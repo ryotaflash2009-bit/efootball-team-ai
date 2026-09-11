@@ -1,0 +1,36 @@
+{
+  "name": "efootball-team-ai",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "audit:ja-labels": "node scripts/audit-ja-stat-labels.mjs",
+    "audit:i18n-keys": "node scripts/audit-i18n-keys.mjs",
+    "verify": "npm run audit:ja-labels && npm run audit:i18n-keys && npm run typecheck && npm run lint && npm run test",
+    "fetch:players": "node scripts/fetch-player-index.mjs"
+  },
+  "dependencies": {
+    "next": "^15.5.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "zod": "3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "20.17.12",
+    "@types/react": "19.0.7",
+    "@types/react-dom": "19.0.3",
+    "autoprefixer": "10.4.20",
+    "eslint": "8.57.1",
+    "eslint-config-next": "^15.5.0",
+    "postcss": "8.4.49",
+    "tailwindcss": "3.4.17",
+    "typescript": "5.7.3",
+    "vitest": "2.1.8"
+  }
+}

@@ -1,0 +1,59 @@
+# dependencies
+/node_modules
+
+# npm (workspace-local cache only)
+.npm-cache/
+
+# next.js
+/.next
+/out
+
+# production
+/build
+/dist
+/coverage
+
+# local SQLite DB, dev-session logs, server PID (regenerated / not redistributable — see below)
+# includes: efootball.db (read-only reference data), all *.log, server.pid
+/data
+
+# third-party sample data (fetched from eFHUB; redistribution rights not confirmed — see
+# docs/data-verification.md / docs/production-readiness/architecture-audit.md). Keep the
+# README.md that documents the local dev setup, but never track the fetched data itself.
+/src/data/cards/*.json
+/src/data/players.sample.json
+/src/data/meta.json
+
+# typescript
+*.tsbuildinfo
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# env
+.env
+.env.*
+!.env.example
+
+# certificates / private keys (defensive; none currently exist in this workspace)
+*.pem
+*.key
+*.pfx
+*.p12
+*.crt
+
+# os
+.DS_Store
+Thumbs.db
+
+# editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# Claude Code local tooling state (session locks etc.; ephemeral, machine/session-specific)
+.claude/

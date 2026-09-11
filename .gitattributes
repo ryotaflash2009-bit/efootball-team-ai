@@ -1,0 +1,11 @@
+# Normalize line endings to LF in the repository, regardless of the
+# developer's OS (this workspace is developed on Windows). Git still checks
+# files out using the OS's native line-ending convention unless overridden.
+* text=auto eol=lf
+
+# Treat these as binary (no line-ending conversion, no diff noise).
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.svg -text

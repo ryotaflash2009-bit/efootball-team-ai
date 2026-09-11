@@ -1,0 +1,150 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * eFootball Team AI デザインシステム トークン。
+ * 色・余白・レイアウト寸法はここ（CSS 変数）で一元管理し、
+ * Tailwind からは var(--*) 経由で参照する。ページごとに色をハードコードしない。
+ */
+:root {
+  /*
+   * 色は RGB 三つ組（"R G B"）で定義。Tailwind から
+   * rgb(var(--color-x-rgb) / <alpha-value>) として参照するので、
+   * bg-surface/40 のような不透明度修飾が確実に効く。
+   */
+  --color-bg-rgb: 9 12 15;
+  --color-surface-rgb: 18 23 28;
+  --color-surface-2-rgb: 26 33 41;
+  --color-surface-3-rgb: 35 45 55;
+  --color-border-rgb: 42 52 61;
+  --color-border-strong-rgb: 58 71 83;
+  --color-text-rgb: 238 241 243;
+  --color-text-dim-rgb: 154 166 176;
+  --color-text-muted-rgb: 97 109 119;
+  --color-accent-rgb: 199 240 0;
+  --color-accent-ink-rgb: 10 13 16;
+  --color-success-rgb: 99 209 77;
+  --color-warning-rgb: 244 194 80;
+  --color-danger-rgb: 255 90 90;
+  --color-info-rgb: 92 184 230;
+
+  /* CSS から直接使う hex エイリアス（芝・スクロールバー・SVG など） */
+  --color-bg: #090c0f;
+  --color-surface: #12171c;
+  --color-surface-2: #1a2129;
+  --color-border: #2a343d;
+  --color-border-strong: #3a4753;
+  --color-text: #eef1f3;
+  --color-text-dim: #9aa6b0;
+  --color-accent: #c7f000;
+  --color-accent-ink: #0a0d10;
+  --color-danger: #ff5a5a;
+  --color-accent-soft: rgba(199, 240, 0, 0.14);
+
+  /* 能力値の段階色（数値と併用・色だけに依存しない） */
+  --stat-elite: #56d3e0;
+  --stat-high: #8fe04f;
+  --stat-mid: #f4c250;
+  --stat-low: #f0964e;
+  --stat-poor: #f0645a;
+
+  /* 角丸 */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* シャドウ（控えめ） */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 8px 24px -14px rgba(0, 0, 0, 0.6);
+  --shadow-pop: 0 8px 28px -6px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.4);
+
+  /* レイアウト寸法 */
+  --header-h: 56px;
+  --sidebar-w: 244px;
+  --sidebar-w-collapsed: 64px;
+  --content-regular: 880px;
+  --content-wide: 1200px;
+  --content-xwide: 1440px;
+  --content-full: 1720px;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, "Segoe UI", "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP", Meiryo, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* フォーカスリング（キーボード操作時にはっきり見える） */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* スケルトン */
+@keyframes pulse-bg {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+.skeleton {
+  background: var(--color-surface-2);
+  animation: pulse-bg 1.5s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* スクロールバー（暗背景向け） */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+/* ピッチ（スカッド）の芝テクスチャ。画像生成はせず CSS のみ。 */
+.pitch-turf {
+  background-color: #123a1e;
+  background-image:
+    linear-gradient(0deg, rgba(255, 255, 255, 0.04) 0 25%, transparent 25% 50%, rgba(255, 255, 255, 0.04) 50% 75%, transparent 75% 100%),
+    radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.06), transparent 60%);
+  background-size: 100% 16.66%, 100% 100%;
+}
+
+/* モーション削減の尊重 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

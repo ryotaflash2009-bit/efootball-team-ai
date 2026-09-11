@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" role="img" aria-label="選手画像なし">
+  <rect width="300" height="400" fill="#0b0f12"/>
+  <rect x="4" y="4" width="292" height="392" fill="none" stroke="#c7f000" stroke-width="2" opacity="0.5"/>
+  <circle cx="150" cy="150" r="55" fill="#c7f000" opacity="0.18"/>
+  <path d="M60 360c0-55 40-96 90-96s90 41 90 96z" fill="#c7f000" opacity="0.18"/>
+  <text x="150" y="332" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="26" font-weight="700" fill="#c7f000" opacity="0.85">NO IMAGE</text>
+</svg>
