@@ -3251,6 +3251,57 @@ export interface Dictionary {
     itemSupportStructureDesc: string;
     draftNotice: string;
   };
+  auth: {
+    navSignIn: string;
+    navSignUp: string;
+    navAccount: string;
+    emailLabel: string;
+    passwordLabel: string;
+    passwordConfirmLabel: string;
+    passwordRequirementsHint: string;
+    passwordMismatchError: string;
+    invalidEmailError: string;
+    genericErrorMessage: string;
+    tryAgainMessage: string;
+    processingAuthMessage: string;
+    checkingSessionMessage: string;
+    signUpPageTitle: string;
+    signUpSubmitButton: string;
+    signUpSuccessTitle: string;
+    signUpSuccessMessage: string;
+    signUpFailedMessage: string;
+    signUpHaveAccountPrompt: string;
+    signUpSignInLink: string;
+    signInPageTitle: string;
+    signInSubmitButton: string;
+    signInFailedMessage: string;
+    signInNoAccountPrompt: string;
+    signInSignUpLink: string;
+    signInForgotPasswordLink: string;
+    logoutButton: string;
+    logoutProcessingMessage: string;
+    forgotPasswordPageTitle: string;
+    forgotPasswordDescription: string;
+    forgotPasswordSubmitButton: string;
+    forgotPasswordSentMessage: string;
+    updatePasswordPageTitle: string;
+    updatePasswordDescription: string;
+    updatePasswordSubmitButton: string;
+    updatePasswordSuccessMessage: string;
+    callbackProcessingMessage: string;
+    callbackFailedMessage: string;
+    callbackReturnLink: string;
+    accountPageTitle: string;
+    accountLoginRequiredMessage: string;
+    accountLoggedInLabel: string;
+    accountEmailLabel: string;
+    accountCloudSyncNoticeTitle: string;
+    accountCloudSyncNoticeDesc: string;
+    accountLocalDataNoticeDesc: string;
+    accountNoAutoUploadNoticeDesc: string;
+    accountCrossDeviceNoticeDesc: string;
+    accountDeletionFutureNoticeDesc: string;
+  };
 }
 
 const ja: Dictionary = {
@@ -6560,6 +6611,57 @@ const ja: Dictionary = {
     itemSupportStructureTitle: "サポート体制",
     itemSupportStructureDesc: "継続的な利用者サポート体制は未整備です。",
     draftNotice: "このページの内容は現行実装に基づく確認結果です。正式公開に向けた最終判断は運営者が行う必要があります。",
+  },
+  auth: {
+    navSignIn: "ログイン",
+    navSignUp: "新規登録",
+    navAccount: "アカウント",
+    emailLabel: "メールアドレス",
+    passwordLabel: "パスワード",
+    passwordConfirmLabel: "パスワード（確認用）",
+    passwordRequirementsHint: "12文字以上で、英大文字・英小文字・数字・記号をすべて含めてください。",
+    passwordMismatchError: "パスワードが一致しません。",
+    invalidEmailError: "メールアドレスの形式が正しくありません。",
+    genericErrorMessage: "処理に失敗しました。時間をおいて再度お試しください。",
+    tryAgainMessage: "もう一度お試しください。",
+    processingAuthMessage: "認証を処理しています…",
+    checkingSessionMessage: "ログイン状態を確認しています…",
+    signUpPageTitle: "新規登録",
+    signUpSubmitButton: "登録する",
+    signUpSuccessTitle: "確認メールを送信しました",
+    signUpSuccessMessage: "ご登録いただいたメールアドレスに確認メールを送信しました。メール内のリンクを開いて登録を完了してください。",
+    signUpFailedMessage: "登録に失敗しました。入力内容を確認し、もう一度お試しください。",
+    signUpHaveAccountPrompt: "すでにアカウントをお持ちの方",
+    signUpSignInLink: "ログインはこちら",
+    signInPageTitle: "ログイン",
+    signInSubmitButton: "ログイン",
+    signInFailedMessage: "メールアドレスまたはパスワードが正しくありません。",
+    signInNoAccountPrompt: "アカウントをお持ちでない方",
+    signInSignUpLink: "新規登録はこちら",
+    signInForgotPasswordLink: "パスワードをお忘れですか？",
+    logoutButton: "ログアウト",
+    logoutProcessingMessage: "ログアウトしています…",
+    forgotPasswordPageTitle: "パスワードをお忘れの方",
+    forgotPasswordDescription: "ご登録のメールアドレスを入力してください。パスワード再設定用のリンクをお送りします。",
+    forgotPasswordSubmitButton: "再設定メールを送信",
+    forgotPasswordSentMessage: "入力いただいたメールアドレス宛にパスワード再設定用のメールを送信しました（該当するアカウントが存在する場合）。メールをご確認ください。",
+    updatePasswordPageTitle: "新しいパスワードを設定",
+    updatePasswordDescription: "新しいパスワードを入力してください。",
+    updatePasswordSubmitButton: "パスワードを更新",
+    updatePasswordSuccessMessage: "パスワードを更新しました。新しいパスワードで再度ログインしてください。",
+    callbackProcessingMessage: "認証情報を確認しています…",
+    callbackFailedMessage: "認証の確認に失敗しました。もう一度ログインまたは登録をお試しください。",
+    callbackReturnLink: "ログイン画面へ戻る",
+    accountPageTitle: "アカウント",
+    accountLoginRequiredMessage: "この画面を利用するにはログインが必要です。",
+    accountLoggedInLabel: "ログイン中",
+    accountEmailLabel: "確認済みメールアドレス",
+    accountCloudSyncNoticeTitle: "クラウド同期は未実装です",
+    accountCloudSyncNoticeDesc: "現在、このアカウントはログイン機能の技術検証段階です。My Team・お気に入り・保存済みビルド・保存済みスカッドなどのクラウド同期はまだ利用できません。",
+    accountLocalDataNoticeDesc: "My Team・お気に入り・保存済みビルド・保存済みスカッドなどのデータは、引き続きこの端末のブラウザー内（ローカル）にのみ保存されます。",
+    accountNoAutoUploadNoticeDesc: "ログインしても、この端末に保存されているローカルデータが自動的にアップロードされることはありません。",
+    accountCrossDeviceNoticeDesc: "別の端末やブラウザーとのデータ同期には現時点で対応していません。",
+    accountDeletionFutureNoticeDesc: "アカウントの削除機能は今後のフェーズで提供予定です。",
   },
 };
 

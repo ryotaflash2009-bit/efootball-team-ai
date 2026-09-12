@@ -7,6 +7,7 @@ import { Icon } from "@/components/ui/Icon";
 import { IconButton } from "@/components/ui/IconButton";
 import { useT } from "@/lib/i18n/LocaleContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { HeaderAccountNav } from "@/components/auth/HeaderAccountNav";
 
 /**
  * グローバルヘッダー。ブランド・グローバル検索・モバイルメニュー・言語選択。
@@ -48,6 +49,8 @@ export function Header({ onMenuClick }: { onMenuClick: () => void }) {
           className="h-9 min-w-0 flex-1 bg-transparent text-sm text-text placeholder:text-text-muted focus:outline-none"
         />
       </form>
+
+      <HeaderAccountNav />
 
       <LanguageSwitcher compact />
 
