@@ -226,6 +226,112 @@ export async function installSupabaseAuthTestDouble(client) {
         signInWithPassword: async function () { return { data: {}, error: null }; },
         resetPasswordForEmail: async function () { return { data: {}, error: null }; },
       };
+
+      // rls_probe_records用の最小インメモリDBダブル(実Supabaseへは一切接続しない)。
+      // 「認証済みなら自分の行だけが見える」という点だけを模擬する
+      // (実際のRLS分離そのものの証明は実Supabase上のSQL監査・手動検証で行う。
+      // ここはUI/アプリ層が0件更新・0件削除を成功と誤表示しないか等を検証する目的)。
+      var rlsRows = [];
+      var rlsIdCounter = 0;
+      function rlsMakeId() {
+        rlsIdCounter += 1;
+        return "efb-test-row-" + rlsIdCounter;
+      }
+      function rlsEmptySelect() {
+        return async function () {
+          return { data: [], error: null };
+        };
+      }
+      function rlsFrom(table) {
+        if (table !== "rls_probe_records") {
+          return {
+            select: function () {
+              return { order: rlsEmptySelect() };
+            },
+            insert: function () {
+              return {
+                select: function () {
+                  return {
+                    single: async function () {
+                      return { data: null, error: { message: "unknown table" } };
+                    },
+                  };
+                },
+              };
+            },
+            update: function () {
+              return { eq: function () { return { select: rlsEmptySelect() }; } };
+            },
+            delete: function () {
+              return { eq: function () { return { select: rlsEmptySelect() }; } };
+            },
+          };
+        }
+        return {
+          select: function () {
+            return {
+              order: async function () {
+                if (!authenticated) return { data: [], error: null };
+                // 挿入順は作成順と一致するため、reverse()で作成日時降順を模擬する。
+                return { data: rlsRows.slice().reverse(), error: null };
+              },
+            };
+          },
+          insert: function (payload) {
+            return {
+              select: function () {
+                return {
+                  single: async function () {
+                    if (!authenticated) return { data: null, error: { status: 401, message: "test double: not authenticated" } };
+                    var now = new Date().toISOString();
+                    var row = { id: rlsMakeId(), label: payload.label, created_at: now, updated_at: now };
+                    rlsRows.push(row);
+                    return { data: row, error: null };
+                  },
+                };
+              },
+            };
+          },
+          update: function (payload) {
+            return {
+              eq: function (_col, id) {
+                return {
+                  select: async function () {
+                    if (!authenticated) return { data: [], error: null };
+                    var row = null;
+                    for (var i = 0; i < rlsRows.length; i++) {
+                      if (rlsRows[i].id === id) { row = rlsRows[i]; break; }
+                    }
+                    if (!row) return { data: [], error: null };
+                    row.label = payload.label;
+                    row.updated_at = new Date().toISOString();
+                    return { data: [row], error: null };
+                  },
+                };
+              },
+            };
+          },
+          delete: function () {
+            return {
+              eq: function (_col, id) {
+                return {
+                  select: async function () {
+                    if (!authenticated) return { data: [], error: null };
+                    var idx = -1;
+                    for (var i = 0; i < rlsRows.length; i++) {
+                      if (rlsRows[i].id === id) { idx = i; break; }
+                    }
+                    if (idx === -1) return { data: [], error: null };
+                    var removed = rlsRows.splice(idx, 1)[0];
+                    return { data: [{ id: removed.id }], error: null };
+                  },
+                };
+              },
+            };
+          },
+        };
+      }
+      window.__EFB_DB_TEST_DOUBLE__ = { from: rlsFrom };
     })();
   `;
   await client.send("Page.addScriptToEvaluateOnNewDocument", { source });
