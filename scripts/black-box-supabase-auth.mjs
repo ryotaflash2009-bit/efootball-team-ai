@@ -26,6 +26,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { launchIsolatedBrowser, openTab, closeTab, connectCDP, waitForCondition, installSupabaseAuthTestDouble } from "./lib/headless-chrome.mjs";
+import { escapeMarkdownCell } from "../src/lib/testing/markdown-table.ts";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "..");
@@ -47,6 +48,30 @@ async function evalJson(client, expression) {
   if (res?.exceptionDetails) throw new Error(`eval exception: ${res.exceptionDetails.text}`);
   return res?.result?.value;
 }
+/**
+ * `fn`(このファイル内に静的に書かれた、外部入力を一切含まない固定の関数)を、
+ * ページ内で`args`を「関数の引数」として実行する(CDP `Runtime.callFunctionOn`)。
+ *
+ * `evalJson`のようにテンプレートリテラルへ値を文字列として埋め込んでコードを組み立てる方式
+ * (`` `...${JSON.stringify(value)}...` ``)は取らない。CDPの`arguments`配列はプロトコル層で
+ * 個別にシリアライズされ、`functionDeclaration`(常に固定の関数ソース)へ文字列として
+ * 混ぜ込まれることが無いため、値の中身(バックスラッシュ・引用符・改行・Unicode区切り文字等)に
+ * 関わらずコード注入・文字列境界の脱出が起こらない。
+ */
+async function callInPage(client, fn, ...args) {
+  const windowRef = await client.send("Runtime.evaluate", { expression: "window" });
+  if (windowRef?.exceptionDetails) throw new Error(`eval exception: ${windowRef.exceptionDetails.text}`);
+  const objectId = windowRef?.result?.objectId;
+  const res = await client.send("Runtime.callFunctionOn", {
+    objectId,
+    functionDeclaration: fn.toString(),
+    arguments: args.map((value) => ({ value })),
+    returnByValue: true,
+    awaitPromise: true,
+  });
+  if (res?.exceptionDetails) throw new Error(`callFunctionOn exception: ${res.exceptionDetails.text}`);
+  return res?.result?.value;
+}
 async function navigateAndSettle(client, url) {
   await client.send("Page.navigate", { url });
   await waitForCondition(async () => (await evalJson(client, "document.readyState")) === "complete", { timeoutMs: 8000, intervalMs: 100 });
@@ -56,30 +81,60 @@ async function bodyText(client) {
   return evalJson(client, "document.body.innerText");
 }
 async function setLocalStorageItem(client, key, value) {
-  await client.send("Runtime.evaluate", { expression: `localStorage.setItem(${JSON.stringify(key)}, ${JSON.stringify(value)})` });
+  await callInPage(
+    client,
+    function (k, v) {
+      localStorage.setItem(k, v);
+    },
+    key,
+    value,
+  );
 }
 async function getLocalStorageItem(client, key) {
-  return evalJson(client, `localStorage.getItem(${JSON.stringify(key)})`);
+  return callInPage(
+    client,
+    function (k) {
+      return localStorage.getItem(k);
+    },
+    key,
+  );
 }
 async function setInputValue(client, selector, value) {
-  const expr = `
-    (function() {
-      const el = document.querySelector(${JSON.stringify(selector)});
+  return callInPage(
+    client,
+    function (sel, val) {
+      const el = document.querySelector(sel);
       if (!el) return false;
       const proto = Object.getPrototypeOf(el);
-      const setter = Object.getOwnPropertyDescriptor(proto, 'value').set;
-      setter.call(el, ${JSON.stringify(value)});
-      el.dispatchEvent(new Event('input', { bubbles: true }));
+      const setter = Object.getOwnPropertyDescriptor(proto, "value").set;
+      setter.call(el, val);
+      el.dispatchEvent(new Event("input", { bubbles: true }));
       return true;
-    })()
-  `;
-  return evalJson(client, expr);
+    },
+    selector,
+    value,
+  );
 }
 async function clickSelector(client, selector) {
-  return evalJson(client, `(function(){ const el = document.querySelector(${JSON.stringify(selector)}); if (!el) return false; el.click(); return true; })()`);
+  return callInPage(
+    client,
+    function (sel) {
+      const el = document.querySelector(sel);
+      if (!el) return false;
+      el.click();
+      return true;
+    },
+    selector,
+  );
 }
 async function setResendMode(client, mode) {
-  await client.send("Runtime.evaluate", { expression: `window.__EFB_TEST_RESEND_MODE__ = ${JSON.stringify(mode)};` });
+  await callInPage(
+    client,
+    function (m) {
+      window.__EFB_TEST_RESEND_MODE__ = m;
+    },
+    mode,
+  );
 }
 
 // 実際の値が万一混入していないかの検出用パターン(このスクリプト自体には実値を書かない)。
@@ -178,6 +233,57 @@ async function main() {
     const mismatchBody = await bodyText(client);
     record("[サインアップ] パスワード不一致で安全なエラーが表示される", mismatchBody.includes("パスワードが一致しません"), "");
     record("[サインアップ] パスワードの値そのものは画面に表示されない", !mismatchBody.includes("Aa1!Aa1!Aa1!") && !mismatchBody.includes("Different1!Aa1!"), "");
+
+    // ============================================================
+    // 入力値のコード注入耐性(callInPage経由の値渡しは、値をテンプレートリテラルへ
+    // 文字列として埋め込まない。値の内容に関わらず「引数」として渡るだけであることを、
+    // 実際に悪意ある値を投入して検証する。読み戻した値が入力値と完全一致すれば、
+    // コードとして実行されず・文字列境界を脱出せず・意図した値としてだけ扱われたことになる)
+    // ============================================================
+    const injectionProbes = [
+      ["通常のASCII文字列", "probe-ascii@example.com"],
+      ["シングルクォート", "a'b@example.com"],
+      ["ダブルクォート", 'a"b@example.com'],
+      ["バックスラッシュ", "a\\b@example.com"],
+      ["連続するバックスラッシュ", "a\\\\\\\\b@example.com"],
+      ["改行", "a\nb@example.com"],
+      ["CRLF", "a\r\nb@example.com"],
+      ["テンプレートリテラルのバッククォート", "a`b@example.com"],
+      ["${...}に見える文字列", "a${1+1}b@example.com"],
+      ["script終了タグに見える文字列", "</script><script>alert(1)</script>"],
+      ["HTML特殊文字", "<img src=x onerror=alert(1)>"],
+      ["Unicode文字", "café🎉@example.com"],
+      ["非常に長い文字列", "a".repeat(5000) + "@example.com"],
+      ["javascript:に見える値", "javascript:alert(1)"],
+      ["data:に見える値", "data:text/html,<script>alert(1)</script>"],
+      ["プロトコル相対URL", "//evil.example.com"],
+      ["不正URL", "ht!tp://[invalid"],
+      ["引用符とバックスラッシュの混在", "a\\'\"b@example.com"],
+      ["バックスラッシュと改行の混在", "a\\\nb@example.com"],
+    ];
+    const errorsBeforeProbes = errors.length;
+    await navigateAndSettle(client, `${BASE}/auth/sign-up`);
+    const PROBE_KEY = "efb-test-injection-probe";
+    for (const [label, probeValue] of injectionProbes) {
+      // localStorage往復(callInPage経由)で値そのものの完全性を検証する。
+      // <input type="email">はHTML仕様の value sanitization algorithm により
+      // 改行/CRLFを単独入力欄の値から取り除く(ブラウザーの正規動作であり、
+      // callInPageの引数渡しとは無関係)ため、改行を含む値の完全性確認には使わない。
+      await setLocalStorageItem(client, PROBE_KEY, probeValue);
+      const storedBack = await getLocalStorageItem(client, PROBE_KEY);
+      record(`[入力値耐性] ${label}: localStorage往復後、値が入力値と完全一致する(コード実行・境界脱出なし)`, storedBack === probeValue, "");
+
+      // 改行を含まない値については、実際のDOM入力欄(<input>)への設定でも完全一致することを確認する。
+      if (!/[\r\n]/.test(probeValue)) {
+        await setInputValue(client, 'input[type="email"]', probeValue);
+        const readBack = await evalJson(client, `document.querySelector('input[type="email"]').value`);
+        record(`[入力値耐性] ${label}: 入力欄へ設定した値が完全一致する(コード実行・境界脱出なし)`, readBack === probeValue, "");
+      }
+
+      const stillOnSignUp = await evalJson(client, "location.pathname");
+      record(`[入力値耐性] ${label}: 意図しないページ遷移が発生しない`, stillOnSignUp === "/auth/sign-up", stillOnSignUp);
+    }
+    record("[入力値耐性] 上記すべての注入耐性チェック中にJS例外が発生していない", errors.length === errorsBeforeProbes, errors.slice(errorsBeforeProbes, errorsBeforeProbes + 3).join(" / "));
 
     // ============================================================
     // サインアップ成功画面(テストダブル: signUpは常にerror無しで成功する)
@@ -452,7 +558,7 @@ async function write() {
     "",
     "| 結果 | 項目 | 詳細 |",
     "|---|---|---|",
-    ...results.map((r) => `| ${r.pass ? "PASS" : "FAIL"} | ${r.name} | ${(r.detail || "").replace(/\|/g, "\\|")} |`),
+    ...results.map((r) => `| ${r.pass ? "PASS" : "FAIL"} | ${escapeMarkdownCell(r.name)} | ${escapeMarkdownCell(r.detail || "")} |`),
     "",
     `## 判定: ${failed.length === 0 ? "全項目 PASS" : failed.length + " 件 FAIL"}`,
     "",
