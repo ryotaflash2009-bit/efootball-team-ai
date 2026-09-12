@@ -32,9 +32,15 @@ export interface AuthTestDouble {
   resetPasswordForEmail: SupabaseClient["auth"]["resetPasswordForEmail"];
 }
 
+/** ブラックボックステスト専用: `.from(table)`だけを差し替えるDB用テストダブル。 */
+export interface DbTestDouble {
+  from: SupabaseClient["from"];
+}
+
 declare global {
   interface Window {
     __EFB_AUTH_TEST_DOUBLE__?: AuthTestDouble;
+    __EFB_DB_TEST_DOUBLE__?: DbTestDouble;
   }
 }
 
@@ -43,9 +49,10 @@ let cached: SupabaseClient | null | undefined;
 function resolveTestDouble(): SupabaseClient | null {
   if (typeof window === "undefined") return null;
   if (!isLocalDevHostname(window.location.hostname)) return null;
-  const double = window.__EFB_AUTH_TEST_DOUBLE__;
-  if (!double) return null;
-  return { auth: double } as unknown as SupabaseClient;
+  const authDouble = window.__EFB_AUTH_TEST_DOUBLE__;
+  if (!authDouble) return null;
+  const dbDouble = window.__EFB_DB_TEST_DOUBLE__;
+  return { auth: authDouble, from: dbDouble?.from } as unknown as SupabaseClient;
 }
 
 /** 検証済みの環境変数からブラウザー用クライアントを生成する。未設定/不正なら`null`。 */

@@ -78,6 +78,13 @@ export function AccountView() {
             <p className="text-sm text-text-dim">{ta("accountCrossDeviceNoticeDesc")}</p>
             <p className="text-sm text-text-dim">{ta("accountDeletionFutureNoticeDesc")}</p>
           </Surface>
+
+          <Surface tone="outline" padding="md" className="flex flex-col gap-1.5">
+            <p className="text-xs font-semibold text-text-muted">{t("rlsTest", "devNoticeTitle")}</p>
+            <Link href="/account/rls-test" className="w-fit text-sm text-accent hover:underline">
+              {t("rlsTest", "pageTitle")}
+            </Link>
+          </Surface>
         </div>
       )}
     </div>
