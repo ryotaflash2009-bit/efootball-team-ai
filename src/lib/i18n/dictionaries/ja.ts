@@ -3301,6 +3301,22 @@ export interface Dictionary {
     accountNoAutoUploadNoticeDesc: string;
     accountCrossDeviceNoticeDesc: string;
     accountDeletionFutureNoticeDesc: string;
+    signUpNextStepsHeading: string;
+    signUpStep1: string;
+    signUpStep2: string;
+    signUpStep3: string;
+    signUpStep4: string;
+    signUpGoToSignInButton: string;
+    signUpSpamFolderNotice: string;
+    signUpAlreadyConfirmedNotice: string;
+    signUpEmailNotArrivingNotice: string;
+    localDevConfirmationNotice: string;
+    resendConfirmationButton: string;
+    resendConfirmationSending: string;
+    resendConfirmationSuccessMessage: string;
+    resendConfirmationRateLimitedMessage: string;
+    resendConfirmationFailedMessage: string;
+    resendConfirmationWaitTemplate: string;
   };
 }
 
@@ -6662,6 +6678,23 @@ const ja: Dictionary = {
     accountNoAutoUploadNoticeDesc: "ログインしても、この端末に保存されているローカルデータが自動的にアップロードされることはありません。",
     accountCrossDeviceNoticeDesc: "別の端末やブラウザーとのデータ同期には現時点で対応していません。",
     accountDeletionFutureNoticeDesc: "アカウントの削除機能は今後のフェーズで提供予定です。",
+    signUpNextStepsHeading: "次に行うこと",
+    signUpStep1: "登録したメールアドレスの受信箱を確認してください。",
+    signUpStep2: "eFootball Team AIから届いた確認メールを開いてください。",
+    signUpStep3: "メール内の確認リンクを押してください。",
+    signUpStep4: "確認が完了したら、ログイン画面またはアカウント画面へ進んでください。",
+    signUpGoToSignInButton: "ログイン画面へ進む",
+    signUpSpamFolderNotice: "メールが見当たらない場合は、迷惑メールフォルダーもご確認ください。",
+    signUpAlreadyConfirmedNotice: "メールアドレスの確認がすでに完了している場合は、そのままログインできます。",
+    signUpEmailNotArrivingNotice: "しばらく待ってもメールが届かない場合は、確認メールを再送信できます。",
+    localDevConfirmationNotice:
+      "現在はローカル開発環境です。確認メールのリンクは、このサイトを起動しているWindows PCで開いてください。スマートフォンなど別の端末でlocalhostのリンクを開くと、開発中のサイトへ接続できません。",
+    resendConfirmationButton: "確認メールを再送信",
+    resendConfirmationSending: "送信中…",
+    resendConfirmationSuccessMessage: "確認メールを再送信しました。メールが届くまで少し時間がかかる場合があります。",
+    resendConfirmationRateLimitedMessage: "短時間に複数回送信されたため、現在は再送信できません。しばらく待ってからもう一度お試しください。",
+    resendConfirmationFailedMessage: "確認メールの再送信に失敗しました。時間をおいてもう一度お試しください。",
+    resendConfirmationWaitTemplate: "再送信まであと{seconds}秒",
   },
 };
 

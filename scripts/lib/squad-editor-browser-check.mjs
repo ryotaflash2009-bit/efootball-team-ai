@@ -16,7 +16,7 @@
  * - 検証後、テスト用タブ・ブラウザプロセス・一時プロファイルはすべて破棄する。
  */
 
-import { launchIsolatedBrowser, openTab, closeTab, connectCDP, waitForCondition } from "./headless-chrome.mjs";
+import { launchIsolatedBrowser, openTab, closeTab, connectCDP, waitForCondition, installSupabaseAuthTestDouble } from "./headless-chrome.mjs";
 
 const SQUAD_STORAGE_KEY = "efb:squads:v1";
 const LOCALE_STORAGE_KEY = "efootball-team-ai:locale:v1";
@@ -79,6 +79,7 @@ export async function verifySquadEditorManagerGuidance(baseUrl) {
     await client.ready;
     await client.send("Page.enable");
     await client.send("Runtime.enable");
+    await installSupabaseAuthTestDouble(client); // ヘッダーの認証状態表示が実Supabaseへ接続しないようにする(このレールは認証と無関係)
     // デスクトップ幅を明示（Tailwind lg: ブレークポイント未満だと監督パネルが
     // モバイルタブ切替の裏に隠れ、そもそも innerText へ現れないため）。
     await client.send("Emulation.setDeviceMetricsOverride", {

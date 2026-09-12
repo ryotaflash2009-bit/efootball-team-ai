@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { classifySignInFailure, classifySignUpFailure, classifyPasswordResetFailure } from "./auth-errors";
+import { classifySignInFailure, classifySignUpFailure, classifyPasswordResetFailure, classifyResendFailure } from "./auth-errors";
 
 describe("classifySignInFailure", () => {
   it("status 429はRATE_LIMITEDになる", () => {
@@ -42,5 +42,16 @@ describe("classifyPasswordResetFailure", () => {
 
   it("それ以外はUNKNOWNになる", () => {
     expect(classifyPasswordResetFailure({ status: 500 })).toBe("UNKNOWN");
+  });
+});
+
+describe("classifyResendFailure", () => {
+  it("レート制限はRATE_LIMITEDになる", () => {
+    expect(classifyResendFailure({ status: 429 })).toBe("RATE_LIMITED");
+    expect(classifyResendFailure({ code: "over_email_send_rate_limit" })).toBe("RATE_LIMITED");
+  });
+
+  it("すでに確認済みなど、それ以外の理由はUNKNOWNになる(確認状態の調査への悪用防止)", () => {
+    expect(classifyResendFailure({ message: "Email already confirmed detail that must not leak" })).toBe("UNKNOWN");
   });
 });

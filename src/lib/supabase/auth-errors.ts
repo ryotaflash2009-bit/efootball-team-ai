@@ -11,6 +11,7 @@
 export type SignInFailureReason = "INVALID_CREDENTIALS" | "RATE_LIMITED" | "UNKNOWN";
 export type SignUpFailureReason = "WEAK_PASSWORD" | "INVALID_EMAIL" | "RATE_LIMITED" | "UNKNOWN";
 export type PasswordResetFailureReason = "RATE_LIMITED" | "UNKNOWN";
+export type ResendFailureReason = "RATE_LIMITED" | "UNKNOWN";
 
 interface RawAuthError {
   message?: string | null;
@@ -38,6 +39,17 @@ export function classifySignUpFailure(error: RawAuthError): SignUpFailureReason 
 }
 
 export function classifyPasswordResetFailure(error: RawAuthError): PasswordResetFailureReason {
+  if (isRateLimited(error)) return "RATE_LIMITED";
+  return "UNKNOWN";
+}
+
+/**
+ * 確認メール再送信の失敗を分類する。
+ * 「既に確認済みのため再送信できない」場合もSupabaseはエラーを返すが、
+ * ここでは区別せずUNKNOWN扱いにする(メールアドレス存在・確認状態の調査への悪用防止。
+ * 「確認済みならログインできます」という案内は、結果に関わらず常時表示する静的な文言で足りる)。
+ */
+export function classifyResendFailure(error: RawAuthError): ResendFailureReason {
   if (isRateLimited(error)) return "RATE_LIMITED";
   return "UNKNOWN";
 }

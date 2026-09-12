@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Surface } from "@/components/ui/Surface";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Field";
+import { SignUpSuccessPanel } from "@/components/auth/SignUpSuccessPanel";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isValidEmailFormat, validatePasswordRules } from "@/lib/supabase/password-rules";
 import { classifySignUpFailure } from "@/lib/supabase/auth-errors";
@@ -92,10 +93,7 @@ export function SignUpView() {
       <PageHeader title={ta("signUpPageTitle")} icon="shield" />
 
       {successMessage ? (
-        <Surface tone="inset" padding="md">
-          <p className="text-sm font-semibold text-success">{ta("signUpSuccessTitle")}</p>
-          <p className="mt-1.5 text-sm text-text-dim">{successMessage}</p>
-        </Surface>
+        <SignUpSuccessPanel email={email} successMessage={successMessage} />
       ) : (
         <Surface padding="md" className="max-w-md">
           <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>

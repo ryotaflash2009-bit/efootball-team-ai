@@ -159,6 +159,79 @@ export function connectCDP(webSocketDebuggerUrl) {
 }
 
 /**
+ * Supabase Authブラウザークライアント(`src/lib/supabase/client.ts`)向けの安全なテストダブルを、
+ * `Page.addScriptToEvaluateOnNewDocument`でこのタブの以後のすべてのナビゲーションへ注入する。
+ *
+ * - `.env.local`に実Supabase認証情報が入っていても、ヘッドレスChromeで開くページの
+ *   `getSupabaseBrowserClient()`はこのダブルを使い、実Supabaseへは一切接続しない
+ *   (サイト全体のヘッダーが認証状態を表示するため、認証と無関係なブラックボックスレールでも
+ *   ページを開くだけで実Supabaseへ通信してしまうのを防ぐ)。
+ * - `getSupabaseBrowserClient()`はホスト名が`localhost`等(isLocalDevHostname)の場合だけ
+ *   このダブルを受け付ける。本番ドメインでは絶対に有効化されない。
+ * - 既定(オプション省略)では常に「未ログイン」を返す無害なダブルになる
+ *   (認証と無関係なレールが誤って実Supabaseへ接続するのを防ぐ目的)。
+ * - `auth-supabase`レールなど、シナリオごとにサインアップ成功・再送信レート制限・
+ *   ログイン中状態を切り替えたい場合は、ページ側で`window.__EFB_TEST_RESEND_MODE__`
+ *   (`"success" | "rate_limited" | "failure"`)を書き換えるか、URLへ`__efbAuth=1`を
+ *   付けて認証済み扱いにする。
+ */
+export async function installSupabaseAuthTestDouble(client) {
+  const source = `
+    (function () {
+      var params = new URLSearchParams(location.search);
+      var authenticated = params.get("__efbAuth") === "1";
+      var fakeUser = { id: "efb-test-double-user-id", email: "efb-test-double@example.invalid" };
+      var listeners = [];
+      function notify(event, session) {
+        listeners.slice().forEach(function (cb) {
+          try { cb(event, session); } catch (e) { /* noop */ }
+        });
+      }
+      window.__EFB_AUTH_TEST_DOUBLE__ = {
+        signUp: async function (p) {
+          return { data: { user: { id: "efb-test-double-user-id", email: p.email, identities: [{}] }, session: null }, error: null };
+        },
+        resend: async function () {
+          var mode = window.__EFB_TEST_RESEND_MODE__ || "success";
+          if (mode === "rate_limited") {
+            return { data: null, error: { status: 429, code: "over_email_send_rate_limit", message: "test double: rate limited" } };
+          }
+          if (mode === "failure") {
+            return { data: null, error: { status: 500, code: "unexpected_failure", message: "test double: unexpected failure" } };
+          }
+          return { data: {}, error: null };
+        },
+        getUser: async function () {
+          return { data: { user: authenticated ? fakeUser : null }, error: null };
+        },
+        onAuthStateChange: function (cb) {
+          listeners.push(cb);
+          return {
+            data: {
+              subscription: {
+                unsubscribe: function () {
+                  var i = listeners.indexOf(cb);
+                  if (i >= 0) listeners.splice(i, 1);
+                },
+              },
+            },
+          };
+        },
+        signOut: async function () {
+          authenticated = false;
+          notify("SIGNED_OUT", null);
+          return { error: null };
+        },
+        updateUser: async function () { return { data: {}, error: null }; },
+        signInWithPassword: async function () { return { data: {}, error: null }; },
+        resetPasswordForEmail: async function () { return { data: {}, error: null }; },
+      };
+    })();
+  `;
+  await client.send("Page.addScriptToEvaluateOnNewDocument", { source });
+}
+
+/**
  * 決定的な画面状態が現れるまでポーリングする（固定 sleep だけに依存しない）。
  * fn が truthy を返すまで intervalMs 間隔で再試行し、timeoutMs で打ち切る（最後の戻り値を返す＝falsy なら未達）。
  */

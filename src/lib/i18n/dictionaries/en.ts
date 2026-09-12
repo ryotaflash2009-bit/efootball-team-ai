@@ -3368,6 +3368,23 @@ const en: Dictionary = {
     accountNoAutoUploadNoticeDesc: "Signing in does not automatically upload the local data already stored on this device.",
     accountCrossDeviceNoticeDesc: "Syncing data across other devices or browsers is not supported yet.",
     accountDeletionFutureNoticeDesc: "Account deletion is planned for a future phase.",
+    signUpNextStepsHeading: "What to do next",
+    signUpStep1: "Check the inbox for the email address you registered.",
+    signUpStep2: "Open the confirmation email from eFootball Team AI.",
+    signUpStep3: "Click the confirmation link in the email.",
+    signUpStep4: "Once confirmed, continue to the sign-in page or your account page.",
+    signUpGoToSignInButton: "Go to sign in",
+    signUpSpamFolderNotice: "If you don't see the email, please also check your spam folder.",
+    signUpAlreadyConfirmedNotice: "If your email address is already confirmed, you can just sign in.",
+    signUpEmailNotArrivingNotice: "If the email hasn't arrived after a while, you can resend the confirmation email.",
+    localDevConfirmationNotice:
+      "This is a local development environment. Open the confirmation link on the Windows PC running this site. A localhost link opened on another device cannot reach the development server.",
+    resendConfirmationButton: "Resend confirmation email",
+    resendConfirmationSending: "Sending…",
+    resendConfirmationSuccessMessage: "The confirmation email has been resent. It may take a little time to arrive.",
+    resendConfirmationRateLimitedMessage: "Too many emails were sent in a short time, so resending is unavailable right now. Please wait a while and try again.",
+    resendConfirmationFailedMessage: "Failed to resend the confirmation email. Please try again later.",
+    resendConfirmationWaitTemplate: "You can resend in {seconds}s",
   },
 };
 
