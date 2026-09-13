@@ -3348,6 +3348,81 @@ export interface Dictionary {
     genericErrorMessage: string;
     notFoundOrForbiddenMessage: string;
   };
+  myTeamCloud: {
+    pageTitle: string;
+    devNoticeTitle: string;
+    devNoticeBody: string;
+    optionalNotice: string;
+    noAutoSendNotice: string;
+    notFullSyncNotice: string;
+    loginRequiredMessage: string;
+    loadingMessage: string;
+    processingLabel: string;
+    localSummaryHeading: string;
+    localCountLabel: string;
+    cloudSummaryHeading: string;
+    cloudNoneMessage: string;
+    cloudExistsMessage: string;
+    cloudCountLabel: string;
+    cloudUpdatedAtLabel: string;
+    checkCloudButton: string;
+    checkingMessage: string;
+    saveButton: string;
+    savingMessage: string;
+    saveConfirmTitle: string;
+    saveConfirmIntro: string;
+    saveConfirmCountTemplate: string;
+    saveConfirmOverwriteWarning: string;
+    saveConfirmNoLocalDeleteNotice: string;
+    saveConfirmFailureSafeNotice: string;
+    saveConfirmOwnDataOnlyNotice: string;
+    saveConfirmNotIncludedNotice: string;
+    saveConfirmEmptyWarning: string;
+    saveConfirmExecuteButton: string;
+    cancelButton: string;
+    saveSuccessMessage: string;
+    saveFailureMessage: string;
+    fetchFailureMessage: string;
+    deleteFailureMessage: string;
+    previewHeading: string;
+    previewMatchingLabel: string;
+    previewLocalOnlyLabel: string;
+    previewCloudOnlyLabel: string;
+    previewUnknownCardsLabel: string;
+    previewNoChangesMessage: string;
+    previewLocalUnchangedNotice: string;
+    conflictNotice: string;
+    backupRecommendationNotice: string;
+    applyButton: string;
+    applyConfirmTitle: string;
+    applyConfirmBodyTemplate: string;
+    applyConfirmExecuteButton: string;
+    applySuccessMessageTemplate: string;
+    applyFailureMessage: string;
+    applyPartialNoticeTemplate: string;
+    deleteCloudButton: string;
+    deleteConfirmTitle: string;
+    deleteConfirmBody: string;
+    deleteConfirmExecuteButton: string;
+    deleteSuccessMessage: string;
+    limitationsHeading: string;
+    limitationsBody: string;
+    errorUnauthenticated: string;
+    errorNotFoundOrForbidden: string;
+    errorMultipleRows: string;
+    errorInvalidLocalData: string;
+    errorInvalidCloudData: string;
+    errorVerificationFailed: string;
+    errorNetwork: string;
+    errorTimeout: string;
+    errorUnknown: string;
+    browserSharedDataNotice: string;
+    notYetCloudSyncedNotice: string;
+    provenanceUnknownNotice: string;
+    provenanceMismatchWarning: string;
+    saveConfirmProvenanceUnclearWarning: string;
+    saveConfirmProvenanceCheckboxLabel: string;
+  };
 }
 
 const ja: Dictionary = {
@@ -6755,6 +6830,81 @@ const ja: Dictionary = {
     deleteSuccessMessage: "削除しました。",
     genericErrorMessage: "処理に失敗しました。時間をおいて再度お試しください。",
     notFoundOrForbiddenMessage: "対象のレコードが見つからないか、操作する権限がありません。",
+  },
+  myTeamCloud: {
+    pageTitle: "My Teamクラウド保存（開発用PoC）",
+    devNoticeTitle: "これは開発向けのMy Teamクラウド保存PoCです",
+    devNoticeBody: "保存対象はMy Team（実際に保有しているカードの一覧）だけです。お気に入り・保存ビルド・保存スカッド・スカッドテンプレートは含まれません。",
+    optionalNotice: "クラウド保存は任意です。使わなくてもMy Teamは今まで通りこのブラウザーに保存され続けます。",
+    noAutoSendNotice: "ログインだけでは自動送信されません。クラウドへの保存は、下の「クラウドへ保存」ボタンを押したときだけ実行されます。",
+    notFullSyncNotice: "「完全同期」「常時同期」ではありません。保存も反映も、この画面でのボタン操作からのみ実行される手動の機能です。",
+    loginRequiredMessage: "クラウド機能を利用するにはログインが必要です。ログインしなくても、ローカルのMy Teamはそのまま利用できます。",
+    loadingMessage: "読み込んでいます…",
+    processingLabel: "処理中…",
+    localSummaryHeading: "ローカルMy Team",
+    localCountLabel: "現在のローカル件数",
+    cloudSummaryHeading: "クラウドMy Team",
+    cloudNoneMessage: "クラウドデータなし",
+    cloudExistsMessage: "クラウド保存済み",
+    cloudCountLabel: "クラウド件数",
+    cloudUpdatedAtLabel: "クラウド更新日時",
+    checkCloudButton: "クラウドデータを確認",
+    checkingMessage: "確認中…",
+    saveButton: "クラウドへ保存",
+    savingMessage: "保存中…",
+    saveConfirmTitle: "保存前の確認",
+    saveConfirmIntro: "My Teamだけをクラウドへ保存します。",
+    saveConfirmCountTemplate: "保存対象件数: {count}件",
+    saveConfirmOverwriteWarning: "既存のクラウドデータがある場合は上書きされます。",
+    saveConfirmNoLocalDeleteNotice: "ローカルのMy Teamは削除されません。",
+    saveConfirmFailureSafeNotice: "保存に失敗した場合も、ローカルのMy Teamはそのまま残ります。",
+    saveConfirmOwnDataOnlyNotice: "保存先は、ログイン中の本人のクラウド領域だけです。",
+    saveConfirmNotIncludedNotice: "お気に入り・保存ビルド・保存スカッドは保存対象に含まれません。",
+    saveConfirmEmptyWarning: "現在ローカルのMy Teamは0件です。空の状態で保存されます。",
+    saveConfirmExecuteButton: "保存する",
+    cancelButton: "キャンセル",
+    saveSuccessMessage: "クラウドへ保存しました。",
+    saveFailureMessage: "保存に失敗しました。ローカルのMy Teamはそのまま残っています。",
+    fetchFailureMessage: "クラウドデータの取得に失敗しました。",
+    deleteFailureMessage: "クラウドデータの削除に失敗しました。",
+    previewHeading: "クラウドデータのプレビュー",
+    previewMatchingLabel: "一致",
+    previewLocalOnlyLabel: "ローカルのみ",
+    previewCloudOnlyLabel: "クラウドのみ（追加候補）",
+    previewUnknownCardsLabel: "カード情報が見つからない件数",
+    previewNoChangesMessage: "ローカルへ追加できる新しいカードはありません。",
+    previewLocalUnchangedNotice: "確認しただけでは、ローカルデータはまだ変更されていません。",
+    conflictNotice: "ローカルとクラウドの両方に異なるデータが見つかりました。競合が見つかりました。反映するかどうかはご自身で確認のうえ選択してください。",
+    backupRecommendationNotice: "より安全に運用したい場合は、事前にブラウザーのMy Teamデータのバックアップを作成してください。",
+    applyButton: "ローカルへ反映（不足分のみ追加）",
+    applyConfirmTitle: "ローカルへ反映しますか？",
+    applyConfirmBodyTemplate: "クラウドにのみ存在する{count}件を、ローカルのMy Teamへ追加します。既存のローカルデータは変更・削除されません。",
+    applyConfirmExecuteButton: "追加する",
+    applySuccessMessageTemplate: "{count}件をローカルへ追加しました。",
+    applyFailureMessage: "一部のカードの追加に失敗しました。",
+    applyPartialNoticeTemplate: "追加: {added}件 / 失敗: {failed}件。失敗した分は、時間をおいてもう一度お試しください。",
+    deleteCloudButton: "クラウドデータを削除",
+    deleteConfirmTitle: "クラウドデータを削除しますか？",
+    deleteConfirmBody: "削除されるのはクラウド上のMy Teamだけです。ローカルのMy Team・お気に入り・保存ビルド・保存スカッドは削除されません。この操作は取り消せません。",
+    deleteConfirmExecuteButton: "削除する",
+    deleteSuccessMessage: "クラウドデータを削除しました。",
+    limitationsHeading: "既知の制限事項",
+    limitationsBody: "クラウド保存は1ユーザーにつき最大1件のスナップショットです。ローカルへの反映は「不足しているカードの追加」のみに対応しており、既存のローカルレコードの上書きや削除は行いません。複数端末間の自動同期・リアルタイム同期には対応していません。",
+    errorUnauthenticated: "ログインが必要です。",
+    errorNotFoundOrForbidden: "対象のクラウドデータが見つからないか、操作する権限がありません。",
+    errorMultipleRows: "想定外の状態を検知したため、安全のため処理を中止しました。もう一度お試しください。",
+    errorInvalidLocalData: "ローカルのMy Teamデータを検証できなかったため、保存を中止しました。",
+    errorInvalidCloudData: "クラウドのデータを検証できなかったため、取得を中止しました。",
+    errorVerificationFailed: "保存または削除後の確認に失敗したため、成功として表示していません。もう一度お試しください。",
+    errorNetwork: "通信に失敗しました。もう一度お試しください。",
+    errorTimeout: "応答がありませんでした。もう一度お試しください。",
+    errorUnknown: "処理に失敗しました。時間をおいて再度お試しください。",
+    browserSharedDataNotice: "ローカルデータ(My Team・My Builds・お気に入り・保存スカッド・スカッドテンプレート)は、現在このブラウザーで共通です。アカウントごとに分かれていません。",
+    notYetCloudSyncedNotice: "My Builds・お気に入り・保存スカッド・スカッドテンプレートは、まだクラウド同期の対象ではありません(このPoCで対応するのはMy Teamだけです)。",
+    provenanceUnknownNotice: "このブラウザーでMy Teamクラウド保存を利用するのは初めて、または由来を確認できません。",
+    provenanceMismatchWarning: "このブラウザーのローカルMy Teamは、別のアカウントで最後に使用された可能性があります。保存する前に内容をよくご確認ください。",
+    saveConfirmProvenanceUnclearWarning: "このローカルデータは、現在ログイン中のアカウントが作成したものとは限りません。",
+    saveConfirmProvenanceCheckboxLabel: "このローカルデータの由来が現在のアカウントとは限らないことを理解し、現在ログイン中のアカウントのクラウド領域へ保存します。",
   },
 };
 
