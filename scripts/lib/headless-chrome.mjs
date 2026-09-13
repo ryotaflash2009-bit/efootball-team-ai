@@ -242,7 +242,91 @@ export async function installSupabaseAuthTestDouble(client) {
           return { data: [], error: null };
         };
       }
+      // my_team_snapshots用の最小インメモリDBダブル(実Supabaseへは一切接続しない)。
+      // 「1ユーザーにつき最大1行」「user_idはクライアントから送らない」という
+      // 実際のテーブル設計だけを模擬する。RLS分離そのものの証明は実Supabase上の
+      // SQL監査・手動検証で行う(rls_probe_recordsと同じ方針)。
+      var mtRow = null;
+      var mtIdCounter = 0;
+      function mtMakeId() {
+        mtIdCounter += 1;
+        return "efb-test-mt-row-" + mtIdCounter;
+      }
+      // テスト側からwindow.__EFB_TEST_FORCE_MULTIROW__ = trueを設定すると、
+      // 「異常系: 複数行が返る」を模擬できる(通常はunique(user_id)+RLSにより起こり得ない)。
+      // テスト側からwindow.__EFB_TEST_MT_DELAY_MS__に数値を設定すると、応答前に
+      // その分だけ待機する(処理中表示・二重送信防止・古い応答の破棄をテストするため)。
+      async function mtMaybeDelay() {
+        var ms = window.__EFB_TEST_MT_DELAY_MS__;
+        if (typeof ms === "number" && ms > 0) {
+          await new Promise(function (r) {
+            setTimeout(r, ms);
+          });
+        }
+      }
+      function mtFromTable() {
+        return {
+          // 実コードはawait supabase.from(table).select(cols)の形で直接awaitするため、
+          // select自体をasync関数にしてPromiseをそのまま返す(rls_probe_records用の
+          // ダブルとは異なり、.order(...)のような追加チェーンを挟まない形状のため)。
+          select: async function () {
+            await mtMaybeDelay();
+            if (!authenticated) return { data: [], error: null };
+            if (window.__EFB_TEST_FORCE_MULTIROW__ && mtRow) {
+              return { data: [mtRow, Object.assign({}, mtRow, { id: mtMakeId() })], error: null };
+            }
+            return { data: mtRow ? [mtRow] : [], error: null };
+          },
+          upsert: function (payload) {
+            return {
+              select: async function () {
+                // 実際に(擬似的な)書き込みリクエストが発生した回数を数える。
+                // UIのdisabled属性やボタン文言だけでなく、「本当に保存処理が実行されなかったか」を
+                // 独立して検証できるようにするためのテスト専用カウンター。
+                window.__EFB_TEST_MT_UPSERT_CALLS__ = (window.__EFB_TEST_MT_UPSERT_CALLS__ || 0) + 1;
+                await mtMaybeDelay();
+                if (!authenticated) {
+                  return { data: null, error: { status: 401, message: "test double: not authenticated" } };
+                }
+                var now = new Date().toISOString();
+                mtRow = {
+                  id: mtRow ? mtRow.id : mtMakeId(),
+                  schema_version: payload.schema_version,
+                  team_data: payload.team_data,
+                  item_count: payload.item_count,
+                  payload_hash: payload.payload_hash,
+                  client_updated_at: payload.client_updated_at,
+                  created_at: mtRow ? mtRow.created_at : now,
+                  updated_at: now,
+                };
+                return { data: [mtRow], error: null };
+              },
+            };
+          },
+          delete: function () {
+            return {
+              eq: function (_col, id) {
+                return {
+                  select: async function () {
+                    await mtMaybeDelay();
+                    if (!authenticated || !mtRow || mtRow.id !== id) {
+                      return { data: [], error: null };
+                    }
+                    var removedId = mtRow.id;
+                    mtRow = null;
+                    return { data: [{ id: removedId }], error: null };
+                  },
+                };
+              },
+            };
+          },
+        };
+      }
+
       function rlsFrom(table) {
+        if (table === "my_team_snapshots") {
+          return mtFromTable();
+        }
         if (table !== "rls_probe_records") {
           return {
             select: function () {
