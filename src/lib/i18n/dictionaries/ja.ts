@@ -394,6 +394,7 @@ export interface Dictionary {
   squadBuildPanel: {
     modalTitle: string;
     intro: string;
+    scopeLoadingNotice: string;
     targetHeading: string;
     targetSquadLabel: string;
     targetSlotLabel: string;
@@ -990,6 +991,7 @@ export interface Dictionary {
   myBuildsView: {
     pageTitle: string;
     pageDescription: string;
+    scopeLoadingMessage: string;
     sortUpdatedDesc: string;
     sortUpdatedAsc: string;
     sortCreatedDesc: string;
@@ -1264,6 +1266,7 @@ export interface Dictionary {
   buildInventoryView: {
     pageTitle: string;
     pageDescription: string;
+    scopeLoadingMessage: string;
     sortUpdatedDesc: string;
     sortUpdatedAsc: string;
     sortCreatedDesc: string;
@@ -2659,6 +2662,7 @@ export interface Dictionary {
     emptyDescription: string;
     noResultsTitle: string;
     removeLabel: string;
+    scopeLoadingMessage: string;
   };
   favoriteButton: {
     saveFailedFallback: string;
@@ -3443,11 +3447,13 @@ export interface Dictionary {
     loadingMessage: string;
     loginRequiredMessage: string;
     currentAccountLabel: string;
-    myTeamMigrationIntro: string;
+    selectionIntro: string;
+    selectKindCheckboxTemplate: string;
     previewButton: string;
     downloadBackupButton: string;
     backupDownloadSuccessMessage: string;
     backupDownloadFailureMessage: string;
+    previewKindHeadingTemplate: string;
     previewHeading: string;
     previewLegacyCountLabel: string;
     previewTargetCountLabel: string;
@@ -3462,6 +3468,7 @@ export interface Dictionary {
     conflictNotMigratedNotice: string;
     migrateButton: string;
     nothingToMigrateMessage: string;
+    resultKindHeadingTemplate: string;
     migrationSuccessMessageTemplate: string;
     migrationFailedMessage: string;
     migrationFailedRolledBackMessage: string;
@@ -3477,6 +3484,11 @@ export interface Dictionary {
     migrateConfirmConflictSkippedNotice: string;
     migrateConfirmCheckboxLabel: string;
     cancelButton: string;
+    referenceIntegrityHeading: string;
+    referenceIntegrityTotalLabel: string;
+    referenceIntegrityBrokenLabel: string;
+    referenceIntegrityNotice: string;
+    referenceIntegrityNoDataMessage: string;
   };
 }
 
@@ -3880,6 +3892,7 @@ const ja: Dictionary = {
     modalTitle: "保存ビルドを選択（スカッド）",
     intro:
       "このスカッド枠で使用する保存ビルド（スカッド用ビルド）を確認・変更します。My Team の選択中ビルド・お気に入りビルドとは別の設定です。対象枠の設定だけを変更し、他の枠・配置・座標・キャプテン・セットプレー・監督・他のスカッドは変更しません。",
+    scopeLoadingNotice: "アカウント情報を確認しています…（確認が終わるまで保存ビルド一覧は表示されません）",
     targetHeading: "対象",
     targetSquadLabel: "スカッド: ",
     targetSlotLabel: "枠: ",
@@ -4499,6 +4512,7 @@ const ja: Dictionary = {
   myBuildsView: {
     pageTitle: "My Builds",
     pageDescription: "選手詳細・選手比較・My Team・スカッド編集で保存した育成ビルドを、一覧・検索・名前変更・複製・削除できます。保存形式は既存のまま（このブラウザにのみ保存）です。",
+    scopeLoadingMessage: "アカウント情報を確認しています…",
     sortUpdatedDesc: "更新が新しい順",
     sortUpdatedAsc: "更新が古い順",
     sortCreatedDesc: "作成が新しい順",
@@ -4779,6 +4793,7 @@ const ja: Dictionary = {
   buildInventoryView: {
     pageTitle: "保存ビルド分析",
     pageDescription: "保存ビルドの使用状況、重複候補、旧規則、参照問題を確認できます。育成配分・My Team・スカッドは変更しません。育成目的は、Build Analysisで明示的に保存操作を行った場合に限り、該当する保存ビルドへ追加保存されます。",
+    scopeLoadingMessage: "アカウント情報を確認しています…",
     sortUpdatedDesc: "更新が新しい順",
     sortUpdatedAsc: "更新が古い順",
     sortCreatedDesc: "作成が新しい順",
@@ -6195,6 +6210,7 @@ const ja: Dictionary = {
     emptyDescription: "選手一覧や選手詳細の星アイコンから追加できます。所有していないカードも登録できます。",
     noResultsTitle: "条件に一致するお気に入りがありません",
     removeLabel: "お気に入り解除",
+    scopeLoadingMessage: "アカウント情報を確認しています…",
   },
   favoriteButton: {
     saveFailedFallback: "保存できませんでした",
@@ -6639,7 +6655,7 @@ const ja: Dictionary = {
     deleteAllTargetEditorPrefs: "スカッド編集の表示設定",
     deleteAllTargetComparisonState: "スカッド比較の一時状態",
     deleteAllExcludedNote: "表示言語の設定・サイドバーの開閉状態は削除されません。",
-    deleteAllScopeNote: "この一括削除は、アカウント分離前にこのブラウザーへ保存された共通データだけが対象です。認証済みアカウント専用のMy Team領域と、クラウドMy Teamはこの操作では削除されません。",
+    deleteAllScopeNote: "この一括削除は、アカウント分離前にこのブラウザーへ保存された共通データだけが対象です。認証済みアカウント専用のMy Team・My Builds・お気に入り領域、およびクラウドMy Teamはこの操作では削除されません。",
     deleteAllNothingToDelete: "現在、削除できるデータはありません。",
     deleteAllStartButton: "ローカルデータをすべて削除する",
     deleteAllConfirmTitle: "本当にすべて削除しますか？",
@@ -6981,11 +6997,13 @@ const ja: Dictionary = {
     loadingMessage: "アカウント情報を確認しています…",
     loginRequiredMessage: "アカウント専用領域への移行にはログインが必要です。ログインしなくても、上記の件数は確認できます。",
     currentAccountLabel: "現在ログイン中のアカウント",
-    myTeamMigrationIntro: "My Teamだけ、今回移行できます。",
+    selectionIntro: "移行したいデータ種別を選んでください(初期状態では何も選択されていません)。My Team・My Builds・お気に入りをそれぞれ個別に選択できます。",
+    selectKindCheckboxTemplate: "{kind}を移行対象に選ぶ",
     previewButton: "移行内容を確認(プレビュー)",
     downloadBackupButton: "バックアップをJSONでダウンロード",
     backupDownloadSuccessMessage: "バックアップを保存しました。",
     backupDownloadFailureMessage: "バックアップの保存に失敗しました。",
+    previewKindHeadingTemplate: "{kind}の移行プレビュー",
     previewHeading: "移行プレビュー",
     previewLegacyCountLabel: "レガシー件数",
     previewTargetCountLabel: "移行先の現在件数",
@@ -7000,21 +7018,27 @@ const ja: Dictionary = {
     conflictNotMigratedNotice: "競合データは自動上書きせず、今回は移行対象に含まれません。",
     migrateButton: "新規追加分を移行する",
     nothingToMigrateMessage: "現在、新規に追加できるデータはありません。",
+    resultKindHeadingTemplate: "{kind}の移行結果",
     migrationSuccessMessageTemplate: "{count}件を現在のアカウント領域へ追加しました。",
     migrationFailedMessage: "移行に失敗しました。アカウント領域のデータは変更されていません。",
     migrationFailedRolledBackMessage: "移行後の確認に失敗したため、アカウント領域を移行前の状態へ戻しました。",
     migrateConfirmTitle: "移行を実行しますか？",
     migrateConfirmExecuteButton: "移行する",
-    migrateConfirmIntro: "移行元(アカウント分離前のブラウザー共通My Team)から、移行先(現在ログイン中のアカウント専用ローカル領域)へMy Teamをコピーします。",
-    migrateConfirmCountTemplate: "移行対象件数: {count}件",
-    migrateConfirmDuplicateTemplate: "重複(追加しない): {count}件",
-    migrateConfirmConflictTemplate: "競合(移行しない): {count}件",
-    migrateConfirmLegacyKeptNotice: "レガシー共通My Teamは削除されません。",
+    migrateConfirmIntro: "選択したローカルデータを、移行元(アカウント分離前のブラウザー共通データ)から移行先(現在ログイン中のアカウント専用ローカル領域)へコピーします。",
+    migrateConfirmCountTemplate: "{kind}: 移行対象件数 {count}件",
+    migrateConfirmDuplicateTemplate: "{kind}: 重複(追加しない) {count}件",
+    migrateConfirmConflictTemplate: "{kind}: 競合(移行しない) {count}件",
+    migrateConfirmLegacyKeptNotice: "レガシー共通データは削除されません。",
     migrateConfirmNoCloudNotice: "クラウドへは送信されません。",
     migrateConfirmNoOverwriteNotice: "アカウント領域の既存データは上書きしません(不足分だけ追加します)。",
     migrateConfirmConflictSkippedNotice: "競合データは移行しません。",
-    migrateConfirmCheckboxLabel: "移行元と移行先を確認し、現在ログイン中のアカウント専用ローカル領域へMy Teamをコピーします。",
+    migrateConfirmCheckboxLabel: "選択したローカルデータを、現在ログイン中のアカウント専用領域へコピーします。元のブラウザー共通データは削除されません。",
     cancelButton: "キャンセル",
+    referenceIntegrityHeading: "My Team ↔ My Builds 参照整合性",
+    referenceIntegrityTotalLabel: "参照されている保存ビルド数",
+    referenceIntegrityBrokenLabel: "参照切れ件数",
+    referenceIntegrityNotice: "参照切れは自動修正・自動削除しません。My Buildsを移行すると解消される場合があります。",
+    referenceIntegrityNoDataMessage: "現在のアカウント領域にMy Teamのデータがないため、確認できる参照がありません。",
   },
 };
 

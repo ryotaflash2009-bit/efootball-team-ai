@@ -13,6 +13,7 @@ import {
 import { getRuleset, isLegacyRulesVersion, normalizeRulesVersion } from "./progression-rules";
 import { MESSI_BIGTIME, CANNAVARO_EPIC } from "./fixtures";
 import type { SavedBuild } from "./types";
+import { setCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
 
 function installMemoryStorage() {
   const map = new Map<string, string>();
@@ -28,6 +29,7 @@ function installMemoryStorage() {
       },
     },
   });
+  setCurrentScope({ kind: "guest" });
 }
 
 describe("育成フロー v2（item 15）", () => {

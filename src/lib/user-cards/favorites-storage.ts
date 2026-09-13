@@ -1,6 +1,5 @@
 import { z } from "zod";
 import {
-  FAVORITES_STORAGE_KEY,
   FAVORITES_STORAGE_VERSION,
   type FavoriteRecord,
   type FavoritesStore,
@@ -14,13 +13,21 @@ import {
   isValidWorldCardId,
 } from "./validation";
 import { notifyUserCards } from "./store-events";
+import { getCurrentScope, subscribeCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
+import { buildScopedStorageKey } from "@/lib/local-storage-scope/keys";
 
 /**
- * お気に入りのローカル保存（localStorage `efootball-team-ai:favorites:v1`）。
+ * お気に入りのローカル保存(localStorage、アカウント別スコープ対応)。
  *  - 外部アカウント・クラウド同期なし。SQLite へは保存しない。
  *  - SSR / localStorage 不可 / 壊れた JSON でも呼び出し側がクラッシュしないよう安全な既定値を返す。
  *  - 読み込み時に Zod で検証し、壊れたレコードは黙って捨てる（保存全体は壊さない）。
  *  - My Team とは独立。お気に入り解除は My Team / 保存ビルド / スカッド / 比較に影響しない。
+ *
+ * アカウント別スコープ対応(Stage 3): 実際に読み書きするキーは、現在解決済みのスコープ
+ * (`current-scope-store.ts`)に応じて動的に決まる。スコープ未解決(認証状態確認中)の間は、
+ * 読み込みは常に空、書き込みは常に拒否する。アカウント分離前の共通キー
+ * (`efootball-team-ai:favorites:v1`)は、この通常モジュールからは一切読み書きしない
+ * (レガシー領域は`local-storage-scope`の移行機能だけが扱う)。
  */
 
 const favoriteRecordSchema = z.object({
@@ -47,10 +54,21 @@ function getStorage(): Storage | null {
     const k = "__efb_fav_probe__";
     window.localStorage.setItem(k, "1");
     window.localStorage.removeItem(k);
+    ensureWindowStorageListenerRegistered();
     return window.localStorage;
   } catch {
     return null;
   }
+}
+
+/**
+ * 現在解決済みのスコープにおける、実際に読み書きするキー。
+ * スコープ未解決(認証状態確認中)の場合はnull(「確認中は読み書きしない」)。
+ */
+export function getActiveFavoritesStorageKey(): string | null {
+  const scope = getCurrentScope();
+  if (!scope) return null;
+  return buildScopedStorageKey(scope, "favorites");
 }
 
 export function isFavoritesStorageAvailable(): boolean {
@@ -88,13 +106,17 @@ export function parseFavoritesStorage(raw: string | null): { store: FavoritesSto
   return { store: { ...parsed.data, storageVersion: FAVORITES_STORAGE_VERSION, records }, warning: null };
 }
 
+const EMPTY_FAVORITES_STORE: FavoritesStore = { storageVersion: FAVORITES_STORAGE_VERSION, updatedAt: "", records: [] };
+
 function readStore(): FavoritesStore {
+  const key = getActiveFavoritesStorageKey();
+  if (!key) return EMPTY_FAVORITES_STORE; // スコープ未解決: 安全な空値(書き込みは行わない)
   const ls = getStorage();
-  if (!ls) return { storageVersion: FAVORITES_STORAGE_VERSION, updatedAt: "", records: [] };
-  return parseFavoritesStorage(ls.getItem(FAVORITES_STORAGE_KEY)).store;
+  if (!ls) return EMPTY_FAVORITES_STORE;
+  return parseFavoritesStorage(ls.getItem(key)).store;
 }
 
-/** useSyncExternalStore 用の安定スナップショット（書き込み / cross-tab で無効化）。 */
+/** useSyncExternalStore 用の安定スナップショット（書き込み / cross-tab / スコープ切替で無効化）。 */
 let snapshot: FavoriteRecord[] | null = null;
 function invalidate(): void {
   snapshot = null;
@@ -104,9 +126,28 @@ function invalidate(): void {
 export function __invalidateFavoritesSnapshotForTests(): void {
   invalidate();
 }
-if (typeof window !== "undefined") {
+// スコープ自体が切り替わった(ログイン・ログアウト・アカウント切り替え)場合、
+// 直前スコープのキャッシュを破棄し、新スコープの内容を再読込させる。
+subscribeCurrentScope(() => {
+  invalidate();
+  notifyUserCards("favorites");
+});
+
+// storageイベントの購読は、モジュール読込時ではなく実際のストレージアクセス時に遅延登録する
+// (my-team-storage.tsと同じ理由: テスト環境でのwindow差し替えタイミング問題を避けるため)。
+let windowStorageListenerRegistered = false;
+/** テスト専用: 各テストが差し替える偽`window`ごとにリスナーを登録し直せるようにする。 */
+export function __resetFavoritesWindowListenerForTests(): void {
+  windowStorageListenerRegistered = false;
+}
+function ensureWindowStorageListenerRegistered(): void {
+  if (windowStorageListenerRegistered) return;
+  if (typeof window === "undefined") return;
+  windowStorageListenerRegistered = true;
   window.addEventListener("storage", (e) => {
-    if (e.key == null || e.key === FAVORITES_STORAGE_KEY) {
+    // 別タブでの変更でも、現在アクティブなスコープのキーでなければ無視する
+    // (別アカウントスコープの変更を無視する)。
+    if (e.key == null || e.key === getActiveFavoritesStorageKey()) {
       invalidate();
       notifyUserCards("favorites");
     }
@@ -114,10 +155,12 @@ if (typeof window !== "undefined") {
 }
 
 function writeStore(store: FavoritesStore): boolean {
+  const key = getActiveFavoritesStorageKey();
+  if (!key) return false; // スコープ未解決の間は書き込みを拒否する
   const ls = getStorage();
   if (!ls) return false;
   try {
-    ls.setItem(FAVORITES_STORAGE_KEY, JSON.stringify({ ...store, updatedAt: new Date().toISOString() }));
+    ls.setItem(key, JSON.stringify({ ...store, updatedAt: new Date().toISOString() }));
     invalidate();
     notifyUserCards("favorites");
     return true;

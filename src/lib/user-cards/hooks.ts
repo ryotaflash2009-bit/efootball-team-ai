@@ -16,13 +16,26 @@ import { setCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
 const EMPTY_FAVS: FavoriteRecord[] = [];
 const EMPTY_TEAM: MyTeamRecord[] = [];
 
+/**
+ * お気に入りのアカウント別スコープを解決し、プレーンなストレージモジュール
+ * (`favorites-storage.ts`)へ同期する。お気に入りを扱うすべての画面がこのフックを
+ * 経由することで、スコープの解決状況(`scopeStatus`)を一貫して取得できる。
+ */
 export function useFavorites(): {
   favorites: FavoriteRecord[];
   favoriteIds: Set<string>;
   isFavorite: (worldCardId: string) => boolean;
   toggle: (worldCardId: string) => { ok: boolean; favorite: boolean; error?: string };
   available: boolean;
+  /** "loading": 認証状態確認中(お気に入りを読み書きしない)。"guest"/"account": 解決済み。 */
+  scopeStatus: "loading" | "guest" | "account";
 } {
+  const scopeState = useStorageScope();
+
+  useEffect(() => {
+    setCurrentScope(scopeState.status === "resolved" ? scopeState.scope : null);
+  }, [scopeState.status === "resolved" ? scopeState.scope.kind : "loading", scopeState.status === "resolved" && scopeState.scope.kind === "account" ? scopeState.scope.scopeId : null]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const favorites = useSyncExternalStore(
     (cb) => subscribeUserCards("favorites", cb),
     () => getFavorites(),
@@ -36,7 +49,8 @@ export function useFavorites(): {
   const favoriteIds = new Set(favorites.map((r) => r.worldCardId));
   const isFavorite = useCallback((id: string) => favoriteIds.has(id), [favorites]); // eslint-disable-line react-hooks/exhaustive-deps
   const toggle = useCallback((id: string) => toggleFavoriteStore(id), []);
-  return { favorites, favoriteIds, isFavorite, toggle, available };
+  const scopeStatus: "loading" | "guest" | "account" = scopeState.status === "loading" ? "loading" : scopeState.scope.kind;
+  return { favorites, favoriteIds, isFavorite, toggle, available, scopeStatus };
 }
 
 /**

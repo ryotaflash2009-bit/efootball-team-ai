@@ -129,3 +129,64 @@ describe("executeMigrationForKind: 検証失敗時のロールバック", () => 
     expect(JSON.parse(map.get(TARGET_KEY)!).records).toEqual([{ worldCardId: "9" }]);
   });
 });
+
+describe("executeMigrationForKind: myBuilds(マップ形式)", () => {
+  const MB_LEGACY_KEY = "efootball-team-ai:progression-builds:v1";
+  const MB_TARGET_KEY = "efootball-team-ai:local:account:deadbeef:progression-builds:v1";
+
+  it("不足分だけ追加され、レガシー(マップ形式)は変更されない", async () => {
+    const legacyValue = JSON.stringify({
+      "111": [{ buildId: "b1", worldCardId: "111", updatedAt: "t1" }],
+      "222": [{ buildId: "b2", worldCardId: "222", updatedAt: "t1" }],
+    });
+    const map = installMemoryStorage({
+      [MB_LEGACY_KEY]: legacyValue,
+      [MB_TARGET_KEY]: JSON.stringify({ "222": [{ buildId: "b2", worldCardId: "222", updatedAt: "t1" }] }),
+    });
+    const result = await executeMigrationForKind("myBuilds", MB_LEGACY_KEY, MB_TARGET_KEY);
+    expect(result).toMatchObject({ ok: true, addedCount: 1, duplicateCount: 1, conflictCount: 0, rolledBack: false });
+    expect(map.get(MB_LEGACY_KEY)).toBe(legacyValue);
+    const target = JSON.parse(map.get(MB_TARGET_KEY)!);
+    const allBuildIds = Object.values(target)
+      .flat()
+      .map((b: any) => b.buildId)
+      .sort();
+    expect(allBuildIds).toEqual(["b1", "b2"]);
+  });
+
+  it("競合(同じbuildIdで内容が異なる)は対象へ書き込まれない", async () => {
+    const map = installMemoryStorage({
+      [MB_LEGACY_KEY]: JSON.stringify({ "111": [{ buildId: "b1", worldCardId: "111", buildName: "legacy" }] }),
+      [MB_TARGET_KEY]: JSON.stringify({ "111": [{ buildId: "b1", worldCardId: "111", buildName: "account" }] }),
+    });
+    const result = await executeMigrationForKind("myBuilds", MB_LEGACY_KEY, MB_TARGET_KEY);
+    expect(result).toMatchObject({ ok: true, addedCount: 0, conflictCount: 1 });
+    expect(JSON.parse(map.get(MB_TARGET_KEY)!)["111"][0].buildName).toBe("account");
+  });
+});
+
+describe("executeMigrationForKind: favorites", () => {
+  const FAV_LEGACY_KEY = "efootball-team-ai:favorites:v1";
+  const FAV_TARGET_KEY = "efootball-team-ai:local:account:deadbeef:favorites:v1";
+
+  it("不足分だけ追加され、レガシーは変更されない", async () => {
+    const legacyValue = JSON.stringify({ records: [{ worldCardId: "10001", updatedAt: "t1" }, { worldCardId: "10002", updatedAt: "t1" }] });
+    const map = installMemoryStorage({ [FAV_LEGACY_KEY]: legacyValue });
+    const result = await executeMigrationForKind("favorites", FAV_LEGACY_KEY, FAV_TARGET_KEY);
+    expect(result).toMatchObject({ ok: true, addedCount: 2, duplicateCount: 0, conflictCount: 0 });
+    expect(map.get(FAV_LEGACY_KEY)).toBe(legacyValue);
+    const target = JSON.parse(map.get(FAV_TARGET_KEY)!);
+    expect(target.records.map((r: { worldCardId: string }) => r.worldCardId).sort()).toEqual(["10001", "10002"]);
+  });
+
+  it("既存のaccount領域のお気に入りは維持され、重複は追加されない", async () => {
+    const map = installMemoryStorage({
+      [FAV_LEGACY_KEY]: JSON.stringify({ records: [{ worldCardId: "10001", updatedAt: "t1" }] }),
+      [FAV_TARGET_KEY]: JSON.stringify({ records: [{ worldCardId: "10001", updatedAt: "t1" }, { worldCardId: "99999", updatedAt: "t1" }] }),
+    });
+    const result = await executeMigrationForKind("favorites", FAV_LEGACY_KEY, FAV_TARGET_KEY);
+    expect(result).toMatchObject({ ok: true, addedCount: 0, duplicateCount: 1 });
+    const target = JSON.parse(map.get(FAV_TARGET_KEY)!);
+    expect(target.records.map((r: { worldCardId: string }) => r.worldCardId).sort()).toEqual(["10001", "99999"]);
+  });
+});

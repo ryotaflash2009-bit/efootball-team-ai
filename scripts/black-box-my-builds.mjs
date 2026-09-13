@@ -48,19 +48,34 @@ async function json(p) {
 const MESSI = "89138556575063";
 const CANNAVARO = "88041460996837";
 
+// アカウント別localStorage領域対応(feat/account-scoped-builds-favorites)により、
+// My Builds・保存ビルド分析(/build-inventory)は、My Team・お気に入りと同様、認証状態が
+// 確定するまでは安全な読み込み中シェルだけを表示し、それ以外の文言(空状態・書き出し/読み込み・
+// 旧規則ガイド・重複候補等の説明文)はSSR直後には出なくなった。これらは全て「表示条件が
+// 変わっただけ」で文言そのものは変更していないため、ここでは i18n 辞書ソース
+// (src/lib/i18n/dictionaries/ja.ts)に該当文言がまだ存在することを直接確認する
+// (実際の画面表示・JS実行後の内容はblack-box-account-scoped-storage.mjsで検証済み)。
+const jaDictPath = path.join(ROOT, "src", "lib", "i18n", "dictionaries", "ja.ts");
+const jaDict = await fs.readFile(jaDictPath, "utf8");
+
 async function main() {
-  // 1. My Builds 画面（SSR 空状態シェル）
+  // 1. My Builds 画面（認証確認中は安全な読み込み中シェル）
   const mb = await get("/my-builds");
   record("My Builds: /my-builds が 200", mb.status === 200, `HTTP ${mb.status}`);
   record("My Builds: 見出し（h1）は 1 つ", (mb.body.match(/<h1/g) || []).length === 1, "");
   record("My Builds: 見出し「My Builds」", mb.text.includes("My Builds"), "");
-  record("My Builds: 空状態「保存ビルドがありません」", mb.text.includes("保存ビルドがありません"), "");
   record(
-    "My Builds: 空状態の説明「この育成を保存」から追加",
-    mb.text.includes("「この育成を保存」から追加"),
+    "My Builds: SSRは認証確認中の安全な読み込み中シェルを表示する(空状態を先走って表示しない)",
+    mb.text.includes("アカウント情報を確認しています"),
     "",
   );
-  record("My Builds: ローカル保存の明示（このブラウザにのみ）", mb.text.includes("このブラウザにのみ"), "");
+  record("My Builds: 空状態「保存ビルドがありません」の文言は辞書に存在する", jaDict.includes("保存ビルドがありません"), "");
+  record(
+    "My Builds: 空状態の説明「この育成を保存」から追加、の文言は辞書に存在する",
+    jaDict.includes("「この育成を保存」から追加"),
+    "",
+  );
+  record("My Builds: ローカル保存の明示（このブラウザにのみ）の文言は辞書に存在する", jaDict.includes("このブラウザにのみ"), "");
   record(
     "My Builds: ログイン/クラウド同期を「済み」と誤表示しない",
     !/アカウントへ保存済み|クラウド同期済み|本人確認済み/.test(mb.text),
@@ -72,11 +87,11 @@ async function main() {
     "",
   );
   record(
-    "My Builds: 空状態から 選手を探す / 選手比較 / My Team / スカッド への導線",
-    mb.text.includes("選手を探す") &&
-      mb.text.includes("選手比較を開く") &&
-      mb.text.includes("My Team を開く") &&
-      mb.text.includes("スカッドを開く"),
+    "My Builds: 空状態から 選手を探す / 選手比較 / My Team / スカッド への導線の文言は辞書に存在する",
+    jaDict.includes("選手を探す") &&
+      jaDict.includes("選手比較を開く") &&
+      jaDict.includes("My Team を開く") &&
+      jaDict.includes("スカッドを開く"),
     "",
   );
   record(
@@ -99,30 +114,30 @@ async function main() {
   //     直前再検証・競合検出・スキーマ検証・Blob/Object URL・ファイル名は
   //     src/lib/progression/build-export.test.ts と src/lib/browser-download.test.ts（vitest）で担保。
   //     ここでは /my-builds の SSR に必ず出る入口の文言と安全性のみ検証。
-  record("書き出し: 「保存ビルドを書き出す」入口がある", mb.text.includes("保存ビルドを書き出す"), "");
+  record("書き出し: 「保存ビルドを書き出す」入口の文言は辞書に存在する", jaDict.includes("保存ビルドを書き出す"), "");
   record(
-    "書き出し: ローカルの JSON ファイルとして保存する説明",
-    mb.text.includes("JSON ファイル"),
+    "書き出し: ローカルの JSON ファイルとして保存する説明の文言は辞書に存在する",
+    jaDict.includes("JSON ファイル"),
     "",
   );
   record(
-    "書き出し: サーバー / 外部サービスへ送信しない説明",
-    mb.text.includes("サーバーや外部サービスへは送信しません"),
+    "書き出し: サーバー / 外部サービスへ送信しない説明の文言は辞書に存在する",
+    jaDict.includes("サーバーや外部サービスへは送信しません"),
     "",
   );
   record(
-    "書き出し: 書き出しても元データを変更しない説明",
-    /書き出しても\s*保存ビルドは変更されません/.test(mb.text),
+    "書き出し: 書き出しても元データを変更しない説明の文言は辞書に存在する",
+    /書き出しても\s*保存ビルドは変更されません/.test(jaDict),
     "",
   );
   record(
-    "書き出し: 全件エクスポート・選択エクスポートの両方に触れている",
-    mb.text.includes("全件") && mb.text.includes("選択した保存ビルドだけを書き出せます"),
+    "書き出し: 全件エクスポート・選択エクスポートの両方に触れている(辞書確認)",
+    jaDict.includes("全件") && jaDict.includes("選択した保存ビルドだけを書き出せます"),
     "",
   );
   record(
-    "書き出し: 「書き出す」と「読み込む」が別の入口として区別されている",
-    mb.text.includes("保存ビルドを書き出す") && mb.text.includes("保存ビルドを読み込む"),
+    "書き出し: 「書き出す」と「読み込む」が別の入口として区別されている(辞書確認)",
+    jaDict.includes("保存ビルドを書き出す") && jaDict.includes("保存ビルドを読み込む"),
     "",
   );
   record(
@@ -136,13 +151,13 @@ async function main() {
     "",
   );
   record(
-    "書き出し: 対応ブラウザーで保存場所の選択画面が表示される旨とドキュメントフォルダーの案内",
-    mb.text.includes("保存場所の選択画面が表示されます") && mb.text.includes("「ドキュメント」フォルダーを選ぶ"),
+    "書き出し: 対応ブラウザーで保存場所の選択画面が表示される旨とドキュメントフォルダーの案内(辞書確認)",
+    jaDict.includes("保存場所の選択画面が表示されます") && jaDict.includes("「ドキュメント」フォルダーを選ぶ"),
     "",
   );
   record(
-    "書き出し: 非対応ブラウザーは通常のダウンロード先へ保存する旨（実際の保存先選択・write/close/AbortError 処理は browser-save-file.test.ts で担保）",
-    mb.text.includes("非対応の場合は通常のダウンロード先へ保存します"),
+    "書き出し: 非対応ブラウザーは通常のダウンロード先へ保存する旨(辞書確認。実際の保存先選択・write/close/AbortError 処理は browser-save-file.test.ts で担保)",
+    jaDict.includes("非対応の場合は通常のダウンロード先へ保存します"),
     "",
   );
   record(
@@ -156,52 +171,52 @@ async function main() {
   //     全件単位保存・保存直前/保存後の再検証・競合検出・プロトタイプ汚染対策は
   //     src/lib/progression/build-import.test.ts / build-storage.test.ts / browser-upload.test.ts（vitest）で担保。
   //     ここでは /my-builds の SSR に必ず出る入口の文言と安全性のみ検証。File API は Modal 内でのみ使う。
-  record("読み込み: 「保存ビルドを読み込む」入口がある", mb.text.includes("保存ビルドを読み込む"), "");
+  record("読み込み: 「保存ビルドを読み込む」入口の文言は辞書に存在する", jaDict.includes("保存ビルドを読み込む"), "");
   record(
-    "読み込み: 前回書き出したローカル JSON ファイルが対象という説明",
-    mb.text.includes("前回このアプリから書き出したローカル JSON ファイル"),
+    "読み込み: 前回書き出したローカル JSON ファイルが対象という説明の文言は辞書に存在する",
+    jaDict.includes("前回このアプリから書き出したローカル JSON ファイル"),
     "",
   );
   record(
-    "読み込み: サーバー / 外部サービスへ送信しない説明",
-    /サーバーや外部サービスへは送信しません（アップロードしません）/.test(mb.text),
+    "読み込み: サーバー / 外部サービスへ送信しない説明の文言は辞書に存在する",
+    /サーバーや外部サービスへは送信しません（アップロードしません）/.test(jaDict),
     "",
   );
   record(
-    "読み込み: ファイル選択だけ・プレビューだけでは保存されない説明",
-    /ファイルを選んだだけ・プレビューを開いただけでは保存されません/.test(mb.text) &&
-      mb.text.includes("最終確認を押したときだけ保存します"),
+    "読み込み: ファイル選択だけ・プレビューだけでは保存されない説明の文言は辞書に存在する",
+    /ファイルを選んだだけ・プレビューを開いただけでは保存されません/.test(jaDict) &&
+      jaDict.includes("最終確認を押したときだけ保存します"),
     "",
   );
   record(
-    "読み込み: 既存ビルドを上書き・削除しない説明",
-    /既存の保存ビルドは上書き・削除しません/.test(mb.text),
+    "読み込み: 既存ビルドを上書き・削除しない説明の文言は辞書に存在する",
+    /既存の保存ビルドは上書き・削除しません/.test(jaDict),
     "",
   );
   record(
-    "読み込み: buildId 衝突時は新しい buildId で追加する説明",
-    /buildId が既存と重複する場合は新しい buildId で追加します/.test(mb.text),
+    "読み込み: buildId 衝突時は新しい buildId で追加する説明の文言は辞書に存在する",
+    /buildId が既存と重複する場合は新しい buildId で追加します/.test(jaDict),
     "",
   );
   record(
-    "読み込み: My Team / スカッド / カードお気に入りへ自動適用しない説明",
-    mb.text.includes("My Team・スカッド・カードのお気に入りへ自動で適用しません") &&
-      mb.text.includes("参照も作りません"),
+    "読み込み: My Team / スカッド / カードお気に入りへ自動適用しない説明の文言は辞書に存在する",
+    jaDict.includes("My Team・スカッド・カードのお気に入りへ自動で適用しません") &&
+      jaDict.includes("参照も作りません"),
     "",
   );
   record(
-    "読み込み: 未対応 formatVersion を変換せず拒否する説明",
-    /未対応の formatVersion のファイルは変換せず拒否します/.test(mb.text),
+    "読み込み: 未対応 formatVersion を変換せず拒否する説明の文言は辞書に存在する",
+    /未対応の formatVersion のファイルは変換せず拒否します/.test(jaDict),
     "",
   );
   record(
-    "読み込み: 内容を検証してプレビューし最終確認のうえ追加する説明",
-    mb.text.includes("内容を検証してプレビューし、最終確認のうえ"),
+    "読み込み: 内容を検証してプレビューし最終確認のうえ追加する説明の文言は辞書に存在する",
+    jaDict.includes("内容を検証してプレビューし、最終確認のうえ"),
     "",
   );
   record(
-    "読み込み: selectedBuildId / favoriteBuildId へ自動設定しない説明",
-    mb.text.includes("選択中ビルド・お気に入りには自動設定しません"),
+    "読み込み: selectedBuildId / favoriteBuildId へ自動設定しない説明の文言は辞書に存在する",
+    jaDict.includes("選択中ビルド・お気に入りには自動設定しません"),
     "",
   );
   record(
@@ -272,7 +287,11 @@ async function main() {
   );
   const favBb = await get("/favorites");
   record("お気に入り: /favorites が 200（My Builds のお気に入りビルド連携と別機能・回帰なし）", favBb.status === 200, `HTTP ${favBb.status}`);
-  record("お気に入り: 空状態シェル", favBb.text.includes("お気に入りはまだありません"), "");
+  record(
+    "お気に入り: SSRは認証確認中の安全な読み込み中シェルを表示する(空状態を先走って表示しない)",
+    favBb.text.includes("アカウント情報を確認しています"),
+    "",
+  );
 
   // 1c. 保存ビルド分析（/build-inventory・旧称「保存ビルド棚卸し」。2026-09-05 に名称変更・URL 不変）。
   //     集計・参照分類・削除済み参照・検索/絞り込み/並び替えは
@@ -282,12 +301,17 @@ async function main() {
   record("分析: /build-inventory が 200（URL 不変）", bi.status === 200, `HTTP ${bi.status}`);
   record("分析: 見出し（h1）は 1 つ", (bi.body.match(/<h1/g) || []).length === 1, "");
   record("分析: 見出し「保存ビルド分析」（旧「保存ビルド棚卸し」は主表示に残さない）", bi.text.includes("保存ビルド分析") && !bi.text.includes("保存ビルド棚卸し"), "");
-  record("分析: 読み取り専用の明示", bi.text.includes("読み取り専用"), "");
-  record("分析: ローカル保存の明示（このブラウザにのみ）", bi.text.includes("このブラウザにのみ"), "");
-  record("分析: 空状態「保存ビルドがありません」", bi.text.includes("保存ビルドがありません"), "");
   record(
-    "分析: 空状態から My Builds / My Team / スカッド への導線",
-    bi.text.includes("My Builds を開く") && bi.text.includes("My Team を開く") && bi.text.includes("スカッドを開く"),
+    "分析: SSRは認証確認中の安全な読み込み中シェルを表示する(空状態を先走って表示しない)",
+    bi.text.includes("アカウント情報を確認しています"),
+    "",
+  );
+  record("分析: 読み取り専用の明示の文言は辞書に存在する", jaDict.includes("読み取り専用"), "");
+  record("分析: ローカル保存の明示（このブラウザにのみ）の文言は辞書に存在する", jaDict.includes("このブラウザにのみ"), "");
+  record("分析: 空状態「保存ビルドがありません」の文言は辞書に存在する", jaDict.includes("保存ビルドがありません"), "");
+  record(
+    "分析: 空状態から My Builds / My Team / スカッド への導線の文言は辞書に存在する",
+    jaDict.includes("My Builds を開く") && jaDict.includes("My Team を開く") && jaDict.includes("スカッドを開く"),
     "",
   );
   record(
@@ -317,27 +341,27 @@ async function main() {
   //     状態別の旧規則件数・使用状況・参照数・「旧規則だけを表示」絞り込み・手順表示は
   //     src/lib/progression/build-inventory.test.ts（summarizeLegacyBuilds / legacyOnlyFilter /
   //     filterBuildInventory）で担保。ここでは SSR に必ず出る文言と安全性のみ検証。
-  record("旧規則ガイド: 見出し「旧規則ビルド確認ガイド」", bi.text.includes("旧規則ビルド確認ガイド"), "");
+  record("旧規則ガイド: 見出し「旧規則ビルド確認ガイド」の文言は辞書に存在する", jaDict.includes("旧規則ビルド確認ガイド"), "");
   record("旧規則ガイド: 新しい専用ページを増やしていない（/build-inventory 内のセクション）", !/href="\/(legacy|legacy-builds|build-inventory\/legacy)"/.test(bi.body), "");
   record(
-    "旧規則ガイド: 読み取り専用・自動移行機能ではないと明示",
-    bi.text.includes("「自動移行機能」ではありません") &&
-      bi.text.includes("自動変換・一括変換・上書き・削除・解除・付け替え"),
+    "旧規則ガイド: 読み取り専用・自動移行機能ではないと明示、の文言は辞書に存在する",
+    jaDict.includes("「自動移行機能」ではありません") &&
+      jaDict.includes("自動変換・一括変換・上書き・削除・解除・付け替え"),
     "",
   );
   record(
-    "旧規則ガイド: 旧規則ビルドの説明（旧 rulesVersion / 現行規則へ調整し直す）",
-    bi.text.includes("旧 rulesVersion") && bi.text.includes("現行規則へ調整し直す"),
+    "旧規則ガイド: 旧規則ビルドの説明（旧 rulesVersion / 現行規則へ調整し直す）の文言は辞書に存在する",
+    jaDict.includes("旧 rulesVersion") && jaDict.includes("現行規則へ調整し直す"),
     "",
   );
   record(
-    "旧規則ガイド: 既存の旧規則ビルドはそのまま保持されると明示",
-    bi.text.includes("既存の旧規則ビルドはそのまま保持されます"),
+    "旧規則ガイド: 既存の旧規則ビルドはそのまま保持されると明示、の文言は辞書に存在する",
+    jaDict.includes("既存の旧規則ビルドはそのまま保持されます"),
     "",
   );
   record(
-    "旧規則ガイド: 空状態「旧規則ビルドはありません」",
-    bi.text.includes("旧規則ビルドはありません"),
+    "旧規則ガイド: 空状態「旧規則ビルドはありません」の文言は辞書に存在する",
+    jaDict.includes("旧規則ビルドはありません"),
     "",
   );
   record(
@@ -346,8 +370,8 @@ async function main() {
     "",
   );
   record(
-    "旧規則ガイド: 個別確認の導線（My Builds / My Team / スカッド）",
-    bi.text.includes("My Builds で管理"),
+    "旧規則ガイド: 個別確認の導線（My Builds / My Team / スカッド）の文言は辞書に存在する",
+    jaDict.includes("My Builds で管理"),
     "",
   );
   record(
@@ -360,52 +384,52 @@ async function main() {
   //     フィンガープリント判定・類似判定・使用状況・検索/絞り込み/並び替え・判定不能分類は
   //     src/lib/progression/build-duplicate-review.test.ts（vitest）で担保。
   //     ここでは SSR に必ず出る文言と安全性のみ検証。
-  record("重複候補: 見出し「保存ビルド重複候補」", bi.text.includes("保存ビルド重複候補"), "");
+  record("重複候補: 見出し「保存ビルド重複候補」の文言は辞書に存在する", jaDict.includes("保存ビルド重複候補"), "");
   record(
-    "重複候補: 完全一致候補の説明（World ID・rulesVersion・育成配分・選手ブースター試算・Power of Many指定が一致）",
-    bi.text.includes("完全一致候補") &&
-      bi.text.includes("World ID（worldCardId）・rulesVersion・育成配分・選手ブースター試算・") &&
-      /Power of Many\s*指定がすべて一致する保存ビルドです/.test(bi.text),
+    "重複候補: 完全一致候補の説明（World ID・rulesVersion・育成配分・選手ブースター試算・Power of Many指定が一致）の文言は辞書に存在する",
+    jaDict.includes("完全一致候補") &&
+      jaDict.includes("World ID（worldCardId）・rulesVersion・育成配分・選手ブースター試算・") &&
+      /Power of Many\s*指定がすべて一致する保存ビルドです/.test(jaDict),
     "",
   );
   record(
-    "重複候補: 類似候補の説明（安全な範囲に限定・未対応の場合も 0 件と誤表示しない）",
-    bi.text.includes("類似候補"),
+    "重複候補: 類似候補の説明（安全な範囲に限定・未対応の場合も 0 件と誤表示しない）の文言は辞書に存在する",
+    jaDict.includes("類似候補"),
     "",
   );
   record(
-    "重複候補: 自動削除しない説明",
-    bi.text.includes("削除・統合・上書き・一括処理・付け替え") && bi.text.includes("ありません"),
+    "重複候補: 自動削除しない説明の文言は辞書に存在する",
+    jaDict.includes("削除・統合・上書き・一括処理・付け替え") && jaDict.includes("ありません"),
     "",
   );
   record(
-    "重複候補: 自動統合しない説明",
-    bi.text.includes("統合"),
+    "重複候補: 自動統合しない説明の文言は辞書に存在する",
+    jaDict.includes("統合"),
     "",
   );
   record(
-    "重複候補: 一括処理しない説明",
-    bi.text.includes("一括処理"),
+    "重複候補: 一括処理しない説明の文言は辞書に存在する",
+    jaDict.includes("一括処理"),
     "",
   );
   record(
-    "重複候補: My Team 参照を変更しない説明",
-    bi.text.includes("My Team・スカッドの参照も変更しません"),
+    "重複候補: My Team 参照を変更しない説明の文言は辞書に存在する",
+    jaDict.includes("My Team・スカッドの参照も変更しません"),
     "",
   );
   record(
-    "重複候補: スカッド参照を変更しない説明",
-    bi.text.includes("スカッドの参照も変更しません"),
+    "重複候補: スカッド参照を変更しない説明の文言は辞書に存在する",
+    jaDict.includes("スカッドの参照も変更しません"),
     "",
   );
   record(
-    "重複候補: 空状態「完全一致する保存ビルド候補はありません」",
-    bi.text.includes("保存ビルドがありません") || bi.text.includes("完全一致する保存ビルド候補はありません"),
+    "重複候補: 空状態「完全一致する保存ビルド候補はありません」の文言は辞書に存在する",
+    jaDict.includes("保存ビルドがありません") || jaDict.includes("完全一致する保存ビルド候補はありません"),
     "",
   );
   record(
-    "重複候補: My Builds への導線",
-    bi.text.includes("My Builds で管理"),
+    "重複候補: My Builds への導線の文言は辞書に存在する",
+    jaDict.includes("My Builds で管理"),
     "",
   );
   record(
@@ -424,13 +448,13 @@ async function main() {
     "",
   );
   record(
-    "重複候補: My Builds 画面に Build Inventory への導線（重複候補の案内）",
-    mb.text.includes("Build Inventory で重複候補を確認") && /href="\/build-inventory"/.test(mb.body),
+    "重複候補: My Builds 画面に Build Inventory への導線（重複候補の案内）の文言は辞書に存在する",
+    jaDict.includes("Build Inventory で重複候補を確認") && /href="\/build-inventory"/.test(mb.body),
     "",
   );
   record(
-    "重複候補: My Builds 側の案内も削除・統合・上書きしないと明示",
-    mb.text.includes("削除・統合・上書きしません"),
+    "重複候補: My Builds 側の案内も削除・統合・上書きしないと明示、の文言は辞書に存在する",
+    jaDict.includes("削除・統合・上書きしません"),
     "",
   );
 
@@ -478,7 +502,11 @@ async function main() {
     "",
   );
   const fav = await get("/favorites");
-  record("回帰: お気に入り 200 + 空状態", fav.status === 200 && fav.text.includes("お気に入りはまだありません"), "");
+  record(
+    "回帰: お気に入り 200 + 認証確認中の安全な読み込み中シェル(アカウント別localStorage対応)",
+    fav.status === 200 && fav.text.includes("アカウント情報を確認しています"),
+    "",
+  );
   const squads = await get("/squads");
   record("回帰: スカッド 200", squads.status === 200, `HTTP ${squads.status}`);
   const squadCmp = await get("/squads/compare");

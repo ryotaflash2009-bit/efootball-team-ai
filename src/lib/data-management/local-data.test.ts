@@ -129,6 +129,38 @@ describe("local-data（メモリlocalStorage）", () => {
     expect(map.get(accountMyTeamKey)).toBe("account-team");
   });
 
+  it("deleteAllManagedLocalData: アカウント別/guestスコープのMy Buildsキーは変更されない", () => {
+    const guestBuildsKey = buildScopedStorageKey({ kind: "guest" }, "myBuilds");
+    const accountBuildsKey = buildScopedStorageKey({ kind: "account", scopeId: "c".repeat(64) }, "myBuilds");
+    const { map } = installMemoryStorage({
+      "efootball-team-ai:progression-builds:v1": "legacy-builds",
+      [guestBuildsKey]: "guest-builds",
+      [accountBuildsKey]: "account-builds",
+    });
+    const result = deleteAllManagedLocalData();
+    expect(result.ok).toBe(true);
+    expect(result.attemptedKeys).toEqual(["efootball-team-ai:progression-builds:v1"]);
+    expect(map.has("efootball-team-ai:progression-builds:v1")).toBe(false);
+    expect(map.get(guestBuildsKey)).toBe("guest-builds");
+    expect(map.get(accountBuildsKey)).toBe("account-builds");
+  });
+
+  it("deleteAllManagedLocalData: アカウント別/guestスコープのお気に入りキーは変更されない", () => {
+    const guestFavKey = buildScopedStorageKey({ kind: "guest" }, "favorites");
+    const accountFavKey = buildScopedStorageKey({ kind: "account", scopeId: "d".repeat(64) }, "favorites");
+    const { map } = installMemoryStorage({
+      "efootball-team-ai:favorites:v1": "legacy-fav",
+      [guestFavKey]: "guest-fav",
+      [accountFavKey]: "account-fav",
+    });
+    const result = deleteAllManagedLocalData();
+    expect(result.ok).toBe(true);
+    expect(result.attemptedKeys).toEqual(["efootball-team-ai:favorites:v1"]);
+    expect(map.has("efootball-team-ai:favorites:v1")).toBe(false);
+    expect(map.get(guestFavKey)).toBe("guest-fav");
+    expect(map.get(accountFavKey)).toBe("account-fav");
+  });
+
   it("削除対象データが何も無い場合、attemptedKeysは空でokはtrue(何もしないことに成功する)", () => {
     installMemoryStorage();
     const result = deleteAllManagedLocalData();

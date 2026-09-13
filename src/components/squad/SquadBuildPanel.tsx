@@ -5,9 +5,10 @@ import Link from "next/link";
 import type { SavedBuild } from "@/lib/progression/types";
 import type { SquadPlayerDisplay } from "@/lib/squad/types";
 import { SQUAD_STORAGE_KEY } from "@/lib/squad/types";
-import { getBuild, isBuildStorageAvailable, listBuilds } from "@/lib/progression/build-storage";
+import { getBuild, isBuildStorageAvailable, listBuilds, getActiveBuildsStorageKey } from "@/lib/progression/build-storage";
 import { isSquadStorageAvailable } from "@/lib/squad/squad-storage";
-import { BUILD_STORAGE_KEY } from "@/lib/progression/constants";
+import { useStorageScope } from "@/lib/local-storage-scope/resolve-scope";
+import { setCurrentScope, subscribeCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
 import {
   buildAllocationRows,
   buildHasExperimental,
@@ -73,6 +74,15 @@ export function SquadBuildPanel({
   onRequestReload: () => void;
   onClose: () => void;
 }) {
+  // スカッド自体はブラウザー共通のままだが、パネルが表示する保存ビルドはアカウント別領域の
+  // ものになったため、このパネル自身がスコープを解決してストレージモジュールへ伝える
+  // (スカッド編集画面はMy Team/My Builds/お気に入りのいずれも経由せず開ける可能性があるため)。
+  const scopeState = useStorageScope();
+  useEffect(() => {
+    setCurrentScope(scopeState.status === "resolved" ? scopeState.scope : null);
+  }, [scopeState.status === "resolved" ? scopeState.scope.kind : "loading", scopeState.status === "resolved" && scopeState.scope.kind === "account" ? scopeState.scope.scopeId : null]); // eslint-disable-line react-hooks/exhaustive-deps
+  const scopeLoading = scopeState.status === "loading";
+
   const [builds, setBuilds] = useState<SavedBuild[]>(() => listBuilds(worldCardId));
   const [q, setQ] = useState("");
   const [stale, setStale] = useState(false);
@@ -97,13 +107,21 @@ export function SquadBuildPanel({
             : tp("errorBuildMissing");
 
   const reloadBuilds = useCallback(() => {
+    if (scopeState.status === "loading") return; // 認証確認中はMy Buildsを読み書きしない
     setBuilds(listBuilds(worldCardId));
     setStale(false);
-  }, [worldCardId]);
+  }, [worldCardId, scopeState.status]);
+
+  useEffect(() => {
+    reloadBuilds();
+  }, [reloadBuilds]);
+
+  // アカウント切り替え時は、直前スコープの一覧を即座に破棄して新スコープへ切り替える。
+  useEffect(() => subscribeCurrentScope(reloadBuilds), [reloadBuilds]);
 
   useEffect(() => {
     function onStorage(e: StorageEvent) {
-      if (e.key == null || e.key === SQUAD_STORAGE_KEY || e.key === BUILD_STORAGE_KEY) setStale(true);
+      if (e.key == null || e.key === SQUAD_STORAGE_KEY || e.key === getActiveBuildsStorageKey()) setStale(true);
     }
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
@@ -192,6 +210,7 @@ export function SquadBuildPanel({
     <Modal open onClose={onClose} title={tp("modalTitle")} size="lg">
       <div className="flex flex-col gap-3 text-sm">
         <p className="text-2xs text-text-dim">{tp("intro")}</p>
+        {scopeLoading ? <p className="text-2xs text-info">{tp("scopeLoadingNotice")}</p> : null}
 
         {/* 対象枠 */}
         <div className="rounded border border-border bg-surface-2/40 p-2 text-2xs">

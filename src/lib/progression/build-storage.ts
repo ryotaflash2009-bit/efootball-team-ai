@@ -1,8 +1,10 @@
 import { z } from "zod";
-import { BUILD_SCHEMA_VERSION, BUILD_STORAGE_KEY } from "./constants";
+import { BUILD_SCHEMA_VERSION } from "./constants";
 import { validateConditionalBoosterSelection } from "./conditional-boosters";
 import type { SavedBuild, SelectedConditionalBooster } from "./types";
 import type { SavedBuildIntent } from "./build-intent-persistence";
+import { getCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
+import { buildScopedStorageKey } from "@/lib/local-storage-scope/keys";
 
 /**
  * 育成ビルドのローカル保存（localStorage）。
@@ -10,7 +12,17 @@ import type { SavedBuildIntent } from "./build-intent-persistence";
  * - localStorage が使えなくても呼び出し側がクラッシュしないよう、すべて安全なフォールバックを返す。
  * - 読み込み時に Zod で検証し、壊れたデータは黙って捨てる。
  * - 保存形式は将来のアカウントDB移行を意識してフラット。
+ * - アカウント別localStorage領域対応(feat/account-scoped-builds-favorites)により、実際の
+ *   読み書き先は現在解決済みのスコープ(guest/account)に応じて動的に決まる。スコープが
+ *   未解決(認証確認中)の間は、読み取りは安全な空、書き込みは拒否する。
  */
+
+/** 現在のスコープにおけるMy Buildsの実際のlocalStorageキー。スコープ未解決ならnull。 */
+export function getActiveBuildsStorageKey(): string | null {
+  const scope = getCurrentScope();
+  if (!scope) return null;
+  return buildScopedStorageKey(scope, "myBuilds");
+}
 
 const WORLD_CARD_ID_RE = /^[0-9]{1,20}$/;
 const BUILD_ID_RE = /^[A-Za-z0-9_-]{1,64}$/;
@@ -115,8 +127,10 @@ function getStorage(): Storage | null {
 function readStore(): Store {
   const ls = getStorage();
   if (!ls) return {};
+  const key = getActiveBuildsStorageKey();
+  if (!key) return {};
   try {
-    const raw = ls.getItem(BUILD_STORAGE_KEY);
+    const raw = ls.getItem(key);
     if (!raw) return {};
     const parsed = storeSchema.safeParse(JSON.parse(raw));
     return parsed.success ? parsed.data : {};
@@ -128,8 +142,10 @@ function readStore(): Store {
 function writeStore(store: Store): boolean {
   const ls = getStorage();
   if (!ls) return false;
+  const key = getActiveBuildsStorageKey();
+  if (!key) return false;
   try {
-    ls.setItem(BUILD_STORAGE_KEY, JSON.stringify(store));
+    ls.setItem(key, JSON.stringify(store));
     return true;
   } catch {
     return false;
