@@ -2776,6 +2776,9 @@ export interface Dictionary {
     captainUsageSuffix: string;
     benchUsageLabel: string;
     selectedBuildAriaTemplate: string;
+    scopeLoadingMessage: string;
+    legacyNoticeTemplate: string;
+    migrationLinkLabel: string;
   };
   bench: {
     modeNone: string;
@@ -3099,6 +3102,7 @@ export interface Dictionary {
     deleteAllTargetEditorPrefs: string;
     deleteAllTargetComparisonState: string;
     deleteAllExcludedNote: string;
+    deleteAllScopeNote: string;
     deleteAllNothingToDelete: string;
     deleteAllStartButton: string;
     deleteAllConfirmTitle: string;
@@ -3378,6 +3382,7 @@ export interface Dictionary {
     saveConfirmOwnDataOnlyNotice: string;
     saveConfirmNotIncludedNotice: string;
     saveConfirmEmptyWarning: string;
+    saveConfirmEmptyAccountBlockedNotice: string;
     saveConfirmExecuteButton: string;
     cancelButton: string;
     saveSuccessMessage: string;
@@ -3422,6 +3427,56 @@ export interface Dictionary {
     provenanceMismatchWarning: string;
     saveConfirmProvenanceUnclearWarning: string;
     saveConfirmProvenanceCheckboxLabel: string;
+  };
+  localDataMigration: {
+    pageTitle: string;
+    introBody: string;
+    noAutoMigrationNotice: string;
+    legacySummaryHeading: string;
+    kindLabel_myTeam: string;
+    kindLabel_myBuilds: string;
+    kindLabel_favorites: string;
+    kindLabel_squads: string;
+    kindLabel_squadTemplates: string;
+    notYetMigratableNotice: string;
+    notYetCloudSyncedForOthersNotice: string;
+    loadingMessage: string;
+    loginRequiredMessage: string;
+    currentAccountLabel: string;
+    myTeamMigrationIntro: string;
+    previewButton: string;
+    downloadBackupButton: string;
+    backupDownloadSuccessMessage: string;
+    backupDownloadFailureMessage: string;
+    previewHeading: string;
+    previewLegacyCountLabel: string;
+    previewTargetCountLabel: string;
+    previewAddCountLabel: string;
+    previewDuplicateCountLabel: string;
+    previewConflictCountLabel: string;
+    previewInvalidCountLabel: string;
+    previewResultCountLabel: string;
+    legacyPreservedNotice: string;
+    noCloudSendNotice: string;
+    cloudUnchangedNotice: string;
+    conflictNotMigratedNotice: string;
+    migrateButton: string;
+    nothingToMigrateMessage: string;
+    migrationSuccessMessageTemplate: string;
+    migrationFailedMessage: string;
+    migrationFailedRolledBackMessage: string;
+    migrateConfirmTitle: string;
+    migrateConfirmExecuteButton: string;
+    migrateConfirmIntro: string;
+    migrateConfirmCountTemplate: string;
+    migrateConfirmDuplicateTemplate: string;
+    migrateConfirmConflictTemplate: string;
+    migrateConfirmLegacyKeptNotice: string;
+    migrateConfirmNoCloudNotice: string;
+    migrateConfirmNoOverwriteNotice: string;
+    migrateConfirmConflictSkippedNotice: string;
+    migrateConfirmCheckboxLabel: string;
+    cancelButton: string;
   };
 }
 
@@ -6258,6 +6313,9 @@ const ja: Dictionary = {
     captainUsageSuffix: "・C",
     benchUsageLabel: "ベンチ",
     selectedBuildAriaTemplate: "{name} の選択中ビルド",
+    scopeLoadingMessage: "アカウント情報を確認しています…",
+    legacyNoticeTemplate: "アカウント分離前に、このブラウザーへ保存されたMy Teamが{count}件あります。データは削除されていません。現在のアカウントで使用するには、ローカルデータ移行画面を開いてください。",
+    migrationLinkLabel: "ローカルデータ移行画面を開く",
   },
   bench: {
     modeNone: "育成なし",
@@ -6581,6 +6639,7 @@ const ja: Dictionary = {
     deleteAllTargetEditorPrefs: "スカッド編集の表示設定",
     deleteAllTargetComparisonState: "スカッド比較の一時状態",
     deleteAllExcludedNote: "表示言語の設定・サイドバーの開閉状態は削除されません。",
+    deleteAllScopeNote: "この一括削除は、アカウント分離前にこのブラウザーへ保存された共通データだけが対象です。認証済みアカウント専用のMy Team領域と、クラウドMy Teamはこの操作では削除されません。",
     deleteAllNothingToDelete: "現在、削除できるデータはありません。",
     deleteAllStartButton: "ローカルデータをすべて削除する",
     deleteAllConfirmTitle: "本当にすべて削除しますか？",
@@ -6861,6 +6920,7 @@ const ja: Dictionary = {
     saveConfirmOwnDataOnlyNotice: "保存先は、ログイン中の本人のクラウド領域だけです。",
     saveConfirmNotIncludedNotice: "お気に入り・保存ビルド・保存スカッドは保存対象に含まれません。",
     saveConfirmEmptyWarning: "現在ローカルのMy Teamは0件です。空の状態で保存されます。",
+    saveConfirmEmptyAccountBlockedNotice: "現在のアカウント専用ローカルMy Teamは空です。空のデータでクラウドMy Teamを上書きしません。",
     saveConfirmExecuteButton: "保存する",
     cancelButton: "キャンセル",
     saveSuccessMessage: "クラウドへ保存しました。",
@@ -6905,6 +6965,56 @@ const ja: Dictionary = {
     provenanceMismatchWarning: "このブラウザーのローカルMy Teamは、別のアカウントで最後に使用された可能性があります。保存する前に内容をよくご確認ください。",
     saveConfirmProvenanceUnclearWarning: "このローカルデータは、現在ログイン中のアカウントが作成したものとは限りません。",
     saveConfirmProvenanceCheckboxLabel: "このローカルデータの由来が現在のアカウントとは限らないことを理解し、現在ログイン中のアカウントのクラウド領域へ保存します。",
+  },
+  localDataMigration: {
+    pageTitle: "ローカルデータ移行",
+    introBody: "アカウント分離前にこのブラウザーへ保存されたローカルデータを、現在ログイン中のアカウント専用領域へコピーします。移行はここでの明示操作からのみ実行されます。",
+    noAutoMigrationNotice: "ログインやページ表示だけでは、自動的に移行は行われません。",
+    legacySummaryHeading: "アカウント分離前のローカルデータ(このブラウザー共通)",
+    kindLabel_myTeam: "My Team",
+    kindLabel_myBuilds: "My Builds",
+    kindLabel_favorites: "お気に入り",
+    kindLabel_squads: "保存スカッド",
+    kindLabel_squadTemplates: "スカッドテンプレート",
+    notYetMigratableNotice: "アカウント別領域への切り替えは準備中です。今回はまだ移行できません。クラウド同期も未実装です。",
+    notYetCloudSyncedForOthersNotice: "My Team以外のデータは、現在このブラウザーで共通のままです。クラウド同期は今回実装していません。",
+    loadingMessage: "アカウント情報を確認しています…",
+    loginRequiredMessage: "アカウント専用領域への移行にはログインが必要です。ログインしなくても、上記の件数は確認できます。",
+    currentAccountLabel: "現在ログイン中のアカウント",
+    myTeamMigrationIntro: "My Teamだけ、今回移行できます。",
+    previewButton: "移行内容を確認(プレビュー)",
+    downloadBackupButton: "バックアップをJSONでダウンロード",
+    backupDownloadSuccessMessage: "バックアップを保存しました。",
+    backupDownloadFailureMessage: "バックアップの保存に失敗しました。",
+    previewHeading: "移行プレビュー",
+    previewLegacyCountLabel: "レガシー件数",
+    previewTargetCountLabel: "移行先の現在件数",
+    previewAddCountLabel: "新規追加候補",
+    previewDuplicateCountLabel: "重複(追加しない)",
+    previewConflictCountLabel: "競合(移行しない)",
+    previewInvalidCountLabel: "不正データ件数",
+    previewResultCountLabel: "移行後の予想件数",
+    legacyPreservedNotice: "レガシー元データは移行後も残ります(削除されません)。",
+    noCloudSendNotice: "Supabaseへは送信されません。",
+    cloudUnchangedNotice: "クラウドMy Teamは変更されません。",
+    conflictNotMigratedNotice: "競合データは自動上書きせず、今回は移行対象に含まれません。",
+    migrateButton: "新規追加分を移行する",
+    nothingToMigrateMessage: "現在、新規に追加できるデータはありません。",
+    migrationSuccessMessageTemplate: "{count}件を現在のアカウント領域へ追加しました。",
+    migrationFailedMessage: "移行に失敗しました。アカウント領域のデータは変更されていません。",
+    migrationFailedRolledBackMessage: "移行後の確認に失敗したため、アカウント領域を移行前の状態へ戻しました。",
+    migrateConfirmTitle: "移行を実行しますか？",
+    migrateConfirmExecuteButton: "移行する",
+    migrateConfirmIntro: "移行元(アカウント分離前のブラウザー共通My Team)から、移行先(現在ログイン中のアカウント専用ローカル領域)へMy Teamをコピーします。",
+    migrateConfirmCountTemplate: "移行対象件数: {count}件",
+    migrateConfirmDuplicateTemplate: "重複(追加しない): {count}件",
+    migrateConfirmConflictTemplate: "競合(移行しない): {count}件",
+    migrateConfirmLegacyKeptNotice: "レガシー共通My Teamは削除されません。",
+    migrateConfirmNoCloudNotice: "クラウドへは送信されません。",
+    migrateConfirmNoOverwriteNotice: "アカウント領域の既存データは上書きしません(不足分だけ追加します)。",
+    migrateConfirmConflictSkippedNotice: "競合データは移行しません。",
+    migrateConfirmCheckboxLabel: "移行元と移行先を確認し、現在ログイン中のアカウント専用ローカル領域へMy Teamをコピーします。",
+    cancelButton: "キャンセル",
   },
 };
 
