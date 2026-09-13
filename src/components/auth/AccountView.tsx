@@ -92,6 +92,13 @@ export function AccountView() {
               {t("myTeamCloud", "pageTitle")}
             </Link>
           </Surface>
+
+          <Surface tone="outline" padding="md" className="flex flex-col gap-1.5">
+            <p className="text-xs font-semibold text-text-muted">{t("localDataMigration", "legacySummaryHeading")}</p>
+            <Link href="/account/local-data-migration" className="w-fit text-sm text-accent hover:underline">
+              {t("localDataMigration", "pageTitle")}
+            </Link>
+          </Surface>
         </div>
       )}
     </div>

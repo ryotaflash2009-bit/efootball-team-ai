@@ -3,6 +3,7 @@ import { previewMyTeamCloudApply, applyAddMissingCloudItems } from "./my-team-cl
 import { __invalidateMyTeamSnapshotForTests, addToMyTeam, getMyTeam } from "./my-team-storage";
 import type { MyTeamRecord } from "./types";
 import type { CloudMyTeamItem } from "@/lib/supabase/my-team-cloud-schema";
+import { setCurrentScope, __resetCurrentScopeForTests } from "@/lib/local-storage-scope/current-scope-store";
 
 function installMemoryStorage() {
   const map = new Map<string, string>();
@@ -21,6 +22,9 @@ function installMemoryStorage() {
     removeEventListener: () => {},
   });
   __invalidateMyTeamSnapshotForTests();
+  // My Teamの書き込みには解決済みスコープが必要(アカウント別スコープ対応)。
+  __resetCurrentScopeForTests();
+  setCurrentScope({ kind: "guest" });
   return map;
 }
 

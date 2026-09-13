@@ -17,12 +17,12 @@ import { findSquadUsageByWorldCardId, type SquadUsage } from "@/lib/squad/usage"
 import { useMyTeam } from "@/lib/user-cards/hooks";
 import {
   addToMyTeam,
+  getActiveMyTeamStorageKey,
   getMyTeamByWorldId,
   updateMyTeamRecord,
   isMyTeamStorageAvailable,
 } from "@/lib/user-cards/my-team-storage";
 import {
-  MY_TEAM_STORAGE_KEY,
   OWNERSHIP_LABELS,
   OWNERSHIP_STATUSES,
   USAGE_LABELS,
@@ -138,7 +138,7 @@ export function MyBuildsView() {
   useEffect(() => {
     function onStorage(e: StorageEvent) {
       if (e.key == null || e.key === BUILD_STORAGE_KEY) setStale(true);
-      if (e.key == null || e.key === MY_TEAM_STORAGE_KEY) setStaleMyTeam(true);
+      if (e.key == null || e.key === getActiveMyTeamStorageKey()) setStaleMyTeam(true);
     }
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);

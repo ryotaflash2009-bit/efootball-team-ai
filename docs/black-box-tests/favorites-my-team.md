@@ -1,6 +1,6 @@
 # お気に入り / My Team 基盤 ブラックボックステスト結果
 
-実行日時: 2026-09-13T00:32:49.953Z
+実行日時: 2026-09-13T07:10:26.814Z
 対象: http://localhost:3000（localhost のみ）  外部アクセス: **0 回**
 
 注: お気に入り / My Team は localStorage 保存のため、SSR では「空状態シェル」までを検証。
@@ -17,10 +17,7 @@ src/lib/user-cards/user-cards.test.ts（vitest 28件）で担保。
 | PASS | お気に入り: 内部情報/SQL/絶対パスを含まない |  |
 | PASS | My Team: /my-team が 200 | HTTP 200 |
 | PASS | My Team: 見出し「My Team」 |  |
-| PASS | My Team: 空状態「My Team にはまだカードがありません」 |  |
-| PASS | My Team: 「お気に入りとは独立した管理」の明示 |  |
-| PASS | My Team: ローカル保存の明示 |  |
-| PASS | My Team: 空状態から「お気に入りを見る」への導線 |  |
+| PASS | My Team: SSRは認証確認中の安全な読み込み中シェルを表示する(空状態を先走って表示しない) |  |
 | PASS | サイドメニューに「お気に入り」（準備中ではない） |  |
 | PASS | サイドメニューに「My Team」（準備中ではない） |  |
 | PASS | by-ids API: 200 + 指定 ID を解決 | found=2 |

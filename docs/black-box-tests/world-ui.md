@@ -1,6 +1,6 @@
 # World データ UI 接続 ブラックボックステスト結果
 
-実行日時: 2026-09-13T00:33:45.337Z
+実行日時: 2026-09-13T07:10:26.430Z
 対象: http://localhost:3000（localhost のみ）  外部アクセス: 0 回
 
 | 結果 | 項目 | 詳細 |
@@ -67,7 +67,7 @@
 | PASS | 画面: 詳細に 26 能力値の内容が描画される（有効IDのみ） |  |
 | PASS | 画面: 不正 World ID の詳細はクラッシュせず not-found（詳細本文を描画しない） | HTTP 200 |
 | PASS | 画面: 存在しない World ID の詳細はクラッシュせず not-found | HTTP 200 |
-| PASS | 画像: eFHUB リンクなし World カードでも画像が表示される | Lionel Messi 200 241KB cache=HIT |
+| PASS | 画像: eFHUB リンクなし World カードでも画像が表示される | Lionel Messi 200 241KB cache=MISS |
 | PASS | 画像: eFHUB リンクありカードは eFHUB プロキシで画像が表示される | Lionel Messi 200 |
 | PASS | 画像: 同カードの World プロキシ経路でも画像が表示される | 200 |
 | PASS | 画像: 取得不可時はローカル SVG プレースホルダー（外部アクセス0） | 200 placeholder=true |
@@ -86,7 +86,7 @@
 | PASS | 回帰: 画像プロキシの不正IDは 400 | HTTP 400 |
 | PASS | 回帰: eFHUB 画像プロキシ（efimg 経路）が応答 | HTTP 200 |
 | PASS | 回帰: ブラウザへ渡す src は同一オリジンのみ（cloudfront URL を露出しない） |  |
-| PASS | 画像取得の外部 GET 累計が 10 回以内 | external=1 |
+| PASS | 画像取得の外部 GET 累計が 10 回以内 | external=2 |
 
 ## 判定: 全項目 PASS
 

@@ -22,6 +22,7 @@ import {
   checkAccountProvenance,
   recordAccountHint,
   isProvenanceConfirmationRequired,
+  isEmptyAccountCloudOverwriteBlocked,
   type ProvenanceStatus,
 } from "@/lib/supabase/my-team-cloud-provenance";
 import { ConfirmDialog } from "@/components/user-cards/ConfirmDialog";
@@ -52,7 +53,7 @@ export function MyTeamCloudView() {
   );
 
   const session = useSupabaseSession();
-  const { myTeam } = useMyTeam();
+  const { myTeam, scopeStatus } = useMyTeam();
 
   function errorMessage(reason: MyTeamCloudErrorReason): string {
     switch (reason) {
@@ -159,6 +160,10 @@ export function MyTeamCloudView() {
     return previewMyTeamCloudApply(myTeam, cloudSnapshot.payload.items, knownWorldCardIds);
   }, [cloudSnapshot, myTeam, knownWorldCardIds]);
 
+  // 現在のアカウント領域のMy Teamが空で、クラウド側に既存データがある場合、
+  // 空データでの上書きを一切許可しない(チェックボックスによる例外も設けない)。
+  const isEmptyAccountWithCloudData = isEmptyAccountCloudOverwriteBlocked(myTeam.length, cloudSnapshot?.itemCount ?? null);
+
   // 保存確認画面を開くたびに、追加確認チェックボックスの状態をリセットする
   // (前回の確認状態が別の操作へ引き継がれないようにする)。
   function openSaveConfirm() {
@@ -168,6 +173,8 @@ export function MyTeamCloudView() {
 
   async function handleSaveConfirmed() {
     if (saving) return; // 連打防止
+    if (scopeStatus !== "account") return; // アカウント領域が確定するまで実行しない
+    if (isEmptyAccountWithCloudData) return; // 空データでの上書きは例外なく拒否する
     // UIのdisabled属性とまったく同じ判定関数を使う(画面と処理の食い違いを構造的に防ぐ)。
     if (isProvenanceConfirmationRequired(provenanceStatus, provenanceAck)) return;
     const supabase = getSupabaseBrowserClient();
@@ -270,7 +277,7 @@ export function MyTeamCloudView() {
         </dl>
       </Surface>
 
-      {session.status === "loading" ? (
+      {session.status === "loading" || (session.status === "authenticated" && scopeStatus === "loading") ? (
         <Surface padding="md">
           <p className="text-sm text-text-dim">{ta("loadingMessage")}</p>
         </Surface>
@@ -292,6 +299,13 @@ export function MyTeamCloudView() {
         </Surface>
       ) : (
         <>
+          {isEmptyAccountWithCloudData ? (
+            <Surface tone="outline" padding="sm" className="border-danger/60">
+              <p role="alert" className="text-xs font-semibold text-danger">
+                {ta("saveConfirmEmptyAccountBlockedNotice")}
+              </p>
+            </Surface>
+          ) : null}
           {provenanceStatus === "MISMATCH" ? (
             <Surface tone="outline" padding="sm" className="border-warning/60">
               <p role="alert" className="text-xs font-semibold text-warning">
@@ -400,15 +414,21 @@ export function MyTeamCloudView() {
         title={ta("saveConfirmTitle")}
         confirmLabel={ta("saveConfirmExecuteButton")}
         cancelLabel={ta("cancelButton")}
-        confirmDisabled={isProvenanceConfirmationRequired(provenanceStatus, provenanceAck)}
+        confirmDisabled={isEmptyAccountWithCloudData || isProvenanceConfirmationRequired(provenanceStatus, provenanceAck)}
         onCancel={() => setShowSaveConfirm(false)}
         onConfirm={handleSaveConfirmed}
         body={
           <div className="flex flex-col gap-1.5">
             <p>{ta("saveConfirmIntro")}</p>
             <p className="font-semibold">{fill(ta("saveConfirmCountTemplate"), { count: String(myTeam.length) })}</p>
-            {myTeam.length === 0 ? <p className="text-warning">{ta("saveConfirmEmptyWarning")}</p> : null}
-            {cloudSnapshot ? <p className="text-warning">{ta("saveConfirmOverwriteWarning")}</p> : null}
+            {isEmptyAccountWithCloudData ? (
+              <p role="alert" className="font-semibold text-danger">
+                {ta("saveConfirmEmptyAccountBlockedNotice")}
+              </p>
+            ) : myTeam.length === 0 ? (
+              <p className="text-warning">{ta("saveConfirmEmptyWarning")}</p>
+            ) : null}
+            {cloudSnapshot && !isEmptyAccountWithCloudData ? <p className="text-warning">{ta("saveConfirmOverwriteWarning")}</p> : null}
             <p>{ta("saveConfirmNoLocalDeleteNotice")}</p>
             <p>{ta("saveConfirmFailureSafeNotice")}</p>
             <p>{ta("saveConfirmOwnDataOnlyNotice")}</p>

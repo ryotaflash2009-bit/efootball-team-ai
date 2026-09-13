@@ -151,6 +151,7 @@ function DeleteAllDataPanel({ tdm }: { tdm: (key: DataManagementKey) => string }
             </ul>
           )}
           <p className="mt-1.5 text-2xs text-text-muted">{tdm("deleteAllExcludedNote")}</p>
+          <p className="mt-1 text-2xs text-text-muted">{tdm("deleteAllScopeNote")}</p>
 
           {resultMessage ? (
             <p

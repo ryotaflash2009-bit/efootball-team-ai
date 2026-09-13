@@ -5,6 +5,8 @@ import {
   getManagedKeysWithData,
   deleteAllManagedLocalData,
 } from "./local-data";
+import { buildScopedStorageKey } from "@/lib/local-storage-scope/keys";
+import { DATA_KINDS } from "@/lib/local-storage-scope/types";
 
 function installMemoryStorage(initial: Record<string, string> = {}) {
   const map = new Map<string, string>(Object.entries(initial));
@@ -40,6 +42,17 @@ describe("MANAGED_LOCAL_DATA_KEYS", () => {
     const keys = MANAGED_LOCAL_DATA_KEYS.map((e) => e.key);
     expect(keys).not.toContain("efootball-team-ai:locale:v1");
     expect(keys).not.toContain("efb:sidebar-collapsed");
+  });
+
+  it("アカウント別/guestスコープの新My Teamキー(local:guest:*・local:account:*)を誤って列挙しない", () => {
+    // アカウント分離(Stage 2)導入後も、この一括削除機能はレガシー共通キーだけを
+    // 対象にする設計を維持する(無断でアカウント別全対応へ変更しない)。
+    const keys = MANAGED_LOCAL_DATA_KEYS.map((e) => e.key);
+    const guestKeys = DATA_KINDS.map((k) => buildScopedStorageKey({ kind: "guest" }, k));
+    const accountKeys = DATA_KINDS.map((k) => buildScopedStorageKey({ kind: "account", scopeId: "a".repeat(64) }, k));
+    for (const scoped of [...guestKeys, ...accountKeys]) {
+      expect(keys).not.toContain(scoped);
+    }
   });
 });
 
@@ -98,6 +111,22 @@ describe("local-data（メモリlocalStorage）", () => {
     expect(map.get("efootball-team-ai:locale:v1")).toBe("en");
     expect(map.get("efb:sidebar-collapsed")).toBe("1");
     expect(map.get("some-other-site-key")).toBe("untouched");
+  });
+
+  it("deleteAllManagedLocalData: アカウント別/guestスコープのMy Teamキーは変更されない", () => {
+    const guestMyTeamKey = buildScopedStorageKey({ kind: "guest" }, "myTeam");
+    const accountMyTeamKey = buildScopedStorageKey({ kind: "account", scopeId: "b".repeat(64) }, "myTeam");
+    const { map } = installMemoryStorage({
+      "efootball-team-ai:my-team:v1": "legacy-team",
+      [guestMyTeamKey]: "guest-team",
+      [accountMyTeamKey]: "account-team",
+    });
+    const result = deleteAllManagedLocalData();
+    expect(result.ok).toBe(true);
+    expect(result.attemptedKeys).toEqual(["efootball-team-ai:my-team:v1"]);
+    expect(map.has("efootball-team-ai:my-team:v1")).toBe(false);
+    expect(map.get(guestMyTeamKey)).toBe("guest-team");
+    expect(map.get(accountMyTeamKey)).toBe("account-team");
   });
 
   it("削除対象データが何も無い場合、attemptedKeysは空でokはtrue(何もしないことに成功する)", () => {

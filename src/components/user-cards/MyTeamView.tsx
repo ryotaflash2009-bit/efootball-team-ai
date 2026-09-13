@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useMyTeam, useFavorites } from "@/lib/user-cards/hooks";
+import { detectLegacyDataForKind } from "@/lib/local-storage-scope/legacy-detect";
 import { useResolvedCards } from "@/lib/user-cards/use-resolved-cards";
 import { removeFromMyTeam, updateMyTeamRecord } from "@/lib/user-cards/my-team-storage";
 import { listBuilds } from "@/lib/progression/build-storage";
@@ -40,9 +41,12 @@ export function MyTeamView() {
     (id: string) => fillMt(t("squadBuildPanel", "cardFallbackNameTemplate"), { id }),
     [fillMt, t],
   );
-  const { myTeam, available } = useMyTeam();
+  const { myTeam, available, scopeStatus } = useMyTeam();
   const { favoriteIds } = useFavorites();
   const ids = useMemo(() => myTeam.map((r) => r.worldCardId), [myTeam]);
+  // レガシー(アカウント分離前)の共通My Team件数だけを表示する(中身は一切表示・自動表示しない)。
+  // スコープとは独立した別キーを読むだけの軽量処理のため、メモ化せず毎レンダー評価する。
+  const legacySummary = detectLegacyDataForKind("myTeam");
   const { cards, loading, error } = useResolvedCards(ids);
   const [filter, setFilter] = useState<UserCardFilterState>(DEFAULT_FILTER);
   const [editRec, setEditRec] = useState<MyTeamRecord | null>(null);
@@ -98,11 +102,32 @@ export function MyTeamView() {
   const mainCount = myTeam.filter((r) => r.usageStatus === "main").length;
   const withBuilds = myTeam.filter((r) => (buildsByCard.get(r.worldCardId)?.length ?? 0) > 0).length;
 
+  if (scopeStatus === "loading") {
+    return (
+      <div className="flex flex-col gap-4">
+        <PageHeader title={tmt("pageTitle")} icon="shirt" description={tmt("pageDescription")} />
+        <Surface padding="md">
+          <p className="text-sm text-text-dim">{tmt("scopeLoadingMessage")}</p>
+        </Surface>
+      </div>
+    );
+  }
+
   if (myTeam.length === 0) {
     return (
       <div className="flex flex-col gap-4">
         <PageHeader title={tmt("pageTitle")} icon="shirt" description={tmt("pageDescription")} />
         <LocalStorageNotice kind="my-team" />
+        {legacySummary.hasData ? (
+          <Surface tone="outline" padding="sm" className="flex flex-col gap-1.5">
+            <p className="text-xs text-text-dim">
+              {fillMt(tmt("legacyNoticeTemplate"), { count: String(legacySummary.itemCount) })}
+            </p>
+            <Link href="/account/local-data-migration" className="w-fit text-xs text-accent hover:underline">
+              {tmt("migrationLinkLabel")}
+            </Link>
+          </Surface>
+        ) : null}
         <EmptyState
           icon="shirt"
           title={tmt("emptyTitle")}
@@ -126,6 +151,16 @@ export function MyTeamView() {
     <div className="flex flex-col gap-4">
       <PageHeader title={tmt("pageTitle")} icon="shirt" description={tmt("pageDescription")} />
       <LocalStorageNotice kind="my-team" />
+      {legacySummary.hasData ? (
+        <Surface tone="outline" padding="sm" className="flex flex-col gap-1.5">
+          <p className="text-xs text-text-dim">
+            {fillMt(tmt("legacyNoticeTemplate"), { count: String(legacySummary.itemCount) })}
+          </p>
+          <Link href="/account/local-data-migration" className="w-fit text-xs text-accent hover:underline">
+            {tmt("migrationLinkLabel")}
+          </Link>
+        </Surface>
+      ) : null}
       {!available ? (
         <p className="rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-2xs text-warning">
           {tmt("notAvailableNotice")}

@@ -952,6 +952,8 @@ describe("My Team 選択中ビルド設定（既存 updateMyTeamRecord 経由）
 
   async function setup() {
     const team = await import("@/lib/user-cards/my-team-storage");
+    const scope = await import("@/lib/local-storage-scope/current-scope-store");
+    scope.setCurrentScope({ kind: "guest" }); // My Teamの書き込みには解決済みスコープが必要
     team.__invalidateMyTeamSnapshotForTests();
     const a = team.addToMyTeam({ worldCardId: "89138556575063" });
     const b = team.addToMyTeam({ worldCardId: "88041460996837" });
@@ -1030,6 +1032,8 @@ describe("My Team お気に入りビルド設定／解除（既存 updateMyTeamR
 
   async function setup() {
     const team = await import("@/lib/user-cards/my-team-storage");
+    const scope = await import("@/lib/local-storage-scope/current-scope-store");
+    scope.setCurrentScope({ kind: "guest" }); // My Teamの書き込みには解決済みスコープが必要
     team.__invalidateMyTeamSnapshotForTests();
     const a = team.addToMyTeam({ worldCardId: "89138556575063" });
     const b = team.addToMyTeam({ worldCardId: "88041460996837" });
@@ -1123,6 +1127,8 @@ describe("My Team 新規登録（既存 addToMyTeam 経由の結合）", () => {
 
   async function setup() {
     const team = await import("@/lib/user-cards/my-team-storage");
+    const scope = await import("@/lib/local-storage-scope/current-scope-store");
+    scope.setCurrentScope({ kind: "guest" }); // My Teamの書き込みには解決済みスコープが必要
     team.__invalidateMyTeamSnapshotForTests();
     // 別カードを 1 件だけ先に登録（他レコード不変の検証用）
     const other = team.addToMyTeam({ worldCardId: OTHER_CARD, usageStatus: "main", tags: ["既存"] });
@@ -1234,6 +1240,8 @@ describe("My Team ビルド選択パネル（既存 updateMyTeamRecord 経由の
 
   async function setup() {
     const team = await import("@/lib/user-cards/my-team-storage");
+    const scope = await import("@/lib/local-storage-scope/current-scope-store");
+    scope.setCurrentScope({ kind: "guest" }); // My Teamの書き込みには解決済みスコープが必要
     team.__invalidateMyTeamSnapshotForTests();
     const a = team.addToMyTeam({ worldCardId: CARD, ownershipStatus: "owned", usageStatus: "main", tags: ["主力"], note: "メモ" });
     const b = team.addToMyTeam({ worldCardId: OTHER });

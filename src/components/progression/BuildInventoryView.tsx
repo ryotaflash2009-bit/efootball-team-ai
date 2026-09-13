@@ -18,7 +18,7 @@ import { BUILD_STORAGE_KEY } from "@/lib/progression/constants";
 import { isSquadStorageAvailable, listSquads } from "@/lib/squad/squad-storage";
 import { SQUAD_STORAGE_KEY } from "@/lib/squad/types";
 import { useMyTeam } from "@/lib/user-cards/hooks";
-import { MY_TEAM_STORAGE_KEY } from "@/lib/user-cards/types";
+import { getActiveMyTeamStorageKey } from "@/lib/user-cards/my-team-storage";
 import { useResolvedCards } from "@/lib/user-cards/use-resolved-cards";
 import {
   BUILD_INVENTORY_SORT_KEYS,
@@ -176,7 +176,7 @@ export function BuildInventoryView() {
   useEffect(() => {
     function onStorage(e: StorageEvent) {
       if (e.key == null || e.key === BUILD_STORAGE_KEY) setStaleBuild(true);
-      if (e.key == null || e.key === MY_TEAM_STORAGE_KEY) setStaleMyTeam(true);
+      if (e.key == null || e.key === getActiveMyTeamStorageKey()) setStaleMyTeam(true);
       if (e.key == null || e.key === SQUAD_STORAGE_KEY) setStaleSquad(true);
     }
     window.addEventListener("storage", onStorage);

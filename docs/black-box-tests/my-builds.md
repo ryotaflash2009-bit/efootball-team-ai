@@ -1,6 +1,6 @@
 # My Builds 画面 ブラックボックステスト結果
 
-実行日時: 2026-09-13T00:32:52.341Z
+実行日時: 2026-09-13T07:10:22.621Z
 対象: http://localhost:3000（localhost のみ）  外部アクセス: **0 回**
 
 注: 保存ビルドは localStorage 保存のため、SSR では「空状態シェル」までを検証。
@@ -51,7 +51,7 @@ src/lib/progression/build-inventory.test.ts（vitest）で担保。
 | PASS | 読み込み: 架空のポジション別 OVR を SSR で断定表示しない |  |
 | PASS | 読み込み: 内部情報 / server.pid / dev-err.log / 環境変数 / SQL を含まない |  |
 | PASS | My Team: /my-team が 200（My Builds 連携追加後も回帰なし） | HTTP 200 |
-| PASS | My Team: 空状態シェル（カードなし） |  |
+| PASS | My Team: SSRは認証確認中の安全な読み込み中シェルを表示する(空状態を先走って表示しない) |  |
 | PASS | My Team: 選択中ビルド select が残る（既存機能・回帰なし） |  |
 | PASS | My Team: 架空のポジション別 OVR を SSR で断定表示しない |  |
 | PASS | My Team: 英語育成カテゴリ名を主表示へ出さない（Shooting/Passing/Dribbling…） |  |
@@ -104,7 +104,7 @@ src/lib/progression/build-inventory.test.ts（vitest）で担保。
 | PASS | 回帰: プレイヤー一覧 200 + 詳細リンク |  |
 | PASS | 回帰: World 選手詳細 200 + 育成タブ |  |
 | PASS | 回帰: 比較 /compare 2人 200 + 26能力値 |  |
-| PASS | 回帰: My Team 200 + 空状態 |  |
+| PASS | 回帰: My Team 200 + 認証確認中の安全な読み込み中シェル(アカウント別localStorage対応) |  |
 | PASS | 回帰: お気に入り 200 + 空状態 |  |
 | PASS | 回帰: スカッド 200 | HTTP 200 |
 | PASS | 回帰: スカッド比較 200 | HTTP 200 |
