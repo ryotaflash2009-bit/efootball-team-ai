@@ -46,13 +46,25 @@ async function json(p) {
 const MESSI = "89138556575063";
 const CANNAVARO = "88041460996837";
 
+// アカウント別localStorage領域対応(feat/account-scoped-builds-favorites)により、お気に入りも
+// 認証状態が確定するまでは安全な読み込み中シェルを表示する。空状態文言はSSR直後には出なくなった
+// (文言自体は変更していないため、辞書ソースに存在することを直接確認する。実際の画面表示は
+// black-box-account-scoped-storage.mjsで検証済み)。
+const jaDictPath = path.join(ROOT, "src", "lib", "i18n", "dictionaries", "ja.ts");
+const jaDict = await fs.readFile(jaDictPath, "utf8");
+
 async function main() {
-  // 1. お気に入り画面（SSR 空状態シェル）
+  // 1. お気に入り画面（認証確認中は安全な読み込み中シェル）
   const fav = await get("/favorites");
   record("お気に入り: /favorites が 200", fav.status === 200, `HTTP ${fav.status}`);
   record("お気に入り: 見出し「お気に入り」", fav.text.includes("お気に入り"), "");
-  record("お気に入り: 空状態「お気に入りはまだありません」", fav.text.includes("お気に入りはまだありません"), "");
-  record("お気に入り: ローカル保存の明示（このブラウザにのみ）", fav.text.includes("このブラウザにのみ"), "");
+  record(
+    "お気に入り: SSRは認証確認中の安全な読み込み中シェルを表示する(空状態を先走って表示しない)",
+    fav.text.includes("アカウント情報を確認しています"),
+    "",
+  );
+  record("お気に入り: 空状態「お気に入りはまだありません」の文言は辞書に存在する", jaDict.includes("お気に入りはまだありません"), "");
+  record("お気に入り: ローカル保存の明示（このブラウザにのみ）の文言は辞書に存在する", jaDict.includes("このブラウザにのみ"), "");
   record(
     "お気に入り: ログイン/クラウド同期を「済み」と誤表示しない",
     !/アカウントへ保存済み|クラウド同期済み|本人確認済み/.test(fav.text),

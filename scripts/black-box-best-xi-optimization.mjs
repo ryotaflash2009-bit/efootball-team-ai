@@ -29,7 +29,9 @@ const BASE = process.env.BASE_URL ?? "http://localhost:3000";
 // このスクリプトは一切認証しない(常にguest)ため、フィクスチャの注入先もguestキーへ揃える。
 const MY_TEAM_KEY = "efootball-team-ai:local:guest:my-team:v1";
 const MY_TEAM_VERSION = "my-team-storage/2026-08-30.v1";
-const BUILDS_KEY = "efootball-team-ai:progression-builds:v1";
+// アカウント別localStorage領域対応(feat/account-scoped-builds-favorites)により、My Buildsも
+// 同様にguest専用キーへ読み書きされるようになった。
+const BUILDS_KEY = "efootball-team-ai:local:guest:progression-builds:v1";
 const NOW = "2026-09-11T00:00:00.000Z";
 const RULES_V2 = "progression/2026-08-28.v2";
 const RULES_LEGACY = "progression/2026-08-28.provisional-1";
