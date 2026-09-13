@@ -27,8 +27,24 @@ const BASE = process.env.BASE_URL ?? "http://localhost:3000";
 const PAGE = `${BASE}/account/my-team-cloud`;
 
 const LOCALE_KEY = "efootball-team-ai:locale:v1";
-const MY_TEAM_KEY = "efootball-team-ai:my-team:v1";
 const MY_TEAM_STORAGE_VERSION = "my-team-storage/2026-08-30.v1";
+// アカウント別localStorage領域対応(feat/account-scoped-local-storage)により、
+// My Teamの実際の読み書き先は、未認証時はguest領域、認証時はアカウント別領域
+// (SHA-256スコープID)へ変わった。旧固定キーへの直接注入はもう画面へ反映されないため、
+// 実際にアプリが読み書きするキーをここで計算して使う(アプリのcomputeAccountScopeId()と
+// 完全に同じアルゴリズム)。このスクリプトの`?__efbAuth=1`(userId省略)は常に同一の
+// 固定テストダブルユーザー("efb-test-double-user-id")を指すため、アカウント領域キーは1つだけでよい。
+const GUEST_MY_TEAM_KEY = "efootball-team-ai:local:guest:my-team:v1";
+const TEST_DOUBLE_USER_ID = "efb-test-double-user-id";
+async function computeAccountMyTeamKey(userId) {
+  const prefix = "efootball-team-ai:local-storage-scope:v1:";
+  const data = new TextEncoder().encode(prefix + userId);
+  const digest = await crypto.subtle.digest("SHA-256", data);
+  const scopeId = Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return `efootball-team-ai:local:account:${scopeId}:my-team:v1`;
+}
 
 function fixtureRecord(worldCardId, overrides = {}) {
   return {
@@ -195,6 +211,7 @@ const UNREPLACED_VAR_RE = /\{[a-zA-Z][a-zA-Z0-9_]*\}|__[A-Z_]+__/;
 const UUID_LIKE_RE = /\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/i;
 
 async function main() {
+  const MY_TEAM_KEY = await computeAccountMyTeamKey(TEST_DOUBLE_USER_ID);
   const browser = await launchIsolatedBrowser();
   const tab = await openTab(browser.port, "about:blank");
   const client = connectCDP(tab.webSocketDebuggerUrl);
@@ -222,7 +239,7 @@ async function main() {
     // 最初に一度ナビゲートしてから状態を仕込む。
     await navigateAndSettle(client, PAGE);
     const unauthFixture = myTeamFixtureJson([fixtureRecord("10001")]);
-    await setLocalStorageItem(client, MY_TEAM_KEY, unauthFixture);
+    await setLocalStorageItem(client, GUEST_MY_TEAM_KEY, unauthFixture);
     await navigateAndSettle(client, PAGE);
     const unauthBody = await bodyText(client);
     record("[未認証] クラッシュせず表示される", errors.length === 0, errors.slice(0, 2).join(" / "));
@@ -232,7 +249,7 @@ async function main() {
     const noSaveButton = !(await buttonExists(client, "クラウドへ保存"));
     const noDeleteButton = !(await buttonExists(client, "クラウドデータを削除"));
     record("[未認証] クラウド操作ボタンを表示しない", noSaveButton && noDeleteButton, "");
-    const localAfterUnauth = await getLocalStorageItem(client, MY_TEAM_KEY);
+    const localAfterUnauth = await getLocalStorageItem(client, GUEST_MY_TEAM_KEY);
     record("[未認証] ローカルMy Teamは変更されない", localAfterUnauth === unauthFixture, "");
     record("[未認証] 内部UUIDを表示しない", !UUID_LIKE_RE.test(unauthBody), "");
     record("[未認証] Secret key/service_role等を表示しない", !SECRET_LEAK_RE.test(unauthBody), "");

@@ -60,14 +60,19 @@ async function main() {
   );
   record("お気に入り: 内部情報/SQL/絶対パスを含まない", !/efootball\.db|SELECT \*|C:\\\\Users/.test(fav.body), "");
 
-  // 2. My Team 画面（SSR 空状態シェル）
+  // 2. My Team 画面（SSR シェル）
+  // アカウント別localStorage領域対応(feat/account-scoped-local-storage)により、
+  // 認証状態が確定するまでは安全な読み込み中シェルだけを表示し、空状態テキストや
+  // 各種案内文は表示しない(SSRは常に未確定状態のため)。空状態・案内文の実表示は
+  // JSを実行するblack-box-account-scoped-storage.mjs(ヘッドレスブラウザー)側で検証済み。
   const mt = await get("/my-team");
   record("My Team: /my-team が 200", mt.status === 200, `HTTP ${mt.status}`);
   record("My Team: 見出し「My Team」", mt.text.includes("My Team"), "");
-  record("My Team: 空状態「My Team にはまだカードがありません」", mt.text.includes("My Team にはまだカードがありません"), "");
-  record("My Team: 「お気に入りとは独立した管理」の明示", mt.text.includes("お気に入りとは独立"), "");
-  record("My Team: ローカル保存の明示", mt.text.includes("このブラウザにのみ"), "");
-  record("My Team: 空状態から「お気に入りを見る」への導線", mt.text.includes("お気に入りを見る"), "");
+  record(
+    "My Team: SSRは認証確認中の安全な読み込み中シェルを表示する(空状態を先走って表示しない)",
+    mt.text.includes("アカウント情報を確認しています"),
+    "",
+  );
 
   // 3. サイドメニュー（マイデータ グループ・準備中ではない）
   record(

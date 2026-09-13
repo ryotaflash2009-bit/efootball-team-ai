@@ -234,12 +234,21 @@ async function main() {
   //    カードが出ないため、登録・設定・解除・整合性検証は src/lib/progression/my-builds.test.ts
   //    のインメモリ結合テストで担保。ここでは /my-team 側の空状態シェルと、
   //    My Builds が /my-team・お気に入り・比較を壊さないことを確認。
+  // アカウント別localStorage領域対応(feat/account-scoped-local-storage)により、
+  // My Teamは認証状態が確定するまで安全な読み込み中シェルを表示する(SSRは常に
+  // 未確定状態のため、空状態テキストではなく読み込み中メッセージが出るのが正しい)。
+  // 実際の空状態表示・カード表示はJSを実行するblack-box-account-scoped-storage.mjs
+  // (ヘッドレスブラウザー)側で検証済み。
   const mt2 = await get("/my-team");
   record("My Team: /my-team が 200（My Builds 連携追加後も回帰なし）", mt2.status === 200, `HTTP ${mt2.status}`);
-  record("My Team: 空状態シェル（カードなし）", mt2.text.includes("My Team にはまだカードがありません"), "");
+  record(
+    "My Team: SSRは認証確認中の安全な読み込み中シェルを表示する(空状態を先走って表示しない)",
+    mt2.text.includes("アカウント情報を確認しています"),
+    "",
+  );
   record(
     "My Team: 選択中ビルド select が残る（既存機能・回帰なし）",
-    /選択中ビルド|の選択中ビルド/.test(mt2.body) || mt2.text.includes("My Team にはまだカードがありません"),
+    /選択中ビルド|の選択中ビルド/.test(mt2.body) || mt2.text.includes("アカウント情報を確認しています"),
     "",
   );
   // My Team「保存ビルドを選ぶ」パネル。SSR 空状態ではカードが出ないため、パネル本体の
@@ -463,7 +472,11 @@ async function main() {
   const cmp = await get(`/compare?ids=${MESSI},${CANNAVARO}`);
   record("回帰: 比較 /compare 2人 200 + 26能力値", cmp.status === 200 && cmp.text.includes("能力値（26項目）"), "");
   const mt = await get("/my-team");
-  record("回帰: My Team 200 + 空状態", mt.status === 200 && mt.text.includes("My Team にはまだカードがありません"), "");
+  record(
+    "回帰: My Team 200 + 認証確認中の安全な読み込み中シェル(アカウント別localStorage対応)",
+    mt.status === 200 && mt.text.includes("アカウント情報を確認しています"),
+    "",
+  );
   const fav = await get("/favorites");
   record("回帰: お気に入り 200 + 空状態", fav.status === 200 && fav.text.includes("お気に入りはまだありません"), "");
   const squads = await get("/squads");
