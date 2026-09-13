@@ -15,8 +15,8 @@ import {
   isMyTeamStorageAvailable,
   updateMyTeamRecord,
 } from "@/lib/user-cards/my-team-storage";
-import { getBuild, listBuilds } from "@/lib/progression/build-storage";
-import { BUILD_STORAGE_KEY } from "@/lib/progression/constants";
+import { getBuild, listBuilds, getActiveBuildsStorageKey } from "@/lib/progression/build-storage";
+import { subscribeCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
 import {
   buildAllocationRows,
   buildHasExperimental,
@@ -87,11 +87,13 @@ export function MyTeamBuildPanel({
   // 別タブ更新（My Team / 保存ビルド）: 通知のみ・自動リロードしない・パネルを閉じない・検索を消さない
   useEffect(() => {
     function onStorage(e: StorageEvent) {
-      if (e.key == null || e.key === getActiveMyTeamStorageKey() || e.key === BUILD_STORAGE_KEY) setStale(true);
+      if (e.key == null || e.key === getActiveMyTeamStorageKey() || e.key === getActiveBuildsStorageKey()) setStale(true);
     }
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
   }, []);
+  // アカウント切り替え時は、直前スコープの内容を即座に破棄して新スコープへ切り替える。
+  useEffect(() => subscribeCurrentScope(reload), [reload]);
   useEffect(() => {
     return () => {
       if (noticeTimer.current) clearTimeout(noticeTimer.current);

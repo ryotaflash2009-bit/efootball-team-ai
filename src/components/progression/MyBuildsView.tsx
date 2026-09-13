@@ -10,8 +10,9 @@ import {
   renameBuild,
   duplicateBuild,
   deleteBuild,
+  getActiveBuildsStorageKey,
 } from "@/lib/progression/build-storage";
-import { BUILD_STORAGE_KEY } from "@/lib/progression/constants";
+import { subscribeCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
 import { listSquads } from "@/lib/squad/squad-storage";
 import { findSquadUsageByWorldCardId, type SquadUsage } from "@/lib/squad/usage";
 import { useMyTeam } from "@/lib/user-cards/hooks";
@@ -124,20 +125,32 @@ export function MyBuildsView() {
   const [clearFavoriteTarget, setClearFavoriteTarget] = useState<SavedBuild | null>(null);
   const noticeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const { myTeam, scopeStatus } = useMyTeam();
+
   const reload = useCallback(() => {
+    if (scopeStatus === "loading") return; // 認証確認中はMy Buildsを読み書きしない
     setAvailable(isBuildStorageAvailable());
     setBuilds(listAllBuilds());
     setStale(false);
-  }, []);
+  }, [scopeStatus]);
 
   useEffect(() => {
     reload();
   }, [reload]);
 
+  // アカウント切り替え(ログイン/ログアウト/A↔B)時は、直前スコープの一覧を即座に破棄して
+  // 新スコープの内容へ切り替える(別タブのstorageイベントとは異なり、確認バナーを挟まない)。
+  useEffect(() => {
+    return subscribeCurrentScope(() => {
+      setBuilds([]);
+      reload();
+    });
+  }, [reload]);
+
   // 別タブ更新（保存ビルド / My Team の対象キーのみ監視・自動リロード/自動差し替えはしない）
   useEffect(() => {
     function onStorage(e: StorageEvent) {
-      if (e.key == null || e.key === BUILD_STORAGE_KEY) setStale(true);
+      if (e.key == null || e.key === getActiveBuildsStorageKey()) setStale(true);
       if (e.key == null || e.key === getActiveMyTeamStorageKey()) setStaleMyTeam(true);
     }
     window.addEventListener("storage", onStorage);
@@ -163,7 +176,6 @@ export function MyBuildsView() {
 
   const ids = useMemo(() => [...new Set(builds.map((b) => b.worldCardId))], [builds]);
   const { cards, loading: cardsLoading, error: cardsError } = useResolvedCards(ids);
-  const { myTeam } = useMyTeam();
   const myTeamByCard = useMemo(
     () => new Map(myTeam.map((r) => [r.worldCardId, r])),
     [myTeam],
@@ -405,6 +417,17 @@ export function MyBuildsView() {
     filter.pom !== "all" ||
     filter.experimental !== "all" ||
     filter.usage !== "all";
+
+  if (scopeStatus === "loading") {
+    return (
+      <div className="flex flex-col gap-4">
+        <PageHeader title={tmb("pageTitle")} icon="sliders" description={tmb("pageDescription")} />
+        <Surface padding="md">
+          <p className="text-sm text-text-dim">{tmb("scopeLoadingMessage")}</p>
+        </Surface>
+      </div>
+    );
+  }
 
   if (builds.length === 0) {
     return (

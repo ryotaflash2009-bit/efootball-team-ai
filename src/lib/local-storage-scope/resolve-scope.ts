@@ -18,39 +18,61 @@ import type { StorageScope } from "./types";
  * - このフック自体はlocalStorageへ一切書き込まない(読み取り・計算だけ)。
  * - ユーザーIDが一時的に取得できない異常系は、安全側としてguest扱いにする
  *   (認証済みアカウント領域へは絶対にアクセスしない)。
+ *
+ * 同一ユーザーIDのスコープID計算結果はタブ内でキャッシュする。このフックは一覧内の
+ * カードごとのお気に入りボタン等、同一ページ内に多数のインスタンスとして呼び出され得るため、
+ * キャッシュが無いと「既に解決済みのはずなのに、後から追加でマウントされたインスタンスだけが
+ * 自分自身の初期状態("loading")を共有ストア(`current-scope-store`)へ一時的に押し戻し、
+ * 既にアカウント領域を正しく表示していた他の画面までもが一瞬「確認中」に巻き戻る」という
+ * 不具合を招く。キャッシュ済みの場合は初回レンダーから同期的に解決済み状態を返す。
  */
 export type ScopeResolutionState = { status: "loading" } | { status: "resolved"; scope: StorageScope };
 
+const scopeIdCache = new Map<string, string | null>();
+
+async function computeAccountScopeIdCached(userId: string): Promise<string | null> {
+  const cached = scopeIdCache.get(userId);
+  if (cached !== undefined) return cached;
+  const scopeId = await computeAccountScopeId(userId);
+  scopeIdCache.set(userId, scopeId);
+  return scopeId;
+}
+
+/** `session.status`と`currentUserId`(派生値)だけから解決する。`session`オブジェクト自体は参照しない。 */
+function resolveFromStatus(sessionStatus: "loading" | "unauthenticated" | "unconfigured" | "authenticated", currentUserId: string | null): ScopeResolutionState {
+  if (sessionStatus === "loading") return { status: "loading" };
+  if (sessionStatus === "unauthenticated" || sessionStatus === "unconfigured") {
+    return { status: "resolved", scope: { kind: "guest" } };
+  }
+  // authenticated: キャッシュ済みなら同期的に確定させる(未キャッシュならloadingのまま)。
+  if (currentUserId) {
+    const cachedScopeId = scopeIdCache.get(currentUserId);
+    if (cachedScopeId !== undefined) {
+      return { status: "resolved", scope: cachedScopeId ? { kind: "account", scopeId: cachedScopeId } : { kind: "guest" } };
+    }
+  }
+  return { status: "loading" };
+}
+
 export function useStorageScope(): ScopeResolutionState {
   const session = useSupabaseSession();
-  const [state, setState] = useState<ScopeResolutionState>({ status: "loading" });
+  const sessionStatus = session.status;
+  const currentUserId = sessionStatus === "authenticated" ? session.userId : null;
+  const [state, setState] = useState<ScopeResolutionState>(() => resolveFromStatus(sessionStatus, currentUserId));
   const requestIdRef = useRef(0);
-
-  const currentUserId = session.status === "authenticated" ? session.userId : null;
 
   useEffect(() => {
     const requestId = ++requestIdRef.current;
+    const resolved = resolveFromStatus(sessionStatus, currentUserId);
+    setState(resolved);
+    if (resolved.status === "resolved" || !currentUserId) return;
 
-    if (session.status === "loading") {
-      setState({ status: "loading" });
-      return;
-    }
-    if (session.status === "unauthenticated" || session.status === "unconfigured") {
-      setState({ status: "resolved", scope: { kind: "guest" } });
-      return;
-    }
-
-    // authenticated: スコープID計算が終わるまでは"loading"のまま。
-    setState({ status: "loading" });
-    computeAccountScopeId(currentUserId).then((scopeId) => {
+    // 未キャッシュの認証済みユーザー: 実際にスコープID計算が終わるまで待つ。
+    computeAccountScopeIdCached(currentUserId).then((scopeId) => {
       if (requestIdRef.current !== requestId) return; // 古い応答は破棄する
-      if (!scopeId) {
-        setState({ status: "resolved", scope: { kind: "guest" } });
-        return;
-      }
-      setState({ status: "resolved", scope: { kind: "account", scopeId } });
+      setState({ status: "resolved", scope: scopeId ? { kind: "account", scopeId } : { kind: "guest" } });
     });
-  }, [session.status, currentUserId]);
+  }, [sessionStatus, currentUserId]);
 
   return state;
 }

@@ -12,10 +12,11 @@ import {
   generateUniqueBuildId,
   saveBuildIntent,
   deleteBuildIntent,
+  getActiveBuildsStorageKey,
 } from "./build-storage";
-import { BUILD_STORAGE_KEY } from "./constants";
 import type { SavedBuild } from "./types";
 import type { SavedBuildIntent } from "./build-intent-persistence";
+import { setCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
 
 function fullBuildIntent(over: Partial<SavedBuildIntent> = {}): SavedBuildIntent {
   return {
@@ -69,6 +70,7 @@ function installMemoryStorage() {
     },
   };
   vi.stubGlobal("window", { localStorage: storage });
+  setCurrentScope({ kind: "guest" });
   return { map, storage };
 }
 
@@ -194,7 +196,7 @@ describe("build-storage（メモリ localStorage）", () => {
 
   it("不正な保存データ（壊れた JSON）を安全に無視する", () => {
     const mem = installMemoryStorage();
-    mem.storage.setItem(BUILD_STORAGE_KEY, "{ this is not json");
+    mem.storage.setItem(getActiveBuildsStorageKey()!, "{ this is not json");
     expect(listBuilds(base.worldCardId)).toEqual([]);
   });
 
@@ -264,7 +266,7 @@ describe("build-storage（メモリ localStorage）", () => {
     it("フィールドを持たない古い保存データを読める", () => {
       const mem = installMemoryStorage();
       mem.storage.setItem(
-        BUILD_STORAGE_KEY,
+        getActiveBuildsStorageKey()!,
         JSON.stringify({
           [base.worldCardId]: [
             {
@@ -291,7 +293,7 @@ describe("build-storage（メモリ localStorage）", () => {
     it("壊れた conditionalBoosterSelections は catch で undefined に落ちる（他フィールドは生きる）", () => {
       const mem = installMemoryStorage();
       mem.storage.setItem(
-        BUILD_STORAGE_KEY,
+        getActiveBuildsStorageKey()!,
         JSON.stringify({
           [base.worldCardId]: [
             {

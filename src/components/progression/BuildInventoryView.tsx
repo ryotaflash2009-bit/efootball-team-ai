@@ -7,14 +7,20 @@ import type { StoredSquad } from "@/lib/squad/types";
 import type { WorldPlayerListItem, WorldPlayerDetail } from "@/lib/world/types";
 import { toProgressionCard } from "@/lib/progression/from-world";
 import type { AbilityCardInput } from "@/lib/progression/build-ability-impact";
-import { isBuildStorageAvailable, listAllBuilds, saveBuildIntent, deleteBuildIntent } from "@/lib/progression/build-storage";
+import {
+  isBuildStorageAvailable,
+  listAllBuilds,
+  saveBuildIntent,
+  deleteBuildIntent,
+  getActiveBuildsStorageKey,
+} from "@/lib/progression/build-storage";
+import { subscribeCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
 import {
   normalizeSavedBuildIntent,
   restoreBuildIntentFromSaved,
   isSavedIntentCurrent,
   type BuildIntentSource,
 } from "@/lib/progression/build-intent-persistence";
-import { BUILD_STORAGE_KEY } from "@/lib/progression/constants";
 import { isSquadStorageAvailable, listSquads } from "@/lib/squad/squad-storage";
 import { SQUAD_STORAGE_KEY } from "@/lib/squad/types";
 import { useMyTeam } from "@/lib/user-cards/hooks";
@@ -156,26 +162,36 @@ export function BuildInventoryView() {
   const [issueKind, setIssueKind] = useState<IssueFilterKind>("all");
   const [issueQuery, setIssueQuery] = useState("");
 
-  const { myTeam, available: myTeamAvail } = useMyTeam();
+  const { myTeam, available: myTeamAvail, scopeStatus } = useMyTeam();
 
   const reload = useCallback(() => {
-    setBuildAvail(isBuildStorageAvailable());
     setSquadAvail(isSquadStorageAvailable());
-    setBuilds(listAllBuilds());
     setSquads(listSquads());
+    if (scopeStatus === "loading") return; // 認証確認中はMy Buildsを読み書きしない
+    setBuildAvail(isBuildStorageAvailable());
+    setBuilds(listAllBuilds());
     setStaleBuild(false);
     setStaleMyTeam(false);
     setStaleSquad(false);
-  }, []);
+  }, [scopeStatus]);
 
   useEffect(() => {
     reload();
   }, [reload]);
 
+  // アカウント切り替え時は、直前スコープのMy Builds一覧を即座に破棄して新スコープへ切り替える
+  // (別タブのstorageイベントとは異なり、確認バナーを挟まない)。
+  useEffect(() => {
+    return subscribeCurrentScope(() => {
+      setBuilds([]);
+      reload();
+    });
+  }, [reload]);
+
   // 別タブ更新（3 キーのみ監視・自動リロード/自動差し替えはしない）
   useEffect(() => {
     function onStorage(e: StorageEvent) {
-      if (e.key == null || e.key === BUILD_STORAGE_KEY) setStaleBuild(true);
+      if (e.key == null || e.key === getActiveBuildsStorageKey()) setStaleBuild(true);
       if (e.key == null || e.key === getActiveMyTeamStorageKey()) setStaleMyTeam(true);
       if (e.key == null || e.key === SQUAD_STORAGE_KEY) setStaleSquad(true);
     }
@@ -877,6 +893,17 @@ export function BuildInventoryView() {
   const s = inv.summary;
   const anyIssue = inv.issues.length > 0;
   const storageDegraded = !buildAvail || !squadAvail || !myTeamAvail;
+
+  if (scopeStatus === "loading") {
+    return (
+      <div className="flex flex-col gap-4">
+        <PageHeader title={biv("pageTitle")} icon="database" description={biv("pageDescription")} />
+        <Surface padding="md">
+          <p className="text-sm text-text-dim">{biv("scopeLoadingMessage")}</p>
+        </Surface>
+      </div>
+    );
+  }
 
   if (builds.length === 0) {
     return (
