@@ -13,6 +13,7 @@ export function ConfirmDialog({
   confirmLabel,
   cancelLabel,
   danger = false,
+  confirmDisabled = false,
   onConfirm,
   onCancel,
 }: {
@@ -22,6 +23,8 @@ export function ConfirmDialog({
   confirmLabel?: string;
   cancelLabel?: string;
   danger?: boolean;
+  /** 追加の明示確認(例: チェックボックス)が済むまで実行ボタンを無効化したい場合に使う。 */
+  confirmDisabled?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 }) {
@@ -36,7 +39,7 @@ export function ConfirmDialog({
           <Button variant="ghost" size="sm" onClick={onCancel}>
             {resolvedCancelLabel}
           </Button>
-          <Button variant={danger ? "danger" : "primary"} size="sm" onClick={onConfirm}>
+          <Button variant={danger ? "danger" : "primary"} size="sm" onClick={onConfirm} disabled={confirmDisabled}>
             {resolvedConfirmLabel}
           </Button>
         </div>

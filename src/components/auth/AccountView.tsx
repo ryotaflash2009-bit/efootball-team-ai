@@ -85,6 +85,13 @@ export function AccountView() {
               {t("rlsTest", "pageTitle")}
             </Link>
           </Surface>
+
+          <Surface tone="outline" padding="md" className="flex flex-col gap-1.5">
+            <p className="text-xs font-semibold text-text-muted">{t("myTeamCloud", "devNoticeTitle")}</p>
+            <Link href="/account/my-team-cloud" className="w-fit text-sm text-accent hover:underline">
+              {t("myTeamCloud", "pageTitle")}
+            </Link>
+          </Surface>
         </div>
       )}
     </div>
