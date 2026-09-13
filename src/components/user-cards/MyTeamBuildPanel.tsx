@@ -5,12 +5,12 @@ import Link from "next/link";
 import type { SavedBuild } from "@/lib/progression/types";
 import type { WorldPlayerListItem } from "@/lib/world/types";
 import type { MyTeamRecord } from "@/lib/user-cards/types";
-import { MY_TEAM_STORAGE_KEY } from "@/lib/user-cards/types";
 import { useOwnershipLabels, useUsageLabels } from "./UserCardTile";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import {
+  getActiveMyTeamStorageKey,
   getMyTeamRecord,
   isMyTeamStorageAvailable,
   updateMyTeamRecord,
@@ -87,7 +87,7 @@ export function MyTeamBuildPanel({
   // 別タブ更新（My Team / 保存ビルド）: 通知のみ・自動リロードしない・パネルを閉じない・検索を消さない
   useEffect(() => {
     function onStorage(e: StorageEvent) {
-      if (e.key == null || e.key === MY_TEAM_STORAGE_KEY || e.key === BUILD_STORAGE_KEY) setStale(true);
+      if (e.key == null || e.key === getActiveMyTeamStorageKey() || e.key === BUILD_STORAGE_KEY) setStale(true);
     }
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);

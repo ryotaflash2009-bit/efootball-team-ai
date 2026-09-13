@@ -6,6 +6,7 @@ import {
   checkAccountProvenance,
   recordAccountHint,
   isProvenanceConfirmationRequired,
+  isEmptyAccountCloudOverwriteBlocked,
   __clearAccountHintForTests,
 } from "./my-team-cloud-provenance";
 
@@ -189,5 +190,25 @@ describe("isProvenanceConfirmationRequired", () => {
   it("チェックを外すと直ちに再び確認必須へ戻る(MISMATCH確定後のトグル)", () => {
     expect(isProvenanceConfirmationRequired("MISMATCH", true)).toBe(false);
     expect(isProvenanceConfirmationRequired("MISMATCH", false)).toBe(true);
+  });
+});
+
+describe("isEmptyAccountCloudOverwriteBlocked", () => {
+  it("ローカル0件・クラウド既存データありは拒否する(true)", () => {
+    expect(isEmptyAccountCloudOverwriteBlocked(0, 3)).toBe(true);
+  });
+
+  it("ローカル0件・クラウドも0件なら拒否しない(初回保存を妨げない)", () => {
+    expect(isEmptyAccountCloudOverwriteBlocked(0, 0)).toBe(false);
+  });
+
+  it("ローカル0件・クラウドデータなし(null)なら拒否しない", () => {
+    expect(isEmptyAccountCloudOverwriteBlocked(0, null)).toBe(false);
+  });
+
+  it("ローカルに件数がある場合は、クラウド件数に関わらず拒否しない", () => {
+    expect(isEmptyAccountCloudOverwriteBlocked(1, 5)).toBe(false);
+    expect(isEmptyAccountCloudOverwriteBlocked(5, 0)).toBe(false);
+    expect(isEmptyAccountCloudOverwriteBlocked(5, null)).toBe(false);
   });
 });

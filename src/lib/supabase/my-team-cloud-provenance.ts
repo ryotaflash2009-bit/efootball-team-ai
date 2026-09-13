@@ -140,6 +140,15 @@ export function isProvenanceConfirmationRequired(status: ProvenanceStatus | null
   return status !== "MATCH" && !acknowledged;
 }
 
+/**
+ * 現在のアカウント領域のMy Teamが空で、クラウド側に既存データがある場合、
+ * クラウド保存を例外なく拒否するための判定(チェックボックスによる例外を設けない)。
+ * UIのdisabled属性と保存処理ハンドラーの両方がこの同じ関数だけを参照する。
+ */
+export function isEmptyAccountCloudOverwriteBlocked(localItemCount: number, cloudItemCount: number | null): boolean {
+  return localItemCount === 0 && cloudItemCount != null && cloudItemCount > 0;
+}
+
 /** テスト専用: 記録済みの目印を消去する。 */
 export function __clearAccountHintForTests(): void {
   const ls = getStorage();
