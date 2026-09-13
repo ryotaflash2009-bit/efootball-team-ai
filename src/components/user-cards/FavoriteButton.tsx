@@ -21,13 +21,16 @@ export function FavoriteButton({
   className?: string;
 }) {
   const t = useT();
-  const { isFavorite, toggle, available } = useFavorites();
+  const { isFavorite, toggle, available, scopeStatus } = useFavorites();
   const on = isFavorite(worldCardId);
   const [err, setErr] = useState<string | null>(null);
+  // 認証状態確認中はお気に入りを読み書きしない(まだどのアカウント領域か確定していないため)。
+  const confirming = scopeStatus === "loading";
 
   function handle(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
+    if (confirming) return;
     const r = toggle(worldCardId);
     setErr(r.ok ? null : (r.error ?? t("favoriteButton", "saveFailedFallback")));
   }
@@ -46,10 +49,11 @@ export function FavoriteButton({
       <button
         type="button"
         onClick={handle}
+        disabled={confirming}
         aria-pressed={on}
         aria-label={label}
         title={label}
-        className={`absolute right-1 top-1 z-10 inline-grid h-8 w-8 place-items-center rounded-md bg-black/70 text-text-dim transition-colors hover:text-accent ${
+        className={`absolute right-1 top-1 z-10 inline-grid h-8 w-8 place-items-center rounded-md bg-black/70 text-text-dim transition-colors hover:text-accent disabled:opacity-50 ${
           on ? "text-accent" : ""
         } ${className}`}
       >
@@ -63,9 +67,10 @@ export function FavoriteButton({
       <button
         type="button"
         onClick={handle}
+        disabled={confirming}
         aria-pressed={on}
         aria-label={label}
-        className={`inline-flex min-h-[36px] items-center gap-1 rounded-md border px-2 py-1 text-2xs font-semibold transition-colors ${
+        className={`inline-flex min-h-[36px] items-center gap-1 rounded-md border px-2 py-1 text-2xs font-semibold transition-colors disabled:opacity-50 ${
           on
             ? "border-accent bg-accent-soft text-accent"
             : "border-border text-text-dim hover:border-accent hover:text-text"
@@ -82,8 +87,9 @@ export function FavoriteButton({
       <button
         type="button"
         onClick={handle}
+        disabled={confirming}
         aria-pressed={on}
-        className={`inline-flex h-9 min-h-[36px] items-center gap-1.5 rounded-md border px-3 text-sm font-semibold transition-colors ${
+        className={`inline-flex h-9 min-h-[36px] items-center gap-1.5 rounded-md border px-3 text-sm font-semibold transition-colors disabled:opacity-50 ${
           on
             ? "border-accent bg-accent-soft text-accent"
             : "border-border-strong bg-surface-2 text-text hover:border-accent"

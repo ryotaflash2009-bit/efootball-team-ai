@@ -11,13 +11,14 @@ import { UserCardTile } from "./UserCardTile";
 import { LocalStorageNotice } from "./LocalStorageNotice";
 import { MyTeamButton } from "./MyTeamButton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Surface } from "@/components/ui/Surface";
 import { buttonClasses } from "@/components/ui/Button";
 import { useT } from "@/lib/i18n/LocaleContext";
 import { PageHeader } from "@/components/ui/PageHeader";
 
 export function FavoritesView() {
   const t = useT();
-  const { favorites, available } = useFavorites();
+  const { favorites, available, scopeStatus } = useFavorites();
   const { myTeamIds } = useMyTeam();
   const ids = useMemo(() => favorites.map((f) => f.worldCardId), [favorites]);
   const { cards, loading, error } = useResolvedCards(ids);
@@ -37,6 +38,17 @@ export function FavoritesView() {
   const facets = useMemo(() => facetsFromRows(rows), [rows]);
   const visible = useMemo(() => filterAndSortUserCards(rows, filter), [rows, filter]);
   const favByWorldId = useMemo(() => new Map(favorites.map((f) => [f.worldCardId, f])), [favorites]);
+
+  if (scopeStatus === "loading") {
+    return (
+      <div className="flex flex-col gap-4">
+        <PageHeader title={t("favoritesView", "pageTitle")} icon="star" description={t("favoritesView", "pageDescription")} />
+        <Surface padding="md">
+          <p className="text-sm text-text-dim">{t("favoritesView", "scopeLoadingMessage")}</p>
+        </Surface>
+      </div>
+    );
+  }
 
   if (favorites.length === 0) {
     return (
