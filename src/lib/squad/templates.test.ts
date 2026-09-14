@@ -19,8 +19,8 @@ import {
 } from "./templates";
 import { findSquadUsageByWorldCardId } from "./usage";
 import { assignWorldCardToSlot, addWorldCardToBench } from "./assign";
-import { SQUAD_TEMPLATE_STORAGE_KEY } from "./types";
 import type { StoredSquad } from "./types";
+import { setCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
 
 function installMemoryStorage() {
   const map = new Map<string, string>();
@@ -36,6 +36,7 @@ function installMemoryStorage() {
       },
     },
   });
+  setCurrentScope({ kind: "guest" });
   return map;
 }
 
@@ -155,9 +156,7 @@ describe("テンプレート", () => {
     if (!g2.ok) throw new Error();
     const parsed = parseTemplatesStorage(
       JSON.stringify({
-        storageVersion: SQUAD_TEMPLATE_STORAGE_KEY.includes("v1")
-          ? "squad-templates-storage/2026-08-30.v1"
-          : "squad-templates-storage/2026-08-30.v1",
+        storageVersion: "squad-templates-storage/2026-08-30.v1",
         templates: [{ templateId: "bad" }, g2.template],
       }),
     );

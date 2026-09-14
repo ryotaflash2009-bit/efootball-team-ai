@@ -3,7 +3,6 @@ import { getFormation, DEFAULT_FORMATION_ID, isFormationId } from "./formations"
 import {
   MAX_SQUAD_TEMPLATES,
   SQUAD_COORDINATE_VERSION,
-  SQUAD_TEMPLATE_STORAGE_KEY,
   SQUAD_TEMPLATE_STORAGE_VERSION,
   SQUAD_NAME_MAX,
 } from "./types";
@@ -17,14 +16,27 @@ import {
   saveSquad,
   type SquadSaveResult,
 } from "./squad-storage";
+import { getCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
+import { buildScopedStorageKey } from "@/lib/local-storage-scope/keys";
 
 /**
- * スカッドテンプレート（通常スカッドとは別ストア）。
+ * スカッドテンプレート（通常スカッドとは別ストア、アカウント別スコープ対応）。
  *  - 空テンプレート: フォーメーションだけ（選手なし）。
  *  - 完全テンプレート: 選手・自由配置座標・監督・役割・ベンチも含む。
  *  - テンプレートから作成した通常スカッドはテンプレートと完全に独立（参照共有しない）。
  *  - 1 件壊れても他を失わないよう要素ごとに検証する。localStorage 全消去はしない。
+ *
+ * アカウント別スコープ対応(Stage 4): squad-storage.ts と同じ方針(現在のスコープに応じたキーを
+ * 動的に決定し、未解決の間は読み込み空・書き込み拒否)。レガシー共通キーはこのモジュールからは
+ * 一切読み書きしない。
  */
+
+/** 現在のスコープにおけるスカッドテンプレートの実際のlocalStorageキー。スコープ未解決ならnull。 */
+export function getActiveTemplatesStorageKey(): string | null {
+  const scope = getCurrentScope();
+  if (!scope) return null;
+  return buildScopedStorageKey(scope, "squadTemplates");
+}
 
 const TEMPLATE_ID_RE = /^tpl_[A-Za-z0-9]{6,32}$/;
 
@@ -138,15 +150,19 @@ export function parseTemplatesStorage(raw: string | null): { templates: SquadTem
 function readStore(): SquadTemplate[] {
   const ls = getStorage();
   if (!ls) return [];
-  return parseTemplatesStorage(ls.getItem(SQUAD_TEMPLATE_STORAGE_KEY)).templates;
+  const key = getActiveTemplatesStorageKey();
+  if (!key) return []; // スコープ未解決: 安全な空値(書き込みは行わない)
+  return parseTemplatesStorage(ls.getItem(key)).templates;
 }
 
 function writeStore(list: SquadTemplate[]): boolean {
   const ls = getStorage();
   if (!ls) return false;
+  const key = getActiveTemplatesStorageKey();
+  if (!key) return false; // スコープ未解決の間は書き込みを拒否する
   try {
     ls.setItem(
-      SQUAD_TEMPLATE_STORAGE_KEY,
+      key,
       JSON.stringify({
         storageVersion: SQUAD_TEMPLATE_STORAGE_VERSION,
         updatedAt: new Date().toISOString(),
