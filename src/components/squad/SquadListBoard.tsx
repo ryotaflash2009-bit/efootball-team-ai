@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -13,12 +13,15 @@ import {
   duplicateSquad,
   deleteSquad,
   isSquadStorageAvailable,
+  getActiveSquadsStorageKey,
 } from "@/lib/squad/squad-storage";
 import { saveTemplateFromSquad } from "@/lib/squad/templates";
 import { findSquadUsageByWorldCardId } from "@/lib/squad/usage";
 import { FORMATIONS, getFormation } from "@/lib/squad/formations";
 import { resolvePendingSquadAddition, pendingSquadAdditionQuery } from "@/lib/squad/pending-addition";
 import type { SquadListEntry } from "@/lib/squad/types";
+import { useSyncedStorageScope } from "@/lib/local-storage-scope/resolve-scope";
+import { subscribeCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
 
 type SquadSort = "updated_desc" | "created_desc" | "name" | "formation";
 import { Surface } from "@/components/ui/Surface";
@@ -70,12 +73,34 @@ export function SquadListBoard({
   // 取得できるまでは名前を出さず(ID露出を避ける)、失敗時もIDへフォールバックしない。
   const [pendingCardName, setPendingCardName] = useState<string | null>(null);
 
-  const reload = () => setEntries(listSquadEntries());
+  // スカッド編集画面(SquadBuildPanel)と同じ理由: この画面はMy Team/My Builds/お気に入りの
+  // いずれも経由せず開ける可能性があるため、自力でスコープを解決してストレージへ伝える。
+  const scopeState = useSyncedStorageScope();
+  const scopeLoading = scopeState.status === "loading";
+
+  const reload = useCallback(() => {
+    if (scopeState.status === "loading") return; // 認証確認中はスカッドを読み書きしない
+    setStorageOk(isSquadStorageAvailable());
+    setEntries(listSquadEntries());
+  }, [scopeState.status]);
 
   useEffect(() => {
-    setStorageOk(isSquadStorageAvailable());
+    if (scopeState.status === "loading") {
+      setEntries(null); // アカウント切替時、直前スコープの一覧を表示し続けない
+      return;
+    }
     reload();
-  }, []);
+  }, [scopeState.status === "resolved" ? scopeState.scope.kind : "loading", scopeState.status === "resolved" && scopeState.scope.kind === "account" ? scopeState.scope.scopeId : null]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // 別タブでの更新・アカウント切替を検知して再読込する。
+  useEffect(() => subscribeCurrentScope(reload), [reload]);
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key == null || e.key === getActiveSquadsStorageKey()) reload();
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [reload]);
 
   useEffect(() => {
     if (!pendingWorldCardId) {
@@ -143,6 +168,21 @@ export function SquadListBoard({
       return;
     }
     router.push(`/squads/${r.squad.squadId}${cardQuery}`);
+  }
+
+  if (scopeLoading) {
+    return (
+      <div className="flex flex-col gap-4">
+        <PageHeader
+          title={tsl("pageTitle")}
+          icon="squad"
+          description={fillSl(tsl("pageDescriptionTemplate"), { formations: FORMATIONS.map((f) => f.name).join(" / ") })}
+        />
+        <Surface tone="outline" className="text-center">
+          <p className="text-sm text-text-dim">{tsl("scopeLoadingMessage")}</p>
+        </Surface>
+      </div>
+    );
   }
 
   if (!storageOk) {

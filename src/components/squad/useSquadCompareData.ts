@@ -6,11 +6,13 @@ import type { ManagerDetail } from "@/lib/managers/types";
 import type { ManagerContext, SavedBuild } from "@/lib/progression/types";
 import { managerToContext } from "@/lib/managers/to-context";
 import { listBuilds } from "@/lib/progression/build-storage";
-import { getSquad, isSquadStorageAvailable } from "@/lib/squad/squad-storage";
-import { SQUAD_STORAGE_KEY, SQUAD_ID_RE, type StoredSquad } from "@/lib/squad/types";
+import { getSquad, isSquadStorageAvailable, getActiveSquadsStorageKey } from "@/lib/squad/squad-storage";
+import { SQUAD_ID_RE, type StoredSquad } from "@/lib/squad/types";
 import { buildSquad } from "@/lib/squad/build-squad";
 import { assembleBuildSquadInput } from "@/lib/squad/assemble-build-input";
 import type { CompareSideInput, ResolvedCompareCard } from "@/lib/squad/compare-squads";
+import { useSyncedStorageScope } from "@/lib/local-storage-scope/resolve-scope";
+import { subscribeCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
 
 const WORLD_ID_RE = /^[0-9]{1,20}$/;
 
@@ -83,6 +85,9 @@ export function useSquadCompareData(rawA: string | null, rawB: string | null): S
   const idA = rawA && SQUAD_ID_RE.test(rawA) ? rawA : null;
   const idB = rawB && SQUAD_ID_RE.test(rawB) ? rawB : null;
 
+  // 比較画面もMy Team/My Builds/お気に入りを経由せず開けるため、自力でスコープを解決する。
+  const scopeState = useSyncedStorageScope();
+
   const [storageOk, setStorageOk] = useState(true);
   const [nonce, setNonce] = useState(0);
   const [aSquad, setASquad] = useState<StoredSquad | null>(null);
@@ -112,7 +117,17 @@ export function useSquadCompareData(rawA: string | null, rawB: string | null): S
   }, []);
 
   // --- スカッド読み込み ---
+  // アカウント切替時は、直前スコープのスカッド内容を表示し続けない(nonceだけでなく
+  // 現在のスコープ自体もキーにして読み直す)。
   useEffect(() => {
+    if (scopeState.status === "loading") {
+      setLoadingSquads(true);
+      setASquad(null);
+      setBSquad(null);
+      setAMissing(false);
+      setBMissing(false);
+      return;
+    }
     setStorageOk(isSquadStorageAvailable());
     setLoadingSquads(true);
     const a = idA ? getSquad(idA) : null;
@@ -122,12 +137,15 @@ export function useSquadCompareData(rawA: string | null, rawB: string | null): S
     setAMissing(idA != null && a == null);
     setBMissing(idB != null && b == null);
     setLoadingSquads(false);
-  }, [idA, idB, nonce]);
+  }, [idA, idB, nonce, scopeState.status === "resolved" ? scopeState.scope.kind : "loading", scopeState.status === "resolved" && scopeState.scope.kind === "account" ? scopeState.scope.scopeId : null]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // アカウント切替(別タブでの切替を含む)を検知して再読込する。
+  useEffect(() => subscribeCurrentScope(reload), [reload]);
 
   // --- 別タブでのスカッド更新を検知 ---
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
-      if (e.key === SQUAD_STORAGE_KEY) setExternalUpdate(true);
+      if (e.key == null || e.key === getActiveSquadsStorageKey()) setExternalUpdate(true);
     };
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);

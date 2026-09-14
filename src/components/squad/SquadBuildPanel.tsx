@@ -4,9 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import type { SavedBuild } from "@/lib/progression/types";
 import type { SquadPlayerDisplay } from "@/lib/squad/types";
-import { SQUAD_STORAGE_KEY } from "@/lib/squad/types";
 import { getBuild, isBuildStorageAvailable, listBuilds, getActiveBuildsStorageKey } from "@/lib/progression/build-storage";
-import { isSquadStorageAvailable } from "@/lib/squad/squad-storage";
+import { isSquadStorageAvailable, getActiveSquadsStorageKey } from "@/lib/squad/squad-storage";
 import { useStorageScope } from "@/lib/local-storage-scope/resolve-scope";
 import { setCurrentScope, subscribeCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
 import {
@@ -121,7 +120,7 @@ export function SquadBuildPanel({
 
   useEffect(() => {
     function onStorage(e: StorageEvent) {
-      if (e.key == null || e.key === SQUAD_STORAGE_KEY || e.key === getActiveBuildsStorageKey()) setStale(true);
+      if (e.key == null || e.key === getActiveSquadsStorageKey() || e.key === getActiveBuildsStorageKey()) setStale(true);
     }
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);

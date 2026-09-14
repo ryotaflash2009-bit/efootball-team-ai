@@ -10,6 +10,8 @@ import { compareSquads, type SquadComparisonResult, type CompareCardUnit } from 
 import { fmt, fmtInt, fmtDiff, fmtDate } from "@/lib/squad/compare-format";
 import { resolveCardImageSources } from "@/lib/world/image";
 import { useSquadCompareData } from "./useSquadCompareData";
+import { useSyncedStorageScope } from "@/lib/local-storage-scope/resolve-scope";
+import { subscribeCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
 import { CompareMiniPitch } from "./CompareMiniPitch";
 import { WorldCardImage } from "@/components/world/WorldCardImage";
 import { Surface } from "@/components/ui/Surface";
@@ -47,14 +49,28 @@ export function SquadCompareBoard() {
   const rawB = sp.get("b");
   const dupParams = sp.getAll("a").length > 1 || sp.getAll("b").length > 1;
 
+  // 選択候補一覧(スカッド名のドロップダウン)もアカウント別スコープに従う必要があるため、
+  // この画面自身でもスコープを解決する(useSquadCompareDataも内部で同じ共有ストアへ解決するため、
+  // 二重解決自体は安全 — session/scopeIdキャッシュを共有する)。
+  const scopeState = useSyncedStorageScope();
   const [entries, setEntries] = useState<SquadListEntry[] | null>(null);
   const [tab, setTab] = useState<Tab>("overview");
   const [diffOnly, setDiffOnly] = useState(false);
   const [restored, setRestored] = useState(false);
 
-  useEffect(() => {
+  const reloadEntries = useCallback(() => {
+    if (scopeState.status === "loading") {
+      setEntries(null);
+      return;
+    }
     setEntries(listSquadEntries());
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scopeState.status === "resolved" ? scopeState.scope.kind : "loading", scopeState.status === "resolved" && scopeState.scope.kind === "account" ? scopeState.scope.scopeId : null]);
+
+  useEffect(() => {
+    reloadEntries();
+  }, [reloadEntries]);
+  useEffect(() => subscribeCurrentScope(reloadEntries), [reloadEntries]);
 
   const setParams = useCallback(
     (a: string | null, b: string | null) => {
