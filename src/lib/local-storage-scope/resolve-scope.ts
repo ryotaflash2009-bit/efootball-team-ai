@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSupabaseSession } from "@/lib/supabase/use-auth-session";
 import { computeAccountScopeId } from "./scope-id";
+import { setCurrentScope } from "./current-scope-store";
 import type { StorageScope } from "./types";
 
 /**
@@ -75,4 +76,19 @@ export function useStorageScope(): ScopeResolutionState {
   }, [sessionStatus, currentUserId]);
 
   return state;
+}
+
+/**
+ * `useStorageScope()`を解決し、結果を共有ストア(`current-scope-store`)へ同期まで行う。
+ * My Team / My Builds / お気に入りのいずれも経由せずに開ける画面(スカッド一覧・編集・比較・
+ * テンプレート等)が、それぞれ自力でスコープを解決してストレージモジュールへ伝える際の
+ * 共通処理(`SquadBuildPanel.tsx`で最初に確立したパターン)をまとめたもの。挙動は完全に同一で、
+ * 呼び出し側の重複を減らすためだけの薄いラッパー(スコープ解決・保存形式のロジックは一切変更しない)。
+ */
+export function useSyncedStorageScope(): ScopeResolutionState {
+  const scopeState = useStorageScope();
+  useEffect(() => {
+    setCurrentScope(scopeState.status === "resolved" ? scopeState.scope : null);
+  }, [scopeState.status === "resolved" ? scopeState.scope.kind : "loading", scopeState.status === "resolved" && scopeState.scope.kind === "account" ? scopeState.scope.scopeId : null]); // eslint-disable-line react-hooks/exhaustive-deps
+  return scopeState;
 }

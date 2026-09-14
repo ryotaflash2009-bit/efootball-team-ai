@@ -47,7 +47,10 @@ import {
   duplicateSquad,
   isSquadStorageAvailable,
   newSubId,
+  getActiveSquadsStorageKey,
 } from "@/lib/squad/squad-storage";
+import { useSyncedStorageScope } from "@/lib/local-storage-scope/resolve-scope";
+import { subscribeCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
 import {
   MAX_SUBSTITUTES,
   SQUAD_NAME_MAX,
@@ -210,8 +213,20 @@ export function SquadEditor({
   const fallbackFormationId =
     initialFormationId && isFormationId(initialFormationId) ? initialFormationId : DEFAULT_FORMATION_ID;
 
-  // ---- 初回ロード ----
+  // このスカッド編集画面はMy Team/My Builds/お気に入りのいずれも経由せず開ける可能性があるため、
+  // SquadBuildPanelと同様、自力でスコープを解決してストレージへ伝える。
+  const scopeState = useSyncedStorageScope();
+
+  // ---- 初回ロード / アカウント切替時の再読込 ----
+  // アカウントAのスカッドURLを開いたままBへ切り替えた場合、Aのスカッド内容を表示し続けない
+  // ようにするため、スコープが変わるたびに squad state を一度破棄してから読み直す。
   useEffect(() => {
+    if (scopeState.status === "loading") {
+      setStatus("loading");
+      setSquad(null);
+      savedSquadRef.current = null;
+      return;
+    }
     const s = getSquad(squadId);
     if (s) {
       savedSquadRef.current = s; // 読み込んだ状態 = 保存済み（hydration 前に「保存済み」と誤表示しない）
@@ -223,7 +238,29 @@ export function SquadEditor({
     } else {
       setStatus("notfound");
     }
-  }, [squadId]);
+  }, [squadId, scopeState.status === "resolved" ? scopeState.scope.kind : "loading", scopeState.status === "resolved" && scopeState.scope.kind === "account" ? scopeState.scope.scopeId : null]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // 別タブでのアカウント切替・スカッド更新を検知した場合も、上と同じ経路で読み直す
+  // (未保存の編集差分がある場合は破棄される。これは他タブでの更新検知と同じ既存挙動)。
+  useEffect(
+    () =>
+      subscribeCurrentScope(() => {
+        if (scopeState.status === "loading") return;
+        const s = getSquad(squadId);
+        if (s) {
+          savedSquadRef.current = s;
+          setSquad(s);
+          setStatus("ready");
+          setSaveState("idle");
+        } else if (!isSquadStorageAvailable()) {
+          setStatus("nostorage");
+        } else {
+          setStatus("notfound");
+          setSquad(null);
+        }
+      }),
+    [squadId, scopeState.status],
+  );
 
   const flashToast = useCallback((msg: string) => {
     setToast(msg);

@@ -10,21 +10,37 @@ import {
   SQUAD_ID_RE,
   SQUAD_NAME_MAX,
   SQUAD_SCHEMA_VERSION,
-  SQUAD_STORAGE_KEY,
   SLOT_ID_RE,
   SUB_ID_RE,
   WORLD_CARD_ID_RE,
   BUILD_ID_RE,
 } from "./types";
 import type { StoredSquad, SquadListEntry } from "./types";
+import { getCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
+import { buildScopedStorageKey } from "@/lib/local-storage-scope/keys";
 
 /**
- * スカッドのローカル保存（localStorage `efb:squads:v1`）。
+ * スカッドのローカル保存（localStorage、アカウント別スコープ対応）。
  * - 外部アカウント・クラウド同期なし。
  * - SSR / localStorage 不可 / 壊れた JSON でも呼び出し側がクラッシュしないよう安全な既定値を返す。
  * - 読み込み時に Zod で検証し、壊れたエントリは黙って捨てる。
  * - Windows 上のファイルは一切触らない。削除はブラウザ内のユーザー作成データのみ。
+ *
+ * アカウント別スコープ対応(Stage 4): 実際に読み書きするキーは、現在解決済みのスコープ
+ * (`current-scope-store.ts`)に応じて動的に決まる(`my-team-storage.ts`/`build-storage.ts`と同じ方針)。
+ * スコープ未解決(認証状態確認中)の間は、読み込みは常に空、書き込みは常に拒否する。アカウント分離前の
+ * 共通キー(`efb:squads:v1`)は、この通常モジュールからは一切読み書きしない(レガシー領域は
+ * `local-storage-scope`の移行機能だけが扱う)。このモジュール自体はキャッシュ/スナップショットを
+ * 持たない(build-storage.tsと同じ)ため、スコープ切替時の再読込は呼び出し側(各コンポーネント)が
+ * `subscribeCurrentScope`で自ら行う。
  */
+
+/** 現在のスコープにおけるスカッドの実際のlocalStorageキー。スコープ未解決ならnull。 */
+export function getActiveSquadsStorageKey(): string | null {
+  const scope = getCurrentScope();
+  if (!scope) return null;
+  return buildScopedStorageKey(scope, "squads");
+}
 
 const buildModeSchema = z.enum(["none", "attack", "defense", "balance", "gk"]);
 
@@ -220,8 +236,10 @@ function normalizeSquad(raw: StoredSquad): StoredSquad {
 function readStore(): Store {
   const ls = getStorage();
   if (!ls) return [];
+  const key = getActiveSquadsStorageKey();
+  if (!key) return []; // スコープ未解決: 安全な空値(書き込みは行わない)
   try {
-    const raw = ls.getItem(SQUAD_STORAGE_KEY);
+    const raw = ls.getItem(key);
     if (!raw) return [];
     const json = JSON.parse(raw);
     if (!Array.isArray(json)) return [];
@@ -242,8 +260,10 @@ function readStore(): Store {
 function writeStore(store: Store): boolean {
   const ls = getStorage();
   if (!ls) return false;
+  const key = getActiveSquadsStorageKey();
+  if (!key) return false; // スコープ未解決の間は書き込みを拒否する
   try {
-    ls.setItem(SQUAD_STORAGE_KEY, JSON.stringify(store.slice(0, MAX_SQUADS)));
+    ls.setItem(key, JSON.stringify(store.slice(0, MAX_SQUADS)));
     return true;
   } catch {
     return false;

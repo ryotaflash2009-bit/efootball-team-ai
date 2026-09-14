@@ -21,8 +21,7 @@ import {
   isSavedIntentCurrent,
   type BuildIntentSource,
 } from "@/lib/progression/build-intent-persistence";
-import { isSquadStorageAvailable, listSquads } from "@/lib/squad/squad-storage";
-import { SQUAD_STORAGE_KEY } from "@/lib/squad/types";
+import { isSquadStorageAvailable, listSquads, getActiveSquadsStorageKey } from "@/lib/squad/squad-storage";
 import { useMyTeam } from "@/lib/user-cards/hooks";
 import { getActiveMyTeamStorageKey } from "@/lib/user-cards/my-team-storage";
 import { useResolvedCards } from "@/lib/user-cards/use-resolved-cards";
@@ -193,7 +192,7 @@ export function BuildInventoryView() {
     function onStorage(e: StorageEvent) {
       if (e.key == null || e.key === getActiveBuildsStorageKey()) setStaleBuild(true);
       if (e.key == null || e.key === getActiveMyTeamStorageKey()) setStaleMyTeam(true);
-      if (e.key == null || e.key === SQUAD_STORAGE_KEY) setStaleSquad(true);
+      if (e.key == null || e.key === getActiveSquadsStorageKey()) setStaleSquad(true);
     }
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);

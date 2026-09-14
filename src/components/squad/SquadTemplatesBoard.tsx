@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -11,9 +11,12 @@ import {
   deleteTemplate,
   getTemplate,
   isTemplateStorageAvailable,
+  getActiveTemplatesStorageKey,
   type SquadTemplateSummary,
 } from "@/lib/squad/templates";
 import { FORMATIONS } from "@/lib/squad/formations";
+import { useSyncedStorageScope } from "@/lib/local-storage-scope/resolve-scope";
+import { subscribeCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
 import { Surface } from "@/components/ui/Surface";
 import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClasses } from "@/components/ui/Button";
@@ -34,11 +37,40 @@ export function SquadTemplatesBoard() {
   const [error, setError] = useState<string | null>(null);
   const [confirmId, setConfirmId] = useState<string | null>(null);
 
-  const reload = () => setItems(listTemplateSummaries());
-  useEffect(() => {
+  // この画面もMy Team/My Builds/お気に入りを経由せず開けるため、自力でスコープを解決する。
+  const scopeState = useSyncedStorageScope();
+  const scopeLoading = scopeState.status === "loading";
+
+  const reload = useCallback(() => {
+    if (scopeState.status === "loading") return;
     setStorageOk(isTemplateStorageAvailable());
+    setItems(listTemplateSummaries());
+  }, [scopeState.status]);
+
+  useEffect(() => {
+    if (scopeState.status === "loading") {
+      setItems(null); // アカウント切替時、直前スコープの一覧を表示し続けない
+      return;
+    }
     reload();
-  }, []);
+  }, [scopeState.status === "resolved" ? scopeState.scope.kind : "loading", scopeState.status === "resolved" && scopeState.scope.kind === "account" ? scopeState.scope.scopeId : null]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => subscribeCurrentScope(reload), [reload]);
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key == null || e.key === getActiveTemplatesStorageKey()) reload();
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [reload]);
+
+  if (scopeLoading) {
+    return (
+      <Surface tone="outline" className="text-center">
+        <p className="text-sm text-text-dim">{tst("scopeLoadingMessage")}</p>
+      </Surface>
+    );
+  }
 
   if (!storageOk) {
     return (

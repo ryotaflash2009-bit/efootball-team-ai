@@ -14,7 +14,13 @@ import { previewMigration, type MigrationPreview } from "@/lib/local-storage-sco
 import { executeMigrationForKind, type MigrationExecutionResult } from "@/lib/local-storage-scope/migration-execute";
 import { getLegacyStorageKey, buildScopedStorageKey } from "@/lib/local-storage-scope/keys";
 import { readRawJson } from "@/lib/local-storage-scope/storage-access";
-import { checkMyTeamBuildReferences, type BuildReferenceCheckResult } from "@/lib/local-storage-scope/build-reference-check";
+import {
+  checkMyTeamBuildReferences,
+  checkSquadBuildReferences,
+  checkSquadTemplateBuildReferences,
+  type BuildReferenceCheckResult,
+  type SquadBuildReferenceCheckResult,
+} from "@/lib/local-storage-scope/build-reference-check";
 import { saveTextFile } from "@/lib/browser-save-file";
 import { DATA_KINDS, type DataKind, type StorageScope } from "@/lib/local-storage-scope/types";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
@@ -22,8 +28,8 @@ import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 type LdmKey = keyof Dictionary["localDataMigration"];
 type AuthKey = keyof Dictionary["auth"];
 
-/** Stage 3で実際に移行できるのはMy Team・My Builds・お気に入りの3種類(残り2種は準備中の状態表示のみ)。 */
-const MIGRATABLE_KINDS: readonly DataKind[] = ["myTeam", "myBuilds", "favorites"];
+/** Stage 4時点で移行できる全5種類(My Team・My Builds・お気に入り・保存スカッド・スカッドテンプレート)。 */
+const MIGRATABLE_KINDS: readonly DataKind[] = ["myTeam", "myBuilds", "favorites", "squads", "squadTemplates"];
 
 const BACKUP_FILE_NAME: Record<DataKind, string> = {
   myTeam: "my-team-legacy-backup.json",
@@ -71,6 +77,8 @@ export function LocalDataMigrationView() {
   const [previews, setPreviews] = useState<Partial<Record<DataKind, MigrationPreview>>>({});
   const [results, setResults] = useState<Partial<Record<DataKind, MigrationExecutionResult>>>({});
   const [refIssues, setRefIssues] = useState<BuildReferenceCheckResult | null>(null);
+  const [squadRefIssues, setSquadRefIssues] = useState<SquadBuildReferenceCheckResult | null>(null);
+  const [templateRefIssues, setTemplateRefIssues] = useState<SquadBuildReferenceCheckResult | null>(null);
   const [confirmKind, setConfirmKind] = useState<DataKind | null>(null);
   const [migrateAck, setMigrateAck] = useState(false);
   const [migrating, setMigrating] = useState(false);
@@ -83,11 +91,18 @@ export function LocalDataMigrationView() {
   const refreshReferenceIntegrity = useCallback(() => {
     if (!accountScope) {
       setRefIssues(null);
+      setSquadRefIssues(null);
+      setTemplateRefIssues(null);
       return;
     }
     const myTeamRaw = readRawJson(buildScopedStorageKey(accountScope, "myTeam"));
     const myBuildsRaw = readRawJson(buildScopedStorageKey(accountScope, "myBuilds"));
+    const legacyMyBuildsRaw = readRawJson(getLegacyStorageKey("myBuilds"));
+    const squadsRaw = readRawJson(buildScopedStorageKey(accountScope, "squads"));
+    const templatesRaw = readRawJson(buildScopedStorageKey(accountScope, "squadTemplates"));
     setRefIssues(checkMyTeamBuildReferences(myTeamRaw, myBuildsRaw));
+    setSquadRefIssues(checkSquadBuildReferences(squadsRaw, myBuildsRaw, legacyMyBuildsRaw));
+    setTemplateRefIssues(checkSquadTemplateBuildReferences(templatesRaw, myBuildsRaw, legacyMyBuildsRaw));
   }, [accountScope]);
 
   useEffect(() => {
@@ -239,6 +254,64 @@ export function LocalDataMigrationView() {
             ) : null}
           </Surface>
 
+          <Surface padding="md" className="flex flex-col gap-2">
+            <p className="text-sm font-semibold text-text">{ta("referenceIntegritySquadHeading")}</p>
+            {squadRefIssues ? (
+              squadRefIssues.totalReferencedCount === 0 ? (
+                <p className="text-2xs text-text-muted">{ta("referenceIntegrityNoDataMessage")}</p>
+              ) : (
+                <>
+                  <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm sm:grid-cols-3">
+                    <div>
+                      <dt className="text-2xs text-text-muted">{ta("referenceIntegrityTotalLabel")}</dt>
+                      <dd className="font-bold tabular-nums">{squadRefIssues.totalReferencedCount}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-2xs text-text-muted">{ta("referenceIntegrityBrokenLabel")}</dt>
+                      <dd className="font-bold tabular-nums">{squadRefIssues.brokenCount}</dd>
+                    </div>
+                    {squadRefIssues.resolvableOnlyInLegacyCount != null ? (
+                      <div>
+                        <dt className="text-2xs text-text-muted">{ta("referenceIntegrityLegacyOnlyLabel")}</dt>
+                        <dd className="font-bold tabular-nums">{squadRefIssues.resolvableOnlyInLegacyCount}</dd>
+                      </div>
+                    ) : null}
+                  </dl>
+                  {squadRefIssues.brokenCount > 0 ? <p className="text-2xs text-warning">{ta("referenceIntegrityNotice")}</p> : null}
+                </>
+              )
+            ) : null}
+          </Surface>
+
+          <Surface padding="md" className="flex flex-col gap-2">
+            <p className="text-sm font-semibold text-text">{ta("referenceIntegrityTemplateHeading")}</p>
+            {templateRefIssues ? (
+              templateRefIssues.totalReferencedCount === 0 ? (
+                <p className="text-2xs text-text-muted">{ta("referenceIntegrityNoDataMessage")}</p>
+              ) : (
+                <>
+                  <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm sm:grid-cols-3">
+                    <div>
+                      <dt className="text-2xs text-text-muted">{ta("referenceIntegrityTotalLabel")}</dt>
+                      <dd className="font-bold tabular-nums">{templateRefIssues.totalReferencedCount}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-2xs text-text-muted">{ta("referenceIntegrityBrokenLabel")}</dt>
+                      <dd className="font-bold tabular-nums">{templateRefIssues.brokenCount}</dd>
+                    </div>
+                    {templateRefIssues.resolvableOnlyInLegacyCount != null ? (
+                      <div>
+                        <dt className="text-2xs text-text-muted">{ta("referenceIntegrityLegacyOnlyLabel")}</dt>
+                        <dd className="font-bold tabular-nums">{templateRefIssues.resolvableOnlyInLegacyCount}</dd>
+                      </div>
+                    ) : null}
+                  </dl>
+                  {templateRefIssues.brokenCount > 0 ? <p className="text-2xs text-warning">{ta("referenceIntegrityNotice")}</p> : null}
+                </>
+              )
+            ) : null}
+          </Surface>
+
           {MIGRATABLE_KINDS.filter((kind) => previews[kind]).map((kind) => {
             const preview = previews[kind]!;
             const result = results[kind];
@@ -269,6 +342,10 @@ export function LocalDataMigrationView() {
                   <div>
                     <dt className="text-2xs text-text-muted">{ta("previewInvalidCountLabel")}</dt>
                     <dd className="font-bold tabular-nums">{preview.invalidCount}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-2xs text-text-muted">{ta("previewExcludedCountLabel")}</dt>
+                    <dd className="font-bold tabular-nums">{preview.conflictCount + preview.invalidCount}</dd>
                   </div>
                   <div>
                     <dt className="text-2xs text-text-muted">{ta("previewResultCountLabel")}</dt>

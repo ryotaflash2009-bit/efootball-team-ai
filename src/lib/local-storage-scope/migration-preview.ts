@@ -42,7 +42,7 @@ export function previewMigration(kind: DataKind, legacyRaw: unknown, targetRaw: 
     if (!existing) {
       addCount += 1;
       items.push({ id: item.id, status: "add" });
-    } else if (scopedItemsContentEqual(item, existing)) {
+    } else if (scopedItemsContentEqual(kind, item, existing)) {
       duplicateCount += 1;
       items.push({ id: item.id, status: "duplicate" });
     } else {

@@ -1,7 +1,7 @@
 # AIベスト11 全体配置最適化 専用ブラックボックステスト結果
 
-実行日時: 2026-09-13T11:20:35.357Z
-対象: http://localhost:3000（Production Build上の隔離ヘッドレスChrome確認。実機ではない）
+実行日時: 2026-09-14T08:51:26.813Z
+対象: http://localhost:3001（Production Build上の隔離ヘッドレスChrome確認。実機ではない）
 
 実ユーザーのMy Team・保存ビルド・保存スカッド・SQLiteは一切変更しない(隔離プロファイルのlocalStorageのみ操作)。
 実在するWorld DBカード(本番SQLite)のworldCardIdのみを使用し、架空のIDは作らない。
@@ -26,8 +26,8 @@
 | PASS | [破損データ耐性] 破損したビルドJSON・存在しないworldCardIdが混在してもクラッシュしない |  |
 | PASS | [破損データ耐性] 存在しないカードは取得不可カードとして扱われる(内部IDそのままの露出はしない) |  |
 | PASS | [決定性] My Teamの保存順を逆にしても選出選手一覧の内容は変わらない |  |
-| PASS | [大規模候補プール] 候補100件でも選考が完了する | elapsedMs=536 |
-| PASS | [大規模候補プール] 妥当な時間内(15秒以内)に完了する | elapsedMs=536 |
+| PASS | [大規模候補プール] 候補100件でも選考が完了する | elapsedMs=861 |
+| PASS | [大規模候補プール] 妥当な時間内(15秒以内)に完了する | elapsedMs=861 |
 | PASS | [390px] 横スクロールが発生しない(scrollWidthがinnerWidthを大きく超えない) | overflow=0 |
 | PASS | [390px] 見出し・選考結果が表示される |  |
 | PASS | [内部情報非露出] 選考結果表示中もcandidateKey/savedBuildId等の内部識別子を含まない |  |

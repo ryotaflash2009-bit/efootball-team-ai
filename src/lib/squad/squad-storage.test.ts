@@ -9,8 +9,12 @@ import {
   duplicateSquad,
   deleteSquad,
   isSquadStorageAvailable,
+  getActiveSquadsStorageKey,
 } from "./squad-storage";
-import { SQUAD_STORAGE_KEY } from "./types";
+import { setCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
+
+/** テスト内で実際に読み書きされているキー(常にguestスコープ)。 */
+const SQUAD_STORAGE_KEY = () => getActiveSquadsStorageKey()!;
 
 function installMemoryStorage() {
   const map = new Map<string, string>();
@@ -25,6 +29,7 @@ function installMemoryStorage() {
     },
   };
   vi.stubGlobal("window", { localStorage: storage });
+  setCurrentScope({ kind: "guest" });
   return { map, storage };
 }
 
@@ -130,9 +135,9 @@ describe("squad-storage（メモリ localStorage）", () => {
     sq.slots[1].worldCardId = "777";
     const r = saveSquad(sq);
     if (!r.ok) throw new Error();
-    const raw = JSON.parse(mem.storage.getItem(SQUAD_STORAGE_KEY)!);
+    const raw = JSON.parse(mem.storage.getItem(SQUAD_STORAGE_KEY())!);
     raw[0].slots[1].boosters = [{ slot: 9, boosterKey: "NOPE!!", level: 99 }];
-    mem.storage.setItem(SQUAD_STORAGE_KEY, JSON.stringify(raw));
+    mem.storage.setItem(SQUAD_STORAGE_KEY(), JSON.stringify(raw));
     const reload = getSquad(r.squad.squadId)!;
     expect(reload.slots[1].worldCardId).toBe("777");
     expect(reload.slots[1].boosters).toBeUndefined();
@@ -156,9 +161,9 @@ describe("squad-storage（メモリ localStorage）", () => {
     sq.slots[1].worldCardId = "999";
     const r = saveSquad(sq);
     if (!r.ok) throw new Error();
-    const raw = JSON.parse(mem.storage.getItem(SQUAD_STORAGE_KEY)!);
+    const raw = JSON.parse(mem.storage.getItem(SQUAD_STORAGE_KEY())!);
     raw[0].slots[1].conditionalBoosters = [{ boosterKey: "total-package", selection: "garbage" }];
-    mem.storage.setItem(SQUAD_STORAGE_KEY, JSON.stringify(raw));
+    mem.storage.setItem(SQUAD_STORAGE_KEY(), JSON.stringify(raw));
     const reload = getSquad(r.squad.squadId)!;
     expect(reload.slots[1].worldCardId).toBe("999");
     expect(reload.slots[1].conditionalBoosters).toBeUndefined();
@@ -170,10 +175,10 @@ describe("squad-storage（メモリ localStorage）", () => {
     sq.slots[1].worldCardId = "222";
     const r = saveSquad(sq);
     if (!r.ok) throw new Error();
-    const raw = JSON.parse(mem.storage.getItem(SQUAD_STORAGE_KEY)!);
+    const raw = JSON.parse(mem.storage.getItem(SQUAD_STORAGE_KEY())!);
     for (const s of raw[0].slots) delete s.conditionalBoosters;
     delete raw[0].conditionalSettings;
-    mem.storage.setItem(SQUAD_STORAGE_KEY, JSON.stringify(raw));
+    mem.storage.setItem(SQUAD_STORAGE_KEY(), JSON.stringify(raw));
     const reload = getSquad(r.squad.squadId)!;
     expect(reload.slots[1].worldCardId).toBe("222");
     expect(reload.slots[1].conditionalBoosters).toBeUndefined();
@@ -204,9 +209,9 @@ describe("squad-storage（メモリ localStorage）", () => {
     sq.slots[1].worldCardId = "111";
     const r = saveSquad(sq);
     if (!r.ok) throw new Error();
-    const raw = JSON.parse(mem.storage.getItem(SQUAD_STORAGE_KEY)!);
+    const raw = JSON.parse(mem.storage.getItem(SQUAD_STORAGE_KEY())!);
     for (const s of raw[0].slots) delete s.boosters;
-    mem.storage.setItem(SQUAD_STORAGE_KEY, JSON.stringify(raw));
+    mem.storage.setItem(SQUAD_STORAGE_KEY(), JSON.stringify(raw));
     const reload = getSquad(r.squad.squadId)!;
     expect(reload.slots[1].worldCardId).toBe("111");
     expect(reload.slots[1].boosters).toBeUndefined();
@@ -214,15 +219,15 @@ describe("squad-storage（メモリ localStorage）", () => {
 
   it("壊れた JSON を安全に無視", () => {
     const mem = installMemoryStorage();
-    mem.storage.setItem(SQUAD_STORAGE_KEY, "{ broken");
+    mem.storage.setItem(SQUAD_STORAGE_KEY(), "{ broken");
     expect(listSquads()).toEqual([]);
   });
 
   it("不正な形（配列でない / 必須欠落）を無視", () => {
     const mem = installMemoryStorage();
-    mem.storage.setItem(SQUAD_STORAGE_KEY, JSON.stringify({ not: "an array" }));
+    mem.storage.setItem(SQUAD_STORAGE_KEY(), JSON.stringify({ not: "an array" }));
     expect(listSquads()).toEqual([]);
-    mem.storage.setItem(SQUAD_STORAGE_KEY, JSON.stringify([{ squadId: "bad" }]));
+    mem.storage.setItem(SQUAD_STORAGE_KEY(), JSON.stringify([{ squadId: "bad" }]));
     expect(listSquads()).toEqual([]);
   });
 
@@ -273,9 +278,9 @@ describe("squad-storage（メモリ localStorage）", () => {
     sq.slots[2].worldCardId = "222";
     const r = saveSquad(sq);
     if (!r.ok) throw new Error();
-    const raw = JSON.parse(mem.storage.getItem(SQUAD_STORAGE_KEY)!);
+    const raw = JSON.parse(mem.storage.getItem(SQUAD_STORAGE_KEY())!);
     raw[0].slots[1].worldCardId = "not-a-valid-id"; // 壊す
-    mem.storage.setItem(SQUAD_STORAGE_KEY, JSON.stringify(raw));
+    mem.storage.setItem(SQUAD_STORAGE_KEY(), JSON.stringify(raw));
     const reload = getSquad(r.squad.squadId);
     expect(reload).not.toBeNull();
     expect(reload!.slots[1].worldCardId).toBeNull(); // 壊れたスロットだけ空
@@ -384,10 +389,10 @@ describe("squad-storage（メモリ localStorage）", () => {
     it("不正な buildId は Zod で null に落ちる（別カードへ漏れない）", () => {
       const mem = installMemoryStorage();
       const { id, a } = seed();
-      const raw = JSON.parse(mem.storage.getItem(SQUAD_STORAGE_KEY)!);
+      const raw = JSON.parse(mem.storage.getItem(SQUAD_STORAGE_KEY())!);
       const slot = raw[0].slots.find((s: { slotId: string }) => s.slotId === a);
       slot.savedBuildId = "bad id!";
-      mem.storage.setItem(SQUAD_STORAGE_KEY, JSON.stringify(raw));
+      mem.storage.setItem(SQUAD_STORAGE_KEY(), JSON.stringify(raw));
       const reload = getSquad(id)!;
       expect(reload.slots.find((s) => s.slotId === a)!.savedBuildId).toBeNull();
       expect(reload.slots.find((s) => s.slotId === a)!.worldCardId).toBe("89138556575063");

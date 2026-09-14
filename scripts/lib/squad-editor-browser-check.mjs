@@ -10,15 +10,21 @@
  *
  * - 隔離された一時プロファイル（--user-data-dir）を毎回新規作成し、終了後に削除する。
  *   実ユーザーの Chrome プロファイル／localStorage には一切触れない。
- * - スカッド保存スキーマ（StoredSquad・SQUAD_SCHEMA_VERSION・SQUAD_STORAGE_KEY）は
+ * - スカッド保存スキーマ（StoredSquad・SQUAD_SCHEMA_VERSION）は
  *   src/lib/squad/types.ts の現行定義をそのまま踏襲した最小限の fixture のみを使用し、
  *   SquadEditor 本体・監督計算・Link-Up Play 判定のコードは一切変更しない。
  * - 検証後、テスト用タブ・ブラウザプロセス・一時プロファイルはすべて破棄する。
+ *
+ * Stage 4補足: このレールは未認証(installSupabaseAuthTestDouble、__efbAuthなし)のまま実行するため、
+ * アプリは常にguestスコープに解決される。よってfixtureはguestスコープの実際のキー
+ * (src/lib/local-storage-scope/keys.ts の buildScopedStorageKey({kind:"guest"}, "squads")と
+ * 完全一致させる。推測で値を変えない)へ書き込む。レガシー共通キー(efb:squads:v1)は、
+ * Stage 4でスコープ対応した squad-storage.ts からはもう読み書きされない。
  */
 
 import { launchIsolatedBrowser, openTab, closeTab, connectCDP, waitForCondition, installSupabaseAuthTestDouble } from "./headless-chrome.mjs";
 
-const SQUAD_STORAGE_KEY = "efb:squads:v1";
+const GUEST_SQUADS_STORAGE_KEY = "efootball-team-ai:local:guest:squads:v1";
 const LOCALE_STORAGE_KEY = "efootball-team-ai:locale:v1";
 
 // 既存スキーマ（src/lib/squad/types.ts の StoredSquad）に合わせた最小限の fixture。
@@ -107,7 +113,7 @@ export async function verifySquadEditorManagerGuidance(baseUrl) {
     const readyId = "sq_bbheadlessrd01";
     await navigateAndSettle(client, `${baseUrl}/squads/${readyId}`);
     await client.send("Runtime.evaluate", {
-      expression: `localStorage.setItem(${JSON.stringify(SQUAD_STORAGE_KEY)}, ${JSON.stringify(
+      expression: `localStorage.setItem(${JSON.stringify(GUEST_SQUADS_STORAGE_KEY)}, ${JSON.stringify(
         JSON.stringify([buildFixtureSquad(readyId)]),
       )})`,
     });

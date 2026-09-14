@@ -109,12 +109,67 @@ describe("scopedItemsContentEqual", () => {
   it("同じ内容なら true", () => {
     const a = { id: "1", updatedAt: NOW, raw: { worldCardId: "1", note: "x" } };
     const b = { id: "1", updatedAt: NOW, raw: { worldCardId: "1", note: "x" } };
-    expect(scopedItemsContentEqual(a, b)).toBe(true);
+    expect(scopedItemsContentEqual("myTeam", a, b)).toBe(true);
   });
 
   it("異なる内容なら false", () => {
     const a = { id: "1", updatedAt: NOW, raw: { worldCardId: "1", note: "x" } };
     const b = { id: "1", updatedAt: NOW, raw: { worldCardId: "1", note: "y" } };
-    expect(scopedItemsContentEqual(a, b)).toBe(false);
+    expect(scopedItemsContentEqual("myTeam", a, b)).toBe(false);
+  });
+
+  it("squads: 先発スロットの配列順序が違うだけなら true(slotIdで正規化比較)", () => {
+    const slotA = { slotId: "cf", worldCardId: "1", buildMode: "none", savedBuildId: null };
+    const slotB = { slotId: "gk", worldCardId: "2", buildMode: "none", savedBuildId: null };
+    const a = { id: "sq_1", updatedAt: NOW, raw: { squadId: "sq_1", squadName: "n", slots: [slotA, slotB], substitutes: [] } };
+    const b = { id: "sq_1", updatedAt: NOW, raw: { squadId: "sq_1", squadName: "n", slots: [slotB, slotA], substitutes: [] } };
+    expect(scopedItemsContentEqual("squads", a, b)).toBe(true);
+  });
+
+  it("squads: 選手ブースターの配列順序が違うだけなら true(slot/boosterKeyで正規化比較)", () => {
+    const boosters = [
+      { slot: 1, boosterKey: "speed", level: 3 },
+      { slot: 2, boosterKey: "power", level: 2 },
+    ];
+    const slotWith = (bs: typeof boosters) => ({ slotId: "cf", worldCardId: "1", buildMode: "none", savedBuildId: null, boosters: bs });
+    const a = { id: "sq_1", updatedAt: NOW, raw: { squadId: "sq_1", squadName: "n", slots: [slotWith(boosters)], substitutes: [] } };
+    const b = { id: "sq_1", updatedAt: NOW, raw: { squadId: "sq_1", squadName: "n", slots: [slotWith([...boosters].reverse())], substitutes: [] } };
+    expect(scopedItemsContentEqual("squads", a, b)).toBe(true);
+  });
+
+  it("squads: ベンチ(substitutes)の並び順が違えば false(表示順は仕様の一部・順序を変更しない)", () => {
+    const sub1 = { subId: "sub_1", worldCardId: "1", buildMode: "none", savedBuildId: null };
+    const sub2 = { subId: "sub_2", worldCardId: "2", buildMode: "none", savedBuildId: null };
+    const a = { id: "sq_1", updatedAt: NOW, raw: { squadId: "sq_1", squadName: "n", slots: [], substitutes: [sub1, sub2] } };
+    const b = { id: "sq_1", updatedAt: NOW, raw: { squadId: "sq_1", squadName: "n", slots: [], substitutes: [sub2, sub1] } };
+    expect(scopedItemsContentEqual("squads", a, b)).toBe(false);
+  });
+
+  it("squads: 公式フィールド(squadName等)が異なれば false", () => {
+    const a = { id: "sq_1", updatedAt: NOW, raw: { squadId: "sq_1", squadName: "A", slots: [], substitutes: [] } };
+    const b = { id: "sq_1", updatedAt: NOW, raw: { squadId: "sq_1", squadName: "B", slots: [], substitutes: [] } };
+    expect(scopedItemsContentEqual("squads", a, b)).toBe(false);
+  });
+
+  it("squadTemplates: 埋め込みスカッドの先発スロット順序だけが違うなら true", () => {
+    const slotA = { slotId: "cf", worldCardId: "1", buildMode: "none", savedBuildId: null };
+    const slotB = { slotId: "gk", worldCardId: "2", buildMode: "none", savedBuildId: null };
+    const a = {
+      id: "tpl_1",
+      updatedAt: NOW,
+      raw: { templateId: "tpl_1", templateName: "t", squad: { squadId: "sq_1", slots: [slotA, slotB], substitutes: [] } },
+    };
+    const b = {
+      id: "tpl_1",
+      updatedAt: NOW,
+      raw: { templateId: "tpl_1", templateName: "t", squad: { squadId: "sq_1", slots: [slotB, slotA], substitutes: [] } },
+    };
+    expect(scopedItemsContentEqual("squadTemplates", a, b)).toBe(true);
+  });
+
+  it("squadTemplates: テンプレート名が異なれば false", () => {
+    const a = { id: "tpl_1", updatedAt: NOW, raw: { templateId: "tpl_1", templateName: "A", squad: { squadId: "sq_1", slots: [], substitutes: [] } } };
+    const b = { id: "tpl_1", updatedAt: NOW, raw: { templateId: "tpl_1", templateName: "B", squad: { squadId: "sq_1", slots: [], substitutes: [] } } };
+    expect(scopedItemsContentEqual("squadTemplates", a, b)).toBe(false);
   });
 });

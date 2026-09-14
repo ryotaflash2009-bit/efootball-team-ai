@@ -1,5 +1,6 @@
 /**
- * アカウント別localStorage名前空間(Stage 1/2)専用のブラックボックステスト。
+ * アカウント別localStorage名前空間(Stage 1〜4: My Team・My Builds・お気に入り・保存スカッド・
+ * スカッドテンプレート)専用のブラックボックステスト。
  *   npm run build && npm run start  の後に
  *   node scripts/black-box-account-scoped-storage.mjs
  *
@@ -26,12 +27,18 @@ const BASE = process.env.BASE_URL ?? "http://localhost:3000";
 const MY_TEAM_PAGE = `${BASE}/my-team`;
 const MY_BUILDS_PAGE = `${BASE}/my-builds`;
 const FAVORITES_PAGE = `${BASE}/favorites`;
+const SQUADS_PAGE = `${BASE}/squads`;
+const SQUAD_TEMPLATES_PAGE = `${BASE}/squads/templates`;
 const MIGRATION_PAGE = `${BASE}/account/local-data-migration`;
 
 const LOCALE_KEY = "efootball-team-ai:locale:v1";
 const LEGACY_MY_TEAM_KEY = "efootball-team-ai:my-team:v1";
 const LEGACY_MY_BUILDS_KEY = "efootball-team-ai:progression-builds:v1";
 const LEGACY_FAVORITES_KEY = "efootball-team-ai:favorites:v1";
+// src/lib/squad/types.ts の SQUAD_STORAGE_KEY / SQUAD_TEMPLATE_STORAGE_KEY と完全に一致させる
+// (推測で値を変えない)。
+const LEGACY_SQUADS_KEY = "efb:squads:v1";
+const LEGACY_SQUAD_TEMPLATES_KEY = "efootball-team-ai:squad-templates:v1";
 
 const USER_A = "black-box-user-a";
 const USER_B = "black-box-user-b";
@@ -54,6 +61,12 @@ async function scopedMyBuildsKeyFor(userId) {
 }
 async function scopedFavoritesKeyFor(userId) {
   return scopedKeyFor(userId, "favorites");
+}
+async function scopedSquadsKeyFor(userId) {
+  return scopedKeyFor(userId, "squads");
+}
+async function scopedSquadTemplatesKeyFor(userId) {
+  return scopedKeyFor(userId, "squad-templates");
 }
 
 function legacyFixtureJson(records) {
@@ -113,6 +126,43 @@ function favoritesFixtureJson(worldCardIds) {
       source: "local",
       syncStatus: "local_only",
     })),
+  });
+}
+// 保存スカッドはプレーン配列(squad-storage.tsのStore型)。src/lib/squad/squad-storage.tsのsquadSchema
+// (Zod)は多くのフィールドに.catch()フォールバックがあるため、実際に必須なのは
+// squadId/squadName/formationId/managerId/slots/substitutes/rulesVersion/schemaVersion/createdAt/updatedAtだけ。
+function squadFixture(squadId, squadName, formationId = "4-3-3") {
+  return {
+    squadId,
+    squadName,
+    formationId,
+    managerId: null,
+    slots: [],
+    substitutes: [],
+    rulesVersion: "progression/2026-08-28.v2",
+    schemaVersion: 1,
+    createdAt: "2026-09-01T00:00:00.000Z",
+    updatedAt: "2026-09-01T00:00:00.000Z",
+  };
+}
+function squadsFixtureJson(squads) {
+  return JSON.stringify(squads);
+}
+// スカッドテンプレートは{storageVersion, updatedAt, templates}のラップ形式(src/lib/squad/types.tsの
+// SQUAD_TEMPLATE_STORAGE_VERSIONと完全一致させる)。埋め込みスカッド本体(squad)はsquadShape
+// (templates.ts)の必須項目(squadId/squadName/formationId/slots)だけで足りる。
+function templateFixture(templateId, templateName, squadId, squadName) {
+  return {
+    templateId,
+    templateName,
+    squad: { squadId, squadName, formationId: "4-3-3", slots: [] },
+  };
+}
+function templatesFixtureJson(templates) {
+  return JSON.stringify({
+    storageVersion: "squad-templates-storage/2026-08-30.v1",
+    updatedAt: new Date().toISOString(),
+    templates,
   });
 }
 
@@ -435,7 +485,133 @@ async function main() {
     const aFavAfterLogout = await getLocalStorageItem(client, aFavKey);
     record("[お気に入り/ログアウト] Aのアカウント領域データは削除されない", aFavAfterLogout != null && aFavAfterLogout.includes("50001"), "");
 
-    // レガシー共通My Builds(4件相当)・お気に入り(2件)へフィクスチャを仕込む(実データではない)。
+    // ============================================================
+    // 保存スカッド(Stage 4): guest/A/B分離・切り替え・ログアウト後の保持
+    // ============================================================
+    const aSquadsKey = await scopedSquadsKeyFor(USER_A);
+    const bSquadsKey = await scopedSquadsKeyFor(USER_B);
+
+    await navigateAndSettle(client, SQUADS_PAGE);
+    body = await bodyText(client);
+    record("[保存スカッド/未認証] 画面がクラッシュせず表示される(guest空状態)", errors.length === 0 && !body.includes("Aのスカッド1"), "");
+
+    await setLocalStorageItem(client, aSquadsKey, squadsFixtureJson([squadFixture("sq_a0000000001", "Aのスカッド1")]));
+    await navigateAndSettle(client, `${SQUADS_PAGE}?__efbAuth=1&__efbUserId=${USER_A}`);
+    body = await bodyText(client);
+    record("[保存スカッド/A] A領域のスカッドが表示される", body.includes("Aのスカッド1"), "");
+
+    await navigateAndSettle(client, `${SQUADS_PAGE}?__efbAuth=1&__efbUserId=${USER_B}`);
+    body = await bodyText(client);
+    record("[保存スカッド/B] Aのスカッド(Aのスカッド1)が表示されない", !body.includes("Aのスカッド1"), "");
+
+    await setLocalStorageItem(client, bSquadsKey, squadsFixtureJson([squadFixture("sq_b0000000001", "Bのスカッド1")]));
+    await navigateAndSettle(client, `${SQUADS_PAGE}?__efbAuth=1&__efbUserId=${USER_B}`);
+    body = await bodyText(client);
+    record("[保存スカッド/B] B領域のスカッドが表示される", body.includes("Bのスカッド1"), "");
+    record("[保存スカッド/B] Aのスカッドは依然として表示されない", !body.includes("Aのスカッド1"), "");
+
+    await navigateAndSettle(client, `${SQUADS_PAGE}?__efbAuth=1&__efbUserId=${USER_A}`);
+    body = await bodyText(client);
+    record("[保存スカッド/A復帰] Aのスカッドが復元される", body.includes("Aのスカッド1"), "");
+    record("[保存スカッド/A復帰] Bのスカッドは表示されない", !body.includes("Bのスカッド1"), "");
+
+    await callInPage(client, async function () {
+      if (window.__EFB_AUTH_TEST_DOUBLE__ && window.__EFB_AUTH_TEST_DOUBLE__.signOut) {
+        await window.__EFB_AUTH_TEST_DOUBLE__.signOut();
+      }
+    });
+    await waitForCondition(async () => !(await bodyText(client)).includes("Aのスカッド1"), { timeoutMs: 4000, intervalMs: 100 });
+    body = await bodyText(client);
+    record("[保存スカッド/ログアウト] Aのスカッドは表示されない(guestへ戻る)", !body.includes("Aのスカッド1"), "");
+    const aSquadsAfterLogout = await getLocalStorageItem(client, aSquadsKey);
+    record("[保存スカッド/ログアウト] Aのアカウント領域データは削除されない", aSquadsAfterLogout != null && aSquadsAfterLogout.includes("Aのスカッド1"), "");
+
+    // ============================================================
+    // 保存スカッド(Stage 4): 動的ルート(/squads/[squadId])のアカウント切替安全性
+    // AのスカッドURLを開いたまま(同一squadId)Bへ切り替えても、Aのスカッド内容を表示し続けず、
+    // 安全な「見つかりません」表示になることを確認する(この項目のみ、My Team/My Builds/
+    // お気に入りには対応する個別詳細ルートが無いため既存セクションに前例が無い)。
+    // ============================================================
+    const aDetailSquadId = "sq_adetail0000001";
+    await setLocalStorageItem(
+      client,
+      aSquadsKey,
+      squadsFixtureJson([squadFixture("sq_a0000000001", "Aのスカッド1"), squadFixture(aDetailSquadId, "Aの詳細スカッド")]),
+    );
+    await navigateAndSettle(client, `${SQUADS_PAGE}/${aDetailSquadId}?__efbAuth=1&__efbUserId=${USER_A}`);
+    // スカッド名は<input value="...">として描画されるため、document.body.innerText(bodyText())には
+    // 含まれない(input要素のvalueはテキストノードではない)。実際のvalueを直接読む
+    // (ヘッダーの検索欄など他のinputと混同しないよう、SquadEditorのaria-label「スカッド名」で特定する)。
+    const squadNameInputValue = async () => evalJson(client, "document.querySelector('input[aria-label=\"スカッド名\"]')?.value ?? ''");
+    await waitForCondition(async () => (await squadNameInputValue()) === "Aの詳細スカッド", { timeoutMs: 4000, intervalMs: 100 });
+    record("[動的ルート/A] Aのスカッド詳細が表示される", (await squadNameInputValue()) === "Aの詳細スカッド", "");
+
+    await navigateAndSettle(client, `${SQUADS_PAGE}/${aDetailSquadId}?__efbAuth=1&__efbUserId=${USER_B}`);
+    await waitForCondition(async () => (await bodyText(client)).includes("スカッドが見つかりません"), { timeoutMs: 4000, intervalMs: 100 });
+    body = await bodyText(client);
+    record("[動的ルート/A→B] 同一URLでもAのスカッド内容が表示され続けない", !body.includes("Aの詳細スカッド"), "");
+    // innerText(body)には<input value>が含まれないため(input要素のvalueはテキストノードではない)、
+    // 「Aのスカッド名を保持した入力欄がBの画面に残っていない」ことを直接valueで確認する
+    // (見つかりません画面ではスカッド名入力欄自体が描画されないため、空文字になるはず)。
+    record("[動的ルート/A→B] Aのスカッド名を保持した入力欄が残っていない", (await squadNameInputValue()) !== "Aの詳細スカッド", "");
+    record("[動的ルート/A→B] 安全な「見つかりません」表示になる", body.includes("スカッドが見つかりません"), "");
+    record("[動的ルート/A→B] クラッシュしない(500ではない)", errors.length === 0 || !errors.some((e) => /500|Internal Server Error/.test(e)), "");
+
+    // ============================================================
+    // スカッドテンプレート(Stage 4): guest/A/B分離・切り替え・ログアウト後の保持
+    // ============================================================
+    const aTemplatesKey = await scopedSquadTemplatesKeyFor(USER_A);
+    const bTemplatesKey = await scopedSquadTemplatesKeyFor(USER_B);
+
+    await navigateAndSettle(client, SQUAD_TEMPLATES_PAGE);
+    body = await bodyText(client);
+    record("[スカッドテンプレート/未認証] 画面がクラッシュせず表示される(guest空状態)", errors.length === 0 && !body.includes("Aのテンプレ1"), "");
+
+    await setLocalStorageItem(
+      client,
+      aTemplatesKey,
+      templatesFixtureJson([templateFixture("tpl_a0000000001", "Aのテンプレ1", "sq_tplbodya00001", "Aテンプレボディ")]),
+    );
+    await navigateAndSettle(client, `${SQUAD_TEMPLATES_PAGE}?__efbAuth=1&__efbUserId=${USER_A}`);
+    body = await bodyText(client);
+    record("[スカッドテンプレート/A] A領域のテンプレートが表示される", body.includes("Aのテンプレ1"), "");
+
+    await navigateAndSettle(client, `${SQUAD_TEMPLATES_PAGE}?__efbAuth=1&__efbUserId=${USER_B}`);
+    body = await bodyText(client);
+    record("[スカッドテンプレート/B] Aのテンプレート(Aのテンプレ1)が表示されない", !body.includes("Aのテンプレ1"), "");
+
+    await setLocalStorageItem(
+      client,
+      bTemplatesKey,
+      templatesFixtureJson([templateFixture("tpl_b0000000001", "Bのテンプレ1", "sq_tplbodyb00001", "Bテンプレボディ")]),
+    );
+    await navigateAndSettle(client, `${SQUAD_TEMPLATES_PAGE}?__efbAuth=1&__efbUserId=${USER_B}`);
+    body = await bodyText(client);
+    record("[スカッドテンプレート/B] B領域のテンプレートが表示される", body.includes("Bのテンプレ1"), "");
+    record("[スカッドテンプレート/B] Aのテンプレートは依然として表示されない", !body.includes("Aのテンプレ1"), "");
+
+    await navigateAndSettle(client, `${SQUAD_TEMPLATES_PAGE}?__efbAuth=1&__efbUserId=${USER_A}`);
+    body = await bodyText(client);
+    record("[スカッドテンプレート/A復帰] Aのテンプレートが復元される", body.includes("Aのテンプレ1"), "");
+    record("[スカッドテンプレート/A復帰] Bのテンプレートは表示されない", !body.includes("Bのテンプレ1"), "");
+
+    await callInPage(client, async function () {
+      if (window.__EFB_AUTH_TEST_DOUBLE__ && window.__EFB_AUTH_TEST_DOUBLE__.signOut) {
+        await window.__EFB_AUTH_TEST_DOUBLE__.signOut();
+      }
+    });
+    await waitForCondition(async () => !(await bodyText(client)).includes("Aのテンプレ1"), { timeoutMs: 4000, intervalMs: 100 });
+    body = await bodyText(client);
+    record("[スカッドテンプレート/ログアウト] Aのテンプレートは表示されない(guestへ戻る)", !body.includes("Aのテンプレ1"), "");
+    const aTemplatesAfterLogout = await getLocalStorageItem(client, aTemplatesKey);
+    record(
+      "[スカッドテンプレート/ログアウト] Aのアカウント領域データは削除されない",
+      aTemplatesAfterLogout != null && aTemplatesAfterLogout.includes("Aのテンプレ1"),
+      "",
+    );
+
+    // レガシー共通My Builds(4件相当)・お気に入り(2件)・保存スカッド(2件)・スカッドテンプレート(1件)へ
+    // フィクスチャを仕込む(実データではない)。
     // b_legacy1は後段の参照整合性(My Team→My Builds)テストでも再利用する。
     // b_legacy3はAのアカウント領域に同一buildIdで異なる内容のものを後で仕込み、競合検出を検証する。
     // 4件目は不正データ(buildId欠落)として、不正データ件数の検出を検証する。
@@ -449,6 +625,22 @@ async function main() {
     legacyMyBuildsMap["40004"] = [{ worldCardId: "40004", buildName: "不正データ(buildId欠落)" }]; // buildIdが無い不正エントリ
     await setLocalStorageItem(client, LEGACY_MY_BUILDS_KEY, JSON.stringify(legacyMyBuildsMap));
     await setLocalStorageItem(client, LEGACY_FAVORITES_KEY, favoritesFixtureJson(["60001", "60002"]));
+    // レガシー共通の保存スカッド(2件)・スカッドテンプレート(1件)。b_legacy1をsq_legacy2の
+    // savedBuildIdとして参照させ、後段のスカッド参照整合性チェックの再利用に備える。
+    const legacySquadWithBuildRef = {
+      ...squadFixture("sq_legacy0000002", "レガシースカッド2"),
+      slots: [{ slotId: "cf", worldCardId: "40001", buildMode: "none", savedBuildId: "b_legacy1" }],
+    };
+    await setLocalStorageItem(
+      client,
+      LEGACY_SQUADS_KEY,
+      squadsFixtureJson([squadFixture("sq_legacy0000001", "レガシースカッド1"), legacySquadWithBuildRef]),
+    );
+    await setLocalStorageItem(
+      client,
+      LEGACY_SQUAD_TEMPLATES_KEY,
+      templatesFixtureJson([templateFixture("tpl_legacy0000001", "レガシーテンプレ1", "sq_tplbodylegacy1", "レガシーテンプレボディ1")]),
+    );
     // Aのアカウント領域へ、b_legacy3と同一IDだが内容が異なるビルドを先に仕込み、競合を発生させる。
     const aBuildsBeforeConflict = JSON.parse(await getLocalStorageItem(client, aBuildsKey));
     aBuildsBeforeConflict["40003"] = [
@@ -480,6 +672,8 @@ async function main() {
     // 4件仕込んでも表示は3件になる(不正データ件数は移行プレビュー側で別途1件として表示される)。
     record("[移行センター/未認証] レガシーMy Builds件数(有効3件)が表示される", /My Builds[\s\S]{0,10}3/.test(flat), "");
     record("[移行センター/未認証] レガシーお気に入り件数(2件)が表示される", /お気に入り[\s\S]{0,10}2/.test(flat), "");
+    record("[移行センター/未認証] レガシー保存スカッド件数(2件)が表示される(Stage 4)", /保存スカッド[\s\S]{0,10}2/.test(flat), "");
+    record("[移行センター/未認証] レガシースカッドテンプレート件数(1件)が表示される(Stage 4)", /スカッドテンプレート[\s\S]{0,10}1/.test(flat), "");
     record("[移行センター/未認証] ログインが必要である旨が表示される", body.includes("ログイン"), "");
     const hasMigrateButtonUnauth = await evalJson(client, `[...document.querySelectorAll('button')].some(b => b.textContent.includes('移行する'))`);
     record("[移行センター/未認証] 移行実行ボタンは表示されない", hasMigrateButtonUnauth === false, "");
@@ -497,10 +691,14 @@ async function main() {
     record("[移行センター/A] 現在ログイン中のアカウント表記が出る(メール等は出ない)", body.includes("現在ログイン中のアカウント"), "");
     record("[移行センター/A] 内部UUID風の文字列を表示しない", !UUID_LIKE_RE.test(body), "");
     record("[移行センター/A] スコープハッシュ(64桁hex)を表示しない", !HEX64_RE.test(body), "");
+    // Stage 3時点では保存スカッド・テンプレートは移行対象外(チェックボックス無し)だったが、
+    // Stage 4で全5種類が移行対象になったため、このアサーションは「チェックボックスが無いこと」から
+    // 「チェックボックスがあること」へ意図的に反転する(仕様変更そのものを検証する項目のため、
+    // 弱体化ではなく仕様追随)。
     record(
-      "[移行センター/A] 保存スカッド・テンプレートには選択チェックボックスが無い(引き続き対象外)",
-      (await evalJson(client, `!document.querySelector('input[name="local-data-migration-select-squads"]')`)) &&
-        (await evalJson(client, `!document.querySelector('input[name="local-data-migration-select-squadTemplates"]')`)),
+      "[移行センター/A] 保存スカッド・スカッドテンプレートにも選択チェックボックスがある(Stage 4で対象化)",
+      (await evalJson(client, `!!document.querySelector('input[name="local-data-migration-select-squads"]')`)) &&
+        (await evalJson(client, `!!document.querySelector('input[name="local-data-migration-select-squadTemplates"]')`)),
       "",
     );
 
@@ -782,6 +980,114 @@ async function main() {
     await setCheckboxState(client, "local-data-migration-select-favorites", false);
 
     // ============================================================
+    // 移行センター: 保存スカッドを個別に移行する(Stage 4・新規追加候補2・重複0・競合0)
+    // ============================================================
+    await ackCheckboxIfPresent(client, "local-data-migration-select-squads");
+    await clickButtonByText(client, "移行内容を確認(プレビュー)");
+    await new Promise((r) => setTimeout(r, 200));
+    body = await bodyText(client);
+    record("[移行センター/保存スカッド] プレビュー見出しが表示される", body.includes("保存スカッドの移行プレビュー"), "");
+    const sqFlat = body.replace(/\s+/g, " ");
+    record(
+      "[移行センター/保存スカッド] レガシー件数2・新規追加候補2が表示される",
+      /レガシー件数[\s\S]{0,10}2/.test(sqFlat) && /新規追加候補[\s\S]{0,10}2/.test(sqFlat),
+      "",
+    );
+    record(
+      "[移行センター/保存スカッド] プレビューだけではAのアカウント領域が書き込まれない",
+      (await getLocalStorageItem(client, aSquadsKey)) != null && !(await getLocalStorageItem(client, aSquadsKey)).includes("レガシースカッド"),
+      "",
+    );
+
+    await clickButtonByText(client, "新規追加分を移行する");
+    await new Promise((r) => setTimeout(r, 200));
+    await ackCheckboxIfPresent(client, "local-data-migration-ack");
+    await clickButtonByText(client, "移行する");
+    await waitForCondition(async () => (await bodyText(client)).includes("追加しました"), { timeoutMs: 4000, intervalMs: 100 });
+    body = await bodyText(client);
+    record("[移行実行/保存スカッド] 成功メッセージが表示される", body.includes("追加しました"), "");
+    const legacySquadsAfterMigrate = await getLocalStorageItem(client, LEGACY_SQUADS_KEY);
+    record(
+      "[移行実行/保存スカッド] レガシー共通の保存スカッドは削除されない",
+      legacySquadsAfterMigrate != null && legacySquadsAfterMigrate.includes("レガシースカッド1") && legacySquadsAfterMigrate.includes("レガシースカッド2"),
+      "",
+    );
+    const aSquadsAfterMigrate = JSON.parse(await getLocalStorageItem(client, aSquadsKey));
+    const squadNamesAfterMigrate = aSquadsAfterMigrate.map((s) => s.squadName).sort();
+    record(
+      "[移行実行/保存スカッド] Aのアカウント領域に元の2件と移行された2件(計4件)が揃う",
+      JSON.stringify(squadNamesAfterMigrate) === JSON.stringify(["Aのスカッド1", "Aの詳細スカッド", "レガシースカッド1", "レガシースカッド2"].sort()),
+      JSON.stringify(squadNamesAfterMigrate),
+    );
+    const bSquadsAfterAMigration = await getLocalStorageItem(client, bSquadsKey);
+    record(
+      "[移行実行/保存スカッド] Bのアカウント領域は変更されない(Bの既存データのまま・Aの移行分は混入しない)",
+      bSquadsAfterAMigration != null && bSquadsAfterAMigration.includes("Bのスカッド1") && !bSquadsAfterAMigration.includes("レガシースカッド"),
+      "",
+    );
+
+    // 再プレビューで重複扱い(追加候補0)になることを確認する。
+    await clickButtonByText(client, "移行内容を確認(プレビュー)");
+    await new Promise((r) => setTimeout(r, 200));
+    body = await bodyText(client);
+    record("[再プレビュー/保存スカッド] 追加できるデータがない旨が表示される", body.includes("追加できるデータはありません") || body.includes("重複"), "");
+    await setCheckboxState(client, "local-data-migration-select-squads", false);
+
+    // ============================================================
+    // 移行センター: スカッドテンプレートを個別に移行する(Stage 4・新規追加候補1)
+    // ============================================================
+    await ackCheckboxIfPresent(client, "local-data-migration-select-squadTemplates");
+    await clickButtonByText(client, "移行内容を確認(プレビュー)");
+    await new Promise((r) => setTimeout(r, 200));
+    body = await bodyText(client);
+    record("[移行センター/スカッドテンプレート] プレビュー見出しが表示される", body.includes("スカッドテンプレートの移行プレビュー"), "");
+    const tplFlat = body.replace(/\s+/g, " ");
+    record(
+      "[移行センター/スカッドテンプレート] レガシー件数1・新規追加候補1が表示される",
+      /レガシー件数[\s\S]{0,10}1/.test(tplFlat) && /新規追加候補[\s\S]{0,10}1/.test(tplFlat),
+      "",
+    );
+
+    await clickButtonByText(client, "新規追加分を移行する");
+    await new Promise((r) => setTimeout(r, 200));
+    await ackCheckboxIfPresent(client, "local-data-migration-ack");
+    await clickButtonByText(client, "移行する");
+    await waitForCondition(async () => (await bodyText(client)).includes("追加しました"), { timeoutMs: 4000, intervalMs: 100 });
+    body = await bodyText(client);
+    record("[移行実行/スカッドテンプレート] 成功メッセージが表示される", body.includes("追加しました"), "");
+    const legacyTemplatesAfterMigrate = await getLocalStorageItem(client, LEGACY_SQUAD_TEMPLATES_KEY);
+    record(
+      "[移行実行/スカッドテンプレート] レガシー共通のスカッドテンプレートは削除されない",
+      legacyTemplatesAfterMigrate != null && legacyTemplatesAfterMigrate.includes("レガシーテンプレ1"),
+      "",
+    );
+    const aTemplatesAfterMigrate = JSON.parse(await getLocalStorageItem(client, aTemplatesKey));
+    const templateNamesAfterMigrate = aTemplatesAfterMigrate.templates.map((t) => t.templateName).sort();
+    record(
+      "[移行実行/スカッドテンプレート] Aのアカウント領域に元の1件と移行された1件(計2件)が揃う",
+      JSON.stringify(templateNamesAfterMigrate) === JSON.stringify(["Aのテンプレ1", "レガシーテンプレ1"].sort()),
+      JSON.stringify(templateNamesAfterMigrate),
+    );
+    const bTemplatesAfterAMigration = await getLocalStorageItem(client, bTemplatesKey);
+    record(
+      "[移行実行/スカッドテンプレート] Bのアカウント領域は変更されない(Bの既存データのまま・Aの移行分は混入しない)",
+      bTemplatesAfterAMigration != null && bTemplatesAfterAMigration.includes("Bのテンプレ1") && !bTemplatesAfterAMigration.includes("レガシーテンプレ1"),
+      "",
+    );
+    await setCheckboxState(client, "local-data-migration-select-squadTemplates", false);
+
+    // 参照整合性(保存スカッド↔My Builds): レガシースカッド2はb_legacy1を参照しており、
+    // この時点でMy Buildsは既にAへ移行済み(b_legacy1を含む)のため、参照切れ0件になっているはず。
+    body = await bodyText(client);
+    record("[参照整合性/保存スカッド] 見出しが表示される(Stage 4)", body.includes("保存スカッド") && body.includes("参照整合性"), "");
+
+    // 保存スカッド・スカッドテンプレートは、移行後もロールバック検証の前例(お気に入り)が
+    // 確立している一般的な失敗経路(account領域へのsetItemを握りつぶす)をそのまま適用できるが、
+    // このコーディネーターセッションの指示により、未検証の新規メカニズムを増やすのではなく
+    // 既存のお気に入りロールバック検証(次のセクション)で仕組み自体は既に担保されているため、
+    // ここでは重複した追加のロールバックシナリオは実装しない(意図的な省略。理由を明記)。
+
+    // ============================================================
     // 移行実行の失敗・ロールバック(お気に入りのaccount領域書き込みだけを強制的に失敗させる)。
     // ============================================================
     await setLocalStorageItem(client, LEGACY_FAVORITES_KEY, favoritesFixtureJson(["60001", "60002", "60003", "70001"]));
@@ -908,13 +1214,20 @@ async function main() {
       await navigateAndSettle(client, `${MY_TEAM_PAGE}?__efbAuth=1&__efbUserId=${USER_A}`);
       const overflow2 = await evalJson(client, "document.documentElement.scrollWidth - window.innerWidth");
       record(`[レスポンシブ${width}px/My Team] 横スクロールが発生しない`, overflow2 <= 4, `overflow=${overflow2}`);
+      // Stage 4: 保存スカッド一覧・編集画面(いずれもアカウント別スコープ対応の新規対象)も確認する。
+      await navigateAndSettle(client, `${SQUADS_PAGE}?__efbAuth=1&__efbUserId=${USER_A}`);
+      const overflow3 = await evalJson(client, "document.documentElement.scrollWidth - window.innerWidth");
+      record(`[レスポンシブ${width}px/保存スカッド一覧] 横スクロールが発生しない`, overflow3 <= 4, `overflow=${overflow3}`);
+      await navigateAndSettle(client, `${SQUADS_PAGE}/${aDetailSquadId}?__efbAuth=1&__efbUserId=${USER_A}`);
+      const overflow4 = await evalJson(client, "document.documentElement.scrollWidth - window.innerWidth");
+      record(`[レスポンシブ${width}px/スカッド編集] 横スクロールが発生しない`, overflow4 <= 4, `overflow=${overflow4}`);
     }
     await client.send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 1000, deviceScaleFactor: 1, mobile: false });
 
     // ============================================================
     // 既存機能スモーク回帰
     // ============================================================
-    for (const p of ["/", "/players", "/my-team", "/my-builds", "/build-inventory", "/best-xi", "/squads", "/favorites", "/account", "/account/rls-test", "/account/my-team-cloud", "/data-management", "/auth/sign-in"]) {
+    for (const p of ["/", "/players", "/my-team", "/my-builds", "/build-inventory", "/best-xi", "/squads", "/squads/templates", "/squads/compare", "/favorites", "/account", "/account/rls-test", "/account/my-team-cloud", "/data-management", "/auth/sign-in"]) {
       const r = await fetch(`${BASE}${p}`);
       record(`[スモーク回帰] ${p} が引き続き200`, r.status === 200, `HTTP ${r.status}`);
     }
