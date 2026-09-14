@@ -1,7 +1,7 @@
 # スカッド一覧「引き継ぎバナー」内部ID非露出 ブラックボックステスト結果
 
-実行日時: 2026-09-13T11:21:09.146Z
-対象: http://localhost:3000（Production Build上の隔離ヘッドレスChrome確認。実機ではない）
+実行日時: 2026-09-14T08:52:06.437Z
+対象: http://localhost:3001（Production Build上の隔離ヘッドレスChrome確認。実機ではない）
 
 実ユーザーのMy Team・保存ビルド・保存スカッド・SQLiteは一切変更しない。
 実在するWorld DBカード(本番SQLite)のworldCardIdのみを使用する。

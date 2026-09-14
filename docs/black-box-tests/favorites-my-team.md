@@ -1,7 +1,7 @@
 # お気に入り / My Team 基盤 ブラックボックステスト結果
 
-実行日時: 2026-09-13T11:20:08.544Z
-対象: http://localhost:3000（localhost のみ）  外部アクセス: **0 回**
+実行日時: 2026-09-14T08:51:28.455Z
+対象: http://localhost:3001（localhost のみ）  外部アクセス: **0 回**
 
 注: お気に入り / My Team は localStorage 保存のため、SSR では「空状態シェル」までを検証。
 追加/解除/重複防止/同名別カード/タグ/メモ/ビルド関連付け/お気に入りと My Team の独立性の操作は
@@ -31,7 +31,8 @@ src/lib/user-cards/user-cards.test.ts（vitest 28件）で担保。
 | PASS | 選手詳細に My Team へ追加ボタン |  |
 | PASS | お気に入り = 色だけに依存しない（aria-pressed を持つ） |  |
 | PASS | ?tab=progression: 育成タブが初期選択（育成ポイント表示） |  |
-| PASS | /squads?card=<id>: My Team カードの案内バナー |  |
+| PASS | /squads?card=<id>: クラッシュしない | HTTP 200 |
+| PASS | /squads?card=<id>: My Team カードの案内バナー文言は辞書に存在する |  |
 | PASS | /squads（card なし）: バナーを出さない・回帰なし |  |
 | PASS | 回帰: ホーム 200 |  |
 | PASS | 回帰: プレイヤー一覧 200 + 詳細リンク |  |

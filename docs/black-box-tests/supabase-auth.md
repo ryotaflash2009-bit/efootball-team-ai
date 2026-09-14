@@ -1,7 +1,7 @@
 # Supabase Auth 技術検証(PoC) ブラックボックステスト結果
 
-実行日時: 2026-09-13T11:21:18.977Z
-対象: http://localhost:3000（Production Build上の隔離ヘッドレスChrome確認。ブラウザー側Supabaseクライアントはテストダブルへ差し替え、実Supabaseへは接続しない）
+実行日時: 2026-09-14T08:52:17.030Z
+対象: http://localhost:3001（Production Build上の隔離ヘッドレスChrome確認。ブラウザー側Supabaseクライアントはテストダブルへ差し替え、実Supabaseへは接続しない）
 
 実ユーザーのMy Team・保存ビルド・保存スカッド・SQLiteは一切変更しない。実際のメール送信・実サインアップ・実ログインは行わない。
 
@@ -111,7 +111,7 @@
 | PASS | [パスワード更新] クラッシュせず表示される |  |
 | PASS | [パスワード更新] パスワード要件の案内が表示される |  |
 | PASS | [コールバック] codeが無い場合は3xxで内部のsign-inへ遷移する | HTTP 307 |
-| PASS | [コールバック] 遷移先が同一オリジンの内部パスである(外部URLではない) | http://localhost:3000/auth/sign-in?authError=missing_code |
+| PASS | [コールバック] 遷移先が同一オリジンの内部パスである(外部URLではない) | http://localhost:3001/auth/sign-in?authError=missing_code |
 | PASS | [コールバック] 遷移先URLにトークン・セッション情報を含まない |  |
 | PASS | [アカウント/ログイン中] ログイン中である旨が表示される |  |
 | PASS | [アカウント/ログイン中] クラウド同期は未実装である旨の案内がある |  |

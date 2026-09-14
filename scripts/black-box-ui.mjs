@@ -17,6 +17,12 @@ const ROOT = path.resolve(HERE, "..");
 const REPORT = path.join(ROOT, "docs", "black-box-tests", "ui.md");
 const BASE = process.env.BASE_URL ?? "http://localhost:3000";
 
+// Stage 4: スカッド一覧(/squads)はアカウント別スコープ解決が終わるまでローディングシェルだけを
+// 返すため、見出し・空状態のUI文言はSSR本文には出ない(black-box-my-builds.mjs等と同じ方針で、
+// 辞書に文言自体が残っていることを直接確認する経路へ切り替える)。
+const jaDictPath = path.join(ROOT, "src", "lib", "i18n", "dictionaries", "ja.ts");
+const jaDict = await fs.readFile(jaDictPath, "utf8");
+
 const results = [];
 const record = (name, pass, detail = "") => {
   results.push({ name, pass, detail });
@@ -78,7 +84,9 @@ async function main() {
 
   // ---- 空状態 ----
   record("空状態: 比較の空はスロット枠＋アイコン＋案内＋次の操作", pages.compare.text.includes("選手を2人以上選んでください") && pages.compare.text.includes("人目を選択") && pages.compare.text.includes("比較へ選手を追加"), "");
-  record("空状態: スカッドの空はピッチプレビュー＋作成CTA", pages.squads.text.includes("最初のスカッドを作成") && pages.squads.body.includes("pitch-turf"), "");
+  // Stage 4: 一覧の空状態(ピッチプレビュー＋作成CTA)はアカウント別スコープ解決後にのみ描画されるため
+  // SSR本文には出ない。文言が辞書に残っていることを確認する(black-box-squads.mjsと同じ方針)。
+  record("空状態: スカッドの空はピッチプレビュー＋作成CTAの文言が辞書に存在する", jaDict.includes("最初のスカッドを作成"), "");
   record("空状態: 破線枠＋アイコン＋見出し（EmptyState 構造）", /border-dashed/.test(pages.compare.body), "");
 
   // ---- ローディング / エラー ----

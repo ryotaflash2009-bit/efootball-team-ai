@@ -1,7 +1,7 @@
 # 公開準備基盤フェーズ ブラックボックステスト結果
 
-実行日時: 2026-09-13T11:20:57.554Z
-対象: http://localhost:3000（Production Build上の隔離ヘッドレスChrome確認。実機ではない）
+実行日時: 2026-09-14T08:51:54.341Z
+対象: http://localhost:3001（Production Build上の隔離ヘッドレスChrome確認。実機ではない）
 
 実ユーザーのMy Team・保存ビルド・保存スカッド・SQLiteは一切変更しない(隔離プロファイルのlocalStorageのみ操作)。
 

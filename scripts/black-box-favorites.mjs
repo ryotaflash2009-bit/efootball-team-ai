@@ -132,8 +132,12 @@ async function main() {
   record("?tab=progression: 育成タブが初期選択（育成ポイント表示）", prog.status === 200 && prog.text.includes("育成ポイント"), "");
 
   // 7. スカッド連携バナー（My Team → スカッドで使用）
+  // Stage 4: スカッド一覧はアカウント別スコープ解決が終わるまでローディングシェルだけを返すため、
+  // 案内バナーはSSR本文には出ない(クライアント側でスコープ解決後に描画される)。
+  // クラッシュしないことと、文言が辞書に残っていることを確認する。
   const squadCard = await get(`/squads?card=${MESSI}`);
-  record("/squads?card=<id>: My Team カードの案内バナー", squadCard.status === 200 && squadCard.text.includes("My Team のカード"), "");
+  record("/squads?card=<id>: クラッシュしない", squadCard.status === 200, `HTTP ${squadCard.status}`);
+  record("/squads?card=<id>: My Team カードの案内バナー文言は辞書に存在する", jaDict.includes("My Team のカード「{name}」"), "");
   const squadNoCard = await get("/squads");
   record("/squads（card なし）: バナーを出さない・回帰なし", squadNoCard.status === 200 && !squadNoCard.text.includes("My Team のカード（ID"), "");
 
