@@ -174,9 +174,66 @@ export function countRawEntries(kind: DataKind, raw: unknown): number {
   }
 }
 
-/** 2つの要素が内容まで完全に一致するか(JSON構造としての深い比較)。 */
-export function scopedItemsContentEqual(a: ScopedItem, b: ScopedItem): boolean {
+/**
+ * ブースター配列(選手ブースター・条件付きブースター)を、配列内の順序に依存しない
+ * 比較用の表現へ正規化する(`slot`/`boosterKey`が実質的なキーであり、配列順序自体は
+ * 意味を持たないため)。比較専用の一時コピーであり、実データは書き換えない。
+ */
+function normalizeBoosterListForCompare(v: unknown): unknown {
+  if (!Array.isArray(v)) return v;
+  return v
+    .slice()
+    .sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)));
+}
+
+/** スカッド本体を、順序非依存の項目(先発スロット・各枠のブースター)だけ正規化した比較用表現にする。 */
+function normalizeSquadForCompare(raw: unknown): unknown {
+  const obj = asRecord(raw);
+  if (!obj) return raw;
+  const normalizeEntry = (item: unknown): unknown => {
+    const entry = asRecord(item);
+    if (!entry) return item;
+    return {
+      ...entry,
+      boosters: normalizeBoosterListForCompare(entry.boosters),
+      conditionalBoosters: normalizeBoosterListForCompare(entry.conditionalBoosters),
+    };
+  };
+  // 先発(slots)は formation の slotId に紐づく集合であり、配列内の並び順自体は意味を持たない
+  // (normalizeSquad は常に formation 順で再構築するが、移行元の生データはそうとは限らない)ため
+  // slotId で安定ソートしてから比較する。ベンチ(substitutes)は表示順そのものが仕様の一部
+  // (Section 7: 保存形式や識別子を推測で変更しない)であるため、並び順を変更せずに比較する。
+  const slots = Array.isArray(obj.slots)
+    ? obj.slots
+        .map(normalizeEntry)
+        .slice()
+        .sort((a, b) => String(asRecord(a)?.slotId ?? "").localeCompare(String(asRecord(b)?.slotId ?? "")))
+    : obj.slots;
+  const substitutes = Array.isArray(obj.substitutes) ? obj.substitutes.map(normalizeEntry) : obj.substitutes;
+  return { ...obj, slots, substitutes };
+}
+
+/**
+ * 2つの要素が内容まで完全に一致するか。
+ * 既定は JSON 構造としての深い比較(myTeam/myBuilds/favorites はこれで十分)。
+ * squads/squadTemplates(内部に埋め込まれたスカッド本体を含む)は、順序が意味を持たない
+ * 項目(先発スロット・各枠のブースター選択)だけを正規化してから比較する(naive な
+ * JSON文字列比較のままだと、内容が同一でも配列順序差だけで「競合」に誤判定されるため)。
+ * どちらの経路も一時的な比較用コピーを作るだけで、実データ(`raw`)は一切書き換えない。
+ */
+export function scopedItemsContentEqual(kind: DataKind, a: ScopedItem, b: ScopedItem): boolean {
   try {
+    if (kind === "squads") {
+      return JSON.stringify(normalizeSquadForCompare(a.raw)) === JSON.stringify(normalizeSquadForCompare(b.raw));
+    }
+    if (kind === "squadTemplates") {
+      const normalizeTemplate = (raw: unknown): unknown => {
+        const obj = asRecord(raw);
+        if (!obj) return raw;
+        return { ...obj, squad: normalizeSquadForCompare(obj.squad) };
+      };
+      return JSON.stringify(normalizeTemplate(a.raw)) === JSON.stringify(normalizeTemplate(b.raw));
+    }
     return JSON.stringify(a.raw) === JSON.stringify(b.raw);
   } catch {
     return false;

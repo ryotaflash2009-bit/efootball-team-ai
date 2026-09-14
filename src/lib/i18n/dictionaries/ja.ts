@@ -611,6 +611,7 @@ export interface Dictionary {
     pendingCardBannerNameLoading: string;
     pendingCardBannerSuffix: string;
     pendingCardDetailLink: string;
+    scopeLoadingMessage: string;
     noStorageTitle: string;
     noStorageDescription: string;
     templateNamePrompt: string;
@@ -2165,6 +2166,7 @@ export interface Dictionary {
     ariaLabel: string;
   };
   squadTemplatesBoard: {
+    scopeLoadingMessage: string;
     storageUnavailableHeading: string;
     storageUnavailableNote: string;
     backToSquadListLink: string;
@@ -3461,6 +3463,7 @@ export interface Dictionary {
     previewDuplicateCountLabel: string;
     previewConflictCountLabel: string;
     previewInvalidCountLabel: string;
+    previewExcludedCountLabel: string;
     previewResultCountLabel: string;
     legacyPreservedNotice: string;
     noCloudSendNotice: string;
@@ -3485,8 +3488,11 @@ export interface Dictionary {
     migrateConfirmCheckboxLabel: string;
     cancelButton: string;
     referenceIntegrityHeading: string;
+    referenceIntegritySquadHeading: string;
+    referenceIntegrityTemplateHeading: string;
     referenceIntegrityTotalLabel: string;
     referenceIntegrityBrokenLabel: string;
+    referenceIntegrityLegacyOnlyLabel: string;
     referenceIntegrityNotice: string;
     referenceIntegrityNoDataMessage: string;
   };
@@ -4120,6 +4126,7 @@ const ja: Dictionary = {
     pendingCardBannerNameLoading: "読み込み中…",
     pendingCardBannerSuffix: "を追加するスカッドを選んでください（各スカッドの「このカードを追加」）。スカッドを開いた後、追加先の空き枠をタップします。",
     pendingCardDetailLink: "この選手の詳細",
+    scopeLoadingMessage: "アカウント情報を確認しています…",
     noStorageTitle: "この環境ではスカッドを保存できません",
     noStorageDescription: "ブラウザの localStorage が使用できません（プライベートモード等）。スカッドはこの端末のブラウザ内にのみ保存されます。",
     templateNamePrompt: "テンプレート名",
@@ -5699,6 +5706,7 @@ const ja: Dictionary = {
     ariaLabel: "フォーメーションを選択",
   },
   squadTemplatesBoard: {
+    scopeLoadingMessage: "アカウント情報を確認しています…",
     storageUnavailableHeading: "この環境ではテンプレートを保存できません",
     storageUnavailableNote: "ブラウザの localStorage が使用できません（プライベートモード等）。",
     backToSquadListLink: "← スカッド一覧へ",
@@ -6655,7 +6663,7 @@ const ja: Dictionary = {
     deleteAllTargetEditorPrefs: "スカッド編集の表示設定",
     deleteAllTargetComparisonState: "スカッド比較の一時状態",
     deleteAllExcludedNote: "表示言語の設定・サイドバーの開閉状態は削除されません。",
-    deleteAllScopeNote: "この一括削除は、アカウント分離前にこのブラウザーへ保存された共通データだけが対象です。認証済みアカウント専用のMy Team・My Builds・お気に入り領域、およびクラウドMy Teamはこの操作では削除されません。",
+    deleteAllScopeNote: "この一括削除は、アカウント分離前にこのブラウザーへ保存された共通データ(レガシー領域)だけが対象です。現在の未ログイン(ゲスト)領域、および認証済みアカウント専用領域のMy Team・My Builds・お気に入り・保存スカッド・スカッドテンプレート、およびクラウドMy Teamは、この操作では削除されません。",
     deleteAllNothingToDelete: "現在、削除できるデータはありません。",
     deleteAllStartButton: "ローカルデータをすべて削除する",
     deleteAllConfirmTitle: "本当にすべて削除しますか？",
@@ -6993,11 +7001,11 @@ const ja: Dictionary = {
     kindLabel_squads: "保存スカッド",
     kindLabel_squadTemplates: "スカッドテンプレート",
     notYetMigratableNotice: "アカウント別領域への切り替えは準備中です。今回はまだ移行できません。クラウド同期も未実装です。",
-    notYetCloudSyncedForOthersNotice: "My Team以外のデータは、現在このブラウザーで共通のままです。クラウド同期は今回実装していません。",
+    notYetCloudSyncedForOthersNotice: "クラウド同期はMy Teamのみです。他のデータ種別(My Builds・お気に入り・保存スカッド・スカッドテンプレート)は、この端末のブラウザー内のアカウント別ローカル領域に保存され、クラウドへは送信されません。",
     loadingMessage: "アカウント情報を確認しています…",
     loginRequiredMessage: "アカウント専用領域への移行にはログインが必要です。ログインしなくても、上記の件数は確認できます。",
     currentAccountLabel: "現在ログイン中のアカウント",
-    selectionIntro: "移行したいデータ種別を選んでください(初期状態では何も選択されていません)。My Team・My Builds・お気に入りをそれぞれ個別に選択できます。",
+    selectionIntro: "移行したいデータ種別を選んでください(初期状態では何も選択されていません。すでに移行済みのデータ種別も自動選択されません)。My Team・My Builds・お気に入り・保存スカッド・スカッドテンプレートをそれぞれ個別に選択できます。",
     selectKindCheckboxTemplate: "{kind}を移行対象に選ぶ",
     previewButton: "移行内容を確認(プレビュー)",
     downloadBackupButton: "バックアップをJSONでダウンロード",
@@ -7011,6 +7019,7 @@ const ja: Dictionary = {
     previewDuplicateCountLabel: "重複(追加しない)",
     previewConflictCountLabel: "競合(移行しない)",
     previewInvalidCountLabel: "不正データ件数",
+    previewExcludedCountLabel: "移行対象から除外される件数(競合+不正データ)",
     previewResultCountLabel: "移行後の予想件数",
     legacyPreservedNotice: "レガシー元データは移行後も残ります(削除されません)。",
     noCloudSendNotice: "Supabaseへは送信されません。",
@@ -7035,8 +7044,11 @@ const ja: Dictionary = {
     migrateConfirmCheckboxLabel: "選択したローカルデータを、現在ログイン中のアカウント専用領域へコピーします。元のブラウザー共通データは削除されません。",
     cancelButton: "キャンセル",
     referenceIntegrityHeading: "My Team ↔ My Builds 参照整合性",
+    referenceIntegritySquadHeading: "保存スカッド ↔ My Builds 参照整合性",
+    referenceIntegrityTemplateHeading: "スカッドテンプレート ↔ My Builds 参照整合性",
     referenceIntegrityTotalLabel: "参照されている保存ビルド数",
     referenceIntegrityBrokenLabel: "参照切れ件数",
+    referenceIntegrityLegacyOnlyLabel: "レガシーMy Buildsにのみ存在(移行で解消し得る)",
     referenceIntegrityNotice: "参照切れは自動修正・自動削除しません。My Buildsを移行すると解消される場合があります。",
     referenceIntegrityNoDataMessage: "現在のアカウント領域にMy Teamのデータがないため、確認できる参照がありません。",
   },
