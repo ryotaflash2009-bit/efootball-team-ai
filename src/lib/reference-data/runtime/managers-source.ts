@@ -228,19 +228,19 @@ export async function listManagersFromSupabase(q: ManagerListQuery, client?: Ref
   try {
     c = client ?? getReferenceDataClient();
   } catch (err) {
-    throw normalizeClientError(err);
+    throw normalizeClientError(err, { operation: "managers.list" });
   }
 
   // 件数を先に確認してからページ範囲を決める(既存SQLite実装のtotalCount先行方式に合わせる)。
   // フィルタは本クエリと同じ条件を適用する(適用し忘れると件数がズレるため)。
-  let countResult: { count: number | null; error: unknown };
+  let countResult: { count: number | null; error: unknown; status?: number };
   try {
     const countBuilder = applyManagerFilters(c.from("managers").select("internal_manager_id", { count: "exact", head: true }), q);
     countResult = await countBuilder;
   } catch (err) {
-    throw normalizeQueryError(err);
+    throw normalizeQueryError(err, { operation: "managers.list" });
   }
-  if (countResult.error) throw normalizeQueryError(countResult.error);
+  if (countResult.error) throw normalizeQueryError(countResult.error, { operation: "managers.list", status: countResult.status });
 
   const totalCount = countResult.count ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / q.pageSize));
@@ -249,8 +249,8 @@ export async function listManagersFromSupabase(q: ManagerListQuery, client?: Ref
 
   let dataBuilder = applyManagerFilters(c.from("managers").select("*"), q);
   for (const key of ORDER[q.sort]) dataBuilder = dataBuilder.order(key.field, { ascending: key.ascending, nullsFirst: key.nullsFirst });
-  const { data, error } = await dataBuilder.range(offset, offset + q.pageSize - 1);
-  if (error) throw normalizeQueryError(error);
+  const { data, error, status } = await dataBuilder.range(offset, offset + q.pageSize - 1);
+  if (error) throw normalizeQueryError(error, { operation: "managers.list", status });
 
   const rows = (data ?? []) as Row[];
   return {
@@ -273,11 +273,11 @@ export async function getManagerByIdFromSupabase(internalManagerId: string | num
   try {
     c = client ?? getReferenceDataClient();
   } catch (err) {
-    throw normalizeClientError(err);
+    throw normalizeClientError(err, { operation: "managers.detail" });
   }
 
-  const { data, error } = await c.from("managers").select("*").eq("internal_manager_id", Number(idStr)).maybeSingle();
-  if (error) throw normalizeQueryError(error);
+  const { data, error, status } = await c.from("managers").select("*").eq("internal_manager_id", Number(idStr)).maybeSingle();
+  if (error) throw normalizeQueryError(error, { operation: "managers.detail", status });
   if (!data) return null;
 
   const row = data as Row;
@@ -295,9 +295,9 @@ export async function getManagerCountFromSupabase(client?: ReferenceDataClient):
   try {
     c = client ?? getReferenceDataClient();
   } catch (err) {
-    throw normalizeClientError(err);
+    throw normalizeClientError(err, { operation: "managers.count" });
   }
-  const { count, error } = await c.from("managers").select("internal_manager_id", { count: "exact", head: true });
-  if (error) throw normalizeQueryError(error);
+  const { count, error, status } = await c.from("managers").select("internal_manager_id", { count: "exact", head: true });
+  if (error) throw normalizeQueryError(error, { operation: "managers.count", status });
   return count ?? 0;
 }

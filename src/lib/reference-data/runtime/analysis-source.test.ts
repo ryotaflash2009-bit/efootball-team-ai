@@ -138,3 +138,22 @@ describe("getEfhubAnalysisDetailFromSupabase", () => {
     await expect(getEfhubAnalysisDetailFromSupabase(CARD_ID, client as never)).rejects.toThrow();
   });
 });
+
+describe("障害系: 各HTTPステータス/ネットワーク断でも安全に例外化される(優先度A)", () => {
+  const cases: [string, number | undefined, { message: string }][] = [
+    ["401", 401, { message: "JWT expired" }],
+    ["403", 403, { message: "permission denied" }],
+    ["429", 429, { message: "too many requests" }],
+    ["500", 500, { message: "internal server error" }],
+    ["503", 503, { message: "service unavailable" }],
+    ["timeout(status0+abort)", 0, { message: "AbortError: The operation was aborted" }],
+    ["network(status0)", 0, { message: "TypeError: fetch failed" }],
+    ["genericなSDK例外(statusなし)", undefined, { message: "unexpected SDK exception" }],
+  ];
+  for (const [label, status, error] of cases) {
+    it(`${label}: getEfhubAnalysisDetailFromSupabaseが例外を投げる`, async () => {
+      const client = createFailingReferenceDataClient(error, status);
+      await expect(getEfhubAnalysisDetailFromSupabase(CARD_ID, client as never)).rejects.toThrow();
+    });
+  }
+});

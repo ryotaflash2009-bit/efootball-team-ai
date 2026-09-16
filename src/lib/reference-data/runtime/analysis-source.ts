@@ -79,11 +79,11 @@ export async function getEfhubAnalysisDetailFromSupabase(cardId: string, client?
   try {
     c = client ?? getReferenceDataClient();
   } catch (err) {
-    throw normalizeClientError(err);
+    throw normalizeClientError(err, { operation: "analysis.detail" });
   }
 
-  const { data, error } = await c.from("player_card_analysis").select("*").eq("world_card_id", cardId).maybeSingle();
-  if (error) throw normalizeQueryError(error);
+  const { data, error, status } = await c.from("player_card_analysis").select("*").eq("world_card_id", cardId).maybeSingle();
+  if (error) throw normalizeQueryError(error, { operation: "analysis.detail", status });
   if (!data) return null;
   const row = data as Row;
 
@@ -91,8 +91,12 @@ export async function getEfhubAnalysisDetailFromSupabase(cardId: string, client?
   // nameEnはplayer_card_analysis自身のefhub_name_en列から取る(world_player_cards.name_enとは別物)。
   const nameEn = typeof row.efhub_name_en === "string" ? row.efhub_name_en : null;
   let registeredPosition: string | null = null;
-  const { data: cardData, error: cardError } = await c.from("world_player_cards").select("registered_position").eq("world_card_id", cardId).maybeSingle();
-  if (cardError) throw normalizeQueryError(cardError);
+  const {
+    data: cardData,
+    error: cardError,
+    status: cardStatus,
+  } = await c.from("world_player_cards").select("registered_position").eq("world_card_id", cardId).maybeSingle();
+  if (cardError) throw normalizeQueryError(cardError, { operation: "analysis.detail", status: cardStatus });
   if (cardData) {
     registeredPosition = typeof (cardData as Row).registered_position === "string" ? ((cardData as Row).registered_position as string) : null;
   }

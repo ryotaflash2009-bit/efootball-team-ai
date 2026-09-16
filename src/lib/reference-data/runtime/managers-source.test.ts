@@ -153,6 +153,33 @@ describe("listManagersFromSupabase", () => {
   });
 });
 
+describe("障害系: 各HTTPステータス/ネットワーク断でも安全に例外化される(優先度A)", () => {
+  const cases: [string, number | undefined, { message: string }][] = [
+    ["401", 401, { message: "JWT expired" }],
+    ["403", 403, { message: "permission denied" }],
+    ["429", 429, { message: "too many requests" }],
+    ["500", 500, { message: "internal server error" }],
+    ["503", 503, { message: "service unavailable" }],
+    ["timeout(status0+abort)", 0, { message: "AbortError: The operation was aborted" }],
+    ["network(status0)", 0, { message: "TypeError: fetch failed" }],
+    ["genericなSDK例外(statusなし)", undefined, { message: "unexpected SDK exception" }],
+  ];
+  for (const [label, status, error] of cases) {
+    it(`${label}: listManagersFromSupabaseが例外を投げる`, async () => {
+      const client = createFailingReferenceDataClient(error, status);
+      await expect(listManagersFromSupabase(baseQuery(), client as never)).rejects.toThrow();
+    });
+    it(`${label}: getManagerByIdFromSupabaseが例外を投げる`, async () => {
+      const client = createFailingReferenceDataClient(error, status);
+      await expect(getManagerByIdFromSupabase("1", client as never)).rejects.toThrow();
+    });
+    it(`${label}: getManagerCountFromSupabaseが例外を投げる`, async () => {
+      const client = createFailingReferenceDataClient(error, status);
+      await expect(getManagerCountFromSupabase(client as never)).rejects.toThrow();
+    });
+  }
+});
+
 describe("getManagerByIdFromSupabase", () => {
   it("boosters/link_up_plays列が未移行(未設定)の間は詳細のboosters/linkUpPlaysが空配列になる(推測で埋めない)", async () => {
     const client = createFakeReferenceDataClient({ managers: [makeManagerRow(1)] });
