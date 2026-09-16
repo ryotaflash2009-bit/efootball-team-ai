@@ -3,12 +3,17 @@ import { parsePlayerPage, ParserStructureError } from "./parse-player-page";
 import { serializeCard, deserializeCard } from "./card-store";
 import { STAT_DEFINITIONS, STAT_KEYS } from "./masters";
 import { PARSER_VERSION } from "./parser-version";
-import messiGolden from "@/data/cards/89138556575063.json";
-import cannavaroGolden from "@/data/cards/88041460996837.json";
+import messiGolden from "./__fixtures__/player-page-messi.json";
+import cannavaroGolden from "./__fixtures__/player-page-cannavaro.json";
 
 /**
  * 合成 RSC ページ（本調査 docs/player-root-findings.md の実構造から作成）でパーサを検証する。
  * 生レスポンスは保存しない方針のため、フィクスチャはコード内で組み立てる。
+ *
+ * golden JSON(`__fixtures__/player-page-*.json`)は、下記の合成HTML入力(コード内で完結)を
+ * `parsePlayerPage`へ通した際の期待される全出力を固定したスナップショットであり、
+ * `src/data/cards/*.json`(gitignore対象・ローカル専用のキャッシュ領域)とは独立した
+ * Git管理対象のテスト専用フィクスチャである(クリーンcheckoutでの再現性を確保するため)。
  */
 
 function rscScript(rows: string[]): string {
