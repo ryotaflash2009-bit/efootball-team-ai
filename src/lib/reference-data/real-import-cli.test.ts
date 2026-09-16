@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import path from "node:path";
 
 /**
@@ -31,7 +31,11 @@ let tmpDir: string;
 let fakeCaCertPath: string;
 
 beforeAll(() => {
-  tmpDir = mkdtempSync(path.join(ROOT, "data", "test-tmp", "ca-cert-cli-test-"));
+  // mkdtempSyncはprefixの親ディレクトリを自動作成しないため、
+  // クリーンcheckout(data/test-tmp自体がgitignore対象で存在しない)向けに明示作成する。
+  const scratchRoot = path.join(ROOT, "data", "test-tmp");
+  mkdirSync(scratchRoot, { recursive: true });
+  tmpDir = mkdtempSync(path.join(scratchRoot, "ca-cert-cli-test-"));
   fakeCaCertPath = path.join(tmpDir, "fake-ca.pem");
   writeFileSync(fakeCaCertPath, FAKE_CA_PEM, "utf8");
 });
