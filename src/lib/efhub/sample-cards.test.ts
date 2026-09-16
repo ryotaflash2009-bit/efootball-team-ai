@@ -6,11 +6,17 @@ import { STAT_KEYS } from "./masters";
 import { KNOWN_PARSER_VERSIONS } from "./parser-version";
 
 /**
- * src/data/cards/ に保存された全カード（Phase A golden + Phase B sample）を、
- * Phase A の Zod スキーマで再検証し、重複防止の不変条件を確認する。
+ * カード保存フォーマット（Phase A の Zod スキーマ）の不変条件を検証する。
+ *
+ * 対象は `src/data/cards/`（ローカルの実データキャッシュ、gitignore対象・クリーン
+ * checkoutには存在しない）ではなく、`__fixtures__/sample-cards/`（このテスト専用に
+ * Git管理するfixture、`parse-player-page.test.ts`のgolden JSONと同一内容の複製）。
+ * ファイル名をefhubCardIdに一致させる不変条件があるため、専用ディレクトリへ
+ * efhubCardId名でコピーしている（parse-player-page.test.ts側の分かりやすい命名の
+ * フィクスチャとは別ファイルとして扱う）。
  */
 
-const CARDS_DIR = path.join(process.cwd(), "src", "data", "cards");
+const CARDS_DIR = path.join(process.cwd(), "src", "lib", "efhub", "__fixtures__", "sample-cards");
 
 async function listCardFiles(): Promise<string[]> {
   const entries = await fs.readdir(CARDS_DIR);
