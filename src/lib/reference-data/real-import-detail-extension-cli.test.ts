@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { DatabaseSync } from "node:sqlite";
 import path from "node:path";
 
 /**
@@ -12,6 +13,17 @@ import path from "node:path";
  * `real-import-cli.test.ts`(初回投入ツール向け)と同じ検証観点だが、対象は
  * 差分投入ツール(既存行への追加列UPDATEのみ、INSERT/DELETEなし)。
  * 実Supabaseへは一切接続しない(すべて架空のテンプレート/パスワード、または未設定のテストのみ)。
+ *
+ * このCLIは通常、実SQLite(data/efootball.db、gitignore対象・クリーンcheckoutには
+ * 存在しない)を読んで件数を実測し、13,009/66件と厳密一致することを実接続前の
+ * 安全ゲートとして確認する設計になっている。実データをGitへコピーせずクリーン
+ * checkoutで再現するため、`MIGRATION_DB_PATH_OVERRIDE`/`MIGRATION_EXPECTED_*_COUNT`
+ * (CLI側にテスト専用の差し替え口として追加済み、未設定時は本番と同じ既定値のまま)で、
+ * 最小限の合成フィクスチャDB(world_player_cards 1件・managers 1件。読み取り対象の
+ * 残り6テーブル—source_record_links/world_player_ai_styles/world_player_appearances/
+ * data_conflicts/manager_boosters/manager_link_up_plays/manager_link_up_conditions—は
+ * 実スキーマと同じ列構成のテーブルとして作成するが0件のままとする。孤立参照が
+ * 生じないようにするため)を指すよう差し替える。
  *
  * 複数のCLIテストファイルが並列実行されると、実子プロセスの同時起動数が増え、
  * Vitestの既定テストタイムアウト(5,000ms)を稀に超えることがあったため、
@@ -29,8 +41,46 @@ const FAKE_DIRECT_TEMPLATE = "postgresql://postgres:[YOUR-PASSWORD]@db.example-r
 const FAKE_PASSWORD = "fake-test-password-not-real";
 const FAKE_CA_PEM = "-----BEGIN CERTIFICATE-----\nMIIB...fake-test-ca-not-real...\n-----END CERTIFICATE-----\n";
 
+// 合成フィクスチャDBの件数(実データではなく、テストの都合で決めた最小件数)。
+const FIXTURE_WORLD_COUNT = 1;
+const FIXTURE_MANAGER_COUNT = 1;
+
 let tmpDir: string;
 let fakeCaCertPath: string;
+let fixtureDbPath: string;
+
+/**
+ * テスト専用の最小合成SQLite DBを作る(実データのコピーではなく、架空の最小データ)。
+ * `pg-detail-extension-import.mjs`が`SELECT *`で読む
+ * `world_player_appearances`/`manager_boosters`/`manager_link_up_plays`/
+ * `manager_link_up_conditions`は、`src/lib/reference-data/detail-extension-transform.ts`が
+ * 実際に参照する列構成でテーブルだけ作り(0件のままで問題ない)、無条件`SELECT *`が
+ * 失敗しないようにする。
+ */
+function buildFixtureDb(dbPath: string): void {
+  const db = new DatabaseSync(dbPath);
+  db.exec(`
+    CREATE TABLE world_player_cards (world_card_id TEXT PRIMARY KEY);
+    CREATE TABLE source_record_links (internal_card_id INTEGER, source TEXT, source_card_id TEXT);
+    CREATE TABLE world_player_ai_styles (world_card_id TEXT, style_name TEXT, display_order INTEGER);
+    CREATE TABLE world_player_appearances (
+      world_card_id TEXT, position TEXT, leg_coverage_radius REAL, arm_coverage_radius REAL,
+      torso_collision REAL, jumping_height REAL, dribble_height REAL, leg_length REAL,
+      ranks_json TEXT, updated_at TEXT
+    );
+    CREATE TABLE data_conflicts (world_card_id TEXT, field_name TEXT, efhub_value TEXT, world_value TEXT);
+    CREATE TABLE managers (internal_manager_id INTEGER PRIMARY KEY);
+    CREATE TABLE manager_boosters (
+      internal_manager_id INTEGER, display_order INTEGER, stat_name_en TEXT, stat_key TEXT,
+      delta REAL, raw_value TEXT, application_condition TEXT, confirmation_status TEXT
+    );
+    CREATE TABLE manager_link_up_plays (id INTEGER, internal_manager_id INTEGER, display_order INTEGER, name TEXT, confirmation_status TEXT);
+    CREATE TABLE manager_link_up_conditions (link_up_play_id INTEGER, role TEXT, playing_style TEXT, positions_json TEXT);
+  `);
+  db.prepare("INSERT INTO world_player_cards (world_card_id) VALUES (?)").run("1");
+  db.prepare("INSERT INTO managers (internal_manager_id) VALUES (?)").run(1);
+  db.close();
+}
 
 beforeAll(() => {
   // mkdtempSyncはprefixの親ディレクトリを自動作成しないため、
@@ -40,6 +90,8 @@ beforeAll(() => {
   tmpDir = mkdtempSync(path.join(scratchRoot, "ca-cert-cli-test-"));
   fakeCaCertPath = path.join(tmpDir, "fake-ca.pem");
   writeFileSync(fakeCaCertPath, FAKE_CA_PEM, "utf8");
+  fixtureDbPath = path.join(tmpDir, "fixture.db");
+  buildFixtureDb(fixtureDbPath);
 });
 
 afterAll(() => {
@@ -55,6 +107,9 @@ function runCli(args: string[], extraEnv: Record<string, string> = {}): { stdout
   // project ref突合を無効化する(テストは`.env.local`の実プロジェクト値に依存させない)。
   // 一致を検証したいテストだけがNEXT_PUBLIC_SUPABASE_URLを明示的にextraEnvで指定する。
   delete env.NEXT_PUBLIC_SUPABASE_URL;
+  env.MIGRATION_DB_PATH_OVERRIDE = fixtureDbPath;
+  env.MIGRATION_EXPECTED_WORLD_COUNT = String(FIXTURE_WORLD_COUNT);
+  env.MIGRATION_EXPECTED_MANAGER_COUNT = String(FIXTURE_MANAGER_COUNT);
   Object.assign(env, extraEnv);
   try {
     const stdout = execFileSync("node", [SCRIPT_PATH, ...args], {
@@ -78,10 +133,14 @@ describe("pg-detail-extension-import.mjs CLI(実プロセス起動、実Supabase
     expect(stdout).toMatch(/外部接続0回/);
   });
 
-  it("dry-runでは実測件数(13009\\/66)が表示される", () => {
+  it("dry-runでは実測件数(合成フィクスチャ1\\/1件)が表示される", () => {
+    // 実件数(13,009/66)はGit管理外の実DBが必要なため、クリーンcheckoutで再現可能な
+    // 最小合成フィクスチャ(1/1件、buildFixtureDb参照)で同じ検証観点(件数一致・
+    // 孤立参照ゼロ)を確認する。件数の数値自体はテスト専用のダミー値であり、
+    // 検証の厳密さ(完全一致・孤立参照検出)は実件数の場合と変わらない。
     const { stdout } = runCli([]);
-    expect(stdout).toMatch(/world_player_cards 更新対象: 13009件\(期待値13009件\)/);
-    expect(stdout).toMatch(/managers 更新対象: 66件\(期待値66件\)/);
+    expect(stdout).toMatch(/world_player_cards 更新対象: 1件\(期待値1件\)/);
+    expect(stdout).toMatch(/managers 更新対象: 1件\(期待値1件\)/);
     expect(stdout).toMatch(/孤立参照.*: 0件/);
   });
 

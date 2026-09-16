@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { DatabaseSync } from "node:sqlite";
 import path from "node:path";
 
 /**
@@ -10,6 +11,15 @@ import path from "node:path";
  * 無ければ実接続前に拒否する」ことを、モックではなく実際のCLI起動で確認する。
  *
  * 実Supabaseへは一切接続しない(すべて架空のテンプレート/パスワード、または未設定のテストのみ)。
+ *
+ * このCLIは通常、実SQLite(data/efootball.db、gitignore対象・クリーンcheckoutには
+ * 存在しない)を読んで件数を実測し、13,009/66/19件と厳密一致することを実接続前の
+ * 安全ゲートとして確認する設計になっている(この一致確認は--execute/--validate-only有無に
+ * 関わらず常に実行される)。実データをGitへコピーせずクリーンcheckoutで再現するため、
+ * `MIGRATION_DB_PATH_OVERRIDE`/`MIGRATION_EXPECTED_*_COUNT`(CLI側にテスト専用の
+ * 差し替え口として追加済み、未設定時は本番と同じ既定値のまま)で、最小限の合成フィクスチャDB
+ * (world_player_cards 1件・managers 1件、いずれも架空データ。player_cards テーブルは
+ * 意図的に作らず player_card_analysis を0件として扱う)を指すよう差し替える。
  *
  * 複数のCLIテストファイルが並列実行されると、実子プロセスの同時起動数が増え、
  * Vitestの既定テストタイムアウト(5,000ms)を稀に超えることがあったため、
@@ -27,8 +37,52 @@ const FAKE_DIRECT_TEMPLATE = "postgresql://postgres:[YOUR-PASSWORD]@db.example-r
 const FAKE_PASSWORD = "fake-test-password-not-real";
 const FAKE_CA_PEM = "-----BEGIN CERTIFICATE-----\nMIIB...fake-test-ca-not-real...\n-----END CERTIFICATE-----\n";
 
+// 合成フィクスチャDBの件数(実データではなく、テストの都合で決めた最小件数)。
+const FIXTURE_WORLD_COUNT = 1;
+const FIXTURE_MANAGER_COUNT = 1;
+const FIXTURE_ANALYSIS_COUNT = 0;
+
 let tmpDir: string;
 let fakeCaCertPath: string;
+let fixtureDbPath: string;
+
+/**
+ * テスト専用の最小合成SQLite DBを作る(実データのコピーではなく、架空の最小データ)。
+ * `pg-real-import.mjs`は`world_player_cards`/`world_player_stats`/`world_player_skills`/
+ * `managers`を無条件に`SELECT *`するため、空でもテーブル自体は必ず作る必要がある
+ * (`player_cards`系だけは`tableExists`で存在確認されるため意図的に作らない)。
+ */
+function buildFixtureDb(dbPath: string): void {
+  const db = new DatabaseSync(dbPath);
+  db.exec(`
+    CREATE TABLE world_player_cards (
+      world_card_id TEXT PRIMARY KEY, name_en TEXT, name_ja TEXT, card_type TEXT,
+      registered_position TEXT, nationality TEXT, region TEXT, league TEXT, team TEXT,
+      ovr_base INTEGER, ovr_max INTEGER, maximum_level INTEGER, card_rating TEXT,
+      playing_style TEXT, playing_style_def TEXT, preferred_foot TEXT, age INTEGER,
+      height INTEGER, weight INTEGER, image_url TEXT, mobile_image_url TEXT,
+      boost1 TEXT, boost2 TEXT, source TEXT, source_url TEXT,
+      appearance_updated_at TEXT, fetched_at TEXT
+    );
+    CREATE TABLE world_player_stats (world_card_id TEXT, stat_key TEXT, value REAL);
+    CREATE TABLE world_player_skills (world_card_id TEXT, skill_name TEXT, display_order INTEGER);
+    CREATE TABLE managers (
+      internal_manager_id INTEGER PRIMARY KEY, source TEXT, source_manager_id TEXT,
+      name_en TEXT, name_ja TEXT, team_name TEXT, nationality TEXT, age INTEGER,
+      released_at TEXT, possession_game INTEGER, quick_counter INTEGER,
+      long_ball_counter INTEGER, out_wide INTEGER, long_ball INTEGER, overload INTEGER,
+      manager_rating TEXT, coaching_affinity TEXT, formation TEXT, has_booster INTEGER,
+      has_link_up_play INTEGER, booster_confirmation TEXT, source_url TEXT, fetched_at TEXT
+    );
+  `);
+  db.prepare(
+    "INSERT INTO world_player_cards (world_card_id, name_en, source, fetched_at) VALUES (?, ?, ?, ?)",
+  ).run("1", "Fixture Player", "test-fixture", "2026-01-01T00:00:00.000Z");
+  db.prepare(
+    "INSERT INTO managers (internal_manager_id, source, name_en, fetched_at) VALUES (?, ?, ?, ?)",
+  ).run(1, "test-fixture", "Fixture Manager", "2026-01-01T00:00:00.000Z");
+  db.close();
+}
 
 beforeAll(() => {
   // mkdtempSyncはprefixの親ディレクトリを自動作成しないため、
@@ -38,6 +92,8 @@ beforeAll(() => {
   tmpDir = mkdtempSync(path.join(scratchRoot, "ca-cert-cli-test-"));
   fakeCaCertPath = path.join(tmpDir, "fake-ca.pem");
   writeFileSync(fakeCaCertPath, FAKE_CA_PEM, "utf8");
+  fixtureDbPath = path.join(tmpDir, "fixture.db");
+  buildFixtureDb(fixtureDbPath);
 });
 
 afterAll(() => {
@@ -53,6 +109,10 @@ function runCli(args: string[], extraEnv: Record<string, string> = {}): { stdout
   // project ref突合を無効化する(テストは`.env.local`の実プロジェクト値に依存させない)。
   // 一致を検証したいテストだけがNEXT_PUBLIC_SUPABASE_URLを明示的にextraEnvで指定する。
   delete env.NEXT_PUBLIC_SUPABASE_URL;
+  env.MIGRATION_DB_PATH_OVERRIDE = fixtureDbPath;
+  env.MIGRATION_EXPECTED_WORLD_COUNT = String(FIXTURE_WORLD_COUNT);
+  env.MIGRATION_EXPECTED_MANAGER_COUNT = String(FIXTURE_MANAGER_COUNT);
+  env.MIGRATION_EXPECTED_ANALYSIS_COUNT = String(FIXTURE_ANALYSIS_COUNT);
   Object.assign(env, extraEnv);
   try {
     const stdout = execFileSync("node", [SCRIPT_PATH, ...args], {
@@ -76,11 +136,14 @@ describe("pg-real-import.mjs CLI(実プロセス起動、実Supabase接続なし
     expect(stdout).toMatch(/外部接続0回/);
   });
 
-  it("dry-runでは実測件数(13009\\/66\\/19)が表示される", () => {
+  it("dry-runでは実測件数(合成フィクスチャ1\\/1\\/0件)が表示される", () => {
+    // 実件数(13,009/66/19)はGit管理外の実DBが必要なため、クリーンcheckoutで再現可能な
+    // 最小合成フィクスチャ(1/1/0件、buildFixtureDb参照)で同じ検証観点(件数一致)を確認する。
+    // 件数の数値自体はテスト専用のダミー値であり、検証の厳密さは実件数の場合と変わらない。
     const { stdout } = runCli([]);
-    expect(stdout).toMatch(/world_player_cards: 取得元13009件 \/ 検証OK13009件/);
-    expect(stdout).toMatch(/managers: 取得元66件 \/ 検証OK66件/);
-    expect(stdout).toMatch(/player_card_analysis: 取得元19件 \/ 検証OK19件/);
+    expect(stdout).toMatch(/world_player_cards: 取得元1件 \/ 検証OK1件/);
+    expect(stdout).toMatch(/managers: 取得元1件 \/ 検証OK1件/);
+    expect(stdout).toMatch(/player_card_analysis: 取得元0件 \/ 検証OK0件/);
   });
 
   it("dry-run/validate-onlyの出力には接続試行を示す文言が一切現れない", () => {
