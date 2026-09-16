@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { writeFileSync, mkdtempSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildPgSslConfig, describeSslConfigForLog, loadCaCertificateFromFile, type PgSslConfig } from "./pg-ssl-config";
+import { buildPgSslConfig, describeSslConfigForLog, loadCaCertificateFromFile, checkCaCertPathProvided, type PgSslConfig } from "./pg-ssl-config";
 
 const FAKE_PEM = "-----BEGIN CERTIFICATE-----\nMIIB...fake...\n-----END CERTIFICATE-----\n";
 // プロジェクト外(OS一時ディレクトリ)ではなく、プロジェクト内のGit非追跡領域(data/test-tmp)だけを使う。
@@ -79,5 +79,22 @@ describe("loadCaCertificateFromFile", () => {
 
   it("存在しないファイルは例外を投げる", () => {
     expect(() => loadCaCertificateFromFile("/nonexistent/path/ca.pem")).toThrow();
+  });
+});
+
+describe("checkCaCertPathProvided(実接続前のCA証明書必須チェック)", () => {
+  it("パスが指定されていれば成功", () => {
+    expect(checkCaCertPathProvided("./data/tls/prod-ca-2021.crt").ok).toBe(true);
+  });
+  it("undefined/null/空文字/空白のみは失敗", () => {
+    expect(checkCaCertPathProvided(undefined).ok).toBe(false);
+    expect(checkCaCertPathProvided(null).ok).toBe(false);
+    expect(checkCaCertPathProvided("").ok).toBe(false);
+    expect(checkCaCertPathProvided("   ").ok).toBe(false);
+  });
+  it("失敗理由はCA証明書の必須性を説明する定型文で、パス実値を含まない", () => {
+    const result = checkCaCertPathProvided(undefined);
+    expect(result.reason).toMatch(/CA証明書/);
+    expect(result.reason).not.toContain("prod-ca-2021");
   });
 });

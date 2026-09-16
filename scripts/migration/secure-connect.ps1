@@ -13,17 +13,44 @@
   それぞれ独立したユーザー確認(2段階のyes入力)で分離する。
   入力直後に自動で投入が始まることはない。
 
+  -Tool パラメータで、起動する投入ツールを明示的に選ぶ(既定は初回投入で、
+  これまでの挙動と変わらない)。初回投入(InitialImport)・追加データ投入
+  (DetailExtension)・Phase D差分修正(PhaseDRemediation)は別物であり、
+  意図せず混同して実行しないよう、必ずいずれか1つを明示的に選択させる設計にしている。
+    - InitialImport     : pg-real-import.mjs(空テーブル前提のINSERT専用、初回投入)
+    - DetailExtension   : pg-detail-extension-import.mjs(既存行への追加列UPDATEのみ、
+      efhub_card_id/ai_styles/appearance/efhub_conflicts/boosters/link_up_plays。実行・COMMIT済み)
+    - PhaseDRemediation : pg-phase-d-remediation-import.mjs(既存行への追加列UPDATEのみ、
+      world_player_cards/managers.name_sort_key、player_card_analysis.efhub_name_en。
+      Phase Dのシャドー比較で確認された2件の差分を修正する)
+
+  -CaCertPath は必須。Supabase Session poolerの証明書チェーンがNode既定のCAストアに
+  含まれない環境があり、指定が無いと"self-signed certificate in certificate chain"で
+  実接続に失敗するため、指定が無ければ接続文字列・パスワードの入力を求める前に中止する
+  (InitialImport/DetailExtensionいずれのツールでも同じ条件を適用する)。
+
 .NOTES
   このスクリプトを Start-Transcript 実行中に使わないこと(入力内容がログへ残る恐れがある)。
 #>
 
 [CmdletBinding()]
 param(
-    # Supabase公式のCA証明書ファイルへのローカルパス(任意)。証明書は公開情報であり秘密情報ではないため、
+    # Supabase公式のCA証明書ファイルへのローカルパス(必須)。証明書は公開情報であり秘密情報ではないため、
     # 通常のパラメータとして受け取ってよい(コマンド履歴に残っても問題ない)。
-    # 省略した場合はNode既定のCAストアで検証する(Session poolerの証明書チェーンが
-    # そこに含まれない場合は "self-signed certificate in certificate chain" で失敗する)。
-    [string]$CaCertPath
+    # 省略、または指定されたファイルが存在しない場合は、実接続前(接続文字列・パスワードの
+    # 入力より前)に中止する("self-signed certificate in certificate chain"での接続失敗を防ぐため)。
+    [string]$CaCertPath,
+
+    # どちらの投入ツールを起動するか。既定は初回投入(これまでの挙動と同じ)。
+    # 追加データ投入を行うときは -Tool DetailExtension、Phase D差分修正を行うときは
+    # -Tool PhaseDRemediation を、それぞれ明示的に指定すること。
+    [ValidateSet("InitialImport", "DetailExtension", "PhaseDRemediation")]
+    [string]$Tool = "InitialImport",
+
+    # 接続方式。現時点ではSession poolerのみ許可(Direct connection/Transaction poolerは
+    # 接続前に常に拒否される)。将来的に他方式を安全に扱えるようになるまで、値は1つだけ。
+    [ValidateSet("SessionPooler")]
+    [string]$ConnectionMode = "SessionPooler"
 )
 
 $ErrorActionPreference = "Stop"
@@ -34,7 +61,16 @@ $PasswordEnvName = "MIGRATION_PG_PASSWORD"
 $TargetLabelEnvName = "MIGRATION_TARGET_LABEL"
 $CaCertPathEnvName = "MIGRATION_PG_CA_CERT_PATH"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$ImportToolPath = Join-Path $ScriptDir "pg-real-import.mjs"
+if ($Tool -eq "DetailExtension") {
+    $ImportToolPath = Join-Path $ScriptDir "pg-detail-extension-import.mjs"
+    $ToolDescription = "追加データ投入(既存行への追加列UPDATEのみ。新しい行のINSERT/DELETEは行わない)"
+} elseif ($Tool -eq "PhaseDRemediation") {
+    $ImportToolPath = Join-Path $ScriptDir "pg-phase-d-remediation-import.mjs"
+    $ToolDescription = "Phase D差分修正(name_sort_key/efhub_name_en列の追加UPDATEのみ。新しい行のINSERT/DELETEは行わない)"
+} else {
+    $ImportToolPath = Join-Path $ScriptDir "pg-real-import.mjs"
+    $ToolDescription = "初回投入(空テーブル前提のINSERT専用)"
+}
 $RepoRoot = Join-Path $ScriptDir "..\.."
 
 $plainTemplate = $null
@@ -75,10 +111,14 @@ try {
     Write-Host "対象プロジェクト: $TargetLabel" -ForegroundColor Cyan
     Write-Host "これはPreview/開発専用プロジェクトです。Production用プロジェクトではありません。" -ForegroundColor Cyan
     Write-Host ""
-    Write-Host "接続方式: Supabase Dashboard の Connect 画面から取得した"
-    Write-Host "  Session pooler の接続文字列を使用してください(SSL必須)。"
-    Write-Host "  Direct connection は、Windows側のIPv6到達性が確認できる場合のみ代替候補です。"
-    Write-Host "  Transaction pooler は今回使用しないでください。"
+    Write-Host "実行するツール: $ToolDescription" -ForegroundColor Cyan
+    Write-Host "  ($ImportToolPath)" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "接続方式(-ConnectionMode): $ConnectionMode" -ForegroundColor Cyan
+    Write-Host "接続文字列: Supabase Dashboard の Connect 画面を開き、方式の一覧から"
+    Write-Host "  必ず「Session pooler」を選んでからコピーしてください(SSL必須、ポート5432)。" -ForegroundColor Yellow
+    Write-Host "  「Direct connection」や「Transaction pooler」のタブに表示される文字列は" -ForegroundColor Yellow
+    Write-Host "  接続前に自動で拒否されます(誤って別タブをコピーした場合によくある失敗です)。" -ForegroundColor Yellow
     Write-Host ""
     Write-Host "接続文字列テンプレートとDBパスワードは、別々に・非表示で入力していただきます。"
     Write-Host "[YOUR-PASSWORD] というプレースホルダーは、あなたが手作業で編集する必要はありません。"
@@ -87,6 +127,19 @@ try {
     Write-Host "入力内容は画面に表示されず、コマンド履歴にも記録されません。"
     Write-Host "処理の終了後(成功・失敗・中断いずれでも)、環境変数から自動的に削除されます。"
     Write-Host ""
+
+    # CA証明書は実接続の必須項目(initial-import/detail-extensionいずれのツールでも同じ条件)。
+    # "self-signed certificate in certificate chain" での接続失敗を未然に防ぐため、
+    # 接続文字列やパスワードの入力を求める前に、ここで先に必須チェックする。
+    if ([string]::IsNullOrWhiteSpace($CaCertPath)) {
+        Write-Host "-CaCertPath が指定されていません。実接続にはCA証明書の指定が必須です。" -ForegroundColor Red
+        Write-Host "例: -CaCertPath .\data\tls\prod-ca-2021.crt" -ForegroundColor Red
+        return
+    }
+    if (-not (Test-Path $CaCertPath)) {
+        Write-Host "指定されたCA証明書ファイルが見つかりません: $CaCertPath" -ForegroundColor Red
+        return
+    }
 
     $confirm = Read-Host "上記を確認し、続行しますか? (yes と入力してください)"
     if ($confirm -ne "yes") {
@@ -126,22 +179,10 @@ try {
     $env:MIGRATION_PG_PASSWORD = $plainPassword
     $env:MIGRATION_TARGET_LABEL = $TargetLabel
 
-    if ($CaCertPath) {
-        if (-not (Test-Path $CaCertPath)) {
-            Write-Host ""
-            Write-Host "指定されたCA証明書ファイルが見つかりません: $CaCertPath" -ForegroundColor Yellow
-            return
-        }
-        $env:MIGRATION_PG_CA_CERT_PATH = (Resolve-Path $CaCertPath).Path
-        Write-Host ""
-        Write-Host "CA証明書を使用します(パス: $CaCertPath、内容は表示しません)。" -ForegroundColor Cyan
-    } else {
-        Write-Host ""
-        Write-Host "CA証明書が指定されていません。Node既定のCAストアで検証します。" -ForegroundColor Yellow
-        Write-Host "Session poolerの証明書チェーンがそこに含まれない場合、接続時に" -ForegroundColor Yellow
-        Write-Host "'self-signed certificate in certificate chain' で失敗します。その場合は" -ForegroundColor Yellow
-        Write-Host "Supabase DashboardからCA証明書をダウンロードし、-CaCertPath で指定してください。" -ForegroundColor Yellow
-    }
+    # -CaCertPathの必須チェック・実在チェックは、この関数の冒頭で既に完了している。
+    $env:MIGRATION_PG_CA_CERT_PATH = (Resolve-Path $CaCertPath).Path
+    Write-Host ""
+    Write-Host "CA証明書を使用します(パス: $CaCertPath、内容は表示しません)。" -ForegroundColor Cyan
 
     Write-Host ""
     Write-Host "入力内容を検証します(この時点ではまだ実Supabaseへ接続しません)..."
