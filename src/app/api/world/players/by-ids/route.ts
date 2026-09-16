@@ -26,8 +26,8 @@ export async function GET(request: Request) {
   }
 
   try {
-    const players = getPlayersByWorldIds(ids);
-    const meta = getSourceMeta();
+    const players = await getPlayersByWorldIds(ids);
+    const meta = await getSourceMeta();
     const res = NextResponse.json({
       players,
       requested: ids.length,

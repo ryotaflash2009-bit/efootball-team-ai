@@ -31,9 +31,9 @@ export default async function WorldPlayerDetailPage({
   const parsed = worldCardIdSchema.safeParse(decodeURIComponent(worldCardId));
   if (!parsed.success) notFound();
 
-  let player: ReturnType<typeof getPlayerByWorldId> = null;
+  let player: Awaited<ReturnType<typeof getPlayerByWorldId>> = null;
   try {
-    player = getPlayerByWorldId(parsed.data);
+    player = await getPlayerByWorldId(parsed.data);
   } catch (err) {
     if (err instanceof WorldDataUnavailableError) {
       return (
@@ -56,9 +56,9 @@ export default async function WorldPlayerDetailPage({
     hasWorldMobileImage: player.mobileImageUrlCandidate != null,
   });
 
-  let analysisDetail: ReturnType<typeof getEfhubAnalysisDetail> = null;
+  let analysisDetail: Awaited<ReturnType<typeof getEfhubAnalysisDetail>> = null;
   try {
-    analysisDetail = getEfhubAnalysisDetail(player.worldCardId);
+    analysisDetail = await getEfhubAnalysisDetail(player.worldCardId);
   } catch {
     analysisDetail = null;
   }

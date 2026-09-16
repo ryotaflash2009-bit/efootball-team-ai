@@ -36,11 +36,13 @@ export default async function HomePage() {
   let recent: HomeMiniCardData[] = [];
   let managerCount: number | null = null;
   try {
-    const sourceMeta = getSourceMeta();
+    const sourceMeta = await getSourceMeta();
     world = { totalCount: sourceMeta.totalCount, source: sourceMeta.source, syncFinishedAt: sourceMeta.syncFinishedAt };
-    topOvr = listPlayers({ page: 1, pageSize: 14, query: "", sort: "ovr_max_desc", position: null, cardType: null, playingStyle: null, playingStyleDefensive: null, minOvr: null, maxOvr: null, hasBooster: null }).players.map(toMiniCardData);
-    recent = listPlayers({ page: 1, pageSize: 14, query: "", sort: "updated_desc", position: null, cardType: null, playingStyle: null, playingStyleDefensive: null, minOvr: null, maxOvr: null, hasBooster: null }).players.map(toMiniCardData);
-    managerCount = getManagerCount();
+    const topOvrResult = await listPlayers({ page: 1, pageSize: 14, query: "", sort: "ovr_max_desc", position: null, cardType: null, playingStyle: null, playingStyleDefensive: null, minOvr: null, maxOvr: null, hasBooster: null });
+    topOvr = topOvrResult.players.map(toMiniCardData);
+    const recentResult = await listPlayers({ page: 1, pageSize: 14, query: "", sort: "updated_desc", position: null, cardType: null, playingStyle: null, playingStyleDefensive: null, minOvr: null, maxOvr: null, hasBooster: null });
+    recent = recentResult.players.map(toMiniCardData);
+    managerCount = await getManagerCount();
   } catch (err) {
     if (!(err instanceof WorldDataUnavailableError)) throw err;
   }

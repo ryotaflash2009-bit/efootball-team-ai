@@ -29,12 +29,12 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
   let dataError = false;
   try {
     for (let i = 0; i < state.ids.length; i++) {
-      const detail = getPlayerByWorldId(state.ids[i]);
+      const detail = await getPlayerByWorldId(state.ids[i]);
       if (!detail) continue;
       let managerCtx = null;
       const mid = state.managerIds[i];
       if (mid != null) {
-        const m = getManagerById(mid);
+        const m = await getManagerById(mid);
         if (m) managerCtx = managerToContext(m);
       }
       inputs.push(

@@ -21,7 +21,7 @@ export async function GET(
   }
 
   try {
-    const manager = getManagerById(decoded);
+    const manager = await getManagerById(decoded);
     if (!manager) {
       return NextResponse.json(
         { error: { code: "NOT_FOUND", message: "監督が見つかりません。" } },

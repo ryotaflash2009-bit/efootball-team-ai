@@ -54,14 +54,14 @@ export default async function PlayersPage({ searchParams }: { searchParams: Prom
 
   let result: Awaited<ReturnType<typeof listPlayers>> | null = null;
   let facets: WorldFacets = { positions: [], cardTypes: [], playingStyles: [], playingStyleDefensives: [] };
-  let sourceMeta: ReturnType<typeof getSourceMeta> | null = null;
+  let sourceMeta: Awaited<ReturnType<typeof getSourceMeta>> | null = null;
   let unavailable = false;
   let failed = false;
 
   try {
-    result = listPlayers(query);
-    facets = getFacets();
-    sourceMeta = getSourceMeta();
+    result = await listPlayers(query);
+    facets = await getFacets();
+    sourceMeta = await getSourceMeta();
   } catch (err) {
     if (err instanceof WorldDataUnavailableError) unavailable = true;
     else failed = true;
