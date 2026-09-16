@@ -49,8 +49,11 @@ const { parseExecuteFlag, parseValidateOnlyFlag, sanitizeErrorMessage, EXPECTED_
   "../../src/lib/reference-data/real-import-guards.ts"
 );
 const { runRealImport } = await import("../../src/lib/reference-data/real-import-orchestrator.ts");
-const { buildAndValidateConnectionString } = await import("../../src/lib/reference-data/connection-string-builder.ts");
-const { buildPgSslConfig, loadCaCertificateFromFile, describeSslConfigForLog } = await import("../../src/lib/reference-data/pg-ssl-config.ts");
+const { buildAndValidateConnectionString, extractProjectRefFromSupabaseUrl } = await import("../../src/lib/reference-data/connection-string-builder.ts");
+const { extractSupabaseUrlFromEnvFileContent } = await import("../../src/lib/reference-data/local-env-file.ts");
+const { buildPgSslConfig, loadCaCertificateFromFile, describeSslConfigForLog, checkCaCertPathProvided } = await import(
+  "../../src/lib/reference-data/pg-ssl-config.ts"
+);
 
 const ROOT = path.resolve(HERE, "..", "..");
 const DB_PATH = path.join(ROOT, "data", "efootball.db");
@@ -58,6 +61,25 @@ const CA_CERT_PATH_ENV = "MIGRATION_PG_CA_CERT_PATH";
 const TEMPLATE_ENV = "MIGRATION_PG_CONNECTION_TEMPLATE";
 const PASSWORD_ENV = "MIGRATION_PG_PASSWORD";
 const TARGET_LABEL_ENV = "MIGRATION_TARGET_LABEL";
+
+/**
+ * 接続文字列の「別プロジェクト取り違え」検出のためだけに、project ref(非秘密値)を解決する。
+ * 通常のnodeプロセスは`.env.local`を自動読み込みしないため、環境変数に無ければ
+ * `.env.local`から`NEXT_PUBLIC_SUPABASE_URL`の行だけを読む(publishable key等は読まない)。
+ * 取得できなくても致命的エラーにはしない(project ref突合はあくまで追加の安全網のため)。
+ */
+async function resolveExpectedProjectRef() {
+  if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    return extractProjectRefFromSupabaseUrl(process.env.NEXT_PUBLIC_SUPABASE_URL);
+  }
+  try {
+    const content = await fs.readFile(path.join(ROOT, ".env.local"), "utf8");
+    const url = extractSupabaseUrlFromEnvFileContent(content);
+    return url ? extractProjectRefFromSupabaseUrl(url) : null;
+  } catch {
+    return null;
+  }
+}
 
 function tableExists(db, name) {
   return db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name = ?").get(name) != null;
@@ -251,7 +273,11 @@ async function main() {
     return;
   }
 
-  const buildResult = buildAndValidateConnectionString({ template: connectionTemplate, password });
+  // NEXT_PUBLIC_SUPABASE_URLはクライアントへ公開済みの非秘密値。ここから抽出したproject refは
+  // 「別プロジェクトの接続情報を誤って貼り付けていないか」の追加検証にのみ使い、画面には出さない。
+  const expectedProjectRef = await resolveExpectedProjectRef();
+
+  const buildResult = buildAndValidateConnectionString({ template: connectionTemplate, password, expectedProjectRef });
   if (!buildResult.ok) {
     console.error(`接続文字列の検証に失敗したため中止します: ${buildResult.reason}`);
     process.exitCode = 1;
@@ -259,27 +285,25 @@ async function main() {
   }
   console.log(`接続文字列の検証に成功しました(形式: ${buildResult.poolerType} pooler)。接続文字列の内容自体は表示しません。`);
 
-  // CA証明書(任意)の読み込み。rejectUnauthorizedは常にtrue固定で、CA未指定でも緩めない。
+  // CA証明書は実接続前の必須項目。rejectUnauthorizedは常にtrue固定で、CA未指定でも緩めない
+  // (指定が無ければ、緩めるのではなく接続前に中止する)。
   const caCertPath = process.env[CA_CERT_PATH_ENV];
+  const caCertPathCheck = checkCaCertPathProvided(caCertPath);
+  if (!caCertPathCheck.ok) {
+    console.error(`実接続前に中止します: ${caCertPathCheck.reason}(環境変数 ${CA_CERT_PATH_ENV} で指定する)`);
+    process.exitCode = 1;
+    return;
+  }
   let caCertPem;
-  if (caCertPath) {
-    try {
-      caCertPem = loadCaCertificateFromFile(caCertPath);
-    } catch (err) {
-      console.error(`CA証明書の読み込みに失敗したため中止します: ${err?.message ?? err}`);
-      process.exitCode = 1;
-      return;
-    }
+  try {
+    caCertPem = loadCaCertificateFromFile(caCertPath);
+  } catch (err) {
+    console.error(`CA証明書の読み込みに失敗したため中止します: ${err?.message ?? err}`);
+    process.exitCode = 1;
+    return;
   }
   const sslConfig = buildPgSslConfig(caCertPem);
   console.log(`SSL設定: ${describeSslConfigForLog(sslConfig)}`);
-  if (!caCertPath) {
-    console.log(
-      `注意: ${CA_CERT_PATH_ENV}が未設定です。Supabase Session poolerの証明書チェーンがNode既定のCAストアに` +
-        `含まれない場合、"self-signed certificate in certificate chain"で接続に失敗します。` +
-        `その場合はSupabase公式のCA証明書ファイルをローカルへ保存し、${CA_CERT_PATH_ENV}で指定してください。`,
-    );
-  }
 
   if (validateOnly) {
     console.log("");

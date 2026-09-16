@@ -1,5 +1,7 @@
 import { getDb } from "./db";
 import { WORLD_CARD_ID_RE } from "./schemas";
+import { getWorldDataSource } from "@/lib/reference-data/runtime/data-source";
+import { getEfhubAnalysisDetailFromSupabase } from "@/lib/reference-data/runtime/analysis-source";
 
 /**
  * 選手分析レール用の追加読み取り（すべて読み取り専用・すべて任意）。
@@ -67,7 +69,12 @@ function safeAll(db: ReturnType<typeof getDb>, sql: string, arg: string): Row[] 
   }
 }
 
-export function getEfhubAnalysisDetail(cardId: string): EfhubAnalysisDetail | null {
+export async function getEfhubAnalysisDetail(cardId: string): Promise<EfhubAnalysisDetail | null> {
+  if (getWorldDataSource() === "supabase") return getEfhubAnalysisDetailFromSupabase(cardId);
+  return getEfhubAnalysisDetailSqlite(cardId);
+}
+
+function getEfhubAnalysisDetailSqlite(cardId: string): EfhubAnalysisDetail | null {
   if (!WORLD_CARD_ID_RE.test(cardId)) return null;
 
   let db: ReturnType<typeof getDb>;

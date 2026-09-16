@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import type { GuardCheck } from "./real-import-guards";
 
 /**
  * 実Supabase(PostgreSQL Session pooler)へのSSL/TLS接続設定を組み立てる純関数群。
@@ -19,6 +20,24 @@ import { readFileSync } from "node:fs";
 export interface PgSslConfig {
   rejectUnauthorized: true;
   ca?: string;
+}
+
+/**
+ * CA証明書のパスが指定されていることを確認する(実接続前の必須チェック)。
+ * Supabase Session poolerの証明書チェーンがNode既定のCAストアに含まれない環境があり、
+ * その場合は"self-signed certificate in certificate chain"で実接続が失敗するため、
+ * `--validate-only`/`--execute`いずれの経路でもCA証明書パスの指定を必須とする
+ * (初回投入ツール・差分投入ツールの両方に同じ条件を適用する)。
+ * パスの値自体はreasonに含めない(reasonは常に定型文)。
+ */
+export function checkCaCertPathProvided(caCertPath: string | undefined | null): GuardCheck {
+  if (!caCertPath || caCertPath.trim() === "") {
+    return {
+      ok: false,
+      reason: "CA証明書のパスが指定されていない(実接続にはCA証明書の指定が必須。--CaCertPathでSupabase公式のCA証明書ファイルを指定すること)",
+    };
+  }
+  return { ok: true };
 }
 
 /** CA証明書ファイルを読み込む(内容はそのまま返すが、呼び出し側はログへ出力しないこと)。 */

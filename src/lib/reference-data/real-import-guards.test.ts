@@ -21,6 +21,7 @@ import {
   checkIdempotencyGuard,
   chunkRows,
   buildUpsertSql,
+  buildBulkUpdateSql,
 } from "./real-import-guards";
 
 describe("parseExecuteFlag", () => {
@@ -248,5 +249,56 @@ describe("buildUpsertSql", () => {
 
   it("rowCountが0以下では例外を投げる", () => {
     expect(() => buildUpsertSql("managers", ["internal_manager_id"], 0, "internal_manager_id")).toThrow();
+  });
+});
+
+describe("buildBulkUpdateSql", () => {
+  it("UPDATE ... FROM (VALUES ...) 形式でSQLを組み立てる(主キーの型キャストも明示する)", () => {
+    const sql = buildBulkUpdateSql(
+      "managers",
+      "internal_manager_id",
+      ["boosters", "link_up_plays"],
+      { internal_manager_id: "integer", boosters: "jsonb", link_up_plays: "jsonb" },
+      2,
+    );
+    expect(sql).toMatch(/^update reference_data\.managers as t/);
+    expect(sql).toContain("set boosters = v.boosters, link_up_plays = v.link_up_plays");
+    expect(sql).toContain(
+      "from (values ($1::integer, $2::jsonb, $3::jsonb), ($4::integer, $5::jsonb, $6::jsonb)) as v(internal_manager_id, boosters, link_up_plays)",
+    );
+    expect(sql).toContain("where t.internal_manager_id = v.internal_manager_id");
+  });
+
+  it("public/authスキーマへは言及しない", () => {
+    const sql = buildBulkUpdateSql("world_player_cards", "world_card_id", ["ai_styles"], { world_card_id: "text", ai_styles: "text[]" }, 1);
+    expect(sql).not.toMatch(/\bpublic\./i);
+    expect(sql).not.toMatch(/\bauth\./i);
+  });
+
+  it("主キー以外でキャスト指定の無い列にはキャストを付けない(主キーには必ず付く)", () => {
+    const sql = buildBulkUpdateSql("world_player_cards", "world_card_id", ["efhub_card_id"], { world_card_id: "text" }, 1);
+    expect(sql).toContain("($1::text, $2)");
+  });
+
+  it("主キーの型キャストが未指定なら例外を投げる(PostgreSQLの型推論に依存させない、実際に発生した障害の再発防止)", () => {
+    expect(() => buildBulkUpdateSql("world_player_cards", "world_card_id", ["efhub_card_id"], {}, 1)).toThrow(/主キー/);
+    expect(() => buildBulkUpdateSql("managers", "internal_manager_id", ["boosters"], { boosters: "jsonb" }, 1)).toThrow(/主キー/);
+  });
+
+  it("主キーのキャストが\"none\"指定でも例外を投げる", () => {
+    expect(() => buildBulkUpdateSql("world_player_cards", "world_card_id", ["efhub_card_id"], { world_card_id: "none" }, 1)).toThrow(/主キー/);
+  });
+
+  it("許可外テーブルでは例外を投げる", () => {
+    expect(() => buildBulkUpdateSql("auth.users", "id", ["x"], { id: "text" }, 1)).toThrow();
+  });
+
+  it("rowCountが0以下では例外を投げる", () => {
+    expect(() => buildBulkUpdateSql("managers", "internal_manager_id", ["boosters"], { internal_manager_id: "integer" }, 0)).toThrow();
+  });
+
+  it("値そのものを含まず、プレースホルダーのみで構成される", () => {
+    const sql = buildBulkUpdateSql("managers", "internal_manager_id", ["boosters"], { internal_manager_id: "integer", boosters: "jsonb" }, 1);
+    expect(sql).not.toMatch(/[^\x00-\x7F]/);
   });
 });

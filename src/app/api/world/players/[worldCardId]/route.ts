@@ -24,7 +24,7 @@ export async function GET(
   }
 
   try {
-    const player = getPlayerByWorldId(parsed.data);
+    const player = await getPlayerByWorldId(parsed.data);
     if (!player) {
       return NextResponse.json(
         { error: { code: "NOT_FOUND", message: "選手が見つかりません。" } },

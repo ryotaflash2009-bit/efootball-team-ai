@@ -22,7 +22,7 @@ export async function GET(request: Request) {
   });
 
   try {
-    const result = listManagers(q);
+    const result = await listManagers(q);
     const res = NextResponse.json(result);
     if (process.env.NODE_ENV === "production") {
       res.headers.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");

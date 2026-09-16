@@ -71,7 +71,7 @@ export async function GET(
 
   let urls: { imageUrl: string | null; mobileImageUrl: string | null } | null;
   try {
-    urls = getWorldImageUrls(decoded);
+    urls = await getWorldImageUrls(decoded);
   } catch (err) {
     if (err instanceof WorldDataUnavailableError || err instanceof WorldQueryError) {
       return placeholderResponse(err.code);

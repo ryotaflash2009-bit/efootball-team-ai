@@ -23,7 +23,7 @@ export default async function ManagersPage({ searchParams }: { searchParams: Pro
   let unavailable = false;
   let failed = false;
   try {
-    result = listManagers(q);
+    result = await listManagers(q);
   } catch (err) {
     if (err instanceof ManagerDataUnavailableError) unavailable = true;
     else failed = true;

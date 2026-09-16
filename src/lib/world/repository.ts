@@ -11,11 +11,33 @@ import type {
   WorldEfhubConflict,
 } from "./types";
 import { WORLD_CARD_ID_RE } from "./schemas";
+import { getWorldDataSource } from "@/lib/reference-data/runtime/data-source";
+import {
+  listPlayersFromSupabase,
+  getPlayerByWorldIdFromSupabase,
+  getPlayersByWorldIdsFromSupabase,
+  getWorldImageUrlsFromSupabase,
+  getFacetsFromSupabase,
+  getSourceMetaFromSupabase,
+  _resetFacetCacheForSupabase,
+} from "@/lib/reference-data/runtime/world-source";
 
 type Row = Record<string, unknown>;
 
+/**
+ * データソース抽象化: `WORLD_DATA_SOURCE`環境変数に応じて、既存のSQLite実装
+ * (`*Sqlite`、挙動は完全に既存のまま無変更)とSupabase実装(`runtime/world-source.ts`)を
+ * 切り替える。既定は"sqlite"(本番挙動は無変更)。関数はいずれの経路でも同じPromiseを返す
+ * (SQLite経路は同期処理をそのままPromiseで包むだけで、処理内容自体は変えない)。
+ */
+
 /** 一覧: 検索 + フィルタ + 並べ替え + サーバー側ページネーション */
-export function listPlayers(q: WorldListQuery): WorldListResult {
+export async function listPlayers(q: WorldListQuery): Promise<WorldListResult> {
+  if (getWorldDataSource() === "supabase") return listPlayersFromSupabase(q);
+  return listPlayersSqlite(q);
+}
+
+function listPlayersSqlite(q: WorldListQuery): WorldListResult {
   const db = getDb();
   const { sql: where, params } = buildWhere(q);
 
@@ -72,7 +94,12 @@ function buildAppliedFilters(q: WorldListQuery): Record<string, string | number 
 }
 
 /** 詳細: world_card_id 1 件（見つからなければ null） */
-export function getPlayerByWorldId(worldCardId: string): WorldPlayerDetail | null {
+export async function getPlayerByWorldId(worldCardId: string): Promise<WorldPlayerDetail | null> {
+  if (getWorldDataSource() === "supabase") return getPlayerByWorldIdFromSupabase(worldCardId);
+  return getPlayerByWorldIdSqlite(worldCardId);
+}
+
+function getPlayerByWorldIdSqlite(worldCardId: string): WorldPlayerDetail | null {
   if (!WORLD_CARD_ID_RE.test(worldCardId)) return null;
   const db = getDb();
 
@@ -142,7 +169,12 @@ export function getPlayerByWorldId(worldCardId: string): WorldPlayerDetail | nul
  * 複数の world_card_id をまとめて取得（お気に入り / My Team の解決用・読み取り専用）。
  * 見つからなかった ID は結果に含まれない。入力上限あり（DoS 回避）。順序は入力順を尊重。
  */
-export function getPlayersByWorldIds(ids: string[]): WorldPlayerListItem[] {
+export async function getPlayersByWorldIds(ids: string[]): Promise<WorldPlayerListItem[]> {
+  if (getWorldDataSource() === "supabase") return getPlayersByWorldIdsFromSupabase(ids);
+  return getPlayersByWorldIdsSqlite(ids);
+}
+
+function getPlayersByWorldIdsSqlite(ids: string[]): WorldPlayerListItem[] {
   const clean = Array.from(new Set(ids.filter((id) => WORLD_CARD_ID_RE.test(id)))).slice(0, 500);
   if (clean.length === 0) return [];
   const db = getDb();
@@ -160,9 +192,14 @@ export function getPlayersByWorldIds(ids: string[]): WorldPlayerListItem[] {
 }
 
 /** 画像プロキシ用: 保存済みの画像 URL を取得（見つからなければ null） */
-export function getWorldImageUrls(
+export async function getWorldImageUrls(
   worldCardId: string,
-): { imageUrl: string | null; mobileImageUrl: string | null } | null {
+): Promise<{ imageUrl: string | null; mobileImageUrl: string | null } | null> {
+  if (getWorldDataSource() === "supabase") return getWorldImageUrlsFromSupabase(worldCardId);
+  return getWorldImageUrlsSqlite(worldCardId);
+}
+
+function getWorldImageUrlsSqlite(worldCardId: string): { imageUrl: string | null; mobileImageUrl: string | null } | null {
   if (!WORLD_CARD_ID_RE.test(worldCardId)) return null;
   const db = getDb();
   let row: Row | undefined;
@@ -197,7 +234,12 @@ function dedupeStrings(arr: string[]): string[] {
 
 let facetCache: WorldFacets | null = null;
 
-export function getFacets(): WorldFacets {
+export async function getFacets(): Promise<WorldFacets> {
+  if (getWorldDataSource() === "supabase") return getFacetsFromSupabase();
+  return getFacetsSqlite();
+}
+
+function getFacetsSqlite(): WorldFacets {
   if (facetCache) return facetCache;
   const db = getDb();
   try {
@@ -218,7 +260,12 @@ export function getFacets(): WorldFacets {
 
 // ---- データソースのメタ情報 ----
 
-export function getSourceMeta(): WorldSourceMeta {
+export async function getSourceMeta(): Promise<WorldSourceMeta> {
+  if (getWorldDataSource() === "supabase") return getSourceMetaFromSupabase();
+  return getSourceMetaSqlite();
+}
+
+function getSourceMetaSqlite(): WorldSourceMeta {
   const db = getDb();
   try {
     const total = db.prepare("SELECT COUNT(*) AS n FROM world_player_cards").get() as { n: number };
@@ -242,4 +289,5 @@ export function getSourceMeta(): WorldSourceMeta {
 
 export function _resetFacetCache(): void {
   facetCache = null;
+  _resetFacetCacheForSupabase();
 }

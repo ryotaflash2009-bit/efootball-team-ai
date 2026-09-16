@@ -8,6 +8,8 @@ import {
   substitutePlaceholderOnce,
   validateConnectionStringStructure,
   buildAndValidateConnectionString,
+  extractProjectRefFromSupabaseUrl,
+  checkTemplateMatchesProjectRef,
 } from "./connection-string-builder";
 
 const SESSION_POOLER_TEMPLATE = `postgresql://postgres.example-ref:${PASSWORD_PLACEHOLDER}@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres`;
@@ -118,6 +120,76 @@ describe("validateConnectionStringStructure", () => {
     expect(result.reason).not.toContain("aws-0-ap-northeast-1");
     expect(result.reason).not.toContain("example-ref");
   });
+
+  it("Direct connectionの拒否理由には、Session poolerタブを選び直す具体的な案内を含む", () => {
+    const result = validateConnectionStringStructure(substitutePlaceholderOnce(DIRECT_TEMPLATE, "dummy"));
+    expect(result.reason).toMatch(/Session pooler.*タブ/);
+  });
+
+  it("Transaction poolerの拒否理由には、Session poolerタブを選び直す具体的な案内を含む", () => {
+    const result = validateConnectionStringStructure(substitutePlaceholderOnce(TRANSACTION_POOLER_TEMPLATE, "dummy"));
+    expect(result.reason).toMatch(/Session pooler.*タブ/);
+  });
+
+  it("前後に空白が付いていてもSession pooler形式を正しく認識する(URI仕様で自動除去される)", () => {
+    const withSpaces = `  ${substitutePlaceholderOnce(SESSION_POOLER_TEMPLATE, "dummy")}  `;
+    const result = validateConnectionStringStructure(withSpaces);
+    expect(result.ok).toBe(true);
+    expect(result.poolerType).toBe("session");
+  });
+
+  it("途中に改行・タブが混入していてもSession pooler形式を正しく認識する(URI仕様で自動除去される)", () => {
+    const raw = substitutePlaceholderOnce(SESSION_POOLER_TEMPLATE, "dummy");
+    const withNewline = raw.replace("dummy@", "dum\nmy@");
+    const withTab = raw.replace(":5432", "\t:5432");
+    expect(validateConnectionStringStructure(withNewline).poolerType).toBe("session");
+    expect(validateConnectionStringStructure(withTab).poolerType).toBe("session");
+  });
+
+  it("前後を引用符で囲まれた文字列は、Direct/Session誤判定ではなく明確なURI解析失敗として拒否される", () => {
+    const quoted = `"${substitutePlaceholderOnce(SESSION_POOLER_TEMPLATE, "dummy")}"`;
+    const result = validateConnectionStringStructure(quoted);
+    expect(result.ok).toBe(false);
+    expect(result.poolerType).toBeUndefined();
+    expect(result.reason).toMatch(/URI解析に失敗/);
+  });
+});
+
+describe("extractProjectRefFromSupabaseUrl", () => {
+  it("https://<ref>.supabase.co からproject refを取り出す", () => {
+    expect(extractProjectRefFromSupabaseUrl("https://abcdefghijklmnop.supabase.co")).toBe("abcdefghijklmnop");
+  });
+  it("supabase.co以外のホストはnull", () => {
+    expect(extractProjectRefFromSupabaseUrl("https://example.com")).toBeNull();
+  });
+  it("不正なURLはnull", () => {
+    expect(extractProjectRefFromSupabaseUrl("not a url")).toBeNull();
+  });
+});
+
+describe("checkTemplateMatchesProjectRef", () => {
+  const sessionCs = substitutePlaceholderOnce(SESSION_POOLER_TEMPLATE, "dummy"); // ref = example-ref
+  const directCs = substitutePlaceholderOnce(DIRECT_TEMPLATE, "dummy"); // ref = example-ref
+
+  it("Session poolerのユーザー名部分のrefが一致すればok", () => {
+    expect(checkTemplateMatchesProjectRef(sessionCs, "example-ref").ok).toBe(true);
+  });
+  it("Direct connectionのホスト名部分のrefが一致すればok", () => {
+    expect(checkTemplateMatchesProjectRef(directCs, "example-ref").ok).toBe(true);
+  });
+  it("refが不一致なら拒否する(理由にref実値を含めない)", () => {
+    const result = checkTemplateMatchesProjectRef(sessionCs, "totally-different-ref");
+    expect(result.ok).toBe(false);
+    expect(result.reason).not.toContain("example-ref");
+    expect(result.reason).not.toContain("totally-different-ref");
+  });
+  it("期待値が未指定(null/undefined)ならスキップしてok(誤検知回避)", () => {
+    expect(checkTemplateMatchesProjectRef(sessionCs, null).ok).toBe(true);
+    expect(checkTemplateMatchesProjectRef(sessionCs, undefined).ok).toBe(true);
+  });
+  it("大文字小文字の違いは同一とみなす", () => {
+    expect(checkTemplateMatchesProjectRef(sessionCs, "EXAMPLE-REF").ok).toBe(true);
+  });
 });
 
 describe("buildAndValidateConnectionString(統合エントリポイント)", () => {
@@ -169,5 +241,22 @@ describe("buildAndValidateConnectionString(統合エントリポイント)", () 
     const result = buildAndValidateConnectionString({ template: DIRECT_TEMPLATE, password: "my-super-secret-password" });
     expect(JSON.stringify(result)).not.toContain("my-super-secret-password");
     expect(JSON.stringify(result)).not.toContain("db.example-ref.supabase.co");
+  });
+
+  it("expectedProjectRefが一致すれば成功する", () => {
+    const result = buildAndValidateConnectionString({ template: SESSION_POOLER_TEMPLATE, password: "x", expectedProjectRef: "example-ref" });
+    expect(result.ok).toBe(true);
+  });
+
+  it("expectedProjectRefが不一致なら、Session pooler形式でも拒否する(別プロジェクトの取り違え検出)", () => {
+    const result = buildAndValidateConnectionString({ template: SESSION_POOLER_TEMPLATE, password: "x", expectedProjectRef: "some-other-project" });
+    expect(result.ok).toBe(false);
+    expect(JSON.stringify(result)).not.toContain("example-ref");
+    expect(JSON.stringify(result)).not.toContain("some-other-project");
+  });
+
+  it("expectedProjectRefを省略した場合は、これまでどおりproject ref不一致では失敗しない", () => {
+    const result = buildAndValidateConnectionString({ template: SESSION_POOLER_TEMPLATE, password: "x" });
+    expect(result.ok).toBe(true);
   });
 });

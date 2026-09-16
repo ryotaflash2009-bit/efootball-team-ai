@@ -138,6 +138,15 @@ export function checkNoInvalidRows(invalidCount: number, label: string): GuardCh
   return { ok: true };
 }
 
+/** 更新対象IDが全件、期待する形式(正規表現)に一致するかを確認する(不正なIDでのUPDATE実行を未然に防ぐ)。 */
+export function checkAllIdsValid(ids: readonly string[], pattern: RegExp, label: string): GuardCheck {
+  const invalidCount = ids.filter((id) => !pattern.test(id)).length;
+  if (invalidCount > 0) {
+    return { ok: false, reason: `${label}に形式不正なIDが${invalidCount}件見つかった` };
+  }
+  return { ok: true };
+}
+
 export function checkSqliteIntegrity(integrityCheckResult: string): GuardCheck {
   if (integrityCheckResult.trim().toLowerCase() !== "ok") {
     return { ok: false, reason: `SQLite integrity_checkが"ok"以外を返した: ${integrityCheckResult}` };
@@ -210,5 +219,58 @@ export function buildUpsertSql(table: string, columns: readonly string[], rowCou
     `insert into ${qualified} (${columns.join(", ")})`,
     `values ${valueRows.join(", ")}`,
     `on conflict (${conflictColumn}) do update set ${updateSet}`,
+  ].join("\n");
+}
+
+/** カラムごとの明示的なPostgres型キャスト(UPDATE...FROM (VALUES ...)のVALUES内で型を明確にするため)。 */
+export type BulkUpdateColumnCast = "text" | "text[]" | "jsonb" | "integer" | "numeric" | "none";
+
+/**
+ * `UPDATE ... FROM (VALUES ...) AS v(pk, col1, col2, ...) WHERE t.pk = v.pk`形式の
+ * パラメータ化された複数行UPDATE文を組み立てる(値そのものは含まない、プレースホルダーのみ)。
+ * 既存の初回投入(buildUpsertSql、INSERT専用)とは別物で、既存行の追加列だけをUPDATEする
+ * 差分投入(reference_data.world_player_cards/managersへの詳細フィールド追加)に使う。
+ *
+ * 主キー列のキャストは`columnCasts`で必ず明示すること(省略や"none"は例外)。
+ * `INSERT INTO (columns) VALUES (...)`とは異なり、`FROM (VALUES ...) AS v(...)`は
+ * 挿入先カラムからの型推論が効かないため、キャスト無しのパラメータはPostgreSQLに
+ * text相当として推論されることがある。主キーがinteger等の場合、後続のWHERE句
+ * (`t.pk = v.pk`)で`operator does not exist: integer = text`のように失敗する
+ * (実際に発生した障害の原因)。この関数はその型推論への依存を構造的に排除する。
+ */
+export function buildBulkUpdateSql(
+  table: string,
+  pkColumn: string,
+  columns: readonly string[],
+  columnCasts: Readonly<Record<string, BulkUpdateColumnCast>>,
+  rowCount: number,
+): string {
+  const qualified = qualifiedTable(table);
+  if (rowCount <= 0) throw new Error("buildBulkUpdateSql: rowCountは1以上である必要がある");
+  const pkCast = columnCasts[pkColumn];
+  if (!pkCast || pkCast === "none") {
+    throw new Error(
+      `buildBulkUpdateSql: 主キー列(${pkColumn})の型キャストが未指定。` +
+        `PostgreSQLがVALUES句の型をtext相当へ推論し、実カラムの型と比較できず` +
+        `"operator does not exist"で失敗する恐れがあるため、呼び出し側でtext/integer等を必ず指定すること。`,
+    );
+  }
+  const allColumns = [pkColumn, ...columns];
+  const valueRows: string[] = [];
+  let paramIndex = 1;
+  for (let r = 0; r < rowCount; r += 1) {
+    const placeholders = allColumns.map((c) => {
+      const cast = columnCasts[c] ?? "none";
+      const ph = `$${paramIndex++}`;
+      return cast === "none" ? ph : `${ph}::${cast}`;
+    });
+    valueRows.push(`(${placeholders.join(", ")})`);
+  }
+  const setClause = columns.map((c) => `${c} = v.${c}`).join(", ");
+  return [
+    `update ${qualified} as t`,
+    `set ${setClause}`,
+    `from (values ${valueRows.join(", ")}) as v(${allColumns.join(", ")})`,
+    `where t.${pkColumn} = v.${pkColumn}`,
   ].join("\n");
 }

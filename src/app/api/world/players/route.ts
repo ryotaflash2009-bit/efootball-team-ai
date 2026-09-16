@@ -32,8 +32,8 @@ export async function GET(request: Request) {
   });
 
   try {
-    const result = listPlayers(q);
-    const meta = getSourceMeta();
+    const result = await listPlayers(q);
+    const meta = await getSourceMeta();
     const body: Record<string, unknown> = {
       players: result.players,
       page: result.page,
@@ -47,7 +47,7 @@ export async function GET(request: Request) {
       updatedAt: meta.syncFinishedAt,
     };
     if (searchParams.get("facets") === "1") {
-      body.facets = getFacets();
+      body.facets = await getFacets();
     }
 
     const res = NextResponse.json(body);

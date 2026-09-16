@@ -10,6 +10,8 @@ import type {
   LinkUpPlay,
 } from "./types";
 import { MANAGER_ID_RE } from "./schemas";
+import { getWorldDataSource } from "@/lib/reference-data/runtime/data-source";
+import { listManagersFromSupabase, getManagerByIdFromSupabase, getManagerCountFromSupabase } from "@/lib/reference-data/runtime/managers-source";
 
 type Row = Record<string, unknown>;
 
@@ -38,16 +40,34 @@ function ensureManagerTables(): void {
   }
 }
 
+/**
+ * 正式なタイブレーク規則(Phase Dで確定): 主ソートキー → name_en(NOCASE) → internal_manager_id ASC。
+ * 最終タイブレークは主ソートの昇順・降順によらず常にASCで固定する
+ * (world_player_cards側の既存規則「world_card_id ASCで固定」と同じ設計、Phase C以来の既存precedent)。
+ *
+ * 66件中16グループ(各2〜3件)で監督名が完全重複しており、さらに一部の主ソート値・name_enまで
+ * 完全に一致する組が実在する(例: internal_manager_id 51/58の「Johan Cruyff」)。
+ * この最終タイブレークが無いと、SQLiteは非公開のrowid等へ、PostgreSQLは別の内部順序へ
+ * 依存する未定義動作になり、エンジン間で順序が一致しないことが実測で確認された。
+ * これは「既存の意味のある表示仕様の変更」ではなく、これまで未定義だった完全同値レコード間の
+ * 順序を初めて正式に決定するものとして扱う(ユーザーの明示判断)。
+ *
+ * NULL順序(released_at・overloadなど): SQLiteの既定動作(NULLは常に最小値として扱われるため、
+ * ASCでは先頭、DESCでは末尾に来る)を正式仕様として維持する。この動作はSQLite側のクエリを
+ * 変更しなくても既に得られるため、ORDER BY文字列自体は変更不要(Supabase側だけ、
+ * PostgreSQLの既定NULL順序[ASCで末尾/DESCで先頭、SQLiteと正反対]に依存せず、
+ * `nullsFirst`を明示してこの規則を再現する。managers-source.tsを参照)。
+ */
 const ORDER_BY: Record<ManagerSortKey, string> = {
   name: "m.name_en COLLATE NOCASE ASC, m.internal_manager_id ASC",
-  released_desc: "m.released_at DESC, m.name_en COLLATE NOCASE ASC",
-  released_asc: "m.released_at ASC, m.name_en COLLATE NOCASE ASC",
-  possession_desc: "m.possession_game DESC, m.name_en COLLATE NOCASE ASC",
-  quick_counter_desc: "m.quick_counter DESC, m.name_en COLLATE NOCASE ASC",
-  long_ball_counter_desc: "m.long_ball_counter DESC, m.name_en COLLATE NOCASE ASC",
-  out_wide_desc: "m.out_wide DESC, m.name_en COLLATE NOCASE ASC",
-  long_ball_desc: "m.long_ball DESC, m.name_en COLLATE NOCASE ASC",
-  overload_desc: "m.overload DESC, m.name_en COLLATE NOCASE ASC",
+  released_desc: "m.released_at DESC, m.name_en COLLATE NOCASE ASC, m.internal_manager_id ASC",
+  released_asc: "m.released_at ASC, m.name_en COLLATE NOCASE ASC, m.internal_manager_id ASC",
+  possession_desc: "m.possession_game DESC, m.name_en COLLATE NOCASE ASC, m.internal_manager_id ASC",
+  quick_counter_desc: "m.quick_counter DESC, m.name_en COLLATE NOCASE ASC, m.internal_manager_id ASC",
+  long_ball_counter_desc: "m.long_ball_counter DESC, m.name_en COLLATE NOCASE ASC, m.internal_manager_id ASC",
+  out_wide_desc: "m.out_wide DESC, m.name_en COLLATE NOCASE ASC, m.internal_manager_id ASC",
+  long_ball_desc: "m.long_ball DESC, m.name_en COLLATE NOCASE ASC, m.internal_manager_id ASC",
+  overload_desc: "m.overload DESC, m.name_en COLLATE NOCASE ASC, m.internal_manager_id ASC",
 };
 
 function proficienciesFromRow(r: Row): TacticalProficiencies {
@@ -87,7 +107,12 @@ function escapeLike(v: string): string {
   return v.replace(/[\\%_]/g, (m) => `\\${m}`);
 }
 
-export function listManagers(q: ManagerListQuery): ManagerListResult {
+export async function listManagers(q: ManagerListQuery): Promise<ManagerListResult> {
+  if (getWorldDataSource() === "supabase") return listManagersFromSupabase(q);
+  return listManagersSqlite(q);
+}
+
+function listManagersSqlite(q: ManagerListQuery): ManagerListResult {
   ensureManagerTables();
   const db = getDb();
   const clauses: string[] = [];
@@ -151,7 +176,12 @@ export function listManagers(q: ManagerListQuery): ManagerListResult {
   };
 }
 
-export function getManagerById(internalManagerId: string | number): ManagerDetail | null {
+export async function getManagerById(internalManagerId: string | number): Promise<ManagerDetail | null> {
+  if (getWorldDataSource() === "supabase") return getManagerByIdFromSupabase(internalManagerId);
+  return getManagerByIdSqlite(internalManagerId);
+}
+
+function getManagerByIdSqlite(internalManagerId: string | number): ManagerDetail | null {
   const idStr = String(internalManagerId);
   if (!MANAGER_ID_RE.test(idStr)) return null;
   ensureManagerTables();
@@ -224,7 +254,12 @@ export function getManagerById(internalManagerId: string | number): ManagerDetai
   };
 }
 
-export function getManagerCount(): number {
+export async function getManagerCount(): Promise<number> {
+  if (getWorldDataSource() === "supabase") return getManagerCountFromSupabase();
+  return getManagerCountSqlite();
+}
+
+function getManagerCountSqlite(): number {
   ensureManagerTables();
   const db = getDb();
   try {

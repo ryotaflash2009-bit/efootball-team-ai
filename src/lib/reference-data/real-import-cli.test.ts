@@ -1,15 +1,22 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { execFileSync } from "node:child_process";
+import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
 import path from "node:path";
 
 /**
  * `scripts/migration/pg-real-import.mjs`を実際に子プロセスとして起動し、
  * 「既定はdry-run」「--validate-only/--executeなしでは接続0回」「環境変数が無ければ
- * 安全に拒否する」「Session pooler以外の形式は接続前に拒否する」ことを、
- * モックではなく実際のCLI起動で確認する。
+ * 安全に拒否する」「Session pooler以外の形式は接続前に拒否する」「CA証明書パスが
+ * 無ければ実接続前に拒否する」ことを、モックではなく実際のCLI起動で確認する。
  *
  * 実Supabaseへは一切接続しない(すべて架空のテンプレート/パスワード、または未設定のテストのみ)。
+ *
+ * 複数のCLIテストファイルが並列実行されると、実子プロセスの同時起動数が増え、
+ * Vitestの既定テストタイムアウト(5,000ms)を稀に超えることがあったため、
+ * このファイル内のテストだけタイムアウトを緩める(ロジック自体の変更ではない)。
  */
+vi.setConfig({ testTimeout: 20_000 });
+
 const ROOT = path.resolve(__dirname, "..", "..", "..");
 const SCRIPT_PATH = path.join(ROOT, "scripts", "migration", "pg-real-import.mjs");
 const FAKE_SESSION_POOLER_TEMPLATE =
@@ -18,12 +25,30 @@ const FAKE_TRANSACTION_POOLER_TEMPLATE =
   "postgresql://postgres.example-ref:[YOUR-PASSWORD]@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres";
 const FAKE_DIRECT_TEMPLATE = "postgresql://postgres:[YOUR-PASSWORD]@db.example-ref.supabase.co:5432/postgres";
 const FAKE_PASSWORD = "fake-test-password-not-real";
+const FAKE_CA_PEM = "-----BEGIN CERTIFICATE-----\nMIIB...fake-test-ca-not-real...\n-----END CERTIFICATE-----\n";
+
+let tmpDir: string;
+let fakeCaCertPath: string;
+
+beforeAll(() => {
+  tmpDir = mkdtempSync(path.join(ROOT, "data", "test-tmp", "ca-cert-cli-test-"));
+  fakeCaCertPath = path.join(tmpDir, "fake-ca.pem");
+  writeFileSync(fakeCaCertPath, FAKE_CA_PEM, "utf8");
+});
+
+afterAll(() => {
+  rmSync(tmpDir, { recursive: true, force: true });
+});
 
 function runCli(args: string[], extraEnv: Record<string, string> = {}): { stdout: string; stderr: string; status: number } {
   const env: Record<string, string> = { ...(process.env as Record<string, string>) };
   delete env.MIGRATION_PG_CONNECTION_TEMPLATE;
   delete env.MIGRATION_PG_PASSWORD;
   delete env.MIGRATION_TARGET_LABEL;
+  delete env.MIGRATION_PG_CA_CERT_PATH;
+  // project ref突合を無効化する(テストは`.env.local`の実プロジェクト値に依存させない)。
+  // 一致を検証したいテストだけがNEXT_PUBLIC_SUPABASE_URLを明示的にextraEnvで指定する。
+  delete env.NEXT_PUBLIC_SUPABASE_URL;
   Object.assign(env, extraEnv);
   try {
     const stdout = execFileSync("node", [SCRIPT_PATH, ...args], {
@@ -90,15 +115,70 @@ describe("pg-real-import.mjs CLI(実プロセス起動、実Supabase接続なし
     expect(stdout + stderr).toMatch(/MIGRATION_PG_PASSWORD.*設定されていません/);
   });
 
-  it("正しいSession poolerテンプレート+パスワードなら--validate-onlyは成功し、接続はしない", () => {
+  it("正しいSession poolerテンプレート+パスワード+CA証明書パスなら--validate-onlyは成功し、接続はしない", () => {
     const { stdout, status } = runCli(["--validate-only"], {
       MIGRATION_TARGET_LABEL: "test-label",
       MIGRATION_PG_CONNECTION_TEMPLATE: FAKE_SESSION_POOLER_TEMPLATE,
       MIGRATION_PG_PASSWORD: FAKE_PASSWORD,
+      MIGRATION_PG_CA_CERT_PATH: fakeCaCertPath,
+      // project ref突合をテンプレートのref(example-ref)に一致させ、実の.env.localに依存しない
+      NEXT_PUBLIC_SUPABASE_URL: "https://example-ref.supabase.co",
     });
     expect(status).toBe(0);
     expect(stdout).toMatch(/検証OK: 入力準備が完了しました/);
+    expect(stdout).toMatch(/CA証明書=指定あり/);
     expect(stdout).not.toMatch(/PostgreSQLへ接続しました/);
+  });
+
+  it("CA証明書パス(MIGRATION_PG_CA_CERT_PATH)が未指定だと、テンプレート/パスワードが正しくても実接続前に拒否される", () => {
+    const { stdout, stderr, status } = runCli(["--validate-only"], {
+      MIGRATION_TARGET_LABEL: "test-label",
+      MIGRATION_PG_CONNECTION_TEMPLATE: FAKE_SESSION_POOLER_TEMPLATE,
+      MIGRATION_PG_PASSWORD: FAKE_PASSWORD,
+      NEXT_PUBLIC_SUPABASE_URL: "https://example-ref.supabase.co",
+    });
+    expect(status).not.toBe(0);
+    expect(stdout + stderr).toMatch(/CA証明書のパスが指定されていない/);
+    expect(stdout + stderr).not.toMatch(/PostgreSQLへ接続しました/);
+  });
+
+  it("--executeでもCA証明書パスが未指定なら実接続前に拒否される", () => {
+    const { stdout, stderr, status } = runCli(["--execute"], {
+      MIGRATION_TARGET_LABEL: "test-label",
+      MIGRATION_PG_CONNECTION_TEMPLATE: FAKE_SESSION_POOLER_TEMPLATE,
+      MIGRATION_PG_PASSWORD: FAKE_PASSWORD,
+      NEXT_PUBLIC_SUPABASE_URL: "https://example-ref.supabase.co",
+    });
+    expect(status).not.toBe(0);
+    expect(stdout + stderr).toMatch(/CA証明書のパスが指定されていない/);
+    expect(stdout + stderr).not.toMatch(/PostgreSQLへ接続しました/);
+  });
+
+  it("存在しないCA証明書ファイルを指定した場合は実接続前に拒否される", () => {
+    const { stdout, stderr, status } = runCli(["--validate-only"], {
+      MIGRATION_TARGET_LABEL: "test-label",
+      MIGRATION_PG_CONNECTION_TEMPLATE: FAKE_SESSION_POOLER_TEMPLATE,
+      MIGRATION_PG_PASSWORD: FAKE_PASSWORD,
+      MIGRATION_PG_CA_CERT_PATH: path.join(tmpDir, "does-not-exist.pem"),
+      NEXT_PUBLIC_SUPABASE_URL: "https://example-ref.supabase.co",
+    });
+    expect(status).not.toBe(0);
+    expect(stdout + stderr).toMatch(/CA証明書の読み込みに失敗/);
+    expect(stdout + stderr).not.toMatch(/PostgreSQLへ接続しました/);
+  });
+
+  it("project refが既知のSupabaseプロジェクトと一致しないSession poolerテンプレートは拒否される(別プロジェクト取り違え検出)", () => {
+    const { stdout, stderr, status } = runCli(["--validate-only"], {
+      MIGRATION_TARGET_LABEL: "test-label",
+      MIGRATION_PG_CONNECTION_TEMPLATE: FAKE_SESSION_POOLER_TEMPLATE,
+      MIGRATION_PG_PASSWORD: FAKE_PASSWORD,
+      NEXT_PUBLIC_SUPABASE_URL: "https://totallydifferentprojectref.supabase.co",
+    });
+    expect(status).not.toBe(0);
+    expect(stdout + stderr).toMatch(/プロジェクト参照が.*一致しない/);
+    expect(stdout + stderr).not.toMatch(/PostgreSQLへ接続しました/);
+    expect(stdout + stderr).not.toContain("example-ref");
+    expect(stdout + stderr).not.toContain("totallydifferentprojectref");
   });
 
   it("Transaction pooler形式は--validate-onlyで拒否される(接続前)", () => {

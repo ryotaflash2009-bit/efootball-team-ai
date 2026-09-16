@@ -25,9 +25,9 @@ export default async function ManagerDetailPage({ params }: { params: Promise<{ 
   const decoded = decodeURIComponent(managerId);
   if (!MANAGER_ID_RE.test(decoded)) notFound();
 
-  let manager: ReturnType<typeof getManagerById> = null;
+  let manager: Awaited<ReturnType<typeof getManagerById>> = null;
   try {
-    manager = getManagerById(decoded);
+    manager = await getManagerById(decoded);
   } catch (err) {
     if (err instanceof ManagerDataUnavailableError) {
       return (
