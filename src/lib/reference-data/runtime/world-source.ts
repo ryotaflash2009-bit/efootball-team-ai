@@ -34,6 +34,17 @@ import type {
 } from "@/lib/world/types";
 import { getReferenceDataClient } from "./supabase-client";
 import { normalizeClientError, normalizeQueryError } from "./errors";
+import type { ReferenceDataOperation } from "./observability";
+
+/**
+ * facetsキャッシュのTTL(ミリ秒、300秒)。
+ * 詳細ページの`export const revalidate = 300`(`src/app/players/world/[worldCardId]/page.tsx`)と
+ * 値を揃える。Supabase側データ更新後、サーバープロセス再起動までfacetsが無期限に古いまま
+ * 残る問題を防ぐため導入する(SQLite側の同名キャッシュ`src/lib/world/repository.ts`は、
+ * データがアプリ再デプロイ経由でしか変わらない前提のため今回の対象外)。
+ * テストは`vi.useFakeTimers()`で`Date.now()`を制御し、実時間300秒を待たない。
+ */
+const FACET_CACHE_TTL_MS = 300_000;
 
 type Row = Record<string, unknown>;
 
@@ -91,11 +102,11 @@ function buildAppliedFilters(q: WorldListQuery): Record<string, string | number 
   return f;
 }
 
-async function getClient(client?: ReferenceDataClient): Promise<ReferenceDataClient> {
+async function getClient(operation: ReferenceDataOperation, client?: ReferenceDataClient): Promise<ReferenceDataClient> {
   try {
     return client ?? getReferenceDataClient();
   } catch (err) {
-    throw normalizeClientError(err);
+    throw normalizeClientError(err, { operation });
   }
 }
 
@@ -164,15 +175,15 @@ function normalizeAiStyles(value: unknown): string[] {
 }
 
 export async function listPlayersFromSupabase(q: WorldListQuery, client?: ReferenceDataClient): Promise<WorldListResult> {
-  const c = await getClient(client);
+  const c = await getClient("world.list", client);
 
-  let countResult: { count: number | null; error: unknown };
+  let countResult: { count: number | null; error: unknown; status?: number };
   try {
     countResult = await applyWorldFilters(c.from("world_player_cards").select("world_card_id", { count: "exact", head: true }), q);
   } catch (err) {
-    throw normalizeQueryError(err);
+    throw normalizeQueryError(err, { operation: "world.list" });
   }
-  if (countResult.error) throw normalizeQueryError(countResult.error);
+  if (countResult.error) throw normalizeQueryError(countResult.error, { operation: "world.list", status: countResult.status });
 
   const totalCount = countResult.count ?? 0;
   const totalPages = q.pageSize > 0 ? Math.max(1, Math.ceil(totalCount / q.pageSize)) : 1;
@@ -181,8 +192,8 @@ export async function listPlayersFromSupabase(q: WorldListQuery, client?: Refere
 
   let dataBuilder = applyWorldFilters(c.from("world_player_cards").select("*"), q);
   for (const key of ORDER[q.sort] ?? ORDER.ovr_max_desc) dataBuilder = dataBuilder.order(key.field, { ascending: key.ascending });
-  const { data, error } = await dataBuilder.range(offset, offset + q.pageSize - 1);
-  if (error) throw normalizeQueryError(error);
+  const { data, error, status } = await dataBuilder.range(offset, offset + q.pageSize - 1);
+  if (error) throw normalizeQueryError(error, { operation: "world.list", status });
 
   const rows = (data ?? []) as Row[];
   const players = rows.map((r) => rowToListItem(r));
@@ -201,10 +212,10 @@ export async function listPlayersFromSupabase(q: WorldListQuery, client?: Refere
 
 export async function getPlayerByWorldIdFromSupabase(worldCardId: string, client?: ReferenceDataClient): Promise<WorldPlayerDetail | null> {
   if (!WORLD_CARD_ID_RE.test(worldCardId)) return null;
-  const c = await getClient(client);
+  const c = await getClient("world.detail", client);
 
-  const { data, error } = await c.from("world_player_cards").select("*").eq("world_card_id", worldCardId).maybeSingle();
-  if (error) throw normalizeQueryError(error);
+  const { data, error, status } = await c.from("world_player_cards").select("*").eq("world_card_id", worldCardId).maybeSingle();
+  if (error) throw normalizeQueryError(error, { operation: "world.detail", status });
   if (!data) return null;
   const row = data as Row;
   const base = rowToListItem(row);
@@ -228,10 +239,10 @@ export async function getPlayerByWorldIdFromSupabase(worldCardId: string, client
 export async function getPlayersByWorldIdsFromSupabase(ids: string[], client?: ReferenceDataClient): Promise<WorldPlayerListItem[]> {
   const clean = Array.from(new Set(ids.filter((id) => WORLD_CARD_ID_RE.test(id)))).slice(0, 500);
   if (clean.length === 0) return [];
-  const c = await getClient(client);
+  const c = await getClient("world.byIds", client);
 
-  const { data, error } = await c.from("world_player_cards").select("*").in("world_card_id", clean);
-  if (error) throw normalizeQueryError(error);
+  const { data, error, status } = await c.from("world_player_cards").select("*").in("world_card_id", clean);
+  if (error) throw normalizeQueryError(error, { operation: "world.byIds", status });
 
   const rows = (data ?? []) as Row[];
   const byId = new Map(rows.map((r) => [String(r.world_card_id), rowToListItem(r)]));
@@ -243,9 +254,9 @@ export async function getWorldImageUrlsFromSupabase(
   client?: ReferenceDataClient,
 ): Promise<{ imageUrl: string | null; mobileImageUrl: string | null } | null> {
   if (!WORLD_CARD_ID_RE.test(worldCardId)) return null;
-  const c = await getClient(client);
-  const { data, error } = await c.from("world_player_cards").select("image_url,mobile_image_url").eq("world_card_id", worldCardId).maybeSingle();
-  if (error) throw normalizeQueryError(error);
+  const c = await getClient("world.image", client);
+  const { data, error, status } = await c.from("world_player_cards").select("image_url,mobile_image_url").eq("world_card_id", worldCardId).maybeSingle();
+  if (error) throw normalizeQueryError(error, { operation: "world.image", status });
   if (!data) return null;
   const row = data as Row;
   return {
@@ -254,7 +265,11 @@ export async function getWorldImageUrlsFromSupabase(
   };
 }
 
-let facetCache: WorldFacets | null = null;
+interface FacetCacheEntry {
+  value: WorldFacets;
+  expiresAt: number;
+}
+let facetCacheEntry: FacetCacheEntry | null = null;
 
 function addNonEmpty(set: Set<string>, v: unknown): void {
   if (typeof v === "string" && v !== "") set.add(v);
@@ -274,20 +289,24 @@ function sortedArray(set: Set<string>): string[] {
 const FACET_PAGE_SIZE = 1000;
 
 export async function getFacetsFromSupabase(client?: ReferenceDataClient): Promise<WorldFacets> {
-  if (facetCache) return facetCache;
-  const c = await getClient(client);
+  if (facetCacheEntry && facetCacheEntry.expiresAt > Date.now()) return facetCacheEntry.value;
+  const c = await getClient("world.facets", client);
   const positions = new Set<string>();
   const cardTypes = new Set<string>();
   const playingStyles = new Set<string>();
   const playingStyleDefensives = new Set<string>();
 
   let offset = 0;
+  let pageIndex = 0;
   for (;;) {
-    const { data, error, count } = await c
+    const { data, error, count, status } = await c
       .from("world_player_cards")
       .select("registered_position,card_type,playing_style,playing_style_def", { count: "exact" })
       .range(offset, offset + FACET_PAGE_SIZE - 1);
-    if (error) throw normalizeQueryError(error);
+    // TTL経過後の再取得に失敗した場合も含め、期限切れの値を黙って返さずここで伝播させる
+    // (fail closed。facetCacheEntryは成功時にしか更新しないため、失敗時は古いまま=次回も
+    // 期限切れ扱いになり、また再取得を試みる)。
+    if (error) throw normalizeQueryError(error, { operation: "world.facets", status, pageIndex });
     const rows = (data ?? []) as Row[];
     for (const r of rows) {
       addNonEmpty(positions, r.registered_position);
@@ -296,36 +315,37 @@ export async function getFacetsFromSupabase(client?: ReferenceDataClient): Promi
       addNonEmpty(playingStyleDefensives, r.playing_style_def);
     }
     offset += rows.length;
+    pageIndex += 1;
     if (rows.length === 0 || (count != null && offset >= count)) break;
   }
 
-  facetCache = {
+  const value: WorldFacets = {
     positions: sortedArray(positions),
     cardTypes: sortedArray(cardTypes),
     playingStyles: sortedArray(playingStyles),
     playingStyleDefensives: sortedArray(playingStyleDefensives),
   };
-  return facetCache;
+  facetCacheEntry = { value, expiresAt: Date.now() + FACET_CACHE_TTL_MS };
+  return value;
 }
 
 export function _resetFacetCacheForSupabase(): void {
-  facetCache = null;
+  facetCacheEntry = null;
 }
 
 export async function getSourceMetaFromSupabase(client?: ReferenceDataClient): Promise<WorldSourceMeta> {
-  const c = await getClient(client);
-  const { count, error } = await c.from("world_player_cards").select("world_card_id", { count: "exact", head: true });
-  if (error) throw normalizeQueryError(error);
+  const c = await getClient("world.sourceMeta", client);
+  const { count, error, status } = await c.from("world_player_cards").select("world_card_id", { count: "exact", head: true });
+  if (error) throw normalizeQueryError(error, { operation: "world.sourceMeta", status });
 
   // 既知の制約: world_sync_state/world_sync_runs相当は未移行のため、syncFinishedAt/syncStatusは
   // 各行が持つdataset_version/fetched_atの最新値から代替する(推測ではなく実データの範囲で分かる情報のみ使う)。
-  const { data: latest, error: latestError } = await c
-    .from("world_player_cards")
-    .select("fetched_at")
-    .order("fetched_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (latestError) throw normalizeQueryError(latestError);
+  const {
+    data: latest,
+    error: latestError,
+    status: latestStatus,
+  } = await c.from("world_player_cards").select("fetched_at").order("fetched_at", { ascending: false }).limit(1).maybeSingle();
+  if (latestError) throw normalizeQueryError(latestError, { operation: "world.sourceMeta", status: latestStatus });
 
   return {
     source: "eFootball World",

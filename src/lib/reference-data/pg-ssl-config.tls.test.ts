@@ -12,12 +12,20 @@ import { buildPgSslConfig } from "./pg-ssl-config";
  *
  * "self-signed certificate in certificate chain"エラーの再現・解消を、
  * 設定オブジェクトの形だけでなく実際のTLS検証結果で確認するための統合テスト。
- * 証明書はテスト実行のたびにopensslでその場生成し、プロジェクト内のGit非追跡領域
+ * 証明書のほとんどはテスト実行のたびにopensslでその場生成し、プロジェクト内のGit非追跡領域
  * (data/test-tmp配下)へ書き出し、テスト終了後に削除する。
+ *
+ * 例外: 「期限切れの証明書」だけは、`__fixtures__/tls/`配下のGit管理対象の静的fixtureを使う
+ * (`-not_before`/`-not_after`で過去日付を強制するopensslのx509オプションが、環境によって
+ * サポート状況が異なり、実際にGitHub Actions上のOpenSSLビルドで
+ * `x509: Use -help for summary.`として失敗することを確認した。詳細は
+ * `__fixtures__/tls/README.md`)。証明書の検証自体はNodeのTLSスタックが行うため、
+ * 事前生成した証明書でも毎回動的生成した場合と同じ検証結果になる。
  */
 
 const REPO_ROOT = fileURLToPath(new URL("../../../", import.meta.url));
 const FIXTURE_DIR = join(REPO_ROOT, "data", "test-tmp", "tls-fixtures");
+const STATIC_FIXTURE_DIR = join(REPO_ROOT, "src", "lib", "reference-data", "__fixtures__", "tls");
 
 function opensslQuiet(args: string[]): void {
   execFileSync("openssl", args, { cwd: FIXTURE_DIR, stdio: "pipe" });
@@ -26,13 +34,14 @@ function opensslQuiet(args: string[]): void {
 let caKeyPath: string, caCertPath: string;
 let wrongCaCertPath: string;
 let serverKeyPath: string, serverCertPath: string;
-let expiredCertPath: string;
 let mismatchCertPath: string;
 
 let validCaCert: string;
 let wrongCaCert: string;
 let serverKey: string, serverCert: string;
 let expiredCert: string;
+let expiredCertCa: string;
+let expiredCertKey: string;
 let mismatchCert: string;
 let mismatchKey: string;
 
@@ -61,13 +70,6 @@ beforeAll(() => {
     "-out", "server-cert.pem", "-days", "825", "-sha256", "-extfile", "san.ext",
   ]);
 
-  expiredCertPath = join(FIXTURE_DIR, "expired-cert.pem");
-  opensslQuiet([
-    "x509", "-req", "-in", "server.csr", "-CA", "ca-cert.pem", "-CAkey", "ca-key.pem", "-CAcreateserial",
-    "-out", "expired-cert.pem", "-sha256", "-extfile", "san.ext",
-    "-not_before", "20240101000000Z", "-not_after", "20240201000000Z",
-  ]);
-
   const mismatchKeyPath = join(FIXTURE_DIR, "mismatch-key.pem");
   const mismatchCsrPath = join(FIXTURE_DIR, "mismatch.csr");
   const mismatchExtPath = join(FIXTURE_DIR, "san-mismatch.ext");
@@ -84,9 +86,13 @@ beforeAll(() => {
   wrongCaCert = readFileSync(wrongCaCertPath, "utf8");
   serverKey = readFileSync(serverKeyPath, "utf8");
   serverCert = readFileSync(serverCertPath, "utf8");
-  expiredCert = readFileSync(expiredCertPath, "utf8");
   mismatchCert = readFileSync(mismatchCertPath, "utf8");
   mismatchKey = readFileSync(mismatchKeyPath, "utf8");
+
+  // 期限切れ証明書だけは静的fixture(Git管理対象、TEST ONLY)から読む(ファイル先頭のコメント参照)。
+  expiredCert = readFileSync(join(STATIC_FIXTURE_DIR, "expired-test-server-cert.pem"), "utf8");
+  expiredCertKey = readFileSync(join(STATIC_FIXTURE_DIR, "expired-test-server-key.pem"), "utf8");
+  expiredCertCa = readFileSync(join(STATIC_FIXTURE_DIR, "expired-test-ca-cert.pem"), "utf8");
 }, 30_000);
 
 afterAll(() => {
@@ -169,9 +175,9 @@ describe("buildPgSslConfigの実TLSハンドシェイク検証(127.0.0.1のみ�
   });
 
   it("期限切れの証明書は、正しいCAを渡していても拒否される", async () => {
-    const { server, port } = await startTestServer(expiredCert, serverKey);
+    const { server, port } = await startTestServer(expiredCert, expiredCertKey);
     try {
-      const result = await attemptHandshake(port, validCaCert);
+      const result = await attemptHandshake(port, expiredCertCa);
       expect(result.ok).toBe(false);
       if (!result.ok) {
         expect(result.code).toMatch(/EXPIRED/i);

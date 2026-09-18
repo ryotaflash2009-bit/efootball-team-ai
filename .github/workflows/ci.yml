@@ -1,0 +1,50 @@
+name: CI
+
+# 目的: PR作成時とmainへのpush時に、型チェック・全Unit Test・Production Buildを自動実行する。
+# - 実Supabaseへは一切接続しない(Supabase呼び出しはすべて`WORLD_DATA_SOURCE`既定値"sqlite"の
+#   経路か、テストダブル経由のためネットワークアクセスが発生しない)。
+# - Supabase書き込み・migration実行・shadow comparisonの実接続はここでは行わない。
+# - WORLD_DATA_SOURCEはここでも設定しない(既定値"sqlite"のまま)。
+# - secretsはこのworkflowへ一切渡さない。
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Typecheck, test, and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          # ローカル開発・これまでの全検証で実際に使用しているバージョン系列に合わせる
+          # (package.jsonにenginesの指定なし、.nvmrcなし。Next.js 15.5の要件は満たす)。
+          node-version: "24"
+          cache: "npm"
+
+      - name: Install dependencies (reproducible)
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Unit tests
+        run: npx vitest run
+
+      - name: Production build
+        run: npm run build

@@ -54,12 +54,18 @@ const { buildPgSslConfig, loadCaCertificateFromFile, describeSslConfigForLog, ch
 const { extractSupabaseUrlFromEnvFileContent } = await import("../../src/lib/reference-data/local-env-file.ts");
 
 const ROOT = path.resolve(HERE, "..", "..");
-const DB_PATH = path.join(ROOT, "data", "efootball.db");
+// MIGRATION_DB_PATH_OVERRIDE/MIGRATION_EXPECTED_*_COUNTは、クリーンcheckout(実DBを
+// 含まない)でのCLIテストが、実DB(data/efootball.db、13,009/66件)を必要とせず
+// 最小限の合成フィクスチャDBで完結できるようにするためのテスト専用の差し替え口である
+// (pg-real-import.mjs/pg-phase-d-remediation-import.mjsと同じ仕組み)。通常運用
+// (secure-connect.ps1経由)ではいずれも設定されず、既定値(実DBパス・実件数)のままなので、
+// 本番の挙動・安全性(件数一致ゲート等)は一切変わらない。
+const DB_PATH = process.env.MIGRATION_DB_PATH_OVERRIDE || path.join(ROOT, "data", "efootball.db");
 const CA_CERT_PATH_ENV = "MIGRATION_PG_CA_CERT_PATH";
 const TEMPLATE_ENV = "MIGRATION_PG_CONNECTION_TEMPLATE";
 const PASSWORD_ENV = "MIGRATION_PG_PASSWORD";
 const TARGET_LABEL_ENV = "MIGRATION_TARGET_LABEL";
-const EXPECTED_WORLD_COUNT = 13009;
+const EXPECTED_WORLD_COUNT = Number(process.env.MIGRATION_EXPECTED_WORLD_COUNT || 13009);
 
 /**
  * 接続文字列の「別プロジェクト取り違え」検出のためだけに、project ref(非秘密値)を解決する。
@@ -79,7 +85,7 @@ async function resolveExpectedProjectRef() {
     return null;
   }
 }
-const EXPECTED_MANAGER_COUNT = 66;
+const EXPECTED_MANAGER_COUNT = Number(process.env.MIGRATION_EXPECTED_MANAGER_COUNT || 66);
 
 function readAndTransform(db, now) {
   const worldIds = new Set(db.prepare("SELECT world_card_id FROM world_player_cards").all().map((r) => r.world_card_id));

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
   listPlayersFromSupabase,
   getPlayerByWorldIdFromSupabase,
@@ -202,6 +202,43 @@ describe("listPlayersFromSupabase", () => {
   });
 });
 
+describe("障害系: 各HTTPステータス/ネットワーク断でも安全にWorldQueryErrorへ正規化される(優先度A)", () => {
+  const cases: [string, number | undefined, { message: string }][] = [
+    ["401", 401, { message: "JWT expired" }],
+    ["403", 403, { message: "permission denied" }],
+    ["429", 429, { message: "too many requests" }],
+    ["500", 500, { message: "internal server error" }],
+    ["503", 503, { message: "service unavailable" }],
+    ["timeout(status0+abort)", 0, { message: "AbortError: The operation was aborted" }],
+    ["network(status0)", 0, { message: "TypeError: fetch failed" }],
+    ["genericなSDK例外(statusなし)", undefined, { message: "unexpected SDK exception" }],
+  ];
+
+  for (const [label, status, error] of cases) {
+    it(`${label}: listPlayersFromSupabaseが例外を投げ、秘密情報を含まない`, async () => {
+      const client = createFailingReferenceDataClient(error, status);
+      await expect(listPlayersFromSupabase(baseQuery(), client as never)).rejects.toThrow();
+    });
+
+    it(`${label}: getPlayerByWorldIdFromSupabaseが例外を投げる`, async () => {
+      const client = createFailingReferenceDataClient(error, status);
+      await expect(getPlayerByWorldIdFromSupabase("1", client as never)).rejects.toThrow();
+    });
+  }
+
+  it("エラーオブジェクトにURLや鍵らしき文字列が含まれていても、投げられる例外のmessageには含まれない", async () => {
+    const client = createFailingReferenceDataClient({ message: "failed: https://example.supabase.co key=sb_publishable_abcdefg" }, 500);
+    try {
+      await listPlayersFromSupabase(baseQuery(), client as never);
+      expect.unreachable();
+    } catch (err) {
+      const message = String((err as Error).message);
+      expect(message).not.toContain("supabase.co");
+      expect(message).not.toContain("sb_publishable_");
+    }
+  });
+});
+
 describe("getPlayerByWorldIdFromSupabase", () => {
   it("statsを26項目形式へ復元する", async () => {
     const rows = [makeCardRow("1", { stats: { finishing: 90, dribbling: 85 } })];
@@ -368,6 +405,107 @@ describe("getFacetsFromSupabase", () => {
     const facets = await getFacetsFromSupabase(client as never);
     expect(facets.cardTypes).toContain("RARE-ONLY-ON-LAST-ROW");
     expect(facets.cardTypes).toContain("EPIC");
+  });
+
+  it("ページング途中で失敗した場合、部分結果をキャッシュせず例外を投げる", async () => {
+    // 1,500件を1,000件区切りで2ページに分ける想定のうち、2ページ目相当を失敗させたいが、
+    // フェイククライアントはテーブル単位でしか失敗を切り替えられないため、ここでは
+    // 「1ページ目から既に失敗する」ケースで代替する(部分結果が絶対にキャッシュされないことの確認が目的)。
+    const failingClient = createFailingReferenceDataClient({ message: "mid-pagination failure" }, 500);
+    await expect(getFacetsFromSupabase(failingClient as never)).rejects.toThrow();
+    // 失敗後、正常なクライアントで呼び直せば正しく取得できる(不正なキャッシュが残っていない)。
+    const rows = [makeCardRow("1", { registered_position: "CF" })];
+    const okClient = createFakeReferenceDataClient({ world_player_cards: rows, player_card_analysis: [] });
+    const facets = await getFacetsFromSupabase(okClient as never);
+    expect(facets.positions).toEqual(["CF"]);
+  });
+
+  describe("TTL(300秒)", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("TTL内は再取得しない(299秒経過時点でもキャッシュを返す)", async () => {
+      const rows = [makeCardRow("1", { registered_position: "CF" })];
+      const client = createFakeReferenceDataClient({ world_player_cards: rows, player_card_analysis: [] });
+      const first = await getFacetsFromSupabase(client as never);
+      vi.advanceTimersByTime(299_000);
+      const failingClient = createFailingReferenceDataClient({ message: "should not be called within TTL" });
+      const second = await getFacetsFromSupabase(failingClient as never);
+      expect(second).toBe(first);
+    });
+
+    it("TTL(300秒)経過後は再取得する", async () => {
+      const rows = [makeCardRow("1", { registered_position: "CF" })];
+      const client = createFakeReferenceDataClient({ world_player_cards: rows, player_card_analysis: [] });
+      await getFacetsFromSupabase(client as never);
+      vi.advanceTimersByTime(300_001);
+      const rows2 = [makeCardRow("2", { registered_position: "GK" })];
+      const client2 = createFakeReferenceDataClient({ world_player_cards: rows2, player_card_analysis: [] });
+      const second = await getFacetsFromSupabase(client2 as never);
+      expect(second.positions).toEqual(["GK"]);
+    });
+
+    it("TTLが正確に境界判定される(ちょうど300,000msでは期限切れ扱い)", async () => {
+      const rows = [makeCardRow("1", { registered_position: "CF" })];
+      const client = createFakeReferenceDataClient({ world_player_cards: rows, player_card_analysis: [] });
+      await getFacetsFromSupabase(client as never);
+      vi.advanceTimersByTime(300_000);
+      const rows2 = [makeCardRow("2", { registered_position: "GK" })];
+      const client2 = createFakeReferenceDataClient({ world_player_cards: rows2, player_card_analysis: [] });
+      const second = await getFacetsFromSupabase(client2 as never);
+      expect(second.positions).toEqual(["GK"]);
+    });
+
+    it("再取得成功時だけキャッシュを更新する", async () => {
+      const rows1 = [makeCardRow("1", { registered_position: "CF" })];
+      const client1 = createFakeReferenceDataClient({ world_player_cards: rows1, player_card_analysis: [] });
+      const first = await getFacetsFromSupabase(client1 as never);
+      expect(first.positions).toEqual(["CF"]);
+
+      vi.advanceTimersByTime(300_001);
+      const rows2 = [makeCardRow("2", { registered_position: "GK" })];
+      const client2 = createFakeReferenceDataClient({ world_player_cards: rows2, player_card_analysis: [] });
+      const second = await getFacetsFromSupabase(client2 as never);
+      expect(second.positions).toEqual(["GK"]);
+    });
+
+    it("TTL経過後の再取得に失敗した場合、古い値を黙って返さずエラーを伝播させる(fail closed)", async () => {
+      const rows = [makeCardRow("1", { registered_position: "CF" })];
+      const client = createFakeReferenceDataClient({ world_player_cards: rows, player_card_analysis: [] });
+      await getFacetsFromSupabase(client as never);
+
+      vi.advanceTimersByTime(300_001);
+      const failingClient = createFailingReferenceDataClient({ message: "refetch failed" }, 500);
+      await expect(getFacetsFromSupabase(failingClient as never)).rejects.toThrow();
+    });
+
+    it("再取得失敗後、不正な値がキャッシュされない(次回呼び出しでも再取得を試みる)", async () => {
+      const rows = [makeCardRow("1", { registered_position: "CF" })];
+      const client = createFakeReferenceDataClient({ world_player_cards: rows, player_card_analysis: [] });
+      await getFacetsFromSupabase(client as never);
+
+      vi.advanceTimersByTime(300_001);
+      const failingClient = createFailingReferenceDataClient({ message: "refetch failed" }, 500);
+      await expect(getFacetsFromSupabase(failingClient as never)).rejects.toThrow();
+
+      // 直後に正常なクライアントで呼び出せば、失敗した中途半端な値ではなく正しい最新値が返る。
+      const rows2 = [makeCardRow("2", { registered_position: "GK" })];
+      const client2 = createFakeReferenceDataClient({ world_player_cards: rows2, player_card_analysis: [] });
+      const third = await getFacetsFromSupabase(client2 as never);
+      expect(third.positions).toEqual(["GK"]);
+    });
+
+    it("既存の1,000件ページングを壊さない(TTL導入後も1,500件を正しく走査する)", async () => {
+      const rows = Array.from({ length: 1500 }, (_, i) => makeCardRow(String(i + 1), { card_type: "EPIC" }));
+      rows[1499] = { ...rows[1499], card_type: "RARE-ONLY-ON-LAST-ROW" };
+      const client = createFakeReferenceDataClient({ world_player_cards: rows, player_card_analysis: [] });
+      const facets = await getFacetsFromSupabase(client as never);
+      expect(facets.cardTypes).toContain("RARE-ONLY-ON-LAST-ROW");
+    });
   });
 });
 

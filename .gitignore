@@ -46,6 +46,11 @@ pnpm-debug.log*
 *.p12
 *.crt
 
+# exception: synthetic, non-secret TLS test fixtures for pg-ssl-config.tls.test.ts
+# (self-signed throwaway CA/server cert+key, no real-world trust, TEST ONLY — see
+# src/lib/reference-data/__fixtures__/tls/README.md for generation details and scope).
+!/src/lib/reference-data/__fixtures__/tls/*.pem
+
 # os
 .DS_Store
 Thumbs.db

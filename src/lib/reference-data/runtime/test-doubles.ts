@@ -19,6 +19,7 @@ interface FakeResult {
   data: unknown;
   error: { code?: string; message: string } | null;
   count: number | null;
+  status?: number;
 }
 
 function matchOne(row: Row, f: Filter): boolean {
@@ -159,13 +160,13 @@ class FakeQueryBuilder implements PromiseLike<FakeResult> {
     }
 
     if (this.singleMode === "single") {
-      if (rows.length === 0) return { data: null, error: { code: "PGRST116", message: "no rows returned" }, count };
-      return { data: rows[0], error: null, count };
+      if (rows.length === 0) return { data: null, error: { code: "PGRST116", message: "no rows returned" }, count, status: 406 };
+      return { data: rows[0], error: null, count, status: 200 };
     }
     if (this.singleMode === "maybeSingle") {
-      return { data: rows[0] ?? null, error: null, count };
+      return { data: rows[0] ?? null, error: null, count, status: 200 };
     }
-    return { data: this.headOnly ? null : rows, error: null, count };
+    return { data: this.headOnly ? null : rows, error: null, count, status: 200 };
   }
 
   then<TResult1 = FakeResult, TResult2 = never>(
@@ -188,8 +189,13 @@ export function createFakeReferenceDataClient(tables: Tables) {
   };
 }
 
-/** 常にエラーを返すフェイククライアント(接続失敗・RLS拒否等のエラー処理テスト用)。 */
-export function createFailingReferenceDataClient(error: { code?: string; message: string }) {
+/**
+ * 常にエラーを返すフェイククライアント(接続失敗・RLS拒否・障害系テスト用)。
+ * `status`は実PostgREST/postgrest-jsのクエリ結果`{ data, error, status }`の`status`に相当する
+ * (エラーオブジェクト自体には乗らない。ネットワーク断・タイムアウトは`status: 0`、
+ * それ以外はPostgRESTが返す実HTTPステータス。ライブラリソース確認済み)。省略時は`undefined`。
+ */
+export function createFailingReferenceDataClient(error: { code?: string; message: string }, status?: number) {
   const failingBuilder: Record<string, unknown> = {
     select: () => failingBuilder,
     eq: () => failingBuilder,
@@ -206,7 +212,7 @@ export function createFailingReferenceDataClient(error: { code?: string; message
     maybeSingle: () => failingBuilder,
     single: () => failingBuilder,
     then(onfulfilled?: ((value: FakeResult) => unknown) | null) {
-      return Promise.resolve({ data: null, error, count: null }).then(onfulfilled ?? undefined);
+      return Promise.resolve({ data: null, error, count: null, status }).then(onfulfilled ?? undefined);
     },
   };
   return {
