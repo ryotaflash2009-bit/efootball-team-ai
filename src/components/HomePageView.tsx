@@ -118,6 +118,13 @@ export function HomePageView({
   return (
     <PageContainer>
       <div className="flex flex-col gap-8">
+        <Surface tone="inset" padding="sm" className="text-xs text-warning">
+          {th("alphaNoticeBanner")}{" "}
+          <Link href="/privacy" className="underline">
+            {th("alphaNoticeDetailsLinkLabel")}
+          </Link>
+        </Surface>
+
         {/* ヒーロー */}
         <section className="relative overflow-hidden rounded-lg border border-border-strong bg-surface p-6 sm:p-8">
           <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-accent/10 blur-3xl" />
