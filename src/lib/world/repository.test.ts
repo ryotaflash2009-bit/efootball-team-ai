@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import fs from "node:fs";
 import {
   listPlayers,
@@ -14,11 +14,25 @@ import { parseWorldListQuery } from "./schemas";
 /**
  * ローカル SQLite（data/efootball.db）に対する結合テスト。
  * DB が無い環境では skip する。
+ *
+ * Phase E(`WORLD_DATA_SOURCE`既定値のsupabase化)以降も、このテストの意図(実SQLiteの
+ * 検証)を保つため、既定値に関わらずWORLD_DATA_SOURCE=sqliteを明示的に指定する
+ * (指定しないと、既定値がsupabaseの環境では黙って実Supabaseへ向いてしまう)。
  */
 const hasDb = fs.existsSync(DB_PATH);
 const d = hasDb ? describe : describe.skip;
 
 d("repository（実 DB）", () => {
+  let previousWorldDataSource: string | undefined;
+  beforeAll(() => {
+    previousWorldDataSource = process.env.WORLD_DATA_SOURCE;
+    process.env.WORLD_DATA_SOURCE = "sqlite";
+  });
+  afterAll(() => {
+    if (previousWorldDataSource === undefined) delete process.env.WORLD_DATA_SOURCE;
+    else process.env.WORLD_DATA_SOURCE = previousWorldDataSource;
+  });
+
   it("一覧: 総件数はおよそ 13,009・1 ページは pageSize 以内", async () => {
     const r = await listPlayers(parseWorldListQuery({ pageSize: "24" }));
     expect(r.totalCount).toBeGreaterThan(12000);

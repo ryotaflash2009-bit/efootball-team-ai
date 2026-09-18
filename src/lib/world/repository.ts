@@ -27,8 +27,11 @@ type Row = Record<string, unknown>;
 /**
  * データソース抽象化: `WORLD_DATA_SOURCE`環境変数に応じて、既存のSQLite実装
  * (`*Sqlite`、挙動は完全に既存のまま無変更)とSupabase実装(`runtime/world-source.ts`)を
- * 切り替える。既定は"sqlite"(本番挙動は無変更)。関数はいずれの経路でも同じPromiseを返す
+ * 切り替える。既定は"supabase"(Phase E)。`WORLD_DATA_SOURCE=sqlite`を明示指定すれば
+ * この分岐でSQLite実装へ戻る(切戻し経路)。関数はいずれの経路でも同じPromiseを返す
  * (SQLite経路は同期処理をそのままPromiseで包むだけで、処理内容自体は変えない)。
+ * Supabase経路が失敗した場合もSQLiteへの暗黙フォールバックは行わない(呼び出し元へ
+ * そのままエラーを伝播する)。
  */
 
 /** 一覧: 検索 + フィルタ + 並べ替え + サーバー側ページネーション */

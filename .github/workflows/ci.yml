@@ -1,10 +1,15 @@
 name: CI
 
 # 目的: PR作成時とmainへのpush時に、型チェック・全Unit Test・Production Buildを自動実行する。
-# - 実Supabaseへは一切接続しない(Supabase呼び出しはすべて`WORLD_DATA_SOURCE`既定値"sqlite"の
-#   経路か、テストダブル経由のためネットワークアクセスが発生しない)。
+# - 実Supabaseへは一切接続しない。Unit TestはテストダブルまたはSupabase環境変数不足時の
+#   安全なエラー(WorldDataUnavailableError)経路のみを検証し、Production Buildも
+#   参照データを扱う全ルートが動的(force-dynamic)のためビルド時にSupabaseへもSQLiteへも
+#   接続しない(Phase E、2026-09-18に既定値をsupabaseへ切替後もこの構造は変わらない。
+#   実測: NEXT_PUBLIC_SUPABASE_*未設定でも`npm run build`が成功することを確認済み)。
 # - Supabase書き込み・migration実行・shadow comparisonの実接続はここでは行わない。
-# - WORLD_DATA_SOURCEはここでも設定しない(既定値"sqlite"のまま)。
+# - WORLD_DATA_SOURCEはここでも設定しない(このworkflowの環境では常に未設定のまま、
+#   コード側の既定値がそのまま使われる。実Supabase環境変数も渡さないため、参照データの
+#   Supabase経路を呼び出すテストは安全なエラーで終わる設計になっている)。
 # - secretsはこのworkflowへ一切渡さない。
 
 on:
