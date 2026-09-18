@@ -57,6 +57,18 @@ describe("parseAllocations", () => {
     expect(parseAllocations("", 2)).toEqual([null, null]);
     expect(parseAllocations(null, 1)).toEqual([null]);
   });
+
+  it("ALLOCATION_URL_MAX_LENを超える極端に長い入力は、切り詰めたうえでクラッシュせず安全に処理する(URL共有の入力安全性)", () => {
+    const huge = "shooting~5." + "x".repeat(ALLOCATION_URL_MAX_LEN * 10);
+    expect(() => parseAllocations(huge, 1)).not.toThrow();
+    // 切り詰め境界をまたぐため有効値が復元される保証はないが、例外を投げず配列を返すことだけを確認する。
+    const result = parseAllocations(huge, 1);
+    expect(result).toHaveLength(1);
+  });
+
+  it("HTML/scriptらしき文字列が混じっても、許可リスト外のgroupIdとして無視される(XSS反射なし)", () => {
+    expect(parseAllocations("<script>alert(1)</script>~5.shooting~2", 1)).toEqual([{ shooting: 2 }]);
+  });
 });
 
 describe("round-trip", () => {

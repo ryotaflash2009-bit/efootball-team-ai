@@ -33,6 +33,7 @@ const PROHIBITED_ITEM_KEYS: TermsKey[] = [
   "section4ProhibitExcessiveLoad",
   "section4ProhibitMaliciousJsonOrScript",
   "section4ProhibitMisrepresentAsOfficial",
+  "section4ProhibitUrlRedistribution",
   "section4ProhibitUnlawfulUse",
 ];
 

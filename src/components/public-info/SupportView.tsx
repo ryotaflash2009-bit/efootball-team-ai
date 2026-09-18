@@ -79,6 +79,7 @@ export function SupportView() {
 
       <Surface tone="outline" padding="md">
         <p className="text-sm font-semibold text-text">{ts("bugReportHeading")}</p>
+        <p className="mt-1.5 text-sm text-text-dim">{ts("bugReportAlphaParticipantNotice")}</p>
         <p className="mt-1.5 text-sm text-text-dim">{ts("bugReportIntro")}</p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-dim">
           <li>{ts("bugReportFieldPage")}</li>

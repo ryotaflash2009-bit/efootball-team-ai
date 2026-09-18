@@ -31,6 +31,8 @@ export interface Dictionary {
     playersLink: string;
   };
   homePage: {
+    alphaNoticeBanner: string;
+    alphaNoticeDetailsLinkLabel: string;
     heroBadge: string;
     heroTitlePrefix: string;
     heroTitleAccent: string;
@@ -2997,16 +2999,18 @@ export interface Dictionary {
     dataStoredUiSettings: string;
     dataNotStoredHeading: string;
     dataNotStoredName: string;
-    dataNotStoredEmail: string;
     dataNotStoredAddress: string;
     dataNotStoredPhone: string;
     dataNotStoredPayment: string;
     dataNotStoredPassword: string;
-    dataNotStoredAccount: string;
     dataNotStoredAiConversation: string;
     dataNotStoredFreeformOldInput: string;
     dataNotStoredDiagnosisPng: string;
     dataNotStoredBestXiResults: string;
+    authSectionHeading: string;
+    authEmailUsage: string;
+    authSessionCookie: string;
+    authPasswordHandling: string;
     storageLocationHeading: string;
     storageLocationBrowserOnly: string;
     storageLocationNoServerAccount: string;
@@ -3014,6 +3018,9 @@ export interface Dictionary {
     storageLocationNoAutoMigration: string;
     storageLocationNoCloudBackup: string;
     storageLocationDeletionRisk: string;
+    cloudSaveHeading: string;
+    cloudSaveExplicitAction: string;
+    cloudSaveUserIsolation: string;
     externalTransmissionHeading: string;
     externalTransmissionInAppApiIntro: string;
     externalTransmissionInAppApiWorldData: string;
@@ -3023,11 +3030,22 @@ export interface Dictionary {
     externalTransmissionNoGenerativeAi: string;
     externalTransmissionNoAnalytics: string;
     externalTransmissionNoAds: string;
+    supabaseUsageHeading: string;
+    supabaseUsageBody: string;
     cookieHeading: string;
     cookieBody: string;
+    accountDeletionHeading: string;
+    accountDeletionBody: string;
+    contactHeading: string;
+    contactBodyPrefix: string;
+    contactLinkLabel: string;
+    alphaHeading: string;
+    alphaBody: string;
     futureChangesHeading: string;
     futureChangesBody: string;
     specialistReviewNotice: string;
+    lastUpdatedLabel: string;
+    lastUpdatedDate: string;
   };
   terms: {
     pageTitle: string;
@@ -3050,6 +3068,7 @@ export interface Dictionary {
     section4ProhibitExcessiveLoad: string;
     section4ProhibitMaliciousJsonOrScript: string;
     section4ProhibitMisrepresentAsOfficial: string;
+    section4ProhibitUrlRedistribution: string;
     section4ProhibitUnlawfulUse: string;
     section5Heading: string;
     section5Body: string;
@@ -3152,6 +3171,7 @@ export interface Dictionary {
     generalContactEmailLabel: string;
     bugReportHeading: string;
     bugReportIntro: string;
+    bugReportAlphaParticipantNotice: string;
     bugReportFieldPage: string;
     bugReportFieldSteps: string;
     bugReportFieldExpected: string;
@@ -3524,6 +3544,8 @@ const ja: Dictionary = {
     playersLink: "プレイヤー一覧へ",
   },
   homePage: {
+    alphaNoticeBanner: "現在、本人・家族・信頼できる友人のみを対象とした招待制アルファ版です。このURLを許可なく第三者へ共有しないでください。動作確認のため、保存データが予告なく変更・削除される場合があります。",
+    alphaNoticeDetailsLinkLabel: "詳しくはプライバシーポリシー",
     heroBadge: "eFootball データツール",
     heroTitlePrefix: "選手を調べ、比較し、",
     heroTitleAccent: "スカッド",
@@ -6552,50 +6574,66 @@ const ja: Dictionary = {
     dataStoredUiSettings: "表示言語・サイドバーの開閉状態などの表示設定",
     dataNotStoredHeading: "現在保存していない情報(確認できた範囲)",
     dataNotStoredName: "氏名",
-    dataNotStoredEmail: "メールアドレス",
     dataNotStoredAddress: "住所",
     dataNotStoredPhone: "電話番号",
     dataNotStoredPayment: "決済情報",
-    dataNotStoredPassword: "パスワード",
-    dataNotStoredAccount: "アカウント情報",
+    dataNotStoredPassword: "パスワードそのもの(本サービス独自のデータベースには保存しません)",
     dataNotStoredAiConversation: "生成AIとの会話内容",
     dataNotStoredFreeformOldInput: "分析用の自由記述の全文をサーバーへ保存すること",
     dataNotStoredDiagnosisPng: "作成した診断PNG画像そのもの",
     dataNotStoredBestXiResults: "AIベスト11の選出結果",
+    authSectionHeading: "ログイン機能を利用する場合に扱う情報",
+    authEmailUsage: "サインアップ・ログインには、メールアドレスを使用します。認証基盤であるSupabase Authが管理し、本サービス独自のデータベースには保存しません。",
+    authSessionCookie: "ログイン状態を維持するため、認証用のCookieを使用します(Supabase Authによる標準的な認証Cookie)。ログインしていない場合、認証用Cookieは発行されません。",
+    authPasswordHandling: "入力されたパスワードは、Supabase Authがハッシュ化して管理します。本サービス自身のデータベースにパスワードそのものを保存することはありません。",
     storageLocationHeading: "保存場所",
-    storageLocationBrowserOnly: "現在のユーザーデータは、お使いのブラウザー内(localStorage)に保存されます。",
-    storageLocationNoServerAccount: "サーバー側のユーザーアカウントには紐付けていません。",
-    storageLocationNoSync: "端末間・別ブラウザー間で自動的に同期しません。",
+    storageLocationBrowserOnly: "My Team・保存ビルド・保存スカッド等のユーザーデータは、お使いのブラウザー内(localStorage)に保存されます。",
+    storageLocationNoServerAccount: "ログインしていない場合、これらのデータはサーバー側のユーザーアカウントには紐付きません。ログインした場合でも、下記の「クラウド保存」を明示的に利用しない限り、これらのデータが自動的にサーバーへ送信されることはありません。",
+    storageLocationNoSync: "端末間・別ブラウザー間で自動的に同期することはありません。ログインしてクラウド保存機能を使った場合も、反映は自動ではなく、利用者ご自身の明示的な操作によってのみ行われます。",
     storageLocationNoAutoMigration: "別のブラウザーへ自動的に移行することはありません。",
-    storageLocationNoCloudBackup: "サーバー側でのクラウドバックアップは現在ありません。",
-    storageLocationDeletionRisk: "ブラウザーのデータを削除すると、保存した内容を復元できない場合があります。",
+    storageLocationNoCloudBackup: "クラウド保存機能を利用しない場合、サーバー側でのバックアップは現在ありません。",
+    storageLocationDeletionRisk: "ブラウザーのデータを削除すると、クラウドへ保存していない内容は復元できない場合があります。",
+    cloudSaveHeading: "クラウド保存(My Teamクラウド保存)について",
+    cloudSaveExplicitAction: "クラウドへの保存は、ログインしたうえで「クラウドへ保存」ボタンを押すなど、利用者ご自身の明示的な操作を行った場合にのみ実行されます。ログインやページの表示だけで、自動的にクラウドへ送信されることはありません。",
+    cloudSaveUserIsolation: "クラウドに保存したデータは、Supabaseのアクセス制御(Row Level Security)により、ご自身のアカウントに紐づく行にのみアクセスできる設計になっています。他の利用者が閲覧・変更することはできません。",
     externalTransmissionHeading: "外部への送信について",
     externalTransmissionInAppApiIntro: "以下の処理は、アプリ自身のAPI(サーバー内の処理)と通信します。これは「アプリ内通信」であり、第三者の外部サービスへの送信ではありません。",
     externalTransmissionInAppApiWorldData: "選手・監督データの検索・取得(サーバー内のデータベースを参照します)",
     externalTransmissionInAppApiImageProxy: "選手画像の表示(サーバーが画像を取得して中継します)",
     externalTransmissionBrowserOnlyIntro: "以下は、ブラウザー内だけで完結し、サーバーへは送信されません。",
-    externalTransmissionNoThirdParty: "第三者の外部サービス(決済・SNS連携等)へユーザーデータを送信することはありません。",
+    externalTransmissionNoThirdParty: "決済・SNS連携等の第三者の外部サービスへユーザーデータを送信することはありません(下記のSupabaseは、本サービスの認証・クラウド保存機能そのものを支える基盤として利用しています)。",
     externalTransmissionNoGenerativeAi: "生成AI・外部AI APIへ分析内容を送信することはありません。",
     externalTransmissionNoAnalytics: "現在、アクセス解析(Google Analytics等)は使用していません。",
     externalTransmissionNoAds: "現在、広告は表示していません。",
+    supabaseUsageHeading: "Supabase(外部のクラウド基盤)の利用について",
+    supabaseUsageBody: "本サービスは、ログイン機能とMy Teamクラウド保存機能のために、外部のクラウド基盤であるSupabaseを利用しています。ログインしていない場合、またログインしていてもクラウド保存機能を利用しない場合は、Supabaseへ利用者データが送信されることはありません。",
     cookieHeading: "Cookieについて",
-    cookieBody: "現在、Cookieは使用していません(確認できた範囲)。",
+    cookieBody: "ログイン機能を利用する場合、ログイン状態を維持するための認証Cookieが使用されます(Supabase Authによる標準的な認証Cookie)。ログインしていない場合、Cookieは使用しません。",
+    accountDeletionHeading: "アカウントの削除について",
+    accountDeletionBody: "アカウントを完全に削除する機能は、現時点で実装していません。削除をご希望の場合は、下記の問い合わせ先までご連絡いただければ、運営者が手動で対応します。",
+    contactHeading: "問い合わせ先",
+    contactBodyPrefix: "本サービスに関するお問い合わせ・不具合報告・アカウント削除依頼は、",
+    contactLinkLabel: "問い合わせページ",
+    alphaHeading: "招待制アルファ期間中の注意",
+    alphaBody: "本サービスは現在、本人・家族・信頼できる友人を対象とした招待制アルファ公開の準備段階、または招待制アルファ期間中です。動作確認のため、保存データや実装内容を予告なく変更・削除する場合があります。重要なデータは、本サービス以外の方法でも保管してください。",
     futureChangesHeading: "将来の変更について",
-    futureChangesBody: "今後、認証・同期・決済・アクセス解析・監視などを導入する場合は、導入前にこのポリシーを更新します。",
+    futureChangesBody: "認証機能・My Teamクラウド保存機能は、このポリシーに記載のとおり既に導入済みです。今後、決済・アクセス解析・広告・監視などをさらに追加する場合は、導入前にこのポリシーを更新します。",
     specialistReviewNotice: "この草案は、法令適合を保証するものではありません。正式公開または課金開始の前には、必要に応じてプライバシー・法律の専門家確認が別途必要です。",
+    lastUpdatedLabel: "最終更新日",
+    lastUpdatedDate: "2026年9月18日",
   },
   terms: {
     pageTitle: "利用規約(草案) | eFootball Team AI",
     pageDescriptionMeta: "eFootball Team AIの利用条件についての説明(ベータ公開準備用の草案)です。",
     heading: "利用規約(草案)",
     intro: "この利用規約は、現行の実装仕様に基づくベータ公開準備用の草案です。正式な法的文書ではなく、正式公開または課金開始の前に、運営者による最終確認と、必要に応じて法律の専門家確認が別途必要です。",
-    draftNotice: "この草案は、現時点で提供されている機能だけを対象としています。将来実装予定の機能(アカウント・決済等)についての規定は含みません。",
+    draftNotice: "この草案は、現時点で提供されている機能だけを対象としています。将来実装予定の機能(決済等)についての規定は含みません。",
     section1Heading: "1. 適用",
     section1Body: "この規約は、eFootball Team AI(以下「本サービス」)の利用に関する条件を定めるものです。本サービスを利用した時点で、この規約(草案)の内容に同意したものとして扱います。",
     section2Heading: "2. サービス内容",
-    section2Body: "本サービスは、選手データの閲覧・育成計算・チーム編成の検討を支援する非公式ツールです。提供する機能は「サービス概要」ページで説明する範囲に限られ、現時点でアカウント登録・課金機能はありません。",
+    section2Body: "本サービスは、選手データの閲覧・育成計算・チーム編成の検討を支援する非公式ツールです。提供する機能は「サービス概要」ページで説明する範囲に限られます。ログイン機能(任意)を提供していますが、現時点で課金機能はありません。",
     section3Heading: "3. 利用条件",
-    section3Body: "本サービスは、ブラウザーのみで動作し、現時点で年齢制限・登録手続きはありません。ユーザーは自己の判断と責任で本サービスを利用するものとします。",
+    section3Body: "本サービスはブラウザーのみで動作し、現時点で年齢制限はありません。ログイン機能の利用は任意であり、ログインしなくても主要機能は利用できます。ユーザーは自己の判断と責任で本サービスを利用するものとします。",
     section4Heading: "4. 禁止事項",
     section4Intro: "本サービスの利用にあたり、以下の行為を禁止します。",
     section4ProhibitUnauthorizedAccess: "本サービスへの不正アクセス",
@@ -6605,6 +6643,7 @@ const ja: Dictionary = {
     section4ProhibitExcessiveLoad: "システムへ過度な負荷を与える行為",
     section4ProhibitMaliciousJsonOrScript: "不正なJSONやスクリプトを悪用する行為",
     section4ProhibitMisrepresentAsOfficial: "本サービスを公式サービスであるかのように誤認させる形での再配布",
+    section4ProhibitUrlRedistribution: "招待制アルファ期間中に、運営者から許可なく本サービスのURLを招待対象外の第三者へ共有・転載する行為",
     section4ProhibitUnlawfulUse: "法令または公序良俗に反する利用",
     section5Heading: "5. ユーザーが入力または保存するデータ",
     section5Body: "本サービスでユーザーが入力・保存するデータ(My Team・保存ビルド・保存スカッド等)は、現在お使いのブラウザー内にのみ保存されます。詳細は「プライバシーポリシー」「データ管理」ページをご確認ください。",
@@ -6619,7 +6658,7 @@ const ja: Dictionary = {
     section10Heading: "10. 免責",
     section10Body: "本サービスの利用により生じたいかなる損害についても、法令上許容される範囲で、運営者は責任を負わないものとします。分析結果を利用した育成・編成の最終判断は、利用者ご自身の責任で行ってください。",
     section11Heading: "11. 利用停止",
-    section11Body: "本サービスは現時点でアカウント登録・投稿機能を持たないため、個別ユーザーの利用停止措置に関する詳細な規定は設けていません。禁止事項に該当する行為が確認された場合、本サービスへのアクセスを技術的に制限する場合があります。",
+    section11Body: "本サービスは現時点で投稿・公開共有機能を持たないため、個別ユーザーの利用停止措置に関する詳細な規定は設けていません。禁止事項に該当する行為が確認された場合、アカウントの停止、または本サービスへのアクセスの技術的制限を行う場合があります。",
     section12Heading: "12. 規約変更",
     section12Body: "この規約(草案)は、正式公開に向けて内容を変更する場合があります。重要な変更がある場合は、本サービス内で分かる形にする予定です。",
     section13Heading: "13. 問い合わせ・準拠法・管轄",
@@ -6707,6 +6746,7 @@ const ja: Dictionary = {
     generalContactEmailLabel: "問い合わせメール",
     bugReportHeading: "不具合報告",
     bugReportIntro: "不具合を報告する際は、可能な範囲で次の情報をお知らせください。",
+    bugReportAlphaParticipantNotice: "招待制アルファ版にご参加いただいている方は、不具合や気になる挙動があれば、まずここから直接ご連絡ください。",
     bugReportFieldPage: "発生したページ",
     bugReportFieldSteps: "操作手順",
     bugReportFieldExpected: "期待した結果",

@@ -43,7 +43,9 @@ export function parseAllocations(
   raw: string | null | undefined,
   count: number,
 ): (Record<string, number> | null)[] {
-  const segs = (raw ?? "").split("_");
+  // このアプリが生成するURLは常にALLOCATION_URL_MAX_LEN以下(serializeAllocations参照)。
+  // 外部から極端に長い値を渡されても、split処理のコストを既知の上限に抑える防御的切り詰め。
+  const segs = (raw ?? "").slice(0, ALLOCATION_URL_MAX_LEN).split("_");
   const out: (Record<string, number> | null)[] = [];
   for (let i = 0; i < count; i++) {
     const seg = (segs[i] ?? "").trim();
