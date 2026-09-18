@@ -2,24 +2,24 @@ import { describe, it, expect } from "vitest";
 import { resolveWorldDataSource, DEFAULT_WORLD_DATA_SOURCE, InvalidWorldDataSourceError } from "./data-source";
 
 describe("resolveWorldDataSource", () => {
-  it("未設定(undefined)は既定値(sqlite)を返す", () => {
-    expect(resolveWorldDataSource(undefined)).toBe("sqlite");
+  it("未設定(undefined)は既定値(Phase E、supabase)を返す", () => {
+    expect(resolveWorldDataSource(undefined)).toBe("supabase");
     expect(resolveWorldDataSource(undefined)).toBe(DEFAULT_WORLD_DATA_SOURCE);
   });
 
-  it("null は既定値(sqlite)を返す", () => {
-    expect(resolveWorldDataSource(null)).toBe("sqlite");
+  it("null は既定値(supabase)を返す", () => {
+    expect(resolveWorldDataSource(null)).toBe("supabase");
   });
 
-  it("空文字は既定値(sqlite)として扱う(未設定と同じ)", () => {
-    expect(resolveWorldDataSource("")).toBe("sqlite");
+  it("空文字は既定値(supabase)として扱う(未設定と同じ)", () => {
+    expect(resolveWorldDataSource("")).toBe("supabase");
   });
 
-  it("前後の空白のみは既定値(sqlite)として扱う", () => {
-    expect(resolveWorldDataSource("   ")).toBe("sqlite");
+  it("前後の空白のみは既定値(supabase)として扱う", () => {
+    expect(resolveWorldDataSource("   ")).toBe("supabase");
   });
 
-  it('"sqlite"を返す', () => {
+  it('"sqlite"を返す(既定値に関わらず明示指定した経路になる切戻し手段)', () => {
     expect(resolveWorldDataSource("sqlite")).toBe("sqlite");
   });
 

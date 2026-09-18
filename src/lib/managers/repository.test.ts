@@ -1,14 +1,28 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import fs from "node:fs";
 import { listManagers, getManagerById, getManagerCount } from "./repository";
 import { parseManagerListQuery } from "./schemas";
 import { managerToContext } from "./to-context";
 import { DB_PATH } from "@/lib/world/db";
 
+/**
+ * Phase E(`WORLD_DATA_SOURCE`既定値のsupabase化)以降も、このテストの意図(実SQLiteの
+ * 検証)を保つため、既定値に関わらずWORLD_DATA_SOURCE=sqliteを明示的に指定する。
+ */
 const hasDb = fs.existsSync(DB_PATH);
 const d = hasDb ? describe : describe.skip;
 
 d("manager repository（実 DB）", () => {
+  let previousWorldDataSource: string | undefined;
+  beforeAll(() => {
+    previousWorldDataSource = process.env.WORLD_DATA_SOURCE;
+    process.env.WORLD_DATA_SOURCE = "sqlite";
+  });
+  afterAll(() => {
+    if (previousWorldDataSource === undefined) delete process.env.WORLD_DATA_SOURCE;
+    else process.env.WORLD_DATA_SOURCE = previousWorldDataSource;
+  });
+
   it("一覧: 総数 > 0・pageSize 以内", async () => {
     const r = await listManagers(parseManagerListQuery({ pageSize: "24" }));
     expect(r.totalCount).toBeGreaterThan(0);
