@@ -108,4 +108,28 @@ describe("serializeComparisonState / comparisonHref", () => {
     const q = serializeComparisonState({ ids: ["1", "2"], buildModes: ["none", "none"], managerIds: [null, null], allocations: [null, null] });
     expect(q).toBe("ids=1%2C2");
   });
+
+  it("URL共有の入力安全性: HTML/scriptらしき文字列がidsに混じっても、数字IDの正規表現外として除外される(XSS反射なし)", () => {
+    const s = parseComparisonState({ ids: "1,<script>alert(1)</script>,2,javascript:alert(1)" });
+    expect(s.ids).toEqual(["1", "2"]);
+  });
+
+  it("URL共有の入力安全性: 極端に長いidsパラメータを渡しても例外を投げず、最大件数(COMPARISON_MAX)に切り詰める", () => {
+    const huge = Array.from({ length: 10000 }, (_, i) => String(i + 1)).join(",");
+    expect(() => parseComparisonState({ ids: huge })).not.toThrow();
+    const s = parseComparisonState({ ids: huge });
+    expect(s.ids.length).toBeLessThanOrEqual(4);
+  });
+
+  it("URL共有の入力安全性: b/m/tpに不正な形式の値を渡してもnone/nullへフォールバックする", () => {
+    const s = parseComparisonState({
+      ids: "1,2",
+      b: "<img src=x onerror=alert(1)>,attack",
+      m: "not-a-number,-5",
+      tp: "999,-1",
+    });
+    expect(s.buildModes).toEqual(["none", "attack"]);
+    expect(s.managerIds).toEqual([null, null]);
+    expect(s.conditionalTiers).toEqual(["none", "none"]);
+  });
 });
