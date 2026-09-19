@@ -2936,13 +2936,16 @@ export interface Dictionary {
     availableSquadDiagnosis: string;
     availableBestXi: string;
     availableJsonBackup: string;
+    availableAccountAuth: string;
+    availableReferenceDataSupabase: string;
     betaHeading: string;
     betaBestXiIntro: string;
     betaBestXiDedupLimit: string;
     betaBestXiSubPositionLimit: string;
     betaBestXiPoolScopeLimit: string;
+    betaMyTeamCloudSave: string;
+    betaReferenceDataAutoUpdateDryRun: string;
     notProvidedHeading: string;
-    notProvidedAccount: string;
     notProvidedSync: string;
     notProvidedCloudBackup: string;
     notProvidedFriends: string;
@@ -6513,15 +6516,18 @@ const ja: Dictionary = {
     availableSquadDiagnosis: "スカッド診断",
     availableBestXi: "AIベスト11(保存済み候補からのルールベース選出)",
     availableJsonBackup: "JSONによる保存ビルドのバックアップ(エクスポート・インポート)",
+    availableAccountAuth: "Supabase Authによるアカウント登録・ログイン・ログアウト・メール確認・パスワード再設定",
+    availableReferenceDataSupabase: "選手・監督データはSupabaseを既定の参照データ経路として提供(緊急時は明示設定によりSQLiteへ切戻し可能)",
     betaHeading: "ベータ機能(既知の制約があります)",
     betaBestXiIntro: "AIベスト11は動作しますが、次の既知の制約があります。",
     betaBestXiDedupLimit: "同一の実在選手が複数の異なるカードにまたがる場合の重複判定は行っていません。",
     betaBestXiSubPositionLimit: "副ポジション適性のデータは一部のカードでしか確認できません。",
     betaBestXiPoolScopeLimit: "選出は、あなたが保存した候補の中だけで行われます(全カードから自動で探すものではありません)。",
+    betaMyTeamCloudSave: "My Teamクラウド保存(アルファ機能。ログイン後、本人の明示操作でのみ保存・取得します。端末間の自動同期ではありません)",
+    betaReferenceDataAutoUpdateDryRun: "参照データ自動更新はdry-run検証基盤のみ実装済み(本番データの自動更新・Cronは未実装)",
     notProvidedHeading: "未提供の機能",
-    notProvidedAccount: "アカウント登録・ログイン",
     notProvidedSync: "端末間の自動同期",
-    notProvidedCloudBackup: "クラウドバックアップ",
+    notProvidedCloudBackup: "全データの自動クラウドバックアップ(My Team以外のデータの自動保存)",
     notProvidedFriends: "フレンド機能",
     notProvidedRanking: "ランキング機能",
     notProvidedBilling: "決済・課金",
@@ -6785,7 +6791,7 @@ const ja: Dictionary = {
     heading: "公開準備状況",
     intro: "このページでは、本サービスが現在どの提供段階にあるか、正直にお伝えします。",
     currentStageHeading: "現在の提供段階",
-    currentStageBody: "現在はローカル開発版から身内限定テストへ向けた公開準備段階です。認証・端末間同期・決済は未実装であり、一般公開はまだできません。",
+    currentStageBody: "現在は本人・家族・信頼できる友人を対象とした招待制アルファ公開段階です。Supabase Authによる認証・RLSによるユーザー別データ分離・My Teamクラウド保存(アルファ機能)は実装済みです。端末間の完全な自動同期・決済は未実装であり、一般公開はまだできません。",
     availableHeading: "利用可能な機能",
     betaHeading: "ベータ機能(既知の制約あり)",
     notProvidedHeading: "未提供の機能",
@@ -6814,13 +6820,13 @@ const ja: Dictionary = {
     blockingProductionBlocker: "正式公開の障害",
     blockingPaidPlanBlocker: "Pro課金開始の障害",
     itemAuthTitle: "認証",
-    itemAuthDesc: "ユーザーごとのログイン機構は未実装です。",
+    itemAuthDesc: "Supabase Authによる登録・ログイン・ログアウト・メール確認・パスワード再設定・認証セッション維持を実装済みです。",
     itemDataIsolationTitle: "ユーザー別データ分離",
-    itemDataIsolationDesc: "アカウントの概念が無いため、ユーザーごとのデータ分離は未実装です。",
+    itemDataIsolationDesc: "RLS(Row Level Security)により、ログイン中の本人のデータだけが読み書きできるよう分離を実装済みです。",
     itemSyncTitle: "端末間同期",
-    itemSyncDesc: "別端末・別ブラウザーへの自動同期は未実装です。",
+    itemSyncDesc: "別端末・別ブラウザーへの完全な自動同期は未実装です(下記My Teamクラウド保存を除く)。",
     itemCloudBackupTitle: "クラウドバックアップ",
-    itemCloudBackupDesc: "サーバー側でのユーザーデータの自動バックアップは未実装です。",
+    itemCloudBackupDesc: "全データの自動バックアップは未実装です。My Teamに限り、ログイン後に本人の明示操作でクラウドへ保存・取得できるアルファ機能を実装済みです。",
     itemLocalBackupTitle: "JSONバックアップ",
     itemLocalBackupDesc: "保存ビルドはJSON形式で手動エクスポート・インポートできます。",
     itemDataDeletionTitle: "データ削除機能",
@@ -6840,13 +6846,13 @@ const ja: Dictionary = {
     itemRightsContactTitle: "権利者専用連絡窓口",
     itemRightsContactDesc: "権利者(選手・カード・データ・画像等の権利保持者)からの連絡を受け付ける連絡先(初期段階では上記と共通の窓口)。",
     itemHostingTitle: "本番ホスティング",
-    itemHostingDesc: "現在はローカル開発サーバーのみで、本番ホスティングは未整備です。",
+    itemHostingDesc: "Vercel上に本番環境を構築し、招待制アルファとして稼働しています。",
     itemMonitoringTitle: "監視体制",
     itemMonitoringDesc: "稼働監視の仕組みは未整備です。",
     itemErrorCollectionTitle: "エラー収集",
     itemErrorCollectionDesc: "エラー監視サービスは未導入です。",
     itemSecurityTitle: "セキュリティレビュー",
-    itemSecurityDesc: "認証が無い前提での基本的な入力検証は行っていますが、正式なセキュリティレビューは未実施です。",
+    itemSecurityDesc: "Supabase AuthとRLSによる認可設計・基本的な入力検証を行っていますが、正式な第三者セキュリティレビューは未実施です。",
     itemOperatingCostTitle: "運用費試算",
     itemOperatingCostDesc: "本番運用時の費用試算は未実施です。",
     itemFreeProDesignTitle: "無料/Pro設計",

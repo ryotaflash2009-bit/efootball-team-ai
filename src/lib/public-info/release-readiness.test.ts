@@ -65,13 +65,20 @@ describe("buildReleaseReadinessItems", () => {
     expect(serialized).not.toMatch(/C:\\|\/data\/server\.pid|world_player_cards|localhost:3000/i);
   });
 
-  it("認証・ユーザー別データ分離・端末間同期・クラウド同期は未着手として記録されている(過大評価しない)", () => {
+  it("認証・ユーザー別データ分離は実装済み、端末間の完全な自動同期は未着手として記録される(過大評価も過小評価もしない)", () => {
     const items = buildReleaseReadinessItems();
     const byId = new Map(items.map((i) => [i.id, i]));
-    expect(byId.get("auth")?.status).toBe("not-started");
-    expect(byId.get("data-isolation")?.status).toBe("not-started");
+    expect(byId.get("auth")?.status).toBe("complete");
+    expect(byId.get("data-isolation")?.status).toBe("complete");
     expect(byId.get("sync")?.status).toBe("not-started");
-    expect(byId.get("cloud-backup")?.status).toBe("not-started");
+    expect(byId.get("cloud-backup")?.status).toBe("partial");
+  });
+
+  it("認証・データ分離を「実装済み」と記録する一方、端末間の完全な自動同期はいまだ「未着手」のままである(混同しない)", () => {
+    const items = buildReleaseReadinessItems();
+    const byId = new Map(items.map((i) => [i.id, i]));
+    expect(byId.get("auth")?.status).not.toBe("not-started");
+    expect(byId.get("sync")?.status).not.toBe("complete");
   });
 
   it("決済・課金・解約は未着手として記録され、Pro課金開始のブロッカーとして扱われる", () => {
