@@ -131,18 +131,28 @@ async function main() {
     record("[シナリオ2] 公式サービスではないことの明示", aboutBody.includes("公式サービスではありません"), "");
     record("[シナリオ2] 勝率保証をしないことの明示", aboutBody.includes("勝率"), "");
     record(
-      "[シナリオ2] 未提供機能(アカウント・同期・課金等)が「未提供」として明示される",
-      aboutBody.includes("未提供の機能") && aboutBody.includes("アカウント登録"),
+      "[シナリオ2] 未提供機能(端末間の自動同期・課金等)が「未提供」として明示される",
+      aboutBody.includes("未提供の機能") && aboutBody.includes("端末間の自動同期") && aboutBody.includes("決済・課金"),
       "",
     );
     record(
-      "[シナリオ2] 未提供機能が「利用可能な機能」欄には含まれない",
+      "[シナリオ2] 未提供機能(同期・課金)が「利用可能な機能」欄には含まれない",
       !(() => {
         const availIdx = aboutBody.indexOf("利用可能な機能");
         const betaIdx = aboutBody.indexOf("ベータ機能");
         if (availIdx === -1 || betaIdx === -1) return true;
         const availSection = aboutBody.slice(availIdx, betaIdx);
-        return availSection.includes("アカウント登録") || availSection.includes("決済・課金");
+        return availSection.includes("端末間の自動同期") || availSection.includes("決済・課金");
+      })(),
+      "",
+    );
+    record(
+      "[シナリオ2] アカウント登録・ログイン(Supabase Auth)が「利用可能な機能」欄に含まれる(実装済みのため)",
+      (() => {
+        const availIdx = aboutBody.indexOf("利用可能な機能");
+        const betaIdx = aboutBody.indexOf("ベータ機能");
+        if (availIdx === -1 || betaIdx === -1) return false;
+        return aboutBody.slice(availIdx, betaIdx).includes("アカウント登録");
       })(),
       "",
     );
@@ -305,11 +315,11 @@ async function main() {
     // ============================================================
     await navigateAndSettle(client, `${BASE}/release-readiness`);
     const releaseBody = await bodyText(client);
-    record("[シナリオ9] 認証は未着手として表示される", releaseBody.includes("認証"), "");
+    record("[シナリオ9] 認証(Supabase Auth)が実装済みとして表示される", releaseBody.includes("認証") && releaseBody.includes("Supabase Auth"), "");
     record("[シナリオ9] 決済・課金は未実装として表示される", /決済/.test(releaseBody), "");
     record("[シナリオ9] 問い合わせ窓口の項目が完了として表示される", releaseBody.includes("受け付ける連絡先"), "");
     record(
-      "[シナリオ9] 問い合わせ窓口が設定済みでも、認証・同期・課金等の他のブロッカーは完了扱いにならない",
+      "[シナリオ9] 問い合わせ窓口が設定済みでも、端末間の完全な自動同期・課金等の他のブロッカーは完了扱いにならない",
       releaseBody.includes("未着手") || releaseBody.includes("未実装"),
       "",
     );

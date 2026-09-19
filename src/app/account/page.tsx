@@ -3,7 +3,7 @@ import { AccountView } from "@/components/auth/AccountView";
 
 export const metadata = {
   title: "アカウント | eFootball Team AI",
-  description: "アカウントのログイン状態を確認します（技術検証段階。クラウド同期は未実装）。",
+  description: "Supabase Authを利用したアカウント管理と、明示操作によるMy Teamクラウド保存・取得を行えます。端末間の自動同期は未対応です。",
 };
 
 export default function AccountPage() {

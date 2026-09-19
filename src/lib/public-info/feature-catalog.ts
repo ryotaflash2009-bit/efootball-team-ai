@@ -26,16 +26,19 @@ export const AVAILABLE_FEATURE_KEYS: AboutKey[] = [
   "availableSquadDiagnosis",
   "availableBestXi",
   "availableJsonBackup",
+  "availableAccountAuth",
+  "availableReferenceDataSupabase",
 ];
 
 export const BETA_FEATURE_KEYS: AboutKey[] = [
   "betaBestXiDedupLimit",
   "betaBestXiSubPositionLimit",
   "betaBestXiPoolScopeLimit",
+  "betaMyTeamCloudSave",
+  "betaReferenceDataAutoUpdateDryRun",
 ];
 
 export const NOT_PROVIDED_FEATURE_KEYS: AboutKey[] = [
-  "notProvidedAccount",
   "notProvidedSync",
   "notProvidedCloudBackup",
   "notProvidedFriends",
