@@ -2743,6 +2743,7 @@ export interface Dictionary {
     bodyPrefixTemplate: string;
     bodyBold: string;
     bodySuffix: string;
+    bodySuffixMyTeam: string;
   };
   myTeam: {
     pageTitle: string;
@@ -3551,7 +3552,7 @@ const ja: Dictionary = {
     heroTitleAccent: "スカッド",
     heroTitleSuffix: "を組む。",
     heroDescriptionTemplate:
-      "eFootball World の全 {count} カードを SQLite で提供。26 能力値・スキル・育成計算・監督補正・Link-Up Play 条件までを一つの画面で。計算規則が未確認の項目は「検証中」と明示します。",
+      "eFootball World の全 {count} カードを収録。26 能力値・スキル・育成計算・監督補正・Link-Up Play 条件までを一つの画面で。計算規則が未確認の項目は「検証中」と明示します。",
     searchPlaceholder: "選手名・World ID で検索…",
     searchAriaLabel: "選手を検索",
     searchButton: "検索",
@@ -3588,7 +3589,7 @@ const ja: Dictionary = {
   },
   managersPage: {
     metaTemplate: "{count} 名の監督",
-    descriptionTemplate: "データソース: {source}（GitHub data/managers.json）。age・国籍・チーム・Coaching Affinity・フォーメーションはソース非収録。",
+    descriptionTemplate: "データ提供: {source}。age・国籍・チーム・Coaching Affinity・フォーメーションはソース非収録。",
     dataUnavailableTitle: "監督データがまだ用意されていません",
     dataUnavailableDescription: "ターミナルで `node scripts/sync-managers.mjs` を実行して SQLite に取り込んでください。",
     failedTitle: "監督データを読み込めませんでした",
@@ -6318,6 +6319,8 @@ const ja: Dictionary = {
     bodyBold: "このブラウザにのみ",
     bodySuffix:
       "保存されます。別の端末との同期やバックアップ、サーバーへの保存には未対応です。ログイン・アカウント同期は今後のバージョンで対応予定です。",
+    bodySuffixMyTeam:
+      "保存されます。ログイン後は、アカウント画面から明示的な操作でMy Teamをクラウドへ保存・取得できる試験機能（アルファ）を利用できます。端末間の自動同期ではありません。",
   },
   myTeam: {
     pageTitle: "My Team",
@@ -6900,9 +6903,9 @@ const ja: Dictionary = {
     accountLoginRequiredMessage: "この画面を利用するにはログインが必要です。",
     accountLoggedInLabel: "ログイン中",
     accountEmailLabel: "確認済みメールアドレス",
-    accountCloudSyncNoticeTitle: "クラウド同期は未実装です",
-    accountCloudSyncNoticeDesc: "現在、このアカウントはログイン機能の技術検証段階です。My Team・お気に入り・保存済みビルド・保存済みスカッドなどのクラウド同期はまだ利用できません。",
-    accountLocalDataNoticeDesc: "My Team・お気に入り・保存済みビルド・保存済みスカッドなどのデータは、引き続きこの端末のブラウザー内（ローカル）にのみ保存されます。",
+    accountCloudSyncNoticeTitle: "端末間の自動同期は未実装です",
+    accountCloudSyncNoticeDesc: "端末間の自動同期には対応していません。ログイン後は、My Teamを明示的にクラウドへ保存・取得できる試験機能（アルファ）を利用できます。お気に入り・保存済みビルド・保存済みスカッドは、まだクラウド保存に対応していません。",
+    accountLocalDataNoticeDesc: "お気に入り・保存済みビルド・保存済みスカッドなどのデータは、引き続きこの端末のブラウザー内（ローカル）にのみ保存されます。My Teamも既定ではローカル保存で、クラウドへの保存・取得は下記の試験機能から明示的に行った場合だけです。",
     accountNoAutoUploadNoticeDesc: "ログインしても、この端末に保存されているローカルデータが自動的にアップロードされることはありません。",
     accountCrossDeviceNoticeDesc: "別の端末やブラウザーとのデータ同期には現時点で対応していません。",
     accountDeletionFutureNoticeDesc: "アカウントの削除機能は今後のフェーズで提供予定です。",
@@ -6955,8 +6958,8 @@ const ja: Dictionary = {
     notFoundOrForbiddenMessage: "対象のレコードが見つからないか、操作する権限がありません。",
   },
   myTeamCloud: {
-    pageTitle: "My Teamクラウド保存（開発用PoC）",
-    devNoticeTitle: "これは開発向けのMy Teamクラウド保存PoCです",
+    pageTitle: "My Teamクラウド保存（アルファ機能）",
+    devNoticeTitle: "これはMy Teamクラウド保存のアルファ機能です",
     devNoticeBody: "保存対象はMy Team（実際に保有しているカードの一覧）だけです。お気に入り・保存ビルド・保存スカッド・スカッドテンプレートは含まれません。",
     optionalNotice: "クラウド保存は任意です。使わなくてもMy Teamは今まで通りこのブラウザーに保存され続けます。",
     noAutoSendNotice: "ログインだけでは自動送信されません。クラウドへの保存は、下の「クラウドへ保存」ボタンを押したときだけ実行されます。",
@@ -7024,7 +7027,7 @@ const ja: Dictionary = {
     errorTimeout: "応答がありませんでした。もう一度お試しください。",
     errorUnknown: "処理に失敗しました。時間をおいて再度お試しください。",
     browserSharedDataNotice: "ローカルデータ(My Team・My Builds・お気に入り・保存スカッド・スカッドテンプレート)は、現在このブラウザーで共通です。アカウントごとに分かれていません。",
-    notYetCloudSyncedNotice: "My Builds・お気に入り・保存スカッド・スカッドテンプレートは、まだクラウド同期の対象ではありません(このPoCで対応するのはMy Teamだけです)。",
+    notYetCloudSyncedNotice: "My Builds・お気に入り・保存スカッド・スカッドテンプレートは、まだクラウド同期の対象ではありません(このアルファ機能で対応するのはMy Teamだけです)。",
     provenanceUnknownNotice: "このブラウザーでMy Teamクラウド保存を利用するのは初めて、または由来を確認できません。",
     provenanceMismatchWarning: "このブラウザーのローカルMy Teamは、別のアカウントで最後に使用された可能性があります。保存する前に内容をよくご確認ください。",
     saveConfirmProvenanceUnclearWarning: "このローカルデータは、現在ログイン中のアカウントが作成したものとは限りません。",

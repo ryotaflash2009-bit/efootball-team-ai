@@ -188,7 +188,21 @@ export default async function ManagerDetailPage({ params }: { params: Promise<{ 
             ))}
           </dl>
           <p className="mt-3 text-2xs text-text-muted">
-            データソース: <span className="break-all">{manager.sourceUrl}</span> / 取得日時: {fmt(manager.fetchedAt)}
+            データ提供: {manager.source} / 取得日時: {fmt(manager.fetchedAt)}
+            {manager.sourceUrl ? (
+              <>
+                {" "}
+                ・
+                <a
+                  href={manager.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-1 text-accent underline underline-offset-2"
+                >
+                  出典を開く
+                </a>
+              </>
+            ) : null}
           </p>
         </Surface>
       </div>
