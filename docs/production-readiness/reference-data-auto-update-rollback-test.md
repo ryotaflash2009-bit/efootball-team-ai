@@ -75,6 +75,13 @@ beforeSnapshot=[{id:"wc-1", fields:{ovrMax:79,...}}], addedIds=[])`でrollback�
   staging schemaでの実行、実際のネットワーク分断時の挙動は、今回はいずれも検証していない
   (ローカルSQLiteでの`advisory_locks`テーブルによる模擬検証のみ)。
 
+## 2.5 PostgreSQLでの追加実証(2026-09-19)
+
+本書が記録する検証はSQLiteに対するものだったが、その後GitHub ActionsのPostgreSQL
+service container上で、同じ正常系・トランザクション途中失敗・明示rollbackのシナリオを
+実PostgreSQLに対しても実行し、同様の結果(一部だけcommitされない・before-snapshotへの
+正確な復元)を確認した。詳細は`reference-data-auto-update-postgres-validation.md`を参照。
+
 ## 3. 結論
 
 トランザクション内失敗時の自動ROLLBACKと、成功commit後の明示的なundoの両方について、

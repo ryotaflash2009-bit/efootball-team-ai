@@ -94,6 +94,14 @@ node scripts/migration/reference-data-auto-update-apply.mjs \
 - commit・push・PR作成は行っていない(次回セッションでの判断事項)。
 - Production Deploymentへの反映は行っていない。
 
+## 6.5 PostgreSQL隔離検証への発展(2026-09-19)
+
+本書執筆時点ではSQLite合成環境での実証のみだったが、その後GitHub ActionsのPostgreSQL
+service container(ジョブ限定、ローカルWindows環境へのDocker/WSL/PostgreSQL導入は不採用)
+で、実`pg_try_advisory_xact_lock`を含むPostgreSQL固有の検証を追加した。詳細は
+`reference-data-auto-update-postgres-validation.md`を参照。`apply-orchestrator.ts`・
+`rollback.ts`等のPhase 2コア実装は、この検証のために1行も変更していない。
+
 ## 7. Phase 3(定期実行)との関係
 
 Phase 2は「人間の明示承認を経た手動apply」までを実装した。Phase 3(定期的なdry-run実行、

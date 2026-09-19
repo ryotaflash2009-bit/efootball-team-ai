@@ -85,6 +85,16 @@
 | `src/lib/reference-data/auto-update/sqlite-adapter.ts` | `node:sqlite`用`QueryClient`アダプター(ローカル合成専用) | **C**(ローカル専用、Production非該当) |
 | `scripts/migration/reference-data-auto-update-apply.mjs` | 承認付き適用・明示rollbackCLI(`--production`等の禁止フラグは存在しない) | **A**(ローカル合成環境専用) |
 
+## 5c. PostgreSQL隔離検証で新設した部品(このセッションで追加、詳細は`reference-data-auto-update-postgres-validation.md`)
+
+| ファイル | 役割 | 分類 |
+|---|---|---|
+| `src/lib/reference-data/auto-update/postgres-staging.ts` | GitHub Actions PostgreSQL service container専用DDL(実行コードなし) | 設計のみ(隔離環境向け、Production版は**F**) |
+| `src/lib/reference-data/auto-update/postgres-adapter.ts` | 接続安全性強制(localhost限定・Supabaseホスト拒否)+ `?`→`$1`変換 + jsonb正規化アダプター | **A**(接続安全性はUnit Testで、apply/rollback/lockはGitHub Actions実PostgreSQLで実証済み) |
+| `src/lib/reference-data/auto-update/apply-orchestrator.postgres.test.ts` | 実PostgreSQL統合試験(通常Unit Testからは除外、専用config経由でのみ実行) | **A**(GitHub Actions専用) |
+| `vitest.postgres.config.ts` | PostgreSQL統合試験専用vitest設定 | **A** |
+| `.github/workflows/ci.yml`(`reference-data-postgres-validation`ジョブ) | 一時PostgreSQL service containerでの検証ジョブ(`schedule:`なし) | **A** |
+
 ## 6. 結論(何が足りないか)
 
 再利用可能な部品(安全ゲート・差分計算パターン・UPDATE SQL組立・CLI設計パターン・秘密情報取り扱い)は
