@@ -23,7 +23,7 @@ export function LocalStorageNotice({ kind }: { kind: "favorites" | "my-team" | "
       <span>
         {t("localStorageNotice", "bodyPrefixTemplate").replace("{what}", what)}
         <b>{t("localStorageNotice", "bodyBold")}</b>
-        {t("localStorageNotice", "bodySuffix")}
+        {t("localStorageNotice", kind === "my-team" ? "bodySuffixMyTeam" : "bodySuffix")}
       </span>
     </p>
   );

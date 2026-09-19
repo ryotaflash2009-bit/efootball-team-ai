@@ -39,7 +39,7 @@ const en: Dictionary = {
     heroTitleAccent: "squad",
     heroTitleSuffix: ".",
     heroDescriptionTemplate:
-      "All {count} eFootball World cards, served from SQLite. 26 abilities, skills, progression calculations, manager boosters, and Link-Up Play conditions — all in one screen. Items whose calculation rules aren't confirmed are clearly marked \"under verification.\"",
+      "All {count} eFootball World cards. 26 abilities, skills, progression calculations, manager boosters, and Link-Up Play conditions — all in one screen. Items whose calculation rules aren't confirmed are clearly marked \"under verification.\"",
     searchPlaceholder: "Search by player name or World ID…",
     searchAriaLabel: "Search players",
     searchButton: "Search",
@@ -76,7 +76,7 @@ const en: Dictionary = {
   },
   managersPage: {
     metaTemplate: "{count} managers",
-    descriptionTemplate: "Data source: {source} (GitHub data/managers.json). Age, nationality, team, Coaching Affinity, and formation are not included in the source.",
+    descriptionTemplate: "Data provided by {source}. Age, nationality, team, Coaching Affinity, and formation are not included in the source.",
     dataUnavailableTitle: "Manager data isn't set up yet",
     dataUnavailableDescription: "Run `node scripts/sync-managers.mjs` in the terminal to load it into SQLite.",
     failedTitle: "Could not load manager data",
@@ -2810,6 +2810,8 @@ const en: Dictionary = {
     bodyBold: "only in this browser",
     bodySuffix:
       ". Syncing or backing up to another device, or saving to a server, is not yet supported. Login and account sync are planned for a future version.",
+    bodySuffixMyTeam:
+      ". After logging in, you can use an alpha trial feature on the account screen to explicitly save and retrieve My Team from the cloud. This is not automatic sync across devices.",
   },
   myTeam: {
     pageTitle: "My Team",
@@ -3392,9 +3394,9 @@ const en: Dictionary = {
     accountLoginRequiredMessage: "You need to sign in to view this page.",
     accountLoggedInLabel: "Signed in",
     accountEmailLabel: "Confirmed email address",
-    accountCloudSyncNoticeTitle: "Cloud sync is not yet available",
-    accountCloudSyncNoticeDesc: "This account is currently a technical proof of concept for sign-in only. Cloud sync for My Team, Favorites, saved builds, and saved squads is not yet available.",
-    accountLocalDataNoticeDesc: "My Team, Favorites, saved builds, saved squads, and similar data continue to be stored only in this device's browser (locally).",
+    accountCloudSyncNoticeTitle: "Automatic sync across devices is not yet available",
+    accountCloudSyncNoticeDesc: "Automatic sync across devices is not supported. After logging in, you can use an alpha trial feature to explicitly save and retrieve My Team from the cloud. Favorites, saved builds, and saved squads are not yet cloud-saveable.",
+    accountLocalDataNoticeDesc: "Favorites, saved builds, saved squads, and similar data continue to be stored only in this device's browser (locally). My Team is also stored locally by default; it is only saved to or retrieved from the cloud when you explicitly do so using the alpha feature below.",
     accountNoAutoUploadNoticeDesc: "Signing in does not automatically upload the local data already stored on this device.",
     accountCrossDeviceNoticeDesc: "Syncing data across other devices or browsers is not supported yet.",
     accountDeletionFutureNoticeDesc: "Account deletion is planned for a future phase.",
@@ -3447,8 +3449,8 @@ const en: Dictionary = {
     notFoundOrForbiddenMessage: "That record wasn't found, or you don't have permission to modify it.",
   },
   myTeamCloud: {
-    pageTitle: "My Team Cloud Save (Dev PoC)",
-    devNoticeTitle: "This is a developer-only My Team cloud save PoC",
+    pageTitle: "My Team Cloud Save (Alpha Feature)",
+    devNoticeTitle: "This is an alpha feature for My Team cloud save",
     devNoticeBody: "Only My Team (the list of cards you actually own) is saved. Favorites, saved builds, saved squads, and squad templates are not included.",
     optionalNotice: "Cloud save is optional. If you don't use it, My Team keeps working exactly as before, stored only in this browser.",
     noAutoSendNotice: "Signing in alone never sends anything automatically. Data is only sent to the cloud when you press \"Save to cloud\" below.",
@@ -3516,7 +3518,7 @@ const en: Dictionary = {
     errorTimeout: "There was no response in time. Please try again.",
     errorUnknown: "Something went wrong. Please try again later.",
     browserSharedDataNotice: "Local data (My Team, My Builds, Favorites, saved squads, squad templates) is currently shared by this browser. It is not separated per account.",
-    notYetCloudSyncedNotice: "My Builds, Favorites, saved squads, and squad templates are not yet cloud-synced (only My Team is covered by this PoC).",
+    notYetCloudSyncedNotice: "My Builds, Favorites, saved squads, and squad templates are not yet cloud-synced (only My Team is covered by this alpha feature).",
     provenanceUnknownNotice: "This is the first time cloud save is used in this browser, or its origin cannot be confirmed.",
     provenanceMismatchWarning: "The local My Team in this browser may have last been used by a different account. Please review its contents carefully before saving.",
     saveConfirmProvenanceUnclearWarning: "This local data may not have been created by the currently signed-in account.",
