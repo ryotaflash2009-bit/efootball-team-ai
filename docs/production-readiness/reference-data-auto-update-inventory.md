@@ -95,6 +95,17 @@
 | `vitest.postgres.config.ts` | PostgreSQL統合試験専用vitest設定 | **A** |
 | `.github/workflows/ci.yml`(`reference-data-postgres-validation`ジョブ) | 一時PostgreSQL service containerでの検証ジョブ(`schedule:`なし) | **A** |
 
+## 5d. Production preflight設計で新設した部品(このセッションで追加、詳細は`reference-data-production-preflight.md`)
+
+| ファイル | 役割 | 分類 |
+|---|---|---|
+| `src/lib/reference-data/auto-update/production-preflight.ts` | Production adapter安全境界・接続前preflightゲート・レポート生成(`createProductionAdapter()`は意図的に未実装) | 設計のみ(接続コードなし、判定ロジックはテスト済み) |
+| `src/lib/reference-data/auto-update/production-readonly-queries.ts` | 接続後read-only preflightのクエリ文字列+結果検証(実行コードなし) | 設計のみ |
+| `src/lib/reference-data/auto-update/production-ops-sql-audit.ts` | Production向けSQL案(DO NOT RUN)の静的監査 | **A** |
+| `docs/production-readiness/sql/create-reference-data-ops-schema.sql` | `reference_data_ops`スキーマDDL案(DO NOT RUN) | 設計のみ・**F**(Production未適用) |
+| `docs/production-readiness/sql/rollback-reference-data-ops-schema.sql` | 上記のロールバックDDL案(DO NOT RUN) | 設計のみ・**F** |
+| `docs/production-readiness/sql/preflight-reference-data-ops.sql` | 接続後read-only preflight用SELECT専用クエリ案(DO NOT RUN、このセッションでは未実行) | 設計のみ・**F** |
+
 ## 6. 結論(何が足りないか)
 
 再利用可能な部品(安全ゲート・差分計算パターン・UPDATE SQL組立・CLI設計パターン・秘密情報取り扱い)は
