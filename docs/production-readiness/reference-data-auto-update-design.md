@@ -89,17 +89,46 @@ staging昇格方式を組み合わせる**。理由:
 - 既存の外部取得スクリプト(`sync-world-players-incremental.mjs`等)の出力を、本CLIが読める
   `StagingDataset`形式へ変換する「glue」部分は**今回は未実装**(Phase 2で設計)。
 
-### Phase 2(次回以降、今回は実装しない)
+### Phase 2(ローカル合成環境で実装・実証済み、2026-09-19。詳細は
+`reference-data-auto-update-phase-2.md`・`reference-data-auto-update-rollback-test.md`を参照)
 
-- 明示承認後のみ適用。transaction・advisory lock・idempotency key(`checkLockAcquired`・
-  `checkDatasetChecksumNotApplied`は判定ロジックのみPhase 1で用意済み、実際のlock取得・
-  適用SQLの発行は未実装)。
-- stagingから本テーブルへの昇格(`real-import-detail-extension-orchestrator.ts`の
-  `buildBulkUpdateSql`パターンを踏襲したUPSERT/UPDATEオーケストレーター)。
-- 失敗時rollback、適用後シャドー比較(`phase-d-shadow-compare.mjs`の比較パターンを
-  「更新前スナップショット vs 更新後Supabase」に応用)。
+- 明示承認後のみ適用: `src/lib/reference-data/auto-update/approval.ts`で、承認artifact
+  (jobId・datasetChecksum・diffChecksum・schemaVersion・期限・期待件数)が現在のジョブ・
+  差分と完全一致しない限り適用処理へ進まない設計を実装・テスト済み。
+- transaction: `apply-orchestrator.ts`の`applyUpdateJob()`が、事前ゲート全件合格後にだけ
+  `BEGIN`し、UPSERT→shadow comparison→(成功なら)`COMMIT`/(失敗なら)`ROLLBACK`を単一
+  トランザクション内で行う。ローカル一時SQLite(`node:sqlite`)に対する実際のトランザクション
+  実行で、「一部だけcommitされない」ことを実地確認済み(合成テスト、Production未適用)。
+- advisory lock: `lock.ts`(Production設計: `pg_try_advisory_xact_lock`+テーブル名由来の
+  決定的なlock key)。ローカルSQLite環境では専用テーブル(`advisory_locks`)による
+  同等の排他制御を実装・実証済み(取得済みkeyへの二重取得は待機せず即座に失敗)。
+- idempotency: Phase 1の`checkDatasetChecksumNotApplied`をそのまま再利用し、
+  `applied_checksums`テーブル(ローカル合成環境)で適用済みchecksum履歴を管理する設計を
+  実装済み。
+- stagingから本テーブルへの昇格: ローカル合成環境では汎用の`target_records`テーブルへの
+  UPSERTとして実装・実証済み。Production実装では
+  `real-import-detail-extension-orchestrator.ts`の`buildBulkUpdateSql`パターン
+  (型キャスト明示のUPDATE)を踏襲する設計とし、今回はそのPostgreSQL版SQLは書いていない。
+- 失敗時rollback: (a)トランザクション内失敗時のDBエンジンROLLBACK、(b)成功commit後の
+  明示的なundo(`rollback.ts`の`executeRollback()`、before-snapshotへの復元)の両方を
+  ローカル一時SQLiteで実地に確認済み(`reference-data-auto-update-rollback-test.md`参照)。
+- 適用後シャドー比較: `shadow-comparison.ts`の`compareAppliedResult()`で、適用後に読み戻した
+  実データと期待値の完全一致(差分1件でも不合格)を確認する設計を実装・テスト済み。
+  Production実装では`phase-d-shadow-compare.mjs`のSQLite/Supabase比較パターンを
+  「更新前スナップショット vs 更新後Supabase」へ応用する想定(未着手)。
+- 削除候補(tombstone): `tombstone.ts`で、外部データから消えたレコードを連続不在回数が
+  閾値に達するまで物理削除しない設計・大量削除候補の即reject判定を実装・テスト済み。
+  実際の無効化(inactiveフラグ等)・物理削除の実行コード自体は未実装(常に人間承認後の
+  別工程とする設計)。
+- 監査ログ: `audit-log.ts`(Phase 1)を再利用し、jobId・decision・件数・理由を含む
+  監査ログエントリーをCLIが標準出力へ出す設計を実装済み。秘密情報は
+  `sanitizeErrorMessage`で除去する。
 - sourceMeta更新・監査記録の永続化先(Supabaseの管理専用テーブル、または
-  GitHub Actions Artifact)を確定する。
+  GitHub Actions Artifact)は未確定のまま(ローカル合成環境では`update_jobs`テーブルの
+  カラムとして代替)。
+- **Production未実装・未適用の事項(明確化)**: 実Supabaseへの接続コード、Production用の
+  staging schema作成、Production向けPostgreSQL版UPSERT/UPDATE SQL、Production advisory lock
+  の実接続、CRON_SECRET/service role keyの導入、いずれも今回は一切実装・設定していない。
 
 ### Phase 3(今回は有効化しない)
 
@@ -123,13 +152,17 @@ staging昇格方式を組み合わせる**。理由:
 | NULL率増加チェック | 実装済み(`checkNullRateIncrease`) | 異常NULL率 |
 | 数値範囲チェック(OVR等) | 実装済み(`schema-validation.ts`の`numericRanges`) | OVR異常 |
 | 部分取得失敗検出 | 実装済み(`checkAllTablesFetched`) | 一部テーブルだけ取得成功 |
-| 直前ジョブ実行中の二重実行防止 | 判定ロジックのみ実装済み(`checkNoJobInProgress`)、実際のジョブ状態記録は未実装 | 前回ジョブ実行中 |
-| advisory lock | 判定ロジックのみ実装済み(`checkLockAcquired`)、実際のlock取得は未実装 | lock取得失敗 |
-| 内容ベースの重複適用防止 | 判定ロジックのみ実装済み(`checkDatasetChecksumNotApplied`)、適用済みchecksum集合の永続化は未実装 | 同一データの再適用防止 |
-| 参照整合性(orphan検出) | 既存の`real-import-guards.ts`(初回投入向け)に類似実装あり、更新シナリオへの一般化は未実装 | 参照整合性違反 |
-| rollback可能性 | Phase 2で設計(適用処理自体が未実装のため、rollback対象も未実装) | rollback不能 |
+| 直前ジョブ実行中の二重実行防止 | 実装済み・ローカル合成環境で実証済み(`checkNoJobInProgress`+`update_jobs`テーブルのstatus確認、CLIで結線済み) | 前回ジョブ実行中 |
+| advisory lock | 実装済み・ローカル合成環境で実証済み(`lock.ts`設計 + SQLite`advisory_locks`テーブルによる取得/解放、CLIで結線済み)。Production向けの`pg_try_advisory_xact_lock`実接続は未実装 | lock取得失敗 |
+| 内容ベースの重複適用防止 | 実装済み・ローカル合成環境で実証済み(`checkDatasetChecksumNotApplied`+`applied_checksums`テーブル、CLIで結線済み) | 同一データの再適用防止 |
+| 参照整合性(orphan検出) | 既存の`real-import-guards.ts`(初回投入向け)に類似実装あり、更新シナリオへの一般化はPhase 2でも未着手 | 参照整合性違反 |
+| rollback可能性 | 実装済み・ローカル合成環境で実地実証済み(`rollback.ts`の明示undo、トランザクション内失敗時のDBエンジンROLLBACKの両方。詳細は`reference-data-auto-update-rollback-test.md`) | rollback不能 |
 | 取得元利用規約不明時の停止 | 運用ルールとして明記(本書2章)、自動検知は未実装(人が定期的に目視確認する運用を推奨、`reference-data-update.md`4章から継承) | 取得元利用規約不明 |
-| 本番環境変数不足 | Phase 2で設計(Phase 1はSupabase接続自体を行わないため該当なし) | 本番環境変数不足 |
+| 本番環境変数不足 | 未実装(Phase 2もSupabase/Production接続自体を一切行わないため該当なし。Production接続実装自体が将来の別タスク) | 本番環境変数不足 |
+| 承認artifact検証(jobId・checksum・期限・期待件数一致) | 実装済み・ローカル合成環境で実証済み(`approval.ts`の`validateApproval`、CLIで結線済み) | 承認なし・承認内容不一致・期限切れ |
+| 適用後shadow comparison | 実装済み・ローカル合成環境で実証済み(`shadow-comparison.ts`、不一致時はROLLBACK) | shadow比較差分 |
+| 大量削除候補(tombstone)の即reject | 実装済み(`tombstone.ts`の`checkTombstoneCandidateCount`)、無効化・物理削除の実行自体は未実装 | 大量削除候補 |
+| 利用者データテーブルへの適用禁止 | 実装済み・テスト済み(`apply-orchestrator.ts`が`real-import-guards.ts`の許可リストで`auth.users`/`my_team_snapshots`/`rls_probe_records`を構造的に拒否) | 対象外テーブル指定 |
 
 いずれのゲートも、失敗した場合は`decideCommitOrRollback`(`real-import-guards.ts`、既存の
 初回投入と共通の判定関数)により`reject`となり、`UpdatePlan.writesPerformed`は常に0のまま返る
