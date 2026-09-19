@@ -53,3 +53,47 @@ jobs:
 
       - name: Production build
         run: npm run build
+
+  reference-data-postgres-validation:
+    # 参照データ自動更新 Phase 2 の、実PostgreSQL(GitHub-hosted Ubuntuランナー上の
+    # service container、このジョブの間だけ存在しジョブ終了後に破棄される)に対する
+    # 隔離検証。定期実行(schedule)ではない。実Supabase・実Productionへは一切接続しない。
+    # GitHub Secretsは使用せず、ここに書かれている資格情報はこのジョブ専用の使い捨て値。
+    name: Reference data PostgreSQL validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: phase2_test_user
+          POSTGRES_PASSWORD: phase2_test_password_ci_only
+          POSTGRES_DB: phase2_test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - name: Install dependencies (reproducible)
+        run: npm ci
+
+      - name: PostgreSQL Phase 2 validation (isolated service container)
+        run: npx vitest run --config vitest.postgres.config.ts
+        env:
+          PHASE2_TEST_PG_HOST: localhost
+          PHASE2_TEST_PG_PORT: "5432"
+          PHASE2_TEST_PG_USER: phase2_test_user
+          PHASE2_TEST_PG_PASSWORD: phase2_test_password_ci_only
+          PHASE2_TEST_PG_DATABASE: phase2_test_db
