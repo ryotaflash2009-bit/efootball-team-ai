@@ -132,6 +132,14 @@ GitHub Actions上では`reference-data-postgres-validation`ジョブが、ジョ
 PostgreSQL service containerに対してこれを自動実行する(詳細:
 `reference-data-auto-update-postgres-validation.md`)。
 
+## 5.6 Production preflight・apply・rollback(設計のみ、未接続・未適用)
+
+Production(Supabase)向けのstaging schema・最小権限方式・接続前後のpreflight・apply/rollback
+手順は、`reference-data-production-security-model.md`・`reference-data-production-preflight.md`・
+`reference-data-production-apply-runbook.md`・`reference-data-production-rollback-runbook.md`を
+参照。**いずれも設計のみであり、このランブックの対象であるローカル/GitHub Actions検証とは異なり、
+実Production接続コードは実装されていない(`createProductionAdapter()`は意図的な未実装)。**
+
 ## 6. このランブックが対象としないこと
 
 - 実際の外部データ取得(`scripts/sync-*.mjs`の実行そのもの)。

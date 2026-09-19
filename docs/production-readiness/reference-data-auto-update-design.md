@@ -134,6 +134,14 @@ staging昇格方式を組み合わせる**。理由:
   (ジョブ終了後に破棄)で、実`pg_try_advisory_xact_lock`・transaction apply・自動/明示
   rollback・shadow comparisonを実証した。詳細は`reference-data-auto-update-postgres-validation.md`
   を参照。実Supabase・実Production PostgreSQLへは今回も一切接続していない。
+- **Production-compatible staging設計(2026-09-19追記、設計のみ・未接続・未適用)**: staging
+  schema(`reference_data_ops`)のDDL案、最小権限方式の比較(専用PostgreSQLロールを第一候補と
+  判断)、Production adapterの安全境界(呼び出し元・schema・fingerprint・SSL等の接続前
+  ゲート)、接続後read-only preflightの設計を追加した。詳細は
+  `reference-data-production-security-model.md`・`reference-data-production-preflight.md`・
+  `reference-data-production-apply-runbook.md`・`reference-data-production-rollback-runbook.md`
+  を参照。`createProductionAdapter()`は呼び出すと必ず例外を投げる意図的な未実装であり、
+  実Production接続コードはこのセッションでも一切実装していない。
 
 ### Phase 3(今回は有効化しない)
 
