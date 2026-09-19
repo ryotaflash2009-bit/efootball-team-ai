@@ -129,6 +129,11 @@ staging昇格方式を組み合わせる**。理由:
 - **Production未実装・未適用の事項(明確化)**: 実Supabaseへの接続コード、Production用の
   staging schema作成、Production向けPostgreSQL版UPSERT/UPDATE SQL、Production advisory lock
   の実接続、CRON_SECRET/service role keyの導入、いずれも今回は一切実装・設定していない。
+- **PostgreSQL隔離検証(2026-09-19追記)**: ローカルWindows環境にDocker/WSL/PostgreSQLが
+  無いため、GitHub ActionsのGitHub-hosted Ubuntuランナー上の一時PostgreSQL service container
+  (ジョブ終了後に破棄)で、実`pg_try_advisory_xact_lock`・transaction apply・自動/明示
+  rollback・shadow comparisonを実証した。詳細は`reference-data-auto-update-postgres-validation.md`
+  を参照。実Supabase・実Production PostgreSQLへは今回も一切接続していない。
 
 ### Phase 3(今回は有効化しない)
 
@@ -153,7 +158,7 @@ staging昇格方式を組み合わせる**。理由:
 | 数値範囲チェック(OVR等) | 実装済み(`schema-validation.ts`の`numericRanges`) | OVR異常 |
 | 部分取得失敗検出 | 実装済み(`checkAllTablesFetched`) | 一部テーブルだけ取得成功 |
 | 直前ジョブ実行中の二重実行防止 | 実装済み・ローカル合成環境で実証済み(`checkNoJobInProgress`+`update_jobs`テーブルのstatus確認、CLIで結線済み) | 前回ジョブ実行中 |
-| advisory lock | 実装済み・ローカル合成環境で実証済み(`lock.ts`設計 + SQLite`advisory_locks`テーブルによる取得/解放、CLIで結線済み)。Production向けの`pg_try_advisory_xact_lock`実接続は未実装 | lock取得失敗 |
+| advisory lock | 実装済み・SQLite模擬(`advisory_locks`テーブル)とGitHub Actions上の実PostgreSQL(`pg_try_advisory_xact_lock`、2独立connectionでの競合)の両方で実証済み。Production(Supabase)への実接続は未実装 | lock取得失敗 |
 | 内容ベースの重複適用防止 | 実装済み・ローカル合成環境で実証済み(`checkDatasetChecksumNotApplied`+`applied_checksums`テーブル、CLIで結線済み) | 同一データの再適用防止 |
 | 参照整合性(orphan検出) | 既存の`real-import-guards.ts`(初回投入向け)に類似実装あり、更新シナリオへの一般化はPhase 2でも未着手 | 参照整合性違反 |
 | rollback可能性 | 実装済み・ローカル合成環境で実地実証済み(`rollback.ts`の明示undo、トランザクション内失敗時のDBエンジンROLLBACKの両方。詳細は`reference-data-auto-update-rollback-test.md`) | rollback不能 |

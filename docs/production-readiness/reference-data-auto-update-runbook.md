@@ -115,6 +115,23 @@ node scripts/migration/reference-data-auto-update-apply.mjs \
 Production向けstaging schemaの設計・作成、PostgreSQL版UPSERT/UPDATE SQLの実装、
 `pg_try_advisory_xact_lock`への実接続、Secret/認証情報の安全な管理方式の確定。
 
+## 5.5 PostgreSQL隔離検証(GitHub Actions専用、ローカルでは実行しない)
+
+`apply-orchestrator.postgres.test.ts`は通常の`npx vitest run`には含まれない。実行するには
+PostgreSQLへ接続可能な環境で明示的に次を実行する(ローカルWindows環境にPostgreSQLが無い場合は
+実行できない、実行しないこと):
+
+```
+PHASE2_TEST_PG_HOST=localhost PHASE2_TEST_PG_PORT=5432 \
+PHASE2_TEST_PG_USER=phase2_test_user PHASE2_TEST_PG_PASSWORD=<任意のテスト用値> \
+PHASE2_TEST_PG_DATABASE=phase2_test_db \
+npx vitest run --config vitest.postgres.config.ts
+```
+
+GitHub Actions上では`reference-data-postgres-validation`ジョブが、ジョブ限定の一時
+PostgreSQL service containerに対してこれを自動実行する(詳細:
+`reference-data-auto-update-postgres-validation.md`)。
+
 ## 6. このランブックが対象としないこと
 
 - 実際の外部データ取得(`scripts/sync-*.mjs`の実行そのもの)。
