@@ -1,0 +1,72 @@
+-- ============================================================================
+-- rls_auto_enable() の不要なEXECUTE権限のREVOKE(Supabase Security Advisor対応)
+-- ============================================================================
+--
+-- 対象警告(Supabase Security Advisor、2件、本SQLの実行により解消確認済み):
+--   1. Public Can Execute SECURITY DEFINER Function: public.rls_auto_enable()
+--   2. Signed-In Users Can Execute SECURITY DEFINER Function: public.rls_auto_enable()
+--
+-- 実測された実行前の状態(2026-09-18、Supabase Dashboard SQL Editorでの
+-- 読み取り専用メタデータ確認により確定。推測ではない):
+--   - Function: public.rls_auto_enable()
+--   - 引数: なし
+--   - 戻り値: event_trigger
+--   - 所有者(owner): postgres
+--   - セキュリティモード: SECURITY DEFINER
+--   - search_path: pg_catalog
+--   - 紐づくEvent Trigger: ensure_rls(イベント: ddl_command_end、
+--     対象コマンドタグ: CREATE TABLE / CREATE TABLE AS / SELECT INTO、状態: enabled)
+--   - information_schema.routine_privilegesで確認した明示権限:
+--       PUBLIC: EXECUTE
+--       postgres: EXECUTE
+--   - anonへの個別GRANT: なし
+--   - authenticatedへの個別GRANT: なし
+--   - anon/authenticatedが実行可能だった理由: 上記PUBLICへのEXECUTE権限を
+--     ロール継承で受け取っていたため(anon/authenticated自身への直接GRANTではない)
+--
+-- 上記の実測に基づき、本SQLはPUBLICからのREVOKEのみで両ロールへの実行可能性を
+-- 同時に解消できる(anon/authenticatedへの個別REVOKE文は、実測上その対象となる
+-- 個別GRANTが存在しないため不要であり、含めない)。
+--
+-- Event Triggerへの影響について(PostgreSQLの文書化された既定動作):
+--   PostgreSQLのEvent Triggerは、指定したDDLイベント発生時にデータベース
+--   エンジン自身が自動的に対象関数を呼び出す仕組みであり、DDLを実行した
+--   ロールがその関数へのEXECUTE権限を明示的に持っているかどうかを経由しない
+--   (`SELECT function()`のような直接呼び出し経路とは別の内部呼び出し経路)。
+--   したがって、PUBLICからEXECUTE権限をREVOKEしても、ensure_rls Event Trigger
+--   による自動RLS有効化の動作自体は影響を受けない。本SQL実行後の読み取り専用
+--   再確認でも、ensure_rlsがenabledのまま維持されていることを確認済み。
+--
+-- アプリへの影響: 本アプリケーションコードは`.rpc()`を一切使用していないため
+--   (`src`配下を検索し確認済み)、rls_auto_enable()をアプリから直接呼び出す
+--   経路は存在しない。したがって本REVOKEはアプリの挙動に一切影響しない。
+--
+-- 冪等性: REVOKEは既に権限が無い状態に対しても安全に実行できる
+--   (PostgreSQLはエラーにせず、権限が無いことを確認して終了する)。
+--
+-- 影響範囲: public.rls_auto_enable() 関数のPUBLICに対するEXECUTE権限のみ。
+--   postgresのEXECUTE権限・関数本体・所有者・search_path・Event Trigger・
+--   他の関数・テーブル・RLSポリシーは一切変更しない。
+--
+-- ロールバック: rollback-revoke-rls-auto-enable-public-execute.sql を参照
+--   (実測された実行前状態への復元であることを確認済み)。
+-- ============================================================================
+
+begin;
+
+revoke execute on function public.rls_auto_enable() from public;
+
+commit;
+
+-- ============================================================================
+-- 実行後に確認済みの結果(2026-09-18、読み取り専用メタデータ確認):
+--   public_can_execute: false
+--   anon_can_execute: false
+--   authenticated_can_execute: false
+--   postgres_can_execute: true
+--   ensure_rls Event Trigger: 引き続きenabled
+--   public.rls_auto_enable(): 引き続き存在
+--   SECURITY DEFINER: 維持
+--   search_path: 維持(pg_catalog)
+--   Security Advisorの該当2警告: 解消
+-- ============================================================================
