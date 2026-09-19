@@ -58,7 +58,7 @@
 | Observability/アラート | 参照データ更新専用のログ・通知の仕組みは存在しない。 | **F**(未実装) |
 | Lock機構(advisory lock等) | 存在しない。今回`auto-update/safety-gates.ts`に`checkLockAcquired`(判定関数のみ)を新設したが、実際のadvisory lock取得処理は未実装。 | **F**(判定ロジックのみA、取得処理はF) |
 
-## 5. 今回新設した部品(このセッションで追加)
+## 5. 今回新設した部品(Phase 1、前回セッションで追加)
 
 | ファイル | 役割 |
 |---|---|
@@ -69,6 +69,21 @@
 | `src/lib/reference-data/auto-update/plan.ts` | 上記を統合した「更新計画」生成(書込み0件) |
 | `src/lib/reference-data/auto-update/audit-log.ts` | 監査ログエントリー生成(秘密情報マスキング込み) |
 | `scripts/migration/reference-data-auto-update-dry-run.mjs` | 手動実行可能なdry-run専用CLI(`--execute`は存在しない) |
+
+## 5b. Phase 2で新設した部品(このセッションで追加、詳細は`reference-data-auto-update-phase-2.md`)
+
+| ファイル | 役割 | 分類 |
+|---|---|---|
+| `src/lib/reference-data/auto-update/job.ts` | 更新ジョブの状態モデル・許可された状態遷移 | **A**(実装済み・テスト済み) |
+| `src/lib/reference-data/auto-update/approval.ts` | 承認artifact検証(checksum・期限・期待件数の完全一致) | **A** |
+| `src/lib/reference-data/auto-update/lock.ts` | advisory lock設計・テスト用フェイクアダプター | **A**(Production接続部分は**F**) |
+| `src/lib/reference-data/auto-update/tombstone.ts` | 削除候補の連続不在カウント・大量削除即reject | **A** |
+| `src/lib/reference-data/auto-update/shadow-comparison.ts` | 適用後検証(期待値との完全一致) | **A** |
+| `src/lib/reference-data/auto-update/staging.ts` | ローカル合成SQLite専用DDL文字列(実行コードなし) | 設計のみ(合成環境向け、Production版は**F**) |
+| `src/lib/reference-data/auto-update/apply-orchestrator.ts` | 事前ゲート→BEGIN→UPSERT→shadow比較→COMMIT/ROLLBACK | **A**(フェイク+実SQLite両方でテスト済み) |
+| `src/lib/reference-data/auto-update/rollback.ts` | 成功commit後の明示undo | **A**(実SQLiteでテスト済み) |
+| `src/lib/reference-data/auto-update/sqlite-adapter.ts` | `node:sqlite`用`QueryClient`アダプター(ローカル合成専用) | **C**(ローカル専用、Production非該当) |
+| `scripts/migration/reference-data-auto-update-apply.mjs` | 承認付き適用・明示rollbackCLI(`--production`等の禁止フラグは存在しない) | **A**(ローカル合成環境専用) |
 
 ## 6. 結論(何が足りないか)
 

@@ -70,8 +70,53 @@ node scripts/migration/reference-data-auto-update-dry-run.mjs \
   取得元データそのものに問題がある場合は取得元を再確認し、閾値設定が厳しすぎる場合は
   `--max-decrease-ratio`等を見直す(ただし閾値の緩和は人が意図を持って行うこと)。
 
-## 5. このランブックが対象としないこと
+## 5. Phase 2: 承認付き適用(ローカル合成SQLite専用、実Supabaseへは一切接続しない)
+
+対象CLI: `scripts/migration/reference-data-auto-update-apply.mjs`
+
+このCLIは`--sqlite-db`で指定したローカルの一時SQLiteファイルだけを対象とする(Supabase/Postgres
+への接続コードは含まれていない)。`--production`・`--force`・`--skip-validation`・`--no-lock`・
+`--no-rollback`・`--execute`・`--yes`はいずれも存在せず、指定すると即座にエラー終了する。
+
+### 5.1 必要なファイル(Phase 1のstaging/previous/schemaに加えて)
+
+- **ジョブメタデータ(`--job`)**: `{"jobId": "...", "table": "world_player_cards", "schemaVersion": "v1", "datasetChecksum": "..."}`
+- **承認artifact(`--approval`)**: `{"jobId": "...", "datasetChecksum": "...", "diffChecksum": "...", "schemaVersion": "v1", "approvedAt": "...", "approvedBy": "...", "nonce": "...", "expiresAt": "...", "expectedCounts": {"added": 0, "updated": 1, "removedCandidate": 0}}`。
+  `diffChecksum`は対象データの実際の差分から計算される値と完全一致しなければならない
+  (推測やダミー値では通らない)。まずPhase 1のdry-run CLIで差分を確認してから作成すること。
+
+### 5.2 実行
+
+```
+node scripts/migration/reference-data-auto-update-apply.mjs \
+  --sqlite-db path/to/local-temp.sqlite \
+  --staging path/to/staging.json --previous path/to/previous.json --schema path/to/schema.json \
+  --job path/to/job.json --approval path/to/approval.json
+```
+
+`decision: commit`なら、指定したローカルSQLiteファイル内の`target_records`テーブルへ反映される
+(**このファイルはローカルの一時ファイルであり、実Supabaseとは無関係**)。`decision: rollback`なら
+一切書き込まれない。
+
+### 5.3 明示rollback(成功適用後のundo)
+
+```
+node scripts/migration/reference-data-auto-update-apply.mjs \
+  --sqlite-db path/to/local-temp.sqlite \
+  --rollback-plan path/to/rollback-plan.json
+```
+
+`rollback-plan.json`: `{"jobId": "...", "beforeSnapshot": [...], "addedIds": [...]}`。
+
+### 5.4 Production未実装の明示
+
+このCLI・関連コードはローカル合成SQLiteでの実証専用であり、実Supabaseへの適用経路は
+今回一切実装していない。Production適用には、少なくとも次が別途必要(いずれも今回未着手):
+Production向けstaging schemaの設計・作成、PostgreSQL版UPSERT/UPDATE SQLの実装、
+`pg_try_advisory_xact_lock`への実接続、Secret/認証情報の安全な管理方式の確定。
+
+## 6. このランブックが対象としないこと
 
 - 実際の外部データ取得(`scripts/sync-*.mjs`の実行そのもの)。
-- Supabaseへの実際の書込み(Phase 2で別途ランブックを用意する)。
+- 実Supabaseへの適用(今回のPhase 2はローカル合成SQLiteのみ、Production適用は将来の別タスク)。
 - Cron・スケジュール実行(Phase 3、今回は有効化しない)。
