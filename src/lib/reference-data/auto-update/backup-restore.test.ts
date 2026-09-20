@@ -43,9 +43,12 @@ class FakeRestoreClient implements QueryClient {
     if (this.failOn && this.failOn.test(trimmed)) throw new Error(`fault-injected: ${trimmed.slice(0, 60)}`);
     if (lower === "begin" || lower === "commit" || lower === "rollback") return { rows: [] };
 
-    const truncateMatch = trimmed.match(/^truncate table reference_data_backup_restore_test\.(\w+)/i);
-    if (truncateMatch) {
-      this.restoreRows[truncateMatch[1]] = [];
+    if (/^truncate table\b/i.test(trimmed)) {
+      // 実装はRestore先4テーブルすべてを単一のTRUNCATE文でまとめて空にする(外部キー制約回避)。
+      // fake clientでも、カンマ区切りで列挙された全テーブルを空にする。
+      const tables = [...trimmed.matchAll(/reference_data_backup_restore_test\.(\w+)/gi)].map((m) => m[1]);
+      if (tables.length === 0) throw new Error(`予期しないTRUNCATE文: ${trimmed}`);
+      for (const t of tables) this.restoreRows[t] = [];
       return { rows: [] };
     }
 

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   buildBackupDumpSelectSql,
   buildBackupCountSql,
-  buildBackupTruncateRestoreTargetSql,
+  buildBackupTruncateAllRestoreTargetsSql,
   buildBackupRestoreInsertSql,
   mapBackupFieldsToParams,
   toPortableBackupRow,
@@ -37,13 +37,24 @@ describe("buildBackupDumpSelectSql / buildBackupCountSql", () => {
   });
 });
 
-describe("buildBackupTruncateRestoreTargetSql", () => {
-  it("常にrestore先schemaだけを対象にする", () => {
+describe("buildBackupTruncateAllRestoreTargetsSql", () => {
+  it("対象4テーブルすべてを単一のTRUNCATE文にまとめ、restore先schemaだけを対象にする", () => {
+    const sql = buildBackupTruncateAllRestoreTargetsSql();
+    const truncateCount = (sql.match(/\btruncate\b/gi) ?? []).length;
+    expect(truncateCount).toBe(1);
     for (const spec of BACKUP_TABLE_SPECS) {
-      const sql = buildBackupTruncateRestoreTargetSql(spec.table);
       expect(sql).toContain(`${BACKUP_RESTORE_TEST_SCHEMA}.${spec.table}`);
-      expect(sql).not.toContain(BACKUP_SOURCE_TEST_SCHEMA);
     }
+    expect(sql).not.toContain(BACKUP_SOURCE_TEST_SCHEMA);
+  });
+
+  it("1テーブルずつ別々のTRUNCATE文を組み立てる手段を提供しない(外部キー違反の再発防止)", () => {
+    // world_player_cardsはplayer_card_analysisから外部キー参照されているため、
+    // 単独でTRUNCATEすると実PostgreSQLでは失敗する(2026-09-20、GitHub Actionsで確認済み)。
+    // このビルダーは常に4テーブルまとめた単一文だけを返す設計であることを確認する。
+    const sql1 = buildBackupTruncateAllRestoreTargetsSql();
+    const sql2 = buildBackupTruncateAllRestoreTargetsSql();
+    expect(sql1).toBe(sql2);
   });
 });
 

@@ -1,5 +1,6 @@
 import { getBackupTableSpec, type BackupTableSpec, type BackupIsolatedSchemaName } from "./backup-schema";
 import { BACKUP_SOURCE_TEST_SCHEMA, BACKUP_RESTORE_TEST_SCHEMA } from "./backup-schema";
+import { BACKUP_TARGET_TABLES } from "./backup-target";
 
 /**
  * Backup/Restore専用のSQL文字列組み立て(SELECT/INSERT/COUNTのみ)。
@@ -28,10 +29,22 @@ export function buildBackupCountSql(schemaName: BackupIsolatedSchemaName, table:
   return `select count(*) as count from ${schemaName}.${table}`;
 }
 
-export function buildBackupTruncateRestoreTargetSql(table: string): string {
-  // restore先は常に固定のBACKUP_RESTORE_TEST_SCHEMAだけを対象にする(引数でschema名を選べない)。
-  getBackupTableSpec(table);
-  return `truncate table ${BACKUP_RESTORE_TEST_SCHEMA}.${table}`;
+/**
+ * Restore先(常に固定の`BACKUP_RESTORE_TEST_SCHEMA`)の対象4テーブルすべてを、
+ * **単一のTRUNCATE文**でまとめて空にする。
+ *
+ * 1テーブルずつ別々のTRUNCATE文で呼び出してはならない: `player_card_analysis`は
+ * `world_player_cards`を外部キー参照しており、PostgreSQLは「参照されているテーブルを、
+ * 参照元テーブルも同一TRUNCATE文に含めない限り単独でTRUNCATEすることを拒否する」
+ * (参照元テーブルが既に空か・既に別文でTRUNCATE済みかは無関係、制約カタログ上の
+ * 関係だけで判定される)。テーブルを引数で選べない設計にしているのはこの制約のため。
+ */
+export function buildBackupTruncateAllRestoreTargetsSql(): string {
+  const qualified = BACKUP_TARGET_TABLES.map((table) => {
+    getBackupTableSpec(table);
+    return `${BACKUP_RESTORE_TEST_SCHEMA}.${table}`;
+  });
+  return `truncate table ${qualified.join(", ")}`;
 }
 
 export function buildBackupRestoreInsertSql(table: string, rowCount: number): string {

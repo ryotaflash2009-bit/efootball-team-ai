@@ -1,7 +1,7 @@
 import { chunkRows, sanitizeErrorMessage, type GuardCheck } from "../real-import-guards";
 import { BACKUP_TARGET_TABLES } from "./backup-target";
 import { getBackupTableSpec } from "./backup-schema";
-import { buildBackupDumpSelectSql, buildBackupRestoreInsertSql, buildBackupTruncateRestoreTargetSql, mapBackupFieldsToParams, toPortableBackupRow } from "./backup-sql";
+import { buildBackupDumpSelectSql, buildBackupRestoreInsertSql, buildBackupTruncateAllRestoreTargetsSql, mapBackupFieldsToParams, toPortableBackupRow } from "./backup-sql";
 import { BACKUP_RESTORE_TEST_SCHEMA } from "./backup-schema";
 import {
   computeBackupTableChecksum,
@@ -27,7 +27,6 @@ import type { QueryClient } from "./apply-orchestrator";
  */
 
 const INSERT_ORDER: readonly string[] = ["world_player_cards", "managers", "import_batches", "player_card_analysis"];
-const TRUNCATE_ORDER: readonly string[] = [...INSERT_ORDER].reverse();
 
 export interface RestoreInput {
   artifact: BackupArtifact;
@@ -157,9 +156,7 @@ export async function restoreReferenceDataBackup(client: QueryClient, input: Res
   // ここまで全検証に合格した場合だけ、隔離Restore先schemaへ書き込む。
   try {
     await client.query("begin");
-    for (const table of TRUNCATE_ORDER) {
-      await client.query(buildBackupTruncateRestoreTargetSql(table));
-    }
+    await client.query(buildBackupTruncateAllRestoreTargetsSql());
     const restoredCounts: Record<string, number> = {};
     for (const table of INSERT_ORDER) {
       const spec = getBackupTableSpec(table);

@@ -1,7 +1,7 @@
 import type { GuardCheck } from "../real-import-guards";
 import { BACKUP_TARGET_TABLES } from "./backup-target";
 import { BACKUP_SOURCE_TEST_SCHEMA, BACKUP_RESTORE_TEST_SCHEMA } from "./backup-schema";
-import { buildBackupDumpSelectSql, buildBackupCountSql, buildBackupRestoreInsertSql, buildBackupTruncateRestoreTargetSql } from "./backup-sql";
+import { buildBackupDumpSelectSql, buildBackupCountSql, buildBackupRestoreInsertSql, buildBackupTruncateAllRestoreTargetsSql } from "./backup-sql";
 
 /**
  * Backup/Restore SQL(隔離PostgreSQL専用、Production向けではない)の静的監査。
@@ -28,10 +28,12 @@ function collectGeneratedSql(): string[] {
     sqlList.push(buildBackupDumpSelectSql(BACKUP_SOURCE_TEST_SCHEMA, table));
     sqlList.push(buildBackupDumpSelectSql(BACKUP_RESTORE_TEST_SCHEMA, table));
     sqlList.push(buildBackupCountSql(BACKUP_SOURCE_TEST_SCHEMA, table));
-    sqlList.push(buildBackupTruncateRestoreTargetSql(table));
     sqlList.push(buildBackupRestoreInsertSql(table, 1));
     sqlList.push(buildBackupRestoreInsertSql(table, 3));
   }
+  // TRUNCATEは対象4テーブルをまとめた単一文でだけ生成する(1テーブルずつの個別TRUNCATEは
+  // 外部キー制約により実PostgreSQLで失敗するため、そもそも生成できない設計にしている)。
+  sqlList.push(buildBackupTruncateAllRestoreTargetsSql());
   return sqlList;
 }
 
@@ -72,12 +74,36 @@ export function assertNoBroadDestructiveDdl(sqlList: readonly string[]): GuardCh
   return { ok: true };
 }
 
-/** TRUNCATEは`BACKUP_RESTORE_TEST_SCHEMA`(常に空のRestore先)だけに限定して許可する。 */
+/** TRUNCATEで指定されているすべてのテーブルが`BACKUP_RESTORE_TEST_SCHEMA`(常に空のRestore先)であることを、カンマ区切りの各要素ごとに確認する。 */
 export function assertTruncateScopedToRestoreTargetOnly(sqlList: readonly string[]): GuardCheck {
   const truncateStatements = sqlList.filter((sql) => /\btruncate\b/i.test(sql));
   for (const sql of truncateStatements) {
-    if (!sql.includes(`${BACKUP_RESTORE_TEST_SCHEMA}.`)) {
-      return { ok: false, reason: `Restore先schema(${BACKUP_RESTORE_TEST_SCHEMA})以外へのTRUNCATEが見つかった: ${sql}` };
+    const targetsText = sql.replace(/^\s*truncate\s+table\s+/i, "");
+    const targets = targetsText.split(",").map((t) => t.trim());
+    for (const target of targets) {
+      if (!target.startsWith(`${BACKUP_RESTORE_TEST_SCHEMA}.`)) {
+        return { ok: false, reason: `Restore先schema(${BACKUP_RESTORE_TEST_SCHEMA})以外へのTRUNCATEが見つかった: ${target}` };
+      }
+    }
+  }
+  return { ok: true };
+}
+
+/**
+ * TRUNCATE文が、対象4テーブルすべてを含む**単一の文**であることを確認する
+ * (1テーブルずつ別々のTRUNCATE文にすると、外部キー制約により実PostgreSQLで
+ * `player_card_analysis`が参照する`world_player_cards`のTRUNCATEが失敗する。
+ * 2026-09-20、GitHub ActionsのPostgreSQL integrationで実際に確認・修正済みの回帰防止)。
+ */
+export function assertTruncateIsSingleCombinedStatement(sqlList: readonly string[]): GuardCheck {
+  const truncateStatements = sqlList.filter((sql) => /\btruncate\b/i.test(sql));
+  if (truncateStatements.length !== 1) {
+    return { ok: false, reason: `TRUNCATE文は単一のまとめた文だけを許可する(検出件数: ${truncateStatements.length})` };
+  }
+  const sql = truncateStatements[0];
+  for (const table of BACKUP_TARGET_TABLES) {
+    if (!sql.includes(`${BACKUP_RESTORE_TEST_SCHEMA}.${table}`)) {
+      return { ok: false, reason: `TRUNCATE文に${table}が含まれていない(4テーブルすべてを同一文に含める必要がある): ${sql}` };
     }
   }
   return { ok: true };
@@ -139,6 +165,7 @@ export function auditBackupSql(): GuardCheck[] {
     assertNoSelectStar(sqlList),
     assertNoBroadDestructiveDdl(sqlList),
     assertTruncateScopedToRestoreTargetOnly(sqlList),
+    assertTruncateIsSingleCombinedStatement(sqlList),
     assertNoDynamicSql(sqlList),
     assertParameterizedOnly(sqlList),
     assertNoSecretOrConnectionInfo(sqlList),

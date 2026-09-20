@@ -5,11 +5,13 @@ import {
   assertNoUserDataTableReference,
   assertNoBroadDestructiveDdl,
   assertTruncateScopedToRestoreTargetOnly,
+  assertTruncateIsSingleCombinedStatement,
   assertNoDynamicSql,
   assertNoSecretOrConnectionInfo,
   assertNoBypassFlags,
 } from "./backup-sql-audit";
 import { BACKUP_RESTORE_TEST_SCHEMA } from "./backup-schema";
+import { BACKUP_TARGET_TABLES } from "./backup-target";
 
 describe("auditBackupSql(実際のビルダー出力に対する監査)", () => {
   it("issues: []であること", () => {
@@ -45,6 +47,26 @@ describe("静的監査関数の検出力(合成の悪いSQL)", () => {
 
   it("Restore先schemaへのTRUNCATEは許可する", () => {
     expect(assertTruncateScopedToRestoreTargetOnly([`truncate table ${BACKUP_RESTORE_TEST_SCHEMA}.world_player_cards`]).ok).toBe(true);
+  });
+
+  it("カンマ区切りの一部だけがRestore先schema以外の場合も検出する", () => {
+    const sql = `truncate table ${BACKUP_RESTORE_TEST_SCHEMA}.world_player_cards, reference_data.managers`;
+    expect(assertTruncateScopedToRestoreTargetOnly([sql]).ok).toBe(false);
+  });
+
+  it("1テーブルずつ別々のTRUNCATE文(外部キー違反の原因、2026-09-20修正)を検出する", () => {
+    const sqlList = BACKUP_TARGET_TABLES.map((t) => `truncate table ${BACKUP_RESTORE_TEST_SCHEMA}.${t}`);
+    expect(assertTruncateIsSingleCombinedStatement(sqlList).ok).toBe(false);
+  });
+
+  it("4テーブルすべてを含む単一のTRUNCATE文は合格する", () => {
+    const sql = `truncate table ${BACKUP_TARGET_TABLES.map((t) => `${BACKUP_RESTORE_TEST_SCHEMA}.${t}`).join(", ")}`;
+    expect(assertTruncateIsSingleCombinedStatement([sql]).ok).toBe(true);
+  });
+
+  it("単一文でも4テーブルの一部が欠けていれば不合格", () => {
+    const sql = `truncate table ${BACKUP_RESTORE_TEST_SCHEMA}.world_player_cards, ${BACKUP_RESTORE_TEST_SCHEMA}.managers`;
+    expect(assertTruncateIsSingleCombinedStatement([sql]).ok).toBe(false);
   });
 
   it("動的SQL(EXECUTE/DO/CALL)を検出する", () => {

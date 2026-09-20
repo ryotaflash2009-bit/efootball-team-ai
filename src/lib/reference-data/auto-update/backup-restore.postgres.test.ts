@@ -145,7 +145,8 @@ describe("Backup -> 暗号化 -> 復号 -> Restore(実PostgreSQL、隔離schema2
       retentionDays: 1,
       encryptor,
     });
-    expect(backupResult.ok).toBe(true);
+    // result.reasonsはsanitizeErrorMessage済み(接続情報・SQL全文・parameter値を含まない)。
+    expect(backupResult.ok, `createReferenceDataBackup reasons: ${JSON.stringify(backupResult.reasons)}`).toBe(true);
     expect(backupResult.artifact!.manifest.rowCounts.world_player_cards).toBe(2);
     expect(backupResult.artifact!.manifest.rowCounts.managers).toBe(1);
     expect(backupResult.artifact!.manifest.encrypted).toBe(true);
@@ -162,7 +163,9 @@ describe("Backup -> 暗号化 -> 復号 -> Restore(実PostgreSQL、隔離schema2
       expectedPostgresMajorVersion: pgMajor,
       now: new Date(),
     });
-    expect(restoreResult.ok).toBe(true);
+    // result.reasonsはsanitizeErrorMessage済み(接続情報・SQL全文・parameter値を含まない、
+    // テーブル名・件数・failed phase相当の短い文言だけを含む)。CIログでのみ役立つ診断情報。
+    expect(restoreResult.ok, `restoreReferenceDataBackup reasons: ${JSON.stringify(restoreResult.reasons)}`).toBe(true);
     expect(restoreResult.restoreVerified).toBe(true);
     expect(restoreResult.restoredCounts!.world_player_cards).toBe(2);
     expect(restoreResult.manifest!.restoreVerified).toBe(true);
@@ -190,7 +193,7 @@ describe("Backup -> 暗号化 -> 復号 -> Restore(実PostgreSQL、隔離schema2
       retentionDays: 1,
       encryptor,
     });
-    expect(backupResult.ok).toBe(true);
+    expect(backupResult.ok, `createReferenceDataBackup reasons: ${JSON.stringify(backupResult.reasons)}`).toBe(true);
 
     const wrongDecryptor = new NodeAesGcmEncryptor(generateEphemeralTestKey());
     const restoreResult = await restoreReferenceDataBackup(queryClient, {
@@ -223,7 +226,7 @@ describe("Backup -> 暗号化 -> 復号 -> Restore(実PostgreSQL、隔離schema2
       retentionDays: 1,
       encryptor,
     });
-    expect(backupResult.ok).toBe(true);
+    expect(backupResult.ok, `createReferenceDataBackup reasons: ${JSON.stringify(backupResult.reasons)}`).toBe(true);
     const tampered = {
       ...backupResult.artifact!,
       manifest: { ...backupResult.artifact!.manifest, tableChecksums: { ...backupResult.artifact!.manifest.tableChecksums, managers: "tampered" } },
