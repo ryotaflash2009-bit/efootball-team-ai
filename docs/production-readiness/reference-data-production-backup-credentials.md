@@ -20,33 +20,21 @@ keyをBackupへ流用しない。
 
 ### 1.1 read-only role作成SQL(設計案、未実行)
 
-```sql
--- ============================================================================
--- DO NOT RUN
--- DESIGN ONLY
--- REQUIRES SEPARATE APPROVAL
--- PRODUCTION NOT APPLIED
--- ============================================================================
--- このSQLはこのセッションでは実行していない。実行する場合は、本人による独立した
--- 承認(read-only role作成という単独の判断)を経てから、本人が手動で実行すること。
-create role reference_data_backup_reader login password '<本人が別途生成する強力なパスワード>';
+**2026-09-21追記**: role作成SQL・作成後確認SQL・rollback SQLの独立監査を実施し、
+このSQL自体をこの文書から実SQLファイルへ分離した(詳細は
+[[reference-data-production-backup-role-design.md]]を参照)。理由: 独立監査の過程で、
+当初この文書に直接埋め込んでいたSQL案が`password '<プレースホルダー>'`という
+password句(literal)を含んでいたことを検出したため(プレースホルダーであっても、
+静的監査が拒否すべきパターンそのものであった)。現在の設計はパスワードを一切
+含まない・生成しない。
 
--- role creation privilege / BYPASSRLS / replication / superuserのいずれも付与しない
--- (create role文自体にNOSUPERUSER NOCREATEROLE NOCREATEDB NOREPLICATION NOBYPASSRLSを
--- 明示することで、既定値に依存せず意図を明記する)。
-alter role reference_data_backup_reader with nosuperuser nocreatedb nocreaterole noreplication nobypassrls;
+実SQLファイル:
+- `docs/production-readiness/sql/create-reference-data-backup-role.sql`(作成、未実行)
+- `docs/production-readiness/sql/verify-reference-data-backup-role.sql`(作成後確認、metadataのみ)
+- `docs/production-readiness/sql/rollback-reference-data-backup-role.sql`(緊急停止・削除、未実行)
 
-grant usage on schema reference_data to reference_data_backup_reader;
-grant select on
-  reference_data.world_player_cards,
-  reference_data.managers,
-  reference_data.player_card_analysis,
-  reference_data.import_batches
-to reference_data_backup_reader;
-
--- 明示的に他スキーマへのUSAGEを一切付与しない(auth/public/reference_data_opsへは無権限のまま)。
--- INSERT/UPDATE/DELETE/TRUNCATE/CREATE/ALTER/DROP/GRANTはいずれも付与しない。
-```
+静的監査: `src/lib/reference-data/auto-update/backup-role-sql-audit.ts`
+(`backup-role-sql-audit.test.ts`で実ファイルに対しissues: []を確認済み)。
 
 `checkBackupCredentialSeparateFromApply`(`backup-production-security-gate.ts`)が、Backup role名と
 apply role名が同一でないこと、role名に`postgres`/`service_role`らしき文字列が含まれていないことを

@@ -4,7 +4,9 @@
 一切実行していない。**
 
 関連: [[reference-data-production-backup-security-model.md]]・[[reference-data-production-backup-credentials.md]]・
-[[reference-data-production-backup-storage.md]]
+[[reference-data-production-backup-storage.md]]・[[reference-data-production-backup-role-design.md]]
+(read-only role独立監査)・[[reference-data-production-backup-role-runbook.md]](role作成・確認手順)・
+[[reference-data-production-backup-role-revocation.md]](revoke/rotation/緊急対応)
 
 対応workflow: `.github/workflows/reference-data-production-backup.yml`
 (design only、workflow_dispatchのみ、`schedule`/`pull_request`/`push`トリガーなし)
