@@ -3,6 +3,7 @@ import { Client } from "pg";
 import { applyUpdateJob, type QueryClient } from "./apply-orchestrator";
 import { createPostgresQueryClient, buildTestOnlyPgConfigFromEnv, type MinimalPgClient } from "./postgres-adapter";
 import { POSTGRES_STAGING_SCHEMA_DDL, POSTGRES_TEST_SCHEMA } from "./postgres-staging";
+import { runGuardedCleanup } from "./postgres-test-lifecycle";
 import { buildRollbackPlan, executeRollback } from "./rollback";
 import { createPendingJob } from "./job";
 import { computeDiffChecksum, type ApprovalArtifact } from "./approval";
@@ -26,17 +27,33 @@ import type { PreviousSnapshot, StagingDataset } from "./types";
 const config = buildTestOnlyPgConfigFromEnv(process.env);
 
 let adminClient: Client;
+/** adminClient.connect()が成功したか。beforeAll途中失敗時、afterAllが未接続clientをend()しないためのガード。 */
+let adminClientConnected = false;
+/** staging schema(reference_data_ops_test)のDDLが成功したか。beforeAll途中失敗時、afterAll/beforeEachが存在しないschema/tableへ触れないためのガード。 */
+let stagingSchemaReady = false;
 
 beforeAll(async () => {
   adminClient = new Client(config);
   await adminClient.connect();
+  adminClientConnected = true;
   await adminClient.query(POSTGRES_STAGING_SCHEMA_DDL);
+  stagingSchemaReady = true;
 });
 
-afterAll(async () => {
-  // テストで作成した行だけを消す(schema自体は次回実行のために残してもよいが、
-  // クリーンな状態で終わるためテーブル内容を空にする)。
-  await adminClient.query(`truncate table
+/**
+ * schema作成が成功している場合だけtruncateする(元のafterAll全量クリア範囲、
+ * `runGuardedCleanup`は`postgres-test-lifecycle.test.ts`で検証済み)。beforeAllが
+ * 途中失敗した場合(例: 他の*.postgres.test.tsファイルとのCREATE SCHEMA競合、23505)、
+ * まだ作成されていないschemaへのtruncateを試みて二次エラー(3F000)を発生させ、本来の
+ * setupエラーを覆い隠すことを防ぐ。
+ */
+async function cleanupAllSchemaTables(): Promise<void> {
+  if (!adminClientConnected) return;
+  await runGuardedCleanup([
+    {
+      ready: stagingSchemaReady,
+      run: async () => {
+        await adminClient.query(`truncate table
     ${POSTGRES_TEST_SCHEMA}.target_records,
     ${POSTGRES_TEST_SCHEMA}.applied_checksums,
     ${POSTGRES_TEST_SCHEMA}.audit_events,
@@ -45,17 +62,41 @@ afterAll(async () => {
     ${POSTGRES_TEST_SCHEMA}.staging_records,
     ${POSTGRES_TEST_SCHEMA}.source_metadata_test
     cascade`);
-  await adminClient.query(`truncate table ${POSTGRES_TEST_SCHEMA}.update_jobs cascade`);
-  await adminClient.end();
-});
+        await adminClient.query(`truncate table ${POSTGRES_TEST_SCHEMA}.update_jobs cascade`);
+      },
+    },
+  ]);
+}
 
-beforeEach(async () => {
-  await adminClient.query(`truncate table
+/** 元のbeforeEachのtruncate範囲(target_records/applied_checksums/audit_events + update_jobs)を維持する。 */
+async function cleanupPerTestTables(): Promise<void> {
+  if (!adminClientConnected) return;
+  await runGuardedCleanup([
+    {
+      ready: stagingSchemaReady,
+      run: async () => {
+        await adminClient.query(`truncate table
     ${POSTGRES_TEST_SCHEMA}.target_records,
     ${POSTGRES_TEST_SCHEMA}.applied_checksums,
     ${POSTGRES_TEST_SCHEMA}.audit_events
     cascade`);
-  await adminClient.query(`truncate table ${POSTGRES_TEST_SCHEMA}.update_jobs cascade`);
+        await adminClient.query(`truncate table ${POSTGRES_TEST_SCHEMA}.update_jobs cascade`);
+      },
+    },
+  ]);
+}
+
+afterAll(async () => {
+  // テストで作成した行だけを消す(schema自体は次回実行のために残してもよいが、
+  // クリーンな状態で終わるためテーブル内容を空にする)。
+  await cleanupAllSchemaTables();
+  if (adminClientConnected) {
+    await adminClient.end();
+  }
+});
+
+beforeEach(async () => {
+  await cleanupPerTestTables();
 });
 
 function buildScenario(jobId: string, datasetChecksum: string) {

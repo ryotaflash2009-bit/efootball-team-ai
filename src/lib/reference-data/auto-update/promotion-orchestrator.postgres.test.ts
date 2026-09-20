@@ -5,6 +5,7 @@ import { executePromotionRollback, type PromotionRollbackApproval } from "./prom
 import { createPostgresQueryClient, buildTestOnlyPgConfigFromEnv, type MinimalPgClient } from "./postgres-adapter";
 import { POSTGRES_STAGING_SCHEMA_DDL, POSTGRES_TEST_SCHEMA } from "./postgres-staging";
 import { POSTGRES_FINAL_SCHEMA_DDL, POSTGRES_FINAL_TEST_SCHEMA } from "./postgres-final-schema";
+import { runGuardedCleanup } from "./postgres-test-lifecycle";
 import { buildPromotionPlan, computeRecordSetChecksum } from "./promotion";
 import { getPromotionTableSpec, mapFieldsToParams } from "./promotion-sql";
 import { createPendingJob } from "./job";
@@ -35,49 +36,68 @@ import type { QueryClient } from "./apply-orchestrator";
 const config = buildTestOnlyPgConfigFromEnv(process.env);
 
 let adminClient: Client;
+/** adminClient.connect()が成功したか。beforeAll途中失敗時、afterAllが未接続clientをend()しないためのガード。 */
+let adminClientConnected = false;
+/** staging schema(reference_data_ops_test)のDDLが成功したか。beforeAll途中失敗時、afterAll/beforeEachが存在しないschemaへ触れないためのガード。 */
+let stagingSchemaReady = false;
+/** final schema(reference_data_test)のDDLが成功したか。同上。 */
+let finalSchemaReady = false;
 
 beforeAll(async () => {
   adminClient = new Client(config);
   await adminClient.connect();
+  adminClientConnected = true;
   await adminClient.query(POSTGRES_STAGING_SCHEMA_DDL);
+  stagingSchemaReady = true;
   await adminClient.query(POSTGRES_FINAL_SCHEMA_DDL);
+  finalSchemaReady = true;
 });
 
+/**
+ * 存在確認済みのschemaだけをtruncateする(`runGuardedCleanup`、`postgres-test-lifecycle.test.ts`で
+ * 検証済み)。beforeAllが途中失敗した場合(例: 複数の*.postgres.test.tsファイル間での
+ * CREATE SCHEMA競合、23505)、まだ作成されていないschemaへのtruncateを試みて二次エラー
+ * (3F000)を発生させ、本来のsetupエラーを覆い隠すことを防ぐ。
+ */
+async function cleanupSchemas(): Promise<void> {
+  if (!adminClientConnected) return;
+  await runGuardedCleanup([
+    {
+      ready: finalSchemaReady,
+      run: () =>
+        adminClient.query(`truncate table
+      ${POSTGRES_FINAL_TEST_SCHEMA}.player_card_analysis,
+      ${POSTGRES_FINAL_TEST_SCHEMA}.world_player_cards,
+      ${POSTGRES_FINAL_TEST_SCHEMA}.managers,
+      ${POSTGRES_FINAL_TEST_SCHEMA}.source_metadata
+      cascade`).then(() => undefined),
+    },
+    {
+      ready: stagingSchemaReady,
+      run: async () => {
+        await adminClient.query(`truncate table
+      ${POSTGRES_TEST_SCHEMA}.promotion_before_snapshots,
+      ${POSTGRES_TEST_SCHEMA}.promotion_source_metadata_before,
+      ${POSTGRES_TEST_SCHEMA}.applied_checksums,
+      ${POSTGRES_TEST_SCHEMA}.audit_events,
+      ${POSTGRES_TEST_SCHEMA}.rollback_jobs,
+      ${POSTGRES_TEST_SCHEMA}.source_metadata_test
+      cascade`);
+        await adminClient.query(`truncate table ${POSTGRES_TEST_SCHEMA}.update_jobs cascade`);
+      },
+    },
+  ]);
+}
+
 afterAll(async () => {
-  await adminClient.query(`truncate table
-    ${POSTGRES_FINAL_TEST_SCHEMA}.player_card_analysis,
-    ${POSTGRES_FINAL_TEST_SCHEMA}.world_player_cards,
-    ${POSTGRES_FINAL_TEST_SCHEMA}.managers,
-    ${POSTGRES_FINAL_TEST_SCHEMA}.source_metadata
-    cascade`);
-  await adminClient.query(`truncate table
-    ${POSTGRES_TEST_SCHEMA}.promotion_before_snapshots,
-    ${POSTGRES_TEST_SCHEMA}.promotion_source_metadata_before,
-    ${POSTGRES_TEST_SCHEMA}.applied_checksums,
-    ${POSTGRES_TEST_SCHEMA}.audit_events,
-    ${POSTGRES_TEST_SCHEMA}.rollback_jobs,
-    ${POSTGRES_TEST_SCHEMA}.source_metadata_test
-    cascade`);
-  await adminClient.query(`truncate table ${POSTGRES_TEST_SCHEMA}.update_jobs cascade`);
-  await adminClient.end();
+  await cleanupSchemas();
+  if (adminClientConnected) {
+    await adminClient.end();
+  }
 });
 
 beforeEach(async () => {
-  await adminClient.query(`truncate table
-    ${POSTGRES_FINAL_TEST_SCHEMA}.player_card_analysis,
-    ${POSTGRES_FINAL_TEST_SCHEMA}.world_player_cards,
-    ${POSTGRES_FINAL_TEST_SCHEMA}.managers,
-    ${POSTGRES_FINAL_TEST_SCHEMA}.source_metadata
-    cascade`);
-  await adminClient.query(`truncate table
-    ${POSTGRES_TEST_SCHEMA}.promotion_before_snapshots,
-    ${POSTGRES_TEST_SCHEMA}.promotion_source_metadata_before,
-    ${POSTGRES_TEST_SCHEMA}.applied_checksums,
-    ${POSTGRES_TEST_SCHEMA}.audit_events,
-    ${POSTGRES_TEST_SCHEMA}.rollback_jobs,
-    ${POSTGRES_TEST_SCHEMA}.source_metadata_test
-    cascade`);
-  await adminClient.query(`truncate table ${POSTGRES_TEST_SCHEMA}.update_jobs cascade`);
+  await cleanupSchemas();
 });
 
 const sourceMeta: SourceMeta = {
