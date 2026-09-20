@@ -1,12 +1,18 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 import {
   auditProductionOpsCreateSql,
   auditProductionOpsRollbackSql,
-  auditProductionOpsPreflightSql,
+  auditProductionReadonlyPreflightSql,
   assertHasDoNotRunBanner,
+  assertReadOnlyPreflightBanner,
+  assertOnlyReadOnlySyntax,
+  assertNoDirectOpsSchemaTableReference,
+  assertNoSecretLikePatterns,
   assertNoPublicOrAuthSchemaChange,
+  assertNoUserDataTableReference,
   assertNoReferenceDataSchemaChange,
   assertNoUnexpectedDestructiveOps,
   assertNoDynamicSqlInRollback,
@@ -163,15 +169,114 @@ do $$ begin execute format('drop table reference_data_ops.%I', 'update_jobs'); e
   });
 });
 
-describe("preflight-reference-data-ops.sql(実ファイル)", () => {
-  it("静的監査に合格する(SELECT/SHOW専用)", () => {
-    const checks = auditProductionOpsPreflightSql(PREFLIGHT_SQL);
+describe("preflight-reference-data-ops.sql(実ファイル、単一read-only preflight SQL)", () => {
+  it("SHA-256回帰確認: 本人がProduction Supabaseで実際に実行したSQLと同一である(2026-09-20確認済み)", () => {
+    const sha256 = createHash("sha256").update(PREFLIGHT_SQL, "utf8").digest("hex");
+    expect(sha256).toBe("c7de038cabac96275567bd71cd8ca3d30c2e5f950650f5a3779e5d265664a6b5");
+  });
+
+  it("read-only preflight専用の静的監査に合格する(issues: []であること)", () => {
+    const checks = auditProductionReadonlyPreflightSql(PREFLIGHT_SQL);
     const failed = checks.filter((c) => !c.ok);
     expect(failed).toEqual([]);
   });
 
-  it("DDL/DML/GRANT/REVOKEを一切含まない", () => {
-    expect(PREFLIGHT_SQL).not.toMatch(/\b(create\s+table|drop\s+table|insert\s+into|delete\s+from|grant\s|revoke\s)\b/i);
+  it("DDL/DML/GRANT/REVOKEを一切含まない(冒頭の安全宣言コメント行を除く実SQL本体)", () => {
+    const bodyWithoutCommentLines = PREFLIGHT_SQL.split("\n")
+      .filter((line) => !line.trim().startsWith("--"))
+      .join("\n");
+    expect(bodyWithoutCommentLines).not.toMatch(/\b(create\s+table|drop\s+table|insert\s+into|delete\s+from|grant\s|revoke\s)\b/i);
+  });
+
+  it("read-only preflight専用の安全宣言バナー(READ ONLY/NO DDL/NO DML/NO GRANT OR REVOKE/DOES NOT READ USER ROW DATA/SAFE TO RUN)を含む", () => {
+    expect(assertReadOnlyPreflightBanner(PREFLIGHT_SQL).ok).toBe(true);
+  });
+
+  it("reference_data_ops.<table>への直接参照を含まない(未適用でも失敗しない)", () => {
+    expect(assertNoDirectOpsSchemaTableReference(PREFLIGHT_SQL).ok).toBe(true);
+  });
+
+  it("利用者データテーブル(auth.users/my_team_snapshots/rls_probe_records)を参照しない", () => {
+    expect(assertNoUserDataTableReference(PREFLIGHT_SQL).ok).toBe(true);
+  });
+
+  it("秘密情報らしき文字列(メール・接続文字列・トークン・パスワード)を含まない", () => {
+    expect(assertNoSecretLikePatterns(PREFLIGHT_SQL).ok).toBe(true);
+  });
+
+  it("SELECT/WITH/SHOW以外の文・DDL/DML/GRANT/REVOKE/動的SQLキーワードを一切含まない", () => {
+    expect(assertOnlyReadOnlySyntax(PREFLIGHT_SQL).ok).toBe(true);
+  });
+
+  it("必要な12セクションすべてをJSONBオブジェクトのキーとして返す(単一行)", () => {
+    for (const key of [
+      "database_info",
+      "schema_info",
+      "table_info",
+      "column_info",
+      "constraint_info",
+      "index_info",
+      "rls_info",
+      "policy_info",
+      "privilege_info",
+      "row_counts",
+      "ops_schema_status",
+      "final_preflight_summary",
+    ]) {
+      expect(PREFLIGHT_SQL).toContain(`'${key}'`);
+    }
+  });
+
+  it("トップレベルのselect文が1つだけ(複数結果セットを返さない)", () => {
+    const topLevelSelects = PREFLIGHT_SQL.match(/^select\s+jsonb_build_object/gim) ?? [];
+    expect(topLevelSelects.length).toBe(1);
+  });
+});
+
+describe("read-only preflight専用の静的監査関数の検出力(合成の悪いSQL)", () => {
+  it("安全宣言バナーの不足を検出する", () => {
+    expect(assertReadOnlyPreflightBanner("select 1;").ok).toBe(false);
+  });
+
+  it("data-modifying CTE(WITH句内のDELETE)を検出する(トップレベルはselectでも拒否)", () => {
+    const badSql = `
+-- READ ONLY NO DDL NO DML NO GRANT OR REVOKE DOES NOT READ USER ROW DATA SAFE TO RUN MANUALLY IN SUPABASE SQL EDITOR
+with removed as (delete from reference_data.world_player_cards where world_card_id = 'x' returning *)
+select count(*) from removed;
+`;
+    expect(assertOnlyReadOnlySyntax(badSql).ok).toBe(false);
+  });
+
+  it("GRANT/REVOKEを検出する", () => {
+    expect(assertOnlyReadOnlySyntax("select 1; grant select on reference_data.managers to anon;").ok).toBe(false);
+  });
+
+  it("SET ROLE / SECURITY DEFINERを検出する", () => {
+    expect(assertOnlyReadOnlySyntax("set role postgres; select 1;").ok).toBe(false);
+    expect(assertOnlyReadOnlySyntax("select 1; -- create function ... security definer").ok).toBe(true);
+    expect(assertOnlyReadOnlySyntax("create function f() returns int language sql security definer as $$select 1$$;").ok).toBe(false);
+  });
+
+  it("reference_data_ops.<table>への直接参照を検出する(未適用時にエラーになる書き方)", () => {
+    expect(assertNoDirectOpsSchemaTableReference("select * from reference_data_ops.update_jobs;").ok).toBe(false);
+    expect(assertNoDirectOpsSchemaTableReference("select schema_name from information_schema.schemata where schema_name = 'reference_data_ops';").ok).toBe(true);
+  });
+
+  it("メールアドレス・接続文字列・JWT様トークン・password=を検出する", () => {
+    expect(assertNoSecretLikePatterns("select 'someone@example.com';").ok).toBe(false);
+    expect(assertNoSecretLikePatterns("select 'postgres://user:pass@host:5432/db';").ok).toBe(false);
+    expect(assertNoSecretLikePatterns("select 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0';").ok).toBe(false);
+    expect(assertNoSecretLikePatterns("select 'password=hunter2';").ok).toBe(false);
+  });
+
+  it("read-only preflight用の合成SQLは全審査に合格する", () => {
+    const goodSql = `
+-- READ ONLY NO DDL NO DML NO GRANT OR REVOKE DOES NOT READ USER ROW DATA SAFE TO RUN MANUALLY IN SUPABASE SQL EDITOR
+with x as (select 1 as n)
+select jsonb_build_object('n', (select n from x));
+`;
+    const checks = auditProductionReadonlyPreflightSql(goodSql);
+    expect(checks.filter((c) => !c.ok)).toEqual([]);
   });
 });
 
