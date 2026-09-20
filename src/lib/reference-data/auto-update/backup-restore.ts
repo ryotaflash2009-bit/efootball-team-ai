@@ -1,0 +1,206 @@
+import { chunkRows, sanitizeErrorMessage, type GuardCheck } from "../real-import-guards";
+import { BACKUP_TARGET_TABLES } from "./backup-target";
+import { getBackupTableSpec } from "./backup-schema";
+import { buildBackupDumpSelectSql, buildBackupRestoreInsertSql, buildBackupTruncateRestoreTargetSql, mapBackupFieldsToParams, toPortableBackupRow } from "./backup-sql";
+import { BACKUP_RESTORE_TEST_SCHEMA } from "./backup-schema";
+import {
+  computeBackupTableChecksum,
+  computeBackupTotalChecksum,
+  computeSourceMetadataChecksum,
+  deriveSourceDatasetPairs,
+  type BackupSourceMetadataEntry,
+} from "./backup-checksum";
+import { markManifestRestoreVerified, markManifestFailed, type BackupManifest } from "./backup-manifest";
+import type { BackupArtifact, BackupPayload } from "./backup-orchestrator";
+import type { BackupEncryptor } from "./backup-encryptor";
+import type { QueryClient } from "./apply-orchestrator";
+
+/**
+ * Backup検証済み(`manifest.restoreVerified === true`)と主張してよいのは、実際に
+ * 「別の空の隔離schemaへRestoreし、Restore後checksumが一致した」ことを確認した場合だけ。
+ * Backupを取得しただけ(暗号化・アップロードまで成功しただけ)ではverifiedにしない
+ * ([[reference-data-production-backup-design.md]]のBackup gate要件と対応する)。
+ *
+ * Restore先は常に固定の`BACKUP_RESTORE_TEST_SCHEMA`(source用schemaとは別のschema)。
+ * 復号→整合性の全検証(改ざん検出含む)を、Restore先schemaへ一切書き込む前に完了させる
+ * ことで、破損・改ざんされたBackupが隔離schemaへ部分的にでも書き込まれることを防ぐ。
+ */
+
+const INSERT_ORDER: readonly string[] = ["world_player_cards", "managers", "import_batches", "player_card_analysis"];
+const TRUNCATE_ORDER: readonly string[] = [...INSERT_ORDER].reverse();
+
+export interface RestoreInput {
+  artifact: BackupArtifact;
+  decryptor: BackupEncryptor;
+  expectedSchemaVersion: string;
+  expectedPostgresMajorVersion: number;
+  now: Date;
+}
+
+export interface RestoreResult {
+  ok: boolean;
+  reasons: string[];
+  restoredCounts: Record<string, number> | null;
+  restoreVerified: boolean;
+  manifest: BackupManifest | null;
+}
+
+/** Restore実行前の事前ゲート(復号・書込みのいずれも行う前に、manifestの内容だけで判定する)。 */
+export function evaluateRestorePreflightGates(input: RestoreInput): GuardCheck[] {
+  const manifest = input.artifact.manifest;
+  return [
+    manifest.encrypted ? { ok: true } : { ok: false, reason: "manifestがencrypted=falseのBackupはRestore対象にできない(平文Backup)" },
+    manifest.backupStatus === "encrypted"
+      ? { ok: true }
+      : { ok: false, reason: `Restore可能なbackupStatusではない(現在: ${manifest.backupStatus}、期待: encrypted)` },
+    manifest.schemaVersion === input.expectedSchemaVersion
+      ? { ok: true }
+      : { ok: false, reason: `manifestのschemaVersion(${manifest.schemaVersion})が期待値(${input.expectedSchemaVersion})と一致しない` },
+    manifest.postgresMajorVersion === input.expectedPostgresMajorVersion
+      ? { ok: true }
+      : {
+          ok: false,
+          reason: `manifestのPostgreSQL major version(${manifest.postgresMajorVersion})がRestore先(${input.expectedPostgresMajorVersion})と一致しない`,
+        },
+    [...manifest.tableAllowlist].sort().join(",") === [...BACKUP_TARGET_TABLES].sort().join(",")
+      ? { ok: true }
+      : { ok: false, reason: "manifestのtable allowlistが現在の許可リストと一致しない" },
+  ];
+}
+
+export async function restoreReferenceDataBackup(client: QueryClient, input: RestoreInput): Promise<RestoreResult> {
+  const preChecks = evaluateRestorePreflightGates(input);
+  const failed = preChecks.filter((c) => !c.ok);
+  if (failed.length > 0) {
+    return { ok: false, reasons: failed.map((c) => c.reason ?? "理由不明"), restoredCounts: null, restoreVerified: false, manifest: null };
+  }
+
+  const manifest = input.artifact.manifest;
+
+  let payload: BackupPayload;
+  try {
+    const plaintext = await input.decryptor.decrypt(input.artifact.encryptedPayload);
+    payload = JSON.parse(plaintext.toString("utf8")) as BackupPayload;
+  } catch (err) {
+    return {
+      ok: false,
+      reasons: [`復号または解析に失敗(改ざん・不完全なファイル・誤った鍵の可能性): ${sanitizeErrorMessage(err instanceof Error ? err.message : String(err))}`],
+      restoredCounts: null,
+      restoreVerified: false,
+      manifest: markManifestFailed(manifest),
+    };
+  }
+
+  // manifestとpayloadのテーブル集合が一致することを、書込み前に確認する(欠落・想定外テーブルの検出)。
+  const payloadTables = Object.keys(payload.tables).sort();
+  const manifestTables = [...manifest.tableAllowlist].sort();
+  if (payloadTables.length !== manifestTables.length || payloadTables.some((t, i) => t !== manifestTables[i])) {
+    return {
+      ok: false,
+      reasons: [`Backup本体のテーブル集合がmanifestと一致しない(manifest: ${manifestTables.join(",")} / 実体: ${payloadTables.join(",")})`],
+      restoredCounts: null,
+      restoreVerified: false,
+      manifest: markManifestFailed(manifest),
+    };
+  }
+
+  // 書込み前に、Backup前checksumとの完全一致を確認する(1件でも異なれば不合格、この時点ではRestore先へ一切書き込んでいない)。
+  const recomputedTableChecksums: Record<string, string> = {};
+  const sourceMetaEntries: BackupSourceMetadataEntry[] = [];
+  for (const table of manifestTables) {
+    const rows = payload.tables[table] ?? [];
+    const spec = getBackupTableSpec(table);
+    const withIds = rows.map((r) => ({ id: String(r[spec.primaryKey]), fields: r }));
+    recomputedTableChecksums[table] = computeBackupTableChecksum(withIds);
+    sourceMetaEntries.push({ tableName: table, sourceDatasetPairs: deriveSourceDatasetPairs(rows) });
+
+    if (rows.length !== manifest.rowCounts[table]) {
+      return {
+        ok: false,
+        reasons: [`${table}の件数がmanifestと一致しない(manifest: ${manifest.rowCounts[table]}, 実体: ${rows.length})`],
+        restoredCounts: null,
+        restoreVerified: false,
+        manifest: markManifestFailed(manifest),
+      };
+    }
+    if (recomputedTableChecksums[table] !== manifest.tableChecksums[table]) {
+      return {
+        ok: false,
+        reasons: [`${table}のchecksumがmanifestと一致しない(改ざんまたは破損の疑い)`],
+        restoredCounts: null,
+        restoreVerified: false,
+        manifest: markManifestFailed(manifest),
+      };
+    }
+  }
+  const recomputedTotal = computeBackupTotalChecksum(recomputedTableChecksums);
+  if (recomputedTotal !== manifest.totalChecksum) {
+    return {
+      ok: false,
+      reasons: ["total checksumがmanifestと一致しない(改ざんまたは破損の疑い)"],
+      restoredCounts: null,
+      restoreVerified: false,
+      manifest: markManifestFailed(manifest),
+    };
+  }
+  const recomputedSourceMeta = computeSourceMetadataChecksum(sourceMetaEntries);
+  if (recomputedSourceMeta !== manifest.sourceMetadataChecksum) {
+    return {
+      ok: false,
+      reasons: ["source metadata checksumがmanifestと一致しない(改ざんまたは破損の疑い)"],
+      restoredCounts: null,
+      restoreVerified: false,
+      manifest: markManifestFailed(manifest),
+    };
+  }
+
+  // ここまで全検証に合格した場合だけ、隔離Restore先schemaへ書き込む。
+  try {
+    await client.query("begin");
+    for (const table of TRUNCATE_ORDER) {
+      await client.query(buildBackupTruncateRestoreTargetSql(table));
+    }
+    const restoredCounts: Record<string, number> = {};
+    for (const table of INSERT_ORDER) {
+      const spec = getBackupTableSpec(table);
+      const rows = payload.tables[table] ?? [];
+      restoredCounts[table] = rows.length;
+      if (rows.length === 0) continue;
+      for (const chunk of chunkRows(rows, 500)) {
+        const sql = buildBackupRestoreInsertSql(table, chunk.length);
+        const params = chunk.flatMap((r) => mapBackupFieldsToParams(spec, r));
+        await client.query(sql, params);
+      }
+    }
+    await client.query("commit");
+
+    // Restore後checksum: 別の空schemaへ実際に書き込んだ結果を読み戻し、Backup前と再一致することを確認する。
+    for (const table of manifestTables) {
+      const spec = getBackupTableSpec(table);
+      const readback = await client.query(buildBackupDumpSelectSql(BACKUP_RESTORE_TEST_SCHEMA, table));
+      const rows = readback.rows.map((r) => toPortableBackupRow(spec, r));
+      const withIds = rows.map((r) => ({ id: String(r[spec.primaryKey]), fields: r }));
+      const afterChecksum = computeBackupTableChecksum(withIds);
+      if (afterChecksum !== manifest.tableChecksums[table]) {
+        return {
+          ok: false,
+          reasons: [`${table}のRestore後checksumがBackup前と一致しない(書込み経路の不具合の可能性)`],
+          restoredCounts,
+          restoreVerified: false,
+          manifest: markManifestFailed(manifest),
+        };
+      }
+    }
+
+    return { ok: true, reasons: [], restoredCounts, restoreVerified: true, manifest: markManifestRestoreVerified(manifest) };
+  } catch (err) {
+    await client.query("rollback").catch(() => {});
+    return {
+      ok: false,
+      reasons: [sanitizeErrorMessage(err instanceof Error ? err.message : String(err))],
+      restoredCounts: null,
+      restoreVerified: false,
+      manifest: markManifestFailed(manifest),
+    };
+  }
+}
