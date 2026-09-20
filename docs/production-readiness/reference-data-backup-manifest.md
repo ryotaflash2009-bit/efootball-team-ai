@@ -1,7 +1,7 @@
 # Backup manifestフォーマット
 
 作成日: 2026-09-20。実装: `src/lib/reference-data/auto-update/backup-manifest.ts`。
-関連: [[reference-data-production-backup-design.md]]
+関連: [[reference-data-production-backup-design.md]]・[[reference-data-production-backup-security-model.md]]
 
 ## 1. 目的
 

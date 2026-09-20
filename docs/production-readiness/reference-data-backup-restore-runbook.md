@@ -4,7 +4,9 @@
 一切実行していない。** Production Supabaseへの接続・Production Backupの取得・Production
 Restoreは、いずれも独立した承認事項である。
 
-関連: [[reference-data-production-backup-design.md]]・[[reference-data-backup-manifest.md]]
+関連: [[reference-data-production-backup-design.md]]・[[reference-data-backup-manifest.md]]・
+[[reference-data-production-backup-credentials.md]]・[[reference-data-production-backup-storage.md]]・
+[[reference-data-production-backup-approval-runbook.md]](本人承認workflowの詳細な実行手順)
 
 ## 1. 前提条件(実施前に必ず完了していること)
 

@@ -1,12 +1,18 @@
 # 参照データ自動更新 Backup・Restore検証記録(隔離環境)
 
 作成日: 2026-09-20。**この記録はローカル合成fakeクライアント、および`node:crypto`
-(AES-256-GCM、使い捨てテスト鍵)による検証結果である。GitHub Actions実PostgreSQL
-(`backup-restore.postgres.test.ts`)での実証はこのセッションでは未実行。実Productionへの
-接続・実Production Backupの取得・実Production Restoreは一切行っていない。**
+(AES-256-GCM、使い捨てテスト鍵)による検証結果である。実Productionへの接続・実Production
+Backupの取得・実Production Restoreは一切行っていない。**
+
+**追記(2026-09-20、PR #26マージ後)**: `backup-restore.postgres.test.ts`はGitHub Actions
+PostgreSQL 16 service containerで実行され、外部キー制約に起因するTRUNCATE順序の不具合を
+1件修正した上で成功した(job-level success、個別テスト件数はジョブログ非公開のため未確認)。
+詳細はPR #26のマージ後確認記録を参照(この文書自体は更新せず、下記の「未実行」の記述は
+このセッション時点の状態として残す)。
 
 関連: [[reference-data-production-backup-design.md]]・[[reference-data-backup-manifest.md]]・
-[[reference-data-backup-restore-runbook.md]]
+[[reference-data-backup-restore-runbook.md]]・[[reference-data-production-backup-security-model.md]]
+(Production Backup資格情報・暗号鍵・保管先の安全設計、design only)
 
 ## 1. 実施範囲の明確な区分
 
