@@ -140,6 +140,14 @@ Production(Supabase)向けのstaging schema・最小権限方式・接続前後�
 参照。**いずれも設計のみであり、このランブックの対象であるローカル/GitHub Actions検証とは異なり、
 実Production接続コードは実装されていない(`createProductionAdapter()`は意図的な未実装)。**
 
+## 5.7 Backup方式・Promotion設計・rollback検証(隔離PostgreSQL専用、2026-09-20追記)
+
+Production apply前に必要なbackup方式の確定、`reference_data_ops_test`(staging)から
+`reference_data_test`(確定相当)への昇格SQL設計・実装、自動/明示rollbackの検証は、
+`reference-data-backup-decision.md`・`reference-data-promotion-design.md`・
+`reference-data-promotion-rollback-validation.md`を参照。**対象は隔離テスト専用schemaのみ、
+実Production reference_data/reference_data_opsへの適用は一切行っていない。**
+
 ## 6. このランブックが対象としないこと
 
 - 実際の外部データ取得(`scripts/sync-*.mjs`の実行そのもの)。

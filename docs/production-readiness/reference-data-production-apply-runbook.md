@@ -13,8 +13,11 @@
    を確認する。
 4. **Advisor確認**: Security Advisor・Performance Advisorの警告件数を記録する(Leaked Password
    Protection以外に新規警告が無いことを確認)。
-5. **backup確認**: `reference-data-production-security-model.md`3章のbackup方式(未確定、
-   独立した承認事項)に基づき、直近のbackupが存在し復元可能であることを確認する。
+5. **backup確認**: `reference-data-backup-decision.md`で確定した最低backup要件(行単位
+   before snapshot + source metadata snapshot + inverse operation plan、Supabase platform
+   backupは補助条件)を満たしていることを確認する。この要件を満たさない場合、
+   `production-preflight.ts`の`backupConfirmed`ゲートにより、preflightは必ず`blocked`と
+   なる(2026-09-20時点、実運用での`backupConfirmed: true`の根拠はまだ存在しない)。
 6. **read-only preflight**: `preflight-reference-data-ops.sql`の各クエリを、本人が
    Supabase SQL Editor(読み取り専用のSELECT/SHOWだけ)で実行し、`production-readonly-queries.ts`
    の検証関数へ結果を渡して`ready`判定になることを確認する。
@@ -33,8 +36,11 @@
 14. **validation**: schema validation・safety gate(件数増減率・NULL率・未知フィールド・
     大量削除候補reject)を再実行する。
 15. **apply**: `reference_data_ops.before_snapshots`へ適用前スナップショットを保存したうえで、
-    `reference_data.*`(確定済み参照データ)へ反映する(このステップの具体的なSQLは今回設計して
-    いない、staging→確定テーブルへの昇格は将来の独立実装事項)。
+    `reference_data.*`(確定済み参照データ)へ反映する。**このステップに対応する昇格処理は、
+    隔離PostgreSQL(`reference_data_ops_test`/`reference_data_test`)専用として2026-09-20に
+    設計・実装・実証済み(`reference-data-promotion-design.md`参照)だが、Production
+    (`reference_data_ops`/`reference_data`)向けへはまだ移植・実行していない**(schema名・
+    接続処理・専用roleの権限確認など、Production固有の追加検証が別途必要)。
 16. **shadow comparison**: 適用後に読み戻した結果と期待値が完全一致することを確認する
     (1件でも不一致ならROLLBACK)。
 17. **commitまたはrollback**: 15-16がすべて成功すれば`COMMIT`、1つでも失敗すれば`ROLLBACK`。
@@ -50,8 +56,8 @@
 ## 前提(今回のセッションで未実装のため、実行できない)
 
 - Production向け接続処理(`createProductionAdapter()`は意図的に未実装)。
-- staging→確定テーブルへの昇格SQL。
-- backup方式の確定。
+- staging→確定テーブルへの昇格SQL(隔離PostgreSQL専用としては設計・実証済み、Production向けは未移植)。
+- backup方式の確定(方式自体は`reference-data-backup-decision.md`で確定済み、実運用での取得・検証は未実施)。
 - `reference_data_ops`専用ロールの作成・付与(独立した承認事項)。
 
 これらが揃うまで、本ランブックは**手順の設計案**であり、実行可能な状態ではない。

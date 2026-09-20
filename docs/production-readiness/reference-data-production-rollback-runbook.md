@@ -2,6 +2,11 @@
 
 作成日: 2026-09-19。**このランブックは将来の手順案であり、今回のセッションでは一切実行していない。**
 
+**2026-09-20追記**: この手順の元になった明示rollback処理(before snapshotからの復元、
+このjob追加行だけの削除、二重rollback拒否)は、隔離PostgreSQL(`reference_data_ops_test`/
+`reference_data_test`)専用として設計・実装・実証済み(`reference-data-promotion-design.md`・
+`reference-data-promotion-rollback-validation.md`参照)。Production向けへはまだ移植していない。
+
 ## 発動条件(いずれか1つでも該当したら発動を検討する)
 
 - shadow comparisonで1件でも差分が検出された(適用直後に検出された場合はtransaction内で
