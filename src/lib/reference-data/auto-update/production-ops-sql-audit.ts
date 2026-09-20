@@ -278,3 +278,118 @@ export function auditProductionOpsPreflightSql(rawSql: string): GuardCheck[] {
     },
   ];
 }
+
+/**
+ * 実Production Supabaseで「本人が手動実行してよい」単一read-only preflight SQL専用の監査。
+ *
+ * `auditProductionOpsPreflightSql`とは目的が異なる: あちらは「DO NOT RUN」バナーを要求する
+ * 未適用DDL案(reference_data_ops作成SQL)向け。こちらは逆に「SAFE TO RUN」バナーを要求する、
+ * 本人がSupabase SQL Editorへ貼り付けて実行するためのSQL向け。
+ */
+
+const READONLY_PREFLIGHT_BANNER_PHRASES = [
+  /read\s*only/i,
+  /no\s*ddl/i,
+  /no\s*dml/i,
+  /no\s*grant\s*or\s*revoke/i,
+  /does\s*not\s*read\s*user\s*row\s*data/i,
+  /safe\s*to\s*run\s*manually\s*in\s*supabase\s*sql\s*editor/i,
+];
+
+/** ファイル冒頭に、read-only preflight SQL専用の安全宣言バナーが揃っていることを確認する。 */
+export function assertReadOnlyPreflightBanner(rawSql: string): GuardCheck {
+  const header = rawSql.slice(0, 3000);
+  const missing = READONLY_PREFLIGHT_BANNER_PHRASES.filter((re) => !re.test(header));
+  if (missing.length > 0) {
+    return {
+      ok: false,
+      reason: `read-only preflight用の安全宣言バナーが不足している(${missing.length}項目): READ ONLY / NO DDL / NO DML / NO GRANT OR REVOKE / DOES NOT READ USER ROW DATA / SAFE TO RUN MANUALLY IN SUPABASE SQL EDITOR`,
+    };
+  }
+  return { ok: true };
+}
+
+const FORBIDDEN_STATEMENT_KEYWORDS = [
+  "create",
+  "alter",
+  "drop",
+  "truncate",
+  "insert",
+  "update",
+  "delete",
+  "merge",
+  "grant",
+  "revoke",
+  "copy",
+  "call",
+  "do",
+  "execute",
+] as const;
+
+/**
+ * SQL全文(コメント除去後)を対象に、DDL/DML/GRANT/REVOKE/動的SQL相当のキーワードが
+ * 単語境界付きで一切出現しないことを確認する。トップレベル文だけでなく、Postgresの
+ * data-modifying CTE(`with x as (delete from ... returning ...) select ...`)のような
+ * WITH句内部に埋め込まれたDML も検出できるよう、文全体を対象にスキャンする。
+ */
+export function assertOnlyReadOnlySyntax(rawSql: string): GuardCheck {
+  const sql = stripLineComments(rawSql);
+  const statements = splitSqlStatements(sql).filter((s) => s.trim().length > 0);
+  const nonSelectTop = statements.filter((s) => !/^\s*(with|select|show)\b/i.test(s.trim()));
+  if (nonSelectTop.length > 0) {
+    return { ok: false, reason: `トップレベルがSELECT/WITH/SHOW以外の文が含まれている: ${nonSelectTop.length}件` };
+  }
+  for (const keyword of FORBIDDEN_STATEMENT_KEYWORDS) {
+    const re = new RegExp(`\\b${keyword}\\b`, "i");
+    if (re.test(sql)) {
+      return { ok: false, reason: `禁止キーワード(${keyword.toUpperCase()})がSQL中に含まれている(WITH句内のdata-modifying CTEを含め一切許可しない)` };
+    }
+  }
+  if (/\bset\s+role\b/i.test(sql)) {
+    return { ok: false, reason: "SET ROLEが含まれている" };
+  }
+  if (/\bsecurity\s+definer\b/i.test(sql)) {
+    return { ok: false, reason: "SECURITY DEFINERが含まれている" };
+  }
+  return { ok: true };
+}
+
+/** reference_data_opsスキーマの実テーブルへ直接SELECTしていないことを確認する(存在しない場合にエラーで落ちるのを防ぐ)。 */
+export function assertNoDirectOpsSchemaTableReference(rawSql: string): GuardCheck {
+  const sql = stripLineComments(rawSql);
+  if (/\breference_data_ops\s*\.\s*\w+/i.test(sql)) {
+    return {
+      ok: false,
+      reason: "reference_data_ops.<table>への直接参照が含まれている(未適用時にrelation does not existで失敗するため、information_schema/pg_catalog経由の存在確認だけを許可する)",
+    };
+  }
+  return { ok: true };
+}
+
+/** メールアドレス・トークン・パスワード・接続文字列らしき文字列が含まれていないことを確認する。 */
+export function assertNoSecretLikePatterns(rawSql: string): GuardCheck {
+  const sql = stripLineComments(rawSql);
+  const patterns: { name: string; re: RegExp }[] = [
+    { name: "メールアドレス", re: /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i },
+    { name: "postgres接続文字列", re: /postgres(?:ql)?:\/\/\S+/i },
+    { name: "JWT様トークン", re: /eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}/ },
+    { name: "password=リテラル", re: /password\s*=\s*['"]?\S+/i },
+  ];
+  for (const p of patterns) {
+    if (p.re.test(sql)) {
+      return { ok: false, reason: `${p.name}らしき文字列が含まれている` };
+    }
+  }
+  return { ok: true };
+}
+
+export function auditProductionReadonlyPreflightSql(rawSql: string): GuardCheck[] {
+  return [
+    assertReadOnlyPreflightBanner(rawSql),
+    assertOnlyReadOnlySyntax(rawSql),
+    assertNoPublicOrAuthSchemaChange(rawSql),
+    assertNoUserDataTableReference(rawSql),
+    assertNoDirectOpsSchemaTableReference(rawSql),
+    assertNoSecretLikePatterns(rawSql),
+  ];
+}
