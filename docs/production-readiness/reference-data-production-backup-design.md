@@ -7,6 +7,14 @@ Backupの取得・実Production Restoreはまだ実施していない。**
 [[reference-data-promotion-rollback-validation.md]]・[[reference-data-backup-manifest.md]]・
 [[reference-data-backup-restore-runbook.md]]・[[reference-data-backup-restore-validation.md]]
 
+**関連(2026-09-20追記)**: 本文書6章のProduction Backup gate(17項目)は、
+[[reference-data-production-backup-security-model.md]]で追加11項目(Environment承認・
+read-only role・Secret scope等、計28項目)へ拡張した。read-only資格情報・Secret設計は
+[[reference-data-production-backup-credentials.md]]、保管先・Retentionは
+[[reference-data-production-backup-storage.md]]、本人承認workflowの運用手順は
+[[reference-data-production-backup-approval-runbook.md]]、脅威モデルは
+[[reference-data-production-backup-threat-model.md]]を参照。
+
 実装コード: `src/lib/reference-data/auto-update/backup-target.ts`・`backup-schema.ts`・
 `backup-checksum.ts`・`backup-manifest.ts`・`backup-encryptor.ts`・`backup-sql.ts`・
 `backup-orchestrator.ts`・`backup-restore.ts`・`backup-gate.ts`・`backup-sql-audit.ts`
