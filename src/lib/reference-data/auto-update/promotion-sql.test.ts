@@ -13,6 +13,7 @@ import {
   buildSourceMetadataSelectSql,
   buildSourceMetadataDeleteSql,
   mapFieldsToParams,
+  canonicalizeFieldsForComparison,
   getPromotionTableSpec,
   PROMOTION_STAGING_SCHEMA,
   PROMOTION_FINAL_SCHEMA,
@@ -132,6 +133,75 @@ describe("mapFieldsToParams", () => {
     const params = mapFieldsToParams(spec, { internal_manager_id: 1 }, "2026-01-01T00:00:00.000Z");
     const nameIndex = spec.columns.indexOf("name_en");
     expect(params[nameIndex]).toBeNull();
+  });
+});
+
+describe("canonicalizeFieldsForComparison(fakeクライアントと実PostgreSQL readbackの表現差を吸収する比較専用正規化)", () => {
+  it("jsonb列はobject入力・既存文字列入力のどちらでも同じ正規形になる(実PostgreSQLはjsonbをobjectとして読み戻す)", () => {
+    const spec = getPromotionTableSpec("world_player_cards");
+    const asObject = canonicalizeFieldsForComparison(spec, { world_card_id: "wc-1", stats: { offensiveAwareness: 80 } });
+    const asAlreadyStringified = canonicalizeFieldsForComparison(spec, { world_card_id: "wc-1", stats: JSON.stringify({ offensiveAwareness: 80 }) });
+    expect(asObject.stats).toBe(asAlreadyStringified.stats);
+    expect(asObject.stats).toBe(JSON.stringify({ offensiveAwareness: 80 }));
+  });
+
+  it("text[]列(配列)はネイティブ配列入力・既存文字列入力のどちらでも同じ正規形になる(実PostgreSQL adapterはtext[]をJSON文字列化して返す)", () => {
+    const spec = getPromotionTableSpec("world_player_cards");
+    const asNativeArray = canonicalizeFieldsForComparison(spec, { world_card_id: "wc-1", skills: ["Long Range Drive"] });
+    const asAlreadyStringified = canonicalizeFieldsForComparison(spec, { world_card_id: "wc-1", skills: JSON.stringify(["Long Range Drive"]) });
+    expect(asNativeArray.skills).toBe(asAlreadyStringified.skills);
+    expect(asNativeArray.skills).toBe(JSON.stringify(["Long Range Drive"]));
+  });
+
+  it("空配列のtext[]列も一貫して正規化される", () => {
+    const spec = getPromotionTableSpec("world_player_cards");
+    const result = canonicalizeFieldsForComparison(spec, { world_card_id: "wc-1", ai_styles: [] });
+    expect(result.ai_styles).toBe("[]");
+  });
+
+  it("nullは常にnullのまま(jsonb・配列列を含む)", () => {
+    const spec = getPromotionTableSpec("world_player_cards");
+    const result = canonicalizeFieldsForComparison(spec, { world_card_id: "wc-1", stats: null, skills: null });
+    expect(result.stats).toBeNull();
+    expect(result.skills).toBeNull();
+  });
+
+  it("欠損フィールドはnullとして正規化する", () => {
+    const spec = getPromotionTableSpec("world_player_cards");
+    const result = canonicalizeFieldsForComparison(spec, { world_card_id: "wc-1" });
+    expect(result.stats).toBeNull();
+    expect(result.name_en).toBeNull();
+  });
+
+  it("updatedAtOverrideを指定するとupdated_at列だけ上書きされる", () => {
+    const spec = getPromotionTableSpec("world_player_cards");
+    const result = canonicalizeFieldsForComparison(spec, { world_card_id: "wc-1", updated_at: "2020-01-01T00:00:00.000Z" }, "2026-01-01T12:00:00.000Z");
+    expect(result.updated_at).toBe("2026-01-01T12:00:00.000Z");
+  });
+
+  it("updatedAtOverride未指定なら既存のupdated_at値をそのまま使う(promotionが触れない行の一貫性確認用)", () => {
+    const spec = getPromotionTableSpec("world_player_cards");
+    const result = canonicalizeFieldsForComparison(spec, { world_card_id: "wc-1", updated_at: "2020-01-01T00:00:00.000Z" });
+    expect(result.updated_at).toBe("2020-01-01T00:00:00.000Z");
+  });
+
+  it("数値・真偽値はそのまま保持する(JSON文字列化しない)", () => {
+    const spec = getPromotionTableSpec("world_player_cards");
+    const result = canonicalizeFieldsForComparison(spec, { world_card_id: "wc-1", ovr_max: 81, age: 25 });
+    expect(result.ovr_max).toBe(81);
+    expect(result.age).toBe(25);
+  });
+
+  it("managers/player_card_analysisのjsonb配列列(boosters/positions等)も同じ規則で正規化される", () => {
+    const managersSpec = getPromotionTableSpec("managers");
+    const boostersAsArray = canonicalizeFieldsForComparison(managersSpec, { internal_manager_id: 1, boosters: [{ code: "X" }] });
+    const boostersAsString = canonicalizeFieldsForComparison(managersSpec, { internal_manager_id: 1, boosters: JSON.stringify([{ code: "X" }]) });
+    expect(boostersAsArray.boosters).toBe(boostersAsString.boosters);
+
+    const analysisSpec = getPromotionTableSpec("player_card_analysis");
+    const positionsAsArray = canonicalizeFieldsForComparison(analysisSpec, { world_card_id: "wc-1", positions: [{ code: "CF" }] });
+    const positionsAsString = canonicalizeFieldsForComparison(analysisSpec, { world_card_id: "wc-1", positions: JSON.stringify([{ code: "CF" }]) });
+    expect(positionsAsArray.positions).toBe(positionsAsString.positions);
   });
 });
 

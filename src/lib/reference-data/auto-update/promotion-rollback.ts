@@ -7,6 +7,7 @@ import {
   buildSourceMetadataUpsertSql,
   buildSourceMetadataDeleteSql,
   mapFieldsToParams,
+  canonicalizeFieldsForComparison,
   getPromotionTableSpec,
 } from "./promotion-sql";
 import { lockKeyForTable } from "./lock";
@@ -173,7 +174,10 @@ export async function executePromotionRollback(client: QueryClient, input: Promo
     if (updateEntries.length > 0) {
       const ids = updateEntries.map((r) => String(r.record_id));
       const readback = await client.query(buildPromotionSelectByIdsSql(input.plan.targetTable, ids.length), ids);
-      const restoredRecords: StagingRecord[] = readback.rows.map((row) => ({ id: String(row[spec.primaryKey]), fields: row }));
+      const restoredRecords: StagingRecord[] = readback.rows.map((row) => ({
+        id: String(row[spec.primaryKey]),
+        fields: canonicalizeFieldsForComparison(spec, row),
+      }));
       const restoredChecksum = computeBeforeStateChecksum(restoredRecords);
       if (restoredChecksum !== input.plan.beforeChecksum) {
         await client.query("rollback");

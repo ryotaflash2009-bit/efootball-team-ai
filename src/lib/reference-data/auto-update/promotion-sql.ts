@@ -51,6 +51,49 @@ export function mapFieldsToParams(spec: PromotionTableSpec, fields: Readonly<Rec
 }
 
 /**
+ * shadow comparison・checksum計算専用: 行を「比較可能な正規形」へ変換する(書込み時の
+ * `mapFieldsToParams`とは別物、DBへは一切送らない)。
+ *
+ * 隔離PostgreSQL用の`createPostgresQueryClient`(`postgres-adapter.ts`)は、既存の
+ * Phase 2(単一fields_json列)向けに、readback結果のうちnull/Date以外のobject値を
+ * 一律JSON.stringifyする設計になっている。これはjsonb列(objectとして読み戻る)には
+ * 正しく働くが、text[]列(node-postgresが配列として読み戻す値)も同じくJSON文字列化して
+ * しまう。一方、書込み時の`mapFieldsToParams`はtext[]列をネイティブ配列のまま渡す
+ * (PostgreSQLのtext[]パラメータとして正しく解釈させるため、JSON文字列化するとPR以前に
+ * 実際に発生した"malformed array literal"障害を再発させる)。
+ *
+ * この非対称性(書込み時は配列のまま・実readback時はJSON文字列)を、比較専用のこの関数で
+ * 吸収する: jsonb列・配列値の列はいずれも比較対象としてJSON.stringifyし、既に文字列に
+ * なっている値(実readback経由)はそのまま扱う。合成fakeクライアント(常にネイティブ配列を
+ * そのまま返す)と実PostgreSQL(配列をJSON文字列化して返す)の両方で、同じ入力データに対して
+ * 同一の正規形になることを`promotion-sql.test.ts`で確認している。
+ */
+export function canonicalizeFieldsForComparison(
+  spec: PromotionTableSpec,
+  fields: Readonly<Record<string, unknown>>,
+  updatedAtOverride?: string,
+): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const col of spec.columns) {
+    if (col === "updated_at" && updatedAtOverride !== undefined) {
+      out[col] = updatedAtOverride;
+      continue;
+    }
+    const value = fields[col] ?? null;
+    if (value === null || typeof value === "string") {
+      out[col] = value;
+      continue;
+    }
+    if (spec.jsonbColumns.includes(col) || Array.isArray(value)) {
+      out[col] = JSON.stringify(value);
+      continue;
+    }
+    out[col] = value;
+  }
+  return out;
+}
+
+/**
  * promotionが対象にできる唯一の3組(source→target)。この配列に無い組み合わせは
  * `checkAllowedPromotionPair`で拒否する。promotionOrderは外部キー依存の順(親→子)。
  */

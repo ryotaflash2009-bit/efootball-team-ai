@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { executePromotion, evaluatePrePromotionGates, type PromotionExecutionInput } from "./promotion-orchestrator";
 import { executePromotionRollback, evaluatePromotionRollbackGates, type PromotionRollbackApproval } from "./promotion-rollback";
 import { buildPromotionPlan, computeApprovalArtifactId } from "./promotion";
-import { getPromotionTableSpec, mapFieldsToParams } from "./promotion-sql";
+import { getPromotionTableSpec, canonicalizeFieldsForComparison } from "./promotion-sql";
 import { createPendingJob, type UpdateJob } from "./job";
 import { computeDiffChecksum, type ApprovalArtifact } from "./approval";
 import { computeDiff, computeRecordChecksum } from "./diff";
@@ -247,20 +247,17 @@ function wc(id: string, nameEn: string, ovrMax: number): StagingRecord {
 }
 
 /**
- * orchestrator内部の正規化(mapFieldsToParams、全列・jsonb列JSON.stringify・updated_at上書き)と
- * 完全に同じ変換を適用する。PromotionPlanのexpectedAfterChecksumは「実際にDBへ書き込まれた後の
- * 形」で計算する必要があるため、テスト側でplanを構築する際もこの正規化を通してから
- * computeRecordSetChecksumへ渡す(そうしないと、jsonb列がobjectのままか文字列化済みかの差で
- * 偽陽性のchecksum不一致になる)。
+ * orchestrator内部のshadow comparison正規化(`canonicalizeFieldsForComparison`)と完全に
+ * 同じ変換を適用する。PromotionPlanのbeforeChecksum/expectedAfterChecksumは、orchestratorが
+ * 実行時に独自に計算する値と一致しなければならないため、テスト側でplanを構築する際も
+ * 同じ正規化を通してからcomputeRecordSetChecksum/computeBeforeStateChecksumへ渡す
+ * (書込み専用の`mapFieldsToParams`ではなく、比較専用のこちらを使うこと。実PostgreSQL
+ * adapter経由のreadbackがtext[]列もJSON文字列化する既存挙動に合わせるための正規化であり、
+ * 書込みパラメータの形とは異なる)。
  */
 function normalizeForStorage(targetTable: string, record: StagingRecord, nowIso: string): StagingRecord {
   const spec = getPromotionTableSpec(targetTable);
-  const params = mapFieldsToParams(spec, record.fields, nowIso);
-  const fields: Record<string, unknown> = {};
-  spec.columns.forEach((col, idx) => {
-    fields[col] = params[idx];
-  });
-  return { id: record.id, fields };
+  return { id: record.id, fields: canonicalizeFieldsForComparison(spec, record.fields, nowIso) };
 }
 
 interface Scenario {
@@ -316,12 +313,13 @@ function buildScenario(overrides: Partial<{ added: StagingRecord[]; updated: Sta
   const beforeRecordsForPlan = existingBeforeRecords
     .filter((r) => updated.map((u) => u.id).includes(r.id))
     .map((r) => normalizeForStorage("world_player_cards", r, nowIso));
+  const spec = getPromotionTableSpec("world_player_cards");
   const expectedAfterRecords = [
     ...added.map((r) => normalizeForStorage("world_player_cards", r, nowIso)),
     ...updated.map((r) => normalizeForStorage("world_player_cards", r, nowIso)),
     ...unchangedIds.map((id) => existingBeforeRecords.find((r) => r.id === id)!),
     ...removedCandidateIds.map((id) => existingBeforeRecords.find((r) => r.id === id)!),
-  ];
+  ].map((r) => ({ id: r.id, fields: canonicalizeFieldsForComparison(spec, r.fields) }));
 
   const plan = buildPromotionPlan({
     jobId: job.jobId,
