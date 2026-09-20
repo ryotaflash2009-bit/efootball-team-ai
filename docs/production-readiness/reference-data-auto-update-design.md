@@ -142,6 +142,15 @@ staging昇格方式を組み合わせる**。理由:
   `reference-data-production-apply-runbook.md`・`reference-data-production-rollback-runbook.md`
   を参照。`createProductionAdapter()`は呼び出すと必ず例外を投げる意図的な未実装であり、
   実Production接続コードはこのセッションでも一切実装していない。
+- **Backup方式確定・Promotion設計・隔離PostgreSQL実証(2026-09-20追記)**: Production apply前の
+  最低backup要件を明文化し(行単位before snapshot + source metadata snapshot + inverse
+  operation planを必須、Supabase platform backupは補助条件)、`reference_data_ops_test`
+  (staging)から`reference_data_test`(確定相当、実`reference_data`の列構造を再現)への
+  昇格処理(PromotionPlan・25手順transaction・自動/明示rollback・shadow comparison)を
+  設計・実装し、ローカル合成fakeクライアントで実証した(GitHub Actions実PostgreSQLでの
+  実証は未実行)。詳細は`reference-data-backup-decision.md`・`reference-data-promotion-design.md`・
+  `reference-data-promotion-rollback-validation.md`を参照。実Production reference_data/
+  reference_data_opsへの適用は一切行っていない。
 
 ### Phase 3(今回は有効化しない)
 

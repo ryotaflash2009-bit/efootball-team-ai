@@ -106,6 +106,19 @@
 | `docs/production-readiness/sql/rollback-reference-data-ops-schema.sql` | 上記のロールバックDDL案(DO NOT RUN) | 設計のみ・**F** |
 | `docs/production-readiness/sql/preflight-reference-data-ops.sql` | 接続後read-only preflight用SELECT専用クエリ案(DO NOT RUN、このセッションでは未実行) | 設計のみ・**F** |
 
+## 5e. Backup方式・Promotion(隔離PostgreSQL専用、このセッションで追加、詳細は`reference-data-promotion-design.md`)
+
+| ファイル | 役割 | 分類 |
+|---|---|---|
+| `src/lib/reference-data/auto-update/postgres-final-schema.ts` | `reference_data_test`(確定相当)のDDL文字列、GitHub Actions専用 | **A**(隔離PostgreSQL上での実証はGitHub Actions実行待ち) |
+| `src/lib/reference-data/auto-update/promotion.ts` | PromotionPlanの型・checksum・ApprovalArtifact照合の純関数 | **A**(fakeクライアントでテスト済み) |
+| `src/lib/reference-data/auto-update/promotion-sql.ts` | promotion SQL組み立て(schema/table/column固定、パラメータ化) | **A** |
+| `src/lib/reference-data/auto-update/promotion-sql-audit.ts` | promotion SQLの静的監査 | **A** |
+| `src/lib/reference-data/auto-update/backup-snapshot.ts` | before snapshotエントリの構築・検証純関数 | **A** |
+| `src/lib/reference-data/auto-update/promotion-orchestrator.ts` | 25手順・単一transactionのpromotion実行(隔離PostgreSQL専用) | **A**(ローカルfakeクライアントで実証、GitHub Actions実PostgreSQLは未実行) |
+| `src/lib/reference-data/auto-update/promotion-rollback.ts` | 成功後の明示rollback(隔離PostgreSQL専用) | **A**(同上) |
+| `src/lib/reference-data/auto-update/promotion-orchestrator.postgres.test.ts` | GitHub Actions実PostgreSQL向け統合テスト | 未実行(ローカルPostgreSQL無し) |
+
 ## 6. 結論(何が足りないか)
 
 再利用可能な部品(安全ゲート・差分計算パターン・UPDATE SQL組立・CLI設計パターン・秘密情報取り扱い)は

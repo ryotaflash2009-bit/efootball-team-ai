@@ -83,17 +83,72 @@ create table if not exists ${POSTGRES_TEST_SCHEMA}.rollback_jobs (
 );
 create index if not exists idx_rollback_jobs_target
   on ${POSTGRES_TEST_SCHEMA}.rollback_jobs(target_job_id);
+-- 二重rollback防止: 同一target_job_idに対して、failed以外のrollbackは1件までしか許可しない
+-- (Production設計のrollback_jobs_target_job_id_keyと同じ方針)。
+create unique index if not exists idx_rollback_jobs_target_unique_active
+  on ${POSTGRES_TEST_SCHEMA}.rollback_jobs(target_job_id)
+  where status <> 'failed';
 
+-- job単位のsource metadata履歴(promotion検証用、複数回の昇格ジョブを蓄積する)。
 create table if not exists ${POSTGRES_TEST_SCHEMA}.source_metadata_test (
-  table_name text primary key,
-  last_job_id text references ${POSTGRES_TEST_SCHEMA}.update_jobs(job_id),
-  last_applied_at timestamptz,
-  source text,
-  schema_version text
+  table_name text not null,
+  last_job_id text not null references ${POSTGRES_TEST_SCHEMA}.update_jobs(job_id),
+  last_applied_at timestamptz not null,
+  source text not null,
+  schema_version text not null,
+  primary key (table_name, last_job_id)
+);
+
+-- promotion専用: 確定テーブル側source_metadataの「昇格前の状態」保存(明示rollbackでの復元用)。
+create table if not exists ${POSTGRES_TEST_SCHEMA}.promotion_source_metadata_before (
+  job_id text primary key references ${POSTGRES_TEST_SCHEMA}.update_jobs(job_id),
+  table_name text not null,
+  before_json jsonb
 );
 
 create table if not exists ${POSTGRES_TEST_SCHEMA}.target_records (
   record_id text primary key,
   fields_json jsonb not null
+);
+
+-- ----------------------------------------------------------------------------
+-- Phase 3(promotion検証)専用: 確定相当テーブル名と一致する3本のstagingテーブル。
+-- 実Production設計(create-reference-data-ops-schema.sql)のstaging_*と同じ命名・
+-- 構造(job_id + 対象idカラム + fields_json)にしている。Phase 2の汎用target_records/
+-- staging_recordsとは独立しており、promotion検証だけがこれらを使う。
+-- ----------------------------------------------------------------------------
+create table if not exists ${POSTGRES_TEST_SCHEMA}.staging_world_player_cards (
+  job_id text not null references ${POSTGRES_TEST_SCHEMA}.update_jobs(job_id),
+  world_card_id text not null,
+  fields_json jsonb not null,
+  primary key (job_id, world_card_id)
+);
+
+create table if not exists ${POSTGRES_TEST_SCHEMA}.staging_managers (
+  job_id text not null references ${POSTGRES_TEST_SCHEMA}.update_jobs(job_id),
+  internal_manager_id text not null,
+  fields_json jsonb not null,
+  primary key (job_id, internal_manager_id)
+);
+
+create table if not exists ${POSTGRES_TEST_SCHEMA}.staging_player_card_analysis (
+  job_id text not null references ${POSTGRES_TEST_SCHEMA}.update_jobs(job_id),
+  world_card_id text not null,
+  fields_json jsonb not null,
+  primary key (job_id, world_card_id)
+);
+
+-- promotion専用のbefore snapshot(insert/update区別・beforeChecksum・source metadataを保持)。
+-- Phase 2の汎用before_snapshotsとは別テーブルにして、既存のPhase 2検証へ影響しない。
+create table if not exists ${POSTGRES_TEST_SCHEMA}.promotion_before_snapshots (
+  job_id text not null references ${POSTGRES_TEST_SCHEMA}.update_jobs(job_id),
+  table_name text not null,
+  record_id text not null,
+  operation text not null check (operation in ('insert', 'update')),
+  before_fields_json jsonb,
+  before_checksum text,
+  source_meta_json jsonb not null,
+  created_at timestamptz not null,
+  primary key (job_id, table_name, record_id)
 );
 `;

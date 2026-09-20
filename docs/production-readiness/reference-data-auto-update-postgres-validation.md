@@ -107,6 +107,15 @@ DDLとしては用意したが、**現時点の`apply-orchestrator.ts`/`rollback
 明示的なrollback(before-snapshotへの復元・無関係行への非干渉)を、SQLiteのときと同じ
 シナリオで実証した。
 
+## 8.1 Promotion検証の追加(2026-09-20追記)
+
+同じGitHub Actions PostgreSQL service containerの仕組みを使って、`promotion-orchestrator.postgres.test.ts`
+(stagingから確定相当テーブル`reference_data_test`への昇格・自動/明示rollback)を追加した。
+`vitest.postgres.config.ts`の`include`が`src/lib/reference-data/auto-update/*.postgres.test.ts`
+というglobパターンのため、workflow自体の変更は不要で自動的に対象へ含まれる。**このファイルは
+このセッションでは未実行**(ローカルWindows環境にPostgreSQLが無いため)。詳細は
+`reference-data-promotion-design.md`・`reference-data-promotion-rollback-validation.md`参照。
+
 ## 9. 誠実な限界の開示(まだ検証していない事項)
 
 - **これはProduction完成ではない**。実Supabase・実Production PostgreSQLへの接続、
