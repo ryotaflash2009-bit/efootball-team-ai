@@ -68,6 +68,11 @@
 ホスト名・URL・パスワード・トークン・接続文字列は、このレポートのいかなるフィールドにも
 含まれない設計(fingerprintまたは列挙型の状態値だけを持つ)。
 
+`backupConfirmed`(2章の必須項目8)は、`reference-data-production-backup-design.md`の
+Production Backup gate(`backup-gate.ts`、17項目)の`decision === "ready"`を
+`deriveBackupConfirmedFromGate`で変換した値を渡すことを想定している。詳細は
+[[reference-data-production-backup-design.md]]を参照。
+
 ## 4. 接続後read-only preflight(設計のみ、クエリ案と検証コードだけ)
 
 対応するSQL案: `docs/production-readiness/sql/preflight-reference-data-ops.sql`

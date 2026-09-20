@@ -2,6 +2,10 @@
 
 作成日: 2026-09-20。**この文書は方式の決定と設計であり、実Production backupの取得・検証はまだ実施していない。**
 
+**関連(2026-09-20追記)**: 本文書が確定した「行単位before snapshot(C+E)」はPromotion rollback専用。
+テーブル全体を対象とするfull-table Backup(Production apply直前の障害復旧用、本文書とは別目的で併用)は
+[[reference-data-production-backup-design.md]]を参照。
+
 ## 1. 比較対象
 
 | 方式 | 概要 |
