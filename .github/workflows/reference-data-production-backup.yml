@@ -1,0 +1,73 @@
+name: Reference data Production backup (manual, approval-gated, design only)
+
+# ============================================================================
+# design only — this workflow is not authorized to run against Production yet.
+# ============================================================================
+#
+# Trigger: workflow_dispatch ONLY. No `schedule:`, no `pull_request:`, no `push:`.
+# A human must open the Actions tab and click "Run workflow" for this to ever start.
+#
+# GitHub Environment approval (`production-backup-approval`) is a SEPARATE, required
+# gate configured in repository settings, not something this file can weaken or skip.
+# No flag anywhere in this job substitutes for that human approval step.
+#
+# This job is structurally blocked as written: the four secrets it reads
+# (REFERENCE_DATA_BACKUP_DB_URL, REFERENCE_DATA_BACKUP_AGE_RECIPIENT,
+# REFERENCE_DATA_BACKUP_STORAGE_TOKEN, REFERENCE_DATA_BACKUP_STORAGE_DESTINATION)
+# do not exist in this repository. The first step fails fast and loudly if any of
+# them is missing, before any network connection is attempted. Until a human
+# provisions all four (an action outside this session's scope — see
+# docs/production-readiness/reference-data-production-backup-credentials.md),
+# every run of this workflow ends at that first step.
+#
+# The steps after the secret check are intentionally NOT implemented in this
+# session (design only): they always fail. Implementing them is future work that
+# requires read-only credentials, an age public key, and a storage destination to
+# already exist — none of which this session created.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type 'backup' to confirm this manual run. This is not a substitute for the required GitHub Environment approval."
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    environment: production-backup-approval
+    timeout-minutes: 15
+    steps:
+      - name: Reject unless the confirmation input is exactly "backup"
+        if: ${{ inputs.confirm != 'backup' }}
+        run: |
+          echo "::error::confirmation input did not match 'backup'; aborting before touching any secret"
+          exit 1
+
+      - name: Check required secrets are configured (fails before any DB connection)
+        env:
+          REFERENCE_DATA_BACKUP_DB_URL: ${{ secrets.REFERENCE_DATA_BACKUP_DB_URL }}
+          REFERENCE_DATA_BACKUP_AGE_RECIPIENT: ${{ secrets.REFERENCE_DATA_BACKUP_AGE_RECIPIENT }}
+          REFERENCE_DATA_BACKUP_STORAGE_TOKEN: ${{ secrets.REFERENCE_DATA_BACKUP_STORAGE_TOKEN }}
+          REFERENCE_DATA_BACKUP_STORAGE_DESTINATION: ${{ secrets.REFERENCE_DATA_BACKUP_STORAGE_DESTINATION }}
+        run: |
+          missing=0
+          for name in REFERENCE_DATA_BACKUP_DB_URL REFERENCE_DATA_BACKUP_AGE_RECIPIENT REFERENCE_DATA_BACKUP_STORAGE_TOKEN REFERENCE_DATA_BACKUP_STORAGE_DESTINATION; do
+            value="${!name}"
+            if [ -z "$value" ]; then
+              echo "::error::required secret not configured: $name"
+              missing=1
+            fi
+          done
+          if [ "$missing" = "1" ]; then
+            echo "::error::Production backup is blocked: required secrets are not configured. This is the expected, current state until a human explicitly provisions them (see reference-data-production-backup-credentials.md). Do not add a bypass here."
+            exit 1
+          fi
+
+      - name: Not implemented in this session (design only)
+        run: |
+          echo "::error::backup/encrypt/upload/restore-verify steps are design-only and intentionally not implemented in this session."
+          exit 1
