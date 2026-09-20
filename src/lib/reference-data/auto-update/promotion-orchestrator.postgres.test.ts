@@ -5,8 +5,9 @@ import { executePromotionRollback, type PromotionRollbackApproval } from "./prom
 import { createPostgresQueryClient, buildTestOnlyPgConfigFromEnv, type MinimalPgClient } from "./postgres-adapter";
 import { POSTGRES_STAGING_SCHEMA_DDL, POSTGRES_TEST_SCHEMA } from "./postgres-staging";
 import { POSTGRES_FINAL_SCHEMA_DDL, POSTGRES_FINAL_TEST_SCHEMA } from "./postgres-final-schema";
-import { buildPromotionPlan, computeRecordSetChecksum } from "./promotion";
-import { getPromotionTableSpec, mapFieldsToParams } from "./promotion-sql";
+import { runGuardedCleanup } from "./postgres-test-lifecycle";
+import { buildPromotionPlan } from "./promotion";
+import { getPromotionTableSpec, mapFieldsToParams, canonicalizeFieldsForComparison } from "./promotion-sql";
 import { createPendingJob } from "./job";
 import { computeDiffChecksum, type ApprovalArtifact } from "./approval";
 import { computeDiff, computeRecordChecksum } from "./diff";
@@ -35,49 +36,68 @@ import type { QueryClient } from "./apply-orchestrator";
 const config = buildTestOnlyPgConfigFromEnv(process.env);
 
 let adminClient: Client;
+/** adminClient.connect()が成功したか。beforeAll途中失敗時、afterAllが未接続clientをend()しないためのガード。 */
+let adminClientConnected = false;
+/** staging schema(reference_data_ops_test)のDDLが成功したか。beforeAll途中失敗時、afterAll/beforeEachが存在しないschemaへ触れないためのガード。 */
+let stagingSchemaReady = false;
+/** final schema(reference_data_test)のDDLが成功したか。同上。 */
+let finalSchemaReady = false;
 
 beforeAll(async () => {
   adminClient = new Client(config);
   await adminClient.connect();
+  adminClientConnected = true;
   await adminClient.query(POSTGRES_STAGING_SCHEMA_DDL);
+  stagingSchemaReady = true;
   await adminClient.query(POSTGRES_FINAL_SCHEMA_DDL);
+  finalSchemaReady = true;
 });
 
+/**
+ * 存在確認済みのschemaだけをtruncateする(`runGuardedCleanup`、`postgres-test-lifecycle.test.ts`で
+ * 検証済み)。beforeAllが途中失敗した場合(例: 複数の*.postgres.test.tsファイル間での
+ * CREATE SCHEMA競合、23505)、まだ作成されていないschemaへのtruncateを試みて二次エラー
+ * (3F000)を発生させ、本来のsetupエラーを覆い隠すことを防ぐ。
+ */
+async function cleanupSchemas(): Promise<void> {
+  if (!adminClientConnected) return;
+  await runGuardedCleanup([
+    {
+      ready: finalSchemaReady,
+      run: () =>
+        adminClient.query(`truncate table
+      ${POSTGRES_FINAL_TEST_SCHEMA}.player_card_analysis,
+      ${POSTGRES_FINAL_TEST_SCHEMA}.world_player_cards,
+      ${POSTGRES_FINAL_TEST_SCHEMA}.managers,
+      ${POSTGRES_FINAL_TEST_SCHEMA}.source_metadata
+      cascade`).then(() => undefined),
+    },
+    {
+      ready: stagingSchemaReady,
+      run: async () => {
+        await adminClient.query(`truncate table
+      ${POSTGRES_TEST_SCHEMA}.promotion_before_snapshots,
+      ${POSTGRES_TEST_SCHEMA}.promotion_source_metadata_before,
+      ${POSTGRES_TEST_SCHEMA}.applied_checksums,
+      ${POSTGRES_TEST_SCHEMA}.audit_events,
+      ${POSTGRES_TEST_SCHEMA}.rollback_jobs,
+      ${POSTGRES_TEST_SCHEMA}.source_metadata_test
+      cascade`);
+        await adminClient.query(`truncate table ${POSTGRES_TEST_SCHEMA}.update_jobs cascade`);
+      },
+    },
+  ]);
+}
+
 afterAll(async () => {
-  await adminClient.query(`truncate table
-    ${POSTGRES_FINAL_TEST_SCHEMA}.player_card_analysis,
-    ${POSTGRES_FINAL_TEST_SCHEMA}.world_player_cards,
-    ${POSTGRES_FINAL_TEST_SCHEMA}.managers,
-    ${POSTGRES_FINAL_TEST_SCHEMA}.source_metadata
-    cascade`);
-  await adminClient.query(`truncate table
-    ${POSTGRES_TEST_SCHEMA}.promotion_before_snapshots,
-    ${POSTGRES_TEST_SCHEMA}.promotion_source_metadata_before,
-    ${POSTGRES_TEST_SCHEMA}.applied_checksums,
-    ${POSTGRES_TEST_SCHEMA}.audit_events,
-    ${POSTGRES_TEST_SCHEMA}.rollback_jobs,
-    ${POSTGRES_TEST_SCHEMA}.source_metadata_test
-    cascade`);
-  await adminClient.query(`truncate table ${POSTGRES_TEST_SCHEMA}.update_jobs cascade`);
-  await adminClient.end();
+  await cleanupSchemas();
+  if (adminClientConnected) {
+    await adminClient.end();
+  }
 });
 
 beforeEach(async () => {
-  await adminClient.query(`truncate table
-    ${POSTGRES_FINAL_TEST_SCHEMA}.player_card_analysis,
-    ${POSTGRES_FINAL_TEST_SCHEMA}.world_player_cards,
-    ${POSTGRES_FINAL_TEST_SCHEMA}.managers,
-    ${POSTGRES_FINAL_TEST_SCHEMA}.source_metadata
-    cascade`);
-  await adminClient.query(`truncate table
-    ${POSTGRES_TEST_SCHEMA}.promotion_before_snapshots,
-    ${POSTGRES_TEST_SCHEMA}.promotion_source_metadata_before,
-    ${POSTGRES_TEST_SCHEMA}.applied_checksums,
-    ${POSTGRES_TEST_SCHEMA}.audit_events,
-    ${POSTGRES_TEST_SCHEMA}.rollback_jobs,
-    ${POSTGRES_TEST_SCHEMA}.source_metadata_test
-    cascade`);
-  await adminClient.query(`truncate table ${POSTGRES_TEST_SCHEMA}.update_jobs cascade`);
+  await cleanupSchemas();
 });
 
 const sourceMeta: SourceMeta = {
@@ -109,7 +129,8 @@ function wc(id: string, nameEn: string, ovrMax: number): StagingRecord {
   return { id, fields };
 }
 
-function normalizeForStorage(targetTable: string, record: StagingRecord, nowIso: string): StagingRecord {
+/** 実際のINSERT/UPDATEパラメータの形(text[]列はネイティブ配列のまま)。書込み専用。 */
+function normalizeForWrite(targetTable: string, record: StagingRecord, nowIso: string): StagingRecord {
   const spec = getPromotionTableSpec(targetTable);
   const params = mapFieldsToParams(spec, record.fields, nowIso);
   const fields: Record<string, unknown> = {};
@@ -118,6 +139,26 @@ function normalizeForStorage(targetTable: string, record: StagingRecord, nowIso:
   });
   return { id: record.id, fields };
 }
+
+/**
+ * shadow comparison/checksum比較専用の正規形(jsonb列・配列列はいずれもJSON文字列化)。
+ * orchestrator内部の`canonicalizeFieldsForComparison`と完全に同じ変換を適用し、
+ * PromotionPlanのbeforeChecksum/expectedAfterChecksumを、orchestratorが実PostgreSQL
+ * readback(text[]列もJSON文字列化する既存adapterの仕様)に対して独自に計算する値と
+ * 一致させる。書込み専用の`normalizeForWrite`とは別物。
+ */
+function normalizeForComparison(targetTable: string, record: StagingRecord, updatedAtOverride?: string): StagingRecord {
+  const spec = getPromotionTableSpec(targetTable);
+  return { id: record.id, fields: canonicalizeFieldsForComparison(spec, record.fields, updatedAtOverride) };
+}
+
+/**
+ * `existingBeforeRecords`(promotion対象外のwc-3/wc-4を含む)が実際にDBへ投入される際の
+ * `updated_at`。seed時に`normalizeForWrite`/`seedWorldPlayerCard`へ渡すnowIsoと必ず同じ値を
+ * 使うこと(そうしないと、promotionが触れない行のupdated_atについて、テスト側の期待値と
+ * 実際の読み戻し結果が食い違い、shadow comparisonが偽陽性で失敗する)。
+ */
+const SEED_NOW_ISO = "2020-01-01T00:00:00.000Z";
 
 async function insertJobRow(client: Client, jobId: string, table: string, datasetChecksum: string) {
   await client.query(
@@ -129,7 +170,7 @@ async function insertJobRow(client: Client, jobId: string, table: string, datase
 }
 
 async function seedWorldPlayerCard(client: Client, record: StagingRecord, nowIso: string) {
-  const normalized = normalizeForStorage("world_player_cards", record, nowIso);
+  const normalized = normalizeForWrite("world_player_cards", record, nowIso);
   const spec = getPromotionTableSpec("world_player_cards");
   const cols = spec.columns.join(", ");
   const placeholders = spec.columns.map((_, i) => `$${i + 1}`).join(", ");
@@ -145,10 +186,13 @@ function buildScenario(jobId: string, datasetChecksum: string, nowIso: string) {
   const updated = [wc("wc-1", "Updated Player", 81)];
   const unchangedIds = ["wc-3"];
   const removedCandidateIds = ["wc-4"];
+  // 生のfixture値(未正規化)を保持する。SEED_NOW_ISOと同じupdated_atを明示することで、
+  // 実際にseedWorldPlayerCardで書き込まれる値(updated_at=SEED_NOW_ISO)と一致させる
+  // (promotionが触れないwc-3/wc-4は、shadow comparison時もこの値のままである必要がある)。
   const existingBeforeRecords: StagingRecord[] = [
-    normalizeForStorage("world_player_cards", { id: "wc-1", fields: { ...wc("wc-1", "Old Player", 79).fields } }, "2020-01-01T00:00:00.000Z"),
-    normalizeForStorage("world_player_cards", wc("wc-3", "Unchanged Player", 70), "2020-01-01T00:00:00.000Z"),
-    normalizeForStorage("world_player_cards", wc("wc-4", "Removed Candidate", 60), "2020-01-01T00:00:00.000Z"),
+    { id: "wc-1", fields: { ...wc("wc-1", "Old Player", 79).fields, updated_at: SEED_NOW_ISO } },
+    { id: "wc-3", fields: { ...wc("wc-3", "Unchanged Player", 70).fields, updated_at: SEED_NOW_ISO } },
+    { id: "wc-4", fields: { ...wc("wc-4", "Removed Candidate", 60).fields, updated_at: SEED_NOW_ISO } },
   ];
 
   const previous: PreviousSnapshot = {
@@ -181,12 +225,14 @@ function buildScenario(jobId: string, datasetChecksum: string, nowIso: string) {
     expectedCounts: { added: diff.addedCount, updated: diff.updatedCount, removedCandidate: diff.removedCount },
   };
 
-  const beforeRecordsForPlan = existingBeforeRecords.filter((r) => updated.map((u) => u.id).includes(r.id));
+  const beforeRecordsForPlan = existingBeforeRecords
+    .filter((r) => updated.map((u) => u.id).includes(r.id))
+    .map((r) => normalizeForComparison("world_player_cards", r));
   const expectedAfterRecords = [
-    ...added.map((r) => normalizeForStorage("world_player_cards", r, nowIso)),
-    ...updated.map((r) => normalizeForStorage("world_player_cards", r, nowIso)),
-    ...unchangedIds.map((id) => existingBeforeRecords.find((r) => r.id === id)!),
-    ...removedCandidateIds.map((id) => existingBeforeRecords.find((r) => r.id === id)!),
+    ...added.map((r) => normalizeForComparison("world_player_cards", r, nowIso)),
+    ...updated.map((r) => normalizeForComparison("world_player_cards", r, nowIso)),
+    ...unchangedIds.map((id) => normalizeForComparison("world_player_cards", existingBeforeRecords.find((r) => r.id === id)!)),
+    ...removedCandidateIds.map((id) => normalizeForComparison("world_player_cards", existingBeforeRecords.find((r) => r.id === id)!)),
   ];
 
   const plan = buildPromotionPlan({
@@ -235,12 +281,14 @@ describe("executePromotion(実PostgreSQL、GitHub Actions service container)", (
     const scenario = buildScenario("pg-promo-1", "pg-promo-checksum-1", nowIso);
     await insertJobRow(adminClient, scenario.job.jobId, "world_player_cards", scenario.job.datasetChecksum);
     for (const r of scenario.existingBeforeRecords) {
-      await seedWorldPlayerCard(adminClient, r, "2020-01-01T00:00:00.000Z");
+      await seedWorldPlayerCard(adminClient, r, SEED_NOW_ISO);
     }
     const client = createPostgresQueryClient(adminClient as unknown as MinimalPgClient);
 
     const result = await executePromotion(client, scenario.input);
-    expect(result.decision).toBe("commit");
+    // result.reasonsはsanitizeErrorMessage済み(接続情報・SQL全文・parameter値を含まない)。
+    // decisionがrollbackの場合、CIログだけから原因が分かるようassertion messageへ含める。
+    expect(result.decision, `executePromotion rollback reasons: ${JSON.stringify(result.reasons)}`).toBe("commit");
     expect(result.addedCount).toBe(1);
     expect(result.updatedCount).toBe(1);
 
@@ -266,7 +314,7 @@ describe("executePromotion(実PostgreSQL、GitHub Actions service container)", (
     const scenario = buildScenario("pg-promo-2", "pg-promo-checksum-2", nowIso);
     await insertJobRow(adminClient, scenario.job.jobId, "world_player_cards", scenario.job.datasetChecksum);
     for (const r of scenario.existingBeforeRecords) {
-      await seedWorldPlayerCard(adminClient, r, "2020-01-01T00:00:00.000Z");
+      await seedWorldPlayerCard(adminClient, r, SEED_NOW_ISO);
     }
     const realClient = createPostgresQueryClient(adminClient as unknown as MinimalPgClient);
 
@@ -299,12 +347,12 @@ describe("executePromotionRollback(実PostgreSQL): 成功したpromotion後の�
     const scenario = buildScenario("pg-promo-3", "pg-promo-checksum-3", nowIso);
     await insertJobRow(adminClient, scenario.job.jobId, "world_player_cards", scenario.job.datasetChecksum);
     for (const r of scenario.existingBeforeRecords) {
-      await seedWorldPlayerCard(adminClient, r, "2020-01-01T00:00:00.000Z");
+      await seedWorldPlayerCard(adminClient, r, SEED_NOW_ISO);
     }
     const client = createPostgresQueryClient(adminClient as unknown as MinimalPgClient);
 
     const applyResult = await executePromotion(client, scenario.input);
-    expect(applyResult.decision).toBe("commit");
+    expect(applyResult.decision, `executePromotion rollback reasons: ${JSON.stringify(applyResult.reasons)}`).toBe("commit");
 
     const completedJob = { ...scenario.job, status: "completed" as const };
     const rollbackApproval: PromotionRollbackApproval = {

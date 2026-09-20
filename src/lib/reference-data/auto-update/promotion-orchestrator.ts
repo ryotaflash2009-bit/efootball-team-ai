@@ -17,6 +17,7 @@ import {
   buildSourceMetadataUpsertSql,
   buildSourceMetadataSelectSql,
   mapFieldsToParams,
+  canonicalizeFieldsForComparison,
   getPromotionTableSpec,
   PROMOTION_STAGING_SCHEMA,
   PROMOTION_FINAL_SCHEMA,
@@ -226,30 +227,34 @@ export async function executePromotion(client: QueryClient, input: PromotionExec
     await client.query(buildSourceMetadataUpsertSql(), [input.plan.targetTable, input.job.jobId, nowIso, input.sourceMeta.source, "v1"]);
 
     // 20. readback + 21. shadow comparison
-    // added/updatedは、実際にDBへ書き込まれる値(mapFieldsToParamsと全く同じ正規化: 全列・
-    // jsonb列はJSON.stringify・updated_atはこのjobのnowで上書き)と同じ形にしてから比較する。
-    // 読み戻し結果は常にspec.columns全列を持つ(未指定列はnull)ため、入力の一部列だけの
-    // fieldsをそのまま比較すると偽陽性の不一致になる(mapFieldsToParamsを再利用して、
-    // 書込み時と全く同じ変換ロジックであることを保証する)。
-    const normalizeExpected = (record: StagingRecord): StagingRecord => {
-      const params = mapFieldsToParams(spec, record.fields, nowIso);
-      const normalized: Record<string, unknown> = {};
-      spec.columns.forEach((col, idx) => {
-        normalized[col] = params[idx];
-      });
-      return { id: record.id, fields: normalized };
-    };
-    const expectedAfterRecords: StagingRecord[] = [...input.added.map(normalizeExpected), ...input.updated.map(normalizeExpected)];
+    // 期待値・実際値の両方を、比較専用の正規形(canonicalizeFieldsForComparison)へ揃えてから
+    // 比較する。実PostgreSQL経由のreadback(createPostgresQueryClientのnormalizeRow)は、
+    // jsonb列だけでなくtext[]列(node-postgresが配列として返す値)もJSON文字列化するため、
+    // 書込み時の`mapFieldsToParams`(text[]はネイティブ配列のまま)の結果とはそのままでは
+    // 一致しない。合成fakeクライアント(常にネイティブ配列)と実PostgreSQL(配列を文字列化)の
+    // どちらの結果にも同じ正規化を適用することで、この差異による偽陽性のshadow comparison
+    // 失敗を防ぐ(reference-data-promotion-postgres-diagnosis.md参照)。
+    const canonicalizeExpected = (record: StagingRecord): StagingRecord => ({
+      id: record.id,
+      fields: canonicalizeFieldsForComparison(spec, record.fields, nowIso),
+    });
+    const canonicalizeActual = (record: StagingRecord): StagingRecord => ({
+      id: record.id,
+      fields: canonicalizeFieldsForComparison(spec, record.fields),
+    });
+    const expectedAfterRecords: StagingRecord[] = [...input.added.map(canonicalizeExpected), ...input.updated.map(canonicalizeExpected)];
     const beforeById = toRecordMap(input.existingBeforeRecords);
     for (const id of [...input.unchangedIds, ...input.removedCandidateIds]) {
       const before = beforeById.get(id);
-      if (before) expectedAfterRecords.push(before);
+      if (before) expectedAfterRecords.push({ id: before.id, fields: canonicalizeFieldsForComparison(spec, before.fields) });
     }
     const allIds = expectedAfterRecords.map((r) => r.id);
     let actualAfterRecords: StagingRecord[] = [];
     if (allIds.length > 0) {
       const readback = await client.query(buildPromotionSelectByIdsSql(input.plan.targetTable, allIds.length), allIds);
-      actualAfterRecords = readback.rows.map((row) => ({ id: String(row[spec.primaryKey]), fields: row }));
+      actualAfterRecords = readback.rows
+        .map((row) => ({ id: String(row[spec.primaryKey]), fields: row }))
+        .map(canonicalizeActual);
     }
     const comparison = compareAppliedResult(expectedAfterRecords, actualAfterRecords);
     if (!comparison.ok) {
