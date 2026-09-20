@@ -152,6 +152,17 @@ staging昇格方式を組み合わせる**。理由:
   `reference-data-promotion-rollback-validation.md`を参照。実Production reference_data/
   reference_data_opsへの適用は一切行っていない。
 
+- **Production read-only preflight・full-table Backup/Restore検証(2026-09-20追記)**:
+  実Production Supabaseへの単一read-only preflight SQLの手動実行(`reference_data`構造の
+  想定どおり確認、A判定)を完了した(`reference-data-production-readonly-preflight-result.md`)。
+  続けて、Promotion apply直前の障害復旧用として、行単位before snapshotとは別枠の
+  full-table Backup(対象4テーブル限定、`age`によるProduction向け非対称鍵暗号化を第一候補、
+  `node:crypto` AES-256-GCMで隔離検証)・Restore検証・Production Backup gate(17項目)を
+  設計・実装し、fakeクライアントで実証した(GitHub Actions実PostgreSQLでの実証は未実行)。
+  詳細は`reference-data-production-backup-design.md`・`reference-data-backup-manifest.md`・
+  `reference-data-backup-restore-runbook.md`・`reference-data-backup-restore-validation.md`を
+  参照。実Production Backupの取得・実Production Restoreは一切行っていない。
+
 ### Phase 3(今回は有効化しない)
 
 - 日次などの定期実行(GitHub Actions `schedule:`トリガー)。ただし最初はdry-runのみを
