@@ -1,5 +1,5 @@
-import { getBackupTableSpec, type BackupTableSpec, type BackupIsolatedSchemaName } from "./backup-schema";
-import { BACKUP_SOURCE_TEST_SCHEMA, BACKUP_RESTORE_TEST_SCHEMA } from "./backup-schema";
+import { getBackupTableSpec, type BackupTableSpec, type BackupIsolatedSchemaName, type BackupDumpSourceSchemaName } from "./backup-schema";
+import { BACKUP_SOURCE_TEST_SCHEMA, BACKUP_RESTORE_TEST_SCHEMA, PRODUCTION_REFERENCE_DATA_SCHEMA } from "./backup-schema";
 import { BACKUP_TARGET_TABLES } from "./backup-target";
 
 /**
@@ -17,8 +17,15 @@ function assertIsolatedSchema(schemaName: BackupIsolatedSchemaName): void {
   }
 }
 
-export function buildBackupDumpSelectSql(schemaName: BackupIsolatedSchemaName, table: string): string {
-  assertIsolatedSchema(schemaName);
+/** dump(読み出し)専用: 隔離検証2schemaに加え、実Production `reference_data`からの読み出しだけを許可する。 */
+function assertDumpSourceSchema(schemaName: BackupDumpSourceSchemaName): void {
+  if (schemaName !== BACKUP_SOURCE_TEST_SCHEMA && schemaName !== BACKUP_RESTORE_TEST_SCHEMA && schemaName !== PRODUCTION_REFERENCE_DATA_SCHEMA) {
+    throw new Error(`許可されていないdump元schema名: ${schemaName}`);
+  }
+}
+
+export function buildBackupDumpSelectSql(schemaName: BackupDumpSourceSchemaName, table: string): string {
+  assertDumpSourceSchema(schemaName);
   const spec = getBackupTableSpec(table);
   return `select ${spec.columns.join(", ")} from ${schemaName}.${table} order by ${spec.primaryKey}`;
 }

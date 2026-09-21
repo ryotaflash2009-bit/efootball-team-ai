@@ -1,6 +1,6 @@
 import { sanitizeErrorMessage, type GuardCheck } from "../real-import-guards";
 import { BACKUP_TARGET_TABLES, checkBackupTargetSetExact } from "./backup-target";
-import { BACKUP_SOURCE_TEST_SCHEMA, getBackupTableSpec } from "./backup-schema";
+import { getBackupTableSpec, type BackupDumpSourceSchemaName } from "./backup-schema";
 import { buildBackupDumpSelectSql, toPortableBackupRow } from "./backup-sql";
 import { computeBackupTableChecksum, computeBackupTotalChecksum, computeSourceMetadataChecksum, deriveSourceDatasetPairs, type BackupSourceMetadataEntry } from "./backup-checksum";
 import { buildBackupManifest, markManifestEncrypted, assertManifestHasNoSecrets, type BackupManifest } from "./backup-manifest";
@@ -16,9 +16,10 @@ import type { QueryClient } from "./apply-orchestrator";
  * 排他ではなく併用する(このファイルは全体Backup側だけを担当する)。
  *
  * `client`は`QueryClient`(`apply-orchestrator.ts`と同一、`pg`/`node:sqlite`いずれとも互換の
- * 最小interface)だけに依存し、実Supabase/実Productionへの接続コードは含まない。
- * このセッションで実際に読み書きするのは、隔離PostgreSQL専用の
- * `${BACKUP_SOURCE_TEST_SCHEMA}`だけである(実`reference_data`ではない)。
+ * 最小interface)だけに依存し、実Supabase/実Productionへの接続方式(SDK・SSL設定等)そのものは
+ * 含まない(接続の確立は呼び出し元が担う)。dump元schemaは`CreateBackupInput.sourceSchema`
+ * (`BackupDumpSourceSchemaName`: 隔離検証2schema、または実Production `reference_data`)を
+ * 呼び出し側が明示する。
  */
 
 export interface BackupTableDump {
@@ -38,6 +39,15 @@ export interface CreateBackupInput {
   retentionDays: number;
   encryptor: BackupEncryptor;
   backupVersion?: string;
+  /**
+   * dump対象schema名。隔離PostgreSQL検証では`BACKUP_SOURCE_TEST_SCHEMA`、
+   * 実Production読み出しでは`PRODUCTION_REFERENCE_DATA_SCHEMA`("reference_data")を渡す。
+   * 2026-09-21追記: 以前はこの値を`BACKUP_SOURCE_TEST_SCHEMA`へ内部で固定していたため、
+   * 実Productionからの読み出しがそもそも不可能だった。呼び出し側に明示させることで、
+   * 「テスト専用schemaしか読めない」設計上の制約を取り除く(read-only roleの権限自体は
+   * 引き続き対象4テーブルのSELECTだけに限定されている)。
+   */
+  sourceSchema: BackupDumpSourceSchemaName;
 }
 
 export interface BackupPayload {
@@ -69,12 +79,12 @@ export function evaluateBackupPreflightGates(input: Pick<CreateBackupInput, "pos
   ];
 }
 
-/** 対象4テーブルを、隔離schema(`BACKUP_SOURCE_TEST_SCHEMA`)から順に読み出す(SELECT *は使わない)。 */
-export async function dumpBackupTables(client: QueryClient): Promise<BackupTableDump[]> {
+/** 対象4テーブルを、指定されたschemaから順に読み出す(SELECT *は使わない)。 */
+export async function dumpBackupTables(client: QueryClient, sourceSchema: BackupDumpSourceSchemaName): Promise<BackupTableDump[]> {
   const dumps: BackupTableDump[] = [];
   for (const table of BACKUP_TARGET_TABLES) {
     const spec = getBackupTableSpec(table);
-    const sql = buildBackupDumpSelectSql(BACKUP_SOURCE_TEST_SCHEMA, table);
+    const sql = buildBackupDumpSelectSql(sourceSchema, table);
     const result = await client.query(sql);
     const rows = result.rows.map((r) => toPortableBackupRow(spec, r));
     const withIds = rows.map((r) => ({ id: String(r[spec.primaryKey]), fields: r }));
@@ -92,7 +102,7 @@ export async function createReferenceDataBackup(client: QueryClient, input: Crea
   }
 
   try {
-    const dumps = await dumpBackupTables(client);
+    const dumps = await dumpBackupTables(client, input.sourceSchema);
 
     const rowCounts: Record<string, number> = {};
     const tableChecksums: Record<string, string> = {};

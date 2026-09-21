@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { createReferenceDataBackup, evaluateBackupPreflightGates, dumpBackupTables } from "./backup-orchestrator";
-import { getBackupTableSpec } from "./backup-schema";
+import { getBackupTableSpec, BACKUP_SOURCE_TEST_SCHEMA, PRODUCTION_REFERENCE_DATA_SCHEMA } from "./backup-schema";
 import { FakeEncryptor, NodeAesGcmEncryptor, generateEphemeralTestKey } from "./backup-encryptor";
 import type { QueryClient, QueryResult } from "./apply-orchestrator";
 
@@ -81,7 +81,7 @@ describe("dumpBackupTables", () => {
   it("4テーブルすべてを、jsonb/text[]列がネイティブ値へ復元された状態で取得する", async () => {
     const client = new FakeSourceClient();
     seedOneOfEach(client);
-    const dumps = await dumpBackupTables(client);
+    const dumps = await dumpBackupTables(client, BACKUP_SOURCE_TEST_SCHEMA);
     expect(dumps.map((d) => d.table).sort()).toEqual(
       ["world_player_cards", "managers", "player_card_analysis", "import_batches"].sort(),
     );
@@ -93,7 +93,7 @@ describe("dumpBackupTables", () => {
 
   it("0件のテーブルはrowCount=0、checksumは空集合固有の値になる", async () => {
     const client = new FakeSourceClient();
-    const dumps = await dumpBackupTables(client);
+    const dumps = await dumpBackupTables(client, BACKUP_SOURCE_TEST_SCHEMA);
     for (const d of dumps) {
       expect(d.rowCount).toBe(0);
     }
@@ -113,6 +113,7 @@ describe("createReferenceDataBackup", () => {
       retentionCategory: "isolated-test-ephemeral",
       retentionDays: 7,
       encryptor: new FakeEncryptor(),
+      sourceSchema: BACKUP_SOURCE_TEST_SCHEMA,
     });
     expect(result.ok).toBe(true);
     expect(result.artifact).not.toBeNull();
@@ -134,6 +135,7 @@ describe("createReferenceDataBackup", () => {
       retentionCategory: "isolated-test-ephemeral",
       retentionDays: 7,
       encryptor: new FakeEncryptor(),
+      sourceSchema: BACKUP_SOURCE_TEST_SCHEMA,
     });
     const json = JSON.stringify(result.artifact!.manifest);
     expect(json).not.toMatch(/postgres:\/\//i);
@@ -153,6 +155,7 @@ describe("createReferenceDataBackup", () => {
       retentionCategory: "isolated-test-ephemeral",
       retentionDays: 7,
       encryptor: new FakeEncryptor(),
+      sourceSchema: BACKUP_SOURCE_TEST_SCHEMA,
     });
     expect(result.ok).toBe(false);
     expect(result.artifact).toBeNull();
@@ -171,9 +174,52 @@ describe("createReferenceDataBackup", () => {
       retentionCategory: "isolated-test-ephemeral",
       retentionDays: 7,
       encryptor: new NodeAesGcmEncryptor(key),
+      sourceSchema: BACKUP_SOURCE_TEST_SCHEMA,
     });
     expect(result.ok).toBe(true);
     const plaintextLike = result.artifact!.encryptedPayload.toString("utf8");
     expect(plaintextLike).not.toContain("Player One");
+  });
+});
+
+describe("createReferenceDataBackup(実Production reference_data schemaからの読み出し、2026-09-21追記)", () => {
+  class FakeProductionSourceClient implements QueryClient {
+    sourceRows: Record<string, Record<string, unknown>[]> = {
+      world_player_cards: [], managers: [], player_card_analysis: [], import_batches: [],
+    };
+    seed(table: string, fields: Record<string, unknown>): void {
+      const spec = getBackupTableSpec(table);
+      const raw: Record<string, unknown> = {};
+      for (const col of spec.columns) raw[col] = toRawDbValue(fields[col] ?? null);
+      this.sourceRows[table].push(raw);
+    }
+    async query(sql: string): Promise<QueryResult> {
+      // 実schema名(reference_data)だけを対象にする、隔離検証用schemaとは別のfake実装。
+      const m = sql.match(/^select .* from reference_data\.(\w+) /);
+      if (!m) throw new Error(`予期しないSQL(実schema想定): ${sql}`);
+      return { rows: this.sourceRows[m[1]] };
+    }
+  }
+
+  it("sourceSchemaにPRODUCTION_REFERENCE_DATA_SCHEMAを渡すと、reference_data.*から読み出す", async () => {
+    const client = new FakeProductionSourceClient();
+    client.seed("world_player_cards", {
+      world_card_id: "1", name_en: "Player One", stats: { ovr: 90 }, skills: [], ai_styles: [],
+      appearance: null, efhub_conflicts: [], source: "efootball-world.com", dataset_version: "v1",
+      fetched_at: "2026-01-01T00:00:00.000Z", created_at: "2026-01-01T00:00:00.000Z", updated_at: "2026-01-01T00:00:00.000Z",
+    });
+    const result = await createReferenceDataBackup(client, {
+      jobId: "job-prod-1",
+      schemaVersion: "2026-09-20",
+      applicationCommitSha: "0".repeat(40),
+      now: new Date("2026-09-20T00:00:00.000Z"),
+      postgresMajorVersion: 16,
+      retentionCategory: "production-standard",
+      retentionDays: 7,
+      encryptor: new FakeEncryptor(),
+      sourceSchema: PRODUCTION_REFERENCE_DATA_SCHEMA,
+    });
+    expect(result.ok).toBe(true);
+    expect(result.artifact!.manifest.rowCounts.world_player_cards).toBe(1);
   });
 });

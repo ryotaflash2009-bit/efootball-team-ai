@@ -76,14 +76,17 @@ export const BACKUP_SOURCE_TEST_SCHEMA = "reference_data_backup_source_test" as 
 export const BACKUP_RESTORE_TEST_SCHEMA = "reference_data_backup_restore_test" as const;
 export type BackupIsolatedSchemaName = typeof BACKUP_SOURCE_TEST_SCHEMA | typeof BACKUP_RESTORE_TEST_SCHEMA;
 
+/** 実Production `reference_data` schema名。`CreateBackupInput.sourceSchema`へ実行時に渡す値であり、DDL生成対象ではない(実schemaはこのリポジトリ側で作成しない)。 */
+export const PRODUCTION_REFERENCE_DATA_SCHEMA = "reference_data" as const;
+
 /**
- * source用・restore先用のいずれかのschema名を受け取り、同一構造の4テーブルDDLを生成する。
- * 引数は上記2つの固定リテラルだけを型で許可しており、任意のschema名を渡す設計にはしていない。
+ * dump(読み出し専用SELECT)を許可するschema名の集合。隔離検証用2schemaに加え、
+ * 実Production `reference_data`からの読み出しだけを許可する(書込み系のRestore/Truncateは
+ * 引き続き`BackupIsolatedSchemaName`だけに限定されたまま、この型を一切使わない)。
  */
-export function buildBackupIsolatedSchemaDdl(schemaName: BackupIsolatedSchemaName): string {
-  if (schemaName !== BACKUP_SOURCE_TEST_SCHEMA && schemaName !== BACKUP_RESTORE_TEST_SCHEMA) {
-    throw new Error(`許可されていない隔離schema名: ${schemaName}`);
-  }
+export type BackupDumpSourceSchemaName = BackupIsolatedSchemaName | typeof PRODUCTION_REFERENCE_DATA_SCHEMA;
+
+function schemaDdlBody(schemaName: string): string {
   return `
 create schema if not exists ${schemaName};
 
@@ -194,4 +197,25 @@ create table if not exists ${schemaName}.import_batches (
   rolled_back_at timestamptz
 );
 `;
+}
+
+/**
+ * source用・restore先用のいずれかのschema名を受け取り、同一構造の4テーブルDDLを生成する。
+ * 引数は上記2つの固定リテラルだけを型で許可しており、任意のschema名を渡す設計にはしていない。
+ */
+export function buildBackupIsolatedSchemaDdl(schemaName: BackupIsolatedSchemaName): string {
+  if (schemaName !== BACKUP_SOURCE_TEST_SCHEMA && schemaName !== BACKUP_RESTORE_TEST_SCHEMA) {
+    throw new Error(`許可されていない隔離schema名: ${schemaName}`);
+  }
+  return schemaDdlBody(schemaName);
+}
+
+/**
+ * 2026-09-21追記(Production実行準備): 隔離CI PostgreSQL(GitHub Actions service container、
+ * Productionではない)上に、実Production `reference_data`と同一構造のschemaを再現するための
+ * DDL。`run-production-backup.postgres.test.ts`だけが使用し、Productionへは一切適用しない
+ * (Production側の実`reference_data`は本人が別途、正式なマイグレーションで管理する)。
+ */
+export function buildProductionLikeSchemaDdlForIsolatedTesting(): string {
+  return schemaDdlBody(PRODUCTION_REFERENCE_DATA_SCHEMA);
 }

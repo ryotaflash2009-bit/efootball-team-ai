@@ -144,6 +144,7 @@ describe("Backup -> 暗号化 -> 復号 -> Restore(実PostgreSQL、隔離schema2
       retentionCategory: "isolated-test-ephemeral",
       retentionDays: 1,
       encryptor,
+      sourceSchema: BACKUP_SOURCE_TEST_SCHEMA,
     });
     // result.reasonsはsanitizeErrorMessage済み(接続情報・SQL全文・parameter値を含まない)。
     expect(backupResult.ok, `createReferenceDataBackup reasons: ${JSON.stringify(backupResult.reasons)}`).toBe(true);
@@ -192,6 +193,7 @@ describe("Backup -> 暗号化 -> 復号 -> Restore(実PostgreSQL、隔離schema2
       retentionCategory: "isolated-test-ephemeral",
       retentionDays: 1,
       encryptor,
+      sourceSchema: BACKUP_SOURCE_TEST_SCHEMA,
     });
     expect(backupResult.ok, `createReferenceDataBackup reasons: ${JSON.stringify(backupResult.reasons)}`).toBe(true);
 
@@ -225,6 +227,7 @@ describe("Backup -> 暗号化 -> 復号 -> Restore(実PostgreSQL、隔離schema2
       retentionCategory: "isolated-test-ephemeral",
       retentionDays: 1,
       encryptor,
+      sourceSchema: BACKUP_SOURCE_TEST_SCHEMA,
     });
     expect(backupResult.ok, `createReferenceDataBackup reasons: ${JSON.stringify(backupResult.reasons)}`).toBe(true);
     const tampered = {
