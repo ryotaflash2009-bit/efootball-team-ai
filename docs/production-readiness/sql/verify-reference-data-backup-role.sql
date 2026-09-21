@@ -16,6 +16,20 @@
 --
 -- このSQLはこのセッションでは実行していない。role作成後に本人が手動で
 -- Supabase SQL Editorから実行し、結果を確認すること。
+--
+-- 2026-09-21追記(不具合修正): Production実行時に
+-- `ERROR: 3F000: schema "reference_data_ops" does not exist`で停止する不具合を
+-- 修正した。`has_schema_privilege(role, 'schema_name'::text, priv)`の
+-- 「名前」引数版は、対象schemaが実際に存在しない場合、権限なし(false)を
+-- 返すのではなく例外を送出する(`has_table_privilege`の名前引数版も同様に
+-- 対象tableが存在しない場合は例外を送出する)。修正後は、`to_regnamespace`/
+-- `to_regclass`で対象schema/tableのOIDを先に安全に解決し(存在しなければ
+-- SQL NULLを返すだけで例外にならない)、そのOIDを`has_schema_privilege`/
+-- `has_table_privilege`へ渡す(OIDが NULL の場合、これらの関数は例外ではなく
+-- NULLを返す)。NULLは`coalesce(..., false)`で「アクセスなし」として明示的に
+-- 記録するが、それとは別に`_exists`/`table_exists`列で「schemaやtableが
+-- そもそも存在しない」という事実自体も区別して残す(存在しないことを
+-- 無条件に「合格」で握りつぶさない)。
 -- ============================================================================
 
 with target_role as (
@@ -32,10 +46,14 @@ role_settings as (
 ),
 schema_usage as (
   select
-    has_schema_privilege('reference_data_backup_reader', 'reference_data', 'usage') as reference_data_usage,
-    has_schema_privilege('reference_data_backup_reader', 'reference_data_ops', 'usage') as reference_data_ops_usage,
-    has_schema_privilege('reference_data_backup_reader', 'public', 'usage') as public_usage,
-    has_schema_privilege('reference_data_backup_reader', 'auth', 'usage') as auth_usage
+    to_regnamespace('reference_data') is not null as reference_data_exists,
+    coalesce(has_schema_privilege('reference_data_backup_reader', to_regnamespace('reference_data'), 'usage'), false) as reference_data_usage,
+    to_regnamespace('reference_data_ops') is not null as reference_data_ops_exists,
+    coalesce(has_schema_privilege('reference_data_backup_reader', to_regnamespace('reference_data_ops'), 'usage'), false) as reference_data_ops_usage,
+    to_regnamespace('public') is not null as public_exists,
+    coalesce(has_schema_privilege('reference_data_backup_reader', to_regnamespace('public'), 'usage'), false) as public_usage,
+    to_regnamespace('auth') is not null as auth_exists,
+    coalesce(has_schema_privilege('reference_data_backup_reader', to_regnamespace('auth'), 'usage'), false) as auth_usage
 ),
 target_tables(table_name) as (
   values ('world_player_cards'), ('managers'), ('player_card_analysis'), ('import_batches')
@@ -43,14 +61,30 @@ target_tables(table_name) as (
 table_privileges as (
   select
     t.table_name,
-    has_table_privilege('reference_data_backup_reader', 'reference_data.' || t.table_name, 'select') as can_select,
-    has_table_privilege('reference_data_backup_reader', 'reference_data.' || t.table_name, 'insert') as can_insert,
-    has_table_privilege('reference_data_backup_reader', 'reference_data.' || t.table_name, 'update') as can_update,
-    has_table_privilege('reference_data_backup_reader', 'reference_data.' || t.table_name, 'delete') as can_delete,
-    has_table_privilege('reference_data_backup_reader', 'reference_data.' || t.table_name, 'truncate') as can_truncate,
-    has_table_privilege('reference_data_backup_reader', 'reference_data.' || t.table_name, 'references') as can_references,
-    has_table_privilege('reference_data_backup_reader', 'reference_data.' || t.table_name, 'trigger') as can_trigger
+    to_regclass('reference_data.' || t.table_name) is not null as table_exists,
+    coalesce(has_table_privilege('reference_data_backup_reader', to_regclass('reference_data.' || t.table_name), 'select'), false) as can_select,
+    coalesce(has_table_privilege('reference_data_backup_reader', to_regclass('reference_data.' || t.table_name), 'insert'), false) as can_insert,
+    coalesce(has_table_privilege('reference_data_backup_reader', to_regclass('reference_data.' || t.table_name), 'update'), false) as can_update,
+    coalesce(has_table_privilege('reference_data_backup_reader', to_regclass('reference_data.' || t.table_name), 'delete'), false) as can_delete,
+    coalesce(has_table_privilege('reference_data_backup_reader', to_regclass('reference_data.' || t.table_name), 'truncate'), false) as can_truncate,
+    coalesce(has_table_privilege('reference_data_backup_reader', to_regclass('reference_data.' || t.table_name), 'references'), false) as can_references,
+    coalesce(has_table_privilege('reference_data_backup_reader', to_regclass('reference_data.' || t.table_name), 'trigger'), false) as can_trigger
   from target_tables t
+),
+-- 2026-09-21追記: 対象4テーブルとは別に、実際の利用者データテーブル
+-- (public.my_team_snapshots・auth.users)へSELECTがそもそも付与されていない
+-- ことも、同じ安全な存在確認パターンでmetadataだけから確認する。テーブルが
+-- 存在しない環境(例: ローカル検証用の隔離DB)でも例外を出さない。
+user_data_tables(schema_name, table_name) as (
+  values ('public', 'my_team_snapshots'), ('auth', 'users')
+),
+user_data_table_privileges as (
+  select
+    u.schema_name,
+    u.table_name,
+    to_regclass(u.schema_name || '.' || u.table_name) is not null as table_exists,
+    coalesce(has_table_privilege('reference_data_backup_reader', to_regclass(u.schema_name || '.' || u.table_name), 'select'), false) as can_select
+  from user_data_tables u
 ),
 ops_schema_table_check as (
   -- reference_data_opsが未適用の場合でも失敗しないよう、実テーブルへの直接
@@ -73,5 +107,6 @@ select jsonb_build_object(
   'role_settings', coalesce((select jsonb_agg(setting) from role_settings), '[]'::jsonb),
   'schema_usage', (select to_jsonb(schema_usage) from schema_usage),
   'table_privileges', coalesce((select jsonb_agg(to_jsonb(table_privileges)) from table_privileges), '[]'::jsonb),
+  'user_data_table_privileges', coalesce((select jsonb_agg(to_jsonb(user_data_table_privileges)) from user_data_table_privileges), '[]'::jsonb),
   'reference_data_ops_table_count_visible', (select ops_table_count from ops_schema_table_check)
 ) as role_verification_result;

@@ -17,6 +17,8 @@ import {
   assertRoleNameFixed,
   assertExactlyFourTargetTablesGranted,
   assertVerifySqlIsMetadataOnly,
+  assertVerifySqlUsesSafeExistenceCheck,
+  assertVerifySqlHasNoWriteOrGrantStatements,
 } from "./backup-role-sql-audit";
 
 const REPO_ROOT = resolve(__dirname, "../../../..");
@@ -69,6 +71,25 @@ describe("verify-reference-data-backup-role.sql(実ファイル)", () => {
     for (const priv of ["insert", "update", "delete", "truncate", "references", "trigger"]) {
       expect(VERIFY_SQL.toLowerCase()).toContain(`'${priv}'`);
     }
+  });
+
+  it("to_regnamespace/to_regclassによる安全な存在確認を使い、生の名前を直接has_schema_privilege/has_table_privilegeへ渡さない", () => {
+    expect(assertVerifySqlUsesSafeExistenceCheck(VERIFY_SQL).ok).toBe(true);
+  });
+
+  it("SELECT/WITH以外の書き込み・権限変更文(GRANT/INSERT/UPDATE/DELETE/TRUNCATE/ALTER/DROP/CREATE)を含まない", () => {
+    expect(assertVerifySqlHasNoWriteOrGrantStatements(VERIFY_SQL).ok).toBe(true);
+  });
+
+  it("reference_data_ops/public/authの各schema usageをcoalesceでfalseへ倒し、existsフィールドで不存在と非付与を区別する", () => {
+    expect(VERIFY_SQL).toContain("reference_data_ops_exists");
+    expect(VERIFY_SQL).toContain("coalesce(has_schema_privilege('reference_data_backup_reader', to_regnamespace('reference_data_ops'), 'usage'), false)");
+  });
+
+  it("利用者データテーブル(public.my_team_snapshots・auth.users)へのSELECT有無も、同じ安全な存在確認で確認する", () => {
+    expect(VERIFY_SQL).toContain("user_data_table_privileges");
+    expect(VERIFY_SQL).toContain("'public', 'my_team_snapshots'");
+    expect(VERIFY_SQL).toContain("'auth', 'users'");
   });
 });
 
@@ -146,5 +167,60 @@ describe("静的監査関数の検出力(合成の悪いSQL)", () => {
   it("確認用SQLが実テーブルをFROM参照している場合を検出する", () => {
     expect(assertVerifySqlIsMetadataOnly("select * from reference_data.world_player_cards;").ok).toBe(false);
     expect(assertVerifySqlIsMetadataOnly("select has_table_privilege('x','reference_data.y','select'), has_schema_privilege('x','y','usage') from pg_roles;").ok).toBe(true);
+  });
+
+  it("確認用SQLが利用者データテーブルをFROM参照している場合(public.my_team_snapshots/auth.users)を検出する", () => {
+    expect(assertVerifySqlIsMetadataOnly("select * from public.my_team_snapshots;").ok).toBe(false);
+    expect(assertVerifySqlIsMetadataOnly("select * from auth.users;").ok).toBe(false);
+  });
+
+  it("has_schema_privilege/has_table_privilegeへ生の名前を直接渡している(to_regnamespace/to_regclass未経由)行を検出する(Production ERROR 3F000の再発防止)", () => {
+    // Productionで実際にERROR 3F000を起こした、修正前の生SQLパターン。
+    expect(
+      assertVerifySqlUsesSafeExistenceCheck(
+        "select has_schema_privilege('reference_data_backup_reader', 'reference_data_ops', 'usage'), has_table_privilege('x', to_regclass('y.z'), 'select');",
+      ).ok,
+    ).toBe(false);
+    expect(
+      assertVerifySqlUsesSafeExistenceCheck(
+        "select has_schema_privilege('x', to_regnamespace('y'), 'usage'), has_table_privilege('x', 'y.z', 'select');",
+      ).ok,
+    ).toBe(false);
+    expect(assertVerifySqlUsesSafeExistenceCheck("select has_schema_privilege('x','y','usage');").ok).toBe(false); // to_regnamespace/to_regclassとも不在
+  });
+
+  it("一部の行だけto_regnamespace未経由の生名呼び出しが混在している場合を検出する(全体には両関数が存在していても行単位で検出する)", () => {
+    const mixedSql = [
+      "select has_schema_privilege('x', to_regnamespace('safe_schema'), 'usage'),",
+      "has_schema_privilege('x', 'unsafe_schema', 'usage'),",
+      "has_table_privilege('x', to_regclass('y.z'), 'select');",
+    ].join("\n");
+    expect(assertVerifySqlUsesSafeExistenceCheck(mixedSql).ok).toBe(false);
+  });
+
+  it("to_regnamespace/to_regclassを経由したhas_schema_privilege/has_table_privilege呼び出しを合格とする", () => {
+    expect(
+      assertVerifySqlUsesSafeExistenceCheck(
+        "select has_schema_privilege('x', to_regnamespace('y'), 'usage'), has_table_privilege('x', to_regclass('y.z'), 'select');",
+      ).ok,
+    ).toBe(true);
+  });
+
+  it("GRANT/INSERT/UPDATE/DELETE/TRUNCATE/ALTER/DROP/CREATEを意図する文を検出する(権限名の文字列リテラルは誤検出しない)", () => {
+    expect(assertVerifySqlHasNoWriteOrGrantStatements("grant select on reference_data.x to y;").ok).toBe(false);
+    expect(assertVerifySqlHasNoWriteOrGrantStatements("insert into reference_data.x values (1);").ok).toBe(false);
+    expect(assertVerifySqlHasNoWriteOrGrantStatements("update reference_data.x set y = 1;").ok).toBe(false);
+    expect(assertVerifySqlHasNoWriteOrGrantStatements("delete from reference_data.x;").ok).toBe(false);
+    expect(assertVerifySqlHasNoWriteOrGrantStatements("truncate table reference_data.x;").ok).toBe(false);
+    expect(assertVerifySqlHasNoWriteOrGrantStatements("alter table reference_data.x add column y int;").ok).toBe(false);
+    expect(assertVerifySqlHasNoWriteOrGrantStatements("drop table reference_data.x;").ok).toBe(false);
+    expect(assertVerifySqlHasNoWriteOrGrantStatements("create table reference_data.x (y int);").ok).toBe(false);
+    // 権限名としての 'insert'/'update'/'delete'/'truncate' という文字列リテラルは、
+    // has_table_privilegeの第3引数として正当に使われるため、誤検出してはいけない。
+    expect(
+      assertVerifySqlHasNoWriteOrGrantStatements(
+        "select has_table_privilege('x','y','insert'), has_table_privilege('x','y','update'), has_table_privilege('x','y','delete'), has_table_privilege('x','y','truncate');",
+      ).ok,
+    ).toBe(true);
   });
 });
