@@ -116,3 +116,77 @@ Production reference_dataの行データ読み取り・変更は一切行われ�
 
 **この確認結果を理由に、`PUBLIC`schema全体の権限設計(役割自体のUSAGE権限や、
 `public`schemaのデフォルト権限設定)を変更する必要はないと判断し、変更していない。**
+
+## 7. 初回Production Backup実行手順(2026-09-21追記、design only・未実行)
+
+**この章に記載された`Run workflow`操作は、このセッションでは一切実行していない
+(workflow_dispatch 0件を維持)。**
+
+### 7.1 category(prefix自由入力は廃止)
+
+`reference-data-production-backup.yml`のworkflow_dispatchには、`backup_category`
+というchoice input(`pre-apply`/`daily`/`weekly`/`monthly`の4値だけ、既定値
+`pre-apply`)がある。**prefixを直接入力する欄は無い**(`REFERENCE_DATA_BACKUP_PREFIX`
+という自由指定は廃止済み)。categoryからprefix・manifestのretentionCategory・
+retentionDaysは`src/lib/reference-data/auto-update/backup-category.ts`の固定mapping
+だけが一意に決定する:
+
+| category | prefix | retentionCategory | retentionDays | R2 Lifecycle Rule(本人が設定済みの実値) |
+|---|---|---|---|---|
+| `pre-apply` | `pre-apply/` | `production-pre-apply` | `null`(期限なし) | 自動削除なし |
+| `daily` | `daily/` | `production-daily` | `8` | 8日で自動削除 |
+| `weekly` | `weekly/` | `production-weekly` | `35` | 35日で自動削除 |
+| `monthly` | `monthly/` | `production-monthly` | `100` | 100日で自動削除 |
+
+### 7.2 初回Production Backupは`pre-apply`を選択する
+
+**初回のProduction Backup(重要な基準点)は、必ず`backup_category`で`pre-apply`を
+選択すること。** `daily`を選ぶと、R2 Lifecycle Ruleにより8日後にこの基準点が
+自動削除される。`pre-apply`はR2側で自動削除の対象外に設定済みであり、manifest側の
+`retentionDays`/`expiresAt`も`null`(0や遠い未来の日付での偽装ではなく、
+「期限が無い」ことをそのまま記録する)になる。
+
+### 7.3 実行手順
+
+1. GitHubリポジトリのActionsタブを開く。
+2. 「Reference data Production backup (manual, approval-gated)」workflowを選ぶ。
+3. 「Run workflow」を開き、branchが`main`であることを確認する。
+4. `backup_category`で **`pre-apply`** を選択する(既定値がpre-applyになっているが、
+   本人が目視で選択し直し、確定させること。既定値に無自覚に任せない)。
+5. `confirm`欄に **`backup`**(小文字、完全一致)と入力する。
+6. 「Run workflow」を実行する。
+7. `production-backup-approval` GitHub Environmentの承認待ちが表示されたら、
+   本人がreviewerとして承認する(self-review可、他の人の承認は不要な設定)。
+8. 承認後にjobが実行される。
+
+### 7.4 実行前に必ず理解しておくこと
+
+- **age秘密鍵を失うと、アップロードされたBackupは誰にも復号できなくなる。**
+  秘密鍵は本人のPCだけに保管されており、GitHub側には公開鍵(recipient)しか
+  存在しない。秘密鍵の紛失に備えたバックアップ保管は、このBackup機能とは
+  別に本人が判断すること。
+- **workflow自体の成功(`storageVerified: true`)は、「隔離Restore検証(ephemeral鍵による、
+  実データと同一checksumの別artifactを使った検証)に成功した」ことを意味するのであって、
+  「本人が実際にage秘密鍵で復号してRestoreできることを確認した」ことは意味しない。**
+  本人による実秘密鍵を使った隔離Restore試験(このrunbookの範囲外、別途実施)が
+  完了するまでは、このBackupを「完全に検証済み」として扱わないこと。
+- Backup workflow自体はProduction`reference_data`への書込み・Production Restoreを
+  一切行わない(read-only roleがSELECTしか許可されていない構造上、実行不可能)。
+
+### 7.5 孤立した暗号化payloadの既知の低リスク限界
+
+`putEncryptedBackup`(`backup-r2-adapter.ts`)は、暗号化payloadのPUTに成功した後、
+manifestのPUTまたはupload後checksum検証が(ネットワーク瞬断等で)失敗した場合、
+自動でロールバック(削除)を行わない設計になっている。この場合、R2上に
+「暗号化payloadだけ存在しmanifestが無い」不完全なobjectが残る可能性がある
+(暗号化済みのため平文露出のリスクは無い)。object keyには`jobId`
+(workflow run単位で毎回新規発行)が含まれるため、次回の実行が別keyになり、
+この残存objectが将来の再実行をブロックすることはない。**この不完全な状態を
+「成功したBackup」として扱ってはならない**(`putEncryptedBackup`の戻り値`ok`が
+`false`の場合、job全体も失敗として終了する設計)。
+
+### 7.6 duplicate/overwrite・size/checksum不一致時の扱い
+
+同一checksumのobject keyが既に存在する場合、upload自体を行わない(重複・上書き拒否)。
+upload後のremote size/checksum検証が不一致の場合、`storageVerified: false`を返すのみで、
+自動削除・自動再upload・自動上書きは一切行わない(本人による手動調査を前提とする)。

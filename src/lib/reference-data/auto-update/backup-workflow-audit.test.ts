@@ -39,6 +39,33 @@ describe("reference-data-production-backup.yml(実ファイル)", () => {
   it("承認をCLIのyesフラグ等で代替していない", () => {
     expect(WORKFLOW_YAML).not.toMatch(/--yes\b/);
   });
+
+  it("backup_category choice inputはpre-apply/daily/weekly/monthlyの4値だけを許可し、既定値はpre-apply(2026-09-21追加)", () => {
+    const m = WORKFLOW_YAML.match(/backup_category:[\s\S]*?options:\s*\n((?:\s*-\s*\S+\n)+)\s*default:\s*(\S+)/);
+    expect(m, "backup_category inputのoptions/defaultが見つからない").not.toBeNull();
+    const options = m![1]
+      .trim()
+      .split("\n")
+      .map((l) => l.replace(/^\s*-\s*/, "").trim());
+    expect(options.sort()).toEqual(["daily", "monthly", "pre-apply", "weekly"].sort());
+    expect(m![2]).toBe("pre-apply");
+  });
+
+  it("backup_category inputはtype: choiceかつrequired: trueである", () => {
+    const m = WORKFLOW_YAML.match(/backup_category:[\s\S]*?(?=\n {6}\S|\npermissions:)/);
+    expect(m).not.toBeNull();
+    expect(m![0]).toMatch(/type:\s*choice/);
+    expect(m![0]).toMatch(/required:\s*true/);
+  });
+
+  it("REFERENCE_DATA_BACKUP_PREFIXという自由指定は廃止されている(category経由でしか渡せない)", () => {
+    expect(WORKFLOW_YAML).not.toMatch(/REFERENCE_DATA_BACKUP_PREFIX/);
+    expect(WORKFLOW_YAML).toMatch(/REFERENCE_DATA_BACKUP_CATEGORY:\s*\$\{\{\s*inputs\.backup_category\s*\}\}/);
+  });
+
+  it("confirmation文字列(backup)は変更されていない", () => {
+    expect(WORKFLOW_YAML).toMatch(/inputs\.confirm\s*!=\s*'backup'/);
+  });
 });
 
 describe("静的監査関数の検出力(合成の悪いYAML)", () => {

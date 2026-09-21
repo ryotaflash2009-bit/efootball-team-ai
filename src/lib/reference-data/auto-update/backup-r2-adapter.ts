@@ -278,6 +278,13 @@ export async function deleteExpiredBackup(client: R2Client, input: DeleteExpired
   if ((NO_AUTO_DELETE_PREFIXES as readonly string[]).includes(prefixCheck)) {
     return { ok: false, reasons: [`${prefixCheck}は自動削除対象外のprefixのため、この関数では削除できない`] };
   }
+  // manifest.expiresAtがnull(例: pre-apply)の場合、`new Date(null)`はUnix epoch(1970年)を
+  // 返してしまい、誤って「とっくに期限切れ」と判定される恐れがあるため、nullを明示的に
+  // 「削除対象外」として拒否する(上のprefix判定で通常は先に拒否されるが、直接呼び出された
+  // 場合の多層防御として、0や過去の日付への読み替えは一切行わない)。
+  if (input.manifest.expiresAt === null) {
+    return { ok: false, reasons: ["manifest.expiresAtがnull(自動削除対象外のBackup)、この関数では削除できない"] };
+  }
   const expiresAt = new Date(input.manifest.expiresAt);
   if (Number.isNaN(expiresAt.getTime()) || expiresAt.getTime() > input.now.getTime()) {
     return { ok: false, reasons: ["manifest.expiresAtが未到来(期限切れではない)、削除を拒否する"] };

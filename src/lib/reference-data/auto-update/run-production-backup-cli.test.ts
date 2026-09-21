@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { readRequiredEnv, readPrefix, REQUIRED_ENV_NAMES } from "./run-production-backup-cli";
+import { readRequiredEnv, readCategory, REQUIRED_ENV_NAMES } from "./run-production-backup-cli";
 
 /**
  * CLIエントリーポイントの純粋な部分(環境変数読み取り・検証)だけを検証する。
@@ -28,20 +28,35 @@ describe("readRequiredEnv(missing Secret rejection)", () => {
   });
 });
 
-describe("readPrefix(prefix不正時のblocked)", () => {
-  it("daily/weekly/monthly/pre-apply/はすべて許可される", () => {
-    for (const p of ["daily/", "weekly/", "monthly/", "pre-apply/"]) {
-      expect(readPrefix({ REFERENCE_DATA_BACKUP_PREFIX: p })).toBe(p);
+describe("readCategory(category不正時のblocked、prefixの自由指定は廃止)", () => {
+  it("daily/weekly/monthly/pre-applyはすべて許可される(完全一致)", () => {
+    for (const c of ["daily", "weekly", "monthly", "pre-apply"]) {
+      expect(readCategory({ REFERENCE_DATA_BACKUP_CATEGORY: c })).toBe(c);
     }
   });
 
-  it("未指定時は既定でdaily/になる", () => {
-    expect(readPrefix({})).toBe("daily/");
+  it("未設定はblocked(既定値へフォールバックしない)", () => {
+    expect(() => readCategory({})).toThrow(/未設定/);
   });
 
-  it("allowlist外のprefixはblocked(例外)になる", () => {
-    for (const bad of ["yearly/", "../etc/", "/etc/passwd", "public/", ""]) {
-      expect(() => readPrefix({ REFERENCE_DATA_BACKUP_PREFIX: bad })).toThrow();
-    }
+  it("空文字はblocked", () => {
+    expect(() => readCategory({ REFERENCE_DATA_BACKUP_CATEGORY: "" })).toThrow();
+  });
+
+  it("大文字小文字違い(PRE-APPLY)はblocked(暗黙補正しない)", () => {
+    expect(() => readCategory({ REFERENCE_DATA_BACKUP_CATEGORY: "PRE-APPLY" })).toThrow();
+    expect(() => readCategory({ REFERENCE_DATA_BACKUP_CATEGORY: "Daily" })).toThrow();
+  });
+
+  it("前後の空白はblocked(暗黙補正しない)", () => {
+    expect(() => readCategory({ REFERENCE_DATA_BACKUP_CATEGORY: " pre-apply" })).toThrow();
+    expect(() => readCategory({ REFERENCE_DATA_BACKUP_CATEGORY: "pre-apply " })).toThrow();
+    expect(() => readCategory({ REFERENCE_DATA_BACKUP_CATEGORY: "\tdaily\n" })).toThrow();
+  });
+
+  it("未知のcategory・prefix文字列そのものの注入はblocked(REFERENCE_DATA_BACKUP_PREFIXはもう読まれない)", () => {
+    expect(() => readCategory({ REFERENCE_DATA_BACKUP_CATEGORY: "yearly" })).toThrow();
+    expect(() => readCategory({ REFERENCE_DATA_BACKUP_CATEGORY: "daily/" })).toThrow();
+    expect(() => readCategory({ REFERENCE_DATA_BACKUP_CATEGORY: "../etc/" })).toThrow();
   });
 });

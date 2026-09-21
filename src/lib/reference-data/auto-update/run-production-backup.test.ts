@@ -142,9 +142,7 @@ function baseInput(overrides: Partial<Parameters<typeof runProductionBackup>[0]>
     schemaVersion: "2026-09-20",
     postgresMajorVersion: 16,
     applicationCommitSha: "0".repeat(40),
-    retentionCategory: "production-standard" as const,
-    retentionDays: 8,
-    prefix: "daily/" as const,
+    category: "daily" as const,
     ...overrides,
   };
 }
@@ -204,9 +202,51 @@ describe("runProductionBackup(fakeだけを使用、実Postgres・実R2・実age
     expect((baseInput().r2Client as FakeR2Client).putCalls).toBe(0);
   });
 
-  it("実行結果のobjectKeyは指定したprefixから始まる(weekly/等を指定できる)", async () => {
-    const result = await runProductionBackup(baseInput({ prefix: "weekly/" as const }));
+  it("実行結果のobjectKeyは指定したcategoryのprefixから始まる(weekly等を指定できる)", async () => {
+    const result = await runProductionBackup(baseInput({ category: "weekly" as const }));
     expect(result.ok).toBe(true);
     expect((result.summary.objectKey as string).startsWith("weekly/")).toBe(true);
+    expect(result.summary.retentionCategory).toBe("production-weekly");
+    expect(result.summary.expiresAt).not.toBeNull();
+  });
+
+  it("category=pre-applyの場合、objectKeyがpre-apply/で始まり、manifestのretentionDays/expiresAtはnullのまま記録される(0や遠い未来の日付で偽装しない)", async () => {
+    const result = await runProductionBackup(baseInput({ category: "pre-apply" as const }));
+    expect(result.ok, `reasons: ${JSON.stringify(result.reasons)}`).toBe(true);
+    expect((result.summary.objectKey as string).startsWith("pre-apply/")).toBe(true);
+    expect(result.summary.retentionCategory).toBe("production-pre-apply");
+    expect(result.summary.retentionDays).toBeNull();
+    expect(result.summary.expiresAt).toBeNull();
+  });
+
+  it("category=dailyの場合、manifest metadataがprefixと一致する(production-daily/8日相当)", async () => {
+    const result = await runProductionBackup(baseInput({ category: "daily" as const }));
+    expect(result.ok).toBe(true);
+    expect((result.summary.objectKey as string).startsWith("daily/")).toBe(true);
+    expect(result.summary.retentionCategory).toBe("production-daily");
+    expect(result.summary.retentionDays).toBe(8);
+    const expiresAt = new Date(result.summary.expiresAt as string);
+    const now = new Date("2026-09-21T00:00:00.000Z");
+    const diffDays = (expiresAt.getTime() - now.getTime()) / (24 * 60 * 60 * 1000);
+    expect(diffDays).toBeCloseTo(8, 5);
+  });
+
+  it("category=monthlyの場合、manifest metadataがprefixと一致する(production-monthly/100日相当)", async () => {
+    const result = await runProductionBackup(baseInput({ category: "monthly" as const }));
+    expect(result.ok).toBe(true);
+    expect((result.summary.objectKey as string).startsWith("monthly/")).toBe(true);
+    expect(result.summary.retentionCategory).toBe("production-monthly");
+    expect(result.summary.retentionDays).toBe(100);
+  });
+
+  it("不明なcategory(型を無理やり回避した呼び出し)はexport前にblockedになる(実DBへ一切問い合わせない)", async () => {
+    const prodClient = new FakeProductionClient();
+    seedOneOfEach(prodClient);
+    const input = baseInput({ prodClient, category: "yearly" as never });
+    const result = await runProductionBackup(input);
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/category/);
+    expect(prodClient.queryCount).toBe(0); // exportより前にblockedになっている
+    expect((input.r2Client as FakeR2Client).putCalls).toBe(0);
   });
 });

@@ -36,7 +36,8 @@ export interface CreateBackupInput {
   now: Date;
   postgresMajorVersion: number;
   retentionCategory: BackupManifest["retentionCategory"];
-  retentionDays: number;
+  /** nullは「自動削除対象外」(例: pre-apply)を意味し、manifestのexpiresAtもnullになる。0や負の値は不合格。 */
+  retentionDays: number | null;
   encryptor: BackupEncryptor;
   backupVersion?: string;
   /**
@@ -74,7 +75,9 @@ export function evaluateBackupPreflightGates(input: Pick<CreateBackupInput, "pos
     Number.isInteger(input.postgresMajorVersion) && input.postgresMajorVersion > 0
       ? { ok: true }
       : { ok: false, reason: "PostgreSQL major versionが不明、またはBackupを続行できない値" },
-    input.retentionDays > 0 ? { ok: true } : { ok: false, reason: "retentionDaysは1以上である必要がある" },
+    input.retentionDays === null || input.retentionDays > 0
+      ? { ok: true }
+      : { ok: false, reason: "retentionDaysはnull(自動削除対象外)または1以上である必要がある" },
     input.encryptor ? { ok: true } : { ok: false, reason: "encryptorが指定されていない(平文Backupは許可しない)" },
   ];
 }
@@ -118,7 +121,9 @@ export async function createReferenceDataBackup(client: QueryClient, input: Crea
     const sourceMetadataChecksum = computeSourceMetadataChecksum(sourceMetaEntries);
 
     const nowIso = input.now.toISOString();
-    const expiresAt = new Date(input.now.getTime() + input.retentionDays * 24 * 60 * 60 * 1000).toISOString();
+    // retentionDaysがnull(例: pre-apply、R2 Lifecycle Ruleによる自動削除対象外)の場合、
+    // expiresAtもnullのまま記録する。0や遠い未来の日付で「期限が無いこと」を偽装しない。
+    const expiresAt = input.retentionDays === null ? null : new Date(input.now.getTime() + input.retentionDays * 24 * 60 * 60 * 1000).toISOString();
 
     let manifest = buildBackupManifest({
       backupVersion: input.backupVersion ?? "1",
