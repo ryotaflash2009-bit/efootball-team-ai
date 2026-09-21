@@ -11,10 +11,16 @@ import type { GuardCheck } from "../real-import-guards";
  * SigV4認証を要求し、単一の`STORAGE_TOKEN`では表現できない。従来の
  * `REFERENCE_DATA_BACKUP_STORAGE_TOKEN`/`REFERENCE_DATA_BACKUP_STORAGE_DESTINATION`
  * (provider未確定時の汎用名)を、R2採用確定に伴いR2固有の4項目へ置き換えた
- * (詳細は[[reference-data-production-backup-r2-adapter.md]]参照)。
+ * (詳細はreference-data-production-backup-r2-adapter.md参照)。
+ *
+ * 2026-09-21追記: Run #2がProduction PostgreSQLとのTLS証明書チェーン検証で失敗した
+ * (`self-signed certificate in certificate chain`)ため、Supabase Server root
+ * certificateを明示的に信頼するための`REFERENCE_DATA_BACKUP_DB_CA_CERT`を7個目の
+ * 必須Secretとして追加した(TLS検証を弱める変更ではない。詳細はbackup-db-connection.ts参照)。
  */
 const REQUIRED_SECRET_NAMES = [
   "REFERENCE_DATA_BACKUP_DB_URL",
+  "REFERENCE_DATA_BACKUP_DB_CA_CERT",
   "REFERENCE_DATA_BACKUP_AGE_RECIPIENT",
   "REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID",
   "REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY",

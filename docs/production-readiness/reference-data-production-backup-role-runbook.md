@@ -264,3 +264,102 @@ compile→node実行までを行い、module読み込みの成功と「Secret不
 いずれにも変更は不要と判断した。修正のマージ後、**新しいworkflow runとして
 本人が改めて`production-backup-approval`の承認を行う**(このrunの失敗を
 理由に自動でrerun・再承認が行われることはない)。
+
+## 9. 2回目のworkflow run(#2)の失敗記録(2026-09-21、秘密情報なし)
+
+**run #1の修正(module-system不一致の解消)をmainへマージした後、本人が改めて
+`production-backup-approval` Environmentを承認し、`backup_category=pre-apply`・
+`confirm=backup`で2回目のworkflow_dispatchを実行した。runは`failure`で終了した。
+このrunをrerunすることはせず、このセクションに記録した上で、修正を別のPRとして
+提出する運用とした。**
+
+### 9.1 停止地点
+
+`confirm`検証・`backup_category`検証(いずれも合格)・6 Secret存在確認(合格、
+この時点ではまだ7個目のSecretは存在しない)・checkout・Node.jsセットアップ・
+依存関係インストール・`age`インストール・compile・**新設した「Runtime smoke test
+(module load check)」ステップ(run #1の修正の回帰テスト)も成功した**。
+
+「Run Production backup」ステップの、`main()`実行中、**Production PostgreSQLへの
+`prodPgClient.connect()`(TLSハンドシェイク)の時点**で、以下のエラーにより
+失敗した:
+
+```
+self-signed certificate in certificate chain
+```
+
+「Final cleanup verification」ステップ(`if: always()`)は成功しており、平文一時
+ファイルは1件も生成されていなかったことを確認済み。
+
+### 9.2 到達しなかった処理(確認可能な範囲)
+
+`prodPgClient.connect()`がreject(失敗)した時点で`main()`の`try`ブロックは
+直ちに`catch`ブロックへ制御を渡すため、以下はいずれも実行されていない:
+
+- Production `reference_data`へのSQL実行(export/SELECT) — 0件
+- 平文データのexport・一時ファイル生成 — 未到達(生成されていない)
+- `age`による暗号化 — 未到達
+- 隔離Restore検証(ephemeral鍵による再暗号化・service containerへのrestore) — 未到達
+- R2への接続・upload・remote checksum検証 — 0件
+
+Production Backupは作成されず、Production Restoreも実行されていない。
+Secretの値・DB URL・pooler hostname・Project Refはログに一切出力されていない。
+
+### 9.3 根本原因
+
+`run-production-backup-cli.ts`は`new Client({ connectionString, ssl: {
+rejectUnauthorized: true } })`という設定でProduction PostgreSQLへ接続していた。
+`ssl.rejectUnauthorized: true`は証明書検証を要求する正しい設定だが、`ssl.ca`
+(信頼するroot CA)を一切指定していなかったため、Node.jsのTLSスタックはOS/Node
+既定の信頼済みCAストアだけで証明書チェーンを検証しようとした。Supabaseの
+PostgreSQLエンドポイント(session pooler含む)が提示する証明書チェーンのroot CAは
+この既定の信頼済みCAストアに含まれていないため、検証に失敗し、上記のエラーで
+接続が拒否された。**これはTLS検証が正しく機能した結果であり、検証ロジック自体の
+不具合ではない。単に、信頼すべきroot CAが渡されていなかっただけである。**
+
+### 9.4 修正方針(TLS検証を弱めない)
+
+`rejectUnauthorized: false`・`NODE_TLS_REJECT_UNAUTHORIZED=0`・独自の
+`checkServerIdentity`によるhostname検証の迂回など、検証を弱める変更は一切
+行わない。代わりに、Supabase Dashboardから本人が取得したServer root
+certificate(PEM形式)を新規Secret`REFERENCE_DATA_BACKUP_DB_CA_CERT`として
+登録し、`ssl.ca`として明示的に渡すことで、証明書チェーンを正しく検証できる
+ようにした(hostname検証・チェーン検証はいずれも維持したまま)。
+
+あわせて、`REFERENCE_DATA_BACKUP_DB_URL`(接続文字列)自体にTLS設定を上書き
+し得るquery parameter(`sslmode`/`sslrootcert`/`sslcert`/`sslkey`等)が
+含まれていた場合は接続前にblockedとし、`connectionString`をpgへ直接渡す
+のをやめ、host/port/database/user/passwordを個別に渡す設計に変更した
+(`ssl`オブジェクトだけがTLS設定の単一の真実源になる。詳細は
+`src/lib/reference-data/auto-update/backup-db-connection.ts`を参照)。
+
+CA証明書の内容は、PEM形式であること・秘密鍵やage秘密鍵や接続文字列らしき
+文字列を含まないこと等を接続前に検証し、不正な場合はDB接続を一切試みずに
+blockedとする。ローカルの自己署名CA・TLSサーバー(このテストの中だけに
+存在する使い捨てのもの、Production/Supabaseの証明書とは一切無関係)を使い、
+正しいCAでは接続に成功し、誤ったCA・信頼されていない自己署名証明書・
+hostname不一致ではいずれも接続が失敗することを、実際のTLSハンドシェイクで
+検証済み。
+
+### 9.5 Secret契約の変更
+
+Secretは6個から7個になった。新規追加:
+
+- `REFERENCE_DATA_BACKUP_DB_CA_CERT`(Supabase Server root certificate、PEM形式)
+
+workflow側の「Check required secrets are configured」ステップ・
+「Runtime smoke test」ステップ(実Secretではなく空文字を使う既存方針は
+変更していない)・`REQUIRED_ENV_NAMES`(コード側)のいずれも7項目へ
+更新済み。Environment承認・workflow_dispatch専用トリガー・
+`permissions: contents: read`・自動retryなし・`schedule:`なしは
+いずれも変更していない。
+
+### 9.6 今後の対応
+
+このrun #2の失敗はコード側の問題(CA未指定)であり、role・Environment・
+R2設定に変更は不要と判断した。**このrun #2はrerunしない。** 修正は新しい
+PRとして提出し、マージ後、本人が新規Secret`REFERENCE_DATA_BACKUP_DB_CA_CERT`
+にSupabase Dashboardから取得した実際のServer root certificateを登録した
+上で、**次回は新しい、別途承認されたworkflow run(run #3)として**改めて
+`production-backup-approval`の承認を行う(このrunの失敗を理由に自動で
+rerun・再承認が行われることはない)。
