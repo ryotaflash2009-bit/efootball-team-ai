@@ -116,4 +116,8 @@ describe("静的監査関数の検出力(合成の悪いYAML)", () => {
     expect(assertNoApprovalBypassFlag("run: some-cli --yes\n").ok).toBe(false);
     expect(assertNoApprovalBypassFlag("run: some-cli --skip-approval\n").ok).toBe(false);
   });
+
+  it("apt-get install -yのような、承認バイパスとは無関係な単独の-yは誤検出しない(2026-09-21修正)", () => {
+    expect(assertNoApprovalBypassFlag("run: sudo apt-get install -y --no-install-recommends age\n").ok).toBe(true);
+  });
 });

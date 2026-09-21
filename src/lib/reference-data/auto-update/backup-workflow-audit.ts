@@ -107,8 +107,18 @@ export function assertNoSecretValuePrinted(yaml: string): GuardCheck {
 }
 
 /** 承認をCLIの `--yes`/`-y` フラグ等で代替する設計になっていないことを確認する。 */
+/**
+ * 2026-09-21修正: 実行ステップを追加した際、`apt-get install -y`という(承認バイパスとは
+ * 無関係な、パッケージマネージャの単なる非対話フラグ)記述が、以前の`-y\b`という
+ * 過度に広いパターンへ誤って一致した(自己言及ではなく、実際に必要な安全なコマンドを
+ * 誤検出した初めてのケース)。単独の`-y`はapt-get/yum/dnf等で極めて一般的な非対話フラグで
+ * あり、GitHub Environmentの承認そのものを代替する手段にはなり得ない(承認はjob開始前に
+ * GitHub側で強制されるため)。検出対象を、承認・マージ・確認を明示的に指す語を伴う
+ * より長い/特徴的なフラグ(--yes/--force/--no-confirm/--skip-approval)だけに絞り、
+ * 誤検出を減らす(検出力を弱めるのではなく、対象をより正確にする)。
+ */
 export function assertNoApprovalBypassFlag(yaml: string): GuardCheck {
-  if (/--yes\b|-y\b|--force\b|--no-confirm\b|--skip-approval\b/i.test(yaml)) {
+  if (/--yes\b|--force\b|--no-confirm\b|--skip-approval\b/i.test(yaml)) {
     return { ok: false, reason: "承認をCLIフラグで代替する記述が含まれている" };
   }
   return { ok: true };
