@@ -190,3 +190,77 @@ manifestのPUTまたはupload後checksum検証が(ネットワーク瞬断等で
 同一checksumのobject keyが既に存在する場合、upload自体を行わない(重複・上書き拒否)。
 upload後のremote size/checksum検証が不一致の場合、`storageVerified: false`を返すのみで、
 自動削除・自動再upload・自動上書きは一切行わない(本人による手動調査を前提とする)。
+
+## 8. 初回workflow run(#1)の失敗記録(2026-09-21、秘密情報なし)
+
+**本人が`production-backup-approval` Environmentを承認し、`backup_category=pre-apply`・
+`confirm=backup`で初回のworkflow_dispatchを実行した。runは`failure`で終了した。**
+
+### 8.1 停止地点
+
+`confirm`検証・`backup_category`検証(いずれも合格)・6 Secret存在確認(合格)・
+checkout・Node.jsセットアップ・依存関係インストール・`age`インストール・
+compileはすべて成功した。**「Run Production backup」ステップの、`main()`実行より
+前のmodule読み込みの時点**で、以下のエラーにより失敗した:
+
+```
+ReferenceError: exports is not defined in ES module scope
+```
+
+対象: `dist-backup-execution/reference-data/auto-update/run-production-backup-cli.js`。
+
+「Final cleanup verification」ステップ(`if: always()`)は成功しており、平文一時
+ファイルは1件も生成されていなかったことを確認済み。
+
+### 8.2 到達しなかった処理(確認可能な範囲)
+
+`main()`関数自体が一度も呼び出されていないため、以下はいずれも実行されていない:
+
+- `readRequiredEnv`/`readCategory`によるSecret値・category値の読み取り
+- Production `reference_data`への接続・export(SELECT)
+- `age`の実行(暗号化)
+- 隔離Restore検証
+- R2への接続・upload
+- 平文一時ファイルの生成(そもそも作られていない)
+
+Production Backupは作成されず、Production Restoreも実行されていない。
+
+### 8.3 根本原因
+
+このリポジトリの`package.json`は`"type": "module"`を宣言している。
+`tsconfig.backup-execution.json`(`module: "CommonJS"`)がコンパイルする
+`.js`ファイルには、Node.jsのモジュール判定規則により、**最も近い祖先の
+package.jsonの`type`を参照する**という既定動作がある。`dist-backup-execution/`
+配下には(compile直後の時点では)package.jsonが存在しないため、Node.jsは
+リポジトリrootの`package.json`(`type: module`)まで遡り、CommonJS構文
+(`Object.defineProperty(exports, ...)`)を含むcompile済みファイルを誤って
+ES Moduleとして解釈し、上記エラーで停止した。
+
+このセッションでは、開発中に`dist-backup-execution/package.json`
+(`{"type":"commonjs"}`)を手動で1回だけ作成しており、それがローカルの
+作業ディレクトリに残り続けたため、それ以降の同一セッション内でのローカル
+検証はすべてこの手動ファイルの存在に依存してしまい、問題を検出できなかった
+(まっさらなGitHub Actions checkoutで初めて発覚した)。誠実な開示として、
+当時の「ローカル検証済み」という報告は、実際のCI実行環境を正確に再現した
+ものではなかった。
+
+### 8.4 修正
+
+`scripts/run-production-backup-entry.mjs`自身が、compile済みmoduleを
+importする直前に、毎回`dist-backup-execution/package.json`
+(`{"type":"commonjs"}`)を書き出すよう変更した。これにより、
+「compileされた出力の実行方法」がこのファイル1つに一元化され、
+workflow YAML側の別ステップとの食い違いによる再発を構造的に防ぐ。
+加えて、`ci.yml`(通常のPRごとのCI)と`reference-data-production-backup.yml`
+(承認制Backup workflow自身)の両方に、実Secretを使わずに
+compile→node実行までを行い、module読み込みの成功と「Secret不足でblocked」
+という想定どおりの挙動を確認する回帰テストを追加した。この回帰テストは、
+修正前のコードに戻すと確実に失敗することを、このセッションで実際に
+検証済み。
+
+### 8.5 今後の対応
+
+このrun #1の失敗はコード側の問題であり、Secret・role・Environment・R2設定
+いずれにも変更は不要と判断した。修正のマージ後、**新しいworkflow runとして
+本人が改めて`production-backup-approval`の承認を行う**(このrunの失敗を
+理由に自動でrerun・再承認が行われることはない)。
