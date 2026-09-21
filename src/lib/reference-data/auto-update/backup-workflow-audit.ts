@@ -6,11 +6,20 @@ import type { GuardCheck } from "../real-import-guards";
  * 文字列検査に留める。このモジュール自体はworkflowを実行しない)。
  */
 
+/**
+ * 2026-09-21再評価: Cloudflare R2はS3互換のAccess Key ID + Secret Access Keyによる
+ * SigV4認証を要求し、単一の`STORAGE_TOKEN`では表現できない。従来の
+ * `REFERENCE_DATA_BACKUP_STORAGE_TOKEN`/`REFERENCE_DATA_BACKUP_STORAGE_DESTINATION`
+ * (provider未確定時の汎用名)を、R2採用確定に伴いR2固有の4項目へ置き換えた
+ * (詳細は[[reference-data-production-backup-r2-adapter.md]]参照)。
+ */
 const REQUIRED_SECRET_NAMES = [
   "REFERENCE_DATA_BACKUP_DB_URL",
   "REFERENCE_DATA_BACKUP_AGE_RECIPIENT",
-  "REFERENCE_DATA_BACKUP_STORAGE_TOKEN",
-  "REFERENCE_DATA_BACKUP_STORAGE_DESTINATION",
+  "REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID",
+  "REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY",
+  "REFERENCE_DATA_BACKUP_R2_ENDPOINT",
+  "REFERENCE_DATA_BACKUP_R2_BUCKET",
 ] as const;
 
 /** `on:`ブロックが`workflow_dispatch`だけを持ち、`schedule`/`pull_request`/`push`を一切含まないことを確認する。 */
@@ -51,8 +60,8 @@ export function assertEnvironmentApprovalConfigured(yaml: string): GuardCheck {
   return { ok: true };
 }
 
-/** 4つの必須Secret名すべてが参照されており、他の未知のSecretを参照していないことを確認する。 */
-export function assertExactlyFourRequiredSecrets(yaml: string): GuardCheck {
+/** 必須Secret名(REQUIRED_SECRET_NAMES)がすべて参照されており、他の未知のSecretを参照していないことを確認する。 */
+export function assertRequiredSecretsMatch(yaml: string): GuardCheck {
   const referenced = [...yaml.matchAll(/secrets\.(\w+)/g)].map((m) => m[1]);
   const uniqueReferenced = [...new Set(referenced)];
   const missing = REQUIRED_SECRET_NAMES.filter((n) => !uniqueReferenced.includes(n));
@@ -60,7 +69,7 @@ export function assertExactlyFourRequiredSecrets(yaml: string): GuardCheck {
   if (missing.length > 0 || unexpected.length > 0) {
     return {
       ok: false,
-      reason: `参照されているSecretが想定の4件と一致しない(不足: ${missing.join(",") || "なし"} / 想定外: ${unexpected.join(",") || "なし"})`,
+      reason: `参照されているSecretが想定の${REQUIRED_SECRET_NAMES.length}件と一致しない(不足: ${missing.join(",") || "なし"} / 想定外: ${unexpected.join(",") || "なし"})`,
     };
   }
   return { ok: true };
@@ -110,7 +119,7 @@ export function auditBackupApprovalWorkflow(yaml: string): GuardCheck[] {
     assertWorkflowDispatchOnly(yaml),
     assertReadOnlyPermissions(yaml),
     assertEnvironmentApprovalConfigured(yaml),
-    assertExactlyFourRequiredSecrets(yaml),
+    assertRequiredSecretsMatch(yaml),
     assertSecretCheckRunsFirst(yaml),
     assertNoSecretValuePrinted(yaml),
     assertNoApprovalBypassFlag(yaml),

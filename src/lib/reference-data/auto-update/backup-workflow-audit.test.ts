@@ -6,7 +6,7 @@ import {
   assertWorkflowDispatchOnly,
   assertReadOnlyPermissions,
   assertEnvironmentApprovalConfigured,
-  assertExactlyFourRequiredSecrets,
+  assertRequiredSecretsMatch,
   assertSecretCheckRunsFirst,
   assertNoSecretValuePrinted,
   assertNoApprovalBypassFlag,
@@ -76,17 +76,19 @@ describe("静的監査関数の検出力(合成の悪いYAML)", () => {
 
   it("想定外のSecretを参照していれば不合格", () => {
     const bad = "env:\n  X: ${{ secrets.REFERENCE_DATA_BACKUP_DB_URL }}\n  Y: ${{ secrets.SOME_OTHER_SECRET }}\n";
-    expect(assertExactlyFourRequiredSecrets(bad).ok).toBe(false);
+    expect(assertRequiredSecretsMatch(bad).ok).toBe(false);
   });
 
-  it("4件のうち1件でも不足していれば不合格", () => {
+  it("6件のうち1件でも不足していれば不合格(R2固有4項目 + DB_URL + AGE_RECIPIENT)", () => {
     const bad = [
       "env:",
       "  A: ${{ secrets.REFERENCE_DATA_BACKUP_DB_URL }}",
       "  B: ${{ secrets.REFERENCE_DATA_BACKUP_AGE_RECIPIENT }}",
-      "  C: ${{ secrets.REFERENCE_DATA_BACKUP_STORAGE_TOKEN }}",
+      "  C: ${{ secrets.REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID }}",
+      "  D: ${{ secrets.REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY }}",
+      "  E: ${{ secrets.REFERENCE_DATA_BACKUP_R2_ENDPOINT }}",
     ].join("\n");
-    expect(assertExactlyFourRequiredSecrets(bad).ok).toBe(false);
+    expect(assertRequiredSecretsMatch(bad).ok).toBe(false);
   });
 
   it("secretの生値を直接echoしていれば不合格", () => {
