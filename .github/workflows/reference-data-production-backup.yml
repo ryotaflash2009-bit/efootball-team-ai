@@ -16,10 +16,19 @@ name: Reference data Production backup (manual, approval-gated)
 # declared at job level are only exposed to the runner after that approval, per
 # GitHub's own Environment protection semantics — this file cannot read them earlier.
 #
-# The job still fails fast, before any DB/R2 connection, if any of the six required
-# secrets (REFERENCE_DATA_BACKUP_DB_URL, REFERENCE_DATA_BACKUP_AGE_RECIPIENT,
-# REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID, REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY,
-# REFERENCE_DATA_BACKUP_R2_ENDPOINT, REFERENCE_DATA_BACKUP_R2_BUCKET) is missing.
+# The job still fails fast, before any DB/R2 connection, if any of the seven required
+# secrets (REFERENCE_DATA_BACKUP_DB_URL, REFERENCE_DATA_BACKUP_DB_CA_CERT,
+# REFERENCE_DATA_BACKUP_AGE_RECIPIENT, REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID,
+# REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY, REFERENCE_DATA_BACKUP_R2_ENDPOINT,
+# REFERENCE_DATA_BACKUP_R2_BUCKET) is missing.
+#
+# TLS to Production PostgreSQL (2026-09-21 added, after workflow run #2 failed with
+# "self-signed certificate in certificate chain"): REFERENCE_DATA_BACKUP_DB_CA_CERT
+# holds the Supabase Server root certificate (PEM). It is passed to the pg client as
+# `ssl.ca` so the certificate chain can be verified explicitly, alongside a fixed
+# `ssl.rejectUnauthorized: true`. TLS verification is never disabled in this workflow
+# and this Secret's value is never echoed, logged, or written to any file/artifact —
+# see src/lib/reference-data/auto-update/backup-db-connection.ts for the full design.
 #
 # Storage destination: Cloudflare R2 (S3-compatible, SigV4). This job never installs
 # or calls `@aws-sdk/client-s3`; the SigV4 signing and R2 REST calls are implemented
@@ -121,6 +130,7 @@ jobs:
       - name: Check required secrets are configured (fails before any DB or R2 connection)
         env:
           REFERENCE_DATA_BACKUP_DB_URL: ${{ secrets.REFERENCE_DATA_BACKUP_DB_URL }}
+          REFERENCE_DATA_BACKUP_DB_CA_CERT: ${{ secrets.REFERENCE_DATA_BACKUP_DB_CA_CERT }}
           REFERENCE_DATA_BACKUP_AGE_RECIPIENT: ${{ secrets.REFERENCE_DATA_BACKUP_AGE_RECIPIENT }}
           REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID: ${{ secrets.REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID }}
           REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY: ${{ secrets.REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY }}
@@ -128,7 +138,7 @@ jobs:
           REFERENCE_DATA_BACKUP_R2_BUCKET: ${{ secrets.REFERENCE_DATA_BACKUP_R2_BUCKET }}
         run: |
           missing=0
-          for name in REFERENCE_DATA_BACKUP_DB_URL REFERENCE_DATA_BACKUP_AGE_RECIPIENT REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY REFERENCE_DATA_BACKUP_R2_ENDPOINT REFERENCE_DATA_BACKUP_R2_BUCKET; do
+          for name in REFERENCE_DATA_BACKUP_DB_URL REFERENCE_DATA_BACKUP_DB_CA_CERT REFERENCE_DATA_BACKUP_AGE_RECIPIENT REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY REFERENCE_DATA_BACKUP_R2_ENDPOINT REFERENCE_DATA_BACKUP_R2_BUCKET; do
             value="${!name}"
             if [ -z "$value" ]; then
               echo "::error::required secret not configured: $name"
@@ -173,6 +183,7 @@ jobs:
       - name: "Runtime smoke test (module load check, no real secrets used — regression test for the first workflow run's failure)"
         env:
           REFERENCE_DATA_BACKUP_DB_URL: ""
+          REFERENCE_DATA_BACKUP_DB_CA_CERT: ""
           REFERENCE_DATA_BACKUP_AGE_RECIPIENT: ""
           REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID: ""
           REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY: ""
@@ -203,6 +214,7 @@ jobs:
         id: run_backup
         env:
           REFERENCE_DATA_BACKUP_DB_URL: ${{ secrets.REFERENCE_DATA_BACKUP_DB_URL }}
+          REFERENCE_DATA_BACKUP_DB_CA_CERT: ${{ secrets.REFERENCE_DATA_BACKUP_DB_CA_CERT }}
           REFERENCE_DATA_BACKUP_AGE_RECIPIENT: ${{ secrets.REFERENCE_DATA_BACKUP_AGE_RECIPIENT }}
           REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID: ${{ secrets.REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID }}
           REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY: ${{ secrets.REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY }}

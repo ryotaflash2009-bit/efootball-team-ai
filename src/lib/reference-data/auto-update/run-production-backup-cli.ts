@@ -4,6 +4,7 @@ import { R2RealClient } from "./backup-r2-real-client";
 import { runProductionBackup } from "./run-production-backup";
 import { resolveBackupCategory, type BackupCategory } from "./backup-category";
 import { sanitizeErrorMessage } from "../real-import-guards";
+import { buildProductionPgClientConfig } from "./backup-db-connection";
 
 /**
  * `reference-data-production-backup.yml`のjobから直接実行されるCLIエントリーポイント。
@@ -12,14 +13,20 @@ import { sanitizeErrorMessage } from "../real-import-guards";
  * `age`未実行)。実行時に読む環境変数はすべてGitHub ActionsのSecrets/service container
  * 設定から渡される想定であり、このファイル自体はいかなる値もハードコードしない。
  *
- * 6 Secretのいずれかが欠けている場合、workflow側の「Check required secrets are
+ * 7 Secretのいずれかが欠けている場合、workflow側の「Check required secrets are
  * configured」ステップがこのスクリプトより先に必ず失敗する設計(`backup-workflow-audit.ts`
- * で確認済み)だが、このファイル自身も念のため同じ6項目を再確認し、欠けていれば
+ * で確認済み)だが、このファイル自身も念のため同じ7項目を再確認し、欠けていれば
  * 接続を一切試みずに終了する(defense in depth、単独実行された場合の保険)。
+ *
+ * 2026-09-21追記(workflow Run #2の失敗): `REFERENCE_DATA_BACKUP_DB_CA_CERT`
+ * (Supabase Server root certificate、PEM形式)を7個目のSecretとして追加した。
+ * これはSupabase PostgreSQLの証明書チェーンを明示的に信頼するために必須で、
+ * TLS検証を弱めるものではない(詳細は./backup-db-connection.tsを参照)。
  */
 
 export const REQUIRED_ENV_NAMES = [
   "REFERENCE_DATA_BACKUP_DB_URL",
+  "REFERENCE_DATA_BACKUP_DB_CA_CERT",
   "REFERENCE_DATA_BACKUP_AGE_RECIPIENT",
   "REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID",
   "REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY",
@@ -83,7 +90,8 @@ export async function main(): Promise<void> {
       throw new Error("BACKUP_VERIFY_PG_HOSTはlocalhost/127.0.0.1だけを許可する(このjob専用のservice container以外への接続を防ぐ)");
     }
 
-    prodPgClient = new Client({ connectionString: secrets.REFERENCE_DATA_BACKUP_DB_URL, ssl: { rejectUnauthorized: true } });
+    const prodPgConfig = buildProductionPgClientConfig(secrets.REFERENCE_DATA_BACKUP_DB_URL, secrets.REFERENCE_DATA_BACKUP_DB_CA_CERT);
+    prodPgClient = new Client(prodPgConfig);
     verifyPgClient = new Client({ host: verifyHost, port: verifyPort, user: verifyUser, password: verifyPassword, database: verifyDatabase });
 
     await prodPgClient.connect();
