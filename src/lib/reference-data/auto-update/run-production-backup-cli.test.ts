@@ -10,7 +10,7 @@ import { readRequiredEnv, readCategory, REQUIRED_ENV_NAMES } from "./run-product
 const ALL_SECRETS_PRESENT: Record<string, string> = Object.fromEntries(REQUIRED_ENV_NAMES.map((name) => [name, `dummy-${name}`]));
 
 describe("readRequiredEnv(missing Secret rejection)", () => {
-  it("6項目すべて揃っていれば成功する", () => {
+  it("REQUIRED_ENV_NAMES全項目が揃っていれば成功する", () => {
     const result = readRequiredEnv(ALL_SECRETS_PRESENT);
     for (const name of REQUIRED_ENV_NAMES) expect(result[name]).toBe(`dummy-${name}`);
   });
