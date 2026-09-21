@@ -1,7 +1,10 @@
-name: Reference data Production backup (manual, approval-gated, design only)
+name: Reference data Production backup (manual, approval-gated)
 
 # ============================================================================
-# design only — this workflow is not authorized to run against Production yet.
+# 2026-09-21: execution steps implemented. This workflow has NEVER been run
+# (no workflow_dispatch execution exists in this repository's Actions history
+# as of this commit). This session did not connect to Production, did not
+# connect to R2, and did not execute `age`.
 # ============================================================================
 #
 # Trigger: workflow_dispatch ONLY. No `schedule:`, no `pull_request:`, no `push:`.
@@ -9,30 +12,36 @@ name: Reference data Production backup (manual, approval-gated, design only)
 #
 # GitHub Environment approval (`production-backup-approval`) is a SEPARATE, required
 # gate configured in repository settings, not something this file can weaken or skip.
-# No flag anywhere in this job substitutes for that human approval step.
+# No flag anywhere in this job substitutes for that human approval step. Secrets
+# declared at job level are only exposed to the runner after that approval, per
+# GitHub's own Environment protection semantics — this file cannot read them earlier.
 #
-# This job is structurally blocked as written: the six secrets it reads
-# (REFERENCE_DATA_BACKUP_DB_URL, REFERENCE_DATA_BACKUP_AGE_RECIPIENT,
+# The job still fails fast, before any DB/R2 connection, if any of the six required
+# secrets (REFERENCE_DATA_BACKUP_DB_URL, REFERENCE_DATA_BACKUP_AGE_RECIPIENT,
 # REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID, REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY,
-# REFERENCE_DATA_BACKUP_R2_ENDPOINT, REFERENCE_DATA_BACKUP_R2_BUCKET)
-# do not exist in this repository. The first step fails fast and loudly if any of
-# them is missing, before any network connection is attempted. Until a human
-# provisions all six (an action outside this session's scope — see
-# docs/production-readiness/reference-data-production-backup-credentials.md and
-# reference-data-production-backup-r2-adapter.md), every run of this workflow
-# ends at that first step.
+# REFERENCE_DATA_BACKUP_R2_ENDPOINT, REFERENCE_DATA_BACKUP_R2_BUCKET) is missing.
 #
-# The storage destination is Cloudflare R2 (S3-compatible), chosen as the
-# first-choice provider — see reference-data-production-backup-storage.md. R2's
-# SigV4 authentication needs a distinct access key ID and secret access key, so
-# the earlier single-token design (REFERENCE_DATA_BACKUP_STORAGE_TOKEN /
-# REFERENCE_DATA_BACKUP_STORAGE_DESTINATION) was replaced with these four
-# R2-specific secrets.
+# Storage destination: Cloudflare R2 (S3-compatible, SigV4). This job never installs
+# or calls `@aws-sdk/client-s3`; the SigV4 signing and R2 REST calls are implemented
+# directly in this repository (src/lib/reference-data/auto-update/backup-r2-sigv4.ts,
+# backup-r2-real-client.ts) using only Node's built-in crypto/fetch, to avoid adding
+# a large dependency for five well-documented REST operations.
 #
-# The steps after the secret check are intentionally NOT implemented in this
-# session (design only): they always fail. Implementing them is future work that
-# requires read-only Postgres credentials, an age public key, and a real R2
-# bucket/API token to already exist — none of which this session created.
+# Encryption: `age` (installed on the runner below, not an npm package). The job
+# only ever holds the age **public** recipient (REFERENCE_DATA_BACKUP_AGE_RECIPIENT);
+# the private key never leaves the human's own machine and is never referenced here.
+#
+# Restore verification without the private key: this job cannot decrypt the real
+# uploaded artifact (it has no private key). Instead it separately re-encrypts the
+# exact same exported dataset with a one-time, in-memory-only ephemeral test key
+# (generated fresh every run, discarded at job end, never logged, never a Secret)
+# and actually restores THAT copy into the isolated `postgres` service container
+# below (not Production, not the real R2 bucket). Only if that restore succeeds and
+# its checksums match the real export does `run-production-backup.ts` mark the real
+# manifest's `restoreVerified: true` before uploading the real (age-encrypted) artifact.
+# See src/lib/reference-data/auto-update/run-production-backup.ts for the full
+# rationale. Uploading a backup that has not passed this check is rejected by the
+# existing `evaluatePutEncryptedBackupGates` (backup-r2-adapter.ts, unchanged).
 on:
   workflow_dispatch:
     inputs:
@@ -49,6 +58,25 @@ jobs:
     runs-on: ubuntu-latest
     environment: production-backup-approval
     timeout-minutes: 15
+    # Isolated, ephemeral PostgreSQL for restore verification ONLY (see the header
+    # comment above). This is NOT Production and NOT the real R2 bucket. It exists
+    # only for this job's duration and is destroyed when the job ends. Credentials
+    # here are throwaway, job-local values (not secrets) — same convention as the
+    # "Reference data PostgreSQL validation" job in ci.yml.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: backup_verify_user
+          POSTGRES_PASSWORD: backup_verify_password_ci_only
+          POSTGRES_DB: backup_verify_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Reject unless the confirmation input is exactly "backup"
         if: ${{ inputs.confirm != 'backup' }}
@@ -78,7 +106,56 @@ jobs:
             exit 1
           fi
 
-      - name: Not implemented in this session (design only)
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - name: Install dependencies (reproducible, no new packages added by this workflow)
+        run: npm ci
+
+      - name: Install age (encryption CLI, not an npm package)
         run: |
-          echo "::error::backup/encrypt/upload/restore-verify steps are design-only and intentionally not implemented in this session."
-          exit 1
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends age
+          age --version
+
+      - name: Compile the backup execution entrypoint (tsc, no bundler, no new dependency)
+        run: npx tsc -p tsconfig.backup-execution.json
+
+      - name: Run Production backup (preflight, export, manifest, encryption, plaintext cleanup, isolated restore verification, R2 upload, remote checksum verification, audit summary)
+        id: run_backup
+        env:
+          REFERENCE_DATA_BACKUP_DB_URL: ${{ secrets.REFERENCE_DATA_BACKUP_DB_URL }}
+          REFERENCE_DATA_BACKUP_AGE_RECIPIENT: ${{ secrets.REFERENCE_DATA_BACKUP_AGE_RECIPIENT }}
+          REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID: ${{ secrets.REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID }}
+          REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY: ${{ secrets.REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY }}
+          REFERENCE_DATA_BACKUP_R2_ENDPOINT: ${{ secrets.REFERENCE_DATA_BACKUP_R2_ENDPOINT }}
+          REFERENCE_DATA_BACKUP_R2_BUCKET: ${{ secrets.REFERENCE_DATA_BACKUP_R2_BUCKET }}
+          REFERENCE_DATA_BACKUP_PREFIX: "daily/"
+          BACKUP_VERIFY_PG_HOST: localhost
+          BACKUP_VERIFY_PG_PORT: "5432"
+          BACKUP_VERIFY_PG_USER: backup_verify_user
+          BACKUP_VERIFY_PG_PASSWORD: backup_verify_password_ci_only
+          BACKUP_VERIFY_PG_DATABASE: backup_verify_db
+        run: node scripts/run-production-backup-entry.mjs
+
+      # `run-production-backup-cli.ts` deletes its own plaintext temp file immediately
+      # after encryption (and fails the job if that deletion itself fails — see
+      # AgeCliEncryptor in backup-age-cli-encryptor.ts). This step is a second,
+      # independent check: if anything named like a plaintext backup temp file is
+      # still present in the runner's temp directory when the job ends, fail loudly
+      # rather than silently letting the runner's own teardown discard it unnoticed.
+      - name: Final cleanup verification (fails if a plaintext temp file was left behind)
+        if: always()
+        run: |
+          leftover=$(find "${RUNNER_TEMP:-/tmp}" -maxdepth 1 -name 'backup-plaintext-*.tmp' 2>/dev/null || true)
+          if [ -n "$leftover" ]; then
+            echo "::error::plaintext backup temp file(s) left behind at job end: $leftover"
+            exit 1
+          fi
+          echo "no leftover plaintext backup temp files found"

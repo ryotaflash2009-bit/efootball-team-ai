@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { createReferenceDataBackup } from "./backup-orchestrator";
 import { restoreReferenceDataBackup, evaluateRestorePreflightGates } from "./backup-restore";
-import { getBackupTableSpec } from "./backup-schema";
+import { getBackupTableSpec, BACKUP_SOURCE_TEST_SCHEMA } from "./backup-schema";
 import { markManifestFailed } from "./backup-manifest";
 import { FakeEncryptor, NodeAesGcmEncryptor, generateEphemeralTestKey, type BackupEncryptor } from "./backup-encryptor";
 import type { BackupArtifact } from "./backup-orchestrator";
@@ -111,6 +111,7 @@ async function buildValidArtifact(encryptor: BackupEncryptor): Promise<BackupArt
     retentionCategory: "isolated-test-ephemeral",
     retentionDays: 7,
     encryptor,
+    sourceSchema: BACKUP_SOURCE_TEST_SCHEMA,
   });
   if (!result.ok || !result.artifact) throw new Error("テスト前提のBackup生成に失敗した");
   return result.artifact;

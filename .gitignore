@@ -13,6 +13,10 @@
 /dist
 /coverage
 
+# Production backup workflow: compiled output of tsconfig.backup-execution.json
+# (generated fresh by the workflow at run time, never committed)
+/dist-backup-execution
+
 # local SQLite DB, dev-session logs, server PID (regenerated / not redistributable — see below)
 # includes: efootball.db (read-only reference data), all *.log, server.pid
 /data

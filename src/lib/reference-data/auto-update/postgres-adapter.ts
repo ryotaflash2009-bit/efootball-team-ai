@@ -107,8 +107,24 @@ export function createPostgresQueryClient(pgClient: MinimalPgClient): QueryClien
       }
       let i = 0;
       const pgSql = sql.replace(/\?/g, () => `$${++i}`);
-      const result = await pgClient.query(pgSql, params as unknown[]);
-      return { rows: result.rows.map(normalizeRow) };
+      // paramsが空の場合は第2引数を渡さない(simple query protocolのまま実行する)。
+      // node-postgresは第2引数(たとえ空配列でも)を渡すとparameterized/extended
+      // protocolへ切り替わり、PostgreSQLは複数文を含むSQL文字列をそのprotocolでは
+      // 受け付けない(実際にPostgreSQL integrationで確認済みの不具合: 複数
+      // CREATE TABLE文をまとめたDDLをこの経路で実行するとresult.rowsが
+      // undefinedになった)。以前このメソッドは常にparamsを渡していたため、
+      // 単一SELECT/INSERTだけを送るこれまでの呼び出し元(すべて単一文)では
+      // この問題が発生していなかった。
+      //
+      // 2026-09-21追記: simple protocolで複数文を送った場合、driverによっては
+      // 単一の結果objectではなく、文ごとの結果を並べた配列を返す可能性がある
+      // (このセッションではローカルに実PostgreSQLが無く、この分岐を実際には
+      // 検証できていない)。どちらの形でも安全に扱えるよう、配列なら最後の
+      // 要素、`rows`が無ければ空配列として扱う(DDLの戻り値は元々使わないため、
+      // ここでの「空配列」は正しい既定値であり、エラーを握りつぶすものではない)。
+      const rawResult = params.length > 0 ? await pgClient.query(pgSql, params as unknown[]) : await pgClient.query(pgSql);
+      const resolvedResult = Array.isArray(rawResult) ? rawResult[rawResult.length - 1] : rawResult;
+      return { rows: (resolvedResult?.rows ?? []).map(normalizeRow) };
     },
   };
 }

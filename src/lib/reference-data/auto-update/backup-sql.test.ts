@@ -7,7 +7,7 @@ import {
   mapBackupFieldsToParams,
   toPortableBackupRow,
 } from "./backup-sql";
-import { BACKUP_SOURCE_TEST_SCHEMA, BACKUP_RESTORE_TEST_SCHEMA, getBackupTableSpec, BACKUP_TABLE_SPECS } from "./backup-schema";
+import { BACKUP_SOURCE_TEST_SCHEMA, BACKUP_RESTORE_TEST_SCHEMA, PRODUCTION_REFERENCE_DATA_SCHEMA, getBackupTableSpec, BACKUP_TABLE_SPECS } from "./backup-schema";
 
 describe("buildBackupDumpSelectSql / buildBackupCountSql", () => {
   it("SELECT *を使わず、schema修飾されている", () => {
@@ -30,6 +30,16 @@ describe("buildBackupDumpSelectSql / buildBackupCountSql", () => {
 
   it("許可されていないschema名は例外を投げる", () => {
     expect(() => buildBackupDumpSelectSql("public" as never, "managers")).toThrow();
+  });
+
+  it("実Production reference_data schemaからのdump SELECTは許可される(2026-09-21: 実行準備で追加)", () => {
+    const sql = buildBackupDumpSelectSql(PRODUCTION_REFERENCE_DATA_SCHEMA, "world_player_cards");
+    expect(sql).toContain(`${PRODUCTION_REFERENCE_DATA_SCHEMA}.world_player_cards`);
+    expect(sql).not.toMatch(/select\s+\*/i);
+  });
+
+  it("buildBackupCountSqlはreference_data schemaへ拡張していない(count用途は隔離検証専用のまま)", () => {
+    expect(() => buildBackupCountSql(PRODUCTION_REFERENCE_DATA_SCHEMA as never, "managers")).toThrow();
   });
 
   it("未定義テーブルは例外を投げる", () => {
