@@ -11,19 +11,28 @@ name: Reference data Production backup (manual, approval-gated, design only)
 # gate configured in repository settings, not something this file can weaken or skip.
 # No flag anywhere in this job substitutes for that human approval step.
 #
-# This job is structurally blocked as written: the four secrets it reads
+# This job is structurally blocked as written: the six secrets it reads
 # (REFERENCE_DATA_BACKUP_DB_URL, REFERENCE_DATA_BACKUP_AGE_RECIPIENT,
-# REFERENCE_DATA_BACKUP_STORAGE_TOKEN, REFERENCE_DATA_BACKUP_STORAGE_DESTINATION)
+# REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID, REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY,
+# REFERENCE_DATA_BACKUP_R2_ENDPOINT, REFERENCE_DATA_BACKUP_R2_BUCKET)
 # do not exist in this repository. The first step fails fast and loudly if any of
 # them is missing, before any network connection is attempted. Until a human
-# provisions all four (an action outside this session's scope — see
-# docs/production-readiness/reference-data-production-backup-credentials.md),
-# every run of this workflow ends at that first step.
+# provisions all six (an action outside this session's scope — see
+# docs/production-readiness/reference-data-production-backup-credentials.md and
+# reference-data-production-backup-r2-adapter.md), every run of this workflow
+# ends at that first step.
+#
+# The storage destination is Cloudflare R2 (S3-compatible), chosen as the
+# first-choice provider — see reference-data-production-backup-storage.md. R2's
+# SigV4 authentication needs a distinct access key ID and secret access key, so
+# the earlier single-token design (REFERENCE_DATA_BACKUP_STORAGE_TOKEN /
+# REFERENCE_DATA_BACKUP_STORAGE_DESTINATION) was replaced with these four
+# R2-specific secrets.
 #
 # The steps after the secret check are intentionally NOT implemented in this
 # session (design only): they always fail. Implementing them is future work that
-# requires read-only credentials, an age public key, and a storage destination to
-# already exist — none of which this session created.
+# requires read-only Postgres credentials, an age public key, and a real R2
+# bucket/API token to already exist — none of which this session created.
 on:
   workflow_dispatch:
     inputs:
@@ -47,15 +56,17 @@ jobs:
           echo "::error::confirmation input did not match 'backup'; aborting before touching any secret"
           exit 1
 
-      - name: Check required secrets are configured (fails before any DB connection)
+      - name: Check required secrets are configured (fails before any DB or R2 connection)
         env:
           REFERENCE_DATA_BACKUP_DB_URL: ${{ secrets.REFERENCE_DATA_BACKUP_DB_URL }}
           REFERENCE_DATA_BACKUP_AGE_RECIPIENT: ${{ secrets.REFERENCE_DATA_BACKUP_AGE_RECIPIENT }}
-          REFERENCE_DATA_BACKUP_STORAGE_TOKEN: ${{ secrets.REFERENCE_DATA_BACKUP_STORAGE_TOKEN }}
-          REFERENCE_DATA_BACKUP_STORAGE_DESTINATION: ${{ secrets.REFERENCE_DATA_BACKUP_STORAGE_DESTINATION }}
+          REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID: ${{ secrets.REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID }}
+          REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY: ${{ secrets.REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY }}
+          REFERENCE_DATA_BACKUP_R2_ENDPOINT: ${{ secrets.REFERENCE_DATA_BACKUP_R2_ENDPOINT }}
+          REFERENCE_DATA_BACKUP_R2_BUCKET: ${{ secrets.REFERENCE_DATA_BACKUP_R2_BUCKET }}
         run: |
           missing=0
-          for name in REFERENCE_DATA_BACKUP_DB_URL REFERENCE_DATA_BACKUP_AGE_RECIPIENT REFERENCE_DATA_BACKUP_STORAGE_TOKEN REFERENCE_DATA_BACKUP_STORAGE_DESTINATION; do
+          for name in REFERENCE_DATA_BACKUP_DB_URL REFERENCE_DATA_BACKUP_AGE_RECIPIENT REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY REFERENCE_DATA_BACKUP_R2_ENDPOINT REFERENCE_DATA_BACKUP_R2_BUCKET; do
             value="${!name}"
             if [ -z "$value" ]; then
               echo "::error::required secret not configured: $name"
