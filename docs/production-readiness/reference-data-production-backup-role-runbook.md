@@ -1,7 +1,8 @@
-# Production Backup role 作成・確認 実行手順(将来実施用、このセッションでは未実施)
+# Production Backup role 作成・確認 実行手順・実施記録
 
-作成日: 2026-09-21。**この文書は将来の実施手順であり、記載された操作はこのセッションでは
-一切実行していない。role作成・password設定は、いずれも独立した承認事項である。**
+作成日: 2026-09-21。**この文書のうち1〜4章は元々の実施手順であり、記載された操作は
+このセッションでは一切実行していない(Claude Codeは一貫してProduction Supabaseへ
+未接続)。6章は、本人が独立してこの手順を実施した結果の記録(2026-09-21、metadata値のみ)。**
 
 関連: [[reference-data-production-backup-role-design.md]]・[[reference-data-production-backup-credentials.md]]・
 [[reference-data-production-backup-approval-runbook.md]]
@@ -61,3 +62,57 @@
 
 この手順書は設計段階のものであり、実際にこの手順どおりに実行して成功したことを示す
 記録はまだ存在しない。
+
+## 6. Production実施記録(2026-09-21、本人実施・本人確認)
+
+**role作成SQL(`create-reference-data-backup-role.sql`)は無変更のまま、本人がProductionで
+実行した。role名・boolean値・数値・timeout設定文字列以外の情報(password・接続文字列・
+Project ID等)はこの記録に一切含まない。**
+
+### 6.1 検証SQLの不具合修正
+
+1回目の`verify-reference-data-backup-role.sql`実行時、`ERROR: 3F000: schema
+"reference_data_ops" does not exist`でProductionが停止した(`reference_data_ops`が
+未適用のため)。原因は`has_schema_privilege`へschema名の文字列リテラルを直接渡す
+「名前」引数版が、対象schemaが存在しない場合に例外を送出すること。`to_regnamespace`/
+`to_regclass`でOIDを安全に解決してから渡す形へ修正し(修正版SQLファイル・
+静的監査コード(`backup-role-sql-audit.ts`)・Unit Testを更新)、修正版を本人が
+再実行して成功した。
+
+### 6.2 修正版SQLの実行結果(本人確認済み)
+
+| 項目 | 結果 |
+|---|---|
+| `role_exists` | `true` |
+| `login` | `true` |
+| `inherit` | `false` |
+| `superuser`/`createdb`/`createrole`/`replication`/`bypassrls` | すべて`false` |
+| `connection_limit` | `2` |
+| `default_transaction_read_only` | `on` |
+| `statement_timeout` | `120s` |
+| `lock_timeout` | `5s` |
+| `search_path` | `reference_data` |
+| `reference_data` USAGE | `true` |
+| 対象4テーブル(`world_player_cards`/`managers`/`player_card_analysis`/`import_batches`) | いずれも`table_exists: true`・`can_select: true` |
+| 対象4テーブルの`INSERT`/`UPDATE`/`DELETE`/`TRUNCATE`/`REFERENCES`/`TRIGGER` | すべて`false` |
+| `auth.users` SELECT(`user_data_table_privileges`) | `false` |
+| `public.my_team_snapshots` SELECT(`user_data_table_privileges`) | `false` |
+| `reference_data_ops` 存在(`reference_data_ops_exists`) | `false` |
+| `reference_data_ops` USAGE | `false` |
+| `reference_data_ops_table_count_visible` | `0` |
+
+Production reference_dataの行データ読み取り・変更は一切行われていない
+(metadataだけを参照する`verify-reference-data-backup-role.sql`の実行のみ)。
+
+### 6.3 `public_usage`の扱いに関する注記
+
+`schema_usage.public_usage`が`true`であることは、`public`schemaへの`USAGE`権限
+(schema内のオブジェクトを名前解決できる権限)を意味するに過ぎず、
+`public.my_team_snapshots`テーブルへの`SELECT`権限を意味しない。両者は別の権限
+(`USAGE` vs `SELECT`)であり、別のカタログ関数(`has_schema_privilege` vs
+`has_table_privilege`)で確認する。本人が実際に`user_data_table_privileges`の
+`public.my_team_snapshots`行で`can_select: false`であることを直接確認しており、
+この役割(role)は`public.my_team_snapshots`の行データを読み取れない。
+
+**この確認結果を理由に、`PUBLIC`schema全体の権限設計(役割自体のUSAGE権限や、
+`public`schemaのデフォルト権限設定)を変更する必要はないと判断し、変更していない。**

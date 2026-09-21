@@ -183,8 +183,8 @@ export function assertExactlyFourTargetTablesGranted(rawSql: string): GuardCheck
 /** 確認用SQLが、実テーブルの行データを一切FROM参照していないことを確認する(metadataだけを使うこと)。 */
 export function assertVerifySqlIsMetadataOnly(rawSql: string): GuardCheck {
   const sql = stripLineComments(rawSql);
-  if (/\bfrom\s+reference_data\.\w+/i.test(sql)) {
-    return { ok: false, reason: "確認用SQLがreference_dataの実テーブルをFROM参照している(行データを読む疑いがある)" };
+  if (/\bfrom\s+(reference_data\.\w+|public\.my_team_snapshots|auth\.users)\b/i.test(sql)) {
+    return { ok: false, reason: "確認用SQLが実テーブルをFROM参照している(行データを読む疑いがある)" };
   }
   if (/select\s+\*/i.test(sql)) {
     return { ok: false, reason: "確認用SQLにSELECT *が含まれている" };
@@ -193,6 +193,77 @@ export function assertVerifySqlIsMetadataOnly(rawSql: string): GuardCheck {
   const missing = requiredFunctions.filter((fn) => !sql.includes(fn));
   if (missing.length > 0) {
     return { ok: false, reason: `確認用SQLに必要なmetadata関数/ビューが含まれていない: ${missing.join(",")}` };
+  }
+  return { ok: true };
+}
+
+/**
+ * 確認用SQLが、has_schema_privilege/has_table_privilegeへschema名・table名の
+ * 生の文字列(存在確認を経ていないもの)を直接渡していないことを確認する。
+ *
+ * Production実行時に`ERROR: 3F000: schema "reference_data_ops" does not exist`で
+ * 停止した不具合の再発防止(生の名前を渡す「名前」引数版のhas_schema_privilege/
+ * has_table_privilegeは、対象が存在しない場合に例外を送出する。to_regnamespace/
+ * to_regclassで先にOIDへ解決してから渡す「OID」引数版は、存在しない場合に
+ * 例外ではなくNULLを返す)。
+ *
+ * このSQLファイルはhas_schema_privilege/has_table_privilegeの呼び出しを1行に
+ * まとめる書式を前提にした行単位の簡易チェックであり、真のSQL構文解析では
+ * ない(このリポジトリの他の静的監査関数と同じ簡易テキスト検査の方針)。
+ */
+export function assertVerifySqlUsesSafeExistenceCheck(rawSql: string): GuardCheck {
+  const sql = stripLineComments(rawSql);
+  if (!/\bto_regnamespace\s*\(/i.test(sql)) {
+    return { ok: false, reason: "to_regnamespaceによる安全なschema存在確認が含まれていない" };
+  }
+  if (!/\bto_regclass\s*\(/i.test(sql)) {
+    return { ok: false, reason: "to_regclassによる安全なtable存在確認が含まれていない" };
+  }
+  const lines = sql.split("\n");
+  for (const line of lines) {
+    if (/has_schema_privilege\s*\(/i.test(line) && !/to_regnamespace\s*\(/i.test(line)) {
+      return { ok: false, reason: "has_schema_privilegeがto_regnamespaceを経由せずに呼び出されている行がある(存在しないschemaで例外になる恐れ)" };
+    }
+    if (/has_table_privilege\s*\(/i.test(line) && !/to_regclass\s*\(/i.test(line)) {
+      return { ok: false, reason: "has_table_privilegeがto_regclassを経由せずに呼び出されている行がある(存在しないtableで例外になる恐れ)" };
+    }
+  }
+  return { ok: true };
+}
+
+const WRITE_OR_GRANT_STATEMENT_PATTERNS: { name: string; re: RegExp }[] = [
+  { name: "GRANT", re: /\bgrant\s+\w/i },
+  { name: "REVOKE", re: /\brevoke\s+\w/i },
+  { name: "INSERT", re: /\binsert\s+into\b/i },
+  { name: "UPDATE", re: /\bupdate\s+\S+\s+set\b/i },
+  { name: "DELETE", re: /\bdelete\s+from\b/i },
+  { name: "TRUNCATE", re: /\btruncate\s+(table\s+)?\S/i },
+  { name: "ALTER", re: /\balter\s+(table|role|schema)\b/i },
+  { name: "DROP", re: /\bdrop\s+(table|role|schema)\b/i },
+  { name: "CREATE", re: /\bcreate\s+(role|table|schema)\b/i },
+];
+
+/**
+ * 確認用SQLがSELECT/WITHだけで構成され、権限やデータを変更しうる文
+ * (GRANT/REVOKE/INSERT/UPDATE/DELETE/TRUNCATE/ALTER/DROP/CREATE)を
+ * 一切含まないことを確認する。
+ *
+ * この確認により、確認用SQLの中で利用者データテーブル
+ * (`auth.users`・`public.my_team_snapshots`)の名前が
+ * has_table_privilege/to_regclassの引数として現れても、それが実際に
+ * データへアクセスする文(FROM・GRANT等)ではなく、権限の有無を読むだけの
+ * metadata確認であることが構造的に保証される。
+ *
+ * `'insert'`/`'update'`/`'delete'`/`'truncate'`という権限名の文字列リテラル
+ * (has_table_privilegeの第3引数)は、後ろに`into`/`set`/`from`/テーブル名が
+ * 続かないため、このパターンには一致しない。
+ */
+export function assertVerifySqlHasNoWriteOrGrantStatements(rawSql: string): GuardCheck {
+  const sql = stripLineComments(rawSql);
+  for (const { name, re } of WRITE_OR_GRANT_STATEMENT_PATTERNS) {
+    if (re.test(sql)) {
+      return { ok: false, reason: `確認用SQLに書き込み・権限変更を意図する文(${name})が含まれている疑いがある(READ ONLYであるべき)` };
+    }
   }
   return { ok: true };
 }
@@ -217,10 +288,17 @@ export function auditVerifyRoleSql(rawSql: string): GuardCheck[] {
     assertHasVerifySqlBanner(rawSql),
     assertNoPasswordLiteral(rawSql),
     assertNoConnectionInfoOrSecrets(rawSql),
-    assertNoUserDataOrOpsSchemaReference(rawSql),
+    // 確認用SQLは、has_table_privilege/to_regclassの引数として利用者データ
+    // テーブル名(auth.users等)を安全に参照してよい(metadata確認目的のため)。
+    // そのため、create/rollback SQL用のassertNoUserDataOrOpsSchemaReference
+    // (これらの名前があらゆる文脈で出現することを一律禁止する)ではなく、
+    // 「書き込み・権限変更を意図する文が一切無いこと」をより直接的に確認する
+    // assertVerifySqlHasNoWriteOrGrantStatementsを用いる。
+    assertVerifySqlHasNoWriteOrGrantStatements(rawSql),
     assertNoDynamicSql(rawSql),
     assertRoleNameFixed(rawSql),
     assertVerifySqlIsMetadataOnly(rawSql),
+    assertVerifySqlUsesSafeExistenceCheck(rawSql),
   ];
 }
 
