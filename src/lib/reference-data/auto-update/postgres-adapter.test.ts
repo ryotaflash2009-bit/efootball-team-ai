@@ -118,6 +118,43 @@ describe("createPostgresQueryClient", () => {
     expect(fake.calls.some((c) => c.sql === "commit")).toBe(true);
   });
 
+  it("paramsが空の場合、複数文をまとめたDDL文字列でも(rowsがundefinedを返すfakeでも)クラッシュしない(2026-09-21修正の回帰テスト)", async () => {
+    class FakeDdlPgClient implements MinimalPgClient {
+      calls: Array<{ sql: string; paramsGiven: boolean }> = [];
+      async query(sql: string, params?: unknown[]) {
+        this.calls.push({ sql, paramsGiven: params !== undefined });
+        if (/^set search_path/i.test(sql)) return { rows: [] };
+        // 実PostgreSQL統合試験で実際に観測した不具合を再現する: 複数文を
+        // まとめたDDLをparameterized protocol(第2引数あり)で渡すと
+        // rowsがundefinedになるfakeの挙動。
+        if (params !== undefined) return { rows: undefined as unknown as Array<Record<string, unknown>> };
+        return { rows: [] };
+      }
+    }
+    const fake = new FakeDdlPgClient();
+    const client = createPostgresQueryClient(fake);
+    const multiStatementDdl = "create schema if not exists x;\ncreate table if not exists x.a (id text);\ncreate table if not exists x.b (id text);";
+    await expect(client.query(multiStatementDdl)).resolves.toEqual({ rows: [] });
+    const ddlCall = fake.calls.find((c) => /^create schema/i.test(c.sql));
+    expect(ddlCall?.paramsGiven).toBe(false); // paramsを渡していない(simple query protocolのまま)ことを確認
+  });
+
+  it("driverが複数文の結果を配列で返す場合(最後の結果を採用する)", async () => {
+    class FakeMultiResultPgClient implements MinimalPgClient {
+      async query(sql: string) {
+        if (/^set search_path/i.test(sql)) return { rows: [] };
+        // 一部driver/versionではsimple protocolでの複数文実行結果が、単一objectではなく
+        // 文ごとの結果を並べた配列として返る可能性がある(このセッションでは実際には
+        // 未検証)。この形でも安全に扱えることを確認する。
+        return [{ rows: [] }, { rows: [] }, { rows: [{ id: "last" }] }] as unknown as { rows: Array<Record<string, unknown>> };
+      }
+    }
+    const fake = new FakeMultiResultPgClient();
+    const client = createPostgresQueryClient(fake);
+    const result = await client.query("create schema if not exists x; create table if not exists x.a (id text); select id from x.a;");
+    expect(result.rows).toEqual([{ id: "last" }]);
+  });
+
   it("jsonb列(objectとして返る)をJSON文字列へ正規化する(SQLite adapterとの契約を揃える)", async () => {
     const fake = new FakePgClient();
     const client = createPostgresQueryClient(fake);
