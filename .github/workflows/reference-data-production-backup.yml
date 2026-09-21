@@ -161,6 +161,44 @@ jobs:
       - name: Compile the backup execution entrypoint (tsc, no bundler, no new dependency)
         run: npx tsc -p tsconfig.backup-execution.json
 
+      # 2026-09-21追記: 初回run #1が、Backup処理を一切開始する前に
+      # "ReferenceError: exports is not defined in ES module scope"で失敗した
+      # (repository package.jsonの"type": "module"と、tsc(module: CommonJS)が
+      # 生成した.jsの不一致)。この修正はscripts/run-production-backup-entry.mjs
+      # 自身がdist-backup-execution/package.jsonを都度書き出す形で行ったが、
+      # 万一この修正が将来のリファクタで失われても、実Secretへ到達する前に
+      # 必ず検出できるよう、実Secretを一切渡さない(空文字で明示的に上書きする)
+      # 状態でこのステップ自体を実行し、module読み込みが成功することと、
+      # 「Secret不足でblocked」という想定どおりのメッセージになることを確認する。
+      - name: "Runtime smoke test (module load check, no real secrets used — regression test for the first workflow run's failure)"
+        env:
+          REFERENCE_DATA_BACKUP_DB_URL: ""
+          REFERENCE_DATA_BACKUP_AGE_RECIPIENT: ""
+          REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID: ""
+          REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY: ""
+          REFERENCE_DATA_BACKUP_R2_ENDPOINT: ""
+          REFERENCE_DATA_BACKUP_R2_BUCKET: ""
+          REFERENCE_DATA_BACKUP_CATEGORY: ""
+        run: |
+          set +e
+          output=$(node scripts/run-production-backup-entry.mjs 2>&1)
+          code=$?
+          set -e
+          echo "$output"
+          if echo "$output" | grep -qiE "is not defined in ES module scope|Cannot find module|ERR_MODULE_NOT_FOUND|require is not defined"; then
+            echo "::error::compiled backup execution entrypoint failed to load (module-system mismatch reintroduced)"
+            exit 1
+          fi
+          if [ "$code" -eq 0 ]; then
+            echo "::error::runtime smoke test should have blocked without secrets, but exited 0"
+            exit 1
+          fi
+          if ! echo "$output" | grep -q "必須環境変数が不足している"; then
+            echo "::error::expected a missing-secret blocked message, got something else"
+            exit 1
+          fi
+          echo "runtime smoke test passed: module loaded correctly and was blocked before any DB/R2 connection"
+
       - name: Run Production backup (preflight, export, manifest, encryption, plaintext cleanup, isolated restore verification, R2 upload, remote checksum verification, audit summary)
         id: run_backup
         env:

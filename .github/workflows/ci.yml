@@ -54,6 +54,38 @@ jobs:
       - name: Production build
         run: npm run build
 
+      # 2026-09-21追記: 初回Production backup workflow run #1が、Backup処理を一切
+      # 開始する前に「ReferenceError: exports is not defined in ES module scope」
+      # (repository package.jsonが"type": "module"のため、tsconfig.backup-execution.json
+      # (module: CommonJS)が生成した.jsがES Moduleとして誤解釈された)で失敗した。
+      # `npx tsc --noEmit`/`npx vitest run`/`npm run build`はいずれもこの実行時
+      # module-system不一致を検出できない(compile成功後の、実Node実行時にだけ
+      # 顕在化する問題のため)。このステップは、実Secretを一切渡さずに
+      # (このworkflowの既存方針どおり)実際にcompile→node実行まで行い、
+      # 「module読み込みに成功し、Secret不足で安全にblockedになる」ことを
+      # 毎回のPRで検証する回帰テスト。
+      - name: "Backup execution module-format smoke test (no secrets; regression test for the 2026-09-21 initial run failure)"
+        run: |
+          npx tsc -p tsconfig.backup-execution.json
+          set +e
+          output=$(node scripts/run-production-backup-entry.mjs 2>&1)
+          code=$?
+          set -e
+          echo "$output"
+          if echo "$output" | grep -qiE "is not defined in ES module scope|Cannot find module|ERR_MODULE_NOT_FOUND|require is not defined"; then
+            echo "::error::compiled backup execution entrypoint failed to load (module-system mismatch reintroduced)"
+            exit 1
+          fi
+          if [ "$code" -eq 0 ]; then
+            echo "::error::backup execution entrypoint should have blocked without secrets, but exited 0"
+            exit 1
+          fi
+          if ! echo "$output" | grep -q "必須環境変数が不足している"; then
+            echo "::error::expected a missing-secret blocked message, got something else"
+            exit 1
+          fi
+          echo "backup execution module loaded correctly and blocked safely before any DB/R2 connection"
+
   reference-data-postgres-validation:
     # 参照データ自動更新 Phase 2 の、実PostgreSQL(GitHub-hosted Ubuntuランナー上の
     # service container、このジョブの間だけ存在しジョブ終了後に破棄される)に対する
