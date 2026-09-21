@@ -2,7 +2,7 @@ import { Client } from "pg";
 import { createPostgresQueryClient } from "./postgres-adapter";
 import { R2RealClient } from "./backup-r2-real-client";
 import { runProductionBackup } from "./run-production-backup";
-import { checkObjectPrefixAllowed, type BackupObjectPrefix } from "./backup-r2-target";
+import { resolveBackupCategory, type BackupCategory } from "./backup-category";
 import { sanitizeErrorMessage } from "../real-import-guards";
 
 /**
@@ -37,11 +37,28 @@ export function readRequiredEnv(env: Readonly<Record<string, string | undefined>
   return out;
 }
 
-export function readPrefix(env: Readonly<Record<string, string | undefined>>): BackupObjectPrefix {
-  const raw = env.REFERENCE_DATA_BACKUP_PREFIX ?? "daily/";
-  const check = checkObjectPrefixAllowed(raw);
-  if (!check.ok) throw new Error(`REFERENCE_DATA_BACKUP_PREFIXが不正(blocked): ${check.reason}`);
-  return raw as BackupObjectPrefix;
+/**
+ * workflow_dispatchの`backup_category` choice inputから渡された値を読む。
+ *
+ * 2026-09-21追記: 以前の`readPrefix`(廃止)は`REFERENCE_DATA_BACKUP_PREFIX`という
+ * 自由な文字列を読み、prefixだけを決定していた。これにより、workflow YAMLのprefix値と
+ * manifestのretentionCategory/retentionDaysが独立して設定可能になり、両者の不整合
+ * (例: prefix=pre-apply/なのにretentionCategory=production-standard・8日で期限切れ)が
+ * 生じ得た。この関数はprefixを直接受け取らず、`category`という1つの値だけを受け取り、
+ * `resolveBackupCategory`(`backup-category.ts`)による完全一致検証を経由させることで、
+ * prefix・retentionCategory・retentionDaysの組み合わせを常に一意に決定させる
+ * (前後の空白除去・大文字小文字補正・既定値へのフォールバックは一切行わない)。
+ */
+export function readCategory(env: Readonly<Record<string, string | undefined>>): BackupCategory {
+  const raw = env.REFERENCE_DATA_BACKUP_CATEGORY;
+  if (raw === undefined || raw === "") {
+    throw new Error("REFERENCE_DATA_BACKUP_CATEGORYが未設定(blocked)");
+  }
+  const resolved = resolveBackupCategory(raw);
+  if (!resolved.ok || !resolved.category) {
+    throw new Error(`REFERENCE_DATA_BACKUP_CATEGORYが不正(blocked): ${resolved.reason}`);
+  }
+  return resolved.category;
 }
 
 export async function main(): Promise<void> {
@@ -52,7 +69,7 @@ export async function main(): Promise<void> {
 
   try {
     const secrets = readRequiredEnv(env);
-    const prefix = readPrefix(env);
+    const category = readCategory(env);
 
     const verifyHost = env.BACKUP_VERIFY_PG_HOST ?? "localhost";
     const verifyPort = Number(env.BACKUP_VERIFY_PG_PORT ?? "5432");
@@ -95,9 +112,7 @@ export async function main(): Promise<void> {
       schemaVersion: env.REFERENCE_DATA_BACKUP_SCHEMA_VERSION ?? now.toISOString().slice(0, 10),
       postgresMajorVersion: Number(env.REFERENCE_DATA_BACKUP_PG_MAJOR_VERSION ?? "16"),
       applicationCommitSha,
-      retentionCategory: "production-standard",
-      retentionDays: Number(env.REFERENCE_DATA_BACKUP_RETENTION_DAYS ?? "8"),
-      prefix,
+      category,
     });
 
     // audit summary: secretを含まないJSONだけをstdoutへ出力する(workflow側がログとして残す)。

@@ -25,8 +25,21 @@ export interface BackupManifest {
   encryptionAlgorithm: string;
   encrypted: boolean;
   restoreVerified: boolean;
-  retentionCategory: "isolated-test-ephemeral" | "production-short-term" | "production-standard";
-  expiresAt: string;
+  retentionCategory:
+    | "isolated-test-ephemeral"
+    | "production-short-term"
+    | "production-standard"
+    | "production-daily"
+    | "production-weekly"
+    | "production-monthly"
+    | "production-pre-apply";
+  /**
+   * 2026-09-21追記: `production-pre-apply`(初回Production apply直前の基準点Backup等)は
+   * R2 Lifecycle Ruleで自動削除の対象外にしており、期限そのものが存在しない。この
+   * 「期限が無い」という事実を、0や遠い未来の日付で偽装せず、`null`として明示的に
+   * 表現する(`backup-category.ts`の`BACKUP_CATEGORY_MAPPING`と対応)。
+   */
+  expiresAt: string | null;
   applicationCommitSha: string;
   backupStatus: "pending" | "encrypted" | "restore_verified" | "failed";
 }
@@ -45,7 +58,7 @@ export interface BuildBackupManifestInput {
   compression: "none" | "gzip";
   encryptionAlgorithm: string;
   retentionCategory: BackupManifest["retentionCategory"];
-  expiresAt: string;
+  expiresAt: string | null;
   applicationCommitSha: string;
 }
 

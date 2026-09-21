@@ -6,9 +6,9 @@ import { NodeAesGcmEncryptor, generateEphemeralTestKey, type BackupEncryptor } f
 import { AgeCliEncryptor } from "./backup-age-cli-encryptor";
 import type { R2Client } from "./backup-r2-client";
 import { putEncryptedBackup, computeSha256Hex, type PutEncryptedBackupResult } from "./backup-r2-adapter";
-import type { BackupObjectPrefix } from "./backup-r2-target";
-import { markManifestRestoreVerified, type BackupManifest } from "./backup-manifest";
+import { markManifestRestoreVerified } from "./backup-manifest";
 import { PRODUCTION_REFERENCE_DATA_SCHEMA, BACKUP_RESTORE_TEST_SCHEMA, buildBackupIsolatedSchemaDdl } from "./backup-schema";
+import { resolveBackupCategory, type BackupCategory } from "./backup-category";
 
 /**
  * Production reference-data Backupの実行オーケストレーション(design-onlyから実行可能へ)。
@@ -57,9 +57,12 @@ export interface RunProductionBackupInput {
   schemaVersion: string;
   postgresMajorVersion: number;
   applicationCommitSha: string;
-  retentionCategory: BackupManifest["retentionCategory"];
-  retentionDays: number;
-  prefix: BackupObjectPrefix;
+  /**
+   * Backup category(daily/weekly/monthly/pre-apply)。prefix・retentionCategory・
+   * retentionDaysは、呼び出し側から個別に指定させず、すべて`backup-category.ts`の
+   * `BACKUP_CATEGORY_MAPPING`から一意に決定する(自由な組み合わせを禁止する)。
+   */
+  category: BackupCategory;
 }
 
 export interface RunProductionBackupResult {
@@ -74,14 +77,24 @@ function utcDateString(now: Date): string {
 }
 
 export async function runProductionBackup(input: RunProductionBackupInput): Promise<RunProductionBackupResult> {
+  // category→prefix/retentionCategory/retentionDaysの対応は、呼び出し側から個別に
+  // 自由指定させず、必ずこのmappingだけを経由させる(defense in depth: CLI側の
+  // resolveBackupCategoryによる検証を通過済みのはずだが、ここでも独立して再検証し、
+  // 実DB接続より前にunknown categoryをblockedにする)。
+  const resolved = resolveBackupCategory(input.category);
+  if (!resolved.ok || !resolved.mapping) {
+    return { ok: false, reasons: [resolved.reason ?? "不明なBackup category"], summary: { phase: "category-validation", ok: false } };
+  }
+  const { prefix, retentionCategory, retentionDays } = resolved.mapping;
+
   const baseInput: Omit<CreateBackupInput, "encryptor"> = {
     jobId: input.jobId,
     schemaVersion: input.schemaVersion,
     applicationCommitSha: input.applicationCommitSha,
     now: input.now,
     postgresMajorVersion: input.postgresMajorVersion,
-    retentionCategory: input.retentionCategory,
-    retentionDays: input.retentionDays,
+    retentionCategory,
+    retentionDays,
     sourceSchema: PRODUCTION_REFERENCE_DATA_SCHEMA,
   };
 
@@ -145,7 +158,7 @@ export async function runProductionBackup(input: RunProductionBackupInput): Prom
     manifest: verifiedManifest,
     encryptedPayload: realResult.artifact.encryptedPayload,
     localEncryptedChecksum,
-    prefix: input.prefix,
+    prefix,
     jobId: input.jobId,
     utcDate: utcDateString(input.now),
   });
@@ -157,7 +170,11 @@ export async function runProductionBackup(input: RunProductionBackupInput): Prom
     objectKey: putResult.objectKey,
     manifestKey: putResult.manifestKey,
     jobId: input.jobId,
-    prefix: input.prefix,
+    category: input.category,
+    prefix,
+    retentionCategory,
+    retentionDays,
+    expiresAt: verifiedManifest.expiresAt,
     rowCounts: verifiedManifest.rowCounts,
     totalChecksum: verifiedManifest.totalChecksum,
     restoreVerified: verifiedManifest.restoreVerified,

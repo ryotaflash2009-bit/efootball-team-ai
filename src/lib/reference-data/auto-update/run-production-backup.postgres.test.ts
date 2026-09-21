@@ -166,9 +166,7 @@ describe("runProductionBackup(実PostgreSQL、reference_data相当schema1つ + �
       schemaVersion: SCHEMA_VERSION,
       postgresMajorVersion: pgMajor,
       applicationCommitSha: "0".repeat(40),
-      retentionCategory: "production-standard",
-      retentionDays: 8,
-      prefix: "daily/",
+      category: "daily",
     });
 
     expect(result.ok, `reasons: ${JSON.stringify(result.reasons)}`).toBe(true);
@@ -203,12 +201,38 @@ describe("runProductionBackup(実PostgreSQL、reference_data相当schema1つ + �
       schemaVersion: SCHEMA_VERSION,
       postgresMajorVersion: pgMajor,
       applicationCommitSha: "0".repeat(40),
-      retentionCategory: "production-standard",
-      retentionDays: 8,
-      prefix: "daily/",
+      category: "daily",
     });
 
     expect(result.ok, `reasons: ${JSON.stringify(result.reasons)}`).toBe(true);
     expect((result.summary.rowCounts as Record<string, number>).world_player_cards).toBe(0);
+  }, 20000);
+
+  it("category=pre-applyの場合、実PostgreSQLからのexport・隔離Restore検証を経てもretentionDays/expiresAtはnullのまま(初回Production Backup相当)", async () => {
+    await seedProductionLikeRows(adminClient);
+    const pgMajor = await getPostgresMajorVersion(adminClient);
+    const prodClient: QueryClient = createPostgresQueryClient(adminClient);
+    const verifyClient: QueryClient = createPostgresQueryClient(adminClient);
+    const r2Client = new FakeR2Client();
+
+    const result = await runProductionBackup({
+      prodClient,
+      verifyClient,
+      r2Client,
+      ageRecipient: RECIPIENT,
+      ageCommand: [process.execPath, fakeAgeSuccessPath],
+      jobId: "postgres-test-prod-backup-pre-apply",
+      now: new Date(),
+      schemaVersion: SCHEMA_VERSION,
+      postgresMajorVersion: pgMajor,
+      applicationCommitSha: "0".repeat(40),
+      category: "pre-apply",
+    });
+
+    expect(result.ok, `reasons: ${JSON.stringify(result.reasons)}`).toBe(true);
+    expect((result.summary.objectKey as string).startsWith("pre-apply/")).toBe(true);
+    expect(result.summary.retentionCategory).toBe("production-pre-apply");
+    expect(result.summary.retentionDays).toBeNull();
+    expect(result.summary.expiresAt).toBeNull();
   }, 20000);
 });
