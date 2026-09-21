@@ -42,12 +42,20 @@ apply role名が同一でないこと、role名に`postgres`/`service_role`ら�
 
 ## 2. Secret設計(名前と責務のみ、実Secretは追加していない)
 
+**2026-09-21更新**: 保管先をCloudflare R2 Standardに確定したことに伴い、provider未確定時の
+汎用名だった`REFERENCE_DATA_BACKUP_STORAGE_TOKEN`/`REFERENCE_DATA_BACKUP_STORAGE_DESTINATION`
+(単一token設計)を、R2固有の4項目へ置き換えた。理由: R2はS3互換のSigV4認証を要求し、
+性質の異なる2つの値(Access Key ID・Secret Access Key)を必要とするため、単一token design
+では安全に表現できないと判断した(詳細は[[reference-data-production-backup-r2-adapter.md]]参照)。
+
 | Secret名 | 内容の種類 | 読み取り権限 | 保存場所 | 利用workflow | ログマスキング | rotation | revoke方法 | 漏洩時の影響 | apply資格情報との分離 |
 |---|---|---|---|---|---|---|---|---|---|
 | `REFERENCE_DATA_BACKUP_DB_URL` | read-only role専用の接続文字列 | Backup workflowのjobだけ | GitHub Actions Secrets(リポジトリ or Environment単位) | `reference-data-production-backup.yml`のみ | GitHub Actionsは`secrets.*`をログへ自動マスクする(既定機能に依存、追加のマスキングコードは書かない設計にしない=念のため出力しないコードにする) | Supabase側でread-only roleのパスワードを再発行し、Secretを更新 | Secretを削除、次にrole自体のパスワードを変更(role無効化ではなくパスワード変更が即時性が高い) | read-onlyのため書込み被害は無いが、対象4テーブルの内容(公開データ相当)が読み取られる | apply用の別Secretとは名前・値とも完全に別 |
 | `REFERENCE_DATA_BACKUP_AGE_RECIPIENT` | age**公開鍵**(復号能力なし) | Backup workflowのjobだけ | GitHub Actions Secrets | 同上 | 公開鍵自体は秘密情報ではないが、Secretとして管理し値の混入経路を限定する | 本人が新しい鍵ペアを生成した場合に更新 | Secretを削除するだけ(公開鍵漏洩自体に実害はない) | 実害なし(公開鍵) | 該当なし |
-| `REFERENCE_DATA_BACKUP_STORAGE_TOKEN` | 保管先(後述)へのアップロード用トークン | Backup workflowのjobだけ | GitHub Actions Secrets | 同上 | 同上 | 保管先側でトークンを再発行 | トークンを保管先側で無効化、Secretを削除 | 保管先への書込み(アップロード)が可能になる、内容は暗号化済みのため読み取り不可 | apply資格情報と無関係 |
-| `REFERENCE_DATA_BACKUP_STORAGE_DESTINATION` | 保管先の識別子(バケット名/リポジトリ名等、接続文字列ではない) | Backup workflowのjobだけ | GitHub Actions Secrets | 同上 | 識別子自体は秘密情報ではないが、Secretとして管理 | 保管先変更時に更新 | Secretを削除・更新 | 保管先の場所が特定される程度、内容自体は暗号化済み | 該当なし |
+| `REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID` | R2 API TokenのAccess Key ID | Backup workflowのjobだけ | GitHub Actions Secrets | 同上 | 同上 | R2 API Tokenを再発行(Access Key ID・Secret Access Keyは対で再発行される) | Cloudflare DashboardでToken即時削除、Secretを削除 | 単体では悪用不可(Secret Access Keyと対で必要)、念のためTokenごと失効させる | apply資格情報と無関係 |
+| `REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY` | R2 API TokenのSecret Access Key(最も機微) | Backup workflowのjobだけ | GitHub Actions Secrets | 同上 | 同上 | 同上 | Cloudflare DashboardでToken即時削除、Secretを削除 | 対象BucketへのRead/Write(Object Read & Write権限の範囲内)が可能になる、内容は暗号化済みのため読み取り不可 | apply資格情報と無関係 |
+| `REFERENCE_DATA_BACKUP_R2_ENDPOINT` | R2のS3互換エンドポイントURL(Account IDを含む) | Backup workflowのjobだけ | GitHub Actions Secrets | 同上 | エンドポイント自体は接続先情報のため、念のためSecretとして管理(直接の攻撃力は無いが情報最小化のため) | Account構成変更時に更新(通常は不変) | Secretを削除・更新 | 接続先が特定される程度、単体では悪用不可 | 該当なし |
+| `REFERENCE_DATA_BACKUP_R2_BUCKET` | 対象Bucket名 | Backup workflowのjobだけ | GitHub Actions Secrets | 同上 | 識別子自体は秘密情報ではないが、Secretとして管理 | 保管先Bucket変更時に更新 | Secretを削除・更新 | 保管先の場所が特定される程度、単体では悪用不可 | 該当なし |
 
 **秘密鍵自体(age秘密鍵)をGitHub Secretへ保存する設計は第一候補にしない。** GitHub Actions側は
 「暗号化する能力」だけを持てばよく、「復号する能力」を持つ必要がないため、Secretとして

@@ -15,6 +15,10 @@ read-only role・Secret scope等、計28項目)へ拡張した。read-only資格
 [[reference-data-production-backup-approval-runbook.md]]、脅威モデルは
 [[reference-data-production-backup-threat-model.md]]を参照。
 
+**関連(2026-09-21追記)**: 保管先をCloudflare R2 Standardに確定し、Storage adapter・
+Object key・checksum検証・Token最小権限設計を[[reference-data-production-backup-r2-adapter.md]]に
+記録した。
+
 実装コード: `src/lib/reference-data/auto-update/backup-target.ts`・`backup-schema.ts`・
 `backup-checksum.ts`・`backup-manifest.ts`・`backup-encryptor.ts`・`backup-sql.ts`・
 `backup-orchestrator.ts`・`backup-restore.ts`・`backup-gate.ts`・`backup-sql-audit.ts`

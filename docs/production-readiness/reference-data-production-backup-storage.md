@@ -1,9 +1,17 @@
-# Production Backup 保管先・Retention設計(design only、実保管先は作成していない)
+# Production Backup 保管先・Retention設計(2026-09-21: Cloudflare R2採用確定)
 
-作成日: 2026-09-20。**この文書は設計のみである。実storageアカウント・実バケット・実retention
-設定は、このセッションでは一切作成していない。**
+作成日: 2026-09-20(2026-09-21追記: 保管先をCloudflare R2 Standardに確定)。
+**保管先の比較・確定はこの文書で行うが、実R2への接続・実アップロード・実ダウンロードは、
+このセッションでは一切行っていない。API Token・Access Key・Secretも未作成のまま。**
 
-関連: [[reference-data-production-backup-security-model.md]]
+関連: [[reference-data-production-backup-security-model.md]]・
+[[reference-data-production-backup-r2-adapter.md]](R2採用後のStorage adapter・Object key・
+checksum検証・Token最小権限設計の詳細)
+
+**2026-09-21追記**: 本人がCloudflareアカウント作成・2FA有効化・R2 Standard有効化・
+Budget Alert設定・private Bucket作成・Lifecycle Rule設定(daily 8日/weekly 35日/
+monthly 100日/pre-apply自動削除なし)まで完了した。API Token・Secretは未作成、
+Backup/Production接続は0件のまま。詳細は[[reference-data-production-backup-r2-adapter.md]]を参照。
 
 ## 1. 保管先比較
 
@@ -19,25 +27,26 @@
 | Supabase Storage private bucket | Supabase Free枠内 | 設定次第 | server-side encryption(Supabase管理) | RLS相当のポリシーで制御 | 限定的 | なし | 手動またはpolicy | Supabase側ログ | 中 | **Production Supabase自体に依存(Backupの意義と矛盾: Backup対象と保管先が同一障害ドメインになる)** | 低い | 中 | 可能だが上記の理由で非推奨 | private設定を誤るリスクあり |
 | ローカル外付け保存 | 機器費用のみ | 無期限(機器寿命まで) | 本人が別途暗号化 | 物理アクセス制御のみ | なし | なし | 手動 | なし | 遅い(手動転送) | 単一の物理媒体に依存(紛失・故障リスク) | なし | 手動転送の手間 | 可能だが単一障害点 | 物理紛失時のリスク |
 
-## 2. 推奨保管先
+## 2. 採用保管先(確定)
 
-**第一候補: S3互換Object Storage(Cloudflare R2またはBackblaze B2)。**
-**予備保管先: GitHub Release asset(privateリポジトリではなく、このリポジトリ自体はpublicのため、
-暗号化済みファイルのみをRelease assetとして置く場合は特に、平文が絶対に混入しないことを
-二重に確認する運用にする)。**
+**採用: Cloudflare R2 Standard(private Bucket)。**
+**予備保管先(未構成、将来検討): GitHub Release asset(privateリポジトリではなく、このリポジトリ
+自体はpublicのため、暗号化済みファイルのみをRelease assetとして置く場合は特に、平文が絶対に
+混入しないことを二重に確認する運用にする)。**
 
 理由:
 - Supabase Storage(単一のSupabaseプロジェクトに保管先が依存する)は、Production DB自体に
   障害が起きた場合にBackupへもアクセスできなくなるリスクがあり、Backupの目的(障害復旧)と
   矛盾する。
 - GitHub Actions Artifactは既定retentionが短く(90日)、長期保管には不向き。
-- Cloudflare R2はegress無料でFree枠が大きく、個人開発の規模に適合しやすい。Backblaze B2は
-  バックアップ用途向けに設計されたサービスで、Object Lock(改ざん・削除防止)にも対応する。
-- **単一障害点を避けるため、暗号化済みBackupは第一候補(R2/B2)へ保存しつつ、直近世代だけ
-  予備としてGitHub Release assetへも複製する2系統構成を推奨する**(GitHub依存だけに
-  一本化しない)。
+- Cloudflare R2はegress無料でFree枠が大きく、個人開発の規模に適合しやすい(本人が既に
+  アカウント作成・Budget Alert設定まで完了済み)。
+- **単一障害点を避けるため、暗号化済みBackupはR2を主保管先としつつ、直近世代だけ予備として
+  GitHub Release assetへも複製する2系統構成を将来検討する**(GitHub依存だけに一本化しない、
+  ただしこのセッションでは予備保管先の実装は行っていない)。
 
-**このセッションでは、いずれのアカウントもリポジトリも作成していない。**
+**R2の実アカウント設定は本人が完了済みだが、Storage adapterコードからの実接続・実アップロード・
+実ダウンロードは、このセッションでは一切行っていない。API Token・Access Key・Secretは未作成。**
 
 ## 3. Retention設計
 
