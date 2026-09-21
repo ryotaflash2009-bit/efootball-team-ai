@@ -19,6 +19,16 @@ import type { R2Client, R2PutObjectInput, R2PutObjectResult, R2HeadObjectResult,
 const REGION = "auto";
 const CHECKSUM_METADATA_HEADER = "x-amz-meta-sha256";
 
+/**
+ * Cloudflare R2のS3互換エンドポイントとして許可するホスト名の形式。
+ * `<32桁16進数のaccount id>[.eu|.fips].r2.cloudflarestorage.com`のみを許可し、
+ * それ以外の任意のhttps://ホスト(SSRF・endpoint誤設定・Secret誤入力の踏み台化)を拒否する。
+ * `REFERENCE_DATA_BACKUP_R2_ENDPOINT`はGitHub Secretから来る値であり利用者からの
+ * 直接入力ではないが、値の誤り・混入を早期に(実際にfetchする前に)検出するための
+ * 多層防御として、プロトコルだけでなくホスト名の形式も検証する。
+ */
+const R2_ENDPOINT_HOST_PATTERN = /^[a-f0-9]{32}(\.(eu|fips))?\.r2\.cloudflarestorage\.com$/i;
+
 export interface R2RealClientConfig {
   /** R2のS3互換エンドポイントURL(例: https://<account-id>.r2.cloudflarestorage.com)。Secretから取得する想定。 */
   endpoint: string;
@@ -35,22 +45,36 @@ function sanitizeHttpError(operation: string, status: number): Error {
   return new Error(`R2 ${operation}失敗: HTTP ${status}`);
 }
 
+/** endpointがhttps://かつCloudflare R2の想定ホスト名形式であることを確認し、そのoriginを返す。 */
+function assertSafeR2Endpoint(endpoint: string): string {
+  let url: URL;
+  try {
+    url = new URL(endpoint);
+  } catch {
+    throw new Error("R2RealClient: endpointが不正なURLである");
+  }
+  if (url.protocol !== "https:") {
+    throw new Error("R2RealClient: endpointはhttps://である必要がある");
+  }
+  if (!R2_ENDPOINT_HOST_PATTERN.test(url.hostname)) {
+    throw new Error("R2RealClient: endpointのホスト名がCloudflare R2の想定形式(<account-id>.r2.cloudflarestorage.com)と一致しない");
+  }
+  return url.origin;
+}
+
 export class R2RealClient implements R2Client {
   private readonly config: R2RealClientConfig;
   private readonly fetchImpl: typeof fetch;
   private readonly endpointOrigin: string;
 
   constructor(config: R2RealClientConfig) {
-    if (!config.endpoint || !/^https:\/\//i.test(config.endpoint)) {
-      throw new Error("R2RealClient: endpointはhttps://で始まる必要がある");
-    }
+    this.endpointOrigin = assertSafeR2Endpoint(config.endpoint);
     if (!config.bucket) throw new Error("R2RealClient: bucketが指定されていない");
     if (!config.accessKeyId || !config.secretAccessKey) {
       throw new Error("R2RealClient: accessKeyId/secretAccessKeyが指定されていない");
     }
     this.config = config;
     this.fetchImpl = config.fetchImpl ?? fetch;
-    this.endpointOrigin = new URL(config.endpoint).origin;
   }
 
   private objectUrl(key: string): URL {
@@ -193,6 +217,24 @@ export function parseListObjectsV2Xml(xml: string): R2ObjectSummary[] {
   return results;
 }
 
+const XML_ENTITY_REPLACEMENTS: Readonly<Record<string, string>> = {
+  "&amp;": "&",
+  "&lt;": "<",
+  "&gt;": ">",
+  "&quot;": '"',
+  "&apos;": "'",
+};
+
+/**
+ * CodeQL(Double escaping or unescaping)修正: 以前は`&amp;`→`&lt;`→...と複数回に
+ * 分けて`.replace()`を連鎖させていたため、`&amp;lt;`(本来は文字列`&lt;`という
+ * 4文字そのものを表す、正しくエスケープされた値)が、`&amp;`を先に`&`へ戻した
+ * 時点で`&lt;`という文字列になり、次の`.replace(/&lt;/g, "<")`によって誤って
+ * `<`へさらに変換されてしまう(二重アンエスケープ)。1回のregex.replaceで
+ * すべてのentityを同時に置換することで、置換後の文字列が同じパスで再度
+ * マッチされることを防ぐ(String.prototype.replaceの1回のグローバルマッチは
+ * 元の文字列だけを走査し、置換結果を再走査しないため安全)。
+ */
 function decodeXmlEntities(value: string): string {
-  return value.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&apos;/g, "'");
+  return value.replace(/&(?:amp|lt|gt|quot|apos);/g, (entity) => XML_ENTITY_REPLACEMENTS[entity] ?? entity);
 }

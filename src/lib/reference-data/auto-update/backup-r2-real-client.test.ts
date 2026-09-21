@@ -1,7 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
 import { R2RealClient, parseListObjectsV2Xml } from "./backup-r2-real-client";
 
-const ENDPOINT = "https://test-account-id.r2.cloudflarestorage.com";
+const FAKE_ACCOUNT_ID = "0123456789abcdef0123456789abcdef"; // 32桁16進数(Cloudflare account idの実形式、値自体はfake)
+const ENDPOINT = `https://${FAKE_ACCOUNT_ID}.r2.cloudflarestorage.com`;
 const BUCKET = "test-bucket";
 const ACCESS_KEY_ID = "test-access-key-id";
 const SECRET_ACCESS_KEY = "test-secret-access-key-value";
@@ -17,6 +18,27 @@ describe("R2RealClient(fake fetchだけを使用、実ネットワーク通信�
     expect(() => new R2RealClient({ endpoint: ENDPOINT, bucket: "", accessKeyId: "a", secretAccessKey: "b" })).toThrow();
     expect(() => new R2RealClient({ endpoint: ENDPOINT, bucket: BUCKET, accessKeyId: "", secretAccessKey: "b" })).toThrow();
     expect(() => new R2RealClient({ endpoint: ENDPOINT, bucket: BUCKET, accessKeyId: "a", secretAccessKey: "" })).toThrow();
+  });
+
+  it("endpointがCloudflare R2の想定ホスト名形式以外(SSRF・Secret誤設定を模す)なら拒否する", () => {
+    const badEndpoints = [
+      "https://attacker.example.com",
+      "https://r2.cloudflarestorage.com.attacker.example.com",
+      "https://169.254.169.254",
+      `https://${FAKE_ACCOUNT_ID}.r2.cloudflarestorage.com.evil.com`,
+      "https://not-a-valid-account-id.r2.cloudflarestorage.com",
+      "not a url at all",
+    ];
+    for (const endpoint of badEndpoints) {
+      expect(() => new R2RealClient({ endpoint, bucket: BUCKET, accessKeyId: "a", secretAccessKey: "b" })).toThrow();
+    }
+  });
+
+  it("R2の正当なホスト名形式(既定・eu・fips)はすべて許可する", () => {
+    for (const suffix of ["", ".eu", ".fips"]) {
+      const endpoint = `https://${FAKE_ACCOUNT_ID}${suffix}.r2.cloudflarestorage.com`;
+      expect(() => new R2RealClient({ endpoint, bucket: BUCKET, accessKeyId: "a", secretAccessKey: "b" })).not.toThrow();
+    }
   });
 
   it("putObjectは署名済みPUTリクエストを送り、metadataをx-amz-meta-*headerへ変換する", async () => {
@@ -117,5 +139,18 @@ describe("parseListObjectsV2Xml", () => {
   it("XMLエンティティをデコードする", () => {
     const xml = `<Contents><Key>daily/a&amp;b.age</Key><Size>1</Size><ETag>"e"</ETag></Contents>`;
     expect(parseListObjectsV2Xml(xml)[0].key).toBe("daily/a&b.age");
+  });
+
+  it("二重アンエスケープしない(CodeQL \"Double escaping or unescaping\"の回帰テスト): &amp;lt;は&lt;という4文字のままにする(<へは変換しない)", () => {
+    // 元データが文字列 "&lt;" (4文字: &, l, t, ;) を正しく表現するXMLエンティティは
+    // "&amp;lt;"。これを1回だけ正しくデコードすると "&lt;"(4文字のまま)に戻るべきで、
+    // 誤って"<"へ二重デコードしてはならない。
+    const xml = `<Contents><Key>daily/&amp;lt;test&amp;gt;.age</Key><Size>1</Size><ETag>"e"</ETag></Contents>`;
+    expect(parseListObjectsV2Xml(xml)[0].key).toBe("daily/&lt;test&gt;.age");
+  });
+
+  it("複数のentityが隣接していても、1回のパスで正しくデコードする", () => {
+    const xml = `<Contents><Key>a&amp;&amp;b&lt;&gt;c&quot;&apos;d</Key><Size>1</Size><ETag>"e"</ETag></Contents>`;
+    expect(parseListObjectsV2Xml(xml)[0].key).toBe(`a&&b<>c"'d`);
   });
 });

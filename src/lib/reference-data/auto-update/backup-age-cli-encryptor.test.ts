@@ -150,4 +150,48 @@ describe("AgeCliEncryptor(fake age実行境界だけを検証、実バイナリ�
     const src = readFileSync(fakeAgeSuccessPath, "utf8");
     expect(src).toContain("FAKE_AGE:");
   });
+
+  it("recipientにshell metacharacterが含まれていても、shell解釈されず単一の引数としてそのまま渡される(command injection回帰テスト)", async () => {
+    // spawn()はshell:falseで呼び出しており(実装参照)、この文字列は"age1"で始まる
+    // ことだけを検証されて通過するが、shellへは一切渡らないため、";"以降が別コマンドとして
+    // 実行されることはない。fake ageスクリプトが受け取った引数をそのままmarkerへ
+    // 埋め込むため、出力に文字列全体が「無傷のまま」現れることで、injectionが
+    // 発生していないことを確認できる。
+    const maliciousRecipient = "age1qqq; touch " + join(scratchDir, "pwned-marker") + " #";
+    const encryptor = new AgeCliEncryptor({ recipient: maliciousRecipient, ageCommand: [process.execPath, fakeAgeSuccessPath], tempDir: scratchDir });
+    const encrypted = await encryptor.encrypt(Buffer.from("hello"));
+    expect(encrypted.toString("utf8")).toBe(`FAKE_AGE:${maliciousRecipient}:hello`);
+    expect(existsSync(join(scratchDir, "pwned-marker"))).toBe(false);
+  });
+
+  it("recipientにバッククォート・コマンド置換構文が含まれていても、単一引数としてそのまま渡される", async () => {
+    const maliciousRecipient = "age1qqq`id`$(whoami)";
+    const encryptor = new AgeCliEncryptor({ recipient: maliciousRecipient, ageCommand: [process.execPath, fakeAgeSuccessPath], tempDir: scratchDir });
+    const encrypted = await encryptor.encrypt(Buffer.from("hello"));
+    expect(encrypted.toString("utf8")).toBe(`FAKE_AGE:${maliciousRecipient}:hello`);
+  });
+
+  it("plaintext一時ファイルは常にtempDir直下のランダムファイル名になる(呼び出し側はpath文字列を一切渡せないため、path traversalの入力経路が無い)", async () => {
+    const writtenPaths: string[] = [];
+    const encryptor = new AgeCliEncryptor({
+      recipient: RECIPIENT,
+      ageCommand: [process.execPath, fakeAgeSuccessPath],
+      tempDir: scratchDir,
+      fsOverride: {
+        writeFile: async (path, data, opts) => {
+          writtenPaths.push(path as string);
+          const { writeFile } = await import("node:fs/promises");
+          return writeFile(path, data, opts);
+        },
+      },
+    });
+    await encryptor.encrypt(Buffer.from("a"));
+    await encryptor.encrypt(Buffer.from("b"));
+    expect(writtenPaths).toHaveLength(2);
+    for (const p of writtenPaths) {
+      expect(p.startsWith(scratchDir)).toBe(true);
+      expect(p).not.toContain("..");
+    }
+    expect(new Set(writtenPaths).size).toBe(2); // 呼び出しごとに異なるランダムファイル名
+  });
 });
