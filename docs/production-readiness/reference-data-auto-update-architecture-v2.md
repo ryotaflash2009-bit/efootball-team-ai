@@ -297,6 +297,8 @@ awaiting_production_approval → applying → applied → completed`
    Phase Dの決定: 自動更新では保持を継続し、差分件数を`preserved_column_drift`(warning)で示す
    (`reference-data-auto-update-phase-d-policy.md` 4章)。
 7. Production実schemaとリポジトリ内DDLの一致(read-onlyでの確認は別承認)。
+8. **Stage 1(2026-09-23)で判明したWorldのupstream契約変化**: page size固定30(全件443 request)、
+   `sortBy: UPDATED_AT`はHTTP 400。取得方式の見直しは本人判断(`reference-data-auto-update-stage1-upstream-verification.md`)。
 
 ## 25. Phase A Scope
 
