@@ -20,6 +20,8 @@ export interface UpstreamHttpTransportOptions {
   readonly approval: string;
   /** source別の1回の実行あたりのrequest上限。 */
   readonly maxRequests: Readonly<Record<SourceId, number>>;
+  /** 1回の実行で受信してよい応答本文の合計byte数(超過したら読み込みを中断して停止)。 */
+  readonly maxTotalBytes?: number;
   readonly fetchImpl?: typeof fetch;
   readonly sleep?: (ms: number) => Promise<void>;
   readonly nowMs?: () => number;
@@ -28,7 +30,7 @@ export interface UpstreamHttpTransportOptions {
 export interface UpstreamRequestLogEntry {
   readonly sourceId: SourceId;
   readonly status: number | null;
-  readonly outcome: "response" | "timeout" | "network_error" | "too_large" | "cap_exceeded";
+  readonly outcome: "response" | "timeout" | "network_error" | "too_large" | "cap_exceeded" | "transfer_cap_exceeded";
   readonly durationMs: number;
   readonly bytes: number;
 }
@@ -66,6 +68,8 @@ export function createUpstreamHttpTransport(options: UpstreamHttpTransportOption
   const lastRequestAt: Partial<Record<SourceId, number>> = {};
   const log: UpstreamRequestLogEntry[] = [];
   let inFlight = false;
+  let totalBytes = 0;
+  const maxTotal = options.maxTotalBytes ?? Number.POSITIVE_INFINITY;
 
   return {
     kind: "real_http",
@@ -81,6 +85,10 @@ export function createUpstreamHttpTransport(options: UpstreamHttpTransportOption
       if (counts[req.sourceId] >= (options.maxRequests[req.sourceId] ?? 0)) {
         log.push({ sourceId: req.sourceId, status: null, outcome: "cap_exceeded", durationMs: 0, bytes: 0 });
         throw new SourceFetchError("request_cap_exceeded");
+      }
+      if (totalBytes >= maxTotal) {
+        log.push({ sourceId: req.sourceId, status: null, outcome: "transfer_cap_exceeded", durationMs: 0, bytes: 0 });
+        throw new SourceFetchError("transfer_cap_exceeded");
       }
       const last = lastRequestAt[req.sourceId];
       if (last != null) {
@@ -114,16 +122,18 @@ export function createUpstreamHttpTransport(options: UpstreamHttpTransportOption
         });
         let body: { text: string; bytes: number } | null;
         try {
-          body = await readBodyWithCap(res, endpoint.maxResponseBytes);
+          body = await readBodyWithCap(res, Math.min(endpoint.maxResponseBytes, maxTotal - totalBytes));
         } catch (err) {
           const timeout = err instanceof Error && (err.name === "TimeoutError" || err.name === "AbortError");
           log.push({ sourceId: req.sourceId, status: res.status, outcome: timeout ? "timeout" : "network_error", durationMs: nowMs() - started, bytes: 0 });
           throw new SourceFetchError(timeout ? "timeout" : "network_error", res.status);
         }
         if (body == null) {
-          log.push({ sourceId: req.sourceId, status: res.status, outcome: "too_large", durationMs: nowMs() - started, bytes: endpoint.maxResponseBytes });
-          throw new SourceFetchError("response_too_large", res.status);
+          const byTotal = maxTotal - totalBytes < endpoint.maxResponseBytes;
+          log.push({ sourceId: req.sourceId, status: res.status, outcome: byTotal ? "transfer_cap_exceeded" : "too_large", durationMs: nowMs() - started, bytes: 0 });
+          throw new SourceFetchError(byTotal ? "transfer_cap_exceeded" : "response_too_large", res.status);
         }
+        totalBytes += body.bytes;
         log.push({ sourceId: req.sourceId, status: res.status, outcome: "response", durationMs: nowMs() - started, bytes: body.bytes });
         return { status: res.status, headers, bodyText: body.text };
       } finally {
