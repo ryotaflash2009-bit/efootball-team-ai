@@ -290,7 +290,8 @@ awaiting_production_approval → applying → applied → completed`
    凍結するかSupabaseから再生成するかは未決定。
 4. **物理削除**: 初期フェーズでは禁止。tombstoneの閾値・非表示方式は未決定。
 5. **reference_data_ops**: Production未作成(staging・job・承認・before snapshotの置き場)。
-6. `ai_styles`・`appearance`のupstream対応(Phase B)。
+6. `ai_styles`・`appearance`のupstream対応: Phase Bで確認済み(search応答に含まれ、既存syncが保存している)。
+   自動更新で上書きしてよいかはPhase Dで決める(`reference-data-auto-update-phase-b-source.md` 5章)。
 7. Production実schemaとリポジトリ内DDLの一致(read-onlyでの確認は別承認)。
 
 ## 25. Phase A Scope
