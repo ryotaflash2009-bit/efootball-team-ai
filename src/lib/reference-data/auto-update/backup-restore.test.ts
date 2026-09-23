@@ -6,6 +6,7 @@ import { markManifestFailed } from "./backup-manifest";
 import { FakeEncryptor, NodeAesGcmEncryptor, generateEphemeralTestKey, type BackupEncryptor } from "./backup-encryptor";
 import type { BackupArtifact } from "./backup-orchestrator";
 import type { QueryClient, QueryResult } from "./apply-orchestrator";
+import { PRODUCTION_BACKUP_CONTENT_POLICY } from "./backup-content-policy";
 
 function toRawDbValue(v: unknown): unknown {
   return v !== null && v !== undefined && typeof v === "object" ? JSON.stringify(v) : v ?? null;
@@ -347,5 +348,70 @@ describe("restoreReferenceDataBackup", () => {
     });
     expect(result.manifest!.backupStatus).toBe("failed");
     expect(result.manifest).toEqual(markManifestFailed(tampered.manifest));
+  });
+});
+
+describe("restoreReferenceDataBackup: 空データ同士の一致だけではrestoreVerified=trueにしない(workflow Run #6の回帰テスト、2026-09-23)", () => {
+  async function buildEmptyArtifact(): Promise<BackupArtifact> {
+    const result = await createReferenceDataBackup(new FakeSourceClient(), {
+      jobId: "job-empty",
+      schemaVersion: SCHEMA_VERSION,
+      applicationCommitSha: "0".repeat(40),
+      now: new Date("2026-09-20T00:00:00.000Z"),
+      postgresMajorVersion: PG_MAJOR,
+      retentionCategory: "isolated-test-ephemeral",
+      retentionDays: 7,
+      encryptor: new FakeEncryptor(),
+      sourceSchema: BACKUP_SOURCE_TEST_SCHEMA,
+    });
+    if (!result.ok || !result.artifact) throw new Error("テスト前提の空Backup生成に失敗した");
+    return result.artifact;
+  }
+
+  it("contentPolicy指定時、全4テーブル0行のBackupは復号・書込みより前に拒否され、restoreVerified=falseのまま", async () => {
+    const artifact = await buildEmptyArtifact();
+    const restoreClient = new FakeRestoreClient();
+    let decryptCalls = 0;
+    const decryptor: BackupEncryptor = Object.assign(new FakeEncryptor(), {
+      async decrypt(c: Buffer) {
+        decryptCalls += 1;
+        return new FakeEncryptor().decrypt(c);
+      },
+    });
+    const result = await restoreReferenceDataBackup(restoreClient, {
+      artifact, decryptor, expectedSchemaVersion: SCHEMA_VERSION, expectedPostgresMajorVersion: PG_MAJOR, now: new Date(),
+      contentPolicy: PRODUCTION_BACKUP_CONTENT_POLICY,
+    });
+    expect(result.ok).toBe(false);
+    expect(result.restoreVerified).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/最低件数/);
+    expect(decryptCalls).toBe(0);
+    for (const rows of Object.values(restoreClient.restoreRows)) expect(rows.length).toBe(0);
+  });
+
+  it("contentPolicy指定時でも、non-emptyの正常なBackupは従来どおりRestore検証に成功する", async () => {
+    const artifact = await buildValidArtifact(new FakeEncryptor());
+    const result = await restoreReferenceDataBackup(new FakeRestoreClient(), {
+      artifact, decryptor: new FakeEncryptor(), expectedSchemaVersion: SCHEMA_VERSION, expectedPostgresMajorVersion: PG_MAJOR, now: new Date(),
+      contentPolicy: PRODUCTION_BACKUP_CONTENT_POLICY,
+    });
+    expect(result.ok, JSON.stringify(result.reasons)).toBe(true);
+    expect(result.restoreVerified).toBe(true);
+  });
+
+  it("Restore後の読み戻し行数がmanifestと一致しなければrestoreVerified=falseになる(書込み経路で行が失われた場合)", async () => {
+    const artifact = await buildValidArtifact(new FakeEncryptor());
+    const restoreClient = new FakeRestoreClient();
+    const originalQuery = restoreClient.query.bind(restoreClient);
+    restoreClient.query = async (sql: string, params?: readonly unknown[]) => {
+      if (/^select .+ from reference_data_backup_restore_test\.managers/i.test(sql.trim())) return { rows: [] };
+      return originalQuery(sql, params);
+    };
+    const result = await restoreReferenceDataBackup(restoreClient, {
+      artifact, decryptor: new FakeEncryptor(), expectedSchemaVersion: SCHEMA_VERSION, expectedPostgresMajorVersion: PG_MAJOR, now: new Date(),
+    });
+    expect(result.ok).toBe(false);
+    expect(result.restoreVerified).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/managers/);
   });
 });

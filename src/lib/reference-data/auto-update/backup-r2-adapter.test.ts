@@ -346,3 +346,40 @@ describe("Secretがログ・エラー理由へ出力されないことの確認"
     assertNoSecretLikeReasons(result.reasons);
   });
 });
+
+describe("R2 upload gate: 内容妥当性(空Backupの拒否、workflow Run #6の回帰テスト、2026-09-23)", () => {
+  const EMPTY = { world_player_cards: 0, managers: 0, player_card_analysis: 0, import_batches: 0 };
+
+  it("Run #6と同じmanifest(encrypted=true・restoreVerified=true・backupStatus=restore_verified・全4テーブル0行)はuploadを拒否し、R2へ一切書き込まない", async () => {
+    const manifest = { ...verifiedManifest(), rowCounts: EMPTY };
+    expect(manifest.encrypted).toBe(true);
+    expect(manifest.restoreVerified).toBe(true);
+    expect(manifest.backupStatus).toBe("restore_verified");
+    const client = new FakeR2Client();
+    const result = await putEncryptedBackup(client, validPutInput({ manifest }));
+    expect(result.ok).toBe(false);
+    expect(result.storageVerified).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/最低件数/);
+    expect(client.putCalls).toBe(0);
+  });
+
+  for (const table of BACKUP_TARGET_TABLES) {
+    it(`${table}だけが0行のmanifestもuploadを拒否する`, () => {
+      const manifest = { ...verifiedManifest(), rowCounts: { ...verifiedManifest().rowCounts, [table]: 0 } };
+      expect(evaluatePutEncryptedBackupGates(validPutInput({ manifest })).some((c) => !c.ok)).toBe(true);
+    });
+  }
+
+  it("backupStatusがrestore_verifiedでなければ(restoreVerified=trueでも)uploadを拒否する", () => {
+    const manifest = { ...verifiedManifest(), backupStatus: "encrypted" as const };
+    const failed = evaluatePutEncryptedBackupGates(validPutInput({ manifest })).filter((c) => !c.ok);
+    expect(failed.map((c) => c.reason).join(" ")).toMatch(/backupStatus/);
+  });
+
+  it("rowCountsに負の値・非数値があればuploadを拒否する", () => {
+    const negative = { ...verifiedManifest(), rowCounts: { ...verifiedManifest().rowCounts, managers: -1 } };
+    const nonNumeric = { ...verifiedManifest(), rowCounts: { ...verifiedManifest().rowCounts, managers: "1" as unknown as number } };
+    expect(evaluatePutEncryptedBackupGates(validPutInput({ manifest: negative })).some((c) => !c.ok)).toBe(true);
+    expect(evaluatePutEncryptedBackupGates(validPutInput({ manifest: nonNumeric })).some((c) => !c.ok)).toBe(true);
+  });
+});
