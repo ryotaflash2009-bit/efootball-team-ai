@@ -217,6 +217,18 @@ export function normalizeWorldPlayerRecord(raw: unknown): WorldNormalizedPlayer 
   };
 }
 
+const NAIVE_ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,6})?)?$/;
+
+/**
+ * upstreamのappearance.updatedAtはタイムゾーンを持たない(例: 2026-04-28T17:17:02.021292)。
+ * Productionのtimestamptz列はUTCのsessionでこの値を保存しているため、タイムゾーン無しの
+ * ISO形式(日付とTで区切った時刻)だけをUTCとして解釈する。空白区切り等の別形式は補正しない(reject)。
+ * 解釈の妥当性はBackup v2(appearance_updated_atを収録)で確認する。
+ */
+export function assumeUtcIfNaiveIso(value: string): string {
+  return NAIVE_ISO_RE.test(value) ? `${value}Z` : value;
+}
+
 // ---------------------------------------------------------------------------
 // Source row (reference_data.world_player_cards upstream-derived columns)
 // ---------------------------------------------------------------------------
@@ -318,9 +330,9 @@ export function toWorldSourceRow(n: WorldNormalizedPlayer, fetchedAt: string): W
   let appearanceUpdatedAt: string | null = null;
   if (n.appearance_updated_at != null) {
     try {
-      appearanceUpdatedAt = normalizeTimestamp(n.appearance_updated_at, "appearance.updatedAt");
+      appearanceUpdatedAt = normalizeTimestamp(assumeUtcIfNaiveIso(n.appearance_updated_at), "appearance.updatedAt");
     } catch {
-      reasons.push("appearance.updatedAtがタイムゾーン付きISO 8601ではない");
+      reasons.push("appearance.updatedAtがISO 8601ではない");
     }
   }
   let fetched: string | null = null;

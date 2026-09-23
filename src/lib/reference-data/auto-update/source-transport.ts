@@ -29,6 +29,8 @@ export interface SourceEndpoint {
   readonly retryBackoffMs: readonly number[];
   /** 同一sourceへの連続リクエスト間隔(ms)。 */
   readonly minIntervalMs: number;
+  /** 受け付けるContent-Type(先頭一致・小文字)。これ以外はschema driftとして停止する。 */
+  readonly allowedContentTypes: readonly string[];
 }
 
 export const SOURCE_USER_AGENT = "eFootball-Team-AI-dev/0.1 (project data sync; single-threaded; contact: project owner)";
@@ -44,6 +46,7 @@ export const SOURCE_ENDPOINTS: Readonly<Record<SourceId, SourceEndpoint>> = Obje
     maxAttempts: 3,
     retryBackoffMs: Object.freeze([5_000, 15_000]),
     minIntervalMs: 3_000,
+    allowedContentTypes: Object.freeze(["application/json"]),
   }),
   "managers-json": Object.freeze({
     sourceId: "managers-json",
@@ -55,10 +58,16 @@ export const SOURCE_ENDPOINTS: Readonly<Record<SourceId, SourceEndpoint>> = Obje
     maxAttempts: 1,
     retryBackoffMs: Object.freeze([]),
     minIntervalMs: 0,
+    // raw.githubusercontent.comはJSONファイルをtext/plainで返す。
+    allowedContentTypes: Object.freeze(["application/json", "text/plain"]),
   }),
 });
 
-/** Phase Bでは実ネットワークを使わない。trueへ変えるには upstream初回実通信の別承認が必要。 */
+/**
+ * 定期実行(schedule)からの実ネットワーク利用は未承認のまま(false)。
+ * Stage 1で承認されたのは、手動のupstream検証CLIからの読み取りだけで、それは
+ * upstream-http-transport.tsの明示的な承認token付きtransportでのみ行う。
+ */
 export const REAL_NETWORK_ACCESS_ENABLED = false as const;
 
 export interface SourceRequest {
@@ -78,7 +87,7 @@ export interface SourceResponse {
 }
 
 export interface SourceTransport {
-  readonly kind: "recorded_fixture" | "disabled";
+  readonly kind: "recorded_fixture" | "disabled" | "real_http";
   request(req: SourceRequest): Promise<SourceResponse>;
 }
 
@@ -98,7 +107,10 @@ export type SourceErrorCode =
   | "set_cookie"
   | "sensitive_content"
   | "response_too_large"
-  | "empty_body";
+  | "empty_body"
+  | "unexpected_content_type"
+  | "request_cap_exceeded"
+  | "approval_missing";
 
 const ERROR_RETRY_REASON: Readonly<Record<SourceErrorCode, RetryReason>> = Object.freeze({
   network_disabled: "unknown",
@@ -117,6 +129,9 @@ const ERROR_RETRY_REASON: Readonly<Record<SourceErrorCode, RetryReason>> = Objec
   sensitive_content: "unknown",
   response_too_large: "unknown",
   empty_body: "schema_drift",
+  unexpected_content_type: "schema_drift",
+  request_cap_exceeded: "unknown",
+  approval_missing: "unknown",
 });
 
 /** 取得失敗。messageは固定文言+HTTP status番号だけで、応答本文・ヘッダー値・URLのqueryを含めない。 */
@@ -126,6 +141,8 @@ export class SourceFetchError extends Error {
   readonly status: number | null;
   /** fetchSourceWithRetryが失敗時に設定する試行記録(Evidence用)。 */
   attempts: readonly SourceAttemptRecord[] = [];
+  /** 上流がRetry-Afterを返した場合の待機時間(ms、上限60秒)。再試行可能な失敗のときだけ使う。 */
+  retryAfterMs: number | null = null;
 
   constructor(code: SourceErrorCode, status: number | null = null) {
     super(`source取得失敗: ${code}${status != null ? ` (HTTP ${status})` : ""}`);
@@ -163,7 +180,11 @@ export function assertAcceptableSourceResponse(endpoint: SourceEndpoint, res: So
   if (s === 429) throw new SourceFetchError("http_429", s);
   if (s === 403) throw new SourceFetchError(CAPTCHA_RE.test(res.bodyText) ? "captcha" : "http_403", s);
   if (s === 401) throw new SourceFetchError("http_401", s);
-  if (s >= 500 && s < 600) throw new SourceFetchError("http_5xx", s);
+  if (s >= 500 && s < 600) {
+    const e = new SourceFetchError("http_5xx", s);
+    e.retryAfterMs = parseRetryAfterMs(res.headers["retry-after"]);
+    throw e;
+  }
   if (s !== 200) throw new SourceFetchError("unexpected_status", s);
   const headerNames = Object.keys(res.headers).map((h) => h.toLowerCase());
   if (headerNames.includes("set-cookie")) throw new SourceFetchError("set_cookie", s);
@@ -171,7 +192,24 @@ export function assertAcceptableSourceResponse(endpoint: SourceEndpoint, res: So
   if (res.bodyText.trim() === "") throw new SourceFetchError("empty_body", s);
   const contentType = res.headers["content-type"] ?? "";
   if (/text\/html/i.test(contentType) && CAPTCHA_RE.test(res.bodyText)) throw new SourceFetchError("captcha", s);
+  if (!endpoint.allowedContentTypes.some((t) => contentType.toLowerCase().startsWith(t))) throw new SourceFetchError("unexpected_content_type", s);
   if (detectSensitiveSignals(res.bodyText + "\n" + headerNames.join(",")).length > 0) throw new SourceFetchError("sensitive_content", s);
+}
+
+const MAX_RETRY_AFTER_MS = 60_000;
+
+/** Retry-After(秒またはHTTP日付)をmsへ。不正・負値はnull、上限60秒。 */
+export function parseRetryAfterMs(value: string | undefined, now: Date = new Date()): number | null {
+  if (!value) return null;
+  const v = value.trim();
+  let ms: number | null = null;
+  if (/^\d+$/.test(v)) ms = Number(v) * 1000;
+  else {
+    const t = Date.parse(v);
+    if (Number.isFinite(t)) ms = t - now.getTime();
+  }
+  if (ms == null || !Number.isFinite(ms) || ms < 0) return null;
+  return Math.min(ms, MAX_RETRY_AFTER_MS);
 }
 
 /** 許可済みendpointへのrequestだけを組み立てる(host・method・URLは固定値で、呼び出し側は変更できない)。 */
@@ -283,7 +321,8 @@ export async function fetchSourceWithRetry(
         e.attempts = [...attempts];
         throw e;
       }
-      await sleep(endpoint.retryBackoffMs[attempt - 1] ?? endpoint.retryBackoffMs.at(-1) ?? 0);
+      const backoff = endpoint.retryBackoffMs[attempt - 1] ?? endpoint.retryBackoffMs.at(-1) ?? 0;
+      await sleep(Math.max(backoff, e.retryAfterMs ?? 0));
     }
   }
 }

@@ -11,6 +11,7 @@ import {
   createRecordedFixtureTransport,
   fetchSourceWithRetry,
   sourceRequestKey,
+  parseRetryAfterMs,
   type SourceResponse,
 } from "./source-transport";
 
@@ -49,6 +50,29 @@ describe("source transport: 応答の判定", () => {
     expect(codeOf(() => assertAcceptableSourceResponse(WORLD, ok("   ")))).toBe("empty_body");
     const small = { ...WORLD, maxResponseBytes: 10 };
     expect(codeOf(() => assertAcceptableSourceResponse(small, ok('{"players":[1,2,3,4,5]}')))).toBe("response_too_large");
+  });
+
+  it("Content-Typeが許可外(未指定・HTMLのJSON以外)ならschema driftとして停止する", () => {
+    expect(codeOf(() => assertAcceptableSourceResponse(WORLD, ok('{"players":[]}', {})))).toBe("unexpected_content_type");
+    expect(codeOf(() => assertAcceptableSourceResponse(WORLD, ok('{"players":[]}', { "content-type": "text/html" })))).toBe("unexpected_content_type");
+    expect(codeOf(() => assertAcceptableSourceResponse(WORLD, ok('{"players":[]}', { "content-type": "application/json; charset=utf-8" })))).toBeNull();
+    const MANAGERS = SOURCE_ENDPOINTS["managers-json"];
+    expect(codeOf(() => assertAcceptableSourceResponse(MANAGERS, ok("[]", { "content-type": "text/plain; charset=utf-8" })))).toBeNull();
+  });
+
+  it("Retry-After(秒・HTTP日付)を上限60秒で解釈し、5xxの再試行待機へ反映する", async () => {
+    const now = new Date("2026-09-23T00:00:00Z");
+    expect(parseRetryAfterMs("7", now)).toBe(7000);
+    expect(parseRetryAfterMs("600", now)).toBe(60000);
+    expect(parseRetryAfterMs("Wed, 23 Sep 2026 00:00:10 GMT", now)).toBe(10000);
+    expect(parseRetryAfterMs("-1", now)).toBeNull();
+    expect(parseRetryAfterMs("soon", now)).toBeNull();
+    expect(parseRetryAfterMs(undefined, now)).toBeNull();
+    const req = buildSourceRequest("efootball-world", '{"page":9}');
+    const waits: number[] = [];
+    const t = createRecordedFixtureTransport([{ request: req, responses: [{ status: 503, headers: { "retry-after": "20" }, bodyText: "" }, ok()] }]);
+    await fetchSourceWithRetry(t, req, { sleep: async (ms) => void waits.push(ms) });
+    expect(waits).toEqual([20000]);
   });
 
   it("エラーメッセージに応答本文・ヘッダー値を含めない", () => {

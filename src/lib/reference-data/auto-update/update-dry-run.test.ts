@@ -141,3 +141,16 @@ describe("isolated dry run guards", () => {
     await expect(runIsolatedDryRunApply(client, "reference_data", [], [], {})).rejects.toThrow();
   });
 });
+
+describe("collectWorldFullSnapshot: 取得上限", () => {
+  it("page 1のtotalPages/totalCountが上限を超えたら、2page目以降を取得せずcap_exceededで停止", async () => {
+    const t = createRecordedFixtureTransport([worldPage(1, good.slice(0, 2), 5, 10)]);
+    const byPages = await collectWorldFullSnapshot(t, { fetchedAt: FETCHED_AT, maxPages: 4 });
+    expect(byPages.ok ? null : byPages.failure.code).toBe("cap_exceeded");
+    expect(t.calls.length).toBe(1);
+    const t2 = createRecordedFixtureTransport([worldPage(1, good.slice(0, 2), 2, 10)]);
+    const byRecords = await collectWorldFullSnapshot(t2, { fetchedAt: FETCHED_AT, maxPages: 4, maxRecords: 5 });
+    expect(byRecords.ok ? null : byRecords.failure.code).toBe("cap_exceeded");
+    expect(t2.calls.length).toBe(1);
+  });
+});

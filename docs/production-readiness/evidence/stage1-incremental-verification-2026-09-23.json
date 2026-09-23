@@ -1,0 +1,48 @@
+{
+  "kind": "stage1-incremental-verification",
+  "startedAt": "2026-09-23T14:03:55.673Z",
+  "finishedFetchingAt": "2026-09-23T14:03:56.569Z",
+  "limits": {
+    "worldMaxPages": 30,
+    "worldMaxRecords": 15000,
+    "managersMaxRecords": 500
+  },
+  "currentStateSource": "local SQLite (read-only), same transforms as the original Production import; not Production itself",
+  "currentRowCounts": {
+    "world_player_cards": 13009,
+    "managers": 66
+  },
+  "requests": {
+    "count": 1,
+    "bySource": {
+      "efootball-world": 1,
+      "managers-json": 0
+    },
+    "statuses": [
+      "efootball-world:400"
+    ],
+    "totalBytes": 180,
+    "maxDurationMs": 295
+  },
+  "result": {
+    "worldMode": "incremental",
+    "worldIncrementalDecision": null,
+    "stoppedAt": "world_fetch",
+    "failure": {
+      "table": "world_player_cards",
+      "stage": "source_fetch",
+      "code": "unexpected_status"
+    },
+    "snapshots": [],
+    "rejectedReasons": {},
+    "duplicateIdentities": {
+      "world_player_cards": 0,
+      "managers": 0
+    },
+    "diffReports": [],
+    "candidate": null
+  },
+  "isolated": {
+    "skipped": "no candidate"
+  }
+}

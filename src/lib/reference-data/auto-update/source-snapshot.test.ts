@@ -128,7 +128,7 @@ describe("World full snapshot (recorded fixture transport)", () => {
 
 describe("managers snapshot", () => {
   async function managersSnapshot(bodyText: string): Promise<SourceSnapshot> {
-    const transport = createRecordedFixtureTransport([{ request: buildManagersRequest(), responses: [{ status: 200, headers: {}, bodyText }] }]);
+    const transport = createRecordedFixtureTransport([{ request: buildManagersRequest(), responses: [{ status: 200, headers: { "content-type": "text/plain; charset=utf-8" }, bodyText }] }]);
     const r = await fetchSourceWithRetry(transport, buildManagersRequest(), { sleep: noSleep });
     const doc = parseManagersDocument(r.response.bodyText);
     const rows: ManagerSourceRow[] = [];
