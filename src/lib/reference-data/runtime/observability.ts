@@ -42,6 +42,7 @@ export type ReferenceDataErrorCategory =
   | "server_error"
   | "malformed_response"
   | "schema_mismatch"
+  | "upstream_request_rejected"
   | "unknown";
 
 function messageOf(err: unknown): string {

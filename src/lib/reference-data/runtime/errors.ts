@@ -14,6 +14,7 @@
 import { WorldDataUnavailableError, WorldQueryError } from "@/lib/world/db";
 import { ReferenceDataEnvError } from "./supabase-client";
 import { classifyReferenceDataFailure, logReferenceDataFailure, type ReferenceDataOperation } from "./observability";
+import { SearchInputRejectedError } from "@/lib/search/search-input";
 
 export interface PostgrestLikeError {
   code?: string;
@@ -45,4 +46,40 @@ export function normalizeQueryError(err: PostgrestLikeError | Error | unknown, c
   const errorCategory = classifyReferenceDataFailure(context.status, err);
   logReferenceDataFailure({ ...context, errorCategory });
   return new WorldQueryError();
+}
+
+function hasPostgrestErrorCode(err: unknown): boolean {
+  if (!err || typeof err !== "object" || !("code" in err)) return false;
+  const code = (err as { code?: unknown }).code;
+  return typeof code === "string" && code.trim() !== "";
+}
+
+/**
+ * 検索語付きの一覧クエリの失敗を正規化する。
+ *
+ * 上流(Supabase手前の防御)が検索リクエストだけを拒否した場合を、認証・RLS・権限の本当の失敗と
+ * 取り違えないよう、次の全条件を満たすときだけ「検索入力の拒否」(SearchInputRejectedError)とする:
+ *   1. 検索語がある
+ *   2. HTTP 403
+ *   3. PostgREST/PostgreSQLのerror codeを持たない(本当の権限エラーは42501・PGRST3xx等のcodeを持つ)
+ *   4. 同じ条件から検索語だけを外した確認クエリ(件数のみ)は成功する(=拒否は検索語に起因する)
+ * それ以外(401・429・5xx・code付き403・確認クエリも失敗)は既存どおりWorldQueryError。
+ * 利用者向けの内容は定型文だけで、上流の本文はログにも応答にも含めない(ログは安全なreason codeのみ)。
+ */
+export async function normalizeSearchQueryFailure(
+  err: unknown,
+  context: QueryErrorContext,
+  searchTerm: string | null | undefined,
+  probeWithoutSearchTerm: () => PromiseLike<{ error: unknown; status?: number }>,
+): Promise<WorldQueryError | SearchInputRejectedError> {
+  if (!searchTerm || context.status !== 403 || hasPostgrestErrorCode(err)) return normalizeQueryError(err, context);
+  let probe: { error: unknown; status?: number };
+  try {
+    probe = await probeWithoutSearchTerm();
+  } catch {
+    return normalizeQueryError(err, context);
+  }
+  if (probe.error) return normalizeQueryError(err, context);
+  logReferenceDataFailure({ ...context, errorCategory: "upstream_request_rejected" });
+  return new SearchInputRejectedError("rejected_by_upstream");
 }

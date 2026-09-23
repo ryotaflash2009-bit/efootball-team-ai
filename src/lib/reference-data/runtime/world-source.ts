@@ -33,7 +33,7 @@ import type {
   WorldSourceMeta,
 } from "@/lib/world/types";
 import { getReferenceDataClient } from "./supabase-client";
-import { normalizeClientError, normalizeQueryError } from "./errors";
+import { normalizeClientError, normalizeQueryError, normalizeSearchQueryFailure } from "./errors";
 import type { ReferenceDataOperation } from "./observability";
 import { buildSearchOrFilter } from "./postgrest-filter";
 
@@ -184,7 +184,8 @@ export async function listPlayersFromSupabase(q: WorldListQuery, client?: Refere
   } catch (err) {
     throw normalizeQueryError(err, { operation: "world.list" });
   }
-  if (countResult.error) throw normalizeQueryError(countResult.error, { operation: "world.list", status: countResult.status });
+  const probe = () => applyWorldFilters(c.from("world_player_cards").select("world_card_id", { count: "exact", head: true }), { ...q, query: "" });
+  if (countResult.error) throw await normalizeSearchQueryFailure(countResult.error, { operation: "world.list", status: countResult.status }, q.query, probe);
 
   const totalCount = countResult.count ?? 0;
   const totalPages = q.pageSize > 0 ? Math.max(1, Math.ceil(totalCount / q.pageSize)) : 1;
@@ -194,7 +195,7 @@ export async function listPlayersFromSupabase(q: WorldListQuery, client?: Refere
   let dataBuilder = applyWorldFilters(c.from("world_player_cards").select("*"), q);
   for (const key of ORDER[q.sort] ?? ORDER.ovr_max_desc) dataBuilder = dataBuilder.order(key.field, { ascending: key.ascending });
   const { data, error, status } = await dataBuilder.range(offset, offset + q.pageSize - 1);
-  if (error) throw normalizeQueryError(error, { operation: "world.list", status });
+  if (error) throw await normalizeSearchQueryFailure(error, { operation: "world.list", status }, q.query, probe);
 
   const rows = (data ?? []) as Row[];
   const players = rows.map((r) => rowToListItem(r));

@@ -24,7 +24,7 @@ import type {
 } from "@/lib/managers/types";
 import { MANAGER_ID_RE } from "@/lib/managers/schemas";
 import { getReferenceDataClient } from "./supabase-client";
-import { normalizeClientError, normalizeQueryError } from "./errors";
+import { normalizeClientError, normalizeQueryError, normalizeSearchQueryFailure } from "./errors";
 import { buildSearchOrFilter } from "./postgrest-filter";
 
 type Row = Record<string, unknown>;
@@ -241,7 +241,8 @@ export async function listManagersFromSupabase(q: ManagerListQuery, client?: Ref
   } catch (err) {
     throw normalizeQueryError(err, { operation: "managers.list" });
   }
-  if (countResult.error) throw normalizeQueryError(countResult.error, { operation: "managers.list", status: countResult.status });
+  const probe = () => applyManagerFilters(c.from("managers").select("internal_manager_id", { count: "exact", head: true }), { ...q, query: "" });
+  if (countResult.error) throw await normalizeSearchQueryFailure(countResult.error, { operation: "managers.list", status: countResult.status }, q.query, probe);
 
   const totalCount = countResult.count ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / q.pageSize));
@@ -251,7 +252,7 @@ export async function listManagersFromSupabase(q: ManagerListQuery, client?: Ref
   let dataBuilder = applyManagerFilters(c.from("managers").select("*"), q);
   for (const key of ORDER[q.sort]) dataBuilder = dataBuilder.order(key.field, { ascending: key.ascending, nullsFirst: key.nullsFirst });
   const { data, error, status } = await dataBuilder.range(offset, offset + q.pageSize - 1);
-  if (error) throw normalizeQueryError(error, { operation: "managers.list", status });
+  if (error) throw await normalizeSearchQueryFailure(error, { operation: "managers.list", status }, q.query, probe);
 
   const rows = (data ?? []) as Row[];
   return {
