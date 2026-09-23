@@ -5,7 +5,7 @@ import { createRecordedFixtureTransport, type RecordedExchange } from "./source-
 import { buildWorldSearchRequest, normalizeWorldPlayerRecord, toWorldSourceRow } from "./source-world";
 import { buildManagersRequest, toManagerSourceRow } from "./source-managers";
 import { buildInsertRow } from "./update-diff";
-import { STAGE1_LIMITS, analyzeWorldPage, runStage1Full, summarizeStage1Full } from "./stage1-verification";
+import { STAGE1_APPROVED_WORLD_FULL_SCAN, STAGE1_LIMITS, analyzeSourceTimestamps, analyzeWorldPage, runStage1Full, summarizeStage1Full } from "./stage1-verification";
 
 const FIX = path.join(__dirname, "__fixtures__", "source");
 const players = (JSON.parse(readFileSync(path.join(FIX, "world-players-synthetic.json"), "utf8")) as { players: Record<string, unknown>[] }).players.slice(0, 3);
@@ -58,5 +58,25 @@ describe("Stage 1: incremental(UPDATED_AT) + managers.json", () => {
     const summary = JSON.stringify(summarizeStage1Full(r));
     expect(summary).not.toMatch(/Synthetic/);
     expect(summary).toContain('"worldMode":"incremental"');
+  });
+});
+
+describe("Stage 1: upstream時刻の検査(補正しない)", () => {
+  it("タイムゾーン無し・将来日時・前回より古い・同一時刻の偏りを検知する", () => {
+    const r = analyzeSourceTimestamps(
+      ["2026-09-20T00:00:00.000Z", "2026-09-20T00:00:00.000Z", "2027-01-01T00:00:00.000Z", null],
+      ["2026-09-20T00:00:00", "2026-09-20T00:00:00", "2027-01-01T00:00:00Z", null],
+      "2026-09-23T00:00:00.000Z",
+      "2026-09-21T00:00:00.000Z",
+    );
+    expect(r).toMatchObject({ total: 4, withTimestamp: 3, rawWithoutTimezone: 2, rawWithTimezone: 1, futureCount: 1, regression: false, mostCommonCount: 2 });
+    expect(r.findings).toEqual(expect.arrayContaining(["upstream_timestamp_without_timezone_interpreted_as_utc", "future_timestamps", "mass_identical_timestamps"]));
+    const reg = analyzeSourceTimestamps(["2026-09-01T00:00:00.000Z"], ["2026-09-01T00:00:00Z"], "2026-09-23T00:00:00.000Z", "2026-09-10T00:00:00.000Z");
+    expect(reg.regression).toBe(true);
+    expect(reg.findings).toContain("timestamp_regression");
+  });
+
+  it("承認された1回限りの上限値", () => {
+    expect(STAGE1_APPROVED_WORLD_FULL_SCAN).toMatchObject({ worldMaxPages: 443, worldMaxRecords: 14000, worldMaxRequests: 445, maxTotalBytes: 40 * 1024 * 1024 });
   });
 });
