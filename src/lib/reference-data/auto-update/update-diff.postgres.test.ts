@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { buildTestOnlyPgConfigFromEnv } from "./postgres-adapter";
 import { runGuardedCleanup } from "./postgres-test-lifecycle";
+import { buildIsolatedReferenceSchemaDdl, REPOSITORY_REFERENCE_SQL_FILES } from "./isolated-reference-schema";
 import { buildSourceSnapshot, buildStagingDataset, type SnapshotTable } from "./source-snapshot";
 import { normalizeWorldPlayerRecord, toWorldSourceRow, type WorldSourceRow } from "./source-world";
 import { toManagerSourceRow, type ManagerSourceRow } from "./source-managers";
@@ -25,20 +26,15 @@ const SCHEMA = "reference_data_diff_test";
 const SQL_DIR = path.resolve(__dirname, "..", "..", "..", "..", "docs", "production-readiness", "sql");
 const FIX = path.join(__dirname, "__fixtures__", "source");
 const FETCHED_AT = "2026-09-23T00:00:00.000Z";
-const TABLES = ["import_batches", "world_player_cards", "managers"] as const;
 
-/** 実DDLファイルから、対象3 tableのcreate table文と、対象tableへのalter table文だけを取り出す。 */
+/** 実DDLファイルから隔離schemaのDDLを組み立てる(Phase Eと共通のbuilder)。 */
 function buildDdlFromRepositorySql(): string {
-  const base = readFileSync(path.join(SQL_DIR, "create-reference-data-schema.sql"), "utf8");
-  const ext = ["extend-reference-data-detail-schema.sql", "extend-name-sort-key-schema.sql"].map((f) => readFileSync(path.join(SQL_DIR, f), "utf8")).join("\n");
-  const statements: string[] = [`create schema ${SCHEMA};`];
-  for (const t of TABLES) {
-    const m = base.match(new RegExp(`create table if not exists reference_data\\.${t} \\([\\s\\S]*?\\n\\);`));
-    if (!m) throw new Error(`DDLに${t}が見つからない`);
-    statements.push(m[0]);
-  }
-  for (const m of ext.matchAll(/alter table reference_data\.(world_player_cards|managers)\b[\s\S]*?;/g)) statements.push(m[0]);
-  return statements.join("\n").replace(/reference_data\./g, `${SCHEMA}.`);
+  const read = (f: string) => readFileSync(path.join(SQL_DIR, f), "utf8");
+  return buildIsolatedReferenceSchemaDdl(SCHEMA, {
+    base: read(REPOSITORY_REFERENCE_SQL_FILES.base),
+    detailExtension: read(REPOSITORY_REFERENCE_SQL_FILES.detailExtension),
+    nameSortKeyExtension: read(REPOSITORY_REFERENCE_SQL_FILES.nameSortKeyExtension),
+  });
 }
 
 const config = buildTestOnlyPgConfigFromEnv(process.env);
