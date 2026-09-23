@@ -3155,6 +3155,13 @@ export interface Dictionary {
     sharedChannelIntro: string;
     sharedChannelEmailLabel: string;
     sendMailButtonLabel: string;
+    betaLimitsHeading: string;
+    betaLimitsIntro: string;
+    betaLimitData: string;
+    betaLimitStorage: string;
+    betaLimitRecommendation: string;
+    betaLimitChanges: string;
+    betaLimitsFeedback: string;
     mailtoAriaGeneral: string;
     mailtoAriaBugReport: string;
     mailtoAriaRights: string;
@@ -6735,6 +6742,13 @@ const ja: Dictionary = {
     sharedChannelIntro: "現在、一般問い合わせ、不具合報告、権利者からの連絡、プライバシーに関する問い合わせは、共通の窓口で受け付けています。",
     sharedChannelEmailLabel: "問い合わせ先メールアドレス",
     sendMailButtonLabel: "メールを送る",
+    betaLimitsHeading: "ベータ版の既知の制限",
+    betaLimitsIntro: "現在は招待制のベータ段階です。次の点をご了承のうえご利用ください。",
+    betaLimitData: "選手・監督データは定期的に手動で取り込んでいます。ゲーム内の最新の内容と異なる場合があり、各ページの「取り込み」「取得日時」がデータの時点です。",
+    betaLimitStorage: "My Team・保存ビルド・保存スカッド等は現在お使いのブラウザー内に保存されます。端末間の完全な自動同期はありません(My Teamクラウド保存はアルファ機能です)。",
+    betaLimitRecommendation: "ベストイレブン等の提案は本サービス独自のルールに基づく参考情報であり、公式の評価ではありません。",
+    betaLimitChanges: "ベータ期間中は、機能・表示・データの形式が予告なく変わる場合があります。",
+    betaLimitsFeedback: "気づいた点や不具合は、下の「不具合報告」からお知らせください。",
     mailtoAriaGeneral: "一般問い合わせ用のメールを送る",
     mailtoAriaBugReport: "不具合報告用のメールを送る",
     mailtoAriaRights: "権利者からの連絡用のメールを送る",
