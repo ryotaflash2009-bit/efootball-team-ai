@@ -43,6 +43,9 @@ export interface CollectOptions {
   readonly fetchedAt: string;
   readonly sleep?: (ms: number) => Promise<void>;
   readonly now?: () => Date;
+  /** World full scanのpage上限・件数上限(page 1のtotalPages/totalCountで超過を検知したら以降を取得しない)。 */
+  readonly maxPages?: number;
+  readonly maxRecords?: number;
 }
 
 /** full scanの安全上限(page数)。既存全件同期は約27 page。 */
@@ -65,13 +68,17 @@ export async function collectWorldFullSnapshot(transport: SourceTransport, opts:
   const rows: WorldSourceRow[] = [];
   const rejected: WorldRowRejection[] = [];
   let expectedPageSize: number | undefined;
-  for (let page = 1; page <= WORLD_FULL_SCAN_MAX_PAGES; page++) {
+  const pageCap = Math.min(opts.maxPages ?? WORLD_FULL_SCAN_MAX_PAGES, WORLD_FULL_SCAN_MAX_PAGES);
+  for (let page = 1; page <= pageCap; page++) {
     try {
       await paced(opts, page - 1);
       const r = await fetchSourceWithRetry(transport, buildWorldSearchRequest(page, "CREATED_AT"), { sleep: opts.sleep, now: opts.now });
       attempts.push(...r.attempts);
       const parsed = parseWorldSearchPage(r.response.bodyText);
       if (page === 1 && parsed.pageSize != null) expectedPageSize = parsed.pageSize;
+      if (page === 1 && ((parsed.totalPages != null && parsed.totalPages > pageCap) || (opts.maxRecords != null && parsed.totalCount != null && parsed.totalCount > opts.maxRecords))) {
+        return { ok: false, failure: { stage: "source_fetch", table: "world_player_cards", code: "cap_exceeded", attempts } };
+      }
       pages.push({ page, recordCount: parsed.players.length, contentHash: parsed.contentHash, bodyBytes: parsed.bodyBytes, totalCount: parsed.totalCount, totalPages: parsed.totalPages, hasNext: parsed.hasNext });
       for (const p of parsed.players) {
         const res = toWorldSourceRow(normalizeWorldPlayerRecord(p), opts.fetchedAt);
