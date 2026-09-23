@@ -1,6 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { getSupabaseEnv } from "@/lib/supabase/env";
+import { areInternalPagesVisible, isInternalPagePath } from "@/lib/public-info/internal-pages";
+
+/** 存在しないpath。ここへrewriteするとアプリ共通のnot-found画面がHTTP 404で返る。 */
+const HIDDEN_INTERNAL_PAGE_REWRITE = "/__internal-page-not-available";
 
 /**
  * Supabase Authのセッションを更新するミドルウェア(公式パターン)。
@@ -13,6 +17,12 @@ import { getSupabaseEnv } from "@/lib/supabase/env";
  *   未ログイン状態を安全に表示する(本PoCの方針)。
  */
 export async function middleware(request: NextRequest) {
+  // 開発者向け内部ページは、表示不可の環境ではレンダリング前に404にする(fail-closed)。
+  // ページ側のnotFound()だけでは、loading.tsxによるstreaming開始後でHTTP statusが200のままになるため。
+  if (isInternalPagePath(request.nextUrl.pathname.replace(/\/+$/, "") || "/") && !areInternalPagesVisible()) {
+    return NextResponse.rewrite(new URL(HIDDEN_INTERNAL_PAGE_REWRITE, request.url), { status: 404 });
+  }
+
   const env = getSupabaseEnv();
   if (!env.ok) {
     return NextResponse.next({ request });
