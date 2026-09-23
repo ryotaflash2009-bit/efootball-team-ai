@@ -15,7 +15,8 @@ const OK_IDENTITY = [
 
 function tableRows(overrides: Partial<Record<string, unknown>> = {}) {
   return BACKUP_TARGET_TABLES.map((t) => ({
-    table_name: t, table_exists: true, rls_enabled: true, has_select_privilege: true, has_applicable_select_policy: true, ...overrides,
+    table_name: t, table_exists: true, rls_enabled: true, rls_forced: true, owner_is_current_user: false, has_select_privilege: true,
+    has_applicable_select_policy: true, has_restrictive_select_policy: false, ...overrides,
   }));
 }
 
@@ -25,7 +26,12 @@ function failures(identity: Record<string, unknown>[], tables: Record<string, un
 
 describe("PRODUCTION_EXPECTED_SOURCE_IDENTITY", () => {
   it("database=postgres、role=reference_data_backup_reader(秘密情報ではない既知の契約)", () => {
-    expect(PRODUCTION_EXPECTED_SOURCE_IDENTITY).toEqual({ database: "postgres", currentUser: "reference_data_backup_reader", sessionUser: "reference_data_backup_reader" });
+    expect(PRODUCTION_EXPECTED_SOURCE_IDENTITY).toEqual({
+      database: "postgres",
+      currentUser: "reference_data_backup_reader",
+      sessionUser: "reference_data_backup_reader",
+      allowPrivilegedRoleForIsolatedTesting: false,
+    });
     expect(Object.isFrozen(PRODUCTION_EXPECTED_SOURCE_IDENTITY)).toBe(true);
   });
 });
@@ -45,8 +51,36 @@ describe("evaluateSourcePreflight", () => {
     expect(failures(OK_IDENTITY, tableRows({ rls_enabled: false, has_applicable_select_policy: false }))).toEqual([]);
   });
 
-  it("BYPASSRLS属性のroleはポリシー無しでも可視として扱う", () => {
-    expect(failures([{ ...OK_IDENTITY[0], bypass_rls: true }], tableRows({ has_applicable_select_policy: false }))).toEqual([]);
+  it("Productionの期待値では、BYPASSRLS・superuserのroleを成功条件にせずblockedにする(ポリシーがあっても)", () => {
+    expect(failures([{ ...OK_IDENTITY[0], bypass_rls: true }], tableRows()).join(" ")).toMatch(/BYPASSRLS/);
+    expect(failures([{ ...OK_IDENTITY[0], is_superuser: true }], tableRows()).join(" ")).toMatch(/superuser/);
+  });
+
+  it("隔離CI専用の明示フラグがある場合だけ、privileged roleはRLSを回避できるものとして扱う", () => {
+    const ci = { ...PRODUCTION_EXPECTED_SOURCE_IDENTITY, allowPrivilegedRoleForIsolatedTesting: true };
+    const r = evaluateSourcePreflight([{ ...OK_IDENTITY[0], is_superuser: true }], tableRows({ has_applicable_select_policy: false, owner_is_current_user: true }), ci);
+    expect(r.every((c) => c.ok)).toBe(true);
+  });
+
+  it("FORCE RLSの有無を理由に含めて診断する(FORCE解除を成功条件にしない)", () => {
+    const forced = failures(OK_IDENTITY, tableRows({ has_applicable_select_policy: false }));
+    expect(forced[0]).toMatch(/FORCE: true/);
+    const notForced = failures(OK_IDENTITY, tableRows({ rls_forced: false, has_applicable_select_policy: false }));
+    expect(notForced[0]).toMatch(/FORCE: false/);
+    expect(notForced.length).toBe(4); // FORCEが無くてもpolicyが無ければblocked
+  });
+
+  it("Backup roleがtable ownerならblockedにする", () => {
+    expect(failures(OK_IDENTITY, tableRows({ owner_is_current_user: true })).join(" ")).toMatch(/所有者/);
+  });
+
+  it("このroleに適用されるRESTRICTIVE SELECTポリシーがある想定外の状態をblockedにする(PERMISSIVEポリシーがあっても)", () => {
+    expect(failures(OK_IDENTITY, tableRows({ has_restrictive_select_policy: true })).join(" ")).toMatch(/RESTRICTIVE/);
+  });
+
+  it("新しい診断列が欠けた結果(旧形式)は形式不正としてblockedにする", () => {
+    const legacy = BACKUP_TARGET_TABLES.map((t) => ({ table_name: t, table_exists: true, rls_enabled: true, has_select_privilege: true, has_applicable_select_policy: true }));
+    expect(failures(OK_IDENTITY, legacy).length).toBe(4);
   });
 
   it("database名・current_user・session_userのいずれかが想定と異なれば拒否する", () => {
@@ -78,6 +112,15 @@ describe("evaluateSourcePreflight", () => {
 describe("preflight SQL(読み取り専用・カタログだけ・schema修飾)", () => {
   const identitySql = buildSourceIdentitySql();
   const visibilitySql = buildSourceTableVisibilitySql("reference_data");
+
+  it("適用可能なpolicyの条件は、PERMISSIVE・SELECTまたはALL・このroleまたはPUBLIC・USING (true)で、RESTRICTIVEは別に検出する", () => {
+    expect(visibilitySql).toContain("p.permissive = 'PERMISSIVE'");
+    expect(visibilitySql).toContain("p.qual = 'true'");
+    expect(visibilitySql).toContain("p.permissive = 'RESTRICTIVE'");
+    expect(visibilitySql).toContain("p.cmd in ('SELECT', 'ALL')");
+    expect(visibilitySql).toContain("relforcerowsecurity");
+    expect(visibilitySql).toContain("pg_get_userbyid(c.relowner) = current_user");
+  });
 
   it("書込み・DDL・権限変更を一切含まない", () => {
     for (const sql of [identitySql, visibilitySql]) {
@@ -118,7 +161,13 @@ describe("runSourcePreflight(結果shapeの異常を空配列扱いしない)", 
 
   it("正常な結果なら合格", async () => {
     const r = await runSourcePreflight(client({ rows: OK_IDENTITY }, { rows: tableRows() }), "reference_data", PRODUCTION_EXPECTED_SOURCE_IDENTITY);
-    expect(r).toEqual({ ok: true, reasons: [] });
+    expect(r.ok).toBe(true);
+    expect(r.reasons).toEqual([]);
+    expect(r.tables.map((t) => t.table).sort()).toEqual([...BACKUP_TARGET_TABLES].sort());
+    for (const t of r.tables) {
+      expect(t.rlsForced).toBe(true);
+      expect(t.ownerIsCurrentUser).toBe(false);
+    }
   });
 
   it("rowsが無い・undefinedの結果は例外になる(空として通過しない)", async () => {
