@@ -5,6 +5,7 @@
  * `analysis-source.ts`が実際に発行する呼び出し形(eq/ilike/or/gte/lte/in/order/range/
  * maybeSingle/select+count)だけに対応する。実Supabaseへは一切接続しない。
  */
+import { likePatternToRegExp, parsePostgrestOrExpression } from "./postgrest-filter";
 
 type Row = Record<string, unknown>;
 type Tables = Record<string, Row[]>;
@@ -33,10 +34,8 @@ function matchOne(row: Row, f: Filter): boolean {
       return Number(v) >= Number(f.value);
     case "lte":
       return Number(v) <= Number(f.value);
-    case "ilike": {
-      const pattern = String(f.value).replace(/^%/, "").replace(/%$/, "");
-      return typeof v === "string" && v.toLowerCase().includes(pattern.toLowerCase());
-    }
+    case "ilike":
+      return typeof v === "string" && likePatternToRegExp(String(f.value)).test(v);
     case "in":
       return Array.isArray(f.value) && f.value.map(String).includes(String(v));
     case "not.is":
@@ -47,11 +46,8 @@ function matchOne(row: Row, f: Filter): boolean {
 }
 
 function parseOrExpression(expr: string): Filter[] {
-  // 例: "boost1.neq.0,boost2.neq.0"
-  return expr.split(",").map((part) => {
-    const [field, op, ...rest] = part.split(".");
-    return { field, op, value: rest.join(".") };
-  });
+  // 例: "boost1.neq.0,boost2.neq.0" / "name_en.ilike.\"%a\%b%\""(引用値はPostgRESTと同じ規則で解釈する)
+  return parsePostgrestOrExpression(expr).map((c) => ({ field: c.field, op: c.op as Filter["op"], value: c.value }));
 }
 
 class FakeQueryBuilder implements PromiseLike<FakeResult> {
