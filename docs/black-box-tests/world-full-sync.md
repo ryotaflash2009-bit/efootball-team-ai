@@ -1,6 +1,6 @@
 # World 全件同期 ブラックボックステスト結果
 
-実行日時: 2026-09-14T08:54:04.727Z
+実行日時: 2026-09-23T13:17:27.569Z
 外部アクセス: 0 回（localhost + ローカル DB のみ）
 
 | 結果 | 項目 | 詳細 |
@@ -39,7 +39,7 @@
 | PASS | 選手詳細へ移動できる（href=/players/... または /players/world/...） |  |
 | PASS | 不正IDでクラッシュしない | HTTP 200 |
 | PASS | 不正な画像IDは 400（外部アクセスなし） | HTTP 400 |
-| PASS | 旧 eFHUB サンプル系 UI/API は据え置き（players.sample.json フォールバック維持） | src/app/players/[id]/page.tsx:555B / src/components/PlayerCard.tsx:1558B / src/components/PlayerImage.tsx:1434B / src/lib/players.ts:3927B / src/lib/player-image.ts:6350B / next.config.mjs:330B / src/app/api/players/route.ts:1214B / src/app/api/players/[id]/route.ts:1056B / src/data/players.sample.json:13889B |
+| PASS | 旧 eFHUB サンプル系 UI/API は据え置き（players.sample.json フォールバック維持） | src/app/players/[id]/page.tsx:555B / src/components/PlayerCard.tsx:1558B / src/components/PlayerImage.tsx:1434B / src/lib/players.ts:3927B / src/lib/player-image.ts:6350B / next.config.mjs:600B / src/app/api/players/route.ts:1214B / src/app/api/players/[id]/route.ts:1056B / src/data/players.sample.json:13889B |
 
 ## 判定: 全項目 PASS
 

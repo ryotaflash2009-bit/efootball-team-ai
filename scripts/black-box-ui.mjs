@@ -80,7 +80,8 @@ async function main() {
 
   // ---- ページ見出し ----
   record("見出し: 各ページに h1（text-2xl 以上）", ["プレイヤー", "マネージャー", "選手比較", "スカッド"].every((t) => new RegExp(`<h1[^>]*class="[^"]*text-(2xl|3xl)[^"]*"[^>]*>${t}`).test(pages[t === "プレイヤー" ? "players" : t === "マネージャー" ? "managers" : t === "選手比較" ? "compare" : "squads"].body)), "");
-  record("見出し: PageHeader に説明文と主要CTA", pages.players.text.includes("選手比較へ") && pages.managers.text.includes("データソース"), "");
+  // 監督一覧の出典表記は6fc225d(2026-09-19)で「データソース: <内部パス>」から「データ提供: <提供元>」へ意図的に変更された。
+  record("見出し: PageHeader に説明文と主要CTA", pages.players.text.includes("選手比較へ") && pages.managers.text.includes("データ提供"), "");
 
   // ---- 空状態 ----
   record("空状態: 比較の空はスロット枠＋アイコン＋案内＋次の操作", pages.compare.text.includes("選手を2人以上選んでください") && pages.compare.text.includes("人目を選択") && pages.compare.text.includes("比較へ選手を追加"), "");

@@ -1,7 +1,7 @@
 # 監督機能 ブラックボックステスト結果
 
-実行日時: 2026-09-14T08:51:30.553Z
-対象: http://localhost:3001（localhost のみ）  外部アクセス: **0 回**
+実行日時: 2026-09-23T13:17:15.349Z
+対象: http://localhost:3000（localhost のみ）  外部アクセス: **0 回**
 
 | 結果 | 項目 | 詳細 |
 |---|---|---|
@@ -12,7 +12,7 @@
 | PASS | 監督一覧API: 内部情報/SQLを含まない |  |
 | PASS | 検索: Antonio Conte が見つかる | total=1 |
 | PASS | 検索: 大文字小文字を無視 |  |
-| PASS | 検索: SQLインジェクション風でもテーブルが無事 | after=66 |
+| FAIL | 検索: SQLインジェクション風でもテーブルが無事 | after=66 |
 | PASS | フィルタ: ブースターあり | total=64 |
 | PASS | フィルタ: Link-Up Play あり | total=25 |
 | PASS | 同名別カード: Guardiola が複数・全部別 ID | total=2 |
@@ -28,7 +28,7 @@
 | PASS | 画面: 監督総数を表示 |  |
 | PASS | 画面: 監督詳細へのリンク（/managers/{id}） |  |
 | PASS | 画面: 戦術適性・ブースター要約が一覧に出る |  |
-| PASS | 画面: データソースの明示（GitHub managers.json） |  |
+| PASS | 画面: データ提供元の明示（amine250/efootball-managers・内部ファイルパスは非表示） |  |
 | PASS | 画面: 監督詳細が 200 | HTTP 200 |
 | PASS | 画面: 詳細に「戦術適性」「監督ブースター」「Link-Up Play」 |  |
 | PASS | 画面: 詳細に Center Piece / Key Man 条件 |  |
@@ -47,5 +47,5 @@
 | PASS | 回帰: World 画像プロキシ 不正IDは 400（外部アクセスなし） | HTTP 400 |
 | PASS | 回帰: 旧 eFHUB サンプル詳細（Messi） | HTTP 200 |
 
-## 判定: 全項目 PASS
+## 判定: 1 件 FAIL
 

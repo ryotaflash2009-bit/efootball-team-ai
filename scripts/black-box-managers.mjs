@@ -96,7 +96,9 @@ async function main() {
   record("画面: 監督総数を表示", /名の監督/.test(lp.body), "");
   record("画面: 監督詳細へのリンク（/managers/{id}）", /href="\/managers\/\d+"/.test(lp.body), "");
   record("画面: 戦術適性・ブースター要約が一覧に出る", /Possession|Quick Counter/i.test(lp.body) || /Poss|QC/.test(lp.body), "");
-  record("画面: データソースの明示（GitHub managers.json）", /managers\.json/.test(lp.body), "");
+  // 2026-09-19(6fc225d)の意図的な表示修正で、一覧は内部のリポジトリ内ファイルパス(managers.json)を出さず
+  // 「データ提供: amine250/efootball-managers」と表記する。出典の明示と内部パス非表示の両方を確認する。
+  record("画面: データ提供元の明示（amine250/efootball-managers・内部ファイルパスは非表示）", /データ提供: amine250\/efootball-managers/.test(lp.body) && !/managers\.json/.test(lp.body), "");
   const dp = await get(`/managers/${conteId}`);
   record("画面: 監督詳細が 200", dp.status === 200 && /Antonio Conte/.test(dp.body), `HTTP ${dp.status}`);
   record("画面: 詳細に「戦術適性」「監督ブースター」「Link-Up Play」", ["戦術適性", "監督ブースター", "Link-Up Play"].every((h) => dp.body.includes(h)), "");
