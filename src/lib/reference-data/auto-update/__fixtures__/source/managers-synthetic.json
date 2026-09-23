@@ -1,0 +1,47 @@
+[
+  {
+    "id": "synthetic-manager-1",
+    "name": "Synthetic Manager One",
+    "releaseDate": "2026-01-15",
+    "photo": "images/synthetic-manager-1.png",
+    "teamPlaystyleProficiency": {
+      "possessionGame": 88,
+      "quickCounter": 75.9,
+      "longBallCounter": 60,
+      "outWide": -3.2,
+      "longBall": 55,
+      "overload": "70"
+    },
+    "boosterEffects": [
+      { "stat": "Speed", "value": "+2" },
+      { "stat": "Attacking Awareness", "value": "+1 (when leading)" },
+      { "stat": "Unknown Future Stat", "value": "plus two" }
+    ],
+    "linkUpPlays": [
+      {
+        "name": "Synthetic Link",
+        "centerPiece": { "playingStyle": "Hole Player", "positions": ["AMF", "SS"] },
+        "keyMan": { "playingStyle": "Goal Poacher", "positions": ["CF", 9] }
+      },
+      { "name": "  ", "centerPiece": { "positions": "CF" } }
+    ]
+  },
+  {
+    "id": "synthetic-manager-2",
+    "name": "  Synthetic Manager Two  ",
+    "teamPlaystyleProficiency": { "possessionGame": 50 },
+    "linkUpPlay": { "name": "Singular Link", "keyMan": { "playingStyle": "Anchor Man" } }
+  },
+  {
+    "id": 3,
+    "name": "Synthetic Manager Three"
+  },
+  {
+    "id": "bad id with spaces",
+    "name": "Synthetic Invalid Id"
+  },
+  {
+    "id": "synthetic-manager-5",
+    "name": ""
+  }
+]
