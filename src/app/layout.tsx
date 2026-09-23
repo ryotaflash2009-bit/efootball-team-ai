@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AppShell } from "@/components/AppShell";
 import { LocaleProvider } from "@/lib/i18n/LocaleContext";
+import { SITE_ROBOTS_METADATA } from "@/lib/public-info/search-indexing";
 
 export const metadata: Metadata = {
   title: "eFootball Team AI",
@@ -10,6 +11,8 @@ export const metadata: Metadata = {
   // アプリ自身が日本語/英語の表示切替を提供するため、ブラウザーの自動翻訳（Google翻訳等）による
   // 二重翻訳・表示の混乱を避ける（言語切り替えUI自体の文言まで翻訳されてしまうことを防ぐ）。
   other: { google: "notranslate" },
+  // 招待制ベータの間は全ページnoindex(robots.tsでも全体をdisallow)。
+  robots: { ...SITE_ROBOTS_METADATA },
 };
 
 export const viewport: Viewport = {
