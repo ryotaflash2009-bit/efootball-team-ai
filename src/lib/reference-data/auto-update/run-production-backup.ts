@@ -9,6 +9,9 @@ import { putEncryptedBackup, computeSha256Hex, type PutEncryptedBackupResult } f
 import { markManifestRestoreVerified } from "./backup-manifest";
 import { PRODUCTION_REFERENCE_DATA_SCHEMA, BACKUP_RESTORE_TEST_SCHEMA, buildBackupIsolatedSchemaDdl } from "./backup-schema";
 import { resolveBackupCategory, type BackupCategory } from "./backup-category";
+import { PRODUCTION_BACKUP_CONTENT_POLICY, failedContentPolicyReasons } from "./backup-content-policy";
+import { runSourcePreflight, type ExpectedSourceIdentity } from "./backup-source-preflight";
+import { BACKUP_TARGET_TABLES } from "./backup-target";
 
 /**
  * Production reference-data Backupの実行オーケストレーション(design-onlyから実行可能へ)。
@@ -63,6 +66,11 @@ export interface RunProductionBackupInput {
    * `BACKUP_CATEGORY_MAPPING`から一意に決定する(自由な組み合わせを禁止する)。
    */
   category: BackupCategory;
+  /**
+   * export前preflightで照合する接続先identity(database名・role名、秘密情報ではない)。
+   * Production CLIは`PRODUCTION_EXPECTED_SOURCE_IDENTITY`を渡す。
+   */
+  expectedSourceIdentity: ExpectedSourceIdentity;
 }
 
 export interface RunProductionBackupResult {
@@ -87,6 +95,23 @@ export async function runProductionBackup(input: RunProductionBackupInput): Prom
   }
   const { prefix, retentionCategory, retentionDays } = resolved.mapping;
 
+  // 0. 読み取り専用preflight: 接続先identityと、対象4テーブルの行が実際に見える状態かを
+  //    export前に確認する(RLS既定拒否で0行に見える状態をここで検出する、Run #6の再発防止)。
+  let preflight: Awaited<ReturnType<typeof runSourcePreflight>>;
+  try {
+    preflight = await runSourcePreflight(input.prodClient, PRODUCTION_REFERENCE_DATA_SCHEMA, input.expectedSourceIdentity);
+  } catch (err) {
+    const reason = `source preflightに失敗した: ${sanitizeErrorMessage(err instanceof Error ? err.message : String(err))}`;
+    return { ok: false, reasons: [reason], summary: { phase: "source-preflight", ok: false, restoreVerified: false, storageVerified: false } };
+  }
+  if (!preflight.ok) {
+    return {
+      ok: false,
+      reasons: preflight.reasons,
+      summary: { phase: "source-preflight", ok: false, reasons: preflight.reasons, restoreVerified: false, storageVerified: false },
+    };
+  }
+
   const baseInput: Omit<CreateBackupInput, "encryptor"> = {
     jobId: input.jobId,
     schemaVersion: input.schemaVersion,
@@ -96,13 +121,18 @@ export async function runProductionBackup(input: RunProductionBackupInput): Prom
     retentionCategory,
     retentionDays,
     sourceSchema: PRODUCTION_REFERENCE_DATA_SCHEMA,
+    contentPolicy: PRODUCTION_BACKUP_CONTENT_POLICY,
   };
 
   // 1. 本番artifact: 実age recipientで暗号化する(これが最終的にR2へuploadされる)。
   const realEncryptor: BackupEncryptor = new AgeCliEncryptor({ recipient: input.ageRecipient, ageCommand: input.ageCommand });
   const realResult = await createReferenceDataBackup(input.prodClient, { ...baseInput, encryptor: realEncryptor });
   if (!realResult.ok || !realResult.artifact) {
-    return { ok: false, reasons: realResult.reasons, summary: { phase: "export", ok: false, reasons: realResult.reasons } };
+    return {
+      ok: false,
+      reasons: realResult.reasons,
+      summary: { phase: "export", ok: false, reasons: realResult.reasons, restoreVerified: false, storageVerified: false },
+    };
   }
 
   // 2. 検証専用artifact: 使い捨てephemeral鍵で別途暗号化する(uploadしない、jobの外へ一切出さない)。
@@ -110,15 +140,32 @@ export async function runProductionBackup(input: RunProductionBackupInput): Prom
   const verifyEncryptor: BackupEncryptor = new NodeAesGcmEncryptor(ephemeralKey);
   const verifyResult = await createReferenceDataBackup(input.prodClient, { ...baseInput, encryptor: verifyEncryptor });
   if (!verifyResult.ok || !verifyResult.artifact) {
-    return { ok: false, reasons: verifyResult.reasons, summary: { phase: "export-for-verification", ok: false, reasons: verifyResult.reasons } };
+    return {
+      ok: false,
+      reasons: verifyResult.reasons,
+      summary: { phase: "export-for-verification", ok: false, reasons: verifyResult.reasons, restoreVerified: false, storageVerified: false },
+    };
   }
 
   // 3. 2回の抽出が同一データであることを確認する(抽出window中の書込みを検出する安全側の設計)。
-  if (realResult.artifact.manifest.totalChecksum !== verifyResult.artifact.manifest.totalChecksum) {
+  //    totalChecksumだけでなく、テーブルごとの行数・checksum・source metadata checksumも照合する。
+  const realManifest = realResult.artifact.manifest;
+  const verifyManifest = verifyResult.artifact.manifest;
+  const perTableMismatch = BACKUP_TARGET_TABLES.filter(
+    (t) => realManifest.rowCounts[t] !== verifyManifest.rowCounts[t] || realManifest.tableChecksums[t] !== verifyManifest.tableChecksums[t],
+  );
+  if (perTableMismatch.length > 0 || realManifest.sourceMetadataChecksum !== verifyManifest.sourceMetadataChecksum) {
+    return {
+      ok: false,
+      reasons: [`本番artifactと検証artifactの行数・checksumが一致しない(${perTableMismatch.join(",") || "source metadata"}、安全側でblocked)`],
+      summary: { phase: "checksum-consistency", ok: false, restoreVerified: false, storageVerified: false },
+    };
+  }
+  if (realManifest.totalChecksum !== verifyManifest.totalChecksum) {
     return {
       ok: false,
       reasons: ["本番artifactと検証artifactのtotalChecksumが一致しない(抽出window中にProduction側でデータが変わった可能性、安全側でblocked)"],
-      summary: { phase: "checksum-consistency", ok: false },
+      summary: { phase: "checksum-consistency", ok: false, restoreVerified: false, storageVerified: false },
     };
   }
 
@@ -129,7 +176,7 @@ export async function runProductionBackup(input: RunProductionBackupInput): Prom
     return {
       ok: false,
       reasons: [`隔離Restore検証schemaの準備に失敗した: ${sanitizeErrorMessage(err instanceof Error ? err.message : String(err))}`],
-      summary: { phase: "verify-schema-setup", ok: false },
+      summary: { phase: "verify-schema-setup", ok: false, restoreVerified: false, storageVerified: false },
     };
   }
 
@@ -139,18 +186,32 @@ export async function runProductionBackup(input: RunProductionBackupInput): Prom
     expectedSchemaVersion: input.schemaVersion,
     expectedPostgresMajorVersion: input.postgresMajorVersion,
     now: input.now,
+    contentPolicy: PRODUCTION_BACKUP_CONTENT_POLICY,
   });
   if (!restoreResult.ok || !restoreResult.restoreVerified) {
     return {
       ok: false,
       reasons: restoreResult.reasons.length > 0 ? restoreResult.reasons : ["隔離Restore検証に失敗した(restoreVerified=false)"],
-      summary: { phase: "isolated-restore-verification", ok: false, reasons: restoreResult.reasons },
+      summary: { phase: "isolated-restore-verification", ok: false, reasons: restoreResult.reasons, restoreVerified: false, storageVerified: false },
     };
+  }
+
+  // 4b. Restoreされた行数が本番manifestと完全に一致し、かつ内容妥当性policyを満たすことを
+  //     restoreVerified反映の前に独立して確認する(空データ同士の一致だけでは検証済みにしない)。
+  const restoredCounts = restoreResult.restoredCounts ?? {};
+  const restoredMismatch = BACKUP_TARGET_TABLES.filter((t) => restoredCounts[t] !== realManifest.rowCounts[t]);
+  const restoredPolicyFailures = failedContentPolicyReasons(restoredCounts, PRODUCTION_BACKUP_CONTENT_POLICY);
+  if (restoredMismatch.length > 0 || restoredPolicyFailures.length > 0) {
+    const reasons = [
+      ...(restoredMismatch.length > 0 ? [`隔離Restore後の行数が本番manifestと一致しない(${restoredMismatch.join(",")})`] : []),
+      ...restoredPolicyFailures,
+    ];
+    return { ok: false, reasons, summary: { phase: "isolated-restore-verification", ok: false, reasons, restoreVerified: false, storageVerified: false } };
   }
 
   // 5. 隔離Restore検証に成功した場合だけ、本番artifact(実recipientで暗号化済み)のmanifestへ
   //    restoreVerified=trueを反映する。暗号化payload自体(encryptedPayload)は一切変更しない。
-  const verifiedManifest = markManifestRestoreVerified(realResult.artifact.manifest);
+  const verifiedManifest = markManifestRestoreVerified(realManifest);
   const localEncryptedChecksum = computeSha256Hex(realResult.artifact.encryptedPayload);
 
   // 6. upload前ゲート評価→R2 upload→upload後checksum検証(すべて既存のbackup-r2-adapter.tsを再利用)。
