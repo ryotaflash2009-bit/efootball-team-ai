@@ -1,6 +1,6 @@
 # 監督機能 ブラックボックステスト結果
 
-実行日時: 2026-09-23T13:17:15.349Z
+実行日時: 2026-09-23T13:41:10.979Z
 対象: http://localhost:3000（localhost のみ）  外部アクセス: **0 回**
 
 | 結果 | 項目 | 詳細 |
@@ -12,7 +12,7 @@
 | PASS | 監督一覧API: 内部情報/SQLを含まない |  |
 | PASS | 検索: Antonio Conte が見つかる | total=1 |
 | PASS | 検索: 大文字小文字を無視 |  |
-| FAIL | 検索: SQLインジェクション風でもテーブルが無事 | after=66 |
+| PASS | 検索: SQLインジェクション風でもテーブルが無事 | HTTP 400 after=66 |
 | PASS | フィルタ: ブースターあり | total=64 |
 | PASS | フィルタ: Link-Up Play あり | total=25 |
 | PASS | 同名別カード: Guardiola が複数・全部別 ID | total=2 |
@@ -47,5 +47,5 @@
 | PASS | 回帰: World 画像プロキシ 不正IDは 400（外部アクセスなし） | HTTP 400 |
 | PASS | 回帰: 旧 eFHUB サンプル詳細（Messi） | HTTP 200 |
 
-## 判定: 1 件 FAIL
+## 判定: 全項目 PASS
 

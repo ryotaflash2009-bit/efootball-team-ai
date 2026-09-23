@@ -58,7 +58,10 @@ async function main() {
   record("検索: 大文字小文字を無視", sUpper.data?.totalCount === sLower.data?.totalCount && sLower.data?.totalCount > 0, "");
   const inj = await json("/api/managers?q=" + encodeURIComponent("'; DROP TABLE managers; --"));
   const after = await json("/api/managers?pageSize=1");
-  record("検索: SQLインジェクション風でもテーブルが無事", inj.status === 200 && after.data?.totalCount > 0, `after=${after.data?.totalCount}`);
+  // 上流(Supabase手前の防御)が拒否した場合は、安全なクライアント入力エラー(400・SEARCH_INPUT_REJECTED・内部情報なし)が
+  // 期待どおりの応答。5xx・内部情報の露出・テーブルの変化は不合格(本人方針 2026-09-23)。
+  const injSafe = inj.status === 200 || (inj.status === 400 && inj.data?.error?.code === "SEARCH_INPUT_REJECTED" && !/drop|table|select|ilike|postgrest|supabase|cloudflare|stack/i.test(inj.body));
+  record("検索: SQLインジェクション風でもテーブルが無事", injSafe && after.data?.totalCount >= 66, `HTTP ${inj.status} after=${after.data?.totalCount}`);
 
   // 3. フィルタ
   const withB = await json("/api/managers?hasBooster=1&pageSize=100");

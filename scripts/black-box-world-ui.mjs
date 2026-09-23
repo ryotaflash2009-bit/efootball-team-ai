@@ -99,7 +99,10 @@ async function main() {
   record("非常に長い入力を制限（クラッシュしない）", long.status === 200, `HTTP ${long.status}`);
   const inj = await json("/api/world/players?q=" + encodeURIComponent("'; DROP TABLE world_player_cards;--"));
   const afterInj = await json("/api/world/players?pageSize=1");
-  record("SQLインジェクション風入力でテーブルが無事", inj.status === 200 && afterInj.data?.totalCount >= 12000, `after=${afterInj.data?.totalCount}`);
+  // 上流(Supabase手前の防御)が拒否した場合は、安全なクライアント入力エラー(400・SEARCH_INPUT_REJECTED・内部情報なし)が
+  // 期待どおりの応答。5xx・内部情報の露出・テーブルの変化は不合格(本人方針 2026-09-23)。
+  const injSafe = inj.status === 200 || (inj.status === 400 && inj.data?.error?.code === "SEARCH_INPUT_REJECTED" && !/drop|table|select|ilike|postgrest|supabase|cloudflare|stack/i.test(inj.body));
+  record("SQLインジェクション風入力でテーブルが無事", injSafe && afterInj.data?.totalCount >= 12000, `HTTP ${inj.status} after=${afterInj.data?.totalCount}`);
 
   // ---- フィルター ----
   for (const pos of ["GK", "CB", "CMF", "AMF", "CF"]) {
