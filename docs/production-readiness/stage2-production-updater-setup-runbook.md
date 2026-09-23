@@ -73,6 +73,33 @@ Prepared files:
 3. Success: the job is green and the artifact `reference-data-apply-preflight-summary` shows
    `"ok": true` with `problems: []`. The job connects as the updater inside `begin read only`, reads
    catalog/privilege metadata only, and rolls back.
+4. Failure output contains only a phase (`mode` / `secrets` / `config` / `connect` / `preflight`)
+   and safe codes such as `connect_failed:sqlstate_28P01`, `query_failed:<step>:sqlstate_<code>`,
+   `sensitive_schema_usage:auth` or `sensitive_access:<schema.table>` — never error text, URLs or
+   secret values.
+
+### Run #2 (2026-09-24) — failure Evidence, kept as-is (not re-run)
+
+- Result: red at "Run read-only updater preflight", summary
+  `{"ok": false, "phase": "setup", "reasons": ["permission denied for schema auth"]}`.
+  Production write / apply / Backup / R2: 0.
+- Root cause (tool bug, not a Production misconfiguration): the old preflight located
+  `auth.users` etc. by **name** (`to_regclass('auth.users')` and name-based
+  `has_table_privilege`). Resolving a name inside a schema requires USAGE on that schema, so the
+  correctly isolated updater (no auth USAGE) got SQLSTATE 42501 before any privilege was checked.
+  The disposable test DB had no `auth` schema, so `to_regclass` returned null there and the bug
+  was not caught.
+- Fix: the preflight now finds schemas/tables through `pg_catalog.pg_namespace`/`pg_class`
+  (readable by every role) and checks privileges with the **OID** forms of
+  `has_schema_privilege` / `has_table_privilege` / `has_any_column_privilege`. No name
+  resolution, no row reads, **no privilege added to the updater**. Any privilege on `auth`
+  (USAGE), on any table in `auth`/`storage`/`vault`/`public`/`reference_data_ops`, or on
+  `player_card_analysis` still fails the preflight; any query error (including 42501) is a
+  failure, never a success. The disposable-PostgreSQL rehearsal now creates an `auth` schema with
+  `auth.users` and `public.my_team_snapshots`, reproduces the old 42501, and checks every
+  positive/negative case.
+- Next: after this fix is merged, the owner dispatches a **new** preflight run (Step 6). Run #2
+  itself is not re-run.
 
 ## Report to Claude Code (safe to paste)
 
