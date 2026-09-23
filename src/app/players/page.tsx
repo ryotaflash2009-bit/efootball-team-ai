@@ -4,7 +4,8 @@ import { WorldDataUnavailableError } from "@/lib/world/db";
 import type { WorldFacets, WorldPlayerListItem } from "@/lib/world/types";
 import { resolveCardImageSources } from "@/lib/world/image";
 import { PageContainer } from "@/components/ui/PageContainer";
-import { PlayersPageView, PlayersPageUnavailable, PlayersPageFailed } from "@/components/world/PlayersPageView";
+import { PlayersPageView, PlayersPageUnavailable, PlayersPageFailed, PlayersPageSearchRejected } from "@/components/world/PlayersPageView";
+import { SearchInputRejectedError, checkSearchInput } from "@/lib/search/search-input";
 import type { WorldPlayerCardData } from "@/components/world/WorldPlayerCard";
 
 export const runtime = "nodejs";
@@ -38,6 +39,15 @@ function toCardData(p: WorldPlayerListItem): WorldPlayerCardData {
 export default async function PlayersPage({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
 
+  // 制御文字等を含む検索語は照会せず、安全な表示にする(上流の防御による拒否も同じ表示)。
+  if (!checkSearchInput(pick(sp, "q")).ok) {
+    return (
+      <PageContainer>
+        <PlayersPageSearchRejected />
+      </PageContainer>
+    );
+  }
+
   const query = parseWorldListQuery({
     page: pick(sp, "page"),
     pageSize: pick(sp, "pageSize"),
@@ -57,6 +67,7 @@ export default async function PlayersPage({ searchParams }: { searchParams: Prom
   let sourceMeta: Awaited<ReturnType<typeof getSourceMeta>> | null = null;
   let unavailable = false;
   let failed = false;
+  let rejected = false;
 
   try {
     result = await listPlayers(query);
@@ -64,7 +75,16 @@ export default async function PlayersPage({ searchParams }: { searchParams: Prom
     sourceMeta = await getSourceMeta();
   } catch (err) {
     if (err instanceof WorldDataUnavailableError) unavailable = true;
+    else if (err instanceof SearchInputRejectedError) rejected = true;
     else failed = true;
+  }
+
+  if (rejected) {
+    return (
+      <PageContainer>
+        <PlayersPageSearchRejected />
+      </PageContainer>
+    );
   }
 
   if (unavailable) {

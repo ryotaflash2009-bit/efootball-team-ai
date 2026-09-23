@@ -16,6 +16,9 @@ import { TACTICS, topTactic, tacticTier, TACTIC_TEXT, managerInitials } from "./
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { isSearchInputRejectedResponse } from "@/lib/search/search-input";
+
+class SearchRejected extends Error {}
 
 function useSorts(): { value: ManagerSortKey; label: string }[] {
   const t = useT();
@@ -77,9 +80,14 @@ export function ManagerPicker({
     setError(null);
     setManagers(null);
     fetch(`/api/managers?${sp.toString()}`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+      .then(async (r) => {
+        if (r.ok) return r.json();
+        // 検索語が拒否された(制御文字等・上流の防御)場合は、読み込み失敗とは別の安全な案内を出す。
+        const body = await r.json().catch(() => null);
+        throw isSearchInputRejectedResponse(r.status, body) ? new SearchRejected() : new Error(`HTTP ${r.status}`);
+      })
       .then((data) => setManagers(Array.isArray(data.managers) ? data.managers : []))
-      .catch(() => setError(t("managerPicker", "loadError")));
+      .catch((e) => setError(e instanceof SearchRejected ? `${t("searchInput", "rejectedTitle")}: ${t("searchInput", "rejectedDescription")}` : t("managerPicker", "loadError")));
   }, [dq, sort, hasBooster, hasLinkUp, t]);
 
   useEffect(() => {

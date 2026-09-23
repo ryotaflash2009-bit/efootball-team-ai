@@ -3527,6 +3527,11 @@ export interface Dictionary {
     referenceIntegrityNotice: string;
     referenceIntegrityNoDataMessage: string;
   };
+  searchInput: {
+    rejectedTitle: string;
+    rejectedDescription: string;
+    clearSearch: string;
+  };
 }
 
 const ja: Dictionary = {
@@ -7114,6 +7119,11 @@ const ja: Dictionary = {
     referenceIntegrityLegacyOnlyLabel: "レガシーMy Buildsにのみ存在(移行で解消し得る)",
     referenceIntegrityNotice: "参照切れは自動修正・自動削除しません。My Buildsを移行すると解消される場合があります。",
     referenceIntegrityNoDataMessage: "現在のアカウント領域にMy Teamのデータがないため、確認できる参照がありません。",
+  },
+  searchInput: {
+    rejectedTitle: "この検索語では検索できません",
+    rejectedDescription: "記号や特殊な文字を減らして、もう一度お試しください。",
+    clearSearch: "検索条件をクリア",
   },
 };
 

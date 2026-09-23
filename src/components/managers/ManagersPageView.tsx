@@ -42,6 +42,29 @@ export function ManagersFailedView() {
   );
 }
 
+/** 検索語が拒否された(制御文字等、または上流の防御による拒否)ときの安全な表示。内部情報は出さない。 */
+export function ManagersSearchRejectedView() {
+  const t = useT();
+  return (
+    <PageContainer>
+      <PageHeader title={t("nav", "managers")} icon="managers" />
+      <div className="mt-6">
+        <EmptyState
+          variant="no-results"
+          icon="search"
+          title={t("searchInput", "rejectedTitle")}
+          description={t("searchInput", "rejectedDescription")}
+          action={
+            <Link href="/managers" className={buttonClasses("secondary", "sm")}>
+              {t("searchInput", "clearSearch")}
+            </Link>
+          }
+        />
+      </div>
+    </PageContainer>
+  );
+}
+
 export interface ManagersPageResult {
   managers: ManagerListItem[];
   totalCount: number;

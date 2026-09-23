@@ -39,6 +39,29 @@ export function PlayersPageFailed() {
   );
 }
 
+/** 検索語が拒否された(制御文字等、または上流の防御による拒否)ときの安全な表示。内部情報は出さない。 */
+export function PlayersPageSearchRejected() {
+  const t = useT();
+  return (
+    <div className="mt-6">
+      <PageHeader title={t("playersPage", "title")} icon="players" />
+      <div className="mt-6">
+        <EmptyState
+          variant="no-results"
+          icon="search"
+          title={t("searchInput", "rejectedTitle")}
+          description={t("searchInput", "rejectedDescription")}
+          action={
+            <Link href="/players" className={buttonClasses("secondary", "sm")}>
+              {t("searchInput", "clearSearch")}
+            </Link>
+          }
+        />
+      </div>
+    </div>
+  );
+}
+
 export function PlayersPageView({
   result,
   facets,
