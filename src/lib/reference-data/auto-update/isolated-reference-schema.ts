@@ -25,12 +25,18 @@ export interface RepositoryReferenceSql {
   readonly detailExtension: string;
   /** docs/production-readiness/sql/extend-name-sort-key-schema.sql */
   readonly nameSortKeyExtension: string;
+  /**
+   * docs/production-readiness/sql/extend-player-card-analysis-name-schema.sql。
+   * 指定した場合だけplayer_card_analysisも作る(Production metadataの照合検証用。dry run・applyでは使わない)。
+   */
+  readonly analysisNameExtension?: string;
 }
 
 export const REPOSITORY_REFERENCE_SQL_FILES = Object.freeze({
   base: "create-reference-data-schema.sql",
   detailExtension: "extend-reference-data-detail-schema.sql",
   nameSortKeyExtension: "extend-name-sort-key-schema.sql",
+  analysisNameExtension: "extend-player-card-analysis-name-schema.sql",
 } as const);
 
 /** 隔離schemaを作るDDL(create schema + 3 table + alter table)。 */
@@ -49,6 +55,12 @@ export function buildIsolatedReferenceSchemaDdl(schema: string, sql: RepositoryR
     alters++;
   }
   if (alters === 0) throw new Error("実DDLのextension alter文が見つからない(blocked)");
+  if (sql.analysisNameExtension !== undefined) {
+    const m = sql.base.match(/create table if not exists reference_data\.player_card_analysis \([\s\S]*?\n\);/);
+    const a = sql.analysisNameExtension.match(/alter table reference_data\.player_card_analysis\s+add column if not exists efhub_name_en text;/);
+    if (!m || !a) throw new Error("実DDLにplayer_card_analysisの定義が見つからない(blocked)");
+    statements.push(m[0], a[0]);
+  }
   const ddl = statements.join("\n").replace(/reference_data\./g, `${schema}.`);
   if (/\b(grant|revoke|drop\s+table|truncate|delete\s+from|create\s+role|alter\s+role|policy)\b/i.test(ddl)) {
     throw new Error("隔離DDLに権限・削除系の文が含まれている(blocked)");
