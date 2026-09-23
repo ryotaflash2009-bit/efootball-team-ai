@@ -155,6 +155,11 @@ describe("Phase H apply executor(使い捨てPostgreSQL・reference_data_updater
     expect(batch.rows[0]).toMatchObject({ status: "verified", target_table: "world_player_cards", inserted_row_count: 1, payload_hash: inp.plans[0].planChecksum });
     const again = await plan();
     expect(again.plan.inserts.length + again.plan.updates.length).toBe(0);
+    // 同じ承認済み計画の二重適用は、beforeChecksumが一致しないため何も書かずに拒否される。
+    const batches = await batchCount();
+    const dup = await asUpdater(() => applyUpdatePlans(admin, inp));
+    expect(dup).toMatchObject({ ok: false, code: "stale_plan" });
+    expect(await batchCount()).toBe(batches);
   });
 
   it("計画作成後に行が変わっていればstale_planで何も書かない", async () => {
