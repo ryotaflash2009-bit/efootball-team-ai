@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { parseWorldListQuery } from "@/lib/world/schemas";
 import { listPlayers, getSourceMeta, getFacets } from "@/lib/world/repository";
 import { WorldDataUnavailableError, WorldQueryError } from "@/lib/world/db";
+import { SEARCH_INPUT_REJECTED_STATUS, SearchInputRejectedError, assertSearchInput, searchInputRejectedBody } from "@/lib/search/search-input";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,6 +16,14 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
+  const acceptLanguage = request.headers.get("accept-language");
+
+  try {
+    assertSearchInput(searchParams.get("q"));
+    assertSearchInput(searchParams.get("query"));
+  } catch (err) {
+    return errorResponse(err, acceptLanguage);
+  }
 
   const q = parseWorldListQuery({
     page: searchParams.get("page"),
@@ -56,11 +65,15 @@ export async function GET(request: Request) {
     }
     return res;
   } catch (err) {
-    return errorResponse(err);
+    return errorResponse(err, acceptLanguage);
   }
 }
 
-function errorResponse(err: unknown): NextResponse {
+function errorResponse(err: unknown, acceptLanguage: string | null): NextResponse {
+  // 制御文字等の入力、または上流の防御に拒否された検索語は、安全なクライアント入力エラー(400)として返す。
+  if (err instanceof SearchInputRejectedError) {
+    return NextResponse.json(searchInputRejectedBody(err, acceptLanguage), { status: SEARCH_INPUT_REJECTED_STATUS });
+  }
   if (err instanceof WorldDataUnavailableError) {
     return NextResponse.json(
       { error: { code: err.code, message: "World データがまだ用意されていません。" } },

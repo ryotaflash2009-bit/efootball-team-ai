@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { parseManagerListQuery } from "@/lib/managers/schemas";
 import { listManagers, ManagerDataUnavailableError } from "@/lib/managers/repository";
 import { WorldQueryError } from "@/lib/world/db";
+import { SEARCH_INPUT_REJECTED_STATUS, SearchInputRejectedError, assertSearchInput, searchInputRejectedBody } from "@/lib/search/search-input";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -12,6 +13,15 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
+  const acceptLanguage = request.headers.get("accept-language");
+  try {
+    assertSearchInput(searchParams.get("q"));
+  } catch (err) {
+    if (err instanceof SearchInputRejectedError) {
+      return NextResponse.json(searchInputRejectedBody(err, acceptLanguage), { status: SEARCH_INPUT_REJECTED_STATUS });
+    }
+    throw err;
+  }
   const q = parseManagerListQuery({
     page: searchParams.get("page"),
     pageSize: searchParams.get("pageSize"),
@@ -29,6 +39,10 @@ export async function GET(request: Request) {
     }
     return res;
   } catch (err) {
+    // 上流の防御に拒否された検索語は、安全なクライアント入力エラー(400)として返す。
+    if (err instanceof SearchInputRejectedError) {
+      return NextResponse.json(searchInputRejectedBody(err, acceptLanguage), { status: SEARCH_INPUT_REJECTED_STATUS });
+    }
     if (err instanceof ManagerDataUnavailableError) {
       return NextResponse.json(
         { error: { code: "MANAGER_DATA_UNAVAILABLE", message: "監督データがまだ用意されていません。" } },

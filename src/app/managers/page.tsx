@@ -1,6 +1,7 @@
 import { parseManagerListQuery } from "@/lib/managers/schemas";
 import { listManagers, ManagerDataUnavailableError } from "@/lib/managers/repository";
-import { ManagersPageView, ManagersUnavailableView, ManagersFailedView } from "@/components/managers/ManagersPageView";
+import { ManagersPageView, ManagersUnavailableView, ManagersFailedView, ManagersSearchRejectedView } from "@/components/managers/ManagersPageView";
+import { SearchInputRejectedError, checkSearchInput } from "@/lib/search/search-input";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -10,6 +11,8 @@ const pick = (sp: SP, k: string) => (typeof sp[k] === "string" ? (sp[k] as strin
 
 export default async function ManagersPage({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
+  // 制御文字等を含む検索語は照会せず、安全な表示にする(上流の防御による拒否も同じ表示)。
+  if (!checkSearchInput(pick(sp, "q")).ok) return <ManagersSearchRejectedView />;
   const q = parseManagerListQuery({
     page: pick(sp, "page"),
     pageSize: pick(sp, "pageSize"),
@@ -22,14 +25,17 @@ export default async function ManagersPage({ searchParams }: { searchParams: Pro
   let result: Awaited<ReturnType<typeof listManagers>> | null = null;
   let unavailable = false;
   let failed = false;
+  let rejected = false;
   try {
     result = await listManagers(q);
   } catch (err) {
     if (err instanceof ManagerDataUnavailableError) unavailable = true;
+    else if (err instanceof SearchInputRejectedError) rejected = true;
     else failed = true;
   }
 
   if (unavailable) return <ManagersUnavailableView />;
+  if (rejected) return <ManagersSearchRejectedView />;
   if (failed || !result) return <ManagersFailedView />;
 
   const hasFilters = !!(q.query || q.hasBooster != null || q.hasLinkUpPlay != null);

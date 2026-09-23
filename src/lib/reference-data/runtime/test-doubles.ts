@@ -217,3 +217,54 @@ export function createFailingReferenceDataClient(error: { code?: string; message
     },
   };
 }
+
+/**
+ * 検索語付きのリクエストだけを上流が拒否する状況(Supabase手前の防御によるHTTP 403等)を模したフェイククライアント。
+ * `.or()`に部分一致条件(ilike)が渡されたクエリだけを`status`・`error`で失敗させ、それ以外は通常のfakeとして応答する。
+ * `alsoRejectWithoutSearch`がtrueなら検索語の無い確認クエリも失敗させる(本当の権限エラーの再現)。
+ * `calls`は発行されたクエリ数(検索あり/なし)を数える。
+ */
+export function createSearchRejectingReferenceDataClient(
+  tables: Tables,
+  opts: { status: number; error: { code?: string; message: string }; alsoRejectWithoutSearch?: boolean },
+) {
+  const calls = { withSearch: 0, withoutSearch: 0 };
+  const base = createFakeReferenceDataClient(tables);
+  const client = {
+    calls,
+    from(table: string) {
+      const target = base.from(table) as unknown as Record<string | symbol, unknown> & PromiseLike<FakeResult>;
+      let searched = false;
+      const proxy: unknown = new Proxy(target, {
+        get(t, prop) {
+          if (prop === "or") {
+            return (expr: string) => {
+              if (/\.ilike\./.test(expr)) searched = true;
+              (t.or as (e: string) => unknown).call(t, expr);
+              return proxy;
+            };
+          }
+          if (prop === "then") {
+            return (onfulfilled?: ((v: FakeResult) => unknown) | null, onrejected?: ((e: unknown) => unknown) | null) => {
+              if (searched) calls.withSearch++;
+              else calls.withoutSearch++;
+              const fail = searched || opts.alsoRejectWithoutSearch === true;
+              const p: Promise<FakeResult> = fail
+                ? Promise.resolve({ data: null, error: opts.error, count: null, status: opts.status })
+                : Promise.resolve(t.then((x) => x) as PromiseLike<FakeResult>);
+              return p.then(onfulfilled ?? undefined, onrejected ?? undefined);
+            };
+          }
+          const v = t[prop];
+          if (typeof v !== "function") return v;
+          return (...args: unknown[]) => {
+            const r = (v as (...a: unknown[]) => unknown).apply(t, args);
+            return r === t ? proxy : r;
+          };
+        },
+      });
+      return proxy;
+    },
+  };
+  return client;
+}

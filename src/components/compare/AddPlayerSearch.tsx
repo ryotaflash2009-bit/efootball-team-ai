@@ -7,6 +7,7 @@ import { sortSearchResults } from "@/lib/squad/search-results";
 import { WorldPlayerSearchCard } from "@/components/world/WorldPlayerSearchCard";
 import { useT } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { isSearchInputRejectedResponse } from "@/lib/search/search-input";
 
 /**
  * 比較へ追加する選手を検索して選ぶ（World 13,009件・既存 SQLite API）。
@@ -25,6 +26,7 @@ type SearchState =
   | { kind: "tooShort" }
   | { kind: "loading" }
   | { kind: "error" }
+  | { kind: "rejected" }
   | { kind: "results"; players: WorldPlayerListItem[] };
 
 export function AddPlayerSearch({
@@ -85,7 +87,13 @@ export function AddPlayerSearch({
     setState({ kind: "loading" });
     try {
       const r = await fetch(`/api/world/players?q=${encodeURIComponent(v)}&pageSize=20&sort=ovr_max_desc`);
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      if (!r.ok) {
+        // 検索語が拒否された(制御文字等・上流の防御)場合は、通信失敗とは別の安全な案内を出す。
+        const body = await r.json().catch(() => null);
+        if (reqId !== reqIdRef.current) return;
+        if (isSearchInputRejectedResponse(r.status, body)) return setState({ kind: "rejected" });
+        throw new Error(`HTTP ${r.status}`);
+      }
       const data = await r.json();
       if (reqId !== reqIdRef.current) return; // 古いレスポンスは破棄
       setState({ kind: "results", players: Array.isArray(data.players) ? data.players : [] });
@@ -177,6 +185,10 @@ export function AddPlayerSearch({
                   <li key={i} className="h-28 animate-pulse rounded-md border border-border bg-surface-2/40" />
                 ))}
               </ul>
+            ) : state.kind === "rejected" ? (
+              <p role="alert" className="text-xs text-warning">
+                {t("searchInput", "rejectedTitle")}: {t("searchInput", "rejectedDescription")}
+              </p>
             ) : state.kind === "error" ? (
               <div className="text-xs">
                 <p role="alert" className="text-danger">

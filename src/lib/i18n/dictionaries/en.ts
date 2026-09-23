@@ -3596,6 +3596,11 @@ const en: Dictionary = {
     referenceIntegrityNotice: "Broken references are never auto-fixed or auto-deleted. Migrating My Builds may resolve them.",
     referenceIntegrityNoDataMessage: "There is no My Team data in your current account area, so there is nothing to check.",
   },
+  searchInput: {
+    rejectedTitle: "This search term cannot be used",
+    rejectedDescription: "Please remove unusual symbols or characters and try again.",
+    clearSearch: "Clear search",
+  },
 };
 
 export default en;
