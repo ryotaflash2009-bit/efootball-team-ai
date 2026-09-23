@@ -96,6 +96,8 @@ export function deleteAllManagedLocalData(): DeleteAllLocalDataResult {
     attemptedKeys.push(entry.key);
     try {
       ls.removeItem(entry.key);
+      // 削除できたことを読み戻して確認する(確認できなければ失敗扱い=成功と誤表示しない)。
+      if (ls.getItem(entry.key) != null) failedKeys.push(entry.key);
     } catch {
       failedKeys.push(entry.key);
     }

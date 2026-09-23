@@ -201,4 +201,24 @@ describe("local-data（メモリlocalStorage）", () => {
     expect(map.has("efootball-team-ai:my-team:v1")).toBe(false); // 成功した方は削除済み
     expect(map.has("efb:squads:v1")).toBe(true); // 失敗した方は残る
   });
+
+  it("removeItemが例外なしで何もしない(黙って失敗する)場合も、読み戻して失敗として報告する(fail-closed)", () => {
+    const map = new Map<string, string>([["efootball-team-ai:favorites:v1", "fav"]]);
+    const storage = {
+      getItem: (k: string) => (map.has(k) ? map.get(k)! : null),
+      setItem: (k: string, v: string) => void map.set(k, String(v)),
+      removeItem: (k: string) => {
+        if (k !== "efootball-team-ai:favorites:v1") map.delete(k);
+      },
+      clear: () => map.clear(),
+      key: (i: number) => [...map.keys()][i] ?? null,
+      get length() {
+        return map.size;
+      },
+    };
+    vi.stubGlobal("window", { localStorage: storage });
+    const result = deleteAllManagedLocalData();
+    expect(result.ok).toBe(false);
+    expect(result.failedKeys).toEqual(["efootball-team-ai:favorites:v1"]);
+  });
 });
