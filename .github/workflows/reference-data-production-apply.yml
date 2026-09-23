@@ -1,0 +1,117 @@
+name: Reference data Production apply (manual, approval-gated; preflight only)
+
+# Stage 2 of the reference-data auto-update rollout.
+#
+# - Trigger: workflow_dispatch ONLY. No schedule, push, pull_request or workflow_run.
+# - Only the read-only "preflight" mode exists: it connects as reference_data_updater over TLS
+#   (pinned CA), runs catalog/privilege checks inside `begin read only`, and rolls back. It reads no
+#   rows and writes nothing. The "apply" mode is intentionally not implemented until the separately
+#   approved Stage 4 rehearsal; the CLI refuses any other mode before connecting.
+# - Secrets: only REFERENCE_DATA_APPLY_DB_URL and REFERENCE_DATA_APPLY_DB_CA_CERT, stored in the
+#   `reference-data-production-apply` Environment (required reviewer). Backup secrets are never used here.
+# - Concurrency: shares the production-write group with any future apply/rollback job.
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type 'preflight' to confirm this manual read-only check. This is not a substitute for the Environment approval."
+        required: true
+        type: string
+      mode:
+        description: "Only 'preflight' is available (read-only)."
+        required: true
+        type: choice
+        options:
+          - preflight
+        default: preflight
+
+permissions:
+  contents: read
+
+concurrency:
+  group: reference-data-production-write
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    environment: reference-data-production-apply
+    timeout-minutes: 10
+    steps:
+      - name: Reject unless the confirmation input is exactly "preflight"
+        if: ${{ inputs.confirm != 'preflight' || inputs.mode != 'preflight' }}
+        run: |
+          echo "::error::confirmation/mode must be exactly 'preflight'; aborting before touching any secret"
+          exit 1
+
+      - name: Check required secrets are configured (fails before any DB connection)
+        env:
+          REFERENCE_DATA_APPLY_DB_URL: ${{ secrets.REFERENCE_DATA_APPLY_DB_URL }}
+          REFERENCE_DATA_APPLY_DB_CA_CERT: ${{ secrets.REFERENCE_DATA_APPLY_DB_CA_CERT }}
+        run: |
+          missing=0
+          for name in REFERENCE_DATA_APPLY_DB_URL REFERENCE_DATA_APPLY_DB_CA_CERT; do
+            value="${!name}"
+            if [ -z "$value" ]; then
+              echo "::error::required secret not configured: $name"
+              missing=1
+            fi
+          done
+          if [ "$missing" = "1" ]; then
+            echo "::error::Production preflight is blocked until a human provisions the apply Environment secrets. Do not add a bypass here."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - name: Install dependencies (reproducible, no new packages)
+        run: npm ci
+
+      - name: Compile the apply entrypoint (tsc, no bundler)
+        run: npx tsc -p tsconfig.production-apply.json
+
+      - name: Runtime smoke test (module load, no secrets, must be blocked)
+        env:
+          REFERENCE_DATA_APPLY_DB_URL: ""
+          REFERENCE_DATA_APPLY_DB_CA_CERT: ""
+          REFERENCE_DATA_APPLY_MODE: preflight
+        run: |
+          set +e
+          output=$(node scripts/run-production-apply-entry.mjs 2>&1)
+          code=$?
+          set -e
+          echo "$output"
+          if echo "$output" | grep -qiE "is not defined in ES module scope|Cannot find module|ERR_MODULE_NOT_FOUND|require is not defined"; then
+            echo "::error::compiled apply entrypoint failed to load"
+            exit 1
+          fi
+          if [ "$code" -eq 0 ] || ! echo "$output" | grep -q "必須環境変数が不足している"; then
+            echo "::error::runtime smoke test should have been blocked without secrets"
+            exit 1
+          fi
+
+      - name: Run read-only updater preflight
+        env:
+          REFERENCE_DATA_APPLY_DB_URL: ${{ secrets.REFERENCE_DATA_APPLY_DB_URL }}
+          REFERENCE_DATA_APPLY_DB_CA_CERT: ${{ secrets.REFERENCE_DATA_APPLY_DB_CA_CERT }}
+          REFERENCE_DATA_APPLY_MODE: preflight
+          REFERENCE_DATA_APPLY_SUMMARY_PATH: ${{ runner.temp }}/reference-data-apply-preflight-summary.json
+        run: node scripts/run-production-apply-entry.mjs
+
+      # Non-secret summary only (ok, problems, counts). The CLI refuses to write it if any secret value appears.
+      - name: Upload non-secret preflight summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reference-data-apply-preflight-summary
+          path: ${{ runner.temp }}/reference-data-apply-preflight-summary.json
+          if-no-files-found: ignore
+          retention-days: 30
