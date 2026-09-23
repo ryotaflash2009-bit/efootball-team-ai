@@ -6,6 +6,8 @@ import { resolveBackupCategory, type BackupCategory } from "./backup-category";
 import { sanitizeErrorMessage } from "../real-import-guards";
 import { buildProductionPgClientConfig } from "./backup-db-connection";
 import { PRODUCTION_EXPECTED_SOURCE_IDENTITY } from "./backup-source-preflight";
+import { assertSummaryArtifactPath, buildBackupSummaryArtifact, serializeBackupSummaryArtifact } from "./backup-summary-artifact";
+import { writeFileSync } from "node:fs";
 
 /**
  * `reference-data-production-backup.yml`のjobから直接実行されるCLIエントリーポイント。
@@ -129,6 +131,12 @@ export async function main(): Promise<void> {
     // audit summary: secretを含まないJSONだけをstdoutへ出力する(workflow側がログとして残す)。
     process.stdout.write(`${JSON.stringify({ ok: result.ok, reasons: result.reasons, summary: result.summary }, null, 2)}\n`);
     exitCode = result.ok ? 0 : 1;
+    // 秘密情報を含まない要約artifact(workflowがupload-artifactで保存する)。出力先が指定された場合だけ書く。
+    const summaryPath = env.REFERENCE_DATA_BACKUP_SUMMARY_PATH;
+    if (summaryPath) {
+      const text = serializeBackupSummaryArtifact(buildBackupSummaryArtifact(result, new Date()), Object.values(secrets));
+      writeFileSync(assertSummaryArtifactPath(summaryPath), text, { encoding: "utf8", mode: 0o600 });
+    }
   } catch (err) {
     process.stdout.write(`${JSON.stringify({ ok: false, reasons: [sanitizeErrorMessage(err instanceof Error ? err.message : String(err))] }, null, 2)}\n`);
     exitCode = 1;
