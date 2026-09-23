@@ -69,3 +69,25 @@ live Production rows immediately before writing. Approval uses the GitHub Enviro
    (required reviewer). Never share them with the Backup Environment.
 5. Emergency stop: `alter role reference_data_updater nologin;` then delete the Environment Secret.
    Full removal: `rollback-reference-data-updater-role.sql`.
+
+## 6. Stage 2 preparation (2026-09-23)
+
+Step-by-step owner instructions: `stage2-production-updater-setup-runbook.md`. Added for Stage 2:
+
+- `sql/stage2-production-metadata-check.sql`: one read-only query returning metadata JSON (tables,
+  columns, owners, RLS, the two roles, policies, updater grants, and updater access to
+  user/auth tables). `production-metadata-contract.ts` checks it before (`pre`) and after (`post`)
+  setup.
+- `scripts/reference-data-scram-verifier.mjs`: local, hidden input. It prints
+  `alter role ... password 'SCRAM-SHA-256$...'`, so the plain password never enters Supabase SQL
+  history. A disposable PostgreSQL test proves the verifier logs in and a wrong password is refused.
+- `production-apply-preflight.ts` + `production-apply-cli.ts` + `.github/workflows/reference-data-production-apply.yml`:
+  dispatch-only, Environment `reference-data-production-apply`, apply secrets only. The only mode
+  is a **read-only preflight** (`begin read only`, catalog/privilege checks, advisory-lock
+  availability, rollback). The `apply` mode is refused before connecting until Stage 4.
+- Disposable PostgreSQL reproduction (`stage2-production-setup.postgres.test.ts`): Production-like
+  schema from repository DDL with forced RLS, public SELECT policies, and the Backup reader role
+  and policies. The role SQL runs verbatim, the metadata pre/post checks pass, the SCRAM login
+  works, the preflight passes as the updater and reports `wrong_role` as admin, and a missing
+  policy or extra DELETE grant is detected.
+- Duplicate apply: re-running an already applied plan is refused as `stale_plan` without writes.
