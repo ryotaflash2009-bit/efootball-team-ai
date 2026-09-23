@@ -53,4 +53,16 @@ describe("Production apply CLI", () => {
     expect(CLI).not.toMatch(/applyUpdatePlans|applyUndoPlan|insert into|update reference_data/);
     expect(CLI).toMatch(/buildProductionPgClientConfig/);
   });
+
+  it("接続・preflightのエラー本文を出力せず、段階と安全なcode(safeErrorCode)だけを返す(Run #2対応)", () => {
+    expect(CLI).not.toMatch(/sanitizeErrorMessage/);
+    // err.messageを出すのは、自分で投げたsummary_*の固定codeに一致した場合だけ。
+    expect(CLI.match(/err\.message/g)).toHaveLength(2);
+    expect(CLI).toContain('/^summary_/.test(err.message) ? err.message : "summary_write_failed"');
+    expect(CLI).toContain("connect_failed:${safeErrorCode(err)}");
+    expect(CLI).toContain("preflight_failed:${safeErrorCode(err)}");
+    // modeの判定はSecret読込・接続より前。
+    expect(CLI.indexOf("checkApplyMode(env.REFERENCE_DATA_APPLY_MODE)")).toBeLessThan(CLI.indexOf("readApplySecrets(env)"));
+    expect(CLI.indexOf("readApplySecrets(env)")).toBeLessThan(CLI.indexOf("runPreflightWithConfig(config)"));
+  });
 });
