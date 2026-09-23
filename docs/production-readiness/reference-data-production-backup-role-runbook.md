@@ -442,3 +442,93 @@ Production権限設定のままでは、次回runはsource preflightで`RLS`を�
 permissiveポリシーを追加する。`BYPASSRLS`の付与は最小権限の設計方針に反するため第一候補としない)
 Production変更が別途必要で、その内容・SQL・rollback・検証手順は別PRで設計し、本人の明示承認を
 得てから実施する。このPR・このセッションではProductionへの変更を一切行っていない。
+
+## 11. Backup reader専用RLS SELECT policy(2026-09-23、設計・未適用)
+
+**この章のSQLはいずれもProductionへ適用・実行していない。Production metadataの取得も行っていない。**
+
+### 11.1 目的と根本原因
+
+run #6が空Backupになった原因は、対象4テーブルがRLS有効(FORCE)で、SELECT policyが
+`anon`/`authenticated`向けにしか無く、`reference_data_backup_reader`(NOBYPASSRLS)に
+適用されるpolicyが存在しなかったこと(10章)。PR #35で、この状態はsource preflightで
+安全にblockedされるようになった。この章は、Backupを**成功させる**ための最小の権限変更を扱う。
+
+### 11.2 採用する変更(専用SELECT policy 4件)
+
+| table | policy名 |
+|---|---|
+| `reference_data.world_player_cards` | `world_player_cards_backup_reader_select` |
+| `reference_data.managers` | `managers_backup_reader_select` |
+| `reference_data.player_card_analysis` | `player_card_analysis_backup_reader_select` |
+| `reference_data.import_batches` | `import_batches_backup_reader_select` |
+
+いずれも`AS PERMISSIVE FOR SELECT TO reference_data_backup_reader USING (true)`で、
+WITH CHECK無し。INSERT/UPDATE/DELETE/ALLのpolicy、GRANT/REVOKE、role属性の変更、
+RLSの無効化・FORCE解除、table ownerの変更は一切行わない。
+
+- **BYPASSRLSを採用しない理由**: BYPASSRLSはrole単位で全テーブルのRLSを無効化する
+  広い権限で、将来このroleに別の権限が付いた場合にもRLSが効かなくなる。専用policyなら
+  対象4テーブル・SELECTだけに効果が限定され、policy単位でrollbackできる。
+- **既存動作不変**: 既存の`anon`/`authenticated`向けpolicy 3件は変更しない。
+  `import_batches`は`anon`/`authenticated`へ公開しない(GRANTもpolicyも追加しない。
+  専用policyの対象はBackup roleだけ)。
+
+### 11.3 SQLファイル
+
+| ファイル | 役割 |
+|---|---|
+| `sql/verify-reference-data-backup-reader-rls-policies-pre-apply.sql` | 適用前のmetadata-only確認(行データを読まない) |
+| `sql/create-reference-data-backup-reader-rls-policies.sql` | 適用(transaction、事前確認DOブロック、create policy 4件、事後確認) |
+| `sql/verify-reference-data-backup-reader-rls-policies-post-apply.sql` | 適用後(およびrollback後)のmetadata-only確認、`all_checks_pass` |
+| `sql/rollback-reference-data-backup-reader-rls-policies.sql` | 専用4policyだけを削除するrollback |
+
+apply SQLは、role不存在・superuser/BYPASSRLS・RLS/FORCE無効・Backup roleがowner・
+新policy名の衝突・Backup roleを対象にした想定外のpolicy・既存3policyの相違のいずれかを
+検出した場合、例外で停止してtransaction全体を取り消す(上書き・IF NOT EXISTSで黙って
+通過させない)。rollback SQLは、4件が想定の定義・tableで存在する場合だけ削除し、
+それ以外は何も削除せず停止する。
+
+### 11.4 source preflightの強化
+
+- `relrowsecurity`(RLS有効)と`relforcerowsecurity`(FORCE)を別々に記録し、診断
+  (`sourcePreflight`、テーブル名と真偽値だけ)としてsummaryへ出力する。
+- Backup roleがtable ownerならblocked。
+- 適用されるpolicyは、PERMISSIVE・SELECT(またはALL)・このrole(またはPUBLIC)・
+  `USING (true)`の場合だけ有効とみなす。このroleに適用されるRESTRICTIVE policyが
+  あればblocked。
+- superuser/BYPASSRLSのroleは成功条件にしない(Productionではblocked)。FORCE解除も
+  成功条件にしない。
+
+### 11.5 使い捨てPostgreSQLでの検証(CI)
+
+`backup-reader-rls-policy.postgres.test.ts`が、CIのPostgreSQL service container上で
+実際のapply/rollback/verify SQLファイルを実行し、次を確認する:
+状態A(現状相当: 0行・preflight/Backupはblocked)、状態B(apply後: Backup roleだけが
+読める・anon既存動作不変・import_batches非公開・preflight/export/隔離Restore成功)、
+状態C(rollback後: 専用4policyだけ削除・再び0行/blocked・role属性/grant不変)、
+および想定外状態(類似policy・既存policy相違・同名再apply・定義変更・RESTRICTIVE)での停止。
+
+### 11.6 本番適用までの手順(いずれも別承認)
+
+1. このPRのレビュー・マージ(本人)。
+2. **pre-apply確認SQLの実行**(read-only・metadata only、本人がSQL Editorで実行)。
+   11.3の目安と異なる結果が1件でもあれば適用しない。
+3. **Production適用の別途明示承認**の後、本人がapply SQLを実行する。
+4. **post-apply確認SQL**で`all_checks_pass=true`を確認する。
+5. **新しいProduction Backupは、さらに別途明示承認**を得てから新規runとして実行する
+   (run #6はrerunしない)。manifestのrowCountsが0でないことを確認する。
+6. 有効なBackupを取得した後に、本人PCでの隔離Restore試験を再開する。
+
+### 11.7 rollback
+
+- rollbackが必要になる例: post-apply確認が不合格、想定外のroleへ行が見える、
+  Backup運用を停止する判断をした場合。
+- rollbackも**別途明示承認**を得てから本人が実行し、post-apply確認SQLで
+  `new_policy_count=0`・`existing_policies_unchanged=true`を確認する。
+  rollback後はBackupが再びsource preflightでblockedになる(安全側)。
+
+### 11.8 run #6のobject
+
+run #6の無効な空Backup(R2上の暗号化payloadとmanifest)は、原因調査のEvidenceとして
+引き続き保持する。削除は別途明示承認を得てから行う。
