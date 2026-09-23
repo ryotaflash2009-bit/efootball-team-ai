@@ -51,6 +51,18 @@ export function SupportView() {
         </Surface>
       ) : null}
 
+      <Surface tone="inset" padding="md">
+        <p className="text-sm font-semibold text-text">{ts("betaLimitsHeading")}</p>
+        <p className="mt-1.5 text-sm text-text-dim">{ts("betaLimitsIntro")}</p>
+        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-dim">
+          <li>{ts("betaLimitData")}</li>
+          <li>{ts("betaLimitStorage")}</li>
+          <li>{ts("betaLimitRecommendation")}</li>
+          <li>{ts("betaLimitChanges")}</li>
+        </ul>
+        <p className="mt-2 text-sm text-text-dim">{ts("betaLimitsFeedback")}</p>
+      </Surface>
+
       <Surface padding="md">
         <p className="text-sm font-semibold text-text">{ts("generalContactHeading")}</p>
         <p className="mt-1.5 text-sm text-text-dim">{ts("generalContactIntro")}</p>
