@@ -24,12 +24,19 @@ export interface ExpectedSourceIdentity {
   database: string;
   currentUser: string;
   sessionUser: string;
+  /**
+   * 隔離CI PostgreSQL(superuserのadminでdumpする既存統合試験)専用。Productionでは常にfalseで、
+   * superuser/BYPASSRLSのroleは「行が見える」成功条件として扱わず、blockedにする
+   * (Backup roleは最小権限のNOBYPASSRLSで、専用SELECT policyによってだけ行を読む設計)。
+   */
+  allowPrivilegedRoleForIsolatedTesting?: boolean;
 }
 
 export const PRODUCTION_EXPECTED_SOURCE_IDENTITY: ExpectedSourceIdentity = Object.freeze({
   database: "postgres",
   currentUser: "reference_data_backup_reader",
   sessionUser: "reference_data_backup_reader",
+  allowPrivilegedRoleForIsolatedTesting: false,
 });
 
 const PREFLIGHT_SCHEMAS: readonly string[] = [PRODUCTION_REFERENCE_DATA_SCHEMA, BACKUP_SOURCE_TEST_SCHEMA];
@@ -59,19 +66,29 @@ export function buildSourceTableVisibilitySql(schemaName: BackupDumpSourceSchema
     if (!SAFE_IDENTIFIER_RE.test(t)) throw new Error(`不正なテーブル名: ${t}`);
   }
   const tableArray = BACKUP_TARGET_TABLES.map((t) => `'${t}'`).join(", ");
+  const policyFilter = [
+    "    select 1 from pg_catalog.pg_policies p",
+    `    where p.schemaname = '${schemaName}'`,
+    "      and p.tablename = t.table_name",
+    "      and p.cmd in ('SELECT', 'ALL')",
+    "      and (p.roles @> array[current_user]::name[] or p.roles @> array['public']::name[])",
+  ];
   return [
     "select t.table_name,",
     "  c.oid is not null as table_exists,",
     "  coalesce(c.relrowsecurity, false) as rls_enabled,",
+    "  coalesce(c.relforcerowsecurity, false) as rls_forced,",
+    "  coalesce(pg_catalog.pg_get_userbyid(c.relowner) = current_user, false) as owner_is_current_user,",
     "  case when c.oid is null then false else has_table_privilege(c.oid, 'SELECT') end as has_select_privilege,",
     "  exists (",
-    "    select 1 from pg_catalog.pg_policies p",
-    `    where p.schemaname = '${schemaName}'`,
-    "      and p.tablename = t.table_name",
+    ...policyFilter,
     "      and p.permissive = 'PERMISSIVE'",
-    "      and p.cmd in ('SELECT', 'ALL')",
-    "      and (p.roles @> array[current_user]::name[] or p.roles @> array['public']::name[])",
-    "  ) as has_applicable_select_policy",
+    "      and p.qual = 'true'",
+    "  ) as has_applicable_select_policy,",
+    "  exists (",
+    ...policyFilter,
+    "      and p.permissive = 'RESTRICTIVE'",
+    "  ) as has_restrictive_select_policy",
     `from unnest(array[${tableArray}]::text[]) as t(table_name)`,
     `left join pg_catalog.pg_class c on c.oid = to_regclass('${schemaName}.' || t.table_name)`,
     "order by t.table_name",
@@ -112,7 +129,13 @@ export function evaluateSourcePreflight(
     checks.push({ ok: false, reason: "role属性(superuser/bypassrls)を判定できない(blocked)" });
     return checks;
   }
-  const rlsBypassed = isSuperuser || bypassRls;
+  if ((isSuperuser || bypassRls) && !expected.allowPrivilegedRoleForIsolatedTesting) {
+    checks.push({
+      ok: false,
+      reason: "接続roleがsuperuserまたはBYPASSRLS(最小権限のBackup roleではない。RLS回避を成功条件にしない、blocked)",
+    });
+  }
+  const rlsBypassed = Boolean(expected.allowPrivilegedRoleForIsolatedTesting) && (isSuperuser || bypassRls);
 
   const byTable = new Map<string, Record<string, unknown>>();
   for (const row of tableRows) {
@@ -127,8 +150,14 @@ export function evaluateSourcePreflight(
     const exists = asBool(row.table_exists);
     const canSelect = asBool(row.has_select_privilege);
     const rlsEnabled = asBool(row.rls_enabled);
+    const rlsForced = asBool(row.rls_forced);
+    const ownerIsCurrentUser = asBool(row.owner_is_current_user);
     const hasPolicy = asBool(row.has_applicable_select_policy);
-    if (exists === null || canSelect === null || rlsEnabled === null || hasPolicy === null) {
+    const hasRestrictive = asBool(row.has_restrictive_select_policy);
+    if (
+      exists === null || canSelect === null || rlsEnabled === null || rlsForced === null ||
+      ownerIsCurrentUser === null || hasPolicy === null || hasRestrictive === null
+    ) {
       checks.push({ ok: false, reason: `${table}のpreflight結果の形式が不正(blocked)` });
       continue;
     }
@@ -136,14 +165,25 @@ export function evaluateSourcePreflight(
       checks.push({ ok: false, reason: `${table}が存在しない(blocked)` });
       continue;
     }
+    if (ownerIsCurrentUser && !expected.allowPrivilegedRoleForIsolatedTesting) {
+      checks.push({ ok: false, reason: `${table}の所有者が接続roleである(Backup roleはtable ownerであってはならない、blocked)` });
+      continue;
+    }
     if (!canSelect) {
       checks.push({ ok: false, reason: `${table}へのSELECT権限が無い(blocked)` });
+      continue;
+    }
+    if (rlsEnabled && !rlsBypassed && hasRestrictive) {
+      checks.push({
+        ok: false,
+        reason: `${table}にこのroleへ適用されるRESTRICTIVEなSELECTポリシーがある(行が絞り込まれる想定外の状態、blocked)`,
+      });
       continue;
     }
     if (rlsEnabled && !rlsBypassed && !hasPolicy) {
       checks.push({
         ok: false,
-        reason: `${table}はRLS有効だが、このroleに適用されるSELECTポリシーが無い(RLSの既定拒否により行が0件に見える状態、blocked)`,
+        reason: `${table}はRLS有効(FORCE: ${rlsForced})だが、このroleに適用されるUSING (true)のPERMISSIVE SELECTポリシーが無い(RLSの既定拒否により行が0件に見える状態、blocked)`,
       });
       continue;
     }
@@ -158,9 +198,34 @@ function requireRows(result: unknown, label: string): Record<string, unknown>[] 
   return rows as Record<string, unknown>[];
 }
 
+export interface SourcePreflightTableDiagnostic {
+  table: string;
+  rlsEnabled: boolean | null;
+  rlsForced: boolean | null;
+  ownerIsCurrentUser: boolean | null;
+  hasApplicableSelectPolicy: boolean | null;
+  hasRestrictiveSelectPolicy: boolean | null;
+}
+
 export interface SourcePreflightResult {
   ok: boolean;
   reasons: string[];
+  /** 秘密情報を含まない診断(テーブル名と真偽値だけ)。 */
+  tables: SourcePreflightTableDiagnostic[];
+}
+
+export function buildSourcePreflightDiagnostics(tableRows: readonly Record<string, unknown>[]): SourcePreflightTableDiagnostic[] {
+  return BACKUP_TARGET_TABLES.map((table) => {
+    const row = tableRows.find((r) => r.table_name === table);
+    return {
+      table,
+      rlsEnabled: row ? asBool(row.rls_enabled) : null,
+      rlsForced: row ? asBool(row.rls_forced) : null,
+      ownerIsCurrentUser: row ? asBool(row.owner_is_current_user) : null,
+      hasApplicableSelectPolicy: row ? asBool(row.has_applicable_select_policy) : null,
+      hasRestrictiveSelectPolicy: row ? asBool(row.has_restrictive_select_policy) : null,
+    };
+  });
 }
 
 export async function runSourcePreflight(
@@ -171,5 +236,5 @@ export async function runSourcePreflight(
   const identityRows = requireRows(await client.query(buildSourceIdentitySql()), "identity preflight");
   const tableRows = requireRows(await client.query(buildSourceTableVisibilitySql(schemaName)), "table visibility preflight");
   const failed = evaluateSourcePreflight(identityRows, tableRows, expected).filter((c) => !c.ok);
-  return { ok: failed.length === 0, reasons: failed.map((c) => c.reason ?? "理由不明") };
+  return { ok: failed.length === 0, reasons: failed.map((c) => c.reason ?? "理由不明"), tables: buildSourcePreflightDiagnostics(tableRows) };
 }

@@ -108,7 +108,14 @@ export async function runProductionBackup(input: RunProductionBackupInput): Prom
     return {
       ok: false,
       reasons: preflight.reasons,
-      summary: { phase: "source-preflight", ok: false, reasons: preflight.reasons, restoreVerified: false, storageVerified: false },
+      summary: {
+        phase: "source-preflight",
+        ok: false,
+        reasons: preflight.reasons,
+        sourcePreflight: preflight.tables,
+        restoreVerified: false,
+        storageVerified: false,
+      },
     };
   }
 
@@ -240,6 +247,7 @@ export async function runProductionBackup(input: RunProductionBackupInput): Prom
     totalChecksum: verifiedManifest.totalChecksum,
     restoreVerified: verifiedManifest.restoreVerified,
     encryptionAlgorithm: verifiedManifest.encryptionAlgorithm,
+    sourcePreflight: preflight.tables,
   } as const;
 
   if (!putResult.ok) {
