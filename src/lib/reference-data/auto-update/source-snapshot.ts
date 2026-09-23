@@ -234,6 +234,8 @@ export interface StagingDataset {
   readonly removalDetectionAllowed: boolean;
   /** 形式不正でrejectしたが、identityは分かるもの(Phase Cでinvalidとして扱い、removedと誤判定しない)。 */
   readonly rejectedIdentities: readonly string[];
+  /** 形式不正でidentityも分からない件数(Phase Cでinvalidとして数える)。 */
+  readonly rejectedWithoutIdentityCount: number;
 }
 
 /**
@@ -262,6 +264,7 @@ export function buildStagingDataset(snapshot: SourceSnapshot): StagingDataset {
     rawContentHash: snapshot.rawContentHash,
     removalDetectionAllowed: snapshot.removalDetectionAllowed,
     rejectedIdentities: Object.freeze(rejectedIdentities),
+    rejectedWithoutIdentityCount: snapshot.completeness.rejectedWithoutIdentityCount,
   });
 }
 
