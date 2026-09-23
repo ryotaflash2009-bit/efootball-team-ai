@@ -1,4 +1,4 @@
-import { getBackupTableSpec, type BackupTableSpec, type BackupIsolatedSchemaName, type BackupDumpSourceSchemaName } from "./backup-schema";
+import { CURRENT_BACKUP_FORMAT_VERSION, getBackupTableSpec, type BackupFormatVersion, type BackupTableSpec, type BackupIsolatedSchemaName, type BackupDumpSourceSchemaName } from "./backup-schema";
 import { BACKUP_SOURCE_TEST_SCHEMA, BACKUP_RESTORE_TEST_SCHEMA, PRODUCTION_REFERENCE_DATA_SCHEMA } from "./backup-schema";
 import { BACKUP_TARGET_TABLES } from "./backup-target";
 
@@ -24,9 +24,9 @@ function assertDumpSourceSchema(schemaName: BackupDumpSourceSchemaName): void {
   }
 }
 
-export function buildBackupDumpSelectSql(schemaName: BackupDumpSourceSchemaName, table: string): string {
+export function buildBackupDumpSelectSql(schemaName: BackupDumpSourceSchemaName, table: string, version: BackupFormatVersion = CURRENT_BACKUP_FORMAT_VERSION): string {
   assertDumpSourceSchema(schemaName);
-  const spec = getBackupTableSpec(table);
+  const spec = getBackupTableSpec(table, version);
   return `select ${spec.columns.join(", ")} from ${schemaName}.${table} order by ${spec.primaryKey}`;
 }
 
@@ -54,8 +54,8 @@ export function buildBackupTruncateAllRestoreTargetsSql(): string {
   return `truncate table ${qualified.join(", ")}`;
 }
 
-export function buildBackupRestoreInsertSql(table: string, rowCount: number): string {
-  const spec = getBackupTableSpec(table);
+export function buildBackupRestoreInsertSql(table: string, rowCount: number, version: BackupFormatVersion = CURRENT_BACKUP_FORMAT_VERSION): string {
+  const spec = getBackupTableSpec(table, version);
   if (rowCount <= 0) throw new Error("buildBackupRestoreInsertSql: rowCountは1以上である必要がある");
   const valueRows: string[] = [];
   for (let r = 0; r < rowCount; r += 1) {

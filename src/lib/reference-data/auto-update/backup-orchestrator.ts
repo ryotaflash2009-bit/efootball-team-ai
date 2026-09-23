@@ -1,6 +1,6 @@
 import { sanitizeErrorMessage, type GuardCheck } from "../real-import-guards";
 import { BACKUP_TARGET_TABLES, checkBackupTargetSetExact } from "./backup-target";
-import { getBackupTableSpec, type BackupDumpSourceSchemaName } from "./backup-schema";
+import { CURRENT_BACKUP_FORMAT_VERSION, assertBackupFormatVersion, getBackupTableSpec, type BackupDumpSourceSchemaName, type BackupFormatVersion } from "./backup-schema";
 import { buildBackupDumpSelectSql, toPortableBackupRow } from "./backup-sql";
 import { computeBackupTableChecksum, computeBackupTotalChecksum, computeSourceMetadataChecksum, deriveSourceDatasetPairs, type BackupSourceMetadataEntry } from "./backup-checksum";
 import { buildBackupManifest, markManifestEncrypted, assertManifestHasNoSecrets, type BackupManifest } from "./backup-manifest";
@@ -89,11 +89,15 @@ export function evaluateBackupPreflightGates(input: Pick<CreateBackupInput, "pos
 }
 
 /** 対象4テーブルを、指定されたschemaから順に読み出す(SELECT *は使わない)。 */
-export async function dumpBackupTables(client: QueryClient, sourceSchema: BackupDumpSourceSchemaName): Promise<BackupTableDump[]> {
+export async function dumpBackupTables(
+  client: QueryClient,
+  sourceSchema: BackupDumpSourceSchemaName,
+  version: BackupFormatVersion = CURRENT_BACKUP_FORMAT_VERSION,
+): Promise<BackupTableDump[]> {
   const dumps: BackupTableDump[] = [];
   for (const table of BACKUP_TARGET_TABLES) {
-    const spec = getBackupTableSpec(table);
-    const sql = buildBackupDumpSelectSql(sourceSchema, table);
+    const spec = getBackupTableSpec(table, version);
+    const sql = buildBackupDumpSelectSql(sourceSchema, table, version);
     const result = await client.query(sql);
     // 結果shapeの異常を空配列として扱わない(0行と取得失敗を区別する)。
     if (!result || !Array.isArray(result.rows)) {
@@ -115,7 +119,8 @@ export async function createReferenceDataBackup(client: QueryClient, input: Crea
   }
 
   try {
-    const dumps = await dumpBackupTables(client, input.sourceSchema);
+    const formatVersion = assertBackupFormatVersion(input.backupVersion ?? CURRENT_BACKUP_FORMAT_VERSION);
+    const dumps = await dumpBackupTables(client, input.sourceSchema, formatVersion);
 
     const rowCounts: Record<string, number> = {};
     const tableChecksums: Record<string, string> = {};
@@ -143,7 +148,7 @@ export async function createReferenceDataBackup(client: QueryClient, input: Crea
     const expiresAt = input.retentionDays === null ? null : new Date(input.now.getTime() + input.retentionDays * 24 * 60 * 60 * 1000).toISOString();
 
     let manifest = buildBackupManifest({
-      backupVersion: input.backupVersion ?? "1",
+      backupVersion: formatVersion,
       schemaVersion: input.schemaVersion,
       jobId: input.jobId,
       createdAt: nowIso,

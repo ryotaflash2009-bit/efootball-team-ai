@@ -248,3 +248,58 @@ describe("Backup -> 暗号化 -> 復号 -> Restore(実PostgreSQL、隔離schema2
     expect(Number(count.rows[0].c)).toBe(0);
   }, 20000);
 });
+
+describe("Backup形式の版(Phase F: 列の欠落解消と後方互換)", () => {
+  async function backupAndRestore(version: "1" | "2") {
+    await seedSourceRows(adminClient);
+    await adminClient.query(
+      `update ${BACKUP_SOURCE_TEST_SCHEMA}.world_player_cards set appearance_updated_at = $1, import_batch_id = $2 where world_card_id = '1'`,
+      ["2026-09-19T08:30:00.000Z", "8a0b6f3e-6c1d-4f7a-9b2e-1c3d5e7f9a0b"],
+    );
+    await adminClient.query(`update ${BACKUP_SOURCE_TEST_SCHEMA}.managers set import_batch_id = $1`, ["8a0b6f3e-6c1d-4f7a-9b2e-1c3d5e7f9a0b"]);
+    const pgMajor = await getPostgresMajorVersion(adminClient);
+    const queryClient: QueryClient = createPostgresQueryClient(adminClient);
+    const encryptor = new NodeAesGcmEncryptor(generateEphemeralTestKey());
+    const backup = await createReferenceDataBackup(queryClient, {
+      jobId: `postgres-test-backup-format-v${version}`,
+      schemaVersion: SCHEMA_VERSION,
+      applicationCommitSha: "0".repeat(40),
+      now: new Date(),
+      postgresMajorVersion: pgMajor,
+      retentionCategory: "isolated-test-ephemeral",
+      retentionDays: 1,
+      encryptor,
+      sourceSchema: BACKUP_SOURCE_TEST_SCHEMA,
+      backupVersion: version,
+    });
+    expect(backup.ok, JSON.stringify(backup.reasons)).toBe(true);
+    const restore = await restoreReferenceDataBackup(queryClient, {
+      artifact: backup.artifact!,
+      decryptor: encryptor,
+      expectedSchemaVersion: SCHEMA_VERSION,
+      expectedPostgresMajorVersion: pgMajor,
+      now: new Date(),
+    });
+    return { backup, restore };
+  }
+
+  it("現行形式\"2\"はappearance_updated_at・import_batch_idを収録し、Restore後も値とchecksumが一致する", async () => {
+    const { backup, restore } = await backupAndRestore("2");
+    expect(backup.artifact!.manifest.backupVersion).toBe("2");
+    expect(restore.ok, JSON.stringify(restore.reasons)).toBe(true);
+    const w = await adminClient.query(`select appearance_updated_at, import_batch_id from ${BACKUP_RESTORE_TEST_SCHEMA}.world_player_cards where world_card_id = '1'`);
+    expect(new Date(w.rows[0].appearance_updated_at).toISOString()).toBe("2026-09-19T08:30:00.000Z");
+    expect(w.rows[0].import_batch_id).toBe("8a0b6f3e-6c1d-4f7a-9b2e-1c3d5e7f9a0b");
+    const m = await adminClient.query(`select import_batch_id from ${BACKUP_RESTORE_TEST_SCHEMA}.managers`);
+    expect(m.rows[0].import_batch_id).toBe("8a0b6f3e-6c1d-4f7a-9b2e-1c3d5e7f9a0b");
+  }, 20000);
+
+  it("旧形式\"1\"(Run #7と同じ列集合)のBackupも、その列集合のまま検証・Restoreできる", async () => {
+    const { backup, restore } = await backupAndRestore("1");
+    expect(backup.artifact!.manifest.backupVersion).toBe("1");
+    expect(restore.ok, JSON.stringify(restore.reasons)).toBe(true);
+    expect(restore.restoreVerified).toBe(true);
+    const w = await adminClient.query(`select appearance_updated_at, import_batch_id from ${BACKUP_RESTORE_TEST_SCHEMA}.world_player_cards where world_card_id = '1'`);
+    expect(w.rows[0]).toEqual({ appearance_updated_at: null, import_batch_id: null });
+  }, 20000);
+});

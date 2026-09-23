@@ -19,7 +19,23 @@ export interface BackupTableSpec {
   jsonbColumns: readonly string[];
 }
 
-export const BACKUP_TABLE_SPECS: readonly BackupTableSpec[] = [
+/**
+ * Backup形式の版。manifestの`backupVersion`に記録し、Restoreはmanifestの版の列集合で検証・復元する。
+ *   "1": 初期形式(Run #7まで)。world_player_cards.appearance_updated_atと各tableのimport_batch_idを収録しない。
+ *   "2": Phase Fで列の欠落を解消した形式(リポジトリ内DDLのProduction列をすべて収録)。
+ * 旧形式のBackup(Run #7)は"1"のまま検証・Restoreできる(後方互換)。未知の版はblocked。
+ */
+export type BackupFormatVersion = "1" | "2";
+export const CURRENT_BACKUP_FORMAT_VERSION: BackupFormatVersion = "2";
+export const SUPPORTED_BACKUP_FORMAT_VERSIONS: readonly BackupFormatVersion[] = Object.freeze(["1", "2"]);
+
+export function assertBackupFormatVersion(value: unknown): BackupFormatVersion {
+  if (value === "1" || value === "2") return value;
+  throw new Error("未対応のBackup形式の版(blocked)");
+}
+
+/** 版"1"の列集合(変更禁止: 既存Backupの検証に使う)。 */
+const BACKUP_TABLE_SPECS_V1: readonly BackupTableSpec[] = [
   {
     table: "world_player_cards",
     primaryKey: "world_card_id",
@@ -65,8 +81,36 @@ export const BACKUP_TABLE_SPECS: readonly BackupTableSpec[] = [
   },
 ];
 
-export function getBackupTableSpec(table: string): BackupTableSpec {
-  const found = BACKUP_TABLE_SPECS.find((s) => s.table === table);
+/** 版"2"で追加する列(直前の列の後ろへ挿入する)。 */
+const V2_ADDED_COLUMNS: Readonly<Record<string, readonly (readonly [after: string, column: string])[]>> = {
+  world_player_cards: [["source_url", "appearance_updated_at"], ["dataset_version", "import_batch_id"]],
+  managers: [["dataset_version", "import_batch_id"]],
+  player_card_analysis: [["dataset_version", "import_batch_id"]],
+  import_batches: [],
+};
+
+function withAddedColumns(spec: BackupTableSpec): BackupTableSpec {
+  const cols = [...spec.columns];
+  for (const [after, column] of V2_ADDED_COLUMNS[spec.table] ?? []) {
+    const i = cols.indexOf(after);
+    if (i < 0 || cols.includes(column)) throw new Error(`Backup spec v2の列追加位置が不正: ${spec.table}.${column}`);
+    cols.splice(i + 1, 0, column);
+  }
+  return { ...spec, columns: cols };
+}
+
+const BACKUP_TABLE_SPECS_V2: readonly BackupTableSpec[] = BACKUP_TABLE_SPECS_V1.map(withAddedColumns);
+
+export const BACKUP_TABLE_SPECS_BY_VERSION: Readonly<Record<BackupFormatVersion, readonly BackupTableSpec[]>> = Object.freeze({
+  "1": BACKUP_TABLE_SPECS_V1,
+  "2": BACKUP_TABLE_SPECS_V2,
+});
+
+/** 現行版(新しいBackupの作成に使う)の列集合。 */
+export const BACKUP_TABLE_SPECS: readonly BackupTableSpec[] = BACKUP_TABLE_SPECS_BY_VERSION[CURRENT_BACKUP_FORMAT_VERSION];
+
+export function getBackupTableSpec(table: string, version: BackupFormatVersion = CURRENT_BACKUP_FORMAT_VERSION): BackupTableSpec {
+  const found = BACKUP_TABLE_SPECS_BY_VERSION[assertBackupFormatVersion(version)].find((s) => s.table === table);
   if (!found) throw new Error(`Backup対象として定義されていないテーブル: ${table}`);
   return found;
 }
@@ -123,8 +167,10 @@ create table if not exists ${schemaName}.world_player_cards (
   name_sort_key text collate "C",
   source text not null default 'efootball-world.com',
   source_url text,
+  appearance_updated_at timestamptz,
   fetched_at timestamptz not null,
   dataset_version text not null,
+  import_batch_id uuid,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -157,6 +203,7 @@ create table if not exists ${schemaName}.managers (
   source_url text,
   fetched_at timestamptz not null,
   dataset_version text not null,
+  import_batch_id uuid,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -177,6 +224,7 @@ create table if not exists ${schemaName}.player_card_analysis (
   source_url text,
   fetched_at timestamptz not null,
   dataset_version text not null,
+  import_batch_id uuid,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
