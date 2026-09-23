@@ -9,6 +9,7 @@ import { runGuardedCleanup } from "./postgres-test-lifecycle";
 import { runProductionBackup } from "./run-production-backup";
 import { FakeR2Client } from "./backup-r2-client";
 import type { QueryClient } from "./apply-orchestrator";
+import type { ExpectedSourceIdentity } from "./backup-source-preflight";
 
 /**
  * `runProductionBackup`のうち、実PostgreSQLに対する読み出し(dump)・隔離Restore検証
@@ -34,6 +35,10 @@ import type { QueryClient } from "./apply-orchestrator";
 
 const RECIPIENT = "age1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
 const config = buildTestOnlyPgConfigFromEnv(process.env);
+// このCI隔離DBでは、adminユーザー自身がdumpする(実Productionのidentityとは別の、テスト環境の値)。
+const ADMIN_IDENTITY: ExpectedSourceIdentity = { database: config.database, currentUser: config.user, sessionUser: config.user };
+const RLS_PROBE_ROLE = "backup_rls_probe_reader";
+const TARGET_TABLES_SQL = ["world_player_cards", "managers", "player_card_analysis", "import_batches"];
 
 let adminClient: Client;
 let adminClientConnected = false;
@@ -167,6 +172,7 @@ describe("runProductionBackup(実PostgreSQL、reference_data相当schema1つ + �
       postgresMajorVersion: pgMajor,
       applicationCommitSha: "0".repeat(40),
       category: "daily",
+      expectedSourceIdentity: ADMIN_IDENTITY,
     });
 
     expect(result.ok, `reasons: ${JSON.stringify(result.reasons)}`).toBe(true);
@@ -184,7 +190,10 @@ describe("runProductionBackup(実PostgreSQL、reference_data相当schema1つ + �
     expect(Number(untouched.rows[0].c)).toBe(2);
   }, 20000);
 
-  it("0件のテーブルでも(空データセットでも)正常にexport・検証・uploadまで成功する", async () => {
+  // 2026-09-23変更: 以前このテストは「空データセットでもupload まで成功する」ことを
+  // 期待していた(workflow Run #6の空Backupを許した設計そのもの)。空Backupは
+  // 暗号化・保存・checksumが成功しても無効であるため、必ず失敗することを期待する。
+  it("全テーブル0件(空データセット)はexport段階でblockedになり、R2へは一切uploadしない", async () => {
     const pgMajor = await getPostgresMajorVersion(adminClient);
     const prodClient: QueryClient = createPostgresQueryClient(adminClient);
     const verifyClient: QueryClient = createPostgresQueryClient(adminClient);
@@ -202,10 +211,14 @@ describe("runProductionBackup(実PostgreSQL、reference_data相当schema1つ + �
       postgresMajorVersion: pgMajor,
       applicationCommitSha: "0".repeat(40),
       category: "daily",
+      expectedSourceIdentity: ADMIN_IDENTITY,
     });
 
-    expect(result.ok, `reasons: ${JSON.stringify(result.reasons)}`).toBe(true);
-    expect((result.summary.rowCounts as Record<string, number>).world_player_cards).toBe(0);
+    expect(result.ok).toBe(false);
+    expect(result.summary.phase).toBe("export");
+    expect(result.summary.restoreVerified).toBe(false);
+    expect(result.summary.storageVerified).toBe(false);
+    expect(r2Client.putCalls).toBe(0);
   }, 20000);
 
   it("category=pre-applyの場合、実PostgreSQLからのexport・隔離Restore検証を経てもretentionDays/expiresAtはnullのまま(初回Production Backup相当)", async () => {
@@ -227,6 +240,7 @@ describe("runProductionBackup(実PostgreSQL、reference_data相当schema1つ + �
       postgresMajorVersion: pgMajor,
       applicationCommitSha: "0".repeat(40),
       category: "pre-apply",
+      expectedSourceIdentity: ADMIN_IDENTITY,
     });
 
     expect(result.ok, `reasons: ${JSON.stringify(result.reasons)}`).toBe(true);
@@ -234,5 +248,80 @@ describe("runProductionBackup(実PostgreSQL、reference_data相当schema1つ + �
     expect(result.summary.retentionCategory).toBe("production-pre-apply");
     expect(result.summary.retentionDays).toBeNull();
     expect(result.summary.expiresAt).toBeNull();
+  }, 20000);
+
+  it("Run #6再現: RLS有効・適用ポリシー無しのNOBYPASSRLS roleでは、SELECTはエラーにならず0行を返す。preflightがこれを検出しexport前にblockedにする", async () => {
+    await seedProductionLikeRows(adminClient);
+    let roleCreated = false;
+    let rlsEnabled = false;
+    const probeClient = new Client(config);
+    let probeConnected = false;
+    try {
+      await adminClient.query(`drop owned by ${RLS_PROBE_ROLE}`).catch(() => undefined);
+      await adminClient.query(`drop role if exists ${RLS_PROBE_ROLE}`);
+      await adminClient.query(`create role ${RLS_PROBE_ROLE} nologin nobypassrls`);
+      roleCreated = true;
+      await adminClient.query(`grant usage on schema ${PRODUCTION_REFERENCE_DATA_SCHEMA} to ${RLS_PROBE_ROLE}`);
+      for (const t of TARGET_TABLES_SQL) {
+        await adminClient.query(`grant select on ${PRODUCTION_REFERENCE_DATA_SCHEMA}.${t} to ${RLS_PROBE_ROLE}`);
+        await adminClient.query(`alter table ${PRODUCTION_REFERENCE_DATA_SCHEMA}.${t} enable row level security`);
+        await adminClient.query(`alter table ${PRODUCTION_REFERENCE_DATA_SCHEMA}.${t} force row level security`);
+      }
+      rlsEnabled = true;
+
+      await probeClient.connect();
+      probeConnected = true;
+      await probeClient.query(`set role ${RLS_PROBE_ROLE}`);
+
+      // 行は実際に存在する(admin視点)が、probe roleからはエラー無しで0行に見える(Run #6と同じ状態)。
+      const adminCount = await adminClient.query(`select count(*) as c from ${PRODUCTION_REFERENCE_DATA_SCHEMA}.world_player_cards`);
+      expect(Number(adminCount.rows[0].c)).toBe(2);
+      const probeCount = await probeClient.query(`select count(*) as c from ${PRODUCTION_REFERENCE_DATA_SCHEMA}.world_player_cards`);
+      expect(Number(probeCount.rows[0].c)).toBe(0);
+
+      const pgMajor = await getPostgresMajorVersion(adminClient);
+      const r2Client = new FakeR2Client();
+      const result = await runProductionBackup({
+        prodClient: createPostgresQueryClient(probeClient, { setTestSearchPath: false }),
+        verifyClient: createPostgresQueryClient(adminClient),
+        r2Client,
+        ageRecipient: RECIPIENT,
+        ageCommand: [process.execPath, fakeAgeSuccessPath],
+        jobId: "postgres-test-prod-backup-rls-hidden",
+        now: new Date(),
+        schemaVersion: SCHEMA_VERSION,
+        postgresMajorVersion: pgMajor,
+        applicationCommitSha: "0".repeat(40),
+        category: "pre-apply",
+        expectedSourceIdentity: { database: config.database, currentUser: RLS_PROBE_ROLE, sessionUser: config.user },
+      });
+
+      expect(result.ok).toBe(false);
+      expect(result.summary.phase).toBe("source-preflight");
+      expect(result.reasons.join(" ")).toMatch(/RLS/);
+      expect(result.summary.restoreVerified).toBe(false);
+      expect(result.summary.storageVerified).toBe(false);
+      expect(r2Client.putCalls).toBe(0);
+    } finally {
+      if (probeConnected) await probeClient.end().catch(() => undefined);
+      await runGuardedCleanup([
+        {
+          ready: rlsEnabled,
+          run: async () => {
+            for (const t of TARGET_TABLES_SQL) {
+              await adminClient.query(`alter table ${PRODUCTION_REFERENCE_DATA_SCHEMA}.${t} no force row level security`);
+              await adminClient.query(`alter table ${PRODUCTION_REFERENCE_DATA_SCHEMA}.${t} disable row level security`);
+            }
+          },
+        },
+        {
+          ready: roleCreated,
+          run: async () => {
+            await adminClient.query(`drop owned by ${RLS_PROBE_ROLE}`);
+            await adminClient.query(`drop role if exists ${RLS_PROBE_ROLE}`);
+          },
+        },
+      ]);
+    }
   }, 20000);
 });

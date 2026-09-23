@@ -87,10 +87,23 @@ function normalizeRow(row: Record<string, unknown>): Record<string, unknown> {
  * - `?`をPostgreSQLの`$1,$2,...`へ変換する。
  * - セッションの`search_path`を隔離schemaへ設定し、非修飾テーブル名を解決させる。
  */
-export function createPostgresQueryClient(pgClient: MinimalPgClient): QueryClient {
+export interface PostgresQueryClientOptions {
+  /**
+   * 既定true(既存の隔離テスト用途)。Production接続ではfalseを渡し、テスト用schema名を
+   * Productionのセッションへ一切設定しない(Production側のSQLはすべてschema修飾済みで、
+   * search_pathに依存しない)。
+   */
+  setTestSearchPath?: boolean;
+}
+
+const READ_STATEMENT_RE = /^\s*(select|with)\b/i;
+
+export function createPostgresQueryClient(pgClient: MinimalPgClient, options: PostgresQueryClientOptions = {}): QueryClient {
+  const setTestSearchPath = options.setTestSearchPath ?? true;
   let searchPathReady: Promise<void> | null = null;
 
   async function ensureSearchPath(): Promise<void> {
+    if (!setTestSearchPath) return;
     if (!searchPathReady) {
       searchPathReady = pgClient.query(`set search_path to ${POSTGRES_TEST_SCHEMA}, public`).then(() => undefined);
     }
@@ -123,6 +136,18 @@ export function createPostgresQueryClient(pgClient: MinimalPgClient): QueryClien
       // 要素、`rows`が無ければ空配列として扱う(DDLの戻り値は元々使わないため、
       // ここでの「空配列」は正しい既定値であり、エラーを握りつぶすものではない)。
       const rawResult = params.length > 0 ? await pgClient.query(pgSql, params as unknown[]) : await pgClient.query(pgSql);
+      // 読み出し文(select/with)は、結果shapeの異常を空配列へ黙って変換しない。
+      // 行が「無い」のか「取得に失敗した」のかを区別できなくなり、空Backupを
+      // 成功扱いする原因になり得るため(workflow Run #6の再発防止)。
+      if (READ_STATEMENT_RE.test(sql)) {
+        if (Array.isArray(rawResult)) {
+          throw new Error("読み出し文の結果が複数文の結果配列として返った(想定外のresult shape、blocked)");
+        }
+        if (!rawResult || !Array.isArray((rawResult as { rows?: unknown }).rows)) {
+          throw new Error("読み出し文の結果にrows配列が無い(想定外のresult shape、blocked)");
+        }
+        return { rows: rawResult.rows.map(normalizeRow) };
+      }
       const resolvedResult = Array.isArray(rawResult) ? rawResult[rawResult.length - 1] : rawResult;
       return { rows: (resolvedResult?.rows ?? []).map(normalizeRow) };
     },

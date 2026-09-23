@@ -5,6 +5,7 @@ import { runProductionBackup } from "./run-production-backup";
 import { resolveBackupCategory, type BackupCategory } from "./backup-category";
 import { sanitizeErrorMessage } from "../real-import-guards";
 import { buildProductionPgClientConfig } from "./backup-db-connection";
+import { PRODUCTION_EXPECTED_SOURCE_IDENTITY } from "./backup-source-preflight";
 
 /**
  * `reference-data-production-backup.yml`のjobから直接実行されるCLIエントリーポイント。
@@ -97,7 +98,8 @@ export async function main(): Promise<void> {
     await prodPgClient.connect();
     await verifyPgClient.connect();
 
-    const prodClient = createPostgresQueryClient(prodPgClient);
+    // Production側のSQLはすべてschema修飾済みのため、テスト用search_pathを設定しない。
+    const prodClient = createPostgresQueryClient(prodPgClient, { setTestSearchPath: false });
     const verifyClient = createPostgresQueryClient(verifyPgClient);
     const r2Client = new R2RealClient({
       endpoint: secrets.REFERENCE_DATA_BACKUP_R2_ENDPOINT,
@@ -121,6 +123,7 @@ export async function main(): Promise<void> {
       postgresMajorVersion: Number(env.REFERENCE_DATA_BACKUP_PG_MAJOR_VERSION ?? "16"),
       applicationCommitSha,
       category,
+      expectedSourceIdentity: PRODUCTION_EXPECTED_SOURCE_IDENTITY,
     });
 
     // audit summary: secretを含まないJSONだけをstdoutへ出力する(workflow側がログとして残す)。

@@ -3,6 +3,7 @@ import { createReferenceDataBackup, evaluateBackupPreflightGates, dumpBackupTabl
 import { getBackupTableSpec, BACKUP_SOURCE_TEST_SCHEMA, PRODUCTION_REFERENCE_DATA_SCHEMA } from "./backup-schema";
 import { FakeEncryptor, NodeAesGcmEncryptor, generateEphemeralTestKey } from "./backup-encryptor";
 import type { QueryClient, QueryResult } from "./apply-orchestrator";
+import { PRODUCTION_BACKUP_CONTENT_POLICY } from "./backup-content-policy";
 
 /** `normalizeRow`(実PostgreSQL adapter)の挙動(null以外のobject/arrayは一律JSON文字列化)を模倣する。 */
 function toRawDbValue(v: unknown): unknown {
@@ -221,5 +222,83 @@ describe("createReferenceDataBackup(実Production reference_data schemaからの
     });
     expect(result.ok).toBe(true);
     expect(result.artifact!.manifest.rowCounts.world_player_cards).toBe(1);
+  });
+});
+
+describe("createReferenceDataBackup: 内容妥当性policy・異常result shape(workflow Run #6の回帰テスト、2026-09-23)", () => {
+  class CountingEncryptor extends FakeEncryptor {
+    encryptCalls = 0;
+    override async encrypt(plaintext: Buffer): Promise<Buffer> {
+      this.encryptCalls += 1;
+      return super.encrypt(plaintext);
+    }
+  }
+
+  function baseInput(encryptor: FakeEncryptor) {
+    return {
+      jobId: "job-policy",
+      schemaVersion: "2026-09-23",
+      applicationCommitSha: "0".repeat(40),
+      now: new Date("2026-09-23T00:00:00.000Z"),
+      postgresMajorVersion: 16,
+      retentionCategory: "production-pre-apply" as const,
+      retentionDays: null,
+      encryptor,
+      sourceSchema: PRODUCTION_REFERENCE_DATA_SCHEMA,
+      contentPolicy: PRODUCTION_BACKUP_CONTENT_POLICY,
+    };
+  }
+
+  function emptyProductionClient(): QueryClient {
+    return {
+      async query(sql: string): Promise<QueryResult> {
+        if (!/^select .* from reference_data\.\w+ order by /.test(sql)) throw new Error(`予期しないSQL: ${sql}`);
+        return { rows: [] };
+      },
+    };
+  }
+
+  it("全4テーブル0行なら暗号化(age相当)を一切実行せずにblockedになる", async () => {
+    const encryptor = new CountingEncryptor();
+    const result = await createReferenceDataBackup(emptyProductionClient(), baseInput(encryptor));
+    expect(result.ok).toBe(false);
+    expect(result.artifact).toBeNull();
+    expect(result.reasons.length).toBe(4);
+    expect(encryptor.encryptCalls).toBe(0);
+  });
+
+  it("SQLエラー(permission denied)は空配列として扱われずblockedになり、暗号化もしない", async () => {
+    const encryptor = new CountingEncryptor();
+    const client: QueryClient = {
+      async query() {
+        throw new Error("permission denied for table world_player_cards");
+      },
+    };
+    const result = await createReferenceDataBackup(client, baseInput(encryptor));
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/permission denied/);
+    expect(encryptor.encryptCalls).toBe(0);
+  });
+
+  it("export結果にrowsが無い(undefined/配列でない)場合は例外になり、0行として扱わない", async () => {
+    for (const bad of [undefined, {}, { rows: null }]) {
+      const client: QueryClient = { async query() { return bad as unknown as QueryResult; } };
+      await expect(dumpBackupTables(client, PRODUCTION_REFERENCE_DATA_SCHEMA)).rejects.toThrow(/rows配列/);
+    }
+  });
+
+  it("Production export SQLはreference_data.<table>をschema修飾で明示し、search_pathに依存しない", async () => {
+    const seen: string[] = [];
+    const client: QueryClient = { async query(sql: string) { seen.push(sql); return { rows: [] }; } };
+    await dumpBackupTables(client, PRODUCTION_REFERENCE_DATA_SCHEMA);
+    expect(seen.length).toBe(4);
+    for (const t of ["world_player_cards", "managers", "player_card_analysis", "import_batches"]) {
+      expect(seen.some((s) => s.includes(` from reference_data.${t} order by `))).toBe(true);
+    }
+    for (const s of seen) {
+      expect(s.startsWith("select ")).toBe(true);
+      expect(s).not.toMatch(/\bselect \*/);
+      expect(s).not.toMatch(/\b(auth|public)\./);
+    }
   });
 });

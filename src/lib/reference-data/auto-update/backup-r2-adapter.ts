@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { evaluateBackupContentPolicy, PRODUCTION_BACKUP_CONTENT_POLICY } from "./backup-content-policy";
 import type { GuardCheck } from "../real-import-guards";
 import type { R2Client } from "./backup-r2-client";
 import { BACKUP_OBJECT_PREFIXES, NO_AUTO_DELETE_PREFIXES, buildEncryptedPayloadKey, buildManifestKey, checkObjectPrefixAllowed, checkObjectKeyWellFormed, type BackupObjectPrefix } from "./backup-r2-target";
@@ -55,6 +56,15 @@ export function evaluatePutEncryptedBackupGates(input: PutEncryptedBackupInput):
       ? { ok: true }
       : { ok: false, reason: "manifest.restoreVerifiedがfalse(Restore未検証のBackupはR2へuploadしない)" },
   );
+  checks.push(
+    input.manifest.backupStatus === "restore_verified"
+      ? { ok: true }
+      : { ok: false, reason: `manifest.backupStatusがrestore_verifiedではない(現在: ${input.manifest.backupStatus})` },
+  );
+  // 暗号化・Restore検証・checksumの成功は内容の正しさを保証しない(workflow Run #6の
+  // 空Backup)。R2へ保存するBackupは、呼び出し側の指定に依らず常にProductionの
+  // 内容妥当性policyを満たす必要がある(このゲートは弱められない)。
+  checks.push(...evaluateBackupContentPolicy(input.manifest.rowCounts, PRODUCTION_BACKUP_CONTENT_POLICY));
 
   const allowlist = [...BACKUP_TARGET_TABLES].sort();
   const declared = [...input.manifest.tableAllowlist].sort();

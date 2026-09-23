@@ -6,6 +6,7 @@ import { computeBackupTableChecksum, computeBackupTotalChecksum, computeSourceMe
 import { buildBackupManifest, markManifestEncrypted, assertManifestHasNoSecrets, type BackupManifest } from "./backup-manifest";
 import type { BackupEncryptor } from "./backup-encryptor";
 import type { QueryClient } from "./apply-orchestrator";
+import { failedContentPolicyReasons, type BackupContentPolicy } from "./backup-content-policy";
 
 /**
  * Production書込み(Promotion apply)前の、参照データ4テーブル専用のfull-table Backup。
@@ -49,6 +50,11 @@ export interface CreateBackupInput {
    * 引き続き対象4テーブルのSELECTだけに限定されている)。
    */
   sourceSchema: BackupDumpSourceSchemaName;
+  /**
+   * 指定された場合、export直後・暗号化より前に行数の内容妥当性を検査し、満たさなければ
+   * 暗号化(age実行)を一切行わずにblockedにする。Production Backupでは必ず指定する。
+   */
+  contentPolicy?: BackupContentPolicy;
 }
 
 export interface BackupPayload {
@@ -89,6 +95,10 @@ export async function dumpBackupTables(client: QueryClient, sourceSchema: Backup
     const spec = getBackupTableSpec(table);
     const sql = buildBackupDumpSelectSql(sourceSchema, table);
     const result = await client.query(sql);
+    // 結果shapeの異常を空配列として扱わない(0行と取得失敗を区別する)。
+    if (!result || !Array.isArray(result.rows)) {
+      throw new Error(`${table}のexport結果にrows配列が無い(想定外のresult shape、blocked)`);
+    }
     const rows = result.rows.map((r) => toPortableBackupRow(spec, r));
     const withIds = rows.map((r) => ({ id: String(r[spec.primaryKey]), fields: r }));
     const checksum = computeBackupTableChecksum(withIds);
@@ -117,6 +127,13 @@ export async function createReferenceDataBackup(client: QueryClient, input: Crea
       tables[d.table] = d.rows;
       sourceMetaEntries.push({ tableName: d.table, sourceDatasetPairs: deriveSourceDatasetPairs(d.rows) });
     }
+    if (input.contentPolicy) {
+      const policyFailures = failedContentPolicyReasons(rowCounts, input.contentPolicy);
+      if (policyFailures.length > 0) {
+        return { ok: false, reasons: policyFailures, artifact: null };
+      }
+    }
+
     const totalChecksum = computeBackupTotalChecksum(tableChecksums);
     const sourceMetadataChecksum = computeSourceMetadataChecksum(sourceMetaEntries);
 

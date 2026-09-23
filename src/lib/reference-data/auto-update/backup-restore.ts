@@ -14,6 +14,7 @@ import { markManifestRestoreVerified, markManifestFailed, type BackupManifest } 
 import type { BackupArtifact, BackupPayload } from "./backup-orchestrator";
 import type { BackupEncryptor } from "./backup-encryptor";
 import type { QueryClient } from "./apply-orchestrator";
+import { evaluateBackupContentPolicy, type BackupContentPolicy } from "./backup-content-policy";
 
 /**
  * Backup検証済み(`manifest.restoreVerified === true`)と主張してよいのは、実際に
@@ -34,6 +35,12 @@ export interface RestoreInput {
   expectedSchemaVersion: string;
   expectedPostgresMajorVersion: number;
   now: Date;
+  /**
+   * 指定された場合、manifestのrowCountsがこの内容妥当性policyを満たさなければ、復号・
+   * 書込みより前にblockedにする(空データ同士の一致だけでrestoreVerified=trueにしない)。
+   * Production Backupの隔離Restore検証では必ず指定する。
+   */
+  contentPolicy?: BackupContentPolicy;
 }
 
 export interface RestoreResult {
@@ -64,6 +71,7 @@ export function evaluateRestorePreflightGates(input: RestoreInput): GuardCheck[]
     [...manifest.tableAllowlist].sort().join(",") === [...BACKUP_TARGET_TABLES].sort().join(",")
       ? { ok: true }
       : { ok: false, reason: "manifestのtable allowlistが現在の許可リストと一致しない" },
+    ...(input.contentPolicy ? evaluateBackupContentPolicy(manifest.rowCounts, input.contentPolicy) : []),
   ];
 }
 
@@ -175,7 +183,19 @@ export async function restoreReferenceDataBackup(client: QueryClient, input: Res
     for (const table of manifestTables) {
       const spec = getBackupTableSpec(table);
       const readback = await client.query(buildBackupDumpSelectSql(BACKUP_RESTORE_TEST_SCHEMA, table));
+      if (!readback || !Array.isArray(readback.rows)) {
+        throw new Error(`${table}のRestore後読み戻し結果にrows配列が無い(想定外のresult shape)`);
+      }
       const rows = readback.rows.map((r) => toPortableBackupRow(spec, r));
+      if (rows.length !== manifest.rowCounts[table]) {
+        return {
+          ok: false,
+          reasons: [`${table}のRestore後の行数がmanifestと一致しない(manifest: ${manifest.rowCounts[table]}, 読み戻し: ${rows.length})`],
+          restoredCounts,
+          restoreVerified: false,
+          manifest: markManifestFailed(manifest),
+        };
+      }
       const withIds = rows.map((r) => ({ id: String(r[spec.primaryKey]), fields: r }));
       const afterChecksum = computeBackupTableChecksum(withIds);
       if (afterChecksum !== manifest.tableChecksums[table]) {

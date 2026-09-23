@@ -51,3 +51,18 @@ describe("run-production-backup-cli.ts: TLS/DB接続失敗時にSQL/R2へ到達�
     expect(finallyBlock).toMatch(/verifyPgClient\?\.end\(\)/);
   });
 });
+
+describe("run-production-backup-cli.ts: 空Backupを成功扱いしない(workflow Run #6の回帰テスト、2026-09-23)", () => {
+  it("exit codeはrunProductionBackupのok(内容妥当性gateを含む総合判定)からのみ決まり、okでなければ1になる", () => {
+    expect(SOURCE).toMatch(/exitCode = result\.ok \? 0 : 1;/);
+    expect(SOURCE).not.toMatch(/exitCode = 0;/);
+  });
+
+  it("接続先identity preflightの期待値(PRODUCTION_EXPECTED_SOURCE_IDENTITY)をrunProductionBackupへ渡している", () => {
+    expect(SOURCE).toMatch(/expectedSourceIdentity: PRODUCTION_EXPECTED_SOURCE_IDENTITY/);
+  });
+
+  it("Production接続のquery clientにはテスト用search_pathを設定しない", () => {
+    expect(SOURCE).toMatch(/createPostgresQueryClient\(prodPgClient, \{ setTestSearchPath: false \}\)/);
+  });
+});

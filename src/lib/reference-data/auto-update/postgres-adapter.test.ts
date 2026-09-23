@@ -163,3 +163,51 @@ describe("createPostgresQueryClient", () => {
     expect(JSON.parse(result.rows[0].fields_json as string)).toEqual({ nameEn: "A", ovrMax: 80 });
   });
 });
+
+describe("createPostgresQueryClient: 読み出し文の結果shape異常を空配列へ変換しない(workflow Run #6の回帰テスト、2026-09-23)", () => {
+  function fakeReturning(result: unknown): MinimalPgClient & { calls: string[] } {
+    const calls: string[] = [];
+    return {
+      calls,
+      async query(sql: string) {
+        calls.push(sql);
+        if (/^set search_path/i.test(sql)) return { rows: [] };
+        return result as { rows: Array<Record<string, unknown>> };
+      },
+    };
+  }
+
+  it("select結果がundefinedなら例外", async () => {
+    await expect(createPostgresQueryClient(fakeReturning(undefined)).query("select id from reference_data.managers")).rejects.toThrow(/rows配列/);
+  });
+
+  it("select結果にrowsが無い・rowsが配列でないなら例外", async () => {
+    await expect(createPostgresQueryClient(fakeReturning({})).query("select 1")).rejects.toThrow(/rows配列/);
+    await expect(createPostgresQueryClient(fakeReturning({ rows: null })).query("select 1")).rejects.toThrow(/rows配列/);
+    await expect(createPostgresQueryClient(fakeReturning({ rows: "x" })).query("with a as (select 1) select * from a")).rejects.toThrow(/rows配列/);
+  });
+
+  it("select結果が複数文の結果配列(想定外のshape)なら例外(最後の要素を黙って採用しない)", async () => {
+    await expect(createPostgresQueryClient(fakeReturning([{ rows: [] }, { rows: [] }])).query("select 1")).rejects.toThrow(/複数文/);
+  });
+
+  it("正常なselect結果の0行は、そのまま0行として返す(0行自体はここでは拒否しない、内容妥当性は別ゲートが判定する)", async () => {
+    await expect(createPostgresQueryClient(fakeReturning({ rows: [] })).query("select 1")).resolves.toEqual({ rows: [] });
+  });
+
+  it("SQLエラー(permission denied等)はそのまま例外として伝播し、空配列にならない", async () => {
+    const failing: MinimalPgClient = {
+      async query(sql: string) {
+        if (/^set search_path/i.test(sql)) return { rows: [] };
+        throw new Error("permission denied for table managers");
+      },
+    };
+    await expect(createPostgresQueryClient(failing).query("select id from reference_data.managers")).rejects.toThrow(/permission denied/);
+  });
+
+  it("setTestSearchPath: falseの場合、Production接続へテスト用search_pathを一切設定しない", async () => {
+    const fake = fakeReturning({ rows: [] });
+    await createPostgresQueryClient(fake, { setTestSearchPath: false }).query("select 1");
+    expect(fake.calls.some((c) => /search_path/i.test(c))).toBe(false);
+  });
+});

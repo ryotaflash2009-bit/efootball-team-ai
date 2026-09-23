@@ -363,3 +363,82 @@ PRとして提出し、マージ後、本人が新規Secret`REFERENCE_DATA_BACKU
 上で、**次回は新しい、別途承認されたworkflow run(run #3)として**改めて
 `production-backup-approval`の承認を行う(このrunの失敗を理由に自動で
 rerun・再承認が行われることはない)。
+
+## 10. workflow run #6の再判定: 無効な空Backup(2026-09-23、秘密情報なし)
+
+### 10.1 事実
+
+- run #6のworkflow conclusionは`success`(Environment承認・Production read-only接続・export・
+  `age`暗号化・平文cleanup・workflow内の隔離Restore検証・R2 upload・remote size/checksum検証の
+  いずれも成功扱い)。
+- 後続で本人がR2からダウンロードしたmanifestを手動で検査したところ、**対象4テーブルの
+  rowCountsがすべて0**だった。
+- `.age`のサイズは363 bytes、manifestのサイズは1201 bytes。
+- manifest上は`encrypted=true`・`restoreVerified=true`・`backupStatus=restore_verified`・
+  `retentionCategory=production-pre-apply`・`expiresAt=null`で、テーブル別checksum・
+  totalChecksum・sourceMetadataChecksumはいずれも形式上(64文字)存在していた。
+
+### 10.2 判定
+
+- **run #6のobject pairは無効な空Backupであり、有効なProduction Backupとして扱わない。**
+- 本人PCでの復号・隔離Restore試験は中止した(ダウンロード済みファイルは復号していない)。
+- R2上のobject pairは、原因調査のEvidenceとして**削除せず保持する**(削除は別承認)。
+  自動削除も行わない(`pre-apply/`はLifecycle Ruleの対象外)。
+- Production Backup基盤は**未完成扱いへ戻す**。run #6はrerunしない。次回は修正PRの
+  マージ後の、新しい別途承認されたrunとする。
+
+### 10.3 空になった原因(静的監査による特定、Production未接続のため実測は未実施)
+
+- `reference_data`の対象4テーブルはいずれもRLSが有効(`FORCE`)で、SELECTポリシーは
+  `anon`/`authenticated`向けにしか存在しない(`import_batches`にはポリシー自体が無い)。
+- `reference_data_backup_reader`は`NOBYPASSRLS`で作成されており、このroleに適用される
+  SELECTポリシーは存在しない。GRANT SELECTだけでは、RLSの既定拒否により行は見えない。
+- PostgreSQLはこの状態のSELECTを**エラーにせず0行として返す**。そのためexportは黙って空になり、
+  2回のexportは同じ空データで一致し、空のRestoreも成功し、`restoreVerified`/
+  `storageVerified`がtrueになった。暗号化・保存・checksumの成功は内容の正しさを何も保証しない。
+- 既存のPostgreSQL統合試験には、空データセットのBackupが**成功すること**を期待するテストが
+  存在していた(この欠陥をテストが固定していた)。修正で「必ず失敗すること」を期待するよう反転した。
+
+### 10.4 修正後のゲート(このPRで追加)
+
+- **source preflight(export前、読み取り専用・カタログのみ)**: `current_database()`が`postgres`、
+  `current_user`/`session_user`が`reference_data_backup_reader`、対象4テーブルの存在・SELECT権限、
+  「RLS有効かつこのroleに適用されるSELECTポリシーが無い(BYPASSRLSでもない)」状態の検出。
+  上記のいずれかに該当すればexport前にblockedになる。利用者データ・auth系テーブル・対象テーブルの
+  行そのものは読まない。Project Ref・host・URL・password・証明書は出力しない。
+- **non-empty gate(内容妥当性policy)**: 対象4テーブルそれぞれ1行以上、合計1行以上、行数は
+  0以上の整数、対象外テーブルなし。UIの表示件数を固定値としてハードコードしない。
+  `import_batches`も1行以上を要求する(投入経路はすべて`import_batches`へ記録し、読み取り専用
+  preflightの記録でも既に複数件存在するため。コアテーブルに行があるのに0件なら異常とみなす)。
+- 暗号化(`age`実行)より前にpolicyを判定し、空なら`age`・検証用export・隔離Restore・R2通信の
+  いずれも行わない。
+- 2回のexportは、totalChecksumに加えてテーブル別の行数・checksum・source metadata checksumも照合する。
+- 隔離Restoreは、policyを満たさないmanifestを復号・書込みより前に拒否し、Restore後の読み戻し行数も
+  manifestと照合する。空データ同士の一致だけでは`restoreVerified=true`にしない。
+- R2 upload gateは、呼び出し側の指定に依らず常にpolicyを満たすことと
+  `backupStatus=restore_verified`を要求する。`storageVerified=true`は上流の内容妥当性を前提にする。
+- 読み出し文(select/with)の結果shapeの異常(rows欠落・結果配列)を空配列へ変換しない。
+  SQLエラー(permission denied等)は空配列にならず、そのままblockedになる。
+- Production接続のquery clientには、テスト用`search_path`を設定しない(Production側SQLはすべて
+  `reference_data.<table>`のschema修飾済み)。
+
+### 10.5 運用ルール
+
+- **workflowの`success`だけではBackup完成と判定しない。** manifestのrow-count確認(このPRで
+  自動化したgateに加え、初回は手動確認も)を必須とする。
+- 空Backupは、暗号化・保存・remote checksumが成功していても無効。
+- `restoreVerified`・`storageVerified`は、いずれも内容妥当性gateの成功を前提とする。
+- 初回の有効なBackupが取得できたら、そのrowCountsをbaselineとして(秘密情報なしで)記録する。
+- 将来、baselineに対する行数の急減を検出するpolicyを追加する(今回は過剰に厳しい固定件数で
+  将来の更新を妨げないよう、最低件数gateだけを実装した)。
+- 無効なBackupのR2 objectは自動削除しない。削除する場合は別途明示承認を得る。
+
+### 10.6 次回Backupの前提(未実施・別承認)
+
+このPRのgateは空Backupを**拒否する**だけで、Backupを**成功させる**ものではない。現在の
+Production権限設定のままでは、次回runはsource preflightで`RLS`を理由に安全にblockedになる。
+有効なBackupを取得するには、`reference_data_backup_reader`に対象4テーブルのSELECTポリシーを
+付与する(例: 各テーブルに`for select to reference_data_backup_reader using (true)`の
+permissiveポリシーを追加する。`BYPASSRLS`の付与は最小権限の設計方針に反するため第一候補としない)
+Production変更が別途必要で、その内容・SQL・rollback・検証手順は別PRで設計し、本人の明示承認を
+得てから実施する。このPR・このセッションではProductionへの変更を一切行っていない。

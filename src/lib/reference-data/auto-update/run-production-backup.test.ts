@@ -1,11 +1,14 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
+import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
+import { mkdtempSync, writeFileSync, rmSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { runProductionBackup } from "./run-production-backup";
 import { getBackupTableSpec, PRODUCTION_REFERENCE_DATA_SCHEMA } from "./backup-schema";
 import { FakeR2Client } from "./backup-r2-client";
 import type { QueryClient, QueryResult } from "./apply-orchestrator";
+import type { ExpectedSourceIdentity } from "./backup-source-preflight";
+
+const TEST_IDENTITY: ExpectedSourceIdentity = { database: "postgres", currentUser: "reference_data_backup_reader", sessionUser: "reference_data_backup_reader" };
 
 /**
  * `runProductionBackup`の全体オーケストレーション(export→検証専用artifact抽出→
@@ -52,6 +55,9 @@ class FakeProductionClient implements QueryClient {
     world_player_cards: [], managers: [], player_card_analysis: [], import_batches: [],
   };
   queryCount = 0;
+  exportQueryCount = 0;
+  /** trueにするとRLS有効・適用ポリシー無しの状態(workflow Run #6の実際の状態)を模す。 */
+  rlsHidesRows = false;
 
   seed(table: string, fields: Record<string, unknown>): void {
     const spec = getBackupTableSpec(table);
@@ -62,6 +68,18 @@ class FakeProductionClient implements QueryClient {
 
   async query(sql: string): Promise<QueryResult> {
     this.queryCount += 1;
+    if (/current_database()/.test(sql)) {
+      return { rows: [{ current_database_name: "postgres", current_user_name: "reference_data_backup_reader", session_user_name: "reference_data_backup_reader", is_superuser: false, bypass_rls: false }] };
+    }
+    if (/pg_catalog.pg_policies/.test(sql)) {
+      return {
+        rows: ["import_batches", "managers", "player_card_analysis", "world_player_cards"].map((t) => ({
+          table_name: t, table_exists: true, rls_enabled: true, has_select_privilege: true, has_applicable_select_policy: !this.rlsHidesRows,
+        })),
+      };
+    }
+    this.exportQueryCount += 1;
+    if (this.rlsHidesRows) return { rows: [] };
     const m = sql.match(new RegExp(`^select .* from ${PRODUCTION_REFERENCE_DATA_SCHEMA}\\.(\\w+) `));
     if (!m) throw new Error(`予期しないSQL(実schema想定): ${sql}`);
     return { rows: this.sourceRows[m[1]] };
@@ -70,11 +88,13 @@ class FakeProductionClient implements QueryClient {
 
 /** このjob専用の隔離検証schemaを模したfake writable client(schema DDL・truncate・insert・selectをサポート)。 */
 class FakeVerifyClient implements QueryClient {
+  queryCount = 0;
   restoreRows: Record<string, Record<string, unknown>[]> = {
     world_player_cards: [], managers: [], player_card_analysis: [], import_batches: [],
   };
 
   async query(sql: string, params: readonly unknown[] = []): Promise<QueryResult> {
+    this.queryCount += 1;
     const trimmed = sql.trim();
     const lower = trimmed.toLowerCase();
     if (/^create schema/i.test(trimmed) || /^create table/i.test(trimmed) || lower.startsWith("comment on")) return { rows: [] };
@@ -143,6 +163,7 @@ function baseInput(overrides: Partial<Parameters<typeof runProductionBackup>[0]>
     postgresMajorVersion: 16,
     applicationCommitSha: "0".repeat(40),
     category: "daily" as const,
+    expectedSourceIdentity: TEST_IDENTITY,
     ...overrides,
   };
 }
@@ -156,7 +177,8 @@ describe("runProductionBackup(fakeだけを使用、実Postgres・実R2・実age
     expect(result.summary.storageVerified).toBe(true);
     expect(result.summary.restoreVerified).toBe(true);
     expect((input.r2Client as FakeR2Client).putCalls).toBe(2); // 暗号化payload + manifest
-    expect((input.prodClient as FakeProductionClient).queryCount).toBe(8); // 4テーブル x 2回(本番+検証)抽出
+    expect((input.prodClient as FakeProductionClient).exportQueryCount).toBe(8); // 4テーブル x 2回(本番+検証)抽出
+    expect((input.prodClient as FakeProductionClient).queryCount).toBe(10); // + preflight 2件(カタログのみ)
 
     // uploadされたmanifestのrowCountsが実データと一致する。
     const objectKey = result.summary.objectKey as string;
@@ -186,8 +208,8 @@ describe("runProductionBackup(fakeだけを使用、実Postgres・実R2・実age
     const originalQuery = prodClient.query.bind(prodClient);
     prodClient.query = async (sql: string) => {
       callCount += 1;
-      // 5回目以降(2回目の抽出、world_player_cardsから)は行が1件増えたように見せる。
-      if (callCount === 5) {
+      // preflight 2件 + 本番抽出4件の後、2回目の抽出(検証用、world_player_cardsから)で行が1件増えたように見せる。
+      if (callCount === 7) {
         prodClient.seed("world_player_cards", {
           world_card_id: "2", name_en: "Player Two", stats: {}, skills: [],
           source: "efootball-world.com", dataset_version: "v1", fetched_at: "2026-01-01T00:00:00.000Z",
@@ -198,7 +220,7 @@ describe("runProductionBackup(fakeだけを使用、実Postgres・実R2・実age
     };
     const result = await runProductionBackup(baseInput({ prodClient }));
     expect(result.ok).toBe(false);
-    expect(result.reasons.join(" ")).toMatch(/totalChecksum/);
+    expect(result.reasons.join(" ")).toMatch(/checksum/);
     expect((baseInput().r2Client as FakeR2Client).putCalls).toBe(0);
   });
 
@@ -248,5 +270,166 @@ describe("runProductionBackup(fakeだけを使用、実Postgres・実R2・実age
     expect(result.reasons.join(" ")).toMatch(/category/);
     expect(prodClient.queryCount).toBe(0); // exportより前にblockedになっている
     expect((input.r2Client as FakeR2Client).putCalls).toBe(0);
+  });
+});
+
+/** R2 clientの全メソッド呼び出し回数を数える(通信0件の確認用)。 */
+function countingR2Client(): { client: FakeR2Client; calls: () => number } {
+  const inner = new FakeR2Client();
+  let count = 0;
+  const proxy = new Proxy(inner, {
+    get(target, prop, receiver) {
+      const value = Reflect.get(target, prop, receiver);
+      if (typeof value === "function") {
+        return (...args: unknown[]) => {
+          count += 1;
+          return (value as (...a: unknown[]) => unknown).apply(target, args);
+        };
+      }
+      return value;
+    },
+  });
+  return { client: proxy, calls: () => count };
+}
+
+describe("空Backupの拒否(workflow Run #6の回帰テスト、2026-09-23)", () => {
+  let markerDir: string;
+  let fakeAgeMarkerPath: string;
+
+  beforeAll(() => {
+    markerDir = mkdtempSync(join(tmpdir(), "run-production-backup-marker-"));
+    fakeAgeMarkerPath = join(markerDir, "fake-age-marker.mjs");
+    writeFileSync(
+      fakeAgeMarkerPath,
+      `import { readFileSync, writeFileSync } from "node:fs";
+writeFileSync(${JSON.stringify(join(markerDir, "age-was-called"))}, "1");
+const args = process.argv.slice(2);
+const outPath = args[args.indexOf("-o") + 1];
+writeFileSync(outPath, readFileSync(args[args.length - 1]));
+`,
+    );
+  });
+
+  afterAll(() => {
+    rmSync(markerDir, { recursive: true, force: true });
+  });
+
+  beforeEach(() => {
+    rmSync(join(markerDir, "age-was-called"), { force: true });
+  });
+
+  function ageWasCalled(): boolean {
+    try {
+      readFileSync(join(markerDir, "age-was-called"));
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  it("Run #6再現: 全4テーブルが0行(RLS既定拒否で行が見えない状態)ならexport前のpreflightでblockedになり、age・Restore・R2のいずれも実行しない", async () => {
+    const prodClient = new FakeProductionClient();
+    seedOneOfEach(prodClient);
+    prodClient.rlsHidesRows = true;
+    const verifyClient = new FakeVerifyClient();
+    const r2 = countingR2Client();
+    const result = await runProductionBackup(
+      baseInput({ prodClient, verifyClient, r2Client: r2.client, ageCommand: [process.execPath, fakeAgeMarkerPath], category: "pre-apply" as const }),
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.summary.phase).toBe("source-preflight");
+    expect(result.reasons.join(" ")).toMatch(/RLS/);
+    expect(result.summary.restoreVerified).toBe(false);
+    expect(result.summary.storageVerified).toBe(false);
+    expect(prodClient.exportQueryCount).toBe(0);
+    expect(ageWasCalled()).toBe(false);
+    expect(verifyClient.queryCount).toBe(0);
+    expect(r2.calls()).toBe(0);
+  });
+
+  it("preflightを通過しても実exportが全4テーブル0行なら、暗号化前にblockedになる(age未実行・検証export未実行・Restore未実行・R2通信0)", async () => {
+    const prodClient = new FakeProductionClient(); // seedしない = 全テーブル0行
+    const verifyClient = new FakeVerifyClient();
+    const r2 = countingR2Client();
+    const result = await runProductionBackup(
+      baseInput({ prodClient, verifyClient, r2Client: r2.client, ageCommand: [process.execPath, fakeAgeMarkerPath] }),
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.summary.phase).toBe("export");
+    expect(result.reasons.join(" ")).toMatch(/最低件数/);
+    expect(result.summary.restoreVerified).toBe(false);
+    expect(result.summary.storageVerified).toBe(false);
+    expect(prodClient.exportQueryCount).toBe(4); // 本番用exportの1回分のみ(検証用exportは実行されない)
+    expect(ageWasCalled()).toBe(false);
+    expect(verifyClient.queryCount).toBe(0);
+    expect(r2.calls()).toBe(0);
+  });
+
+  for (const emptyTable of ["world_player_cards", "managers", "player_card_analysis", "import_batches"]) {
+    it(`${emptyTable}だけが0行でもblockedになり、R2へは一切通信しない`, async () => {
+      const prodClient = new FakeProductionClient();
+      seedOneOfEach(prodClient);
+      prodClient.sourceRows[emptyTable] = [];
+      const r2 = countingR2Client();
+      const result = await runProductionBackup(baseInput({ prodClient, r2Client: r2.client }));
+      expect(result.ok).toBe(false);
+      expect(result.reasons.join(" ")).toContain(emptyTable);
+      expect(r2.calls()).toBe(0);
+    });
+  }
+
+  it("接続先identityが想定と異なる場合(別role・別database)、exportせずにblockedになる", async () => {
+    const prodClient = new FakeProductionClient();
+    seedOneOfEach(prodClient);
+    const r2 = countingR2Client();
+    const result = await runProductionBackup(
+      baseInput({ prodClient, r2Client: r2.client, expectedSourceIdentity: { ...TEST_IDENTITY, currentUser: "some_other_role" } }),
+    );
+    expect(result.ok).toBe(false);
+    expect(result.summary.phase).toBe("source-preflight");
+    expect(prodClient.exportQueryCount).toBe(0);
+    expect(r2.calls()).toBe(0);
+  });
+
+  it("export中のSQLエラー(permission denied等)は空配列として扱われず、blockedになる", async () => {
+    const prodClient = new FakeProductionClient();
+    seedOneOfEach(prodClient);
+    const original = prodClient.query.bind(prodClient);
+    prodClient.query = async (sql: string) => {
+      if (/from reference_data.managers /.test(sql)) throw new Error("permission denied for table managers");
+      return original(sql);
+    };
+    const r2 = countingR2Client();
+    const result = await runProductionBackup(baseInput({ prodClient, r2Client: r2.client }));
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/permission denied/);
+    expect(r2.calls()).toBe(0);
+  });
+
+  it("exportの結果にrows配列が無い場合(想定外のresult shape)は空配列として扱わず、blockedになる", async () => {
+    const prodClient = new FakeProductionClient();
+    seedOneOfEach(prodClient);
+    const original = prodClient.query.bind(prodClient);
+    prodClient.query = async (sql: string) => {
+      if (/from reference_data.world_player_cards /.test(sql)) return {} as QueryResult;
+      return original(sql);
+    };
+    const r2 = countingR2Client();
+    const result = await runProductionBackup(baseInput({ prodClient, r2Client: r2.client }));
+    expect(result.ok).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/rows配列が無い/);
+    expect(r2.calls()).toBe(0);
+  });
+
+  it("正常なnon-empty Backupは従来どおり成功し、manifestの行数が0件ではない", async () => {
+    const result = await runProductionBackup(baseInput({ category: "pre-apply" as const, ageCommand: [process.execPath, fakeAgeMarkerPath] }));
+    expect(result.ok, `reasons: ${JSON.stringify(result.reasons)}`).toBe(true);
+    expect(ageWasCalled()).toBe(true); // markerの仕組み自体が機能していることの確認(他テストの「age未実行」判定が空振りでないこと)
+    const counts = result.summary.rowCounts as Record<string, number>;
+    for (const t of ["world_player_cards", "managers", "player_card_analysis", "import_batches"]) expect(counts[t]).toBeGreaterThan(0);
+    expect(result.summary.restoreVerified).toBe(true);
+    expect(result.summary.storageVerified).toBe(true);
   });
 });
