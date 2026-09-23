@@ -1,0 +1,176 @@
+{
+  "kind": "stage1-world-full-verification",
+  "approvalId": "world-full-scan-once-2026-09-23",
+  "startedAt": "2026-09-23T14:14:47.537Z",
+  "finishedFetchingAt": "2026-09-23T14:37:01.522Z",
+  "fetchDurationSeconds": 1334,
+  "limits": {
+    "approvalId": "world-full-scan-once-2026-09-23",
+    "worldMaxPages": 443,
+    "worldMaxRecords": 14000,
+    "worldMaxRequests": 445,
+    "maxTotalBytes": 41943040
+  },
+  "currentStateSource": "local SQLite (read-only), same transforms as the original Production import; not Production itself",
+  "currentRowCounts": {
+    "world_player_cards": 13009,
+    "managers": 66
+  },
+  "requests": {
+    "count": 443,
+    "bySource": {
+      "efootball-world": 443
+    },
+    "outcomes": {
+      "efootball-world:200": 443
+    },
+    "totalBytes": 29062699,
+    "maxDurationMs": 656,
+    "avgDurationMs": 281
+  },
+  "result": {
+    "worldMode": "full",
+    "worldIncrementalDecision": null,
+    "stoppedAt": null,
+    "failure": null,
+    "snapshots": [
+      {
+        "contractVersion": "1",
+        "table": "world_player_cards",
+        "sourceId": "efootball-world",
+        "scope": "full",
+        "fetchedAt": "2026-09-23T14:14:47.537Z",
+        "pageCount": 443,
+        "requestAttempts": 443,
+        "rawContentHash": "4a6d07da7d8a",
+        "completeness": "complete",
+        "completenessReasons": [],
+        "receivedRecordCount": 13286,
+        "uniqueIdentityCount": 13286,
+        "rejectedCount": 0,
+        "removalDetectionAllowed": true
+      }
+    ],
+    "rejectedReasons": {
+      "world_player_cards": {}
+    },
+    "duplicateIdentities": {
+      "world_player_cards": 0,
+      "managers": 0
+    },
+    "diffReports": [
+      {
+        "table": "world_player_cards",
+        "beforeCount": 13009,
+        "afterCount": 13286,
+        "addedCount": 277,
+        "changedCount": 5879,
+        "removedCount": 0,
+        "unchangedCount": 7130,
+        "resurrectedCount": 0,
+        "duplicateCount": 0,
+        "invalidCount": 0,
+        "schemaDriftCount": 0,
+        "changedFieldFrequency": {
+          "card_rating": 5816,
+          "maximum_level": 96,
+          "name_ja": 1,
+          "ovr_max": 125
+        },
+        "removalDetection": "performed",
+        "blocked": false,
+        "blockingReasonCount": 0,
+        "beforeChecksum": "35ff4d0f5e6a",
+        "afterChecksum": "a8381d220477",
+        "planChecksum": "e3d4cefd6248"
+      }
+    ],
+    "candidate": {
+      "targetTables": [
+        "world_player_cards"
+      ],
+      "sourceChecksum": "6c0a267ed497",
+      "idempotencyKey": "8238ff68cbd2",
+      "payloadBytes": 32047652,
+      "severity": "manual_review",
+      "findings": [
+        {
+          "severity": "warning",
+          "code": "world_change_near_threshold",
+          "table": "world_player_cards"
+        },
+        {
+          "severity": "warning",
+          "code": "world_count_increase",
+          "table": "world_player_cards"
+        },
+        {
+          "severity": "manual_review",
+          "code": "baseline_missing",
+          "table": null
+        },
+        {
+          "severity": "warning",
+          "code": "preserved_column_drift",
+          "table": "world_player_cards"
+        }
+      ],
+      "preservedColumnDrift": {
+        "world_player_cards": {
+          "ai_styles": 0,
+          "appearance": 13009
+        }
+      },
+      "nextState": "awaiting_review"
+    }
+  },
+  "sourceTimestamps": {
+    "total": 13286,
+    "withTimestamp": 13286,
+    "rawWithoutTimezone": 13286,
+    "rawWithTimezone": 0,
+    "min": "2026-04-28T17:17:02.021Z",
+    "max": "2026-09-19T14:22:37.867Z",
+    "futureCount": 0,
+    "regression": false,
+    "mostCommonCount": 1,
+    "mostCommonShare": 0.0001,
+    "findings": [
+      "upstream_timestamp_without_timezone_interpreted_as_utc"
+    ],
+    "previousMaxFromSqlite": "2026-08-27T16:09:27.455Z",
+    "interpretation": "upstream appearance.updatedAt has no time zone; interpreted as UTC (provisional). Backup v2 proves storage/restore integrity only, not the semantic correctness of this interpretation. Unresolved before any Production apply."
+  },
+  "isolated": {
+    "dryRun": {
+      "verified": true,
+      "tables": [
+        {
+          "table": "world_player_cards",
+          "inserted": 277,
+          "updated": 5879,
+          "expectedAfterChecksum": "a8381d2204776a91c7b6115b7eba26a56efc3cfebbbf1965f03770da846ba237",
+          "observedAfterChecksum": "a8381d2204776a91c7b6115b7eba26a56efc3cfebbbf1965f03770da846ba237",
+          "rediffChanges": 0
+        }
+      ],
+      "problemCount": 0
+    },
+    "rollbackSimulation": {
+      "performed": true,
+      "note": "使い捨てDB専用の模擬前提条件で実executor・undoを実行(Productionの承認・Backupではない)",
+      "applyOk": true,
+      "applyCode": null,
+      "undo": [
+        {
+          "table": "world_player_cards",
+          "ok": true,
+          "restored": 5879,
+          "insertedRemaining": 277,
+          "restoredMatchesBefore": true
+        }
+      ]
+    },
+    "durationSeconds": 22
+  }
+}

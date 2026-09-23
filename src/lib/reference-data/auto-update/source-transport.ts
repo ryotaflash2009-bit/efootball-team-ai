@@ -110,6 +110,7 @@ export type SourceErrorCode =
   | "empty_body"
   | "unexpected_content_type"
   | "request_cap_exceeded"
+  | "transfer_cap_exceeded"
   | "approval_missing";
 
 const ERROR_RETRY_REASON: Readonly<Record<SourceErrorCode, RetryReason>> = Object.freeze({
@@ -131,6 +132,7 @@ const ERROR_RETRY_REASON: Readonly<Record<SourceErrorCode, RetryReason>> = Objec
   empty_body: "schema_drift",
   unexpected_content_type: "schema_drift",
   request_cap_exceeded: "unknown",
+  transfer_cap_exceeded: "unknown",
   approval_missing: "unknown",
 });
 

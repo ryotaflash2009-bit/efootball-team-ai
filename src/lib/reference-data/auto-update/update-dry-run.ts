@@ -46,10 +46,19 @@ export interface CollectOptions {
   /** World full scanのpage上限・件数上限(page 1のtotalPages/totalCountで超過を検知したら以降を取得しない)。 */
   readonly maxPages?: number;
   readonly maxRecords?: number;
+  /** 同じidentityの再出現を検知したら即停止する(Stage 1の完全性検証)。 */
+  readonly stopOnDuplicateIdentity?: boolean;
+  /** 正規化前の各レコード(upstreamの生の値の性質をEvidence用に数えるため。値は保存しない)。 */
+  readonly onRecord?: (n: ReturnType<typeof normalizeWorldPlayerRecord>) => void;
 }
 
-/** full scanの安全上限(page数)。既存全件同期は約27 page。 */
+/** 上限を明示しない場合のfull scanのpage上限(旧来のpage size 500前提)。 */
 export const WORLD_FULL_SCAN_MAX_PAGES = 60;
+/**
+ * 明示指定できるpage上限の絶対的な天井。upstreamのpage sizeが30へ固定されたため(Stage 1で判明、
+ * 13,286件 = 443 page)、本人が承認した1回限りの完全性検証でだけ、この範囲内で明示指定する。
+ */
+export const WORLD_FULL_SCAN_ABSOLUTE_MAX_PAGES = 500;
 
 function failureFrom(table: DiffTable, err: unknown, attempts: readonly SourceAttemptRecord[]): SourceStageFailure {
   if (isSourceFetchError(err)) return { stage: "source_fetch", table, code: err.code, attempts: [...attempts, ...err.attempts] };
@@ -68,7 +77,8 @@ export async function collectWorldFullSnapshot(transport: SourceTransport, opts:
   const rows: WorldSourceRow[] = [];
   const rejected: WorldRowRejection[] = [];
   let expectedPageSize: number | undefined;
-  const pageCap = Math.min(opts.maxPages ?? WORLD_FULL_SCAN_MAX_PAGES, WORLD_FULL_SCAN_MAX_PAGES);
+  const pageCap = Math.min(opts.maxPages ?? WORLD_FULL_SCAN_MAX_PAGES, WORLD_FULL_SCAN_ABSOLUTE_MAX_PAGES);
+  const seenIds = new Set<string>();
   for (let page = 1; page <= pageCap; page++) {
     try {
       await paced(opts, page - 1);
@@ -81,9 +91,21 @@ export async function collectWorldFullSnapshot(transport: SourceTransport, opts:
       }
       pages.push({ page, recordCount: parsed.players.length, contentHash: parsed.contentHash, bodyBytes: parsed.bodyBytes, totalCount: parsed.totalCount, totalPages: parsed.totalPages, hasNext: parsed.hasNext });
       for (const p of parsed.players) {
-        const res = toWorldSourceRow(normalizeWorldPlayerRecord(p), opts.fetchedAt);
+        const normalized = normalizeWorldPlayerRecord(p);
+        opts.onRecord?.(normalized);
+        // 取得中のpageずれ等で同じカードが再出現した場合は、その時点で停止する(完全なsnapshotとして扱わない)。
+        if (opts.stopOnDuplicateIdentity && normalized.world_card_id != null) {
+          if (seenIds.has(normalized.world_card_id)) {
+            return { ok: false, failure: { stage: "source_fetch", table: "world_player_cards", code: "duplicate_identity", attempts } };
+          }
+          seenIds.add(normalized.world_card_id);
+        }
+        const res = toWorldSourceRow(normalized, opts.fetchedAt);
         if (res.ok) rows.push(res.row);
         else rejected.push(res.rejection);
+      }
+      if (opts.maxRecords != null && rows.length + rejected.length > opts.maxRecords) {
+        return { ok: false, failure: { stage: "source_fetch", table: "world_player_cards", code: "cap_exceeded", attempts } };
       }
       const done = parsed.totalPages != null ? page >= parsed.totalPages : parsed.hasNext === false || parsed.players.length === 0;
       if (done) break;

@@ -56,3 +56,50 @@ source and need an owner decision (see the final report for options).
 
 The current state is rebuilt from local SQLite, not read from Production. Stage 4 must re-check it
 against Production (Backup v2 or a read-only check).
+
+## 5. World one-time full completeness scan (owner-approved, 2026-09-23)
+
+Approval: one run only; 443 pages, at most 14,000 records, 40 MB and 445 requests (443 pages plus
+the 2-retry budget); CREATED_AT only, 3-second interval, 20-second timeout. This does **not**
+approve recurring full scans, schedules or Production updates. The CLI mode `world-full` requires
+the approval id and refuses to run again once its Evidence exists.
+
+Added guards: total transfer cap in the transport (`transfer_cap_exceeded`), an immediate stop on
+the first duplicate identity during the scan, a record cap checked during the scan, and a
+World-only run (managers.json was not requested again).
+
+| item | result |
+|---|---|
+| requests / outcome | 443 / all HTTP 200, 0 retries, no 403/429/CAPTCHA/redirect |
+| duration / transfer | 22 min 14 s (14:14:47–14:37:01 UTC) / 29.1 MB (avg 281 ms, max 656 ms per request) |
+| records / unique identities / duplicates / rejects | 13,286 / 13,286 / 0 / 0 |
+| schema drift | none (all records normalized) |
+| completeness | complete (443 contiguous pages, totalPages/totalCount stable, last page `hasNext=false`); removal detection allowed |
+| diff vs SQLite-derived current state (13,009) | **added 277, changed 5,879, removed 0, unchanged 7,130** |
+| changed fields | `card_rating` 5,816 · `ovr_max` 125 · `maximum_level` 96 · `name_ja` 1 |
+| preserved column drift (not applied) | `appearance` 13,009 (every existing row), `ai_styles` 0 |
+| policy | `manual_review`: `baseline_missing`; warnings `world_change_near_threshold` (6,156 of 7,500), `world_count_increase`, `preserved_column_drift`; next state `awaiting_review` |
+| isolated dry run | verified: 277 inserted, 5,879 updated, after checksum equal, re-diff 0 |
+| rollback simulation | executor apply ok; undo restored all 5,879 updated rows (checksum of existing rows equals before); 277 inserted rows remain for a manual decision; 22 s |
+
+### Source timestamps (`appearance.updatedAt`)
+
+All 13,286 values have **no time zone** and are interpreted as UTC (provisional, unchanged policy;
+nothing is silently corrected). Range 2026-04-28T17:17:02Z to 2026-09-19T14:22:37Z. There are no
+future values and no regression (the SQLite maximum was 2026-08-27T16:09:27Z). The largest group
+sharing one identical timestamp is a single row. Backup v2 can prove that this column is stored
+and restored intact, **not** that the UTC interpretation is semantically right. This stays an
+**unresolved item before any Production apply**.
+
+### Items for owner review (not acted on)
+
+1. `card_rating` changed on 5,816 cards (44% of the dataset). It looks like a frequently
+   recalculated upstream value. If every run carries it, change volume will sit near the 7,500
+   manual-review threshold. Options: keep it (review each time), treat it as volatile, or exclude
+   it from automatic updates. This is a policy decision, not made here.
+2. `appearance` (a preserved column) differs from upstream on **every** existing row, including
+   rows with no other change. That points to a systematic representation difference between the
+   detail-extension import and the search response, not 13,009 real changes. Automatic updates keep
+   the current values (Phase D). Diagnose it before any decision to refresh `appearance`.
+3. The current state is rebuilt from local SQLite (same transforms as the original import), not
+   read from Production. Stage 4 must re-diff against Production (Backup v2 or read-only check).

@@ -21,6 +21,61 @@ import { UPDATER_ROLE_NAME } from "./updater-role";
 
 export const STAGE1_LIMITS = Object.freeze({ worldMaxPages: 30, worldMaxRecords: 15_000, managersMaxRecords: 500 });
 
+/**
+ * 本人が2026-09-23に承認した、1回限りのWorld完全性検証の上限(恒久的な全件取得やscheduleの承認ではない)。
+ * request上限 = 443 page + 再試行予算2。
+ */
+export const STAGE1_APPROVED_WORLD_FULL_SCAN = Object.freeze({
+  approvalId: "world-full-scan-once-2026-09-23",
+  worldMaxPages: 443,
+  worldMaxRecords: 14_000,
+  worldMaxRequests: 445,
+  maxTotalBytes: 40 * 1024 * 1024,
+});
+
+export interface SourceTimestampReport {
+  readonly total: number;
+  readonly withTimestamp: number;
+  readonly rawWithoutTimezone: number;
+  readonly rawWithTimezone: number;
+  readonly min: string | null;
+  readonly max: string | null;
+  readonly futureCount: number;
+  readonly regression: boolean;
+  readonly mostCommonCount: number;
+  readonly mostCommonShare: number;
+  readonly findings: readonly string[];
+}
+
+const NAIVE_RAW_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,6})?)?$/;
+
+/** upstream時刻の性質を検査する(将来日時・前回より古い・同一時刻の偏り)。値は補正しない。 */
+export function analyzeSourceTimestamps(
+  normalizedIso: readonly (string | null)[],
+  rawValues: readonly (string | null)[],
+  fetchedAt: string,
+  previousMax: string | null,
+): SourceTimestampReport {
+  const ts = normalizedIso.filter((v): v is string => typeof v === "string");
+  const sorted = [...ts].sort();
+  const limit = new Date(new Date(fetchedAt).getTime() + 24 * 3_600_000).toISOString();
+  const counts = new Map<string, number>();
+  for (const t of ts) counts.set(t, (counts.get(t) ?? 0) + 1);
+  const mostCommonCount = Math.max(0, ...counts.values());
+  const max = sorted.at(-1) ?? null;
+  const future = ts.filter((t) => t > limit).length;
+  const regression = previousMax != null && max != null && max < previousMax;
+  const share = ts.length === 0 ? 0 : mostCommonCount / ts.length;
+  const raw = rawValues.filter((v): v is string => typeof v === "string");
+  const naive = raw.filter((v) => NAIVE_RAW_RE.test(v)).length;
+  const findings: string[] = [];
+  if (naive > 0) findings.push("upstream_timestamp_without_timezone_interpreted_as_utc");
+  if (future > 0) findings.push("future_timestamps");
+  if (regression) findings.push("timestamp_regression");
+  if (share > 0.2) findings.push("mass_identical_timestamps");
+  return { total: normalizedIso.length, withTimestamp: ts.length, rawWithoutTimezone: naive, rawWithTimezone: raw.length - naive, min: sorted[0] ?? null, max, futureCount: future, regression, mostCommonCount, mostCommonShare: Math.round(share * 10000) / 10000, findings };
+}
+
 /** normalizeWorldPlayerRecordが読む項目。page 1の実データにこれらが存在するかを確認する。 */
 const WORLD_EXPECTED_KEYS = Object.freeze([
   "id", "name", "nameJp", "type", "position", "nationality", "region", "league", "team", "overallRating", "maxOverall",
@@ -110,6 +165,11 @@ export interface Stage1FullInput {
    * incremental: UPDATED_AT降順の差分取得(page上限まで。removed検出なし・不完全をcomplete扱いしない)。
    */
   readonly worldMode?: "full" | "incremental" | "skip";
+  /** falseならmanagers.jsonを取得しない(既に検証済みの場合に再取得しない)。 */
+  readonly includeManagers?: boolean;
+  /** World full scanの上限(省略時はSTAGE1_LIMITS)。 */
+  readonly worldLimits?: { readonly maxPages: number; readonly maxRecords: number };
+  readonly onWorldRecord?: (n: ReturnType<typeof normalizeWorldPlayerRecord>) => void;
 }
 
 export interface Stage1FullResult {
@@ -146,19 +206,21 @@ export async function runStage1Full(input: Stage1FullInput): Promise<Stage1FullR
     world = await collectWorldFullSnapshot(input.transport, {
       fetchedAt: input.fetchedAt,
       sleep: input.sleep,
-      maxPages: STAGE1_LIMITS.worldMaxPages,
-      maxRecords: STAGE1_LIMITS.worldMaxRecords,
+      maxPages: input.worldLimits?.maxPages ?? STAGE1_LIMITS.worldMaxPages,
+      maxRecords: input.worldLimits?.maxRecords ?? STAGE1_LIMITS.worldMaxRecords,
+      stopOnDuplicateIdentity: true,
+      onRecord: input.onWorldRecord,
     });
   }
   if (world && !world.ok) return { ...empty, stoppedAt: "world_fetch", failure: { table: "world_player_cards", stage: world.failure.stage, code: world.failure.code } };
-  const managers = await collectManagersSnapshot(input.transport, { fetchedAt: input.fetchedAt, sleep: input.sleep });
-  if (!managers.ok) return { ...empty, snapshots: world ? [world.snapshot] : [], stoppedAt: "managers_fetch", failure: { table: "managers", stage: managers.failure.stage, code: managers.failure.code } };
-  const snapshots = world ? [world.snapshot, managers.snapshot] : [managers.snapshot];
+  const managers = input.includeManagers === false ? null : await collectManagersSnapshot(input.transport, { fetchedAt: input.fetchedAt, sleep: input.sleep });
+  if (managers && !managers.ok) return { ...empty, snapshots: world ? [world.snapshot] : [], stoppedAt: "managers_fetch", failure: { table: "managers", stage: managers.failure.stage, code: managers.failure.code } };
+  const snapshots = [...(world ? [world.snapshot] : []), ...(managers ? [managers.snapshot] : [])];
   const duplicateIdentities = {
     world_player_cards: world ? world.snapshot.completeness.conflictingDuplicateIdentities.length : 0,
-    managers: managers.snapshot.completeness.conflictingDuplicateIdentities.length,
+    managers: managers ? managers.snapshot.completeness.conflictingDuplicateIdentities.length : 0,
   };
-  if (managers.snapshot.completeness.receivedRecordCount > STAGE1_LIMITS.managersMaxRecords) {
+  if (managers && managers.snapshot.completeness.receivedRecordCount > STAGE1_LIMITS.managersMaxRecords) {
     return { ...empty, snapshots, duplicateIdentities, stoppedAt: "managers_limit", failure: { table: "managers", stage: "source_fetch", code: "cap_exceeded" } };
   }
   const stagings: StagingDataset[] = [];

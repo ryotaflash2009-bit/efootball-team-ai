@@ -154,3 +154,22 @@ describe("collectWorldFullSnapshot: 取得上限", () => {
     expect(t2.calls.length).toBe(1);
   });
 });
+
+describe("collectWorldFullSnapshot: 重複identity・件数上限", () => {
+  it("同じidentityが再出現したら即停止し、以降のpageを取得しない", async () => {
+    const t = createRecordedFixtureTransport([
+      worldPage(1, good.slice(0, 2), 3, 5),
+      worldPage(2, [good[1], good[2]], 3, 5),
+      worldPage(3, [good[0]], 3, 5),
+    ]);
+    const c = await collectWorldFullSnapshot(t, { fetchedAt: FETCHED_AT, maxPages: 5, stopOnDuplicateIdentity: true });
+    expect(c.ok ? null : c.failure.code).toBe("duplicate_identity");
+    expect(t.calls.length).toBe(2);
+  });
+
+  it("取得中に件数上限を超えたら停止する(page 1の申告件数が小さくても)", async () => {
+    const t = createRecordedFixtureTransport([worldPage(1, good.slice(0, 2), 2, 2), worldPage(2, good.slice(2), 2, 2)]);
+    const c = await collectWorldFullSnapshot(t, { fetchedAt: FETCHED_AT, maxPages: 5, maxRecords: 2 });
+    expect(c.ok ? null : c.failure.code).toBe("cap_exceeded");
+  });
+});

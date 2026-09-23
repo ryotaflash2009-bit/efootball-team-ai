@@ -119,3 +119,33 @@ describe("upstream実HTTP transport", () => {
     expect(src).toMatch(/credentials: "omit"/);
   });
 });
+
+describe("upstream実HTTP transport: 転送量上限", () => {
+  it("合計受信byteが上限に達したら、それ以降は送信せずtransfer_cap_exceeded", async () => {
+    const captured: Captured[] = [];
+    const body = { players: [], pad: "x".repeat(100) };
+    const size = Buffer.byteLength(JSON.stringify(body));
+    const t = createUpstreamHttpTransport({
+      approval: STAGE1_APPROVAL_TOKEN,
+      maxRequests: { "efootball-world": 10, "managers-json": 0 },
+      maxTotalBytes: size * 2,
+      sleep: async () => undefined,
+      fetchImpl: fakeFetch([json(body), json(body), json(body)], captured),
+    });
+    await t.request(buildWorldSearchRequest(1, "CREATED_AT"));
+    await t.request(buildWorldSearchRequest(2, "CREATED_AT"));
+    await expect(t.request(buildWorldSearchRequest(3, "CREATED_AT"))).rejects.toMatchObject({ code: "transfer_cap_exceeded" });
+    expect(captured.length).toBe(2);
+  });
+
+  it("応答の途中で上限を超えたら読み込みを中断する", async () => {
+    const captured: Captured[] = [];
+    const t = createUpstreamHttpTransport({
+      approval: STAGE1_APPROVAL_TOKEN,
+      maxRequests: { "efootball-world": 10, "managers-json": 0 },
+      maxTotalBytes: 10,
+      fetchImpl: fakeFetch([json({ players: [], pad: "x".repeat(100) })], captured),
+    });
+    await expect(t.request(buildWorldSearchRequest(1, "CREATED_AT"))).rejects.toMatchObject({ code: "transfer_cap_exceeded" });
+  });
+});
