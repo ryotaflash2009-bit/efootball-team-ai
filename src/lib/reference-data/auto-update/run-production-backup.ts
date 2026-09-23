@@ -247,6 +247,7 @@ export async function runProductionBackup(input: RunProductionBackupInput): Prom
     totalChecksum: verifiedManifest.totalChecksum,
     restoreVerified: verifiedManifest.restoreVerified,
     encryptionAlgorithm: verifiedManifest.encryptionAlgorithm,
+    backupVersion: verifiedManifest.backupVersion,
     sourcePreflight: preflight.tables,
   } as const;
 

@@ -226,7 +226,20 @@ jobs:
           BACKUP_VERIFY_PG_USER: backup_verify_user
           BACKUP_VERIFY_PG_PASSWORD: backup_verify_password_ci_only
           BACKUP_VERIFY_PG_DATABASE: backup_verify_db
+          REFERENCE_DATA_BACKUP_SUMMARY_PATH: ${{ runner.temp }}/reference-data-backup-summary.json
         run: node scripts/run-production-backup-entry.mjs
+
+      # Non-secret summary only (allowlisted fields: phase, ok, verification flags, object keys,
+      # row counts, total checksum, format version). The CLI refuses to write it if any secret
+      # value appears in the text. Never upload the payload, manifest body or plaintext files.
+      - name: Upload non-secret backup summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reference-data-backup-summary
+          path: ${{ runner.temp }}/reference-data-backup-summary.json
+          if-no-files-found: ignore
+          retention-days: 30
 
       # `run-production-backup-cli.ts` deletes its own plaintext temp file immediately
       # after encryption (and fails the job if that deletion itself fails — see

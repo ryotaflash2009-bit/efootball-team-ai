@@ -1,6 +1,6 @@
 import { chunkRows, sanitizeErrorMessage, type GuardCheck } from "../real-import-guards";
 import { BACKUP_TARGET_TABLES } from "./backup-target";
-import { getBackupTableSpec } from "./backup-schema";
+import { SUPPORTED_BACKUP_FORMAT_VERSIONS, assertBackupFormatVersion, getBackupTableSpec } from "./backup-schema";
 import { buildBackupDumpSelectSql, buildBackupRestoreInsertSql, buildBackupTruncateAllRestoreTargetsSql, mapBackupFieldsToParams, toPortableBackupRow } from "./backup-sql";
 import { BACKUP_RESTORE_TEST_SCHEMA } from "./backup-schema";
 import {
@@ -68,6 +68,9 @@ export function evaluateRestorePreflightGates(input: RestoreInput): GuardCheck[]
           ok: false,
           reason: `manifestのPostgreSQL major version(${manifest.postgresMajorVersion})がRestore先(${input.expectedPostgresMajorVersion})と一致しない`,
         },
+    (SUPPORTED_BACKUP_FORMAT_VERSIONS as readonly string[]).includes(manifest.backupVersion)
+      ? { ok: true }
+      : { ok: false, reason: "manifestのbackupVersionが未対応の形式" },
     [...manifest.tableAllowlist].sort().join(",") === [...BACKUP_TARGET_TABLES].sort().join(",")
       ? { ok: true }
       : { ok: false, reason: "manifestのtable allowlistが現在の許可リストと一致しない" },
@@ -83,6 +86,8 @@ export async function restoreReferenceDataBackup(client: QueryClient, input: Res
   }
 
   const manifest = input.artifact.manifest;
+  // 形式の版ごとの列集合で検証・復元する(旧形式"1"のBackupも、その列集合のまま再一致を確認する)。
+  const formatVersion = assertBackupFormatVersion(manifest.backupVersion);
 
   let payload: BackupPayload;
   try {
@@ -116,7 +121,7 @@ export async function restoreReferenceDataBackup(client: QueryClient, input: Res
   const sourceMetaEntries: BackupSourceMetadataEntry[] = [];
   for (const table of manifestTables) {
     const rows = payload.tables[table] ?? [];
-    const spec = getBackupTableSpec(table);
+    const spec = getBackupTableSpec(table, formatVersion);
     const withIds = rows.map((r) => ({ id: String(r[spec.primaryKey]), fields: r }));
     recomputedTableChecksums[table] = computeBackupTableChecksum(withIds);
     sourceMetaEntries.push({ tableName: table, sourceDatasetPairs: deriveSourceDatasetPairs(rows) });
@@ -167,12 +172,12 @@ export async function restoreReferenceDataBackup(client: QueryClient, input: Res
     await client.query(buildBackupTruncateAllRestoreTargetsSql());
     const restoredCounts: Record<string, number> = {};
     for (const table of INSERT_ORDER) {
-      const spec = getBackupTableSpec(table);
+      const spec = getBackupTableSpec(table, formatVersion);
       const rows = payload.tables[table] ?? [];
       restoredCounts[table] = rows.length;
       if (rows.length === 0) continue;
       for (const chunk of chunkRows(rows, 500)) {
-        const sql = buildBackupRestoreInsertSql(table, chunk.length);
+        const sql = buildBackupRestoreInsertSql(table, chunk.length, formatVersion);
         const params = chunk.flatMap((r) => mapBackupFieldsToParams(spec, r));
         await client.query(sql, params);
       }
@@ -181,8 +186,8 @@ export async function restoreReferenceDataBackup(client: QueryClient, input: Res
 
     // Restore後checksum: 別の空schemaへ実際に書き込んだ結果を読み戻し、Backup前と再一致することを確認する。
     for (const table of manifestTables) {
-      const spec = getBackupTableSpec(table);
-      const readback = await client.query(buildBackupDumpSelectSql(BACKUP_RESTORE_TEST_SCHEMA, table));
+      const spec = getBackupTableSpec(table, formatVersion);
+      const readback = await client.query(buildBackupDumpSelectSql(BACKUP_RESTORE_TEST_SCHEMA, table, formatVersion));
       if (!readback || !Array.isArray(readback.rows)) {
         throw new Error(`${table}のRestore後読み戻し結果にrows配列が無い(想定外のresult shape)`);
       }

@@ -117,8 +117,7 @@ export const UPDATE_TABLE_CONTRACTS: Readonly<Record<ReferenceTable, UpdateTable
     textArrayColumns: Object.freeze(["skills", "ai_styles"]),
     timestampColumns: Object.freeze(["appearance_updated_at", "fetched_at", "created_at", "updated_at"]),
     unresolvedRequirements: Object.freeze([
-      "Backupがappearance_updated_at・import_batch_idを収録していない(Phase Fで修正)",
-      "ai_styles・appearanceのupstream対応の確認(Phase B)",
+      "ai_styles・appearanceはupstream対応を確認済み(Phase B)。自動更新では保持し、差分はwarningで示す(Phase D)",
     ]),
   }),
   managers: Object.freeze({
@@ -143,7 +142,6 @@ export const UPDATE_TABLE_CONTRACTS: Readonly<Record<ReferenceTable, UpdateTable
     timestampColumns: Object.freeze(["fetched_at", "created_at", "updated_at"]),
     unresolvedRequirements: Object.freeze([
       "(source, source_manager_id)のDB unique constraintが無い(Phase Gまたは別Production migration)",
-      "Backupがimport_batch_idを収録していない(Phase Fで修正)",
     ]),
   }),
   player_card_analysis: Object.freeze({
@@ -165,7 +163,6 @@ export const UPDATE_TABLE_CONTRACTS: Readonly<Record<ReferenceTable, UpdateTable
     timestampColumns: Object.freeze(["fetched_at", "created_at", "updated_at"]),
     unresolvedRequirements: Object.freeze([
       "world_player_cardsの削除がon delete cascadeでこのtableへ波及するため、World cardの物理削除は禁止",
-      "Backupがimport_batch_idを収録していない(Phase Fで修正)",
     ]),
   }),
   import_batches: Object.freeze({
@@ -193,11 +190,14 @@ export const UPDATE_TABLE_CONTRACTS: Readonly<Record<ReferenceTable, UpdateTable
 export const AUTO_UPDATE_TARGET_TABLES: readonly ReferenceTable[] = Object.freeze(["world_player_cards", "managers", "import_batches"]);
 export const AUTO_UPDATE_EXCLUDED_TABLES: readonly ReferenceTable[] = Object.freeze(["player_card_analysis"]);
 
-/** リポジトリ内DDL基準で、Production列のうちBackup(backup-schema.ts)が収録していない列。Phase Fで解消する。 */
+/**
+ * リポジトリ内DDL基準で、Production列のうち現行Backup形式(backup-schema.ts)が収録していない列。
+ * Phase FでBackup形式"2"が全列を収録したため空(旧形式"1"の欠落はbackup-schema.tsの版で管理する)。
+ */
 export const KNOWN_BACKUP_COLUMN_GAPS: Readonly<Record<ReferenceTable, readonly string[]>> = Object.freeze({
-  world_player_cards: Object.freeze(["appearance_updated_at", "import_batch_id"]),
-  managers: Object.freeze(["import_batch_id"]),
-  player_card_analysis: Object.freeze(["import_batch_id"]),
+  world_player_cards: Object.freeze([]),
+  managers: Object.freeze([]),
+  player_card_analysis: Object.freeze([]),
   import_batches: Object.freeze([]),
 });
 
