@@ -74,7 +74,8 @@ class FakeProductionClient implements QueryClient {
     if (/pg_catalog.pg_policies/.test(sql)) {
       return {
         rows: ["import_batches", "managers", "player_card_analysis", "world_player_cards"].map((t) => ({
-          table_name: t, table_exists: true, rls_enabled: true, has_select_privilege: true, has_applicable_select_policy: !this.rlsHidesRows,
+          table_name: t, table_exists: true, rls_enabled: true, rls_forced: true, owner_is_current_user: false, has_select_privilege: true,
+          has_applicable_select_policy: !this.rlsHidesRows, has_restrictive_select_policy: false,
         })),
       };
     }

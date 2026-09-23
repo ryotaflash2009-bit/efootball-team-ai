@@ -36,7 +36,12 @@ import type { ExpectedSourceIdentity } from "./backup-source-preflight";
 const RECIPIENT = "age1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
 const config = buildTestOnlyPgConfigFromEnv(process.env);
 // このCI隔離DBでは、adminユーザー自身がdumpする(実Productionのidentityとは別の、テスト環境の値)。
-const ADMIN_IDENTITY: ExpectedSourceIdentity = { database: config.database, currentUser: config.user, sessionUser: config.user };
+const ADMIN_IDENTITY: ExpectedSourceIdentity = {
+  database: config.database,
+  currentUser: config.user,
+  sessionUser: config.user,
+  allowPrivilegedRoleForIsolatedTesting: true,
+};
 const RLS_PROBE_ROLE = "backup_rls_probe_reader";
 const TARGET_TABLES_SQL = ["world_player_cards", "managers", "player_card_analysis", "import_batches"];
 
