@@ -251,6 +251,9 @@ awaiting_production_approval → applying → applied → completed`
 - 不採用: Vercel Cron(実行時間制限・公開endpoint)、Supabase pg_cron(Production DB内で動く)、
   Cloudflare Workers Cron(新しいGitHub token・別基盤)、本人PCのTask Scheduler、専用VM。
 - **Backupとapplyはscheduleしない。** Phase AではWorkflow・scheduleを追加しない。
+- Phase I: 検出用workflow(`reference-data-update-detection.yml`)を無効な枠組みとして追加した。
+  `schedule:`トリガーは置かず、変数で明示有効化されない限りskip、有効でも実transport未承認のため取得前に停止する
+  (`reference-data-auto-update-phase-i-schedule.md`)。全workflowにscheduleが無いことをテストで固定している。
 
 ## 22. Automation Levels
 

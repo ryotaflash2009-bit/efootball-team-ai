@@ -1,0 +1,36 @@
+name: Reference data update detection (disabled framework)
+
+# Phase I framework for automatic update DETECTION only (no Secrets, no Environment, no Production).
+#
+# - Trigger: workflow_dispatch ONLY. There is intentionally NO `schedule:` trigger: cron must not
+#   fire until the first real upstream access (Stage 1) and scheduled detection are separately
+#   approved. When approved, the proposed trigger is:
+#     # schedule:
+#     #   - cron: "17 18 * * *"   # daily 18:17 UTC (03:17 JST)
+# - The job is skipped unless the repository variable
+#   REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED is exactly "true".
+# - Even when enabled, it stops before any upstream request because the real HTTP transport is
+#   not implemented/approved yet (src/lib/reference-data/auto-update/source-transport.ts,
+#   REAL_NETWORK_ACCESS_ENABLED = false). See update-schedule.ts.
+# - Backup, production apply, rollback and restore are never scheduled.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: reference-data-update-detection
+  cancel-in-progress: false
+
+jobs:
+  detect:
+    if: ${{ vars.REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Stop before any upstream access (real transport not approved)
+        run: |
+          echo "::error::Automatic update detection is not available yet: the real upstream transport requires separate approval (Stage 1). No request was sent."
+          exit 1
