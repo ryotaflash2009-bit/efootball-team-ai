@@ -42,12 +42,20 @@ describe("middleware.ts: Edge Runtime互換性の静的監査", () => {
     expect(source).not.toMatch(/reference-data|WORLD_DATA_SOURCE|@\/lib\/world|@\/lib\/managers/);
   });
 
-  it("既知のimportのみ(next/server・@supabase/ssr・@/lib/supabase/env)を使う", () => {
+  it("既知のimportのみ(next/server・@supabase/ssr・@/lib/supabase/env・@/lib/public-info/internal-pages)を使う", () => {
     const source = readMiddlewareSource();
     const importLines = source.match(/^import .+$/gm) ?? [];
     for (const line of importLines) {
-      expect(line).toMatch(/next\/server|@supabase\/ssr|@\/lib\/supabase\/env/);
+      expect(line).toMatch(/next\/server|@supabase\/ssr|@\/lib\/supabase\/env|@\/lib\/public-info\/internal-pages/);
     }
+  });
+
+  it("追加依存の@/lib/public-info/internal-pagesも他moduleをimportせず、eval・new Function・requireを含まない", () => {
+    const dep = readFileSync(path.resolve(__dirname, "lib", "public-info", "internal-pages.ts"), "utf8");
+    expect(dep).not.toMatch(/^import /m);
+    expect(dep).not.toMatch(/\beval\s*\(/);
+    expect(dep).not.toMatch(/new\s+Function\s*\(/);
+    expect(dep).not.toMatch(/\brequire\s*\(/);
   });
 
   it("Supabase環境変数が未設定/不正な場合は例外を投げずリクエストを素通りさせる設計になっている", () => {

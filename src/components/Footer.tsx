@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useT } from "@/lib/i18n/LocaleContext";
+import { areInternalPagesVisible, isInternalPagePath } from "@/lib/public-info/internal-pages";
 
 const LINKS: { href: string; labelKey: "aboutLink" | "termsLink" | "privacyLink" | "disclaimerLink" | "dataManagementLink" | "supportLink" | "releaseReadinessLink" }[] = [
   { href: "/about", labelKey: "aboutLink" },
@@ -20,11 +21,13 @@ const LINKS: { href: string; labelKey: "aboutLink" | "termsLink" | "privacyLink"
  */
 export function Footer() {
   const t = useT();
+  // 内部ページ(公開準備状況)への導線は、そのページが表示される環境でだけ出す。
+  const links = areInternalPagesVisible() ? LINKS : LINKS.filter((l) => !isInternalPagePath(l.href));
 
   return (
     <footer aria-label={t("footer", "ariaLandmark")} className="mt-8 border-t border-border bg-surface px-4 py-5 sm:px-6 lg:px-8">
       <nav aria-label={t("footer", "ariaLandmark")} className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs">
-        {LINKS.map((link) => (
+        {links.map((link) => (
           <Link key={link.href} href={link.href} className="text-text-dim underline-offset-2 hover:text-accent hover:underline">
             {t("footer", link.labelKey)}
           </Link>
