@@ -33,6 +33,11 @@ const record = (name, ok, detail = "") => {
   console.log(`${ok ? "PASS" : "FAIL"}  ${name}${detail ? `  — ${detail}` : ""}`);
 };
 
+/** Markdown表のセル用: バックスラッシュを先にエスケープしてから`|`をエスケープし、改行は空白にする。 */
+function escapeTableCell(value) {
+  return String(value ?? "").replace(/\\/g, "\\\\").replace(/\|/g, "\\|").replace(/[\r\n]+/g, " ");
+}
+
 async function evalJson(client, expression) {
   const r = await client.send("Runtime.evaluate", { expression, returnByValue: true, awaitPromise: true });
   return r.result?.value;
@@ -108,7 +113,7 @@ async function main() {
     "",
     "| 結果 | 項目 | 詳細 |",
     "|---|---|---|",
-    ...results.map((r) => `| ${r.ok ? "PASS" : "FAIL"} | ${r.name} | ${String(r.detail).replace(/\|/g, "\\|")} |`),
+    ...results.map((r) => `| ${r.ok ? "PASS" : "FAIL"} | ${escapeTableCell(r.name)} | ${escapeTableCell(r.detail)} |`),
     "",
     `**${pass}/${results.length} PASS**`,
     "",
