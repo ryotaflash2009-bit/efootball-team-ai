@@ -12,6 +12,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { checkLegacySampleDetail } from "./lib/legacy-sample-detail.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "..");
@@ -196,8 +197,7 @@ async function main() {
   record("回帰: 監督詳細 200 + ブースター表", mgrDet.status === 200 && mgrDet.body.includes("監督ブースター"), "");
   const imgBad = await get("/api/world/player-image/abc");
   record("回帰: World 画像プロキシ 不正IDは 400（外部アクセスなし）", imgBad.status === 400, `HTTP ${imgBad.status}`);
-  const oldMessi = await get("/players/89138556575063");
-  record("回帰: 旧 eFHUB サンプル詳細（Messi）", oldMessi.status === 200 && /Lionel Messi/.test(oldMessi.body), "");
+  for (const legacy of await checkLegacySampleDetail(BASE)) record(legacy.name, legacy.pass, legacy.detail);
 
   await write();
   const failed = results.filter((r) => !r.pass);

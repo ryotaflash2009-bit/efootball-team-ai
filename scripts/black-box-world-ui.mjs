@@ -10,6 +10,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { checkLegacySampleDetail } from "./lib/legacy-sample-detail.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "..");
@@ -250,10 +251,7 @@ async function main() {
   const home = await http("/");
   record("回帰: ホーム 200", home.status === 200 && /eFootball Team AI/.test(home.body), `HTTP ${home.status}`);
   record("回帰: ホームにサイドメニュー", /プレイヤー/.test(home.body) && /マネージャー/.test(home.body), "");
-  const oldMessi = await http("/players/89138556575063");
-  record("回帰: 旧 eFHUB サンプル詳細（Messi）", oldMessi.status === 200 && /Lionel Messi/.test(oldMessi.body), `HTTP ${oldMessi.status}`);
-  const oldCanna = await http("/players/88041460996837");
-  record("回帰: 旧 eFHUB サンプル詳細（Cannavaro）", oldCanna.status === 200 && /Fabio Cannavaro/.test(oldCanna.body), `HTTP ${oldCanna.status}`);
+  for (const legacy of await checkLegacySampleDetail(BASE, 2)) record(legacy.name, legacy.pass, legacy.detail);
   const oldApi = await json("/api/players?q=messi&sort=ovr_desc&limit=5");
   record("回帰: 旧 /api/players（サンプル）維持", oldApi.status === 200 && Array.isArray(oldApi.data?.players), `HTTP ${oldApi.status}`);
   const imgBad = await http("/api/player-image/abc");

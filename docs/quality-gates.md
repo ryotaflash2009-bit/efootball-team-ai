@@ -107,6 +107,9 @@ build 失敗が環境由来の一時エラーと**明確に判断できる場合
 - 開発中の軽い HTTP 200 確認は可。**最終品質ゲートでは全13レールを必ず `next start` 上で実行する。**
 - 失敗を dev 固有差と判断する場合は、`next start` で再現しないことを実際に確認してから切り分ける。
 - **根拠なくテスト期待値（black-box の `record(...)` 条件）を変更しない。**
+- 旧サンプル詳細 `/players/[id]` の回帰確認は `scripts/lib/legacy-sample-detail.mjs` の環境別判定を使う
+  (再配布不可のgit管理外サンプルがある環境 → 旧APIの選手を表示 / 無い環境 → 共通not-found・内部情報なし)。
+  件数の表示確認は固定値ではなくAPIの現在件数と照合する(Stage 4で監督66→67、根拠: `stage5-invite-beta-readiness.md`)。
 - black-box は localhost への HTTP のみ・外部アクセス 0 回。実ユーザーの localStorage を変更しない
   （localStorage ベース画面は SSR 空状態シェルまでを検証し、状態変更ロジックは unit test で担保）。
 

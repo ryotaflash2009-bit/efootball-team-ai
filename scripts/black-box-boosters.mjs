@@ -15,6 +15,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { checkLegacySampleDetail } from "./lib/legacy-sample-detail.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "..");
@@ -137,8 +138,7 @@ async function main() {
   // 7. 回帰：World / eFHUB 詳細 API の形が変わっていない
   const wd = await json(`/api/world/players/${messiWorld}`);
   record("回帰: World 詳細 API 200 + stats 26件", wd.status === 200 && (wd.data?.player?.stats?.length ?? 0) === 26, `n=${wd.data?.player?.stats?.length}`);
-  const old = await get("/players/89138556575063");
-  record("回帰: 旧 eFHUB サンプル詳細（Messi）200", old.status === 200 && /Lionel Messi/.test(old.body), `HTTP ${old.status}`);
+  for (const legacy of await checkLegacySampleDetail(BASE)) record(legacy.name, legacy.pass, legacy.detail);
 
   // 8. 内部情報を露出しない
   record("露出なし: 本文に SQL / db パスなし", !/efootball\.db|SELECT \*|C:\\\\Users/i.test(b + cmp.body), "");
