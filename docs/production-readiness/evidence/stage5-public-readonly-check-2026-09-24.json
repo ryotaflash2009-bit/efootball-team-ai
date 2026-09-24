@@ -1,0 +1,77 @@
+{
+  "evidence": "stage5-public-readonly-check",
+  "recordedAt": "2026-09-24",
+  "containsSecrets": false,
+  "containsRowDataOrRawLogs": false,
+  "ownerApproval": "read-only GET/HEAD checks of the public Vercel site (pages, APIs, headless Chrome desktop/mobile, managers black-box, small-sample performance) and limited cleanup of ./data/stage5 (16 files)",
+  "method": "GET only; no credentials; isolated headless Chrome profile with the Supabase auth test double (no login); sequential requests; small fixed samples; no settings changed",
+  "site": "public Vercel production (URL not recorded)",
+  "runs": {
+    "initialCheck": { "at": "2026-09-24T11:22:28Z", "deployedCommit": "06df822" },
+    "recheckAfterFix": { "at": "2026-09-24T11:39:17Z", "deployedCommit": "7f9ab2e", "fixPr": 59 }
+  },
+  "mainRoutes": {
+    "status200": ["/", "/players", "/players/world/<id>", "/managers", "/compare", "/my-team", "/my-builds", "/squads", "/best-xi", "/support", "/terms", "/privacy", "/disclaimer", "/about", "/data-management"],
+    "notARoute": { "/diagnostics": 404 },
+    "redirects": 0,
+    "errorBoundaryOrStackTraceOrSecret": 0
+  },
+  "internalPages": {
+    "/account/rls-test": "404", "/account/rls-test/": "308 -> 404", "/release-readiness": "404", "/release-readiness/": "308 -> 404",
+    "internalContentShown": false, "linksOnHome": 0
+  },
+  "indexing": {
+    "metaRobots": "noindex, nofollow, nocache (all pages)",
+    "xRobotsTag": "noindex, nofollow, noarchive (pages, API JSON, images)",
+    "robotsTxt": "Disallow: /",
+    "sitemap": 404,
+    "canonicalOrOg": 0,
+    "noindexRemoved": false
+  },
+  "data": {
+    "managersTotalCount": 67,
+    "worldTotalCount": 13009,
+    "playerCardAnalysis": "no public count endpoint; unchanged per Stage 4 Evidence (19)",
+    "unappliedUpstreamCount13286Shown": false,
+    "internalIdsChecksumsObjectKeysShown": false,
+    "freshnessAfterFix": { "managersImported": "2026年9月24日 19:31 JST", "worldImported": "2026年8月28日 07:59 JST" }
+  },
+  "findings": [
+    {
+      "id": "hydration-418-time-zone",
+      "severity": "gate failure (console error), fixed",
+      "detail": "Home/Players/Managers threw React #418 for browsers in Asia/Tokyo: server (UTC) and browser (JST) formatted import dates differently; dates were shown in UTC without a zone. Reproduced by time-zone emulation (Tokyo: error, UTC: none).",
+      "fix": "formatDate/formatDateTime use a fixed Asia/Tokyo zone with a zone name (PR #59); verified locally with a UTC server and on the public site after deploy"
+    },
+    {
+      "id": "legacy-not-found-streaming",
+      "severity": "test contract, fixed",
+      "detail": "The streamed soft-404 carries NEXT_HTTP_ERROR_FALLBACK;404 in the HTML; the not-found title is rendered in the browser. The legacy check now requires the signal or the title (PR #59)."
+    }
+  ],
+  "releaseGate": {
+    "browserGatePublic": { "before": "152/160 (8 console errors = #418)", "after": "160/160" },
+    "managersBlackBoxPublic": { "before": "42/43 (legacy contract)", "after": "43/43" },
+    "consoleErrors": 0, "unexpectedNetworkErrors": 0, "http5xx": 0, "horizontalOverflow": 0,
+    "localRailsWithUtcServer": "13/13 PASS", "localBrowserGateWithUtcServer": "160/160"
+  },
+  "performancePublic": {
+    "samples": "HTTP cold 1 + warm 3 per target; browser 2 navigations per page per viewport",
+    "httpWarmMedianMs": { "home": 2787, "players": 1768, "playersSearch": 2335, "worldDetail": 1898, "managers": 1386, "managersSearch": 993, "compare": 286, "squads": 293, "bestXi": 114 },
+    "apiMs": { "coldAbout": 1300, "warmMedian": 111 },
+    "browser": { "longTaskMs": 0, "clsMax": 0.019, "duplicateApiMax": 1, "http5xx": 0 },
+    "severeBlockers": 0,
+    "notes": [
+      "Home server response ~2.8 s warm (under the 3 s threshold): top improvement candidate (several reference-data queries per render)",
+      "/players desktop load event 5.7-6.4 s in some samples while mobile ~1.3 s: waits for up to 24 image-proxy responses; content renders progressively, no long tasks",
+      "API cold ~1.3 s (function cold start), warm ~110 ms",
+      "one duplicate image request on mobile Home (same card in two strips; cached)"
+    ]
+  },
+  "legalAndSupport": {
+    "inviteOnlyBeta": true, "worldMayLag": true, "noCharge": true, "noPublicReleasePromise": true, "unofficial": true,
+    "dataManagementLink": true, "accountDeletionContact": true, "feedbackSafetyNotices": true, "supportChannel": true,
+    "legalPagesMarkedDraft": true
+  },
+  "productionEffects": { "writes": 0, "sql": 0, "apply": 0, "backup": 0, "r2": 0, "settingsChanged": 0 }
+}
