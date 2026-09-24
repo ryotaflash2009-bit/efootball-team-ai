@@ -1,5 +1,5 @@
 import { parseManagerListQuery } from "@/lib/managers/schemas";
-import { listManagers, ManagerDataUnavailableError } from "@/lib/managers/repository";
+import { getManagersLatestFetchedAt, listManagers, ManagerDataUnavailableError } from "@/lib/managers/repository";
 import { ManagersPageView, ManagersUnavailableView, ManagersFailedView, ManagersSearchRejectedView } from "@/components/managers/ManagersPageView";
 import { SearchInputRejectedError, checkSearchInput } from "@/lib/search/search-input";
 
@@ -38,6 +38,14 @@ export default async function ManagersPage({ searchParams }: { searchParams: Pro
   if (rejected) return <ManagersSearchRejectedView />;
   if (failed || !result) return <ManagersFailedView />;
 
+  // データの時点(取り込み日時)。取得できなくても一覧は表示し、時点は「—」にする(推測の日時は出さない)。
+  let importedAt: string | null = null;
+  try {
+    importedAt = await getManagersLatestFetchedAt();
+  } catch {
+    importedAt = null;
+  }
+
   const hasFilters = !!(q.query || q.hasBooster != null || q.hasLinkUpPlay != null);
   const hrefFor = (p: number) => {
     const sq = new URLSearchParams();
@@ -57,6 +65,7 @@ export default async function ManagersPage({ searchParams }: { searchParams: Pro
       nextHref={hrefFor(result.page + 1)}
       from={from}
       to={to}
+      importedAt={importedAt}
     />
   );
 }

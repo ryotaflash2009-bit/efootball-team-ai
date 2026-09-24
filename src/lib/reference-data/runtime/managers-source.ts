@@ -292,6 +292,20 @@ export async function getManagerByIdFromSupabase(internalManagerId: string | num
   };
 }
 
+/** 監督データの時点(各行のfetched_atの最新値)。取り込み日時の表示用で、行データは返さない。 */
+export async function getManagersLatestFetchedAtFromSupabase(client?: ReferenceDataClient): Promise<string | null> {
+  let c: ReferenceDataClient;
+  try {
+    c = client ?? getReferenceDataClient();
+  } catch (err) {
+    throw normalizeClientError(err, { operation: "managers.sourceMeta" });
+  }
+  const { data, error, status } = await c.from("managers").select("fetched_at").order("fetched_at", { ascending: false }).limit(1).maybeSingle();
+  if (error) throw normalizeQueryError(error, { operation: "managers.sourceMeta", status });
+  const v = data ? (data as Record<string, unknown>).fetched_at : null;
+  return typeof v === "string" ? v : null;
+}
+
 export async function getManagerCountFromSupabase(client?: ReferenceDataClient): Promise<number> {
   let c: ReferenceDataClient;
   try {

@@ -74,6 +74,7 @@ export interface Dictionary {
   managersPage: {
     metaTemplate: string;
     descriptionTemplate: string;
+    importedAtPrefix: string;
     dataUnavailableTitle: string;
     dataUnavailableDescription: string;
     failedTitle: string;
@@ -3161,6 +3162,9 @@ export interface Dictionary {
     betaLimitStorage: string;
     betaLimitRecommendation: string;
     betaLimitChanges: string;
+    betaLimitWorldLag: string;
+    betaLimitNoPayment: string;
+    betaLimitDataDeletion: string;
     betaLimitsFeedback: string;
     mailtoAriaGeneral: string;
     mailtoAriaBugReport: string;
@@ -3577,7 +3581,7 @@ const ja: Dictionary = {
     worldCardsLabel: "World カード",
     efhubIndexLabel: "eFHUB 索引",
     managersLabel: "監督",
-    syncedAtLabel: "取り込み日時",
+    syncedAtLabel: "World 取り込み日時",
     worldUnavailableTitle: "World データがまだ用意されていません",
     worldUnavailableCommandPrefix: "ターミナルで ",
     worldUnavailableCommandSuffix: " を実行してください。",
@@ -3605,6 +3609,7 @@ const ja: Dictionary = {
   managersPage: {
     metaTemplate: "{count} 名の監督",
     descriptionTemplate: "データ提供: {source}。age・国籍・チーム・Coaching Affinity・フォーメーションはソース非収録。",
+    importedAtPrefix: "取り込み: ",
     dataUnavailableTitle: "監督データがまだ用意されていません",
     dataUnavailableDescription: "ターミナルで `node scripts/sync-managers.mjs` を実行して SQLite に取り込んでください。",
     failedTitle: "監督データを読み込めませんでした",
@@ -6753,6 +6758,9 @@ const ja: Dictionary = {
     betaLimitStorage: "My Team・保存ビルド・保存スカッド等は現在お使いのブラウザー内に保存されます。端末間の完全な自動同期はありません(My Teamクラウド保存はアルファ機能です)。",
     betaLimitRecommendation: "ベストイレブン等の提案は本サービス独自のルールに基づく参考情報であり、公式の評価ではありません。",
     betaLimitChanges: "ベータ期間中は、機能・表示・データの形式が予告なく変わる場合があります。",
+    betaLimitWorldLag: "選手カード(World)のデータは毎日自動では更新されず、ゲーム内やデータ元の最新の内容より遅れている場合があります。収録件数・取り込み日時はホームの表示が現在の値です。",
+    betaLimitNoPayment: "ベータ期間中の利用料金はかかりません。一般公開や提供の継続を約束するものではありません。eFootball Team AIは、eFootballの公式サービスではありません。",
+    betaLimitDataDeletion: "このブラウザーに保存したデータは「データ管理」ページから削除できます。アカウントの削除をご希望の場合は、下の窓口へご連絡ください。",
     betaLimitsFeedback: "気づいた点や不具合は、下の「不具合報告」からお知らせください。",
     mailtoAriaGeneral: "一般問い合わせ用のメールを送る",
     mailtoAriaBugReport: "不具合報告用のメールを送る",

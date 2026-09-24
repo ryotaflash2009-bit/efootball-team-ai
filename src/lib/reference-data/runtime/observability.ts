@@ -22,6 +22,7 @@ export type ReferenceDataOperation =
   | "managers.list"
   | "managers.detail"
   | "managers.count"
+  | "managers.sourceMeta"
   | "analysis.detail";
 
 /**

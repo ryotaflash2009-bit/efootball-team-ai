@@ -11,6 +11,13 @@ describe("buildSecurityHeaders", () => {
     expect(byKey["Permissions-Policy"]).toContain("camera=()");
   });
 
+  it("招待制ベータの間は全応答(API・画像を含む)をX-Robots-Tagで検索対象外にする(開発・本番とも)", () => {
+    for (const isDev of [false, true]) {
+      const byKey = Object.fromEntries(buildSecurityHeaders(isDev).map((h) => [h.key, h.value]));
+      expect(byKey["X-Robots-Tag"]).toBe("noindex, nofollow, noarchive");
+    }
+  });
+
   it("Content-Security-Policyヘッダーを含む", () => {
     const headers = buildSecurityHeaders(false);
     expect(headers.some((h) => h.key === "Content-Security-Policy")).toBe(true);
