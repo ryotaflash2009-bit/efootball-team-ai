@@ -16,7 +16,7 @@ operation** (dispatch + Environment approval).
 | `appearance` / `ai_styles` | Existing Production values are kept (preserve columns; the updater has no UPDATE grant). Upstream differences are reported as `preserved_column_drift` (warning). New cards are inserted with upstream values. |
 | `appearance.updatedAt` | Naive upstream values are interpreted as UTC (provisional; the semantic time zone stays unresolved). The plan summary records how many raw values had no time zone. Future values (> fetch time + 24 h) → **hard block**; upstream maximum older than the Production maximum → **hard block**; > 20 % of cards sharing one timestamp → manual review. |
 | First World apply | Always manual review (`world_first_apply`), plus `baseline_missing`. |
-| Upstream | `plan` fetches the World catalogue once: CREATED_AT pages, 3 s interval, retry budget from the endpoint, caps 460 pages / 14,000 records / 462 requests / 48 MB; no managers request. Stops on any duplicate identity or incomplete scan. |
+| Upstream | `plan` fetches the World catalogue once: CREATED_AT pages, 3 s interval, retry budget from the endpoint, caps 460 pages / 14,000 records / 462 requests / 40 MB; no managers request. Stops on any duplicate identity or incomplete scan. |
 | Scale guard | More than 8,000 inserts + updates stops the plan (`rehearsal_scope_exceeded`). |
 
 ## 2. Expected values (from the 2026-09-23 full scan; the new plan is authoritative)

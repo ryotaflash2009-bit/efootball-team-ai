@@ -1,10 +1,12 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { createRecordedFixtureTransport } from "./source-transport";
+import { SOURCE_ENDPOINTS, createRecordedFixtureTransport } from "./source-transport";
+import { isRetryAllowed } from "./update-batch-state";
 import { buildWorldSearchRequest } from "./source-world";
 import {
   WORLD_CONFIRM,
+  WORLD_LIMITS,
   buildWorldBundle,
   buildWorldCandidate,
   evaluateWorldPlan,
@@ -19,6 +21,16 @@ import { recordedWorldPages, upstreamPlayers, worldState } from "./__fixtures__/
 
 const FETCHED = "2026-09-25T09:00:00.000Z";
 const NOW = "2026-09-25T10:00:00.000Z";
+
+describe("World: 取得の安全上限(本人の安全条件 2026-09-24)", () => {
+  it("転送量40MB・14,000件・460 page(443基準)・462 request。間隔3秒・timeout 20秒・同時1件・429/403は再試行しない", () => {
+    expect(WORLD_LIMITS).toMatchObject({ maxTotalBytes: 40 * 1024 * 1024, maxRecords: 14_000, maxPages: 460, maxRequests: 462 });
+    expect(SOURCE_ENDPOINTS["efootball-world"]).toMatchObject({ minIntervalMs: 3_000, timeoutMs: 20_000, maxAttempts: 3 });
+    expect(isRetryAllowed("source_fetch", "http_429", 1)).toBe(false);
+    expect(isRetryAllowed("source_fetch", "http_403", 1)).toBe(false);
+    expect(isRetryAllowed("source_fetch", "http_5xx", 1)).toBe(true);
+  });
+});
 
 describe("World: 全件の1回取得と記録", () => {
   it("全pageを1回ずつ取得して応答を記録し、記録の再生で同じcandidateになる", async () => {

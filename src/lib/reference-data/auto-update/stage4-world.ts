@@ -51,7 +51,7 @@ export const WORLD_CONFIRM: Readonly<Record<Stage4Mode, string>> = Object.freeze
   verify: "verify-world",
 });
 /** World全件取得と適用規模の上限(2026-09-23の完全取得: 443 page・13,286件・29MB、差分6,156件)。 */
-export const WORLD_LIMITS = Object.freeze({ maxPages: 460, maxRecords: 14_000, maxRequests: 462, maxTotalBytes: 48 * 1024 * 1024, maxChanges: 8_000 });
+export const WORLD_LIMITS = Object.freeze({ maxPages: 460, maxRecords: 14_000, maxRequests: 462, maxTotalBytes: 40 * 1024 * 1024, maxChanges: 8_000 });
 export const WORLD_MAX_IDENTITIES_IN_SUMMARY = 10;
 export const WORLD_DRY_RUN_SCHEMA = "reference_data_stage4w_dry_run";
 export const WORLD_ROLLBACK_SCHEMA = "reference_data_stage4w_rollback_test";
