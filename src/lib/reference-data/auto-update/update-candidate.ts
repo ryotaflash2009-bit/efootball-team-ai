@@ -47,6 +47,15 @@ export interface BuildCandidateInput {
   readonly currentRows: Readonly<Partial<Record<DiffTable, readonly Readonly<Record<string, unknown>>[]>>>;
   readonly history: CandidateHistory;
   readonly now: string;
+  /**
+   * World upstream時刻の検査結果(analyzeSourceTimestampsの判定)と初回World適用の明示。
+   * 未指定なら従来どおり(Stage 1・dry runの呼び出しは変わらない)。
+   */
+  readonly policySignals?: {
+    readonly sourceTimestampFuture?: boolean;
+    readonly massIdenticalSourceTimestamps?: boolean;
+    readonly firstWorldApply?: boolean;
+  };
 }
 
 export interface UpdateCandidate {
@@ -75,7 +84,14 @@ function planCounts(plan: UpdateDiffPlan, approved: number): TablePolicyCounts {
     schemaDriftCount: r.schemaDriftCount,
     sourceMissingCount: r.sourceMissingCount,
     approvedRemovalCount: approved,
+    // card_ratingだけが変わった更新(上流で頻繁に再計算される値)。更新対象・checksumには含めたまま、件数を別に数える。
+    cardRatingOnlyChangedCount: plan.table === "world_player_cards" ? countCardRatingOnlyUpdates(plan) : 0,
   };
+}
+
+/** 変更列がcard_ratingだけの更新件数(値は見ない)。 */
+export function countCardRatingOnlyUpdates(plan: UpdateDiffPlan): number {
+  return plan.updates.filter((u) => u.changedFields.length === 1 && u.changedFields[0] === "card_rating").length;
 }
 
 /** payload size: source rowを正規化したJSONのUTF-8 byte数の合計(upstreamの整形に依存しない)。 */
@@ -172,6 +188,9 @@ export function buildUpdateCandidate(input: BuildCandidateInput): UpdateCandidat
     payloadBytes,
     lastAppliedAt: history.lastAppliedAt,
     now: input.now,
+    sourceTimestampFuture: input.policySignals?.sourceTimestampFuture === true,
+    massIdenticalSourceTimestamps: input.policySignals?.massIdenticalSourceTimestamps === true,
+    firstWorldApply: input.policySignals?.firstWorldApply === true,
   };
 
   const base = evaluateUpdatePolicy(policyInput);
