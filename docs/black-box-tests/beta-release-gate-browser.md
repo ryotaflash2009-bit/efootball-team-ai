@@ -1,6 +1,6 @@
 # 限定ベータ Release Gate ブラウザー確認
 
-実行日時: 2026-09-23T13:41:59.624Z
+実行日時: 2026-09-24T11:10:01.725Z
 対象: http://localhost:3000(localhost のみ)  viewport: desktop 1280 / mobile 390
 
 | 結果 | 項目 | 詳細 |
