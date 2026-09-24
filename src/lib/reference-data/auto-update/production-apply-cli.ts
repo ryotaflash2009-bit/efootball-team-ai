@@ -3,23 +3,27 @@ import { Client, type ClientConfig } from "pg";
 import { buildProductionPgClientConfig } from "./backup-db-connection";
 import { runUpdaterPreflight, safeErrorCode } from "./production-apply-preflight";
 import { APPLY_SECRET_NAMES } from "./update-contract";
+import { runStage4Mode } from "./stage4-managers-cli";
+import type { Stage4Mode } from "./stage4-managers";
 
 /**
- * `reference-data-production-apply.yml`から実行されるCLI(Stage 2時点ではpreflight modeだけ)。
+ * `reference-data-production-apply.yml`から実行されるCLI。
  *
- *   REFERENCE_DATA_APPLY_MODE=preflight node scripts/run-production-apply-entry.mjs
+ *   REFERENCE_DATA_APPLY_MODE=<mode> node scripts/run-production-apply-entry.mjs
  *
  * - preflight: reference_data_updaterとしてTLS(CA固定)で接続し、`begin read only`の中で
  *   runUpdaterPreflightを実行してrollbackする。行データは読まず、書き込みもしない。
- * - apply: Stage 4(初回Production更新リハーサル)の別承認まで実装しない。指定されたら接続前に拒否する。
+ * - plan / dry-run / apply / verify: Stage 4(managersだけの初回Production更新リハーサル、本人承認2026-09-24)。
+ *   処理は stage4-managers-cli.ts。書き込みはapplyだけ(全binding・前提条件を満たした場合に1 transaction)。
+ * - 上記以外のmodeは接続前に拒否する。
  * - 必須Secretが無ければ接続を試みずに停止する。
  * - 出力・要約artifactには、段階(phase)と安全なreason code(SQLSTATE・Node.jsのerror code)だけを残し、
  *   エラー本文・URL・SQL・Secret値を含めない。
  */
 
-export const APPLY_MODES = ["preflight"] as const;
+export const APPLY_MODES = ["preflight", "plan", "dry-run", "apply", "verify"] as const;
 
-export type PreflightPhase = "mode" | "secrets" | "config" | "connect" | "preflight";
+export type PreflightPhase = "mode" | "secrets" | "config" | "connect" | "preflight" | Stage4Mode;
 
 export interface PreflightSummary {
   readonly ok: boolean;
@@ -91,7 +95,7 @@ export async function main(): Promise<void> {
   let secrets: Record<string, string> = {};
   let result: PreflightSummary;
   if (!checkApplyMode(env.REFERENCE_DATA_APPLY_MODE)) {
-    result = summary(false, "mode", ["mode_not_allowed:only_preflight_until_stage4"]);
+    result = summary(false, "mode", ["mode_not_allowed"]);
   } else {
     try {
       secrets = readApplySecrets(env);
@@ -107,7 +111,12 @@ export async function main(): Promise<void> {
       } catch {
         result = summary(false, "config", ["config_invalid"]);
       }
-      if (config) result = await runPreflightWithConfig(config);
+      const mode = env.REFERENCE_DATA_APPLY_MODE as (typeof APPLY_MODES)[number];
+      if (config && mode === "preflight") result = await runPreflightWithConfig(config);
+      else if (config && mode !== "preflight") {
+        const o = await runStage4Mode(mode, env, config);
+        result = summary(o.ok, mode, o.reasons, o.facts);
+      }
     }
   }
   let exitCode = result!.ok ? 0 : 1;

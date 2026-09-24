@@ -172,8 +172,9 @@ describe("updater preflight: 照会エラーは成功扱いにせず、安全な
 });
 
 describe("Production apply CLI: mode", () => {
-  it("preflight以外(apply等)は接続前に拒否する", () => {
-    expect(checkApplyMode("preflight")).toBe(true);
-    for (const m of ["apply", "APPLY", "preflight ", "", undefined]) expect(checkApplyMode(m)).toBe(false);
+  it("許可済みのmode以外(undo・rollback・restore・表記ゆれ等)は接続前に拒否する", () => {
+    for (const m of ["preflight", "plan", "dry-run", "apply", "verify"]) expect(checkApplyMode(m)).toBe(true);
+    for (const m of ["APPLY", "preflight ", "", undefined, "undo", "rollback", "restore", "apply-world", "dry_run"]) expect(checkApplyMode(m)).toBe(false);
+    // apply等の確認入力の照合は stage4-managers.test.ts(runStage4Mode)で確認する。
   });
 });
