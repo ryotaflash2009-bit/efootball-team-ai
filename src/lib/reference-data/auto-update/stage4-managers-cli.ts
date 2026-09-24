@@ -51,53 +51,55 @@ export interface Stage4Outcome {
   readonly facts: Readonly<Record<string, unknown>>;
 }
 
-type Env = Readonly<Record<string, string | undefined>>;
+export type Env = Readonly<Record<string, string | undefined>>;
 
 const MAX_INPUT_BYTES = 8 * 1024 * 1024;
+/** Worldのsource bundle(全page本文、約30MB)用の上限。 */
+export const MAX_WORLD_INPUT_BYTES = 80 * 1024 * 1024;
 const RUN_ID_RE = /^[0-9]{1,20}$/;
 const SHA256_RE = /^[0-9a-f]{64}$/;
 const SQL_DIR = path.join(process.cwd(), "docs", "production-readiness", "sql");
 
-function workDir(env: Env): string {
+export function workDir(env: Env): string {
   const d = env.STAGE4_WORK_DIR;
   if (!d || /[\r\n\0]/.test(d) || !path.isAbsolute(d)) throw new Stage4Stop("work_dir_invalid");
   return d;
 }
 
-function readInput(dir: string, rel: string): string {
+export function readInput(dir: string, rel: string, maxBytes: number = MAX_INPUT_BYTES): string {
   const p = path.join(dir, rel);
   if (!existsSync(p)) throw new Stage4Stop(`input_missing:${rel}`);
-  if (statSync(p).size > MAX_INPUT_BYTES) throw new Stage4Stop(`input_too_large:${rel}`);
+  if (statSync(p).size > maxBytes) throw new Stage4Stop(`input_too_large:${rel}`);
   return readFileSync(p, "utf8");
 }
 
-function writeOut(dir: string, name: string, data: unknown): void {
+export function writeOut(dir: string, name: string, data: unknown): void {
   writeFileSync(path.join(dir, "out", name), `${JSON.stringify(data, null, 2)}\n`, { encoding: "utf8", mode: 0o600 });
 }
 
-function runId(env: Env, key: string): string {
+export function runId(env: Env, key: string): string {
   const v = env[key] ?? "";
   if (!RUN_ID_RE.test(v)) throw new Stage4Stop(`input_invalid:${key}`);
   return v;
 }
 
-function checksum(env: Env, key: string): string {
+export function checksum(env: Env, key: string): string {
   const v = env[key] ?? "";
   if (!SHA256_RE.test(v)) throw new Stage4Stop(`input_invalid:${key}`);
   return v;
 }
 
-function commitSha(env: Env): string {
+export function commitSha(env: Env): string {
   const v = env.GITHUB_SHA ?? "";
   if (!/^[0-9a-f]{40}$/.test(v)) throw new Stage4Stop("input_invalid:GITHUB_SHA");
   return v;
 }
 
-function facts(dir: string, name: string): WorkflowRunFacts {
+export function facts(dir: string, name: string): WorkflowRunFacts {
   return parseRunFacts(readInput(dir, name));
 }
 
-function planRunList(dir: string): { id: number; displayTitle: string; createdAt: string; conclusion: string | null }[] {
+export function planRunList(dir: string): { id: number; displayTitle: string; createdAt: string; conclusion: string | null }[] {
   let d: unknown;
   try {
     d = JSON.parse(readInput(dir, "plan-runs.json"));
@@ -109,7 +111,7 @@ function planRunList(dir: string): { id: number; displayTitle: string; createdAt
   return d as { id: number; displayTitle: string; createdAt: string; conclusion: string | null }[];
 }
 
-function isolatedSql() {
+export function isolatedSql() {
   const r = (f: string) => readFileSync(path.join(SQL_DIR, f), "utf8");
   const s = (f: string) => readFileSync(path.join(SQL_DIR, f), "utf8");
   return {
@@ -125,7 +127,7 @@ function isolatedSql() {
   };
 }
 
-async function withClient<T>(config: ClientConfig, fn: (c: Client) => Promise<T>): Promise<T> {
+export async function withClient<T>(config: ClientConfig, fn: (c: Client) => Promise<T>): Promise<T> {
   const client = new Client(config);
   try {
     await client.connect();
