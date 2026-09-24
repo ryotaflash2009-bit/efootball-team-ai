@@ -5,7 +5,23 @@ import ja from "@/lib/i18n/dictionaries/ja";
 import en from "@/lib/i18n/dictionaries/en";
 
 const SUPPORT_VIEW = readFileSync(path.resolve(__dirname, "..", "..", "components", "public-info", "SupportView.tsx"), "utf8");
-const KEYS = ["betaLimitsHeading", "betaLimitsIntro", "betaLimitData", "betaLimitStorage", "betaLimitRecommendation", "betaLimitChanges", "betaLimitsFeedback"] as const;
+const KEYS = [
+  "betaLimitsHeading", "betaLimitsIntro", "betaLimitData", "betaLimitStorage", "betaLimitRecommendation", "betaLimitChanges",
+  "betaLimitWorldLag", "betaLimitNoPayment", "betaLimitDataDeletion", "betaLimitsFeedback",
+] as const;
+
+describe("問い合わせページ: 招待制ベータの追加の既知の制限(Stage 5)", () => {
+  it("World データの遅れ・料金なし・公開の約束なし・非公式・削除の導線を、既存の表示名・法務文言と一致させて示す", () => {
+    expect(ja.support.betaLimitWorldLag).toMatch(/毎日自動では更新されず/);
+    expect(en.support.betaLimitWorldLag).toMatch(/not updated automatically every day/);
+    expect(ja.support.betaLimitNoPayment).toContain(ja.disclaimer.unofficialBody.split("。")[0]);
+    expect(en.support.betaLimitNoPayment).toContain(en.disclaimer.unofficialBody.split(". ")[0]);
+    expect(ja.support.betaLimitNoPayment).toMatch(/約束するものではありません/);
+    expect(ja.support.betaLimitDataDeletion).toContain(`「${ja.dataManagement.heading}」`);
+    expect(en.support.betaLimitDataDeletion).toContain(`"${en.dataManagement.heading}"`);
+    expect(SUPPORT_VIEW).toContain('href="/data-management"');
+  });
+});
 
 describe("問い合わせページ: ベータ版の既知の制限", () => {
   it("日英とも全項目があり、ページに表示される", () => {

@@ -11,6 +11,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { checkLegacySampleDetail } from "./lib/legacy-sample-detail.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "..");
@@ -94,9 +95,18 @@ async function main() {
   record("ローディング: Skeleton クラスを使う（スカッド編集シェル）", pages.squadEditor.body.includes("skeleton"), "");
   record("エラー: 404 でも安全なガイド（SQL/パスなし）", (await get("/players/world/abc")).status === 200, "");
 
+  // 件数は固定値ではなく、同じサーバーのAPIが返す現在の件数と画面表示を照合する
+  // (2026-09-24 Stage 4で監督が66→67へ正式に更新された。監督の削除は承認されていないため66未満は不合格)。
+  const counts = {
+    managers: JSON.parse((await get("/api/managers?pageSize=1")).body || "{}").totalCount ?? -1,
+    world: JSON.parse((await get("/api/world/players?pageSize=1")).body || "{}").totalCount ?? -1,
+  };
+  const fmt = (n) => n.toLocaleString("en-US");
+
   // ---- ホーム（ダッシュボード） ----
   record("ホーム: ヒーロー＋検索フォーム", pages.home.text.includes("スカッド") && /<form[^>]*action="\/players"/.test(pages.home.body) && /name="q"/.test(pages.home.body), "");
-  record("ホーム: 実データ指標（World カード / 監督 66）", pages.home.text.includes("13,009") && pages.home.text.includes("66"), "");
+  record("ホーム: 実データ指標（World カード / 監督 = APIの件数）", counts.managers >= 66 && counts.world > 0 && pages.home.text.includes(fmt(counts.world)) && pages.home.text.includes(fmt(counts.managers)), `managers=${counts.managers} world=${counts.world}`);
+  record("ホーム: World データの取り込み日時(World と監督を区別した表示)", /World 取り込み日時<\/span><\/div><p[^>]*>\d{4}年/.test(pages.home.body), "");
   record("ホーム: 高OVRカードのストリップ（横スクロール）", pages.home.text.includes("最大OVRの高いカード") && /overflow-x-auto/.test(pages.home.body), "");
   record("ホーム: できること（クイックリンク4種）", ["プレイヤーを探す", "選手を比較する", "スカッドを組む", "監督を調べる"].every((l) => pages.home.text.includes(l)), "");
   record("ホーム: 架空の利用者数・評価を出さない", !/[0-9,]+\s*(ユーザー|レビュー|評価件)/.test(pages.home.text), "");
@@ -143,8 +153,8 @@ async function main() {
 
   // ---- 回帰（主要機能） ----
   record("回帰: 比較の URL 育成方針・監督が SSR 反映", (await get("/compare?ids=89138556575063,88041460996837&b=attack,none&m=65,65")).text.match(/監\+1/) != null, "");
-  record("回帰: 監督総数 66 / World 13,009 表示", pages.managers.text.includes("66 名の監督") && pages.players.text.includes("13,009"), "");
-  record("回帰: 旧 eFHUB サンプル詳細", (await get("/players/89138556575063")).body.includes("Lionel Messi"), "");
+  record("回帰: 監督総数 / World 総数の表示がAPIの件数と一致", counts.managers >= 66 && pages.managers.text.includes(`${fmt(counts.managers)} 名の監督`) && pages.players.text.includes(fmt(counts.world)), `managers=${counts.managers} world=${counts.world}`);
+  for (const legacy of await checkLegacySampleDetail(BASE)) record(legacy.name, legacy.pass, legacy.detail);
   record("回帰: 画像プロキシ不正IDは 400（外部アクセスなし）", (await get("/api/world/player-image/abc")).status === 400, "");
 
   await write();

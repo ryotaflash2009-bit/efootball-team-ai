@@ -11,7 +11,7 @@ import type {
 } from "./types";
 import { MANAGER_ID_RE } from "./schemas";
 import { getWorldDataSource } from "@/lib/reference-data/runtime/data-source";
-import { listManagersFromSupabase, getManagerByIdFromSupabase, getManagerCountFromSupabase } from "@/lib/reference-data/runtime/managers-source";
+import { listManagersFromSupabase, getManagerByIdFromSupabase, getManagerCountFromSupabase, getManagersLatestFetchedAtFromSupabase } from "@/lib/reference-data/runtime/managers-source";
 
 type Row = Record<string, unknown>;
 
@@ -252,6 +252,18 @@ function getManagerByIdSqlite(internalManagerId: string | number): ManagerDetail
     sourceUrl: String(mRow.source_url ?? ""),
     fetchedAt: str(mRow.fetched_at),
   };
+}
+
+/** 監督データの時点(fetched_atの最新値)。無ければnull。 */
+export async function getManagersLatestFetchedAt(): Promise<string | null> {
+  if (getWorldDataSource() === "supabase") return getManagersLatestFetchedAtFromSupabase();
+  ensureManagerTables();
+  try {
+    const row = getDb().prepare("SELECT MAX(fetched_at) AS t FROM managers").get() as { t: string | null } | undefined;
+    return row?.t ?? null;
+  } catch {
+    throw new WorldQueryError();
+  }
 }
 
 export async function getManagerCount(): Promise<number> {

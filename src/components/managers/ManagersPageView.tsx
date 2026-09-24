@@ -14,7 +14,7 @@ import { buttonClasses } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
-import { formatNumber } from "@/lib/i18n/format";
+import { formatDateTime, formatNumber } from "@/lib/i18n/format";
 
 export function ManagersUnavailableView() {
   const t = useT();
@@ -82,6 +82,7 @@ export function ManagersPageView({
   nextHref,
   from,
   to,
+  importedAt = null,
 }: {
   result: ManagersPageResult;
   hasFilters: boolean;
@@ -89,6 +90,8 @@ export function ManagersPageView({
   nextHref: string;
   from: number;
   to: number;
+  /** 監督データの時点(fetched_atの最新値、ISO)。不明ならnull。 */
+  importedAt?: string | null;
 }) {
   const t = useT();
   const { locale } = useLocale();
@@ -108,7 +111,7 @@ export function ManagersPageView({
           title={t("nav", "managers")}
           icon="managers"
           meta={fillMp(mp("metaTemplate"), { count: formatNumber(result.totalCount, locale) })}
-          description={fillMp(mp("descriptionTemplate"), { source: result.source })}
+          description={`${fillMp(mp("descriptionTemplate"), { source: result.source })} ${mp("importedAtPrefix")}${importedAt ? formatDateTime(new Date(importedAt), locale) : "—"}`}
         />
 
         <Suspense fallback={<Skeleton className="h-11 w-full" />}>

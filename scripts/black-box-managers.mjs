@@ -10,6 +10,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { checkLegacySampleDetail } from "./lib/legacy-sample-detail.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "..");
@@ -102,6 +103,8 @@ async function main() {
   // 2026-09-19(6fc225d)の意図的な表示修正で、一覧は内部のリポジトリ内ファイルパス(managers.json)を出さず
   // 「データ提供: amine250/efootball-managers」と表記する。出典の明示と内部パス非表示の両方を確認する。
   record("画面: データ提供元の明示（amine250/efootball-managers・内部ファイルパスは非表示）", /データ提供: amine250\/efootball-managers/.test(lp.body) && !/managers\.json/.test(lp.body), "");
+  // データの時点: 監督データの取り込み日時(fetched_atの最新値)を表示し、取得できない「—」や内部ID・checksumを出さない。
+  record("画面: 監督データの取り込み日時を表示", /取り込み: \d{4}/.test(lp.body) && !/import_batch|batch_id|payload_hash/.test(lp.body), "");
   const dp = await get(`/managers/${conteId}`);
   record("画面: 監督詳細が 200", dp.status === 200 && /Antonio Conte/.test(dp.body), `HTTP ${dp.status}`);
   record("画面: 詳細に「戦術適性」「監督ブースター」「Link-Up Play」", ["戦術適性", "監督ブースター", "Link-Up Play"].every((h) => dp.body.includes(h)), "");
@@ -138,8 +141,10 @@ async function main() {
   record("回帰: World 選手詳細 26能力値 + スキル + 育成タブ", pd.status === 200 && pd.body.includes("能力値グループ") && pd.body.includes("育成ポイント"), "");
   const imgBad = await get("/api/world/player-image/abc");
   record("回帰: World 画像プロキシ 不正IDは 400（外部アクセスなし）", imgBad.status === 400, `HTTP ${imgBad.status}`);
-  const oldMessi = await get("/players/89138556575063");
-  record("回帰: 旧 eFHUB サンプル詳細（Messi）", oldMessi.status === 200 && /Lionel Messi/.test(oldMessi.body), `HTTP ${oldMessi.status}`);
+  // 正式な選手詳細(/players/world/[worldCardId])が、一覧APIと同じ選手を表示していること(identity)。
+  const wName = worldDetail?.nameJa || worldDetail?.nameEn || "";
+  record("回帰: World 選手詳細 identity（詳細APIと同じ選手名）", pd.status === 200 && wName.length > 0 && pd.body.includes(wName), `id=${messiWorld}`);
+  for (const legacy of await checkLegacySampleDetail(BASE)) record(legacy.name, legacy.pass, legacy.detail);
 
   await write();
   const failed = results.filter((r) => !r.pass);

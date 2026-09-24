@@ -13,6 +13,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { checkLegacySampleDetail } from "./lib/legacy-sample-detail.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "..");
@@ -202,8 +203,7 @@ async function main() {
   record("回帰: World 画像プロキシ 存在しないIDはプレースホルダー200（外部アクセスなし）", imgMiss.status === 200, `HTTP ${imgMiss.status}`);
   record("回帰: 一覧に画像プロキシ src が配線・loading=lazy", /\/api\/world\/player-image\/\d+/.test(players.body) && /loading="lazy"/.test(players.body), "");
   record("回帰: cloudfront URL をブラウザへ露出しない", !/d1zxa6glxh8sq9\.cloudfront\.net/.test(players.body + messi.body), "");
-  const oldMessi = await get("/players/89138556575063");
-  record("回帰: 旧 eFHUB サンプル詳細（Messi）", oldMessi.status === 200 && /Lionel Messi/.test(oldMessi.body), `HTTP ${oldMessi.status}`);
+  for (const legacy of await checkLegacySampleDetail(BASE)) record(legacy.name, legacy.pass, legacy.detail);
 
   await write();
   const failed = results.filter((r) => !r.pass);

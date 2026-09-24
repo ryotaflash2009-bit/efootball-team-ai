@@ -6,6 +6,7 @@ import { Surface } from "@/components/ui/Surface";
 import { Icon } from "@/components/ui/Icon";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { resolveSupportChannels } from "@/lib/public-info/support-config";
+import Link from "next/link";
 
 type SupportKey = keyof Dictionary["support"];
 
@@ -59,6 +60,14 @@ export function SupportView() {
           <li>{ts("betaLimitStorage")}</li>
           <li>{ts("betaLimitRecommendation")}</li>
           <li>{ts("betaLimitChanges")}</li>
+          <li>{ts("betaLimitWorldLag")}</li>
+          <li>{ts("betaLimitNoPayment")}</li>
+          <li>
+            {ts("betaLimitDataDeletion")}{" "}
+            <Link href="/data-management" className="underline">
+              /data-management
+            </Link>
+          </li>
         </ul>
         <p className="mt-2 text-sm text-text-dim">{ts("betaLimitsFeedback")}</p>
       </Surface>

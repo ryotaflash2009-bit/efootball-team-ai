@@ -1,6 +1,6 @@
 # World データ UI 接続 ブラックボックステスト結果
 
-実行日時: 2026-09-23T13:41:03.549Z
+実行日時: 2026-09-24T11:07:46.032Z
 対象: http://localhost:3000（localhost のみ）  外部アクセス: 0 回
 
 | 結果 | 項目 | 詳細 |
@@ -67,26 +67,22 @@
 | PASS | 画面: 詳細に 26 能力値の内容が描画される（有効IDのみ） |  |
 | PASS | 画面: 不正 World ID の詳細はクラッシュせず not-found（詳細本文を描画しない） | HTTP 200 |
 | PASS | 画面: 存在しない World ID の詳細はクラッシュせず not-found | HTTP 200 |
-| PASS | 画像: eFHUB リンクなし World カードでも画像が表示される | Lionel Messi 200 241KB cache=MISS |
-| PASS | 画像: eFHUB リンクありカードは eFHUB プロキシで画像が表示される | Lionel Messi 200 |
-| PASS | 画像: 同カードの World プロキシ経路でも画像が表示される | 200 |
+| PASS | 画像: eFHUB リンクなし World カードに World 画像プロキシ src が配線（NO_EXTERNAL） |  |
 | PASS | 画像: 取得不可時はローカル SVG プレースホルダー（外部アクセス0） | 200 placeholder=true |
 | PASS | 画像: 不正な World ID は 400（外部アクセス0） | HTTP 400 |
 | PASS | 画像: 検索後も World 画像プロキシ src が配線されている |  |
-| PASS | 画像: 検索結果の先頭カードの画像が表示される | Lionel Messi 200 |
 | PASS | 画像: 並べ替え後も画像 src が配線されている |  |
 | PASS | 画像: ページ移動後も画像 src が配線されている |  |
 | PASS | 画像: 一覧 HTML は loading="lazy" を使う（プリロードしない） |  |
 | PASS | 画像: 一覧カードレイアウトが崩れない（aspect-[3/4] 枠 + OVR/名前を保持） |  |
 | PASS | 回帰: ホーム 200 | HTTP 200 |
 | PASS | 回帰: ホームにサイドメニュー |  |
-| PASS | 回帰: 旧 eFHUB サンプル詳細（Messi） | HTTP 200 |
-| PASS | 回帰: 旧 eFHUB サンプル詳細（Cannavaro） | HTTP 200 |
+| PASS | 回帰: 旧サンプル詳細（ローカルサンプルあり）: 旧APIと同じ選手を表示 #1 | HTTP 200 |
+| PASS | 回帰: 旧サンプル詳細（ローカルサンプルあり）: 旧APIと同じ選手を表示 #2 | HTTP 200 |
 | PASS | 回帰: 旧 /api/players（サンプル）維持 | HTTP 200 |
 | PASS | 回帰: 画像プロキシの不正IDは 400 | HTTP 400 |
-| PASS | 回帰: eFHUB 画像プロキシ（efimg 経路）が応答 | HTTP 200 |
 | PASS | 回帰: ブラウザへ渡す src は同一オリジンのみ（cloudfront URL を露出しない） |  |
-| PASS | 画像取得の外部 GET 累計が 10 回以内 | external=2 |
+| PASS | 画像取得の外部 GET が 0（NO_EXTERNAL モード） | external=0 |
 
 ## 判定: 全項目 PASS
 

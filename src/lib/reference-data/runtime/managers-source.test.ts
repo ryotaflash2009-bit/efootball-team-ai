@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { listManagersFromSupabase, getManagerByIdFromSupabase, getManagerCountFromSupabase } from "./managers-source";
+import { listManagersFromSupabase, getManagerByIdFromSupabase, getManagerCountFromSupabase, getManagersLatestFetchedAtFromSupabase } from "./managers-source";
 import { createFakeReferenceDataClient, createFailingReferenceDataClient } from "./test-doubles";
 import type { ManagerListQuery, ManagerSortKey } from "@/lib/managers/types";
 
@@ -178,6 +178,20 @@ describe("障害系: 各HTTPステータス/ネットワーク断でも安全に
       await expect(getManagerCountFromSupabase(client as never)).rejects.toThrow();
     });
   }
+});
+
+describe("getManagersLatestFetchedAtFromSupabase", () => {
+  it("fetched_atの最新値を返し、行が無ければnull(推測の日時を返さない)", async () => {
+    const client = createFakeReferenceDataClient({
+      managers: [makeManagerRow(1, { fetched_at: "2026-09-10T00:00:00.000Z" }), makeManagerRow(2, { fetched_at: "2026-09-24T10:31:18.602Z" }), makeManagerRow(3, { fetched_at: "2026-09-01T00:00:00.000Z" })],
+    });
+    expect(await getManagersLatestFetchedAtFromSupabase(client as never)).toBe("2026-09-24T10:31:18.602Z");
+    expect(await getManagersLatestFetchedAtFromSupabase(createFakeReferenceDataClient({ managers: [] }) as never)).toBeNull();
+  });
+
+  it("照会の失敗は例外(呼び出し側が「—」表示にする)", async () => {
+    await expect(getManagersLatestFetchedAtFromSupabase(createFailingReferenceDataClient({ message: "x" }, 500) as never)).rejects.toThrow();
+  });
 });
 
 describe("getManagerByIdFromSupabase", () => {

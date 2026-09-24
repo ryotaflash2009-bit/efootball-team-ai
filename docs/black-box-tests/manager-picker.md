@@ -1,19 +1,19 @@
 # 監督選択UI ブラックボックステスト結果
 
-実行日時: 2026-09-23T13:41:16.652Z
+実行日時: 2026-09-24T11:07:57.987Z
 対象: http://localhost:3000（localhost のみ）  外部アクセス: **0 回**
 
 | 結果 | 項目 | 詳細 |
 |---|---|---|
-| PASS | 並べ替え sort=name: HTTP 200 + 監督が返る | n=66 |
-| PASS | 並べ替え sort=released_desc: HTTP 200 + 監督が返る | n=66 |
-| PASS | 並べ替え sort=released_asc: HTTP 200 + 監督が返る | n=66 |
-| PASS | 並べ替え sort=possession_desc: HTTP 200 + 監督が返る | n=66 |
-| PASS | 並べ替え sort=quick_counter_desc: HTTP 200 + 監督が返る | n=66 |
-| PASS | 並べ替え sort=long_ball_counter_desc: HTTP 200 + 監督が返る | n=66 |
-| PASS | 並べ替え sort=out_wide_desc: HTTP 200 + 監督が返る | n=66 |
-| PASS | 並べ替え sort=long_ball_desc: HTTP 200 + 監督が返る | n=66 |
-| PASS | 並べ替え sort=overload_desc: HTTP 200 + 監督が返る | n=66 |
+| PASS | 並べ替え sort=name: HTTP 200 + 監督が返る | n=67 |
+| PASS | 並べ替え sort=released_desc: HTTP 200 + 監督が返る | n=67 |
+| PASS | 並べ替え sort=released_asc: HTTP 200 + 監督が返る | n=67 |
+| PASS | 並べ替え sort=possession_desc: HTTP 200 + 監督が返る | n=67 |
+| PASS | 並べ替え sort=quick_counter_desc: HTTP 200 + 監督が返る | n=67 |
+| PASS | 並べ替え sort=long_ball_counter_desc: HTTP 200 + 監督が返る | n=67 |
+| PASS | 並べ替え sort=out_wide_desc: HTTP 200 + 監督が返る | n=67 |
+| PASS | 並べ替え sort=long_ball_desc: HTTP 200 + 監督が返る | n=67 |
+| PASS | 並べ替え sort=overload_desc: HTTP 200 + 監督が返る | n=67 |
 | PASS | 並べ替え sort=possession_desc: 該当適性が降順 |  |
 | PASS | 並べ替え sort=quick_counter_desc: 該当適性が降順 |  |
 | PASS | 並べ替え sort=long_ball_counter_desc: 該当適性が降順 |  |
@@ -21,11 +21,11 @@
 | PASS | 並べ替え sort=long_ball_desc: 該当適性が降順 |  |
 | PASS | 並べ替え sort=overload_desc: 該当適性が降順 |  |
 | PASS | 並べ替え released_desc: リリース日が新しい順 |  |
-| PASS | フィルタ hasBooster=1: 全件ブースターあり | n=64 |
+| PASS | フィルタ hasBooster=1: 全件ブースターあり | n=65 |
 | PASS | フィルタ hasBooster=0: 全件ブースターなし | n=2 |
-| PASS | フィルタ hasLinkUpPlay=1: 全件 Link-Up あり | n=25 |
-| PASS | フィルタ合算: あり + なし = 総数 | 64+2 vs 66 |
-| PASS | 検索: 補助的な絞り込みとして機能（総数 > 一致件数） | 2/66 |
+| PASS | フィルタ hasLinkUpPlay=1: 全件 Link-Up あり | n=26 |
+| PASS | フィルタ合算: あり + なし = 総数 | 65+2 vs 67 |
+| PASS | 検索: 補助的な絞り込みとして機能（総数 > 一致件数） | 2/67 |
 | PASS | 詳細API: 6戦術適性 + ブースター + Link-Up + リリース + ID を返す |  |
 | PASS | 詳細API: ブースターは confirmed のみ statKey 付き（未確認は適用しない前提） |  |
 | PASS | 育成: 「監督なし（managerBoosterDelta = 0）」を初期表示 |  |
