@@ -11,7 +11,7 @@ approval-gated plan → Backup → dry-run → apply sequence (`stage4-world-reh
 1. Refuses to send any request unless the repository variable `REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED`
    is exactly `true` (the job is skipped otherwise; a smoke test re-checks this on every run).
 2. Fetches the World catalogue once (≈ 443 page requests, 3 s apart, ≈ 23 min; caps 462 requests /
-   48 MB) and managers.json once.
+   40 MB) and managers.json once.
 3. Normalises both and compares the source checksum (first 12 characters), record counts and
    `appearance.updatedAt` against `docs/production-readiness/reference-data-applied-state.json`.
 4. Uploads `reference-data-detection-summary` with, per dataset, `decision`:
