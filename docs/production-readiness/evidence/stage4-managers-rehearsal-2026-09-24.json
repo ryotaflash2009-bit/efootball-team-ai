@@ -1,0 +1,228 @@
+{
+  "evidence": "stage4-managers-rehearsal",
+  "recordedAt": "2026-09-24",
+  "containsSecrets": false,
+  "containsRowData": false,
+  "ownerApproval": "Stage 4 Managers-only: Plan, new pre-apply Backup, Dry run, owner-approved Production apply, post-apply verify. Not approved: World, player_card_analysis, deletes, rollback, Restore.",
+  "mainCommit": "82532ff321bcbc1de96585d80fffe124f55fecc4",
+  "runs": {
+    "plan": {
+      "runNumber": 4,
+      "runId": 35985921511,
+      "title": "reference-data plan",
+      "attempt": 1,
+      "event": "workflow_dispatch",
+      "branch": "main",
+      "headSha": "82532ff321bcbc1de96585d80fffe124f55fecc4",
+      "conclusion": "success",
+      "createdAt": "2026-09-24T10:12:55Z",
+      "jobStartedAfterApprovalAt": "2026-09-24T10:30:34Z",
+      "completedAt": "2026-09-24T10:31:30Z",
+      "environment": "reference-data-production-apply"
+    },
+    "backup": {
+      "runNumber": 9,
+      "runId": 35987769689,
+      "title": "Reference data Production backup (manual, approval-gated)",
+      "attempt": 1,
+      "event": "workflow_dispatch",
+      "branch": "main",
+      "headSha": "82532ff321bcbc1de96585d80fffe124f55fecc4",
+      "conclusion": "success",
+      "createdAt": "2026-09-24T10:31:58Z",
+      "jobStartedAfterApprovalAt": "2026-09-24T10:33:28Z",
+      "completedAt": "2026-09-24T10:34:59Z",
+      "environment": "production-backup-approval"
+    },
+    "dryRun": {
+      "runNumber": 5,
+      "runId": 35988115289,
+      "title": "reference-data dry-run",
+      "attempt": 1,
+      "event": "workflow_dispatch",
+      "branch": "main",
+      "headSha": "82532ff321bcbc1de96585d80fffe124f55fecc4",
+      "conclusion": "success",
+      "createdAt": "2026-09-24T10:35:31Z",
+      "jobStartedAfterApprovalAt": "2026-09-24T10:40:04Z",
+      "completedAt": "2026-09-24T10:41:06Z",
+      "environment": "reference-data-production-apply"
+    },
+    "apply": {
+      "runNumber": 6,
+      "runId": 35988696821,
+      "title": "reference-data apply",
+      "attempt": 1,
+      "event": "workflow_dispatch",
+      "branch": "main",
+      "headSha": "82532ff321bcbc1de96585d80fffe124f55fecc4",
+      "conclusion": "success",
+      "createdAt": "2026-09-24T10:41:38Z",
+      "jobStartedAfterApprovalAt": "2026-09-24T10:43:28Z",
+      "completedAt": "2026-09-24T10:44:33Z",
+      "environment": "reference-data-production-apply"
+    },
+    "verify": "not run separately: post-apply verification is part of the apply run"
+  },
+  "environmentApprovals": "each run approved in GitHub by the owner with a scope-limited comment (Plan / Backup / Dry run / Apply); approval time ≈ jobStartedAfterApprovalAt",
+  "upstream": {
+    "source": "managers-json",
+    "requests": 1,
+    "status": 200,
+    "bytes": 37237,
+    "fetchedAt": "2026-09-24T10:31:18.602Z",
+    "receivedRecords": 67
+  },
+  "productionBefore": {
+    "world_player_cards": 13009,
+    "managers": 66,
+    "import_batches": 8
+  },
+  "candidate": {
+    "sourceChecksum12": "8c1d654ec48e",
+    "planChecksum12": "2861ca7f8765",
+    "beforeChecksum12": "fca698fdab0b",
+    "afterChecksum12": "4ed0b4a1e7d3",
+    "idempotencyKey12": "6f0c9c1cba7d",
+    "targetTables": [
+      "managers"
+    ]
+  },
+  "diff": {
+    "before": 66,
+    "after": 67,
+    "added": 1,
+    "changed": 0,
+    "removed": 0,
+    "unchanged": 66,
+    "duplicates": 0,
+    "addedIdentitiesRecorded": "count only (identities not recorded)",
+    "addedIdentityCount": 1
+  },
+  "policy": {
+    "severity": "manual_review",
+    "manualReviewCodes": [
+      "baseline_missing",
+      "manager_change"
+    ],
+    "hardBlocks": 0,
+    "planProblems": [],
+    "acknowledged": "baseline_missing,manager_change"
+  },
+  "backup": {
+    "runNumber": 9,
+    "validator": "BACKUP_V2_VALID",
+    "backupVersion": "2",
+    "category": "pre-apply",
+    "restoreVerified": true,
+    "storageVerified": true,
+    "rowCounts": {
+      "world_player_cards": 13009,
+      "managers": 66,
+      "player_card_analysis": 19,
+      "import_batches": 8
+    },
+    "rowCountsMatchPlan": true,
+    "addedColumnsCovered": true,
+    "startedAfterPlanCompleted": true,
+    "run8UsedForApply": false
+  },
+  "dryRun": {
+    "ok": true,
+    "reasons": [],
+    "postgresServerVersionNum": 170011,
+    "dryRun": {
+      "verified": true,
+      "managersBefore": 66,
+      "managersAfter": 67,
+      "observedAfterChecksumMatches": true,
+      "rediffChanges": 0
+    },
+    "executor": {
+      "applyOk": true,
+      "applyCode": null,
+      "auditBatchVerified": true,
+      "postVerifyOk": true,
+      "postVerifyProblems": []
+    },
+    "undoSimulation": {
+      "ok": true,
+      "restored": 0,
+      "insertedRemaining": 1,
+      "existingRowsMatchBefore": true
+    },
+    "productionCountsReRead": {
+      "world_player_cards": 13009,
+      "managers": 66,
+      "import_batches": 8
+    },
+    "startedAt": "2026-09-24T10:40:56.959Z",
+    "completedAt": "2026-09-24T10:40:57.054Z"
+  },
+  "apply": {
+    "ok": true,
+    "status": "applied_verified",
+    "auditBatchId8": "aaa21d16",
+    "inserted": 1,
+    "updated": 0,
+    "removed": 0,
+    "automaticUndo": false,
+    "transaction": "single transaction committed after all bindings and 28 prerequisite gates passed",
+    "appliedAt": "2026-09-24T10:44:27.601Z"
+  },
+  "postVerify": {
+    "ok": true,
+    "problems": [],
+    "facts": {
+      "managersCount": 67,
+      "importBatchesCount": 9,
+      "worldCount": 13009,
+      "auditBatchStatus": "verified"
+    },
+    "worldUnchanged": "count 13009 and max(updated_at) unchanged",
+    "playerCardAnalysis": "not readable/writable by the updater; preflight after apply confirmed no privileges",
+    "userAuthData": "preflight after apply: no auth/user privileges"
+  },
+  "publicChecks": {
+    "publicManagersApi": {
+      "url": "public site /api/managers",
+      "status": 200,
+      "totalCount": 67
+    },
+    "managersBlackBoxOnPublicSite": {
+      "pass": 40,
+      "fail": 1,
+      "failure": "legacy World check '旧 eFHUB サンプル詳細（Messi）' (world_player_cards page, not touched by this apply) returned HTTP 200 without the expected text; investigate separately"
+    },
+    "browserReleaseGateLocalProductionBuild": {
+      "pass": 160,
+      "fail": 0,
+      "note": "localhost production build reading the same reference data (managers totalCount 67); console errors / network failures / 5xx / horizontal overflow all 0"
+    }
+  },
+  "cleanup": {
+    "localArtifactsDeleted": true,
+    "localServerStoppedByPid": 15200,
+    "dockerContainers": 0
+  },
+  "productionEffects": {
+    "managersInserted": 1,
+    "managersUpdated": 0,
+    "managersDeleted": 0,
+    "importBatchesInserted": 1,
+    "worldWrites": 0,
+    "playerCardAnalysisWrites": 0,
+    "rollback": 0,
+    "restore": 0,
+    "undo": 0
+  },
+  "r2Effects": "one new pre-apply Backup object pair (Backup #9); nothing deleted; Run #6/#7/#8 untouched",
+  "world": {
+    "scope": "excluded",
+    "card_rating": "later World rehearsal, counted separately",
+    "appearance": "preserve",
+    "appearanceUpdatedAt": "provisional UTC; semantic time zone unresolved",
+    "worldApply": "future separate approval"
+  },
+  "verdict": "STAGE_4_MANAGERS_REHEARSAL_VERIFIED"
+}
