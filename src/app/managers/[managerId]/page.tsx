@@ -10,6 +10,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Icon } from "@/components/ui/Icon";
+import { DISPLAY_TIME_ZONE } from "@/lib/i18n/format";
 
 export const runtime = "nodejs";
 export const revalidate = 300;
@@ -17,7 +18,8 @@ export const revalidate = 300;
 function fmt(iso: string | null): string {
   if (!iso) return "—";
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? iso : d.toLocaleString("ja-JP", { hour12: false });
+  // サーバー(Vercel、UTC)の時間帯に依存せず、日本時間で時間帯名を付けて表示する(src/lib/i18n/format.tsと同じ方針)。
+  return Number.isNaN(d.getTime()) ? iso : d.toLocaleString("ja-JP", { hour12: false, timeZone: DISPLAY_TIME_ZONE, timeZoneName: "short" });
 }
 
 export default async function ManagerDetailPage({ params }: { params: Promise<{ managerId: string }> }) {
