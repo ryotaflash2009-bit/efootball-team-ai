@@ -1,18 +1,19 @@
-name: Reference data update detection (disabled framework)
+name: Reference data update detection (manual; schedule needs owner approval)
 
-# Phase I framework for automatic update DETECTION only (no Secrets, no Environment, no Production).
+# Automatic update DETECTION only (no Secrets, no Environment, no Production connection).
 #
-# - Trigger: workflow_dispatch ONLY. There is intentionally NO `schedule:` trigger: cron must not
-#   fire until the first real upstream access (Stage 1) and scheduled detection are separately
-#   approved. When approved, the proposed trigger is:
+# - Trigger: workflow_dispatch ONLY. There is intentionally NO `schedule:` trigger yet: adding it is an
+#   owner-approved step. The proposed trigger (weekly, low load: ~443 World page requests + 1 managers
+#   request per run) is:
 #     # schedule:
-#     #   - cron: "17 18 * * *"   # daily 18:17 UTC (03:17 JST)
-# - The job is skipped unless the repository variable
-#   REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED is exactly "true".
-# - Even when enabled, it stops before any upstream request because the real HTTP transport is
-#   not implemented/approved yet (src/lib/reference-data/auto-update/source-transport.ts,
-#   REAL_NETWORK_ACCESS_ENABLED = false). See update-schedule.ts.
-# - Backup, production apply, rollback and restore are never scheduled.
+#     #   - cron: "17 18 * * 0"   # Sundays 18:17 UTC (Mondays 03:17 JST)
+# - The job is skipped unless the repository variable REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED is
+#   exactly "true"; the CLI re-checks it before any upstream request.
+# - What it does: fetch the World catalogue once (caps in stage4-world.ts) and managers.json once, normalise,
+#   and compare source checksums/counts/timestamps with docs/production-readiness/reference-data-applied-state.json.
+#   Output: a non-secret summary (no_change / update_available / attention_required).
+# - It never runs plan/dry-run/apply against Production, Backup, rollback or Restore; those stay
+#   approval-gated manual runs of the apply and backup workflows.
 
 on:
   workflow_dispatch:
@@ -28,9 +29,49 @@ jobs:
   detect:
     if: ${{ vars.REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED == 'true' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 45
     steps:
-      - name: Stop before any upstream access (real transport not approved)
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - name: Install dependencies (reproducible, no new packages)
+        run: npm ci
+
+      - name: Compile the detection entrypoint (tsc, no bundler)
+        run: npx tsc -p tsconfig.update-detection.json
+
+      - name: Runtime smoke test (without the enable variable it must stop before any upstream request)
+        env:
+          REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED: ""
         run: |
-          echo "::error::Automatic update detection is not available yet: the real upstream transport requires separate approval (Stage 1). No request was sent."
-          exit 1
+          set +e
+          output=$(node scripts/run-update-detection-entry.mjs 2>&1)
+          code=$?
+          set -e
+          echo "$output"
+          if [ "$code" -eq 0 ] || ! echo "$output" | grep -q '"not_enabled"' || ! echo "$output" | grep -q '"upstreamRequests": 0'; then
+            echo "::error::detection entrypoint did not stop before upstream access when disabled"
+            exit 1
+          fi
+
+      - name: Detect upstream changes (no Secrets, no Production)
+        env:
+          REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED: ${{ vars.REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED }}
+          REFERENCE_DATA_DETECTION_SUMMARY_PATH: ${{ runner.temp }}/reference-data-detection-summary.json
+        run: node scripts/run-update-detection-entry.mjs
+
+      # Non-secret summary only (counts, 12-character checksum prefixes, decisions, request statistics).
+      - name: Upload the detection summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reference-data-detection-summary
+          path: ${{ runner.temp }}/reference-data-detection-summary.json
+          if-no-files-found: ignore
+          retention-days: 30

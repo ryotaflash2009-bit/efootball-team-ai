@@ -24,7 +24,12 @@ export const STAGE4_MANAGERS_APPROVAL_TOKEN = "stage4-managers-rehearsal-2026-09
  * 実行するrun自体は本人のEnvironment承認が必要。呼び出し側の上限でWorld以外への送信は0件に固定する。
  */
 export const STAGE4_WORLD_APPROVAL_TOKEN = "stage4-world-rehearsal-2026-09-24" as const;
-const APPROVAL_TOKENS: readonly string[] = [STAGE1_APPROVAL_TOKEN, STAGE4_MANAGERS_APPROVAL_TOKEN, STAGE4_WORLD_APPROVAL_TOKEN];
+/**
+ * 定期検出(Secretなし・Productionなし)用。workflowはrepository variableで本人が明示的に有効化した場合だけ動き、
+ * scheduleの追加も本人承認事項。呼び出し側の上限でWorld 1回分の全件 + managers.json 1件に固定する。
+ */
+export const DETECTION_APPROVAL_TOKEN = "scheduled-detection-2026-09-25" as const;
+const APPROVAL_TOKENS: readonly string[] = [STAGE1_APPROVAL_TOKEN, STAGE4_MANAGERS_APPROVAL_TOKEN, STAGE4_WORLD_APPROVAL_TOKEN, DETECTION_APPROVAL_TOKEN];
 
 export interface UpstreamHttpTransportOptions {
   /** 本人承認の明示。STAGE1/STAGE4(managers・world)の承認token以外では作成できない。 */

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
-import { DETECTION_ENABLE_VARIABLE, DETECTION_WORKFLOW_FILE, SCHEDULE_POLICY, decideDetectionRun } from "./update-schedule";
+import { DETECTION_ENABLE_VARIABLE, DETECTION_WORKFLOW_FILE, PROPOSED_DETECTION_CRON, SCHEDULE_POLICY, decideDetectionRun } from "./update-schedule";
 import { CONCURRENCY_GROUPS } from "./update-contract";
 
 const WORKFLOWS = path.resolve(__dirname, "..", "..", "..", "..", ".github", "workflows");
@@ -25,7 +25,7 @@ describe("定期実行の判定(fail-closed)", () => {
   });
 });
 
-describe("検出workflow(無効な枠組み)の静的監査", () => {
+describe("検出workflowの静的監査", () => {
   const yaml = readWf(DETECTION_WORKFLOW_FILE);
   const body = code(yaml);
 
@@ -41,10 +41,21 @@ describe("検出workflow(無効な枠組み)の静的監査", () => {
     expect(body).toMatch(new RegExp(`group: ${CONCURRENCY_GROUPS.detection}$`, "m"));
   });
 
-  it("変数で明示有効化されない限りjobはskipし、有効でも取得前に失敗で止まる", () => {
+  it("変数で明示有効化されない限りjobはskipし、実行するのは検出CLIだけ(Production・Backup・applyのentryを呼ばない)", () => {
     expect(body).toContain(`if: \${{ vars.${DETECTION_ENABLE_VARIABLE} == 'true' }}`);
-    expect(body).not.toMatch(/\bnpm\b|\bnode\b|\bcurl\b|\bwget\b|actions\/checkout/);
-    expect(body).toMatch(/exit 1\s*$/m);
+    expect(body).toContain("npx tsc -p tsconfig.update-detection.json");
+    expect(body).toContain("node scripts/run-update-detection-entry.mjs");
+    expect(body).not.toMatch(/run-production-apply-entry|run-production-backup-entry|tsconfig\.production-apply|tsconfig\.backup-execution/);
+    expect(body).not.toMatch(/\bcurl\b|\bwget\b|gh (workflow|run) /);
+    // 変数なしのsmoke testで、upstreamへ1件も送らずに止まることを毎回確認する。
+    expect(body).toMatch(/Runtime smoke test[\s\S]*REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED: ""[\s\S]*"not_enabled"[\s\S]*"upstreamRequests": 0/);
+    const uploads = [...body.matchAll(/uses: actions\/upload-artifact@v4\s*\n\s+with:\s*\n\s+name: ([^\n]+)/g)].map((m) => m[1].trim());
+    expect(uploads).toEqual(["reference-data-detection-summary"]);
+  });
+
+  it("scheduleの候補は週1回(本人承認まで追加しない)", () => {
+    expect(PROPOSED_DETECTION_CRON).toBe("17 18 * * 0");
+    expect(yaml).toContain(`#   - cron: "${PROPOSED_DETECTION_CRON}"`);
   });
 });
 
