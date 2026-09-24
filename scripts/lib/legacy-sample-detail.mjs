@@ -8,12 +8,16 @@
  *
  * 固定の選手名に依存せず、環境ごとの正しい表示を確認する:
  *   サンプルあり → 旧API(/api/players)が返す先頭の選手の詳細に、その選手名が表示される
- *   サンプルなし → 旧APIは0件で、旧詳細は共通のnot-found画面(選手情報・内部情報・stack traceなし、5xxなし)
+ *   サンプルなし → 旧APIは0件で、旧詳細はnot-found(選手情報・内部情報・stack traceなし、5xxなし)
+ * not-foundの判定: streaming開始後のnotFound()ではHTTP 200のまま、HTMLに共通画面の文言ではなく
+ * Next.jsの404 fallback信号(NEXT_HTTP_ERROR_FALLBACK;404)が入り、文言はブラウザー側で描画される
+ * (2026-09-24、公開サイトで確認。正式な /players/world/<不明ID> も同じ信号)。信号か共通画面の文言のどちらかを必須にする。
  * localhost等、呼び出し側が渡したBASEへのHTTP GETだけ(外部サイトへはアクセスしない)。
  */
 
 const LEGACY_SAMPLE_ID = "89138556575063";
 const NOT_FOUND_TITLE_JA = "ページが見つかりません";
+const NOT_FOUND_FALLBACK_SIGNAL = "NEXT_HTTP_ERROR_FALLBACK;404";
 const LEAK_RE = /Lionel Messi|efootball\.db|players\.sample|stack trace|ENOENT/i;
 
 async function fetchText(base, p) {
@@ -56,7 +60,7 @@ export async function checkLegacySampleDetail(base, count = 1) {
   const d = await fetchText(base, `/players/${LEGACY_SAMPLE_ID}`);
   return [{
     name: "回帰: 旧サンプル詳細（サンプルなし）: 共通のnot-found画面・選手情報/内部情報なし",
-    pass: list.status === 200 && data?.total === 0 && d.status > 0 && d.status < 500 && d.body.includes(NOT_FOUND_TITLE_JA) && !LEAK_RE.test(d.body),
+    pass: list.status === 200 && data?.total === 0 && d.status > 0 && d.status < 500 && (d.body.includes(NOT_FOUND_FALLBACK_SIGNAL) || d.body.includes(NOT_FOUND_TITLE_JA)) && !LEAK_RE.test(d.body),
     detail: `HTTP ${d.status}`,
   }];
 }

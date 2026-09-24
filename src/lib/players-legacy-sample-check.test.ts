@@ -41,6 +41,13 @@ describe("旧サンプル詳細チェック", () => {
     const empty = list([]);
     stubFetch({ "/api/players?limit=1": empty, "/players/89138556575063": { status: 200, body: NOT_FOUND } });
     expect((await checkLegacySampleDetail("http://test"))[0].pass).toBe(true);
+    // streaming後のnotFound(): 文言はブラウザー側で描画され、HTMLにはNext.jsの404 fallback信号が入る(公開サイトで確認した形)。
+    const STREAMED_NOT_FOUND = '<html><body><nav>eFootball Team AI</nav><script>self.__next_f.push([1,"8:E{\\"digest\\":\\"NEXT_HTTP_ERROR_FALLBACK;404\\"}"])</script></body></html>';
+    stubFetch({ "/api/players?limit=1": empty, "/players/89138556575063": { status: 200, body: STREAMED_NOT_FOUND } });
+    expect((await checkLegacySampleDetail("http://test"))[0].pass).toBe(true);
+    // 信号も共通画面の文言も無いHTTP 200(アプリの殻だけ)は不合格。
+    stubFetch({ "/api/players?limit=1": empty, "/players/89138556575063": { status: 200, body: "<html><body><nav>eFootball Team AI</nav></body></html>" } });
+    expect((await checkLegacySampleDetail("http://test"))[0].pass).toBe(false);
     for (const bad of [
       { status: 200, body: "<html></html>" },
       { status: 500, body: NOT_FOUND },

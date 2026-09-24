@@ -13,9 +13,22 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { launchIsolatedBrowser, openTab, closeTab, connectCDP, installSupabaseAuthTestDouble } from "./lib/headless-chrome.mjs";
 
-const BASE = "http://localhost:3000";
+// 既定はlocalhost。本人承認のある読み取り専用の公開サイト確認だけ BASE_URL(https) を指定する。
+// 結果は既定のレポート(localhost用)を上書きしないよう、BASE_URL指定時は REPORT_PATH(リポジトリ内・git管理外の./data配下)へ書く。
+const BASE = (process.env.BASE_URL ?? "http://localhost:3000").replace(/\/+$/, "");
+if (!/^(http:\/\/localhost:\d+|https:\/\/[a-z0-9.-]+)$/.test(BASE)) throw new Error("BASE_URL must be http://localhost:<port> or an https origin");
+const IS_LOCAL = BASE.startsWith("http://localhost");
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const REPORT = path.join(ROOT, "docs", "black-box-tests", "beta-release-gate-browser.md");
+const REPORT = resolveReport(process.env.REPORT_PATH, path.join(ROOT, "docs", "black-box-tests", "beta-release-gate-browser.md"));
+function resolveReport(custom, fallback) {
+  if (!custom) {
+    if (!IS_LOCAL) throw new Error("REPORT_PATH is required when BASE_URL is not localhost");
+    return fallback;
+  }
+  const p = path.resolve(ROOT, custom);
+  if (!p.startsWith(path.join(ROOT, "data") + path.sep)) throw new Error("REPORT_PATH must be inside ./data");
+  return p;
+}
 const PAYLOAD = encodeURIComponent("'; DROP TABLE world_player_cards;--");
 const PAGES = [
   "/", "/players", "/players?q=messi", `/players?q=${PAYLOAD}`, "/managers", `/managers?q=${encodeURIComponent("'; DROP TABLE managers; --")}`,
@@ -62,6 +75,9 @@ async function main() {
   await client.send("Page.enable");
   await client.send("Runtime.enable");
   await client.send("Network.enable");
+  // 利用者(日本)のブラウザーの時間帯で確認する。サーバー(Vercel)はUTCのため、最終確認ではサーバーを TZ=UTC で起動し、
+  // 時間帯の違いによるhydration不一致(React #418)を検出する(2026-09-24に公開サイトで検出・修正済み)。
+  await client.send("Emulation.setTimezoneOverride", { timezoneId: process.env.GATE_BROWSER_TZ ?? "Asia/Tokyo" });
   await installSupabaseAuthTestDouble(client);
 
   let current = { console: [], exceptions: [], failed: [], serverErrors: [], offOrigin: [] };
@@ -95,7 +111,7 @@ async function main() {
         record(`${label} 想定外の通信失敗・5xx 0`, current.failed.length === 0 && current.serverErrors.length === 0, [...current.failed, ...current.serverErrors].join(" | "));
         record(`${label} 横スクロール 0`, overflow <= 0, `overflow=${overflow}`);
         record(`${label} 内部情報の露出なし`, !LEAK_RE.test(String(text ?? "")), "");
-        record(`${label} localhost以外への通信なし`, current.offOrigin.length === 0, [...new Set(current.offOrigin)].slice(0, 3).join(" | "));
+        record(`${label} 対象origin以外への通信なし`, current.offOrigin.length === 0, [...new Set(current.offOrigin)].slice(0, 3).join(" | "));
       }
     }
   } finally {
@@ -109,7 +125,7 @@ async function main() {
     "# 限定ベータ Release Gate ブラウザー確認",
     "",
     `実行日時: ${new Date().toISOString()}`,
-    `対象: ${BASE}(localhost のみ)  viewport: desktop 1280 / mobile 390`,
+    `対象: ${IS_LOCAL ? `${BASE}(localhost のみ)` : "公開サイト(読み取り専用GETのみ)"}  viewport: desktop 1280 / mobile 390`,
     "",
     "| 結果 | 項目 | 詳細 |",
     "|---|---|---|",

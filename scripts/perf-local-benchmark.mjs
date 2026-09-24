@@ -18,11 +18,26 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { launchIsolatedBrowser, openTab, closeTab, connectCDP, installSupabaseAuthTestDouble } from "./lib/headless-chrome.mjs";
 
-const BASE = "http://localhost:3000";
+// 既定はlocalhost。本人承認のある読み取り専用の公開サイト確認だけ BASE_URL(https) を指定する。
+// 結果は既定のレポート(localhost用)を上書きしないよう、BASE_URL指定時は REPORT_PATH(リポジトリ内・git管理外の./data配下)へ書く。
+const BASE = (process.env.BASE_URL ?? "http://localhost:3000").replace(/\/+$/, "");
+if (!/^(http:\/\/localhost:\d+|https:\/\/[a-z0-9.-]+)$/.test(BASE)) throw new Error("BASE_URL must be http://localhost:<port> or an https origin");
+const IS_LOCAL = BASE.startsWith("http://localhost");
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const REPORT = path.join(ROOT, "docs", "black-box-tests", "perf-local-benchmark.md");
-const WARM = 5;
-const BROWSER_REPEAT = 3;
+const REPORT = resolveReport(process.env.REPORT_PATH, path.join(ROOT, "docs", "black-box-tests", "perf-local-benchmark.md"));
+function resolveReport(custom, fallback) {
+  if (!custom) {
+    if (!IS_LOCAL) throw new Error("REPORT_PATH is required when BASE_URL is not localhost");
+    return fallback;
+  }
+  const p = path.resolve(ROOT, custom);
+  if (!p.startsWith(path.join(ROOT, "data") + path.sep)) throw new Error("REPORT_PATH must be inside ./data");
+  return p;
+}
+// 公開サイトでは小さい固定sample数にする(負荷をかけない)。
+const WARM = Number(process.env.PERF_WARM ?? 5);
+const BROWSER_REPEAT = Number(process.env.PERF_REPEAT ?? 3);
+if (!(WARM >= 1 && WARM <= 5 && BROWSER_REPEAT >= 2 && BROWSER_REPEAT <= 3)) throw new Error("PERF_WARM 1-5, PERF_REPEAT 2-3");
 const LIMITS = { pageMs: 3000, apiMs: 2000, longTaskMs: 1000, cls: 0.25 };
 
 const HTTP_TARGETS = [
@@ -30,6 +45,7 @@ const HTTP_TARGETS = [
   ["page", "Players initial", "/players"],
   ["page", "Players search", `/players?q=${encodeURIComponent("メッシ")}`],
   ["page", "Players filter", "/players?position=CF&sort=ovr_max_desc"],
+  ["page", "World detail", "/players/world/89138556575063"],
   ["page", "Managers", "/managers"],
   ["page", "Managers search", "/managers?q=conte"],
   ["page", "Compare", "/compare"],
@@ -158,7 +174,7 @@ async function main() {
   const lines = [
     "# ローカル性能計測(招待制ベータ前)",
     "",
-    `実行日時: ${new Date().toISOString()}  対象: ${BASE}(next start、Production build)  HTTP warm=${WARM}回・browser=${BROWSER_REPEAT}回(1回目をcold相当)`,
+    `実行日時: ${new Date().toISOString()}  対象: ${IS_LOCAL ? `${BASE}(next start、Production build)` : "公開サイト(読み取り専用GETのみ)"}  HTTP warm=${WARM}回・browser=${BROWSER_REPEAT}回(1回目をcold相当)`,
     `閾値(重大な問題だけを判定): page warm中央値 ${LIMITS.pageMs}ms / API ${LIMITS.apiMs}ms / long task合計 ${LIMITS.longTaskMs}ms / CLS ${LIMITS.cls} / 同一APIの重複0 / console error 0 / 5xx 0`,
     "数値はこの端末・この時点の参考値であり一般化しない。",
     "",
