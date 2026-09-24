@@ -48,6 +48,11 @@ const VIEWPORTS = [
   { name: "mobile", width: 390, height: 844, deviceScaleFactor: 2, mobile: true },
 ];
 
+/** Markdown表のセル用: バックスラッシュを先にエスケープしてから`|`をエスケープし、改行は空白にする。 */
+function escapeTableCell(value) {
+  return String(value ?? "").replace(/\\/g, "\\\\").replace(/\|/g, "\\|").replace(/[\r\n]+/g, " ");
+}
+
 const median = (xs) => {
   const s = [...xs].sort((a, b) => a - b);
   return s.length === 0 ? 0 : s.length % 2 ? s[(s.length - 1) / 2] : Math.round((s[s.length / 2 - 1] + s[s.length / 2]) / 2);
@@ -167,7 +172,7 @@ async function main() {
     "",
     "| 判定 | viewport | page | cold load ms | warm load中央値 ms | warm最大 ms | TTFB中央値 ms | long task最大 ms | CLS最大 | requests | API | 重複API | error | 5xx |",
     "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
-    ...browser.map((r) => `| ${r.ok ? "OK" : "SLOW"} | ${r.viewport} | ${decodeURIComponent(r.path).replace(/\|/g, "\\|")} | ${r.coldLoadMs} | ${r.warmLoadMedianMs} | ${r.warmLoadMaxMs} | ${r.ttfbMedianMs} | ${r.longTaskMsMax} | ${r.clsMax} | ${r.requests} | ${r.apiRequests} | ${r.duplicateApiMax} | ${r.errors} | ${r.server5xx} |`),
+    ...browser.map((r) => `| ${r.ok ? "OK" : "SLOW"} | ${r.viewport} | ${escapeTableCell(decodeURIComponent(r.path))} | ${r.coldLoadMs} | ${r.warmLoadMedianMs} | ${r.warmLoadMaxMs} | ${r.ttfbMedianMs} | ${r.longTaskMsMax} | ${r.clsMax} | ${r.requests} | ${r.apiRequests} | ${r.duplicateApiMax} | ${r.errors} | ${r.server5xx} |`),
     "",
     `**重大な問題: ${bad.length}件**`,
     "",

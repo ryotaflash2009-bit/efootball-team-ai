@@ -106,7 +106,7 @@ async function main() {
   // ---- ホーム（ダッシュボード） ----
   record("ホーム: ヒーロー＋検索フォーム", pages.home.text.includes("スカッド") && /<form[^>]*action="\/players"/.test(pages.home.body) && /name="q"/.test(pages.home.body), "");
   record("ホーム: 実データ指標（World カード / 監督 = APIの件数）", counts.managers >= 66 && counts.world > 0 && pages.home.text.includes(fmt(counts.world)) && pages.home.text.includes(fmt(counts.managers)), `managers=${counts.managers} world=${counts.world}`);
-  record("ホーム: World データの取り込み日時(World と監督を区別した表示)", /World 取り込み日時\s*\d{4}年/.test(pages.home.body.replace(/<script[\s\S]*?<\/script>/g, " ").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ")), "");
+  record("ホーム: World データの取り込み日時(World と監督を区別した表示)", /World 取り込み日時<\/span><\/div><p[^>]*>\d{4}年/.test(pages.home.body), "");
   record("ホーム: 高OVRカードのストリップ（横スクロール）", pages.home.text.includes("最大OVRの高いカード") && /overflow-x-auto/.test(pages.home.body), "");
   record("ホーム: できること（クイックリンク4種）", ["プレイヤーを探す", "選手を比較する", "スカッドを組む", "監督を調べる"].every((l) => pages.home.text.includes(l)), "");
   record("ホーム: 架空の利用者数・評価を出さない", !/[0-9,]+\s*(ユーザー|レビュー|評価件)/.test(pages.home.text), "");
