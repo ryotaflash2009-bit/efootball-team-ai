@@ -3,7 +3,8 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { APPLY_SECRET_NAMES, BACKUP_SECRET_NAMES, CONCURRENCY_GROUPS, SECRET_BOUNDARIES } from "./update-contract";
 import { APPLY_MODES, readApplySecrets } from "./production-apply-cli";
-import { STAGE4_CONFIRM, stage4RunTitle } from "./stage4-managers";
+import { STAGE4_CONFIRM, stage4RunTitle, stage4WorldRunTitle } from "./stage4-managers";
+import { WORLD_CONFIRM } from "./stage4-world";
 import { UPDATER_COLUMN_GRANTS, UPDATER_ROLE_NAME } from "./updater-role";
 
 const ROOT = path.resolve(__dirname, "..", "..", "..", "..");
@@ -33,12 +34,18 @@ describe("Production apply workflow(Stage 2 preflight + Stage 4 managers)", () =
     expect(options).toEqual([...APPLY_MODES]);
     expect(lines[start + 1 + options.length].trim()).toBe("default: preflight");
     expect([...APPLY_MODES]).toEqual(["preflight", "plan", "dry-run", "apply", "verify"]);
-    const expected: Record<string, string> = { preflight: "preflight", ...STAGE4_CONFIRM };
-    for (const [mode, confirm] of Object.entries(expected)) expect(code).toContain(`${mode}) expected="${confirm}" ;;`);
+    expect(code).toContain(`preflight:managers|preflight:world) expected="preflight" ;;`);
+    for (const [mode, confirm] of Object.entries(STAGE4_CONFIRM)) expect(code).toContain(`${mode}:managers) expected="${confirm}" ;;`);
+    for (const [mode, confirm] of Object.entries(WORLD_CONFIRM)) expect(code).toContain(`${mode}:world) expected="${confirm}" ;;`);
+    expect(code).toContain(`*) echo "::error::unknown mode or dataset"; exit 1 ;;`);
+    const datasetBlock = code.slice(code.indexOf("      dataset:"), code.indexOf("      confirm:"));
+    expect(datasetBlock).toContain("type: choice");
+    expect(datasetBlock).toContain("options:\n          - managers\n          - world\n        default: managers");
+    expect(code).toMatch(/^run-name: reference-data \$\{\{ inputs\.mode \}\}\$\{\{ inputs\.dataset == 'world' && ' world' \|\| '' \}\}$/m);
+    expect(stage4WorldRunTitle("plan")).toBe("reference-data plan world");
     expect(code.indexOf("Reject unless the confirmation input matches")).toBeLessThan(code.indexOf("secrets.REFERENCE_DATA_APPLY_DB_URL"));
     expect(code.indexOf("Validate run-id and checksum inputs")).toBeLessThan(code.indexOf("secrets.REFERENCE_DATA_APPLY_DB_URL"));
     expect(code).toContain("REFERENCE_DATA_APPLY_MODE: preflight");
-    expect(code).toMatch(/^run-name: reference-data \$\{\{ inputs\.mode \}\}$/m);
     expect(stage4RunTitle("plan")).toBe("reference-data plan");
   });
 
@@ -51,13 +58,13 @@ describe("Production apply workflow(Stage 2 preflight + Stage 4 managers)", () =
 
   it("artifactはbindingしたrun idのrunからだけ取得し、run情報はGitHub API(読み取り)で記録する", () => {
     const pairs: Array<[string, string]> = [
-      ["stage4-managers-bundle", "plan_run_id"],
+      ["stage4-${{ inputs.dataset }}-bundle", "plan_run_id"],
       ["reference-data-backup-summary", "backup_run_id"],
-      ["stage4-managers-dry-run", "dry_run_run_id"],
-      ["stage4-managers-apply-result", "apply_run_id"],
+      ["stage4-${{ inputs.dataset }}-dry-run", "dry_run_run_id"],
+      ["stage4-${{ inputs.dataset }}-apply-result", "apply_run_id"],
     ];
     for (const [name, id] of pairs) {
-      expect(code).toMatch(new RegExp(`name: ${name}\\s*\\n\\s+run-id: \\$\\{\\{ inputs\\.${id} \\}\\}`));
+      expect(code).toContain(`name: ${name}\n          run-id: \${{ inputs.${id} }}`);
     }
     expect(code).toContain('gh api "repos/$REPO/actions/runs/$1"');
     expect(code).not.toMatch(/gh api [^\n]*(-X|--method)\s+(POST|PUT|PATCH|DELETE)/i);
@@ -78,12 +85,13 @@ describe("Production apply workflow(Stage 2 preflight + Stage 4 managers)", () =
   it("uploadするのは要約とStage 4のartifactだけで、no-secret smoke testがある", () => {
     const uploads = [...code.matchAll(/uses: actions\/upload-artifact@v4\s*\n\s+with:\s*\n\s+name: ([^\n]+)/g)].map((m) => m[1].trim());
     expect(uploads).toEqual([
-      "reference-data-apply-${{ inputs.mode }}-summary",
-      "stage4-managers-bundle",
-      "stage4-managers-dry-run",
-      "stage4-managers-apply-result",
-      "stage4-managers-undo-plan",
+      "reference-data-apply-${{ inputs.mode }}${{ inputs.dataset == 'world' && '-world' || '' }}-summary",
+      "stage4-${{ inputs.dataset }}-bundle",
+      "stage4-${{ inputs.dataset }}-dry-run",
+      "stage4-${{ inputs.dataset }}-apply-result",
+      "stage4-${{ inputs.dataset }}-undo-plan",
     ]);
+    expect(code).toContain("REFERENCE_DATA_APPLY_DATASET: ${{ inputs.dataset }}");
     expect(code).toMatch(/Runtime smoke test[\s\S]*REFERENCE_DATA_APPLY_DB_URL: ""/);
   });
 });

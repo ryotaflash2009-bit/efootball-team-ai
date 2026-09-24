@@ -4,6 +4,7 @@ import { buildProductionPgClientConfig } from "./backup-db-connection";
 import { runUpdaterPreflight, safeErrorCode } from "./production-apply-preflight";
 import { APPLY_SECRET_NAMES } from "./update-contract";
 import { runStage4Mode } from "./stage4-managers-cli";
+import { runWorldMode } from "./stage4-world-cli";
 import type { Stage4Mode } from "./stage4-managers";
 
 /**
@@ -13,8 +14,8 @@ import type { Stage4Mode } from "./stage4-managers";
  *
  * - preflight: reference_data_updaterとしてTLS(CA固定)で接続し、`begin read only`の中で
  *   runUpdaterPreflightを実行してrollbackする。行データは読まず、書き込みもしない。
- * - plan / dry-run / apply / verify: Stage 4(managersだけの初回Production更新リハーサル、本人承認2026-09-24)。
- *   処理は stage4-managers-cli.ts。書き込みはapplyだけ(全binding・前提条件を満たした場合に1 transaction)。
+ * - plan / dry-run / apply / verify: Stage 4のProduction更新リハーサル。REFERENCE_DATA_APPLY_DATASET=managers(既定、
+ *   stage4-managers-cli.ts) | world(stage4-world-cli.ts)。書き込みはapplyだけ(全binding・前提条件を満たした場合に1 transaction)。
  * - 上記以外のmodeは接続前に拒否する。
  * - 必須Secretが無ければ接続を試みずに停止する。
  * - 出力・要約artifactには、段階(phase)と安全なreason code(SQLSTATE・Node.jsのerror code)だけを残し、
@@ -114,7 +115,12 @@ export async function main(): Promise<void> {
       const mode = env.REFERENCE_DATA_APPLY_MODE as (typeof APPLY_MODES)[number];
       if (config && mode === "preflight") result = await runPreflightWithConfig(config);
       else if (config && mode !== "preflight") {
-        const o = await runStage4Mode(mode, env, config);
+        // dataset: managers(既定) | world。それ以外は接続せずに停止する。
+        const dataset = env.REFERENCE_DATA_APPLY_DATASET ?? "managers";
+        const o =
+          dataset === "world" ? await runWorldMode(mode, env, config)
+          : dataset === "managers" ? await runStage4Mode(mode, env, config)
+          : { ok: false, reasons: ["dataset_not_allowed"], facts: {} };
         result = summary(o.ok, mode, o.reasons, o.facts);
       }
     }

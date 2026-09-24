@@ -1,5 +1,5 @@
 name: Reference data Production apply (manual, approval-gated)
-run-name: reference-data ${{ inputs.mode }}
+run-name: reference-data ${{ inputs.mode }}${{ inputs.dataset == 'world' && ' world' || '' }}
 
 # Reference-data auto-update, Stage 2 (preflight) and Stage 4 (first Production update rehearsal,
 # managers only; owner decision 2026-09-24).
@@ -15,6 +15,9 @@ run-name: reference-data ${{ inputs.mode }}
 #     apply      "apply-managers-to-production" re-verifies every binding, then ONE transaction as reference_data_updater;
 #                                               post-apply verification; no automatic retry, undo or restore
 #     verify     "verify-managers"              read-only post-apply verification of a given apply run
+#   dataset=world (World-only rehearsal, owner decision 2026-09-24) uses the same modes with the confirmations
+#     plan-world / dry-run-world / apply-world-to-production / verify-world; plan fetches the World catalogue once
+#     (full scan, request/byte caps in stage4-world.ts); removed rows stop the plan; appearance keeps Production values.
 # - Bindings: run ids and checksums are inputs; artifacts are downloaded from exactly those runs and the
 #   runs' facts (workflow, branch, event, attempt, commit, conclusion, time) are read from the GitHub API.
 #   All Stage 4 runs must be on the same main commit (GITHUB_SHA).
@@ -35,6 +38,14 @@ on:
           - apply
           - verify
         default: preflight
+      dataset:
+        description: "managers | world (preflight ignores it)"
+        required: true
+        type: choice
+        options:
+          - managers
+          - world
+        default: managers
       confirm:
         description: "Must match the mode: preflight / plan-managers / dry-run-managers / apply-managers-to-production / verify-managers. Not a substitute for the Environment approval."
         required: true
@@ -87,7 +98,8 @@ jobs:
   production:
     runs-on: ubuntu-latest
     environment: reference-data-production-apply
-    timeout-minutes: 20
+    # World plan: ~443 requests at 3 s intervals (~23 min); World apply: ~6,000 row updates in one transaction.
+    timeout-minutes: 90
     # Job-local, throwaway PostgreSQL for the dry-run mode only (not Production). Same convention as ci.yml.
     services:
       postgres:
@@ -107,15 +119,20 @@ jobs:
       - name: Reject unless the confirmation input matches the selected mode
         env:
           MODE: ${{ inputs.mode }}
+          DATASET: ${{ inputs.dataset }}
           CONFIRM: ${{ inputs.confirm }}
         run: |
-          case "$MODE" in
-            preflight) expected="preflight" ;;
-            plan) expected="plan-managers" ;;
-            dry-run) expected="dry-run-managers" ;;
-            apply) expected="apply-managers-to-production" ;;
-            verify) expected="verify-managers" ;;
-            *) echo "::error::unknown mode"; exit 1 ;;
+          case "$MODE:$DATASET" in
+            preflight:managers|preflight:world) expected="preflight" ;;
+            plan:managers) expected="plan-managers" ;;
+            dry-run:managers) expected="dry-run-managers" ;;
+            apply:managers) expected="apply-managers-to-production" ;;
+            verify:managers) expected="verify-managers" ;;
+            plan:world) expected="plan-world" ;;
+            dry-run:world) expected="dry-run-world" ;;
+            apply:world) expected="apply-world-to-production" ;;
+            verify:world) expected="verify-world" ;;
+            *) echo "::error::unknown mode or dataset"; exit 1 ;;
           esac
           if [ "$CONFIRM" != "$expected" ]; then
             echo "::error::confirmation input does not match the selected mode; aborting before touching any secret"
@@ -210,7 +227,7 @@ jobs:
         if: ${{ inputs.mode == 'dry-run' || inputs.mode == 'apply' }}
         uses: actions/download-artifact@v4
         with:
-          name: stage4-managers-bundle
+          name: stage4-${{ inputs.dataset }}-bundle
           run-id: ${{ inputs.plan_run_id }}
           github-token: ${{ github.token }}
           path: ${{ runner.temp }}/stage4/plan
@@ -228,7 +245,7 @@ jobs:
         if: ${{ inputs.mode == 'apply' }}
         uses: actions/download-artifact@v4
         with:
-          name: stage4-managers-dry-run
+          name: stage4-${{ inputs.dataset }}-dry-run
           run-id: ${{ inputs.dry_run_run_id }}
           github-token: ${{ github.token }}
           path: ${{ runner.temp }}/stage4/dry-run
@@ -237,7 +254,7 @@ jobs:
         if: ${{ inputs.mode == 'verify' }}
         uses: actions/download-artifact@v4
         with:
-          name: stage4-managers-apply-result
+          name: stage4-${{ inputs.dataset }}-apply-result
           run-id: ${{ inputs.apply_run_id }}
           github-token: ${{ github.token }}
           path: ${{ runner.temp }}/stage4/apply
@@ -273,6 +290,7 @@ jobs:
           REFERENCE_DATA_APPLY_DB_URL: ${{ secrets.REFERENCE_DATA_APPLY_DB_URL }}
           REFERENCE_DATA_APPLY_DB_CA_CERT: ${{ secrets.REFERENCE_DATA_APPLY_DB_CA_CERT }}
           REFERENCE_DATA_APPLY_MODE: ${{ inputs.mode }}
+          REFERENCE_DATA_APPLY_DATASET: ${{ inputs.dataset }}
           REFERENCE_DATA_APPLY_CONFIRM: ${{ inputs.confirm }}
           REFERENCE_DATA_APPLY_SUMMARY_PATH: ${{ runner.temp }}/reference-data-apply-summary.json
           STAGE4_WORK_DIR: ${{ runner.temp }}/stage4
@@ -295,7 +313,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: reference-data-apply-${{ inputs.mode }}-summary
+          name: reference-data-apply-${{ inputs.mode }}${{ inputs.dataset == 'world' && '-world' || '' }}-summary
           path: ${{ runner.temp }}/reference-data-apply-summary.json
           if-no-files-found: ignore
           retention-days: 30
@@ -305,8 +323,8 @@ jobs:
         if: ${{ always() && inputs.mode == 'plan' }}
         uses: actions/upload-artifact@v4
         with:
-          name: stage4-managers-bundle
-          path: ${{ runner.temp }}/stage4/out/stage4-managers-bundle.json
+          name: stage4-${{ inputs.dataset }}-bundle
+          path: ${{ runner.temp }}/stage4/out/stage4-${{ inputs.dataset }}-bundle.json
           if-no-files-found: ignore
           retention-days: 7
 
@@ -314,8 +332,8 @@ jobs:
         if: ${{ always() && inputs.mode == 'dry-run' }}
         uses: actions/upload-artifact@v4
         with:
-          name: stage4-managers-dry-run
-          path: ${{ runner.temp }}/stage4/out/stage4-managers-dry-run.json
+          name: stage4-${{ inputs.dataset }}-dry-run
+          path: ${{ runner.temp }}/stage4/out/stage4-${{ inputs.dataset }}-dry-run.json
           if-no-files-found: ignore
           retention-days: 7
 
@@ -323,8 +341,8 @@ jobs:
         if: ${{ always() && inputs.mode == 'apply' }}
         uses: actions/upload-artifact@v4
         with:
-          name: stage4-managers-apply-result
-          path: ${{ runner.temp }}/stage4/out/stage4-managers-apply-result.json
+          name: stage4-${{ inputs.dataset }}-apply-result
+          path: ${{ runner.temp }}/stage4/out/stage4-${{ inputs.dataset }}-apply-result.json
           if-no-files-found: ignore
           retention-days: 90
 
@@ -334,7 +352,7 @@ jobs:
         if: ${{ always() && inputs.mode == 'apply' }}
         uses: actions/upload-artifact@v4
         with:
-          name: stage4-managers-undo-plan
-          path: ${{ runner.temp }}/stage4/out/stage4-managers-undo-plan.json
+          name: stage4-${{ inputs.dataset }}-undo-plan
+          path: ${{ runner.temp }}/stage4/out/stage4-${{ inputs.dataset }}-undo-plan.json
           if-no-files-found: ignore
           retention-days: 90

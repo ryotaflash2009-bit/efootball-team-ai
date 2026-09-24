@@ -19,10 +19,15 @@ export const STAGE1_APPROVAL_TOKEN = "stage1-upstream-read-verification-2026-09-
  * managers.jsonを1回だけ取得するための承認。World・定期実行には使わない(呼び出し側の上限でmanagers-json 1件に固定)。
  */
 export const STAGE4_MANAGERS_APPROVAL_TOKEN = "stage4-managers-rehearsal-2026-09-24" as const;
-const APPROVAL_TOKENS: readonly string[] = [STAGE1_APPROVAL_TOKEN, STAGE4_MANAGERS_APPROVAL_TOKEN];
+/**
+ * World専用のProduction更新リハーサル(本人方針2026-09-24)のplan runで、World全件を1回取得するための承認。
+ * 実行するrun自体は本人のEnvironment承認が必要。呼び出し側の上限でWorld以外への送信は0件に固定する。
+ */
+export const STAGE4_WORLD_APPROVAL_TOKEN = "stage4-world-rehearsal-2026-09-24" as const;
+const APPROVAL_TOKENS: readonly string[] = [STAGE1_APPROVAL_TOKEN, STAGE4_MANAGERS_APPROVAL_TOKEN, STAGE4_WORLD_APPROVAL_TOKEN];
 
 export interface UpstreamHttpTransportOptions {
-  /** 本人承認の明示。STAGE1_APPROVAL_TOKEN・STAGE4_MANAGERS_APPROVAL_TOKEN以外では作成できない。 */
+  /** 本人承認の明示。STAGE1/STAGE4(managers・world)の承認token以外では作成できない。 */
   readonly approval: string;
   /** source別の1回の実行あたりのrequest上限。 */
   readonly maxRequests: Readonly<Record<SourceId, number>>;

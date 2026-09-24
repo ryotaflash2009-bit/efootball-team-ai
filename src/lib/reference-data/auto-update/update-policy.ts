@@ -66,6 +66,11 @@ export interface TablePolicyCounts {
   sourceMissingCount: number;
   /** 人がreviewで承認済みのremoved件数(未承認のremovedはmanual review)。 */
   approvedRemovalCount: number;
+  /**
+   * changedのうち、変更列がcard_ratingだけの件数(World)。上流で頻繁に再計算される値のため、
+   * 更新対象・checksumには含めたまま、規模の判定(added+changed)からは除いて別に集計する。未指定は0。
+   */
+  cardRatingOnlyChangedCount?: number;
 }
 
 export interface UpdatePolicyInput {
@@ -89,6 +94,12 @@ export interface UpdatePolicyInput {
   payloadBytes: number;
   lastAppliedAt: string | null;
   now: string;
+  /** upstream時刻に将来日時がある(取得時刻+24時間より後)。hard block。 */
+  sourceTimestampFuture?: boolean;
+  /** upstream時刻の同一値への偏り(analyzeSourceTimestampsのmass_identical_timestamps)。manual review。 */
+  massIdenticalSourceTimestamps?: boolean;
+  /** Worldを初めてProductionへ適用する。manual review必須。 */
+  firstWorldApply?: boolean;
 }
 
 export interface PolicyFinding {
@@ -126,6 +137,8 @@ export function evaluateUpdatePolicy(input: UpdatePolicyInput): PolicyResult {
   if (input.userOrAuthDataDetected) hard("user_or_auth_data", "user/auth dataが含まれている");
   if (input.identityReuseConflictCount > 0) hard("identity_reuse_conflict", "identityの再利用衝突がある");
   if (input.sourceTimestampRegression) hard("source_timestamp_regression", "sourceの更新時刻が前回より古い");
+  if (input.sourceTimestampFuture === true) hard("source_timestamp_future", "sourceの更新時刻に将来日時がある");
+  if (input.massIdenticalSourceTimestamps === true) review("mass_identical_source_timestamps", "sourceの更新時刻が同一値に偏っている");
   if (input.sourceChecksumAlreadyApplied) hard("source_checksum_already_applied", "同じsource checksumは適用済み");
   if (input.physicalDeleteAttempted) hard("physical_delete_attempt", "物理削除は禁止");
   if (input.frozenTableMutationCount > 0) hard("frozen_table_mutation", "player_card_analysisは自動更新の対象外", "player_card_analysis");
@@ -151,7 +164,11 @@ export function evaluateUpdatePolicy(input: UpdatePolicyInput): PolicyResult {
     const drop = dropRatio(world.beforeCount, world.afterCount);
     if (drop > thresholds.worldPlayerCards.countDropHardBlockRatio) hard("world_count_drop", "World cardの件数減少が閾値を超えた", "world_player_cards");
     else if (drop > 0) review("world_count_drop", "World cardの件数が減少した", "world_player_cards");
-    const volume = world.addedCount + world.changedCount;
+    // card_ratingだけの変更は規模の判定から除き、件数を別のfindingで必ず示す(黙って無視しない)。
+    const cardRatingOnly = Math.min(Math.max(world.cardRatingOnlyChangedCount ?? 0, 0), world.changedCount);
+    if (cardRatingOnly > 0) warn("world_card_rating_only_changes", "card_ratingだけの変更がある(規模の判定とは別に集計)", "world_player_cards");
+    if (input.firstWorldApply === true) review("world_first_apply", "WorldのProduction初回適用はreviewする", "world_player_cards");
+    const volume = world.addedCount + (world.changedCount - cardRatingOnly);
     if (volume > thresholds.worldPlayerCards.addedPlusChangedManualReview) review("world_large_change", "World cardのadded+changedが閾値を超えた", "world_player_cards");
     else if (volume >= thresholds.worldPlayerCards.addedPlusChangedManualReview * thresholds.worldPlayerCards.nearThresholdWarningRatio) warn("world_change_near_threshold", "World cardのadded+changedが閾値に近い", "world_player_cards");
     if (world.beforeCount > 0 && (world.afterCount - world.beforeCount) / world.beforeCount > thresholds.worldPlayerCards.countIncreaseWarningRatio) warn("world_count_increase", "World cardの件数増加が大きい", "world_player_cards");

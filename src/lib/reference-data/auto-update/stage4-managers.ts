@@ -49,6 +49,8 @@ export const APPLY_WORKFLOW_PATH = ".github/workflows/reference-data-production-
 export const BACKUP_WORKFLOW_PATH = ".github/workflows/reference-data-production-backup.yml";
 /** workflowの`run-name`(mode別)。latest判定・binding検証に使う。 */
 export const stage4RunTitle = (mode: Stage4Mode | "preflight") => `reference-data ${mode}`;
+/** 同じworkflowのWorld用run(`run-name`の末尾に " world" が付く)。 */
+export const stage4WorldRunTitle = (mode: Stage4Mode) => `reference-data ${mode} world`;
 export const STAGE4_DRY_RUN_SCHEMA = "reference_data_stage4_dry_run";
 export const STAGE4_ROLLBACK_SCHEMA = "reference_data_stage4_rollback_test";
 
@@ -69,7 +71,7 @@ export class Stage4Stop extends Error {
   }
 }
 
-function targetSchema(schema: string): string {
+export function targetSchema(schema: string): string {
   return schema === PRODUCTION_REFERENCE_SCHEMA ? schema : assertIsolatedSchemaName(schema);
 }
 
@@ -118,8 +120,8 @@ export interface ManagersProductionState {
   readonly worldMaxUpdatedAt: string | null;
 }
 
-const cols = (t: keyof typeof UPDATE_TABLE_CONTRACTS) => UPDATE_TABLE_CONTRACTS[t].productionColumns.join(", ");
-const toIso = (v: unknown): string | null => (v == null ? null : v instanceof Date ? v.toISOString() : new Date(String(v)).toISOString());
+export const cols = (t: keyof typeof UPDATE_TABLE_CONTRACTS) => UPDATE_TABLE_CONTRACTS[t].productionColumns.join(", ");
+export const toIso = (v: unknown): string | null => (v == null ? null : v instanceof Date ? v.toISOString() : new Date(String(v)).toISOString());
 
 /**
  * managers・import_batchesの行と、3 tableの件数を読む。player_card_analysisは読まない(updaterに権限が無い)。
@@ -326,8 +328,8 @@ export function checkRun(facts: WorkflowRunFacts, expected: { id: string; path: 
 }
 
 /** planより後に成功したplan runがあれば、古いplanは使わない(新しいcandidateが存在する)。 */
-export function newerPlanRuns(plan: WorkflowRunFacts, listed: readonly { id: number; displayTitle: string; createdAt: string; conclusion: string | null }[]): number {
-  return listed.filter((r) => r.id !== plan.id && r.displayTitle === stage4RunTitle("plan") && r.conclusion === "success" && Date.parse(r.createdAt) > Date.parse(plan.createdAt)).length;
+export function newerPlanRuns(plan: WorkflowRunFacts, listed: readonly { id: number; displayTitle: string; createdAt: string; conclusion: string | null }[], title: string = stage4RunTitle("plan")): number {
+  return listed.filter((r) => r.id !== plan.id && r.displayTitle === title && r.conclusion === "success" && Date.parse(r.createdAt) > Date.parse(plan.createdAt)).length;
 }
 
 export interface BackupBindingResult {
@@ -391,9 +393,9 @@ export interface Stage4IsolatedSql {
   readonly rollbackUpdaterRole: string;
 }
 
-const toSchema = (sql: string, schema: string) => sql.replace(/\breference_data\b(?!_)/g, schema);
+export const toSchema = (sql: string, schema: string) => sql.replace(/\breference_data\b(?!_)/g, schema);
 
-async function seedRows(client: Stage4Client, schema: string, table: "managers" | "import_batches", rows: readonly Readonly<Record<string, unknown>>[], skip: readonly string[]): Promise<void> {
+export async function seedRows(client: Stage4Client, schema: string, table: "managers" | "import_batches" | "world_player_cards", rows: readonly Readonly<Record<string, unknown>>[], skip: readonly string[]): Promise<void> {
   const contract = UPDATE_TABLE_CONTRACTS[table];
   const c = contract.productionColumns.filter((x) => !skip.includes(x));
   for (let i = 0; i < rows.length; i += 200) {
@@ -408,7 +410,7 @@ async function seedRows(client: Stage4Client, schema: string, table: "managers" 
   }
 }
 
-async function createSchema(client: Stage4Client, schema: string, sql: Stage4IsolatedSql, forceRls: boolean): Promise<void> {
+export async function createSchema(client: Stage4Client, schema: string, sql: Stage4IsolatedSql, forceRls: boolean): Promise<void> {
   await client.query(`drop schema if exists ${schema} cascade`);
   await client.query(buildIsolatedReferenceSchemaDdl(schema, sql.reference));
   if (forceRls) {
@@ -420,7 +422,7 @@ async function createSchema(client: Stage4Client, schema: string, sql: Stage4Iso
 }
 
 /** 使い捨てDB専用の模擬前提条件(Productionの承認・Backupを意味しない)。 */
-function simulationPrerequisites(sourceChecksum: string, now: Date): ApplyPrerequisites {
+export function simulationPrerequisites(sourceChecksum: string, now: Date): ApplyPrerequisites {
   const at = (m: number) => new Date(now.getTime() - m * 60_000).toISOString();
   return {
     sourceFetched: true, sourceChecksum, sourceChecksumAlreadyApplied: false, schemaValidated: true, diffGenerated: true, hardBlockCount: 0, manualReviewResolved: true,
