@@ -24,9 +24,14 @@ describe("Production apply workflow(Stage 2 preflight + Stage 4 managers)", () =
   });
 
   it("modeはpreflight・plan・dry-run・apply・verifyで、確認入力はmodeごとの固定値(Secret参照より前に検査)", () => {
-    const options = code.match(/options:\s*\n((?:\s+- [a-z-]+\s*\n)+)\s+default: preflight/);
-    expect(options).not.toBeNull();
-    expect(options![1].split("\n").map((l) => l.replace(/^\s*-\s*/, "").trim()).filter(Boolean)).toEqual([...APPLY_MODES]);
+    // 正規表現の入れ子の繰り返しを使わず、行単位で読む(ReDoS回避)。
+    const lines = code.split("\n");
+    const start = lines.findIndex((l) => l.trim() === "options:");
+    expect(start).toBeGreaterThan(0);
+    const options: string[] = [];
+    for (let i = start + 1; i < lines.length && lines[i].trim().startsWith("- "); i++) options.push(lines[i].trim().slice(2));
+    expect(options).toEqual([...APPLY_MODES]);
+    expect(lines[start + 1 + options.length].trim()).toBe("default: preflight");
     expect([...APPLY_MODES]).toEqual(["preflight", "plan", "dry-run", "apply", "verify"]);
     const expected: Record<string, string> = { preflight: "preflight", ...STAGE4_CONFIRM };
     for (const [mode, confirm] of Object.entries(expected)) expect(code).toContain(`${mode}) expected="${confirm}" ;;`);
