@@ -14,9 +14,15 @@ import { SOURCE_ENDPOINTS, SourceFetchError, type SourceId, type SourceRequest, 
  */
 
 export const STAGE1_APPROVAL_TOKEN = "stage1-upstream-read-verification-2026-09-23" as const;
+/**
+ * Stage 4(managersだけの初回Production更新リハーサル、本人承認2026-09-24)のplan runで、
+ * managers.jsonを1回だけ取得するための承認。World・定期実行には使わない(呼び出し側の上限でmanagers-json 1件に固定)。
+ */
+export const STAGE4_MANAGERS_APPROVAL_TOKEN = "stage4-managers-rehearsal-2026-09-24" as const;
+const APPROVAL_TOKENS: readonly string[] = [STAGE1_APPROVAL_TOKEN, STAGE4_MANAGERS_APPROVAL_TOKEN];
 
 export interface UpstreamHttpTransportOptions {
-  /** 本人承認の明示。STAGE1_APPROVAL_TOKEN以外では作成できない。 */
+  /** 本人承認の明示。STAGE1_APPROVAL_TOKEN・STAGE4_MANAGERS_APPROVAL_TOKEN以外では作成できない。 */
   readonly approval: string;
   /** source別の1回の実行あたりのrequest上限。 */
   readonly maxRequests: Readonly<Record<SourceId, number>>;
@@ -60,7 +66,7 @@ async function readBodyWithCap(res: Response, maxBytes: number): Promise<{ text:
 }
 
 export function createUpstreamHttpTransport(options: UpstreamHttpTransportOptions): UpstreamHttpTransport {
-  if (options.approval !== STAGE1_APPROVAL_TOKEN) throw new SourceFetchError("approval_missing");
+  if (!APPROVAL_TOKENS.includes(options.approval)) throw new SourceFetchError("approval_missing");
   const fetchImpl = options.fetchImpl ?? fetch;
   const sleep = options.sleep ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)));
   const nowMs = options.nowMs ?? (() => Date.now());
