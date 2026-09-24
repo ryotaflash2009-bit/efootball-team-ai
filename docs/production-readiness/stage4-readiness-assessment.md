@@ -73,3 +73,13 @@ The apply run refuses when any value differs from what it recomputes: the candid
 the downloaded artifact, the plan checksum from a fresh read of Production in the same
 transaction (stale → refuse), the Backup facts from its summary artifact (validated with
 `validate-backup-v2-summary-entry.mjs`) and the workflow's commit.
+
+## 7. Update 2026-09-24 — managers-only rehearsal implemented
+
+Owner decision: first rehearsal = managers only. Implemented (no upstream request, no Production
+access): `plan` / `dry-run` / `apply` / `verify` modes in the apply workflow
+(`stage4-managers.ts`, `stage4-managers-cli.ts`), candidate artifact (recorded managers.json replayed
+deterministically), Production plan from Production rows, Backup / plan / dry-run run bindings,
+approval binding (source + plan checksum, commit, manual-review acknowledgement), post-apply
+verifier, and no automatic undo. Owner procedure: `stage4-managers-rehearsal-runbook.md`.
+Run #8 is not used for apply (24 h limit); a new pre-apply Backup is part of the procedure.
