@@ -1,0 +1,105 @@
+{
+  "evidence": "stage3-production-backup-v2",
+  "recordedAt": "2026-09-24",
+  "containsSecrets": false,
+  "sources": {
+    "claudeCodeReadOnlyChecks": "GitHub REST API read-only: run metadata, job steps, the non-secret summary artifact (validated offline, then deleted locally)",
+    "ownerReport": "dispatch inputs (main, pre-apply, confirm=backup), Environment approval, no re-run, no other R2 operation"
+  },
+  "run": {
+    "workflow": "Reference data Production backup (manual, approval-gated)",
+    "runNumber": 8,
+    "runId": 35980927141,
+    "attempt": 1,
+    "event": "workflow_dispatch",
+    "branch": "main",
+    "headSha": "3ae977376e237fe45b8e5b62136029bf42fbeab2",
+    "conclusion": "success",
+    "newRunNotRerun": true,
+    "steps": {
+      "confirmationReject": "skipped (input matched)",
+      "categoryReject": "skipped (input valid)",
+      "requiredSecretsCheck": "success",
+      "compile": "success",
+      "noSecretSmokeTest": "success",
+      "productionBackup": "success",
+      "summaryUpload": "success",
+      "finalPlaintextCleanupVerification": "success (no leftover plaintext temp file)"
+    },
+    "categoryFromStepEnv": "pre-apply"
+  },
+  "summary": {
+    "schema": "reference-data-backup-summary/v1",
+    "ok": true,
+    "reasons": [],
+    "generatedAt": "2026-09-24T09:24:47.234Z",
+    "phase": "upload",
+    "jobIdMatchesRun": true,
+    "objectKeyShape": "pre-apply/2026-09-24/<jobId>/<checksum12>.age",
+    "manifestKeyShape": "pre-apply/2026-09-24/<jobId>/<checksum12>.manifest.json",
+    "manifestKeyPairsObjectKey": true,
+    "category": "pre-apply",
+    "prefix": "pre-apply/",
+    "retentionCategory": "production-pre-apply",
+    "retentionDays": null,
+    "expiresAt": null,
+    "rowCounts": {
+      "world_player_cards": 13009,
+      "managers": 66,
+      "player_card_analysis": 19,
+      "import_batches": 8
+    },
+    "totalChecksum": "8463e6d62b484febd97be72646913de954019083e36ae717096a8b4cc205ebe1",
+    "encryptionAlgorithm": "age-x25519",
+    "backupVersion": "2",
+    "restoreVerified": true,
+    "storageVerified": true,
+    "columnCoverage": {
+      "formatVersion": "2",
+      "columnCounts": {
+        "world_player_cards": 38,
+        "managers": 30,
+        "player_card_analysis": 18,
+        "import_batches": 13
+      },
+      "addedColumns": {
+        "world_player_cards.appearance_updated_at": {
+          "included": true,
+          "rows": 13009,
+          "nonNullRows": 13009
+        },
+        "world_player_cards.import_batch_id": {
+          "included": true,
+          "rows": 13009,
+          "nonNullRows": 13009
+        },
+        "managers.import_batch_id": {
+          "included": true,
+          "rows": 66,
+          "nonNullRows": 66
+        },
+        "player_card_analysis.import_batch_id": {
+          "included": true,
+          "rows": 19,
+          "nonNullRows": 19
+        }
+      }
+    }
+  },
+  "validator": {
+    "tool": "scripts/validate-backup-v2-summary-entry.mjs",
+    "verdict": "BACKUP_V2_VALID",
+    "problems": []
+  },
+  "rowCountsVsRun7": "identical (13009/66/19/8); Production not updated since Run #7",
+  "plaintextCleanup": "the backup step succeeded, which requires the CLI to delete its plaintext temp file (AgeCliEncryptor fails otherwise); the final cleanup step found no leftover file",
+  "localArtifactHandling": "downloaded to ./data/stage3-backup-v2/ (git-ignored), validated, then deleted",
+  "productionEffects": {
+    "dataWrites": 0,
+    "apply": 0,
+    "restore": 0,
+    "rollback": 0,
+    "r2Operations": "one new pre-apply Backup (payload + manifest) written by the workflow; nothing deleted; Run #6/#7 objects untouched"
+  },
+  "verdict": "STAGE_3_BACKUP_V2_VERIFIED"
+}

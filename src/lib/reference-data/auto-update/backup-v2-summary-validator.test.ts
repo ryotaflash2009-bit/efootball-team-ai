@@ -152,3 +152,21 @@ describe("coverage SQL・CLIの入力制限", () => {
     }
   });
 });
+
+describe("Stage 3 Evidence(Backup v2 Run #8)", () => {
+  it("Evidenceの要約は契約どおりで、完全なobject key・秘密情報を含まない", async () => {
+    const { readFileSync } = await import("node:fs");
+    const text = readFileSync(path.resolve(__dirname, "..", "..", "..", "..", "docs", "production-readiness", "evidence", "stage3-production-backup-v2-2026-09-24.json"), "utf8");
+    const ev = JSON.parse(text);
+    expect(ev.run).toMatchObject({ runNumber: 8, attempt: 1, event: "workflow_dispatch", branch: "main", conclusion: "success", categoryFromStepEnv: "pre-apply" });
+    expect(ev.summary).toMatchObject({ ok: true, reasons: [], phase: "upload", backupVersion: "2", category: "pre-apply", restoreVerified: true, storageVerified: true, rowCounts: RUN7_BASELINE_ROW_COUNTS });
+    for (const key of BACKUP_V2_ADDED_COLUMNS) {
+      const c = ev.summary.columnCoverage.addedColumns[key];
+      expect(c.included, key).toBe(true);
+      expect(c.rows, key).toBe(ev.summary.rowCounts[key.split(".")[0]]);
+    }
+    expect(ev.validator.verdict).toBe("BACKUP_V2_VALID");
+    expect(ev.summary.objectKeyShape).toBe("pre-apply/2026-09-24/<jobId>/<checksum12>.age");
+    expect(text).not.toMatch(/gha-\d+-\d+\/[0-9a-f]{12}|postgres(ql)?:\/\/|-----BEGIN|AGE-SECRET-KEY|age1[0-9a-z]{50,}|cloudflarestorage|supabase\.co/i);
+  });
+});
