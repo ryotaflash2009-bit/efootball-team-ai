@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { APPLY_SECRET_NAMES, BACKUP_SECRET_NAMES, CONCURRENCY_GROUPS, SECRET_BOUNDARIES } from "./update-contract";
 import { APPLY_MODES, readApplySecrets } from "./production-apply-cli";
+import { UPDATER_COLUMN_GRANTS, UPDATER_ROLE_NAME } from "./updater-role";
 
 const ROOT = path.resolve(__dirname, "..", "..", "..", "..");
 const YAML = readFileSync(path.join(ROOT, ".github", "workflows", "reference-data-production-apply.yml"), "utf8");
@@ -64,5 +65,28 @@ describe("Production apply CLI", () => {
     // modeの判定はSecret読込・接続より前。
     expect(CLI.indexOf("checkApplyMode(env.REFERENCE_DATA_APPLY_MODE)")).toBeLessThan(CLI.indexOf("readApplySecrets(env)"));
     expect(CLI.indexOf("readApplySecrets(env)")).toBeLessThan(CLI.indexOf("runPreflightWithConfig(config)"));
+  });
+});
+
+describe("Stage 2 Evidence(Run #3 preflight成功)", () => {
+  const evidence = JSON.parse(readFileSync(path.join(ROOT, "docs", "production-readiness", "evidence", "stage2-production-preflight-2026-09-24.json"), "utf8"));
+
+  it("preflightの件数が契約(table SELECT 3件・列単位grantの合計)と一致し、利用者・認証データへの権限は0", () => {
+    const run3 = evidence.preflightRuns.find((r: { runNumber: number }) => r.runNumber === 3);
+    const columnGrants = Object.values(UPDATER_COLUMN_GRANTS).reduce((n, g) => n + g.insert.length + g.update.length, 0);
+    expect(run3.summaryArtifact).toMatchObject({ ok: true, phase: "preflight", reasons: [] });
+    expect(run3.summaryArtifact.facts).toMatchObject({
+      role: UPDATER_ROLE_NAME, readOnly: "on", tableGrantCount: Object.keys(UPDATER_COLUMN_GRANTS).length, columnGrantCount: columnGrants,
+      sensitiveSchemaUsageCount: 0, sensitiveTableAccessCount: 0,
+    });
+    expect(evidence.productionEffects).toEqual({ dataWrites: 0, apply: 0, backup: 0, r2Operations: 0 });
+  });
+
+  it("Environmentの記録はSecretの名前だけで、2つのEnvironmentのSecretは重ならない", () => {
+    const env = evidence.environmentVerifiedReadOnly;
+    expect(new Set(env[SECRET_BOUNDARIES.production_apply.environment!].secretNames)).toEqual(new Set(APPLY_SECRET_NAMES));
+    expect(new Set(env[SECRET_BOUNDARIES.backup.environment!].secretNames)).toEqual(new Set(BACKUP_SECRET_NAMES));
+    const text = JSON.stringify(evidence);
+    expect(text).not.toMatch(/postgres(ql)?:\/\/|-----BEGIN|AGE-SECRET-KEY|age1[0-9a-z]{50,}|supabase\.co|cloudflarestorage/i);
   });
 });

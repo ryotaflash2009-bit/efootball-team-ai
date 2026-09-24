@@ -57,3 +57,9 @@ the repository DDL, and the backup reader's grant is table-level, but the match 
 and the repository DDL has not been checked read-only (architecture Known Gap 7). If Production
 differs, the Backup fails closed at export (nothing is written or deleted). The Stage 3 checklist
 should include a read-only column check before dispatching.
+
+**Update 2026-09-24 (Stage 2 complete):** the owner's Stage 2 metadata check (before/after) matched
+the contract for all 4 tables, including the `column_missing` / `column_unexpected` checks, so the
+new columns exist in Production. The first format "2" Backup additionally records `columnCoverage`
+(row and non-null counts of the 4 new columns after the isolated restore) and blocks the upload if
+any is missing. Owner steps: `stage3-backup-v2-execution-runbook.md`.
