@@ -170,6 +170,22 @@ describe("Stage 4: 二重適用の検出", () => {
   });
 });
 
+describe("Stage 4 Evidence(managers rehearsal 2026-09-24)", () => {
+  it("同じcommitの4 run・追加1件のみ・post-apply検証ok。行データ・名前・秘密情報を含まない", () => {
+    const text = readFileSync(path.resolve(__dirname, "..", "..", "..", "..", "docs", "production-readiness", "evidence", "stage4-managers-rehearsal-2026-09-24.json"), "utf8");
+    const ev = JSON.parse(text);
+    const runs = [ev.runs.plan, ev.runs.backup, ev.runs.dryRun, ev.runs.apply];
+    for (const r of runs) expect(r).toMatchObject({ attempt: 1, event: "workflow_dispatch", branch: "main", conclusion: "success", headSha: ev.mainCommit });
+    expect(ev.diff).toMatchObject({ before: 66, after: 67, added: 1, changed: 0, removed: 0, duplicates: 0 });
+    expect(ev.policy).toMatchObject({ severity: "manual_review", hardBlocks: 0, planProblems: [] });
+    expect(ev.backup).toMatchObject({ validator: "BACKUP_V2_VALID", backupVersion: "2", category: "pre-apply", rowCountsMatchPlan: true, run8UsedForApply: false });
+    expect(ev.apply).toMatchObject({ status: "applied_verified", inserted: 1, updated: 0, removed: 0, automaticUndo: false });
+    expect(ev.postVerify).toMatchObject({ ok: true, problems: [], facts: { managersCount: 67, importBatchesCount: 9, worldCount: 13009, auditBatchStatus: "verified" } });
+    expect(ev.productionEffects).toMatchObject({ managersInserted: 1, managersUpdated: 0, managersDeleted: 0, worldWrites: 0, playerCardAnalysisWrites: 0, rollback: 0, restore: 0, undo: 0 });
+    expect(text).not.toMatch(/postgres(ql)?:\/\/|-----BEGIN|AGE-SECRET-KEY|age1[0-9a-z]{50,}|cloudflarestorage|supabase\.co|gha-\d+-\d+\/[0-9a-f]{12}|[0-9a-f]{64}/i);
+  });
+});
+
 describe("Stage 4: CLI", () => {
   it("確認入力がmodeの固定値と一致しなければ、接続もupstream取得もしない", async () => {
     // 接続先は到達不能なport。確認入力で止まるため接続は試みられない。
