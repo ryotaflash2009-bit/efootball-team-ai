@@ -186,6 +186,21 @@ describe("runProductionBackup(実PostgreSQL、reference_data相当schema1つ + �
     expect((result.summary.rowCounts as Record<string, number>).world_player_cards).toBe(2);
     expect(r2Client.putCalls).toBe(2);
 
+    // 形式"2"の追加4列が収録され、実PostgreSQLの隔離Restore先で行数どおりに集計できる(Stage 3の確認対象)。
+    expect(result.summary.backupVersion).toBe("2");
+    const coverage = result.summary.columnCoverage as { formatVersion: string; addedColumns: Record<string, { included: boolean; rows: number; nonNullRows: number }> };
+    expect(coverage.formatVersion).toBe("2");
+    expect(Object.keys(coverage.addedColumns).sort()).toEqual([
+      "managers.import_batch_id", "player_card_analysis.import_batch_id", "world_player_cards.appearance_updated_at", "world_player_cards.import_batch_id",
+    ]);
+    for (const [key, c] of Object.entries(coverage.addedColumns)) {
+      expect(c.included, key).toBe(true);
+      expect(c.rows, key).toBe((result.summary.rowCounts as Record<string, number>)[key.split(".")[0]]);
+      const [t, col] = key.split(".");
+      const actual = await adminClient.query(`select count(${col})::int as n from ${BACKUP_RESTORE_TEST_SCHEMA}.${t}`);
+      expect(c.nonNullRows, key).toBe(actual.rows[0].n);
+    }
+
     // 隔離Restore検証schemaに、実際に2行がRestoreされている(実PostgreSQLへの書込みを確認)。
     const restored = await adminClient.query(`select world_card_id, name_en from ${BACKUP_RESTORE_TEST_SCHEMA}.world_player_cards order by world_card_id`);
     expect(restored.rows.map((r) => r.name_en)).toEqual(["Player One", "Player Two"]);

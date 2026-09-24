@@ -120,6 +120,15 @@ class FakeVerifyClient implements QueryClient {
       return { rows: [] };
     }
 
+    // 追加列coverageの集計(行数・非null件数)。
+    const countMatch = trimmed.match(/^select count\(\*\)::int as "__rows"(.*) from reference_data_backup_restore_test\.(\w+)$/i);
+    if (countMatch) {
+      const rows = this.restoreRows[countMatch[2]];
+      const out: Record<string, unknown> = { __rows: rows.length };
+      for (const m of countMatch[1].matchAll(/count\("(\w+)"\)/g)) out[m[1]] = rows.filter((r) => r[m[1]] !== null && r[m[1]] !== undefined).length;
+      return { rows: [out] };
+    }
+
     const selectMatch = trimmed.match(/^select .+ from reference_data_backup_restore_test\.(\w+)/i);
     if (selectMatch) return { rows: this.restoreRows[selectMatch[1]] };
 
@@ -432,5 +441,59 @@ writeFileSync(outPath, readFileSync(args[args.length - 1]));
     for (const t of ["world_player_cards", "managers", "player_card_analysis", "import_batches"]) expect(counts[t]).toBeGreaterThan(0);
     expect(result.summary.restoreVerified).toBe(true);
     expect(result.summary.storageVerified).toBe(true);
+  });
+});
+
+describe("形式\"2\"の追加列coverage(Stage 3: Backup v2初回実行の確認対象)", () => {
+  it("4列が収録され、Restore後の行数・非null件数が要約に残る(値そのものは残らない)", async () => {
+    const input = baseInput({ category: "pre-apply" as const });
+    const prod = input.prodClient as FakeProductionClient;
+    prod.sourceRows.world_player_cards[0].appearance_updated_at = "2026-09-19T08:30:00.000Z";
+    prod.sourceRows.managers[0].import_batch_id = "8a0b6f3e-6c1d-4f7a-9b2e-1c3d5e7f9a0b";
+    const result = await runProductionBackup(input);
+    expect(result.ok, JSON.stringify(result.reasons)).toBe(true);
+    expect(result.summary.backupVersion).toBe("2");
+    expect(result.summary.columnCoverage).toEqual({
+      formatVersion: "2",
+      columnCounts: { world_player_cards: 38, managers: 30, player_card_analysis: 18, import_batches: 13 },
+      addedColumns: {
+        "world_player_cards.appearance_updated_at": { included: true, rows: 1, nonNullRows: 1 },
+        "world_player_cards.import_batch_id": { included: true, rows: 1, nonNullRows: 0 },
+        "managers.import_batch_id": { included: true, rows: 1, nonNullRows: 1 },
+        "player_card_analysis.import_batch_id": { included: true, rows: 1, nonNullRows: 0 },
+      },
+    });
+    const text = JSON.stringify(result.summary);
+    expect(text).not.toContain("8a0b6f3e");
+    expect(text).not.toContain("2026-09-19T08:30");
+  });
+
+  it("隔離Restore後の集計行数がmanifestと一致しなければ、upload前にblocked", async () => {
+    const verifyClient = new FakeVerifyClient();
+    const original = verifyClient.query.bind(verifyClient);
+    verifyClient.query = async (sql: string, params?: readonly unknown[]) => {
+      if (/^select count\(\*\)/.test(sql) && /\.managers$/.test(sql)) return { rows: [{ __rows: 99, import_batch_id: 0 }] };
+      return original(sql, params);
+    };
+    const r2 = countingR2Client();
+    const result = await runProductionBackup(baseInput({ verifyClient, r2Client: r2.client }));
+    expect(result.ok).toBe(false);
+    expect(result.summary.phase).toBe("column-coverage");
+    expect(result.reasons.join(" ")).toMatch(/managers\.import_batch_id/);
+    expect(r2.calls()).toBe(0);
+  });
+
+  it("集計に失敗したらupload前にblocked(成功扱いにしない)", async () => {
+    const verifyClient = new FakeVerifyClient();
+    const original = verifyClient.query.bind(verifyClient);
+    verifyClient.query = async (sql: string, params?: readonly unknown[]) => {
+      if (/^select count\(\*\)/.test(sql)) throw Object.assign(new Error("relation does not exist"), { code: "42P01" });
+      return original(sql, params);
+    };
+    const r2 = countingR2Client();
+    const result = await runProductionBackup(baseInput({ verifyClient, r2Client: r2.client }));
+    expect(result.ok).toBe(false);
+    expect(result.summary.phase).toBe("column-coverage");
+    expect(r2.calls()).toBe(0);
   });
 });

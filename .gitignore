@@ -18,6 +18,7 @@
 /dist-backup-execution
 /dist-stage1-verification
 /dist-production-apply
+/dist-backup-summary-validation
 
 # local SQLite DB, dev-session logs, server PID (regenerated / not redistributable — see below)
 # includes: efootball.db (read-only reference data), all *.log, server.pid

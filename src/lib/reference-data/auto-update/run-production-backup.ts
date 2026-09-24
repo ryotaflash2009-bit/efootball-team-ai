@@ -7,11 +7,12 @@ import { AgeCliEncryptor } from "./backup-age-cli-encryptor";
 import type { R2Client } from "./backup-r2-client";
 import { putEncryptedBackup, computeSha256Hex, type PutEncryptedBackupResult } from "./backup-r2-adapter";
 import { markManifestRestoreVerified } from "./backup-manifest";
-import { PRODUCTION_REFERENCE_DATA_SCHEMA, BACKUP_RESTORE_TEST_SCHEMA, buildBackupIsolatedSchemaDdl } from "./backup-schema";
+import { PRODUCTION_REFERENCE_DATA_SCHEMA, BACKUP_RESTORE_TEST_SCHEMA, buildBackupIsolatedSchemaDdl, type BackupFormatVersion } from "./backup-schema";
 import { resolveBackupCategory, type BackupCategory } from "./backup-category";
 import { PRODUCTION_BACKUP_CONTENT_POLICY, failedContentPolicyReasons } from "./backup-content-policy";
 import { runSourcePreflight, type ExpectedSourceIdentity } from "./backup-source-preflight";
 import { BACKUP_TARGET_TABLES } from "./backup-target";
+import { measureBackupColumnCoverage, type BackupColumnCoverage } from "./backup-column-coverage";
 
 /**
  * Production reference-data Backupの実行オーケストレーション(design-onlyから実行可能へ)。
@@ -216,6 +217,24 @@ export async function runProductionBackup(input: RunProductionBackupInput): Prom
     return { ok: false, reasons, summary: { phase: "isolated-restore-verification", ok: false, reasons, restoreVerified: false, storageVerified: false } };
   }
 
+  // 4c. 形式"2"で追加した列(appearance_updated_at・各import_batch_id)が収録され、Restore後に残っていることを
+  //     隔離schemaの集計値(行数・非null件数)で確かめ、要約へ残す。収録されていない・行数が合わない・集計できない場合はupload前にblocked。
+  //     (非null件数が0であること自体は失敗にしない。値の有無はProductionのデータ次第であり、Evidenceとして記録する)
+  let columnCoverage: BackupColumnCoverage;
+  try {
+    columnCoverage = await measureBackupColumnCoverage(input.verifyClient, realManifest.backupVersion as BackupFormatVersion);
+  } catch (err) {
+    const reasons = [`追加列のcoverage集計に失敗した: ${sanitizeErrorMessage(err instanceof Error ? err.message : String(err))}`];
+    return { ok: false, reasons, summary: { phase: "column-coverage", ok: false, reasons, restoreVerified: false, storageVerified: false } };
+  }
+  const coverageProblems = Object.entries(columnCoverage.addedColumns)
+    .filter(([key, c]) => !c.included || c.rows !== realManifest.rowCounts[key.split(".")[0]])
+    .map(([key]) => key);
+  if (columnCoverage.formatVersion !== "2" || coverageProblems.length > 0) {
+    const reasons = [`形式"2"の追加列がBackupに収録されていない、または行数が一致しない(${coverageProblems.join(",") || `formatVersion=${columnCoverage.formatVersion}`})`];
+    return { ok: false, reasons, summary: { phase: "column-coverage", ok: false, reasons, columnCoverage, restoreVerified: false, storageVerified: false } };
+  }
+
   // 5. 隔離Restore検証に成功した場合だけ、本番artifact(実recipientで暗号化済み)のmanifestへ
   //    restoreVerified=trueを反映する。暗号化payload自体(encryptedPayload)は一切変更しない。
   const verifiedManifest = markManifestRestoreVerified(realManifest);
@@ -248,6 +267,7 @@ export async function runProductionBackup(input: RunProductionBackupInput): Prom
     restoreVerified: verifiedManifest.restoreVerified,
     encryptionAlgorithm: verifiedManifest.encryptionAlgorithm,
     backupVersion: verifiedManifest.backupVersion,
+    columnCoverage,
     sourcePreflight: preflight.tables,
   } as const;
 
