@@ -1,0 +1,20 @@
+{
+  "schema": "reference-data-applied-state/v1",
+  "updatedAt": "2026-09-25",
+  "note": "Last reference-data state applied to Production by the approval-gated auto-update workflow. Scheduled detection compares upstream with this record (no Production access). Update it only in the Evidence PR that follows a verified apply.",
+  "datasets": {
+    "world_player_cards": {
+      "sourceChecksum12": null,
+      "recordCount": 13009,
+      "appliedAt": null,
+      "maxAppearanceUpdatedAt": null,
+      "evidence": null
+    },
+    "managers": {
+      "sourceChecksum12": "8c1d654ec48e",
+      "recordCount": 67,
+      "appliedAt": "2026-09-24T10:44:27.601Z",
+      "evidence": "docs/production-readiness/evidence/stage4-managers-rehearsal-2026-09-24.json"
+    }
+  }
+}

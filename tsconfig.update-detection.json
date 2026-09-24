@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "outDir": "./dist-update-detection",
+    "rootDir": "./src/lib",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "resolveJsonModule": true,
+    "sourceMap": false,
+    "declaration": false,
+    "types": ["node"]
+  },
+  "files": ["src/lib/reference-data/auto-update/update-detection-cli.ts"]
+}
