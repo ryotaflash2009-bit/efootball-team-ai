@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatDate, formatDateTime, formatNumber } from "./format";
+import { DISPLAY_TIME_ZONE, formatDate, formatDateTime, formatNumber } from "./format";
 
 describe("formatNumber", () => {
   it("formats the same underlying value in both locales (only separators may differ)", () => {
@@ -28,6 +28,33 @@ describe("formatDateTime", () => {
   it("represents the same instant in both locales (year is preserved)", () => {
     expect(formatDateTime(sample, "ja")).toContain("2026");
     expect(formatDateTime(sample, "en")).toContain("2026");
+  });
+});
+
+describe("表示用の時間帯は固定(日本時間)で、時間帯名を付ける(hydration不一致の防止)", () => {
+  it("UTCの2026-08-27 22:59は日本時間の2026年8月28日 07:59として表示し、時間帯名(JST)を含む", () => {
+    const d = new Date("2026-08-27T22:59:00Z");
+    const ja = formatDateTime(d, "ja");
+    expect(ja).toContain("2026年8月28日");
+    expect(ja).toContain("07:59");
+    expect(ja).toMatch(/JST/);
+    expect(formatDateTime(d, "en")).toMatch(/August 28, 2026.*07:59.*(JST|GMT\+9)/);
+    expect(formatDate(d, "ja")).toBe("2026年8月28日");
+  });
+
+  it("実行環境(サーバー)の時間帯を変えても同じ文字列になる", () => {
+    const d = new Date("2026-09-24T10:31:18.602Z");
+    const expected = formatDateTime(d, "ja");
+    const original = process.env.TZ;
+    try {
+      for (const tz of ["UTC", "America/Los_Angeles", "Asia/Tokyo"]) {
+        process.env.TZ = tz;
+        expect(formatDateTime(d, "ja"), tz).toBe(expected);
+      }
+    } finally {
+      process.env.TZ = original;
+    }
+    expect(DISPLAY_TIME_ZONE).toBe("Asia/Tokyo");
   });
 });
 
