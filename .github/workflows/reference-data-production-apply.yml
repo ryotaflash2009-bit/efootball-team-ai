@@ -1,49 +1,154 @@
-name: Reference data Production apply (manual, approval-gated; preflight only)
+name: Reference data Production apply (manual, approval-gated)
+run-name: reference-data ${{ inputs.mode }}
 
-# Stage 2 of the reference-data auto-update rollout.
+# Reference-data auto-update, Stage 2 (preflight) and Stage 4 (first Production update rehearsal,
+# managers only; owner decision 2026-09-24).
 #
 # - Trigger: workflow_dispatch ONLY. No schedule, push, pull_request or workflow_run.
-# - Only the read-only "preflight" mode exists: it connects as reference_data_updater over TLS
-#   (pinned CA), runs catalog/privilege checks inside `begin read only`, and rolls back. It reads no
-#   rows and writes nothing. The "apply" mode is intentionally not implemented until the separately
-#   approved Stage 4 rehearsal; the CLI refuses any other mode before connecting.
-# - Secrets: only REFERENCE_DATA_APPLY_DB_URL and REFERENCE_DATA_APPLY_DB_CA_CERT, stored in the
-#   `reference-data-production-apply` Environment (required reviewer). Backup secrets are never used here.
-# - Concurrency: shares the production-write group with any future apply/rollback job.
+# - Every mode runs in the `reference-data-production-apply` Environment (required reviewer) and uses
+#   only REFERENCE_DATA_APPLY_DB_URL / REFERENCE_DATA_APPLY_DB_CA_CERT (never the Backup secrets).
+# - Modes (the confirmation input must match the mode exactly, checked before any secret is read):
+#     preflight  "preflight"                    read-only catalog/privilege checks (Stage 2)
+#     plan       "plan-managers"                read-only Production read + ONE managers.json GET → candidate/diff/policy
+#     dry-run    "dry-run-managers"             binds plan run + new pre-apply Backup run; read-only re-read (stale check);
+#                                               isolated dry run / executor / undo simulation in the job-local postgres:17
+#     apply      "apply-managers-to-production" re-verifies every binding, then ONE transaction as reference_data_updater;
+#                                               post-apply verification; no automatic retry, undo or restore
+#     verify     "verify-managers"              read-only post-apply verification of a given apply run
+# - Bindings: run ids and checksums are inputs; artifacts are downloaded from exactly those runs and the
+#   runs' facts (workflow, branch, event, attempt, commit, conclusion, time) are read from the GitHub API.
+#   All Stage 4 runs must be on the same main commit (GITHUB_SHA).
+# - Writes: only `apply`, only managers + one import_batches audit row (column-level grants, RLS; no DELETE,
+#   no TRUNCATE, no World or player_card_analysis write).
 
 on:
   workflow_dispatch:
     inputs:
-      confirm:
-        description: "Type 'preflight' to confirm this manual read-only check. This is not a substitute for the Environment approval."
-        required: true
-        type: string
       mode:
-        description: "Only 'preflight' is available (read-only)."
+        description: "preflight | plan | dry-run | apply | verify"
         required: true
         type: choice
         options:
           - preflight
+          - plan
+          - dry-run
+          - apply
+          - verify
         default: preflight
+      confirm:
+        description: "Must match the mode: preflight / plan-managers / dry-run-managers / apply-managers-to-production / verify-managers. Not a substitute for the Environment approval."
+        required: true
+        type: string
+      plan_run_id:
+        description: "dry-run, apply: run id of the plan run"
+        required: false
+        type: string
+        default: ""
+      backup_run_id:
+        description: "dry-run, apply: run id of the new pre-apply Backup run (format 2, within 24 h)"
+        required: false
+        type: string
+        default: ""
+      dry_run_run_id:
+        description: "apply: run id of the dry-run run"
+        required: false
+        type: string
+        default: ""
+      apply_run_id:
+        description: "verify: run id of the apply run"
+        required: false
+        type: string
+        default: ""
+      source_checksum:
+        description: "dry-run, apply: sourceChecksum from the plan summary (64 hex)"
+        required: false
+        type: string
+        default: ""
+      plan_checksum:
+        description: "dry-run, apply: planChecksum from the plan summary (64 hex)"
+        required: false
+        type: string
+        default: ""
+      acknowledge_manual_review:
+        description: "apply: manualReviewCodes from the plan summary joined by ',' (or 'none')"
+        required: false
+        type: string
+        default: ""
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: reference-data-production-write
   cancel-in-progress: false
 
 jobs:
-  preflight:
+  production:
     runs-on: ubuntu-latest
     environment: reference-data-production-apply
-    timeout-minutes: 10
+    timeout-minutes: 20
+    # Job-local, throwaway PostgreSQL for the dry-run mode only (not Production). Same convention as ci.yml.
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: phase2_test_user
+          POSTGRES_PASSWORD: phase2_test_password_ci_only
+          POSTGRES_DB: phase2_test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
-      - name: Reject unless the confirmation input is exactly "preflight"
-        if: ${{ inputs.confirm != 'preflight' || inputs.mode != 'preflight' }}
+      - name: Reject unless the confirmation input matches the selected mode
+        env:
+          MODE: ${{ inputs.mode }}
+          CONFIRM: ${{ inputs.confirm }}
         run: |
-          echo "::error::confirmation/mode must be exactly 'preflight'; aborting before touching any secret"
-          exit 1
+          case "$MODE" in
+            preflight) expected="preflight" ;;
+            plan) expected="plan-managers" ;;
+            dry-run) expected="dry-run-managers" ;;
+            apply) expected="apply-managers-to-production" ;;
+            verify) expected="verify-managers" ;;
+            *) echo "::error::unknown mode"; exit 1 ;;
+          esac
+          if [ "$CONFIRM" != "$expected" ]; then
+            echo "::error::confirmation input does not match the selected mode; aborting before touching any secret"
+            exit 1
+          fi
+
+      - name: Validate run-id and checksum inputs for the selected mode
+        env:
+          MODE: ${{ inputs.mode }}
+          PLAN_RUN_ID: ${{ inputs.plan_run_id }}
+          BACKUP_RUN_ID: ${{ inputs.backup_run_id }}
+          DRY_RUN_RUN_ID: ${{ inputs.dry_run_run_id }}
+          APPLY_RUN_ID: ${{ inputs.apply_run_id }}
+          SOURCE_CHECKSUM: ${{ inputs.source_checksum }}
+          PLAN_CHECKSUM: ${{ inputs.plan_checksum }}
+          ACK: ${{ inputs.acknowledge_manual_review }}
+        run: |
+          num='^[0-9]{1,20}$'
+          hex='^[0-9a-f]{64}$'
+          ack='^(none|[a-z_]+(,[a-z_]+)*)$'
+          ok=1
+          case "$MODE" in
+            dry-run)
+              [[ "$PLAN_RUN_ID" =~ $num && "$BACKUP_RUN_ID" =~ $num && "$SOURCE_CHECKSUM" =~ $hex && "$PLAN_CHECKSUM" =~ $hex ]] || ok=0 ;;
+            apply)
+              [[ "$PLAN_RUN_ID" =~ $num && "$BACKUP_RUN_ID" =~ $num && "$DRY_RUN_RUN_ID" =~ $num && "$SOURCE_CHECKSUM" =~ $hex && "$PLAN_CHECKSUM" =~ $hex && "$ACK" =~ $ack ]] || ok=0 ;;
+            verify)
+              [[ "$APPLY_RUN_ID" =~ $num ]] || ok=0 ;;
+          esac
+          if [ "$ok" != "1" ]; then
+            echo "::error::required run ids / checksums for this mode are missing or malformed"
+            exit 1
+          fi
 
       - name: Check required secrets are configured (fails before any DB connection)
         env:
@@ -59,7 +164,7 @@ jobs:
             fi
           done
           if [ "$missing" = "1" ]; then
-            echo "::error::Production preflight is blocked until a human provisions the apply Environment secrets. Do not add a bypass here."
+            echo "::error::blocked until a human provisions the apply Environment secrets. Do not add a bypass here."
             exit 1
           fi
 
@@ -98,20 +203,138 @@ jobs:
             exit 1
           fi
 
-      - name: Run read-only updater preflight
+      - name: Prepare the work directory
+        run: mkdir -p "$RUNNER_TEMP/stage4/out"
+
+      - name: Download the plan bundle from the bound plan run
+        if: ${{ inputs.mode == 'dry-run' || inputs.mode == 'apply' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: stage4-managers-bundle
+          run-id: ${{ inputs.plan_run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/stage4/plan
+
+      - name: Download the Backup summary from the bound Backup run
+        if: ${{ inputs.mode == 'dry-run' || inputs.mode == 'apply' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: reference-data-backup-summary
+          run-id: ${{ inputs.backup_run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/stage4/backup
+
+      - name: Download the dry-run record from the bound dry-run run
+        if: ${{ inputs.mode == 'apply' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: stage4-managers-dry-run
+          run-id: ${{ inputs.dry_run_run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/stage4/dry-run
+
+      - name: Download the apply result from the bound apply run
+        if: ${{ inputs.mode == 'verify' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: stage4-managers-apply-result
+          run-id: ${{ inputs.apply_run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/stage4/apply
+
+      - name: Record the bound runs' facts (read-only GitHub API)
+        if: ${{ inputs.mode == 'dry-run' || inputs.mode == 'apply' || inputs.mode == 'verify' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          MODE: ${{ inputs.mode }}
+          PLAN_RUN_ID: ${{ inputs.plan_run_id }}
+          BACKUP_RUN_ID: ${{ inputs.backup_run_id }}
+          DRY_RUN_RUN_ID: ${{ inputs.dry_run_run_id }}
+          APPLY_RUN_ID: ${{ inputs.apply_run_id }}
+        run: |
+          set -euo pipefail
+          dir="$RUNNER_TEMP/stage4"
+          facts() {
+            gh api "repos/$REPO/actions/runs/$1" --jq '{id, path, event, headBranch: .head_branch, headSha: .head_sha, status, conclusion, runAttempt: .run_attempt, displayTitle: .display_title, createdAt: .created_at, updatedAt: .updated_at}' > "$dir/$2"
+          }
+          case "$MODE" in
+            dry-run) facts "$PLAN_RUN_ID" facts-plan.json; facts "$BACKUP_RUN_ID" facts-backup.json ;;
+            apply) facts "$PLAN_RUN_ID" facts-plan.json; facts "$BACKUP_RUN_ID" facts-backup.json; facts "$DRY_RUN_RUN_ID" facts-dry-run.json ;;
+            verify) facts "$APPLY_RUN_ID" facts-apply.json ;;
+          esac
+          if [ "$MODE" = "dry-run" ] || [ "$MODE" = "apply" ]; then
+            gh api "repos/$REPO/actions/workflows/reference-data-production-apply.yml/runs?branch=main&event=workflow_dispatch&per_page=100" \
+              --jq '[.workflow_runs[] | {id, displayTitle: .display_title, createdAt: .created_at, conclusion}]' > "$dir/plan-runs.json"
+          fi
+
+      - name: Run the selected mode
         env:
           REFERENCE_DATA_APPLY_DB_URL: ${{ secrets.REFERENCE_DATA_APPLY_DB_URL }}
           REFERENCE_DATA_APPLY_DB_CA_CERT: ${{ secrets.REFERENCE_DATA_APPLY_DB_CA_CERT }}
-          REFERENCE_DATA_APPLY_MODE: preflight
-          REFERENCE_DATA_APPLY_SUMMARY_PATH: ${{ runner.temp }}/reference-data-apply-preflight-summary.json
+          REFERENCE_DATA_APPLY_MODE: ${{ inputs.mode }}
+          REFERENCE_DATA_APPLY_CONFIRM: ${{ inputs.confirm }}
+          REFERENCE_DATA_APPLY_SUMMARY_PATH: ${{ runner.temp }}/reference-data-apply-summary.json
+          STAGE4_WORK_DIR: ${{ runner.temp }}/stage4
+          STAGE4_PLAN_RUN_ID: ${{ inputs.plan_run_id }}
+          STAGE4_BACKUP_RUN_ID: ${{ inputs.backup_run_id }}
+          STAGE4_DRY_RUN_RUN_ID: ${{ inputs.dry_run_run_id }}
+          STAGE4_APPLY_RUN_ID: ${{ inputs.apply_run_id }}
+          STAGE4_SOURCE_CHECKSUM: ${{ inputs.source_checksum }}
+          STAGE4_PLAN_CHECKSUM: ${{ inputs.plan_checksum }}
+          STAGE4_ACK_MANUAL_REVIEW: ${{ inputs.acknowledge_manual_review }}
+          PHASE2_TEST_PG_HOST: localhost
+          PHASE2_TEST_PG_PORT: "5432"
+          PHASE2_TEST_PG_USER: phase2_test_user
+          PHASE2_TEST_PG_PASSWORD: phase2_test_password_ci_only
+          PHASE2_TEST_PG_DATABASE: phase2_test_db
         run: node scripts/run-production-apply-entry.mjs
 
-      # Non-secret summary only (ok, problems, counts). The CLI refuses to write it if any secret value appears.
-      - name: Upload non-secret preflight summary
+      # Non-secret summary only (codes, counts, checksums). The CLI refuses to write it if any secret value appears.
+      - name: Upload the non-secret summary
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: reference-data-apply-preflight-summary
-          path: ${{ runner.temp }}/reference-data-apply-preflight-summary.json
+          name: reference-data-apply-${{ inputs.mode }}-summary
+          path: ${{ runner.temp }}/reference-data-apply-summary.json
           if-no-files-found: ignore
           retention-days: 30
+
+      # plan: the recorded managers.json response (public upstream data) and checksums, replayed by later modes.
+      - name: Upload the plan bundle
+        if: ${{ always() && inputs.mode == 'plan' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage4-managers-bundle
+          path: ${{ runner.temp }}/stage4/out/stage4-managers-bundle.json
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload the dry-run record
+        if: ${{ always() && inputs.mode == 'dry-run' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage4-managers-dry-run
+          path: ${{ runner.temp }}/stage4/out/stage4-managers-dry-run.json
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload the apply result
+        if: ${{ always() && inputs.mode == 'apply' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage4-managers-apply-result
+          path: ${{ runner.temp }}/stage4/out/stage4-managers-apply-result.json
+          if-no-files-found: ignore
+          retention-days: 90
+
+      # Before images of updated rows (none expected for this rehearsal) and inserted identities.
+      # Never executed automatically; an undo needs a separate owner decision.
+      - name: Upload the undo plan
+        if: ${{ always() && inputs.mode == 'apply' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage4-managers-undo-plan
+          path: ${{ runner.temp }}/stage4/out/stage4-managers-undo-plan.json
+          if-no-files-found: ignore
+          retention-days: 90
