@@ -1,0 +1,97 @@
+{
+  "evidence": "stage2-production-updater-setup",
+  "recordedAt": "2026-09-24",
+  "containsSecrets": false,
+  "sources": {
+    "ownerReport": "Stage 2 metadata before/after, role attributes and Environment settings as reported by the owner (Supabase SQL Editor / GitHub settings)",
+    "claudeCodeReadOnlyChecks": "GitHub REST API read-only: workflow runs, run jobs/steps, the non-secret summary artifact, Environment names/protection rules and secret NAMES (never values)"
+  },
+  "ownerReported": {
+    "productionPostgresMajor": 17,
+    "role": "reference_data_updater",
+    "roleAttributes": { "login": true, "superuser": false, "createdb": false, "createrole": false, "replication": false, "bypassrls": false, "inherit": false, "connectionLimit": 1 },
+    "scramPasswordSet": true,
+    "updaterRlsPoliciesApplied": true,
+    "columnLevelPrivilegesApplied": true,
+    "metadataBefore": "matches contract",
+    "metadataAfter": "matches contract",
+    "tableOwner": false,
+    "deletePrivilege": false,
+    "truncatePrivilege": false,
+    "playerCardAnalysisWrite": false,
+    "authOrUserDataAccess": false,
+    "updaterSensitiveAccess": [],
+    "productionTablesRls": "enabled + FORCE (unchanged)",
+    "secretValuesShared": false
+  },
+  "environmentVerifiedReadOnly": {
+    "reference-data-production-apply": {
+      "requiredReviewers": 1,
+      "preventSelfReview": false,
+      "adminBypass": false,
+      "deploymentBranches": ["main"],
+      "secretNames": ["REFERENCE_DATA_APPLY_DB_CA_CERT", "REFERENCE_DATA_APPLY_DB_URL"]
+    },
+    "production-backup-approval": {
+      "requiredReviewers": 1,
+      "preventSelfReview": false,
+      "adminBypass": false,
+      "deploymentBranches": ["main"],
+      "secretNames": [
+        "REFERENCE_DATA_BACKUP_AGE_RECIPIENT", "REFERENCE_DATA_BACKUP_DB_CA_CERT", "REFERENCE_DATA_BACKUP_DB_URL",
+        "REFERENCE_DATA_BACKUP_R2_ACCESS_KEY_ID", "REFERENCE_DATA_BACKUP_R2_BUCKET", "REFERENCE_DATA_BACKUP_R2_ENDPOINT",
+        "REFERENCE_DATA_BACKUP_R2_SECRET_ACCESS_KEY"
+      ]
+    },
+    "secretBoundary": "apply and backup Environments hold disjoint secret sets (matches SECRET_BOUNDARIES in update-contract.ts)"
+  },
+  "preflightRuns": [
+    {
+      "runNumber": 1,
+      "result": "stopped safely: secrets not yet registered (owner report)",
+      "rerun": false,
+      "note": "not listed by the GitHub API at recording time (the API returned runs #2 and #3 only); kept as owner-reported Evidence"
+    },
+    {
+      "runNumber": 2,
+      "runId": 35882886645,
+      "headSha": "30ac50dd5b85314ff8a30798cdb2a7db488e14de",
+      "conclusion": "failure",
+      "cause": "old preflight resolved auth.users by name (needs USAGE on schema auth); fixed by PR #53",
+      "rerun": false
+    },
+    {
+      "runNumber": 3,
+      "runId": 35978653183,
+      "event": "workflow_dispatch",
+      "branch": "main",
+      "headSha": "23a8f14f6c611b107d5af29b9888d10be489935e",
+      "conclusion": "success",
+      "steps": {
+        "confirmationReject": "skipped (input matched)",
+        "requiredSecretsCheck": "success",
+        "compile": "success",
+        "noSecretSmokeTest": "success",
+        "readOnlyUpdaterPreflight": "success",
+        "summaryUpload": "success"
+      },
+      "summaryArtifact": {
+        "ok": true,
+        "phase": "preflight",
+        "reasons": [],
+        "facts": {
+          "role": "reference_data_updater",
+          "readOnly": "on",
+          "tableGrantCount": 3,
+          "columnGrantCount": 119,
+          "sensitiveSchemaUsageCount": 0,
+          "sensitiveTableAccessCount": 0,
+          "sensitiveSchemasChecked": ["auth", "storage", "vault", "public", "reference_data_ops"]
+        },
+        "checkedAt": "2026-09-24T09:01:30.601Z"
+      }
+    }
+  ],
+  "productionEffects": { "dataWrites": 0, "apply": 0, "backup": 0, "r2Operations": 0 },
+  "verdict": "STAGE_2_COMPLETE"
+}

@@ -12,6 +12,8 @@ export const BACKUP_SUMMARY_ARTIFACT_SCHEMA = "reference-data-backup-summary/v1"
 const ALLOWED_SUMMARY_KEYS = [
   "phase", "ok", "storageVerified", "restoreVerified", "objectKey", "manifestKey", "jobId", "category", "prefix",
   "retentionCategory", "retentionDays", "expiresAt", "rowCounts", "totalChecksum", "encryptionAlgorithm", "backupVersion",
+  // 形式"2"の追加列の収録確認(列名・列数・行数・非null件数だけ。値は含まない)。
+  "columnCoverage",
 ] as const;
 
 export interface BackupSummaryArtifact {
