@@ -1,0 +1,70 @@
+{
+  "evidence": "public read-only Release Gate after the World update and the weekly detection schedule",
+  "recordedAt": "2026-09-25",
+  "containsSecrets": false,
+  "containsRowDataOrRawLogs": false,
+  "ownerApproval": "read-only recheck of the public site with the latest Production data (owner request 2026-09-25)",
+  "method": "GET only; no credentials; sequential requests; isolated headless Chrome profile with the Supabase auth test double (no login); Asia/Tokyo browser time zone; small fixed samples; no settings, data, Environment or Secrets touched",
+  "site": "public Vercel production alias (URL not recorded)",
+  "deployedCommit": "3649ab4",
+  "mainRoutes": {
+    "status200": ["/", "/players", "/managers", "/compare", "/my-team", "/my-builds", "/squads", "/best-xi", "/support", "/terms", "/privacy", "/disclaimer", "/about", "/data-management", "/favorites", "/players/world/<id>"],
+    "errorBoundaryOrStackTraceOrSecret": 0
+  },
+  "internalPages": {
+    "/diagnostics": 404,
+    "/account/rls-test": 404,
+    "/account/rls-test/": "308 -> 404",
+    "/release-readiness": 404,
+    "/release-readiness/": "308 -> 404"
+  },
+  "indexing": {
+    "metaRobots": "noindex, nofollow, nocache (all checked pages)",
+    "xRobotsTag": "noindex, nofollow, noarchive (pages and API JSON)",
+    "robotsTxt": "Disallow: /",
+    "sitemap": 404,
+    "noindexRemoved": false
+  },
+  "data": {
+    "worldTotalCount": 13297,
+    "managersTotalCount": 67,
+    "playerCardAnalysis": "no public count endpoint; unchanged per Stage 4 World Evidence (19)",
+    "worldImported": "2026年9月25日 18:21 JST (World plan fetch 09:21 UTC)",
+    "managersImported": "2026年9月24日 19:31 JST",
+    "staleFixedCounts": "none (13,009 / 13,286 not shown as a current total on any checked page)"
+  },
+  "physicalRankTotal": {
+    "finding": "World detail header read '全 13,009 中の順位' next to a site total of 13,297; the 13,009 comes from the preserved appearance.ranks (not recalculated by the updater)",
+    "fix": "PR #67: header '順位集計時点の全 13,009 件中' and a note that the total is the count at ranking time and may differ from the current number of cards",
+    "verifiedOnPublicSite": true,
+    "appearanceRecalculated": false,
+    "productionDataChanged": false
+  },
+  "releaseGate": {
+    "browserGate": "160/160 PASS (desktop 1280 / mobile 390)",
+    "browserGateExtraPages": "60/60 PASS (World detail, Privacy, Disclaimer, Players search and position filter, Managers search)",
+    "managersBlackBox": "43/43 PASS",
+    "worldUiBlackBox": "77/77 PASS (NO_EXTERNAL=1)",
+    "consoleErrors": 0,
+    "unexpectedNetworkErrors": 0,
+    "http5xx": 0,
+    "horizontalOverflow": 0,
+    "offOriginRequests": 0
+  },
+  "performance": {
+    "samples": "two runs: HTTP cold 1 + warm 3 per target; browser 2 and 3 navigations per page per viewport",
+    "httpWarmMedianMs": { "home": 1927, "playersInitial": 1244, "worldDetail": 1092, "managers": 915, "compare": 301, "squads": 289, "bestXi": 107 },
+    "apiWarmMedianMs": "106-112",
+    "overThreshold": [
+      {
+        "page": "/players (desktop 1280 only)",
+        "metric": "browser load event",
+        "warmMedianMs": [6397, 3844],
+        "threshold": 3000,
+        "detail": "TTFB 5 ms, long tasks 0, CLS 0; the load event waits for about 24 above-the-fold card images from the image proxy (images are already loading=lazy; the desktop grid shows more cards in the first viewport). Mobile /players 1.3 s. Same pattern as the Stage 5 note (5.7-6.4 s in some samples).",
+        "classification": "known limitation carried from Stage 5; not a regression from the World update; owner decision whether it blocks the invite beta"
+      }
+    ]
+  },
+  "verdict": "PUBLIC_RELEASE_GATE_PASS_WITH_KNOWN_PERF_LIMITATION"
+}
