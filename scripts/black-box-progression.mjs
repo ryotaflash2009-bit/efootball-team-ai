@@ -147,7 +147,10 @@ async function main() {
   record("分析: プレーヤーモデル（腕の長さ / 脚の長さ / 肩幅）", b.includes("プレーヤーモデル") && b.includes("腕の長さ") && b.includes("脚の長さ") && b.includes("肩幅"), "");
   record("分析: モデル値に cm を付けない旨・0 と未収録を区別", b.includes("cm として確認された値ではありません") && b.includes("0 も実値です"), "");
   record("分析: 物理データ 5項目", ["脚カバー半径", "腕カバー半径", "ジャンプ高", "胴体衝突", "脚の長さ基準の身長"].every((x) => b.includes(x)), "");
-  record("分析: 物理順位は全カード実データ・「値の大きい順」明示", b.includes("13,009") && b.includes("値の大きい順") && b.includes("大きさ順位"), "");
+  // 順位の母数は、そのカードのappearance.ranks(取り込み時点の全カード数)。appearanceは自動更新で既存値を保持するため、
+  // 現在のWorld件数(2026-09-25に13,297)とは一致しない。固定値ではなく詳細APIのranksの母数と照合する。
+  const rankTotal = (await json(`/api/world/players/${CARDS.messi}`)).data?.player?.appearance?.ranks?.legLength?.overall?.total ?? -1;
+  record("分析: 物理順位は全カード実データ・「値の大きい順」明示", rankTotal > 0 && b.includes(rankTotal.toLocaleString("en-US")) && b.includes("値の大きい順") && b.includes("大きさ順位"), `rankTotal=${rankTotal}`);
   record("分析: パーセンタイルは「100 に近いほど大」で誤解を避ける", b.includes("100 に近いほど大") && !b.includes("上位 98%") && !b.includes("上位98%"), "");
   record("分析: その他特性は内部値と表示名を分離（内部特性値・意味は追加検証中）", b.includes("内部特性値") && b.includes("段階の意味は追加検証中") && b.includes("逆足頻度"), "");
   record("分析: レールは育成計算に影響しない旨", b.includes("育成計算・ブースター計算・監督補正には影響しません"), "");

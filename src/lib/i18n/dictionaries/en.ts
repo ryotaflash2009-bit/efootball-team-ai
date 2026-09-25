@@ -653,7 +653,7 @@ const en: Dictionary = {
     createAndEditButton: "Create and edit",
     heroHeading: "Build a squad with 11 starters + bench",
     heroDescription:
-      "Choose a formation and place players from 13,009 World cards. Check progression builds, manager corrections, and Link-Up Play conditions on one screen. Calculations reuse the existing progression and manager engines (rules are still being verified). Squads are saved only in this device's browser (localStorage).",
+      "Choose a formation and place players from all World cards. Check progression builds, manager corrections, and Link-Up Play conditions on one screen. Calculations reuse the existing progression and manager engines (rules are still being verified). Squads are saved only in this device's browser (localStorage).",
     createFirstSquadButton: "Create your first squad",
     createNewSquadButton: "Create a new squad",
     goToCompareButton: "Go to player compare",
@@ -2198,7 +2198,7 @@ const en: Dictionary = {
     searchAriaLabelTemplate: "Search for a player to add for {slot}",
     duplicateNote: "The same card (matching World ID) cannot be added twice. Different cards of the same player (different World ID) can still be compared. Order: name match → highest max OVR.",
     minLengthPromptTemplate: "Enter a player name, World ID, or position ({min}+ characters).",
-    tooShortTemplate: "Enter {remaining} more character(s) (to avoid listing all 13,009 cards at once).",
+    tooShortTemplate: "Enter {remaining} more character(s) (to avoid listing all cards at once).",
     searchFailedError: "Could not search for players.",
     retryButton: "Retry",
     noResults: "No cards match your criteria.",
