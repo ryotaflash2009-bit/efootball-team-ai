@@ -126,6 +126,24 @@ describe("World policy: card_ratingだけの大量変動", () => {
   });
 });
 
+describe("World Evidence(2026-09-25 Production rehearsal)", () => {
+  it("同じcommitの4 run・削除0・hard block 0・applied_verified。managers/analysisへの書き込み0、行データ・秘密情報なし", () => {
+    const text = readFileSync(path.resolve(__dirname, "..", "..", "..", "..", "docs", "production-readiness", "evidence", "stage4-world-rehearsal-2026-09-25.json"), "utf8");
+    const ev = JSON.parse(text);
+    for (const r of [ev.runs.plan, ev.runs.backup, ev.runs.dryRun, ev.runs.apply]) expect(r).toMatchObject({ attempt: 1, event: "workflow_dispatch", branch: "main", conclusion: "success", headSha: ev.mainCommit });
+    expect(ev.diff.removed).toBe(0);
+    expect(ev.diff.after).toBe(ev.diff.before + ev.diff.added);
+    expect(ev.diff.changed).toBe(ev.diff.cardRatingOnlyChanged + ev.diff.structuralChanged);
+    expect(ev.policy).toMatchObject({ hardBlocks: 0, planProblems: [] });
+    expect(ev.upstream.managersRequests).toBe(0);
+    expect(ev.upstream.totalBytes).toBeLessThanOrEqual(40 * 1024 * 1024);
+    expect(ev.apply).toMatchObject({ status: "applied_verified", inserted: ev.diff.added, updated: ev.diff.changed, removed: 0, automaticUndo: false });
+    expect(ev.postVerify).toMatchObject({ ok: true, problems: [], facts: { worldCount: ev.diff.after, managersCount: ev.productionBefore.managers } });
+    expect(ev.productionEffects).toMatchObject({ worldDeleted: 0, managersWrites: 0, playerCardAnalysisWrites: 0, undo: 0, rollback: 0, restore: 0 });
+    expect(text).not.toMatch(/postgres(ql)?:\/\/|-----BEGIN|AGE-SECRET-KEY|cloudflarestorage|supabase\.co|[0-9a-f]{64}/i);
+  });
+});
+
 describe("World: bundle・CLI", () => {
   it("本文hashで改ざんを検出する", async () => {
     const pages = recordedWorldPages();

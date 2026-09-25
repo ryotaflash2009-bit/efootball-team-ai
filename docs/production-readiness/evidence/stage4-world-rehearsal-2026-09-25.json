@@ -1,0 +1,266 @@
+{
+  "evidence": "stage4-world-rehearsal",
+  "recordedAt": "2026-09-25",
+  "containsSecrets": false,
+  "containsRowData": false,
+  "ownerApproval": "World-only Production rehearsal: new full scan, plan, new pre-apply Backup, dry run, owner-approved Production apply, post-apply verify, applied-state update. Not approved: managers, player_card_analysis, deletes, undo, rollback, Restore.",
+  "mainCommit": "88805ba",
+  "runs": {
+    "plan": {
+      "runNumber": 7,
+      "runId": 36020192816,
+      "title": "reference-data plan world",
+      "environment": "reference-data-production-apply",
+      "attempt": 1,
+      "event": "workflow_dispatch",
+      "branch": "main",
+      "headSha": "88805ba",
+      "conclusion": "success",
+      "createdAt": "2026-09-24T15:26:26Z",
+      "jobStartedAfterApprovalAt": "2026-09-25T09:20:47Z",
+      "completedAt": "2026-09-25T09:47:36Z"
+    },
+    "backup": {
+      "runNumber": 10,
+      "runId": 36120461092,
+      "title": "Reference data Production backup (manual, approval-gated)",
+      "environment": "production-backup-approval",
+      "attempt": 1,
+      "event": "workflow_dispatch",
+      "branch": "main",
+      "headSha": "88805ba",
+      "conclusion": "success",
+      "createdAt": "2026-09-25T09:48:04Z",
+      "jobStartedAfterApprovalAt": "2026-09-25T09:56:20Z",
+      "completedAt": "2026-09-25T09:57:28Z"
+    },
+    "dryRun": {
+      "runNumber": 8,
+      "runId": 36121373313,
+      "title": "reference-data dry-run world",
+      "environment": "reference-data-production-apply",
+      "attempt": 1,
+      "event": "workflow_dispatch",
+      "branch": "main",
+      "headSha": "88805ba",
+      "conclusion": "success",
+      "createdAt": "2026-09-25T09:58:03Z",
+      "jobStartedAfterApprovalAt": "2026-09-25T10:00:22Z",
+      "completedAt": "2026-09-25T10:02:26Z"
+    },
+    "apply": {
+      "runNumber": 9,
+      "runId": 36121823768,
+      "title": "reference-data apply world",
+      "environment": "reference-data-production-apply",
+      "attempt": 1,
+      "event": "workflow_dispatch",
+      "branch": "main",
+      "headSha": "88805ba",
+      "conclusion": "success",
+      "createdAt": "2026-09-25T10:02:58Z",
+      "jobStartedAfterApprovalAt": "2026-09-25T10:06:15Z",
+      "completedAt": "2026-09-25T10:24:30Z"
+    },
+    "verify": "not run separately: post-apply verification is part of the apply run"
+  },
+  "upstream": {
+    "source": "efootball-world",
+    "requests": 444,
+    "worldRequests": 444,
+    "managersRequests": 0,
+    "httpOutcomes": {
+      "200": 444
+    },
+    "totalBytes": 29086277,
+    "fetchSeconds": 1548,
+    "fetchedAt": "2026-09-25T09:21:27.664Z",
+    "pages": 444,
+    "receivedRecords": 13297,
+    "caps": {
+      "maxPages": 460,
+      "maxRecords": 14000,
+      "maxRequests": 462,
+      "maxTotalBytes": "40 MiB"
+    }
+  },
+  "productionBefore": {
+    "world_player_cards": 13009,
+    "managers": 67,
+    "import_batches": 9
+  },
+  "candidate": {
+    "sourceChecksum12": "33fb0c2ee49c",
+    "planChecksum12": "824af266c669",
+    "beforeChecksum12": "35ff4d0f5e6a",
+    "afterChecksum12": "3d16e8abec16",
+    "idempotencyKey12": "1da859e2af65",
+    "targetTables": [
+      "world_player_cards"
+    ]
+  },
+  "diff": {
+    "before": 13009,
+    "after": 13297,
+    "added": 288,
+    "changed": 5897,
+    "cardRatingOnlyChanged": 5766,
+    "structuralChanged": 131,
+    "removed": 0,
+    "unchanged": 7112,
+    "duplicates": 0,
+    "invalid": 0,
+    "changedFieldFrequency": {
+      "card_rating": 5834,
+      "ovr_max": 125,
+      "maximum_level": 96,
+      "name_ja": 1
+    },
+    "addedIdentitiesRecorded": "count only"
+  },
+  "appearance": {
+    "policy": "existing Production values preserved (preserve column; no UPDATE grant)",
+    "preservedColumnDrift": {
+      "world_player_cards": {
+        "ai_styles": 0,
+        "appearance": 13009
+      }
+    }
+  },
+  "sourceTimestamps": {
+    "total": 13297,
+    "withTimestamp": 13297,
+    "rawWithoutTimezone": 13297,
+    "rawWithTimezone": 0,
+    "interpretation": "naive values interpreted as UTC (provisional; semantic time zone unresolved)",
+    "min": "2026-04-28T17:17:02.021Z",
+    "max": "2026-09-24T17:03:33.478Z",
+    "futureCount": 0,
+    "regression": false,
+    "mostCommonCount": 1,
+    "mostCommonShare": 0.0001,
+    "findings": [
+      "upstream_timestamp_without_timezone_interpreted_as_utc"
+    ]
+  },
+  "policy": {
+    "severity": "manual_review",
+    "findings": [
+      {
+        "severity": "warning",
+        "code": "world_card_rating_only_changes"
+      },
+      {
+        "severity": "manual_review",
+        "code": "world_first_apply"
+      },
+      {
+        "severity": "warning",
+        "code": "world_count_increase"
+      },
+      {
+        "severity": "manual_review",
+        "code": "baseline_missing"
+      },
+      {
+        "severity": "warning",
+        "code": "preserved_column_drift"
+      }
+    ],
+    "manualReviewCodes": [
+      "baseline_missing",
+      "world_first_apply"
+    ],
+    "hardBlocks": 0,
+    "planProblems": [],
+    "acknowledged": "baseline_missing,world_first_apply"
+  },
+  "backup": {
+    "runNumber": 10,
+    "validator": "BACKUP_V2_VALID (expected counts = Production at plan time)",
+    "backupVersion": "2",
+    "category": "pre-apply",
+    "restoreVerified": true,
+    "storageVerified": true,
+    "rowCounts": {
+      "world_player_cards": 13009,
+      "managers": 67,
+      "player_card_analysis": 19,
+      "import_batches": 9
+    },
+    "rowCountsMatchPlan": true,
+    "addedColumnsCovered": true,
+    "startedAfterPlanCompleted": true
+  },
+  "dryRun": {
+    "ok": true,
+    "postgresServerVersionNum": 170011,
+    "dryRun": {
+      "verified": true,
+      "worldBefore": 13009,
+      "worldAfter": 13297,
+      "observedAfterChecksumMatches": true,
+      "rediffChanges": 0
+    },
+    "executor": {
+      "applyOk": true,
+      "applyCode": null,
+      "auditBatchVerified": true,
+      "postVerifyOk": true,
+      "postVerifyProblems": []
+    },
+    "undoSimulation": {
+      "ok": true,
+      "restored": 5897,
+      "insertedRemaining": 288,
+      "existingRowsMatchBefore": true
+    },
+    "productionReRead": {
+      "world_player_cards": 13009,
+      "managers": 67,
+      "import_batches": 9
+    },
+    "startedAt": "2026-09-25T10:01:55.324Z",
+    "completedAt": "2026-09-25T10:02:21.642Z"
+  },
+  "apply": {
+    "ok": true,
+    "status": "applied_verified",
+    "auditBatchId8": "b550918c",
+    "inserted": 288,
+    "updated": 5897,
+    "removed": 0,
+    "automaticUndo": false,
+    "transaction": "single transaction after all bindings and prerequisite gates passed",
+    "appliedAt": "2026-09-25T10:24:25.370Z"
+  },
+  "postVerify": {
+    "ok": true,
+    "problems": [],
+    "facts": {
+      "worldCount": 13297,
+      "importBatchesCount": 10,
+      "managersCount": 67,
+      "auditBatchStatus": "verified"
+    },
+    "managersUnchanged": "count 67 and max(updated_at) unchanged",
+    "playerCardAnalysis": "not readable/writable by the updater; preflight after apply confirmed no privileges",
+    "userAuthData": "preflight after apply: no auth/user privileges"
+  },
+  "productionEffects": {
+    "worldInserted": 288,
+    "worldUpdated": 5897,
+    "worldDeleted": 0,
+    "importBatchesInserted": 1,
+    "managersWrites": 0,
+    "playerCardAnalysisWrites": 0,
+    "undo": 0,
+    "rollback": 0,
+    "restore": 0
+  },
+  "r2Effects": "one new pre-apply Backup object pair (Backup #10); nothing deleted",
+  "unresolved": [
+    "appearance.updatedAt time zone semantics (naive values interpreted as UTC)"
+  ],
+  "verdict": "STAGE_4_WORLD_REHEARSAL_VERIFIED"
+}
