@@ -1,0 +1,58 @@
+{
+  "evidence": "desktop /players load-time investigation and fix",
+  "recordedAt": "2026-09-25",
+  "containsSecrets": false,
+  "containsRowData": false,
+  "method": "read-only GETs against the public site; isolated headless Chrome (desktop 1280x1000, mobile 390x844, Asia/Tokyo), CDP navigation/resource timing, LCP/CLS/long-task observers, HTML stream chunk timing; curl for server and image-proxy timing and cache headers",
+  "before": {
+    "deployedCommit": "2a215a1",
+    "desktopLoadEventMs": "3844-6397 (benchmark), 1792-6435 (6 navigations)",
+    "mobileLoadEventMs": "1187-6470",
+    "loadEqualsDomContentLoaded": true,
+    "domContentLoadedEqualsHtmlResponseEnd": true,
+    "htmlStreamEndMs": "1.2-1.8 s typical, intermittent 6.2-6.5 s on desktop and mobile",
+    "images": {
+      "desktopImages": 24,
+      "desktopAboveFold": 18,
+      "mobileImages": 10,
+      "mobileAboveFold": 4,
+      "loading": "all lazy, no fetchpriority, no srcset",
+      "renderedPx": "150x200 desktop, 172x229 mobile",
+      "naturalPx": "200x282 to 960x1360",
+      "desktopFirstVisitKB": 3964,
+      "host": "same-origin proxy only",
+      "duplicates": 0,
+      "failures": 0,
+      "cdn": "Vercel CDN HIT about 0.13 s; MISS (first request after a deploy) 1.0-2.2 s"
+    },
+    "warmRunWithAllImagesFromBrowserCache": "load still 5993 ms, so the images were not what gated the load event",
+    "ttfbMs": "5-126",
+    "longTaskMs": 0,
+    "cls": 0,
+    "lcpElement": "card image; LCP about 40-190 ms after the HTML finished"
+  },
+  "rootCause": [
+    "getFacetsFromSupabase paged through all World rows (13,297) in 14 sequential 1,000-row requests whenever the per-instance facet cache (TTL 5 min) missed",
+    "the Players page awaited list, facets and source meta one after another"
+  ],
+  "fix": {
+    "pr": 69,
+    "mergeCommit": "b432f63",
+    "changes": [
+      "facet pages: first page gives the exact count, the rest are fetched at most 4 at a time, ordered by world_card_id (no overlap or gaps between concurrent ranges); fail-closed cache unchanged",
+      "Players page: Promise.allSettled for the three queries with the same error precedence"
+    ],
+    "notChanged": ["image quality or sizes", "cache headers", "security headers", "data", "user-specific caching"]
+  },
+  "after": {
+    "deployedCommit": "b432f63",
+    "benchmark": { "severeIssues": 0, "desktopPlayersWarmMedianMs": 910, "mobilePlayersWarmMedianMs": 1220, "homeHttpWarmMedianMs": 2114, "playersHttpWarmMedianMs": 1366 },
+    "htmlStreamEndMs": "0.75-3.8 s in the first 8 navigations right after deploy (cold instances); no 6 s outliers",
+    "curlPlayersSeconds": "0.77-1.46 (before 1.25-3.2)"
+  },
+  "backlog": [
+    "card thumbnails are served at up to 960x1360 for a 150x200 slot (about 4 MB on the first desktop visit); a resized thumbnail variant would cut bytes, but it changes image handling and is not needed for the beta",
+    "facets could come from a small precomputed table or view after each verified World apply (needs a schema change; not needed for the beta)"
+  ],
+  "betaBlocker": false
+}
