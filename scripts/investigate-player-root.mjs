@@ -353,7 +353,7 @@ function buildMarkdown(perPlayer) {
       L.push("");
       L.push("| キー | 型 / 値 |");
       L.push("|---|---|");
-      for (const { k, t } of c.keyTypeMap) L.push(`| \`${k}\` | ${String(t).replace(/\|/g, "\\|").slice(0, 300)} |`);
+      for (const { k, t } of c.keyTypeMap) L.push(`| \`${k}\` | ${String(t).replace(/\\/g, "\\\\").replace(/\|/g, "\\|").slice(0, 300)} |`);
       L.push("");
       L.push("生JSON断片（上限8KB・切り詰めあり）:");
       L.push("```json");
@@ -370,7 +370,7 @@ function buildMarkdown(perPlayer) {
       L.push("| 目的 | 検出キー | パス | 型 / 値 |");
       L.push("|---|---|---|---|");
       for (const r of p.targetRows) {
-        L.push(`| ${r.label} | \`${r.key}\` | \`${r.path}\` | ${String(r.preview).replace(/\|/g, "\\|").slice(0, 260)} |`);
+        L.push(`| ${r.label} | \`${r.key}\` | \`${r.path}\` | ${String(r.preview).replace(/\\/g, "\\\\").replace(/\|/g, "\\|").slice(0, 260)} |`);
       }
     }
     L.push("");

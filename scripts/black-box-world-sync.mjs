@@ -162,7 +162,7 @@ async function main() {
 async function write() {
   const L = ["# World 全件同期 ブラックボックステスト結果", "", `実行日時: ${new Date().toISOString()}`, "外部アクセス: 0 回（localhost + ローカル DB のみ）", "",
     "| 結果 | 項目 | 詳細 |", "|---|---|---|"];
-  for (const r of results) L.push(`| ${r.pass ? "PASS" : "FAIL"} | ${r.name} | ${(r.detail || "").replace(/\|/g, "\\|")} |`);
+  for (const r of results) L.push(`| ${r.pass ? "PASS" : "FAIL"} | ${r.name} | ${(r.detail || "").replace(/\\/g, "\\\\").replace(/\|/g, "\\|")} |`);
   const failed = results.filter((r) => !r.pass);
   L.push("", `## 判定: ${failed.length === 0 ? "全項目 PASS" : failed.length + " 件 FAIL"}`, "",
     "- UI のデータ参照先は `src/data/players.sample.json` のまま（World / SQLite へ切替なし）。", "");
