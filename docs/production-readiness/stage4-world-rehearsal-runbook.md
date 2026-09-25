@@ -37,7 +37,9 @@ Actions → **"Reference data Production apply (manual, approval-gated)"**, bran
    `{13009, 67, 9}`, `plan.removedCount 0`, `planProblems []`. Note run id, `sourceChecksum`,
    `planChecksum`, `manualReviewCodes`.
 2. **Backup** — Backup workflow, `pre-apply`, confirm `backup` → approve `production-backup-approval`.
-   Must be `BACKUP_V2_VALID` with rows `13009 / 67 / 19 / 9`. Started after the plan finished.
+   Must be `BACKUP_V2_VALID` with rows equal to the plan-time Production counts
+   (`node scripts/validate-backup-v2-summary-entry.mjs <summary> --expected-counts=world_player_cards:<n>,managers:<n>,player_card_analysis:<n>,import_batches:<n>`).
+   Started after the plan finished.
 3. **dry-run** — mode `dry-run`, dataset `world`, confirm `dry-run-world`, `plan_run_id`,
    `backup_run_id`, `source_checksum`, `plan_checksum` → approve. Expect `isolated.verified: true`,
    `worldBefore 13009 → worldAfter ≈ 13286`, `rediffChanges 0`, executor / audit / post-verify ok,
@@ -63,3 +65,13 @@ committed apply with `rollback_required`: no undo, no restore, no deletion witho
 
 Claude Code records Evidence and updates the applied-state record used by scheduled detection;
 the Release Gate is re-run on the new data before any invitation is sent.
+
+## 6. Result (2026-09-25)
+
+Plan #7 → Backup #10 → Dry run #8 → Apply #9 on `88805ba`: `applied_verified`, World 13,009 → 13,297
+(288 added, 5,897 updated of which 5,766 card_rating-only, 0 removed), managers 67 unchanged,
+import_batches 10. Evidence: `evidence/stage4-world-rehearsal-2026-09-25.json`; applied-state updated.
+
+Note: the physical-ranking panel ("全 N 中の順位") uses each card's preserved `appearance.ranks`, whose totals
+are from the original import (13,009) and are not refreshed while appearance is preserved. The rail checks
+the page against the card's own ranks total. Refreshing appearance is a separate owner decision.

@@ -82,7 +82,7 @@ export function HomePageView({
   const fillH = (s: string, vars: Record<string, string>) =>
     Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
 
-  const worldCountText = world ? formatNumber(world.totalCount, locale) : "13,009";
+  const worldCountText = world ? formatNumber(world.totalCount, locale) : "—";
 
   const stats = [
     { label: th("worldCardsLabel"), value: world ? formatNumber(world.totalCount, locale) : "—", icon: "database" as IconName, href: "/players" },

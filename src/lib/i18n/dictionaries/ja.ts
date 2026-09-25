@@ -4183,7 +4183,7 @@ const ja: Dictionary = {
     createAndEditButton: "作成して編集",
     heroHeading: "先発11人＋ベンチのスカッドを組む",
     heroDescription:
-      "フォーメーションを選び、World 13,009 カードから選手を配置。育成ビルド・監督補正・Link-Up Play 条件を一画面で確認できます。計算は既存の育成・監督エンジンを再利用（規則は「検証中」）。スカッドはこの端末のブラウザ内（localStorage）にのみ保存されます。",
+      "フォーメーションを選び、World の全カードから選手を配置。育成ビルド・監督補正・Link-Up Play 条件を一画面で確認できます。計算は既存の育成・監督エンジンを再利用（規則は「検証中」）。スカッドはこの端末のブラウザ内（localStorage）にのみ保存されます。",
     createFirstSquadButton: "最初のスカッドを作成",
     createNewSquadButton: "新しいスカッドを作成",
     goToCompareButton: "選手比較へ",
@@ -5726,7 +5726,7 @@ const ja: Dictionary = {
     searchAriaLabelTemplate: "{slot}に追加する選手を検索",
     duplicateNote: "同じカード（World ID 一致）は重複追加できません。同一人物でも別カード（World ID 違い）は比較できます。並び: 名前一致 → 最大 OVR 高い順。",
     minLengthPromptTemplate: "選手名・World ID・ポジションを入力してください（{min} 文字以上）。",
-    tooShortTemplate: "あと {remaining} 文字入力してください（全 13,009 カードの一括表示を避けるため）。",
+    tooShortTemplate: "あと {remaining} 文字入力してください（全カードの一括表示を避けるため）。",
     searchFailedError: "選手を検索できませんでした。",
     retryButton: "再試行",
     noResults: "条件に一致するカードがありません。",

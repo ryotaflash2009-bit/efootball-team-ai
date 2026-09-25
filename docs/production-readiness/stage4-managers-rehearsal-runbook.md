@@ -57,7 +57,7 @@ Open: GitHub → Actions → **"Reference data Production apply (manual, approva
    Note: run id (from the URL), `sourceChecksum`, `planChecksum`, `manualReviewCodes`.
 2. **Backup** — Backup workflow, `backup_category` **pre-apply**, confirm `backup` → approve
    `production-backup-approval`. It must succeed with the same checks as Stage 3
-   (validator: `node scripts/validate-backup-v2-summary-entry.mjs <summary>` → `BACKUP_V2_VALID`).
+   (validator: `node scripts/validate-backup-v2-summary-entry.mjs <summary> --expected-counts=<plan-time Production counts>` → `BACKUP_V2_VALID`).
    Note its run id. Do not re-run a failed Backup; stop and report.
 3. **dry-run** — mode `dry-run`, confirm `dry-run-managers`, `plan_run_id`, `backup_run_id`,
    `source_checksum`, `plan_checksum` → approve. Artifact `reference-data-apply-dry-run-summary`:

@@ -56,7 +56,8 @@ export function Header({ onMenuClick }: { onMenuClick: () => void }) {
 
       <span className="hidden shrink-0 items-center gap-1.5 rounded-md border border-border bg-surface-2 px-2 py-1 text-2xs text-text-dim md:flex">
         <Icon name="database" size={13} className="text-accent" />
-        World 13,009
+        {/* 件数は固定値にしない(Worldは自動更新で変わる)。現在の件数はホーム・プレイヤー一覧に表示する。 */}
+        World
       </span>
     </header>
   );
