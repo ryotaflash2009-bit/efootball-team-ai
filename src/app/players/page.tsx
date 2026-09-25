@@ -69,14 +69,19 @@ export default async function PlayersPage({ searchParams }: { searchParams: Prom
   let failed = false;
   let rejected = false;
 
-  try {
-    result = await listPlayers(query);
-    facets = await getFacets();
-    sourceMeta = await getSourceMeta();
-  } catch (err) {
+  // 3つの照会は互いに独立なので並列に行う(直列だと表示完了が合計時間だけ遅れていた。2026-09-25計測)。
+  // エラーの扱いは従来の直列実行と同じ: 一覧 → facets → メタ情報の順に、最初の失敗で判定する。
+  const [listR, facetsR, metaR] = await Promise.allSettled([listPlayers(query), getFacets(), getSourceMeta()]);
+  const firstFailure = [listR, facetsR, metaR].find((r): r is PromiseRejectedResult => r.status === "rejected");
+  if (firstFailure) {
+    const err: unknown = firstFailure.reason;
     if (err instanceof WorldDataUnavailableError) unavailable = true;
     else if (err instanceof SearchInputRejectedError) rejected = true;
     else failed = true;
+  } else if (listR.status === "fulfilled" && facetsR.status === "fulfilled" && metaR.status === "fulfilled") {
+    result = listR.value;
+    facets = facetsR.value;
+    sourceMeta = metaR.value;
   }
 
   if (rejected) {
