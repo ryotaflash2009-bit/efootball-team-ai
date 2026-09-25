@@ -266,7 +266,7 @@ export function PlayerAnalysisRail({
         defaultOpen
         status={
           analysis.physical.hasRanks ? (
-            <span className="text-text-muted">全 {analysis.physical.metrics[0]?.overallRank?.total.toLocaleString() ?? "?"} 中の順位</span>
+            <span className="text-text-muted">順位集計時点の全 {analysis.physical.metrics[0]?.overallRank?.total.toLocaleString() ?? "?"} 件中</span>
           ) : undefined
         }
       >

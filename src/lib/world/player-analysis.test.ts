@@ -205,6 +205,9 @@ describe("buildPlayerAnalysis — 物理データ", () => {
     expect(a.physical.metrics[0].overallRank).toEqual({ rank: 12733, total: 13009, topPercent: 98 });
     expect(a.physical.metrics[1].overallRank).toBeNull();
     expect(a.physical.hasRanks).toBe(true);
+    // 母数(total)は順位集計時点の件数。現在の収録件数と誤認させない(World更新後もappearanceは再計算しない)。
+    expect(a.physical.note).toContain("順位集計時点");
+    expect(a.physical.note).toContain("現在の収録件数とは異なる場合があります");
   });
 
   it("appearance 無し: 全メトリクス value=null・hasRanks=false", () => {
