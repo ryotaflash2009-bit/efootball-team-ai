@@ -289,6 +289,8 @@ function sortedArray(set: Set<string>): string[] {
  * 欠落する不具合が過去にあったため、意図的に全件走査する設計にしている)。
  */
 const FACET_PAGE_SIZE = 1000;
+/** facetsのページを同時に取得する上限(Supabaseへの同時request数を抑える)。 */
+const FACET_PAGE_CONCURRENCY = 4;
 
 export async function getFacetsFromSupabase(client?: ReferenceDataClient): Promise<WorldFacets> {
   if (facetCacheEntry && facetCacheEntry.expiresAt > Date.now()) return facetCacheEntry.value;
@@ -298,27 +300,50 @@ export async function getFacetsFromSupabase(client?: ReferenceDataClient): Promi
   const playingStyles = new Set<string>();
   const playingStyleDefensives = new Set<string>();
 
-  let offset = 0;
-  let pageIndex = 0;
-  for (;;) {
+  // 主キー順で固定したページ(並列取得してもページ間で行が重複・欠落しない)。
+  const fetchPage = async (pageIndex: number, withCount: boolean): Promise<{ rows: Row[]; count: number | null }> => {
+    const from = pageIndex * FACET_PAGE_SIZE;
     const { data, error, count, status } = await c
       .from("world_player_cards")
-      .select("registered_position,card_type,playing_style,playing_style_def", { count: "exact" })
-      .range(offset, offset + FACET_PAGE_SIZE - 1);
+      .select("registered_position,card_type,playing_style,playing_style_def", withCount ? { count: "exact" } : undefined)
+      .order("world_card_id", { ascending: true })
+      .range(from, from + FACET_PAGE_SIZE - 1);
     // TTL経過後の再取得に失敗した場合も含め、期限切れの値を黙って返さずここで伝播させる
     // (fail closed。facetCacheEntryは成功時にしか更新しないため、失敗時は古いまま=次回も
     // 期限切れ扱いになり、また再取得を試みる)。
     if (error) throw normalizeQueryError(error, { operation: "world.facets", status, pageIndex });
-    const rows = (data ?? []) as Row[];
+    return { rows: (data ?? []) as Row[], count: count ?? null };
+  };
+  const collect = (rows: readonly Row[]) => {
     for (const r of rows) {
       addNonEmpty(positions, r.registered_position);
       addNonEmpty(cardTypes, r.card_type);
       addNonEmpty(playingStyles, r.playing_style);
       addNonEmpty(playingStyleDefensives, r.playing_style_def);
     }
-    offset += rows.length;
-    pageIndex += 1;
-    if (rows.length === 0 || (count != null && offset >= count)) break;
+  };
+
+  // 1ページ目で総件数を得て、残りのページを同時FACET_PAGE_CONCURRENCY件までで取得する
+  // (13,000件超を1ページずつ直列に取るとキャッシュ切れ時の表示が数秒遅れていた。2026-09-25計測)。
+  const first = await fetchPage(0, true);
+  collect(first.rows);
+  if (first.count == null) {
+    // 総件数が得られない場合は従来どおり直列で、空ページまで読む。
+    for (let pageIndex = 1, last = first.rows.length; last === FACET_PAGE_SIZE; pageIndex++) {
+      const p = await fetchPage(pageIndex, false);
+      collect(p.rows);
+      last = p.rows.length;
+    }
+  } else {
+    const pageCount = Math.ceil(first.count / FACET_PAGE_SIZE);
+    let next = 1;
+    const worker = async () => {
+      while (next < pageCount) {
+        const pageIndex = next++;
+        collect((await fetchPage(pageIndex, false)).rows);
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(FACET_PAGE_CONCURRENCY, Math.max(0, pageCount - 1)) }, worker));
   }
 
   const value: WorldFacets = {

@@ -407,6 +407,15 @@ describe("getFacetsFromSupabase", () => {
     expect(facets.cardTypes).toContain("EPIC");
   });
 
+  it("複数ページを並列に取得しても、主キー順の各ページを1回ずつ全件走査する(ページ境界の値も欠落しない)", async () => {
+    const rows = Array.from({ length: 4321 }, (_, i) => makeCardRow(String(100000 + i), { card_type: "EPIC" }));
+    for (const i of [0, 999, 1000, 2999, 3000, 4320]) rows[i] = { ...rows[i], card_type: `EDGE-${i}` };
+    const client = createFakeReferenceDataClient({ world_player_cards: rows.slice().reverse(), player_card_analysis: [] });
+    const facets = await getFacetsFromSupabase(client as never);
+    for (const i of [0, 999, 1000, 2999, 3000, 4320]) expect(facets.cardTypes).toContain(`EDGE-${i}`);
+    expect(facets.cardTypes).toHaveLength(7);
+  });
+
   it("ページング途中で失敗した場合、部分結果をキャッシュせず例外を投げる", async () => {
     // 1,500件を1,000件区切りで2ページに分ける想定のうち、2ページ目相当を失敗させたいが、
     // フェイククライアントはテーブル単位でしか失敗を切り替えられないため、ここでは
