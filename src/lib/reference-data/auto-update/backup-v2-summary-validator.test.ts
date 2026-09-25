@@ -3,7 +3,7 @@ import path from "node:path";
 import { BACKUP_V2_ADDED_COLUMNS, buildColumnCoverageSql } from "./backup-column-coverage";
 import { buildBackupSummaryArtifact, serializeBackupSummaryArtifact } from "./backup-summary-artifact";
 import { RUN7_BASELINE_ROW_COUNTS, validateBackupV2Summary } from "./backup-v2-summary-validator";
-import { resolveSummaryPath } from "./backup-v2-summary-validator-cli";
+import { parseExpectedCounts, resolveSummaryPath } from "./backup-v2-summary-validator-cli";
 
 /** Backup v2 workflow(category pre-apply)が成功した場合の要約artifactと同じ形(値は架空)。 */
 function validSummary(): Record<string, unknown> {
@@ -128,6 +128,22 @@ describe("Backup v2要約artifactの検証(Stage 3)", () => {
     const doc = JSON.parse(artifactText());
     doc.summary.extra = 1;
     expect(validateBackupV2Summary(JSON.stringify(doc)).problems).toContain("summary_key_unexpected:extra");
+  });
+});
+
+describe("CLI: 期待行数の指定", () => {
+  it("4 tableちょうど・0以上の整数だけを受け付け、省略時はnull(行数を照合しない)", () => {
+    expect(parseExpectedCounts(undefined)).toBeNull();
+    expect(parseExpectedCounts("--expected-counts=world_player_cards:13297,managers:67,player_card_analysis:19,import_batches:10")).toEqual({ world_player_cards: 13297, managers: 67, player_card_analysis: 19, import_batches: 10 });
+    for (const bad of ["--expected-counts=managers:67", "--expected-counts=world_player_cards:-1,managers:67,player_card_analysis:19,import_batches:10", "--expected-counts=users:1,managers:67,player_card_analysis:19,import_batches:10", "--counts=x", "--expected-counts=world_player_cards:1,world_player_cards:1,managers:1,player_card_analysis:1"]) {
+      expect(() => parseExpectedCounts(bad), bad).toThrow("summary_expected_counts_invalid");
+    }
+  });
+
+  it("指定した期待行数と違えば無効", () => {
+    const text = artifactText();
+    expect(validateBackupV2Summary(text, { baselineRowCounts: { ...RUN7_BASELINE_ROW_COUNTS } }).ok).toBe(true);
+    expect(validateBackupV2Summary(text, { baselineRowCounts: { ...RUN7_BASELINE_ROW_COUNTS, managers: 67 } }).problems).toContain("row_count_differs_from_run7:managers");
   });
 });
 

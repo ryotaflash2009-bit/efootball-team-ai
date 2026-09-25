@@ -46,7 +46,9 @@ does not run them.
 9. **Validate** (local, no network):
    ```
    npx tsc -p tsconfig.backup-summary-validation.json
-   node scripts/validate-backup-v2-summary-entry.mjs ./data/stage3-backup-v2/reference-data-backup-summary.json
+   node scripts/validate-backup-v2-summary-entry.mjs ./data/stage3-backup-v2/reference-data-backup-summary.json \
+     --expected-counts=world_player_cards:<n>,managers:<n>,player_card_analysis:<n>,import_batches:<n>
+   (use the Production counts at that time; without the option row counts are not compared)
    ```
    Expected `"verdict": "BACKUP_V2_VALID"`. Claude Code can also run this for you.
 10. **Cleanup**: none needed. The job deletes its plaintext temp file and fails if one is left; the
