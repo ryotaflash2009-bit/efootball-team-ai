@@ -1,21 +1,23 @@
-name: Reference data update detection (manual; schedule needs owner approval)
+name: Reference data update detection (weekly + manual; detection only)
 
 # Automatic update DETECTION only (no Secrets, no Environment, no Production connection).
 #
-# - Trigger: workflow_dispatch ONLY. There is intentionally NO `schedule:` trigger yet: adding it is an
-#   owner-approved step. The proposed trigger (weekly, low load: ~443 World page requests + 1 managers
-#   request per run) is:
-#     # schedule:
-#     #   - cron: "17 18 * * 0"   # Sundays 18:17 UTC (Mondays 03:17 JST)
-# - The job is skipped unless the repository variable REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED is
-#   exactly "true"; the CLI re-checks it before any upstream request.
+# - Triggers: weekly schedule (owner-approved 2026-09-25 after the first manual detection Run #1 succeeded;
+#   low load: ~444 World page requests + 1 managers request per run) and workflow_dispatch with confirm "detect".
+#   This is the ONLY workflow with a schedule; Backup, apply, rollback and Restore are never scheduled.
+# - Both triggers pass the same gate: the job is skipped unless the repository variable
+#   REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED is exactly "true" (unset, "false", "True" → skipped, 0 requests);
+#   the CLI re-checks the variable and the trigger (schedule, or workflow_dispatch + "detect") before any request.
 # - What it does: fetch the World catalogue once (caps in stage4-world.ts) and managers.json once, normalise,
 #   and compare source checksums/counts/timestamps with docs/production-readiness/reference-data-applied-state.json.
-#   Output: a non-secret summary (no_change / update_available / attention_required).
-# - It never runs plan/dry-run/apply against Production, Backup, rollback or Restore; those stay
-#   approval-gated manual runs of the apply and backup workflows.
+#   Output: a non-secret summary (no_change / update_available / attention_required); no page bodies are stored.
+#   attention_required or a stopped fetch fails the job (the owner gets GitHub's failure notification).
+# - It never runs plan/dry-run/apply against Production, Backup, rollback or Restore, never updates the
+#   applied-state record, never commits or opens PRs (contents: read only); those stay owner-approved steps.
 
 on:
+  schedule:
+    - cron: "17 18 * * 0"   # Sundays 18:17 UTC = Mondays 03:17 JST (GitHub cron is UTC)
   workflow_dispatch:
     inputs:
       confirm:
@@ -70,6 +72,7 @@ jobs:
       - name: Detect upstream changes (no Secrets, no Production)
         env:
           REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED: ${{ vars.REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED }}
+          REFERENCE_DATA_DETECTION_CONFIRM: ${{ inputs.confirm }}
           REFERENCE_DATA_DETECTION_SUMMARY_PATH: ${{ runner.temp }}/reference-data-detection-summary.json
         run: node scripts/run-update-detection-entry.mjs
 

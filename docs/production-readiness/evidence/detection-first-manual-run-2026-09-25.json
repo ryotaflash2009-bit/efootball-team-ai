@@ -1,0 +1,94 @@
+{
+  "evidence": "first manual update detection (upstream only; no Production)",
+  "recordedAt": "2026-09-25",
+  "containsSecrets": false,
+  "containsRowData": false,
+  "ownerOperations": {
+    "repositoryVariable": { "name": "REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED", "value": "true", "setBy": "owner" },
+    "dispatch": { "by": "owner", "branch": "main", "confirm": "detect", "environmentApproval": "none (the workflow has no Environment)" },
+    "rerun": false
+  },
+  "run": {
+    "workflow": ".github/workflows/reference-data-update-detection.yml",
+    "runId": 36126140433,
+    "runNumber": 1,
+    "attempt": 1,
+    "event": "workflow_dispatch",
+    "headBranch": "main",
+    "headSha": "e5ee50caf2f0eec34aafc53538b56d10fd6c28f3",
+    "createdAt": "2026-09-25T10:50:28Z",
+    "completedAt": "2026-09-25T11:16:33Z",
+    "conclusion": "success",
+    "jobs": { "detect": "success" },
+    "stepsGreen": ["Runtime smoke test (without the enable variable it must stop before any upstream request)", "Detect upstream changes (no Secrets, no Production)", "Upload the detection summary"],
+    "url": "https://github.com/ryotaflash2009-bit/efootball-team-ai/actions/runs/36126140433"
+  },
+  "artifact": {
+    "name": "reference-data-detection-summary",
+    "sizeBytes": 706,
+    "summarySha256": "9d8a698fa50939e2840e451631a5ec800ae2597d1df5d7d5ce3d45b7769a10ed",
+    "summaryFormat": "v1 (no schema field; predates the explicit safety fields added with the weekly schedule)",
+    "localCopyDeleted": true
+  },
+  "validation": {
+    "validator": "scripts/validate-detection-summary-entry.mjs",
+    "verdict": "DETECTION_SUMMARY_VALID",
+    "problems": [],
+    "explicitSafetyFields": false
+  },
+  "upstream": {
+    "requests": 445,
+    "worldRequests": 444,
+    "managersRequests": 1,
+    "non200": 0,
+    "http403": 0,
+    "http429": 0,
+    "challenge": 0,
+    "retries": 0,
+    "totalBytes": 29123516,
+    "worldRequestContract": "444 = World pages for 13,297 cards (same as World Plan Run #7: 444 pages, 444 requests); cap 462 requests / 40 MiB",
+    "requestsOutsideWorldAndManagers": 0,
+    "fetchedAt": "2026-09-25T10:50:48.137Z"
+  },
+  "quality": {
+    "ok": true,
+    "worldComplete": true,
+    "duplicateIdentities": 0,
+    "schemaDrift": 0,
+    "basis": "Run #1 used the v1 CLI: a duplicate identity, schema drift or incomplete snapshot stops the run with ok=false before any verdict, so ok=true with 13,297 records means 0 / 0 / complete. The v1 summary does not list these counts; v2 summaries do."
+  },
+  "world": {
+    "decision": "update_available",
+    "recordCount": 13297,
+    "appliedRecordCount": 13297,
+    "sourceChecksum12": "ed068757c555",
+    "appliedChecksum12": "33fb0c2ee49c",
+    "checksumMatchesApplied": false,
+    "signals": [],
+    "timestamps": { "min": "2026-04-28T17:17:02.021Z", "max": "2026-09-24T17:03:33.478Z", "appliedMax": "2026-09-24T17:03:33.478Z", "futureCount": 0, "regression": false, "rawWithoutTimezone": 13297 },
+    "interpretation": "Same card count and same newest appearance.updatedAt as the applied World data, so no card was added, removed or had its appearance data re-dated since the apply. The checksum still differs, so some upstream field that does not advance appearance.updatedAt changed within ~1.5 hours of the plan fetch (09:21 UTC). The World apply showed such churn: 5,766 of 5,897 updates were card_rating-only. Detection deliberately stores no row data, so which fields changed can only be seen in an approval-gated Plan run. Nothing was applied."
+  },
+  "managers": {
+    "decision": "no_change",
+    "recordCount": 67,
+    "appliedRecordCount": 67,
+    "sourceChecksum12": "8c1d654ec48e",
+    "appliedChecksum12": "8c1d654ec48e",
+    "checksumMatchesApplied": true
+  },
+  "comparisonBasis": "applied-state (docs/production-readiness/reference-data-applied-state.json) stores the applied candidate's sourceChecksum; detection computes the same combined checksum per dataset (fixed in PR #65 before this run).",
+  "productionEffects": {
+    "productionAccess": 0,
+    "productionSql": 0,
+    "r2Access": 0,
+    "secretsUsed": 0,
+    "backup": "not started",
+    "plan": "not started",
+    "dryRun": "not started",
+    "apply": "not started",
+    "rollback": "not started",
+    "restore": "not started",
+    "appliedStateUpdated": false
+  },
+  "verdict": "DETECTION_RUN_VALID: ok; World update_available (review by the owner, nothing automatic); managers no_change"
+}

@@ -11,7 +11,12 @@
     "resolveJsonModule": true,
     "sourceMap": false,
     "declaration": false,
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
-  "files": ["src/lib/reference-data/auto-update/update-detection-cli.ts"]
+  "files": [
+    "src/lib/reference-data/auto-update/update-detection-cli.ts",
+    "src/lib/reference-data/auto-update/detection-summary-validator-cli.ts"
+  ]
 }
