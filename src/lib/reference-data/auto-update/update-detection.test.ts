@@ -9,7 +9,9 @@ import { collectManagersSnapshot } from "./update-dry-run";
 import { APPLIED_STATE_FILE, parseAppliedState, runDetection, type AppliedState } from "./update-detection";
 import { main as detectionMain } from "./update-detection-cli";
 import { SYNTHETIC_MANAGERS, managersResponse } from "./__fixtures__/stage4-fixtures";
-import { recordedWorldPages, upstreamPlayers } from "./__fixtures__/stage4-world-fixtures";
+import { buildManagersCandidate } from "./stage4-managers";
+import { buildWorldCandidate } from "./stage4-world";
+import { recordedWorldPages, upstreamPlayers, worldState } from "./__fixtures__/stage4-world-fixtures";
 
 const FETCHED = "2026-09-25T09:00:00.000Z";
 const noSleep = async () => undefined;
@@ -22,10 +24,14 @@ function transport(world = recordedWorldPages()) {
   return createRecordedFixtureTransport(exchanges);
 }
 
+/** applied-stateに記録される値と同じ基準: 適用したcandidateのsourceChecksum(先頭12文字)。 */
 async function managersChecksum12(): Promise<string> {
-  const m = await collectManagersSnapshot(createRecordedFixtureTransport([{ request: buildManagersRequest(), responses: [{ status: 200, headers: { "content-type": "text/plain" }, bodyText: JSON.stringify(SYNTHETIC_MANAGERS) }] }]), { fetchedAt: FETCHED, sleep: noSleep });
-  if (!m.ok) throw new Error("fixture");
-  return buildStagingDataset(m.snapshot).sourceChecksum.slice(0, 12);
+  const b = await buildManagersCandidate(managersResponse(SYNTHETIC_MANAGERS), FETCHED, [], FETCHED);
+  return b.candidate.sourceChecksum.slice(0, 12);
+}
+async function worldChecksum12(): Promise<string> {
+  const b = await buildWorldCandidate(recordedWorldPages(), FETCHED, worldState(), FETCHED);
+  return b.candidate.sourceChecksum.slice(0, 12);
 }
 
 const applied = (patch: Partial<AppliedState["datasets"]> = {}): AppliedState => ({
@@ -51,6 +57,24 @@ describe("定期検出(Productionなし)", () => {
     expect(r.world.signals).toContain("no_applied_baseline");
     expect(r.world.timestamps).toMatchObject({ rawWithoutTimezone: 5, futureCount: 0 });
     expect(JSON.stringify(r)).not.toMatch(/Synthetic|合成/);
+  });
+
+  it("適用したcandidateと同じupstreamならWorld・managersともno_change(applied-stateと同じchecksum基準)", async () => {
+    const r = await runDetection({
+      transport: transport(),
+      fetchedAt: FETCHED,
+      sleep: noSleep,
+      applied: applied({
+        world_player_cards: { sourceChecksum12: await worldChecksum12(), recordCount: 5, appliedAt: null, maxAppearanceUpdatedAt: "2026-04-01T00:00:00.000Z", evidence: null },
+        managers: { sourceChecksum12: await managersChecksum12(), recordCount: 5, appliedAt: null, evidence: null },
+      }),
+    });
+    expect(r.ok && r.world.decision).toBe("no_change");
+    expect(r.ok && r.managers.decision).toBe("no_change");
+    // staging単体のchecksum(誤った基準)とは一致しないこと = 基準の取り違えを検出できる。
+    const m = await collectManagersSnapshot(createRecordedFixtureTransport([{ request: buildManagersRequest(), responses: [{ status: 200, headers: { "content-type": "text/plain" }, bodyText: JSON.stringify(SYNTHETIC_MANAGERS) }] }]), { fetchedAt: FETCHED, sleep: noSleep });
+    if (!m.ok) throw new Error("fixture");
+    expect(buildStagingDataset(m.snapshot).sourceChecksum.slice(0, 12)).not.toBe(await managersChecksum12());
   });
 
   it("件数の大きな減少・将来日時・逆行はattention_required(applyへは進まない判定)", async () => {

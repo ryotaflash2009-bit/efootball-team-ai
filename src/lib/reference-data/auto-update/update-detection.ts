@@ -3,6 +3,7 @@ import type { SourceTransport } from "./source-transport";
 import { analyzeSourceTimestamps } from "./stage1-verification";
 import { collectManagersSnapshot, collectWorldFullSnapshot } from "./update-dry-run";
 import { UPDATE_POLICY_THRESHOLDS } from "./update-policy";
+import { computeUpdateTotalChecksum } from "./update-contract";
 import { WORLD_LIMITS } from "./stage4-world";
 
 /**
@@ -106,8 +107,10 @@ export async function runDetection(input: { transport: SourceTransport; fetchedA
   });
   const ts = analyzeSourceTimestamps(normalized, worldRaw, input.fetchedAt, input.applied.datasets.world_player_cards.maxAppearanceUpdatedAt ?? null);
   const worldSignals = ts.findings.filter((f) => f !== "upstream_timestamp_without_timezone_interpreted_as_utc");
-  const world = decide(ws.sourceChecksum, ws.rowCount, input.applied.datasets.world_player_cards, UPDATE_POLICY_THRESHOLDS.worldPlayerCards.countDropHardBlockRatio, worldSignals);
-  const managers = decide(ms.sourceChecksum, ms.rowCount, input.applied.datasets.managers, UPDATE_POLICY_THRESHOLDS.managers.countDropHardBlockRatio, []);
+  // applied-stateの値は、適用したcandidateのsourceChecksum(1 tableでもcomputeUpdateTotalChecksumで結合した値)。
+  // 同じ基準で比べる(staging単体のchecksumと比べると、変化が無くても常に不一致になる)。
+  const world = decide(computeUpdateTotalChecksum({ world_player_cards: ws.sourceChecksum }), ws.rowCount, input.applied.datasets.world_player_cards, UPDATE_POLICY_THRESHOLDS.worldPlayerCards.countDropHardBlockRatio, worldSignals);
+  const managers = decide(computeUpdateTotalChecksum({ managers: ms.sourceChecksum }), ms.rowCount, input.applied.datasets.managers, UPDATE_POLICY_THRESHOLDS.managers.countDropHardBlockRatio, []);
   return {
     ok: true,
     world: { ...world, timestamps: { total: ts.total, rawWithoutTimezone: ts.rawWithoutTimezone, min: ts.min, max: ts.max, futureCount: ts.futureCount, regression: ts.regression, mostCommonShare: ts.mostCommonShare } },
