@@ -148,7 +148,7 @@ async function write() {
   L.push("");
   L.push("| 結果 | 項目 | 詳細 |");
   L.push("|---|---|---|");
-  for (const r of results) L.push(`| ${r.pass ? "PASS" : "FAIL"} | ${r.name} | ${(r.detail || "").replace(/\|/g, "\\|")} |`);
+  for (const r of results) L.push(`| ${r.pass ? "PASS" : "FAIL"} | ${r.name} | ${(r.detail || "").replace(/\\/g, "\\\\").replace(/\|/g, "\\|")} |`);
   L.push("");
   const failed = results.filter((r) => !r.pass);
   L.push(`## 判定: ${failed.length === 0 ? "全項目 PASS" : `${failed.length} 件 FAIL`}`);
