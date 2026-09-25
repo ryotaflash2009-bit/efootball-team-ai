@@ -30,7 +30,7 @@ describe("検出workflowの静的監査", () => {
   const body = code(yaml);
 
   it("workflow_dispatchだけで、schedule・push・pull_requestトリガーを持たない", () => {
-    expect(body).toMatch(/^on:\s*\n\s+workflow_dispatch:\s*$/m);
+    expect(body).toMatch(/^on:\s*\n\s+workflow_dispatch:\s*\n\s+inputs:/m);
     expect(body).not.toMatch(/^\s*(schedule|push|pull_request|pull_request_target|workflow_run|repository_dispatch)\s*:/m);
   });
 
@@ -42,7 +42,10 @@ describe("検出workflowの静的監査", () => {
   });
 
   it("変数で明示有効化されない限りjobはskipし、実行するのは検出CLIだけ(Production・Backup・applyのentryを呼ばない)", () => {
-    expect(body).toContain(`if: \${{ vars.${DETECTION_ENABLE_VARIABLE} == 'true' }}`);
+    expect(body).toContain(`if: \${{ vars.${DETECTION_ENABLE_VARIABLE} == 'true' && (github.event_name == 'schedule' || inputs.confirm == 'detect') }}`);
+    const confirmBlock = body.slice(body.indexOf("      confirm:"), body.indexOf("permissions:"));
+    expect(confirmBlock).toContain("'detect'");
+    expect(confirmBlock).toContain("required: true");
     expect(body).toContain("npx tsc -p tsconfig.update-detection.json");
     expect(body).toContain("node scripts/run-update-detection-entry.mjs");
     expect(body).not.toMatch(/run-production-apply-entry|run-production-backup-entry|tsconfig\.production-apply|tsconfig\.backup-execution/);

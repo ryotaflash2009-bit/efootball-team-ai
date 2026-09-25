@@ -17,6 +17,11 @@ name: Reference data update detection (manual; schedule needs owner approval)
 
 on:
   workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type 'detect' to run a manual detection (upstream only; no Production, no Backup, no apply)."
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -27,7 +32,9 @@ concurrency:
 
 jobs:
   detect:
-    if: ${{ vars.REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED == 'true' }}
+    # Runs only when the owner enabled the variable AND (a scheduled run, once a schedule is approved, or a manual
+    # run confirmed with exactly "detect"). Otherwise the job is skipped and no request is sent.
+    if: ${{ vars.REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED == 'true' && (github.event_name == 'schedule' || inputs.confirm == 'detect') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
