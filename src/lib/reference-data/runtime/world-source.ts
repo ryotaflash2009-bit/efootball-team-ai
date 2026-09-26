@@ -362,16 +362,16 @@ export function _resetFacetCacheForSupabase(): void {
 
 export async function getSourceMetaFromSupabase(client?: ReferenceDataClient): Promise<WorldSourceMeta> {
   const c = await getClient("world.sourceMeta", client);
-  const { count, error, status } = await c.from("world_player_cards").select("world_card_id", { count: "exact", head: true });
-  if (error) throw normalizeQueryError(error, { operation: "world.sourceMeta", status });
-
   // 既知の制約: world_sync_state/world_sync_runs相当は未移行のため、syncFinishedAt/syncStatusは
   // 各行が持つdataset_version/fetched_atの最新値から代替する(推測ではなく実データの範囲で分かる情報のみ使う)。
-  const {
-    data: latest,
-    error: latestError,
-    status: latestStatus,
-  } = await c.from("world_player_cards").select("fetched_at").order("fetched_at", { ascending: false }).limit(1).maybeSingle();
+  // 件数と最新fetched_atは独立した照会なので並列に行う(エラーの判定順は従来どおり件数 → 最新)。
+  const [countRes, latestRes] = await Promise.all([
+    c.from("world_player_cards").select("world_card_id", { count: "exact", head: true }),
+    c.from("world_player_cards").select("fetched_at").order("fetched_at", { ascending: false }).limit(1).maybeSingle(),
+  ]);
+  const { count, error, status } = countRes;
+  if (error) throw normalizeQueryError(error, { operation: "world.sourceMeta", status });
+  const { data: latest, error: latestError, status: latestStatus } = latestRes;
   if (latestError) throw normalizeQueryError(latestError, { operation: "world.sourceMeta", status: latestStatus });
 
   return {
