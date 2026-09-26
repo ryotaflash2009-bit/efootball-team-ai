@@ -1,5 +1,5 @@
 {
-  "evidence": "F-060 diagnosis history (verified) and F-043 before/after card (pre-merge)",
+  "evidence": "F-060 diagnosis history (verified) and F-043 before/after card (verified)",
   "recordedAt": "2026-09-27",
   "containsSecrets": false,
   "containsRowDataOrRawHtml": false,
@@ -21,14 +21,61 @@
       "nonGetRequests": 0,
       "memoryHeapGrowth": 1.21,
       "security": "18/18",
-      "historySteps": ["empty state", "corrupted item skipped + notice, delete one (confirmed), delete all (confirmed), reload stays empty, storage cleared", "maximum 50 entries rendered", "storage unavailable (localStorage throws): unavailable message, no success", "save from diagnosis, duplicate not added, listed without internal IDs, open as share link (desktop and mobile)"]
+      "historySteps": [
+        "empty state",
+        "corrupted item skipped + notice, delete one (confirmed), delete all (confirmed), reload stays empty, storage cleared",
+        "maximum 50 entries rendered",
+        "storage unavailable (localStorage throws): unavailable message, no success",
+        "save from diagnosis, duplicate not added, listed without internal IDs, open as share link (desktop and mobile)"
+      ]
     },
     "performanceNote": "perf 12/14 in that run: mobile /compare (2) and /best-xi (1) recorded errors; the /best-xi error was React #418 (hydration). Not reproducible in 32 later loads (public cold/warm, with and without the auth test double; local next dev with TZ=UTC and Tokyo browser). The run started right after the F-060 deployment, which changed the sidebar markup; the likely cause is HTML/JS skew during the deployment switch. Re-checked in the F-043 public run.",
-    "privacy": { "storage": "localStorage only, per storage scope", "serverWrites": 0, "analytics": 0, "exportContainsIds": false }
+    "privacy": {
+      "storage": "localStorage only, per storage scope",
+      "serverWrites": 0,
+      "analytics": 0,
+      "exportContainsIds": false
+    }
   },
   "f043": {
     "unitTests": 7,
-    "localBlackBox": { "viewports": 8, "steps": 568, "pass": 567, "onlyFailure": "known local-only manager-card flake (0/30 on the public site)" },
-    "contract": "same rules version only; before/after decided by saved time, not selection order; per-category improved/worse/unchanged/not comparable; no causal claims; comparison share link = two v1 tokens, no new payload format; PNG image without names or IDs"
-  }
+    "localBlackBox": {
+      "viewports": 8,
+      "steps": 568,
+      "pass": 567,
+      "onlyFailure": "known local-only manager-card flake (0/30 on the public site)"
+    },
+    "contract": "same rules version only; before/after decided by saved time, not selection order; per-category improved/worse/unchanged/not comparable; no causal claims; comparison share link = two v1 tokens, no new payload format; PNG image without names or IDs",
+    "pr": 77,
+    "mergeCommit": "d608266",
+    "publicBlackBox": {
+      "checkedAt": "2026-09-26T18:10:26.345Z",
+      "viewports": 8,
+      "steps": 568,
+      "pass": 568,
+      "consoleErrors": 0,
+      "warnings": 0,
+      "networkErrors": 0,
+      "http5xx": 0,
+      "unexpected4xx": 0,
+      "overflowSteps": 0,
+      "performance": "13/14",
+      "memoryHeapGrowth": 1.21,
+      "security": "18/18",
+      "compareSteps": [
+        "before/after: order by saved time, category trends, rules-version mismatch refused (all 8 viewports)"
+      ]
+    }
+  },
+  "knownIssues": [
+    {
+      "id": "KI-hydration-early-bootstrap",
+      "status": "open (framework-level, recoverable)",
+      "symptom": "Rarely on a cold load: React #418 (hydration) followed by TypeError 'reading parentNode' in the inline $RS script.",
+      "rate": "public /managers mobile-390 cold loads: about 1 in 10 (1/10, 2/10, 0/12, 4/30 in separate batches); /squads 0/10; desktop /managers 0/12; local next start 0/40 (also with throttling); local next dev 0/25",
+      "analysis": "DOM-removal trace from document start: in failing loads the async bootstrap scripts ran about 25-35 ms after navigation, while the document was still loading, and React immediately client-rendered the whole root (head meta/title and every body child, including the hidden streaming segments S:0/S:1). The later $RS then finds its placeholder gone. In passing loads the shell hydrates without removals and the segments are swapped in at about 0.9-1.5 s. The HTML order ($RS before $RC) is correct and metadata streaming is not the cause (checked with htmlLimitedBots; the content segment still streams).",
+      "impact": "React recovers by client rendering; all functional black-box steps pass (568/568). No data or security impact.",
+      "decision": "No code change: the race is inside Next 15.5 streaming/bootstrap with its vendored React. Re-check after the next Next.js upgrade. The F-060 note attributing the /best-xi #418 to deployment skew is superseded by this analysis."
+    }
+  ]
 }

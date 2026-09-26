@@ -969,7 +969,7 @@ async function main() {
         await settle(30000);
         const loadingDoneMs = Date.now() - t0;
         await sleep(800);
-        runs.push({ kind: i === 0 ? "cold" : "warm", ...(await ev(PERF_COLLECT)), loadingIndicatorMs: loadingDoneMs, readyMs: loadingMs, errors: cap.consoleErrors.length + cap.exceptions.length + cap.failed.length + cap.s5xx.length });
+        runs.push({ kind: i === 0 ? "cold" : "warm", ...(await ev(PERF_COLLECT)), loadingIndicatorMs: loadingDoneMs, readyMs: loadingMs, errors: cap.consoleErrors.length + cap.exceptions.length + cap.failed.length + cap.s5xx.length, errorDetails: [...cap.consoleErrors, ...cap.exceptions, ...cap.failed, ...cap.s5xx].map((x) => String(x).slice(0, 160)) });
       }
       const warm = runs.filter((r) => r.kind === "warm");
       const med = (k) => Math.round(warm.map((r) => r[k]).sort((a, b) => a - b)[Math.floor(warm.length / 2)]);
@@ -979,6 +979,7 @@ async function main() {
         clsMax: Math.max(...runs.map((r) => r.cls)), longTaskMax: Math.max(...runs.map((r) => r.longTaskMax)), longTaskTotalMax: Math.max(...runs.map((r) => r.longTaskTotal)),
         requests: runs[0].requests, duplicatesMax: Math.max(...runs.map((r) => r.duplicates)), slowestMs: Math.max(...runs.map((r) => r.slowestMs)),
         apiCount: runs[0].apiCount, apiMaxMs: Math.max(...runs.map((r) => r.apiMaxMs)), loadingIndicatorWarm: med("loadingIndicatorMs"), errors: runs.reduce((a, r) => a + r.errors, 0),
+        errorDetails: [...new Set(runs.flatMap((r) => r.errorDetails))].slice(0, 5),
       };
       // 重大: warm load中央値 > 3000ms、long task合計 > 1000ms、CLS > 0.25、エラー。
       row.ok = row.warmLoadMedian <= 3000 && row.longTaskTotalMax <= 1000 && row.clsMax <= 0.25 && row.errors === 0;

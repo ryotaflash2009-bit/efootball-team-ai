@@ -62,7 +62,7 @@
 | F-040 | 診断結果カード（スカッド／ビルド） | completed | 80% | F-026 | — | — | 不要 | 不要 | Free | `squad-diagnosis-share.ts`（内部IDを含めない） | — |
 | F-041 | 画像保存（PNG） | completed | 80% | F-040 | — | L | 不要 | 不要 | Free | `squad-diagnosis-image.ts`、`build-diagnosis-card-image.ts` | 総合black-boxへ保存操作を追加 |
 | F-042 | 共有URL（診断カード） | verified | 100% | F-040 | — | —（サーバー保存なし・名前/ID なし） | 不要 | 不要 | Free | PR #75、`evidence/f042-share-url-2026-09-27.json`（公開 black-box 522/522） | 比較の共有URLは F-043 で追加 |
-| F-043 | 改善前後の比較カード | completed（公開環境での確認待ち） | 95% | F-026, F-060 | — | L | 不要 | 不要 | Free | tests 7件、ローカル black-box 8 viewport 567/568（ローカル限定の既知 flake のみ） | 公開確認後に verified |
+| F-043 | 改善前後の比較カード | verified | 100% | F-026, F-060 | — | L | 不要 | 不要 | Free | PR #77、`docs/production-readiness/evidence/f060-f043-2026-09-27.json`（公開 black-box 568/568） | 公開環境の稀な hydration 警告は既知の問題として記録（機能影響なし） |
 | F-044 | Pro向け詳細診断 | designed | 20% | F-026, F-120 | — | — | 要 | 任意 | Pro | 出力は基本/詳細に分離済み | 課金の判断まで deferred |
 
 ## 4. アカウントと公開範囲（Phase 4）
@@ -87,7 +87,7 @@
 | F-061 | 成長プロフィール | idea | 0% | F-060 | — | C | 要 | 不要 | Free | — |
 | F-062 | 友達との比較・ライバル | idea | 0% | F-055 | — | C | 要 | 不要 | Free | — |
 | F-070 | AI Best XI 高度化（戦術・監督・ブースター考慮） | partially_implemented | 40% | F-025 | R | L | 不要 | 不要 | Free | 監督適性の反映 |
-| F-071 | カテゴリ別パーセンタイル（スカッド・カード全体） | idea | 0% | F-026, reference data | R | — | 不要 | 不要 | Free | 分布の算出方法の設計 |
+| F-071 | カテゴリ別パーセンタイル（スカッド・カード全体） | designed | 10% | F-026, reference data | R | — | 不要 | 不要 | Free | 設計 `docs/product/f071-percentile-design.md`（標準最終値の全カード算出経路の確認が次） |
 | F-072 | 称号・バッジ | idea | 0% | F-026, F-071 | — | L | 不要 | 不要 | Free | 付与規則の原案確認（質問Q3） |
 | F-073 | 「あなたの一番」の自動発見 | idea | 0% | F-020, F-071 | R | L | 不要 | 不要 | Free | — |
 | F-074 | スカッド独自性評価 | idea | 0% | F-024, 利用統計 | R | C | 要 | 不要 | Free | 集計データが必要 |
