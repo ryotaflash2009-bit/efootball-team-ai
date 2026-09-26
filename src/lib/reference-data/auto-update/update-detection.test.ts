@@ -103,7 +103,10 @@ describe("定期検出(Productionなし)", () => {
     const state = parseAppliedState(readFileSync(path.join(root, APPLIED_STATE_FILE), "utf8"));
     const ev = JSON.parse(readFileSync(path.join(root, "docs", "production-readiness", "evidence", "stage4-managers-rehearsal-2026-09-24.json"), "utf8"));
     expect(state.datasets.managers).toMatchObject({ sourceChecksum12: ev.candidate.sourceChecksum12, recordCount: ev.diff.after });
-    const wev = JSON.parse(readFileSync(path.join(root, "docs", "production-readiness", "evidence", "stage4-world-rehearsal-2026-09-25.json"), "utf8"));
+    // Worldは適用のたびにEvidenceが増えるため、applied-stateが指す最新のEvidenceと照合する。
+    const worldEvidence = state.datasets.world_player_cards.evidence;
+    expect(worldEvidence).toMatch(/^docs\/production-readiness\/evidence\/[a-z0-9-]+\.json$/);
+    const wev = JSON.parse(readFileSync(path.join(root, worldEvidence as string), "utf8"));
     expect(state.datasets.world_player_cards).toMatchObject({
       sourceChecksum12: wev.candidate.sourceChecksum12, recordCount: wev.diff.after, appliedAt: wev.apply.appliedAt, maxAppearanceUpdatedAt: wev.sourceTimestamps.max,
     });
