@@ -151,8 +151,16 @@ describe("要約v2(安全項目を明示)", () => {
       managers: { decision: "no_change", recordCount: 67, appliedRecordCount: 67, sourceChecksum12: "8c1d654ec48e", signals: [] },
       productionAccess: 0, automaticApply: false, nextStep: "update_available/attention_required → owner runs the approval-gated plan", checkedAt: "2026-09-25T11:16:30.393Z",
     };
+    // Run #1時点のapplied-state(2026-09-25。その後のWorld更新でリポジトリの記録は変わる)。
     const state = parseAppliedState(readFileSync(path.join(ROOT, APPLIED_STATE_FILE), "utf8"));
-    const v = validateDetectionSummary(JSON.stringify(v1), state);
+    const atRun1: AppliedState = {
+      ...state,
+      datasets: {
+        world_player_cards: { sourceChecksum12: "33fb0c2ee49c", recordCount: 13297, appliedAt: "2026-09-25T10:24:25.370Z", maxAppearanceUpdatedAt: "2026-09-24T17:03:33.478Z", evidence: null },
+        managers: { sourceChecksum12: "8c1d654ec48e", recordCount: 67, appliedAt: null, evidence: null },
+      },
+    };
+    const v = validateDetectionSummary(JSON.stringify(v1), atRun1);
     expect(v.verdict).toBe("DETECTION_SUMMARY_VALID");
     expect(v.facts).toMatchObject({ summaryVersion: 1, explicitSafetyFields: false, world: { checksumMatchesApplied: false }, managers: { checksumMatchesApplied: true }, worldMaxMatchesApplied: true });
   });

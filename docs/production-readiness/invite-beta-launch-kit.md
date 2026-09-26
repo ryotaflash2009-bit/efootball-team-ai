@@ -8,7 +8,7 @@ date are owner decisions.
 
 | Item | State |
 |---|---|
-| World cards | 13,297 (World import 2026-09-25 18:21 JST, applied_verified) |
+| World cards | 13,297 (World import 2026-09-26 22:54 JST, applied_verified; 2 structural updates after scheduled detection, `evidence/world-update-2026-09-26.json`) |
 | Managers | 67 (import 2026-09-24 19:31 JST, applied_verified) |
 | Player card analysis | 19 (unchanged) |
 | Scheduled update detection | weekly, Mondays 03:17 JST; upstream only; never applies anything |
@@ -40,7 +40,7 @@ date are owner decisions.
 ## 4. Owner acceptance test (phone and PC, about 15 minutes)
 
 On both a phone and a PC:
-1. Home: the World count shows 13,297 and the World import date shows 2026年9月25日.
+1. Home: the World count shows 13,297 and the World import date shows 2026年9月26日 (or later).
 2. Players: search a name you know (e.g. メッシ), filter by position, open one card → the detail shows
    stats, progression and physical data ("順位集計時点の全 13,009 件中").
 3. Compare: add two players.
@@ -86,5 +86,8 @@ If something feels wrong, note the page, device and what you did, and send it to
 | `./data/stagew/` (World rehearsal summaries and rail logs) | 18 files + 6 folders | fixed allowlist, one by one; no wildcard or recursive delete |
 | `./data/detect1/` (detection summary download) | 1 file + folder | same |
 | `./data/stage6/` + `./data/.public-url.txt` (public gate scripts, logs, measurements) | 13 files + folder | same; checked: not tracked, no symlink or reparse point, no secrets (the only "password" hits were the route names `/auth/forgot-password` and `/auth/update-password` in a build log) |
+
+| `./data/perf-inv/`, `./data/final-gate/`, `./data/server.pid` (performance measurements, local and public gate logs, the stopped local server's PID record) | 27 files + 2 folders | same checks; the local server (port 3100) was stopped by its verified PID before deletion |
+| `./data/planw11/`, `./data/backupw11/`, `./data/dryw12/`, `./data/applyw13/` (downloaded non-secret summaries of the 2026-09-26 World update; their facts are in `evidence/world-update-2026-09-26.json`) | 5 files + 6 folders | same checks |
 
 `./data` itself is kept. Official Evidence, Backups and R2 objects were not touched.
