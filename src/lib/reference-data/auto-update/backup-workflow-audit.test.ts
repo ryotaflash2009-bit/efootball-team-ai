@@ -27,8 +27,15 @@ describe("reference-data-production-backup.yml(実ファイル)", () => {
     expect(WORKFLOW_YAML).not.toMatch(/^\s*push\s*:/m);
   });
 
-  it("GitHub Environment承認を要求する", () => {
-    expect(WORKFLOW_YAML).toMatch(/environment:\s*production-backup-approval/);
+  it("手動実行はGitHub Environment承認を要求する。自動実行(orchestratorのpre-applyだけ)は承認者なしのautomation Environment", () => {
+    // 2026-09-27 本人指示(承認1回化): manual = production-backup-approval(承認必須)、automation = reference-data-automation。
+    expect(WORKFLOW_YAML).toContain("environment: ${{ inputs.execution == 'automation' && 'reference-data-automation' || 'production-backup-approval' }}");
+    expect(WORKFLOW_YAML).toMatch(/execution:\s*\n\s+description:[^\n]*\n\s+required: false\s*\n\s+type: choice\s*\n\s+options:\s*\n\s+- manual\s*\n\s+- automation\s*\n\s+default: manual/);
+    // automationは、orchestrator(github-actions[bot])・pre-apply・mainの場合以外はSecretを読む前に停止する。
+    const guard = WORKFLOW_YAML.slice(WORKFLOW_YAML.indexOf("Reject automation unless"), WORKFLOW_YAML.indexOf("Reject unless execution is exactly"));
+    expect(guard).toContain("inputs.execution == 'automation' && (github.actor != 'github-actions[bot]' || inputs.backup_category != 'pre-apply' || github.ref != 'refs/heads/main')");
+    expect(guard).toContain("exit 1");
+    expect(WORKFLOW_YAML.indexOf("Reject automation unless")).toBeLessThan(WORKFLOW_YAML.indexOf("${{ secrets."));
   });
 
   it("Secretが無い現状では、secretチェックステップで必ず失敗する設計になっている", () => {

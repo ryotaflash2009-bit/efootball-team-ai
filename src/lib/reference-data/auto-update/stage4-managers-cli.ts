@@ -29,6 +29,8 @@ import {
   type WorkflowRunFacts,
 } from "./stage4-managers";
 import { STAGE4_MANAGERS_APPROVAL_TOKEN, createUpstreamHttpTransport } from "./upstream-http-transport";
+import { PLAN_READER_ROLES, parseStateSnapshot, runPlanReadPreflight, serializeStateSnapshot } from "./stage4-state-snapshot";
+import type { ManagersProductionState } from "./stage4-managers";
 
 /**
  * Stage 4(managersだけ)のmode別処理。`production-apply-cli.ts`から呼ばれる。
@@ -75,6 +77,11 @@ export function readInput(dir: string, rel: string, maxBytes: number = MAX_INPUT
 
 export function writeOut(dir: string, name: string, data: unknown): void {
   writeFileSync(path.join(dir, "out", name), `${JSON.stringify(data, null, 2)}\n`, { encoding: "utf8", mode: 0o600 });
+}
+
+/** 文字列をそのまま書く(sha256を記録したスナップショット用。整形し直すとhashが変わるため)。 */
+export function writeOutText(dir: string, name: string, text: string): void {
+  writeFileSync(path.join(dir, "out", name), text, { encoding: "utf8", mode: 0o600 });
 }
 
 export function runId(env: Env, key: string): string {
@@ -142,13 +149,13 @@ export async function withClient<T>(config: ClientConfig, fn: (c: Client) => Pro
   }
 }
 
-/** preflight + 現在状態(読み取り専用transaction、終わったらrollback)。 */
-async function readState(client: Client) {
+/** Planの読み取り: 読み取り専用role・読み取り専用transactionで、書き込み権限が無いことを確認してから読む(終わったらrollback)。 */
+async function readStateReadOnly(client: Client) {
   await client.query("begin read only");
   try {
-    const pre = await runUpdaterPreflight(client);
-    if (!pre.ok) throw new Stage4Stop(`preflight_failed:${pre.problems.join("|")}`);
-    return await readManagersProductionState(client);
+    const pre = await runPlanReadPreflight(client);
+    if (!pre.ok) throw new Stage4Stop("plan_read_preflight_failed:" + pre.problems.join("|"));
+    return await readManagersProductionState(client, undefined, PLAN_READER_ROLES);
   } finally {
     await client.query("rollback").catch(() => undefined);
   }
@@ -162,16 +169,22 @@ async function plan(env: Env, db: ClientConfig): Promise<Stage4Outcome> {
   const fetchedAt = new Date().toISOString();
   return withClient(db, async (client) => {
     // Productionの読み取りが通らなければupstreamへ1件も送らない。
-    const state = await readState(client);
+    const state = await readStateReadOnly(client);
     const transport = createUpstreamHttpTransport({
       approval: STAGE4_MANAGERS_APPROVAL_TOKEN,
       maxRequests: { "efootball-world": 0, "managers-json": 1 },
       maxTotalBytes: 5_000_000,
     });
     const response = await fetchManagersOnce(transport, fetchedAt);
-    const b = await buildManagersCandidate(response, fetchedAt, state.managers, new Date().toISOString());
+    const now = new Date().toISOString();
+    const b = await buildManagersCandidate(response, fetchedAt, state.managers, now);
     const e = evaluateManagersPlan(b);
-    writeOut(dir, "stage4-managers-bundle.json", buildSourceBundle(response, fetchedAt, b, state.counts));
+    // Dry run は Production へ接続せず、このスナップショットから同じ候補を作る。JSONを経由しても同じ候補になることを確認する。
+    const snap = serializeStateSnapshot("managers", fetchedAt, state);
+    const replayed = await buildManagersCandidate(response, fetchedAt, parseStateSnapshot<ManagersProductionState>(snap.text, "managers", snap.sha256).managers, now);
+    if (replayed.plan.planChecksum !== b.plan.planChecksum || replayed.candidate.sourceChecksum !== b.candidate.sourceChecksum) throw new Stage4Stop("state_snapshot_not_deterministic");
+    writeOutText(dir, "stage4-managers-state.json", snap.text);
+    writeOut(dir, "stage4-managers-bundle.json", buildSourceBundle(response, fetchedAt, b, state.counts, snap.sha256));
     return {
       ok: e.ok,
       reasons: [...e.problems],
@@ -186,7 +199,8 @@ async function plan(env: Env, db: ClientConfig): Promise<Stage4Outcome> {
   });
 }
 
-async function dryRun(env: Env, db: ClientConfig): Promise<Stage4Outcome> {
+/** Dry run: Productionへ接続しない。PlanのartifactとスナップショットとBackup要約だけを使い、使い捨てPostgreSQLで検証する。 */
+async function dryRun(env: Env): Promise<Stage4Outcome> {
   const dir = workDir(env);
   const sha = commitSha(env);
   const planRunId = runId(env, "STAGE4_PLAN_RUN_ID");
@@ -206,11 +220,9 @@ async function dryRun(env: Env, db: ClientConfig): Promise<Stage4Outcome> {
   if (reasons.length > 0) return { ok: false, reasons, facts: {} };
 
   const now = new Date().toISOString();
-  const { state, b, e } = await withClient(db, async (client) => {
-    const state = await readState(client);
-    const b = await buildManagersCandidate(bundle.response, bundle.fetchedAt, state.managers, now);
-    return { state, b, e: evaluateManagersPlan(b) };
-  });
+  const state = parseStateSnapshot<ManagersProductionState>(readInput(dir, "plan/stage4-managers-state.json"), "managers", bundle.stateSha256);
+  const b = await buildManagersCandidate(bundle.response, bundle.fetchedAt, state.managers, now);
+  const e = evaluateManagersPlan(b);
   reasons.push(...e.problems);
   if (b.plan.planChecksum !== boundPlan) reasons.push("stale_plan");
   if (b.candidate.sourceChecksum !== boundSource) reasons.push("candidate_differs_from_plan_run");
@@ -331,11 +343,13 @@ async function verify(env: Env, db: ClientConfig): Promise<Stage4Outcome> {
 }
 
 /** mode別の処理。確認入力が一致しなければ接続前に停止する。 */
-export async function runStage4Mode(mode: Stage4Mode, env: Env, db: ClientConfig): Promise<Stage4Outcome> {
+/** dry-run は Production へ接続しないため db を受け取らない(null)。それ以外は db が必須。 */
+export async function runStage4Mode(mode: Stage4Mode, env: Env, db: ClientConfig | null): Promise<Stage4Outcome> {
   if (env.REFERENCE_DATA_APPLY_CONFIRM !== STAGE4_CONFIRM[mode]) return { ok: false, reasons: ["confirmation_mismatch"], facts: {} };
   try {
+    if (mode === "dry-run") return await dryRun(env);
+    if (!db) return { ok: false, reasons: ["db_config_missing"], facts: {} };
     if (mode === "plan") return await plan(env, db);
-    if (mode === "dry-run") return await dryRun(env, db);
     if (mode === "apply") return await apply(env, db);
     return await verify(env, db);
   } catch (err) {

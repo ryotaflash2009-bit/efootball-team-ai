@@ -1,0 +1,95 @@
+name: Reference data update orchestrator (automatic up to the Apply approval)
+
+# One-approval pipeline (owner decision 2026-09-27; docs/production-readiness/automated-update-pipeline.md).
+#
+# - Trigger: completion of the detection workflow (workflow_run), or workflow_dispatch with confirm "orchestrate"
+#   and the detection run id. No schedule, push or pull_request.
+# - Gate: skipped unless the repository variable REFERENCE_DATA_AUTO_UPDATE_PIPELINE_ENABLED is exactly "true"
+#   and the detection run succeeded on main.
+# - What it does, with NO Secret and NO Environment (GITHUB_TOKEN only: actions write to dispatch runs, contents read):
+#     detection summary -> Plan run -> pre-apply Backup run (execution=automation) -> Dry run -> Apply run
+#   Each run is a normal workflow_dispatch of the existing workflows on main; each summary is re-validated here
+#   (update-orchestrator.ts) and the pipeline stops at the first failed condition WITHOUT creating the Apply run.
+#   The Apply run then waits for the owner's single "Approve and deploy" on the `reference-data-production-apply`
+#   Environment (required reviewer, unchanged). This workflow never approves, never re-runs, never rolls back.
+# - Level 3 (automatic Apply without approval) is NOT implemented.
+
+on:
+  workflow_run:
+    workflows: ["Reference data update detection (weekly + manual; detection only)"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type 'orchestrate' to resume from a detection run (runs Plan, Backup and Dry run automatically; Apply still needs approval)."
+        required: true
+        type: string
+      detection_run_id:
+        description: "Run id of a successful detection run on main"
+        required: true
+        type: string
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: reference-data-update-orchestrator
+  cancel-in-progress: false
+
+jobs:
+  orchestrate:
+    if: >-
+      ${{ vars.REFERENCE_DATA_AUTO_UPDATE_PIPELINE_ENABLED == 'true' && github.ref == 'refs/heads/main' &&
+      ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main') ||
+      (github.event_name == 'workflow_dispatch' && inputs.confirm == 'orchestrate')) }}
+    runs-on: ubuntu-latest
+    # World plan ~25 min + Backup ~10 min + Dry run ~20 min + waits.
+    timeout-minutes: 150
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - name: Install dependencies (reproducible, no new packages)
+        run: npm ci
+
+      - name: Compile the orchestrator entrypoint (tsc, no bundler)
+        run: npx tsc -p tsconfig.update-orchestrator.json
+
+      - name: Runtime smoke test (invalid input must stop before any GitHub call)
+        env:
+          ORCHESTRATOR_DETECTION_RUN_ID: ""
+        run: |
+          set +e
+          out="$(node scripts/run-update-orchestrator-entry.mjs 2>&1)"
+          status=$?
+          set -e
+          echo "$out"
+          if [ "$status" -eq 0 ] || ! echo "$out" | grep -q "orchestrator_input_invalid"; then
+            echo "::error::orchestrator smoke test did not stop on invalid input"
+            exit 1
+          fi
+
+      - name: Run Plan, Backup and Dry run, then create the Apply run (waits for the owner's approval)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ORCHESTRATOR_DETECTION_RUN_ID: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || inputs.detection_run_id }}
+          ORCHESTRATOR_WORK_DIR: ${{ runner.temp }}/orchestrator
+        run: |
+          mkdir -p "$ORCHESTRATOR_WORK_DIR"
+          node scripts/run-update-orchestrator-entry.mjs
+
+      - name: Upload the approval summary (non-secret)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reference-data-update-approval
+          path: ${{ runner.temp }}/orchestrator/reference-data-update-approval.json
+          if-no-files-found: ignore
+          retention-days: 30

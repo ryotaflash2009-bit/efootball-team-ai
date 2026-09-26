@@ -3,6 +3,7 @@ import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { STAGE4_CONFIRM, buildManagersCandidate, buildSourceBundle } from "./stage4-managers";
 import { runStage4Mode } from "./stage4-managers-cli";
+import { serializeStateSnapshot } from "./stage4-state-snapshot";
 import { COMMIT_SHA, backupSummaryText, managersResponse, minutesAgo, runFacts, state } from "./__fixtures__/stage4-fixtures";
 
 /**
@@ -14,6 +15,7 @@ const DB = { host: "127.0.0.1", port: 1, user: "u", password: "never-printed-pas
 const FETCHED = "2026-09-24T09:00:00.000Z";
 let dir: string;
 let checksums: { source: string; plan: string };
+let stateText: string;
 
 function put(rel: string, data: unknown): void {
   const p = path.join(dir, rel);
@@ -30,7 +32,11 @@ beforeEach(async () => {
   const s = state();
   const b = await buildManagersCandidate(managersResponse(), FETCHED, s.managers, now.toISOString());
   checksums = { source: b.candidate.sourceChecksum, plan: b.plan.planChecksum };
-  put("plan/stage4-managers-bundle.json", buildSourceBundle(managersResponse(), FETCHED, b, s.counts));
+  // PlanがProduction状態をスナップショットとして残し、そのsha256をbundleに記録する(Dry runはProductionへ接続しない)。
+  const snap = serializeStateSnapshot("managers", FETCHED, s);
+  stateText = snap.text;
+  put("plan/stage4-managers-state.json", snap.text);
+  put("plan/stage4-managers-bundle.json", buildSourceBundle(managersResponse(), FETCHED, b, s.counts, snap.sha256));
   put("backup/reference-data-backup-summary.json", backupSummaryText("900", { world_player_cards: 1, managers: 4, player_card_analysis: 1, import_batches: 1 }));
   put("facts-plan.json", runFacts("plan", 101, { created: minutesAgo(now, 180), updated: minutesAgo(now, 170) }));
   put("facts-backup.json", runFacts("backup", 900, { created: minutesAgo(now, 90), updated: minutesAgo(now, 60) }));
@@ -63,10 +69,28 @@ const env = (mode: keyof typeof STAGE4_CONFIRM, extra: Record<string, string> = 
 });
 
 describe("Stage 4 CLI: 接続前の検査", () => {
-  it("dry-run: すべての入力が揃いbindingが一致すれば接続へ進む(ここでは到達不能portでconnect_failed)", async () => {
-    const r = await runStage4Mode("dry-run", env("dry-run"), DB);
+  it("dry-run: Productionへ接続せず(db=null)、スナップショットから候補を作り、使い捨てPostgreSQLの検証へ進む(ここでは到達不能portでconnect_failed)", async () => {
+    const isolatedPg = { PHASE2_TEST_PG_HOST: "127.0.0.1", PHASE2_TEST_PG_PORT: "1", PHASE2_TEST_PG_USER: "u", PHASE2_TEST_PG_PASSWORD: "never-printed-password", PHASE2_TEST_PG_DATABASE: "phase2_test_db" };
+    const r = await runStage4Mode("dry-run", env("dry-run", isolatedPg), null);
     expect(r.reasons).toEqual(["connect_failed:net_ECONNREFUSED"]);
+    expect(JSON.stringify(r)).not.toContain("never-printed-password");
   }, 20000);
+
+  it("dry-run: スナップショットが無い・改ざん・bundleに未記録なら、候補を作る前に停止する", async () => {
+    put("plan/stage4-managers-state.json", stateText.replace("\"managers\":[", "\"managers\":[ "));
+    expect((await runStage4Mode("dry-run", env("dry-run"), null)).reasons).toEqual(["state_snapshot_checksum_mismatch"]);
+    rmSync(path.join(dir, "plan", "stage4-managers-state.json"));
+    expect((await runStage4Mode("dry-run", env("dry-run"), null)).reasons).toEqual(["input_missing:plan/stage4-managers-state.json"]);
+    put("plan/stage4-managers-state.json", stateText);
+    const s = state();
+    const b = await buildManagersCandidate(managersResponse(), FETCHED, s.managers, new Date().toISOString());
+    put("plan/stage4-managers-bundle.json", buildSourceBundle(managersResponse(), FETCHED, b, s.counts));
+    expect((await runStage4Mode("dry-run", env("dry-run"), null)).reasons).toEqual(["state_snapshot_not_bound"]);
+  });
+
+  it("plan・apply・verifyはdb設定が無ければ接続を試みずに停止する", async () => {
+    for (const m of ["plan", "apply", "verify"] as const) expect((await runStage4Mode(m, env(m), null)).reasons).toEqual(["db_config_missing"]);
+  });
 
   it("dry-run: checksum・commit・新しいplan run・入力欠落は接続前に停止", async () => {
     expect((await runStage4Mode("dry-run", env("dry-run", { STAGE4_SOURCE_CHECKSUM: "0".repeat(64) }), DB)).reasons).toContain("source_checksum_not_bound");

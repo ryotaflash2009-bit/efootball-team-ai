@@ -24,6 +24,7 @@ import {
   withClient,
   workDir,
   writeOut,
+  writeOutText,
   type Env,
   type Stage4Outcome,
 } from "./stage4-managers-cli";
@@ -43,6 +44,8 @@ import {
   type WorldPostApplyExpectation,
 } from "./stage4-world";
 import { STAGE4_WORLD_APPROVAL_TOKEN, createUpstreamHttpTransport } from "./upstream-http-transport";
+import { PLAN_READER_ROLES, parseStateSnapshot, runPlanReadPreflight, serializeStateSnapshot } from "./stage4-state-snapshot";
+import type { WorldProductionState } from "./stage4-world";
 
 /**
  * World専用のProduction更新リハーサルのmode別処理(`production-apply-cli.ts`から、dataset=worldのときに呼ばれる)。
@@ -52,16 +55,18 @@ import { STAGE4_WORLD_APPROVAL_TOKEN, createUpstreamHttpTransport } from "./upst
  */
 
 const BUNDLE = "plan/stage4-world-bundle.json";
+const STATE = "plan/stage4-world-state.json";
 const DRY_RUN_RECORD = "dry-run/stage4-world-dry-run.json";
 const APPLY_RESULT = "apply/stage4-world-apply-result.json";
 const realSleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
-async function readState(client: Client) {
+/** Planの読み取り: 読み取り専用role・読み取り専用transactionで、書き込み権限が無いことを確認してから読む。 */
+async function readStateReadOnly(client: Client) {
   await client.query("begin read only");
   try {
-    const pre = await runUpdaterPreflight(client);
-    if (!pre.ok) throw new Stage4Stop(`preflight_failed:${pre.problems.join("|")}`);
-    return await readWorldProductionState(client);
+    const pre = await runPlanReadPreflight(client);
+    if (!pre.ok) throw new Stage4Stop("plan_read_preflight_failed:" + pre.problems.join("|"));
+    return await readWorldProductionState(client, undefined, PLAN_READER_ROLES);
   } finally {
     await client.query("rollback").catch(() => undefined);
   }
@@ -73,7 +78,7 @@ async function plan(env: Env, db: ClientConfig): Promise<Stage4Outcome> {
   const fetchedAt = new Date().toISOString();
   return withClient(db, async (client) => {
     // Productionの読み取りが通らなければupstreamへ1件も送らない。
-    const state = await readState(client);
+    const state = await readStateReadOnly(client);
     const transport = createUpstreamHttpTransport({
       approval: STAGE4_WORLD_APPROVAL_TOKEN,
       maxRequests: { "efootball-world": WORLD_LIMITS.maxRequests, "managers-json": 0 },
@@ -82,9 +87,15 @@ async function plan(env: Env, db: ClientConfig): Promise<Stage4Outcome> {
     const startedMs = Date.now();
     const pages = await fetchWorldFullOnce(transport, fetchedAt, realSleep);
     const fetchSeconds = Math.round((Date.now() - startedMs) / 1000);
-    const b = await buildWorldCandidate(pages, fetchedAt, state, new Date().toISOString());
+    const now = new Date().toISOString();
+    const b = await buildWorldCandidate(pages, fetchedAt, state, now);
     const e = evaluateWorldPlan(b);
-    writeOut(dir, "stage4-world-bundle.json", buildWorldBundle(pages, fetchedAt, b, state.counts));
+    // Dry run は Production へ接続せず、このスナップショットから同じ候補を作る。JSONを経由しても同じ候補になることを確認する。
+    const snap = serializeStateSnapshot("world", fetchedAt, state);
+    const replayed = await buildWorldCandidate(pages, fetchedAt, parseStateSnapshot<WorldProductionState>(snap.text, "world", snap.sha256), now);
+    if (replayed.plan.planChecksum !== b.plan.planChecksum || replayed.candidate.sourceChecksum !== b.candidate.sourceChecksum) throw new Stage4Stop("state_snapshot_not_deterministic");
+    writeOutText(dir, "stage4-world-state.json", snap.text);
+    writeOut(dir, "stage4-world-bundle.json", buildWorldBundle(pages, fetchedAt, b, state.counts, snap.sha256));
     const log = transport.log;
     return {
       ok: e.ok,
@@ -109,7 +120,8 @@ async function plan(env: Env, db: ClientConfig): Promise<Stage4Outcome> {
   });
 }
 
-async function dryRun(env: Env, db: ClientConfig): Promise<Stage4Outcome> {
+/** Dry run: Productionへ接続しない。PlanのartifactとスナップショットとBackup要約だけを使い、使い捨てPostgreSQLで検証する。 */
+async function dryRun(env: Env): Promise<Stage4Outcome> {
   const dir = workDir(env);
   const sha = commitSha(env);
   const planRunId = runId(env, "STAGE4_PLAN_RUN_ID");
@@ -129,11 +141,9 @@ async function dryRun(env: Env, db: ClientConfig): Promise<Stage4Outcome> {
   if (reasons.length > 0) return { ok: false, reasons, facts: {} };
 
   const now = new Date().toISOString();
-  const { state, b, e } = await withClient(db, async (client) => {
-    const state = await readState(client);
-    const b = await buildWorldCandidate(bundle.pages, bundle.fetchedAt, state, now);
-    return { state, b, e: evaluateWorldPlan(b) };
-  });
+  const state = parseStateSnapshot<WorldProductionState>(readInput(dir, STATE, MAX_WORLD_INPUT_BYTES), "world", bundle.stateSha256);
+  const b = await buildWorldCandidate(bundle.pages, bundle.fetchedAt, state, now);
+  const e = evaluateWorldPlan(b);
   reasons.push(...e.problems);
   if (b.plan.planChecksum !== boundPlan) reasons.push("stale_plan");
   if (b.candidate.sourceChecksum !== boundSource) reasons.push("candidate_differs_from_plan_run");
@@ -237,11 +247,13 @@ async function verify(env: Env, db: ClientConfig): Promise<Stage4Outcome> {
 }
 
 /** mode別の処理(dataset=world)。確認入力が一致しなければ接続前に停止する。 */
-export async function runWorldMode(mode: Stage4Mode, env: Env, db: ClientConfig): Promise<Stage4Outcome> {
+/** dry-run は Production へ接続しないため db を受け取らない(null)。それ以外は db が必須。 */
+export async function runWorldMode(mode: Stage4Mode, env: Env, db: ClientConfig | null): Promise<Stage4Outcome> {
   if (env.REFERENCE_DATA_APPLY_CONFIRM !== WORLD_CONFIRM[mode]) return { ok: false, reasons: ["confirmation_mismatch"], facts: {} };
   try {
+    if (mode === "dry-run") return await dryRun(env);
+    if (!db) return { ok: false, reasons: ["db_config_missing"], facts: {} };
     if (mode === "plan") return await plan(env, db);
-    if (mode === "dry-run") return await dryRun(env, db);
     if (mode === "apply") return await apply(env, db);
     return await verify(env, db);
   } catch (err) {

@@ -1,4 +1,4 @@
-name: Reference data Production backup (manual, approval-gated)
+name: Reference data Production backup (manual approval-gated, or automated pre-apply)
 
 # ============================================================================
 # 2026-09-21: execution steps implemented. This workflow has NEVER been run
@@ -64,6 +64,12 @@ name: Reference data Production backup (manual, approval-gated)
 # should be a permanent baseline, not a short-lived daily/weekly/monthly one — see
 # the "Initial pre-apply Production backup" section of
 # reference-data-production-backup-role-runbook.md before running this.
+# execution (2026-09-27 added, one-approval pipeline — docs/production-readiness/automated-update-pipeline.md):
+#   manual     = the owner dispatches it; Environment `production-backup-approval` (required reviewer), unchanged.
+#   automation = dispatched by the update orchestrator (`github-actions[bot]`) for a pre-apply Backup only;
+#                Environment `reference-data-automation` (no reviewer, main only) holding the SAME read-only
+#                Backup secrets. Any other actor or category is rejected before a secret is read.
+#   Never the Apply credential. Production stays read-only (SELECT); one new encrypted object is written to R2.
 on:
   workflow_dispatch:
     inputs:
@@ -81,6 +87,14 @@ on:
           - weekly
           - monthly
         default: pre-apply
+      execution:
+        description: "manual (owner, approval-gated) or automation (update orchestrator only, pre-apply only)"
+        required: false
+        type: choice
+        options:
+          - manual
+          - automation
+        default: manual
 
 permissions:
   contents: read
@@ -88,7 +102,7 @@ permissions:
 jobs:
   backup:
     runs-on: ubuntu-latest
-    environment: production-backup-approval
+    environment: ${{ inputs.execution == 'automation' && 'reference-data-automation' || 'production-backup-approval' }}
     timeout-minutes: 15
     # Isolated, ephemeral PostgreSQL for restore verification ONLY (see the header
     # comment above). This is NOT Production and NOT the real R2 bucket. It exists
@@ -114,6 +128,18 @@ jobs:
         if: ${{ inputs.confirm != 'backup' }}
         run: |
           echo "::error::confirmation input did not match 'backup'; aborting before touching any secret"
+          exit 1
+
+      - name: Reject automation unless it is the orchestrator asking for a pre-apply Backup
+        if: ${{ inputs.execution == 'automation' && (github.actor != 'github-actions[bot]' || inputs.backup_category != 'pre-apply' || github.ref != 'refs/heads/main') }}
+        run: |
+          echo "::error::execution=automation is only for the update orchestrator (pre-apply, main); aborting before touching any secret"
+          exit 1
+
+      - name: Reject unless execution is exactly manual or automation
+        if: ${{ inputs.execution != '' && inputs.execution != 'manual' && inputs.execution != 'automation' }}
+        run: |
+          echo "::error::execution must be manual or automation"
           exit 1
 
       # Defense in depth: the choice input's `options:` already stops the GitHub UI/API

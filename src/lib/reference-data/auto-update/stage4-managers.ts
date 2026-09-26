@@ -127,10 +127,15 @@ export const toIso = (v: unknown): string | null => (v == null ? null : v instan
  * managers・import_batchesの行と、3 tableの件数を読む。player_card_analysisは読まない(updaterに権限が無い)。
  * 呼び出し側が`begin read only`の中で、reference_data_updaterとして実行すること。
  */
-export async function readManagersProductionState(client: Stage4Client, schema: string = PRODUCTION_REFERENCE_SCHEMA): Promise<ManagersProductionState> {
+export async function readManagersProductionState(
+  client: Stage4Client,
+  schema: string = PRODUCTION_REFERENCE_SCHEMA,
+  /** 読み取りを許可するrole(既定はupdater。Planは読み取り専用roleを渡す)。 */
+  allowedRoles: readonly string[] = [UPDATER_ROLE_NAME],
+): Promise<ManagersProductionState> {
   const s = targetSchema(schema);
   const who = await client.query("select current_user::text as u, current_setting('transaction_read_only') as ro");
-  if (who.rows[0]?.u !== UPDATER_ROLE_NAME) throw new Stage4Stop("wrong_role");
+  if (!allowedRoles.includes(String(who.rows[0]?.u))) throw new Stage4Stop("wrong_role");
   if (who.rows[0]?.ro !== "on") throw new Stage4Stop("not_read_only");
   const managers = (await client.query(`select ${cols("managers")} from ${s}.managers`)).rows;
   const importBatches = (await client.query(`select ${cols("import_batches")} from ${s}.import_batches`)).rows;
@@ -249,9 +254,11 @@ export interface ManagersSourceBundle {
   readonly planChecksum: string;
   readonly beforeChecksum: string;
   readonly productionCountsAtPlan: ManagersProductionState["counts"];
+  /** Planが読んだProduction状態スナップショット(別artifact)のsha256。Dry runはこれと照合してから使う。 */
+  readonly stateSha256?: string;
 }
 
-export function buildSourceBundle(response: RecordedManagersResponse, fetchedAt: string, b: ManagersCandidateBuild, counts: ManagersProductionState["counts"]): ManagersSourceBundle {
+export function buildSourceBundle(response: RecordedManagersResponse, fetchedAt: string, b: ManagersCandidateBuild, counts: ManagersProductionState["counts"], stateSha256?: string): ManagersSourceBundle {
   return {
     schema: STAGE4_BUNDLE_SCHEMA,
     fetchedAt,
@@ -261,6 +268,7 @@ export function buildSourceBundle(response: RecordedManagersResponse, fetchedAt:
     planChecksum: b.plan.planChecksum,
     beforeChecksum: b.plan.report.beforeChecksum,
     productionCountsAtPlan: counts,
+    ...(stateSha256 ? { stateSha256 } : {}),
   };
 }
 
@@ -276,6 +284,7 @@ export function parseSourceBundle(text: string): ManagersSourceBundle {
   if (d.schema !== STAGE4_BUNDLE_SCHEMA || typeof d.fetchedAt !== "string" || Number.isNaN(Date.parse(d.fetchedAt)) || !r) throw new Stage4Stop("bundle_shape");
   if (typeof r.status !== "number" || typeof r.contentType !== "string" || typeof r.bodyText !== "string") throw new Stage4Stop("bundle_shape");
   for (const k of ["bodySha256", "sourceChecksum", "planChecksum", "beforeChecksum"]) if (typeof d[k] !== "string" || !SHA256_RE.test(d[k] as string)) throw new Stage4Stop("bundle_shape");
+  if (d.stateSha256 !== undefined && (typeof d.stateSha256 !== "string" || !SHA256_RE.test(d.stateSha256))) throw new Stage4Stop("bundle_shape");
   if (sha256(r.bodyText) !== d.bodySha256) throw new Stage4Stop("bundle_body_hash_mismatch");
   return d as unknown as ManagersSourceBundle;
 }
