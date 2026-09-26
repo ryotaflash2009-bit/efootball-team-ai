@@ -9,6 +9,7 @@ import type {
 import { Badge } from "@/components/ui/Badge";
 import { SquadDiagnosisImageSaveButton } from "./SquadDiagnosisImageSaveButton";
 import { SquadDiagnosisShareUrlButton } from "./SquadDiagnosisShareUrlButton";
+import { SquadDiagnosisHistorySaveButton } from "./SquadDiagnosisHistorySaveButton";
 import { tierBadgeTone, tierBarClass } from "./diagnosis-tier-style";
 import { SquadDiagnosisCommentCard } from "./SquadDiagnosisCommentCard";
 import type { TacticalPlacementInput } from "@/lib/squad/squad-tactical-review";
@@ -386,6 +387,7 @@ export function SquadDiagnosisPanel({
 
       <SquadDiagnosisImageSaveButton result={result} squadName={squadName} formationLabel={formationLabel} />
       <SquadDiagnosisShareUrlButton result={result} formationLabel={formationLabel} />
+      <SquadDiagnosisHistorySaveButton result={result} squadName={squadName} formationLabel={formationLabel} />
 
       <details className="mt-3 rounded-md border border-border/60 bg-surface-2/20">
         <summary className="cursor-pointer px-2.5 py-2 text-xs font-semibold text-text-dim hover:text-text">
