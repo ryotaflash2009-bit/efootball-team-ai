@@ -130,7 +130,7 @@ export function CompareRadarChart({
             {RADAR_MODE_LABEL[m]}
           </button>
         ))}
-        <label className="ml-1 flex items-center gap-1">
+        <label className="ml-1 flex min-h-[24px] cursor-pointer items-center gap-1.5">
           <input type="checkbox" checked={showPreBuild} onChange={onTogglePreBuild} />
           {fillCr(tcr("showPreBuildTemplate"), {
             target:

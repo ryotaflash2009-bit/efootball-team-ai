@@ -176,7 +176,7 @@ export function ComparisonTables({
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-sm font-semibold">{tct("abilitiesHeading")}</h2>
           {comparison.hasAnyConditionalSelection ? (
-            <label className="flex items-center gap-1.5 text-[11px] text-accent">
+            <label className="flex min-h-[24px] cursor-pointer items-center gap-1.5 text-[11px] text-accent">
               <input
                 type="checkbox"
                 checked={conditionalView}

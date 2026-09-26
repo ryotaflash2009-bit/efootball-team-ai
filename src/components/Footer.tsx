@@ -26,9 +26,9 @@ export function Footer() {
 
   return (
     <footer aria-label={t("footer", "ariaLandmark")} className="mt-8 border-t border-border bg-surface px-4 py-5 sm:px-6 lg:px-8">
-      <nav aria-label={t("footer", "ariaLandmark")} className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs">
+      <nav aria-label={t("footer", "ariaLandmark")} className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
         {links.map((link) => (
-          <Link key={link.href} href={link.href} className="text-text-dim underline-offset-2 hover:text-accent hover:underline">
+          <Link key={link.href} href={link.href} className="inline-flex min-h-[24px] items-center text-text-dim underline-offset-2 hover:text-accent hover:underline">
             {t("footer", link.labelKey)}
           </Link>
         ))}
