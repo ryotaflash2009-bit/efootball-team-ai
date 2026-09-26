@@ -55,6 +55,47 @@ const T = {
 const LEAK_RE = /sb_secret_|service_role|postgres(ql)?:\/\/|SUPABASE_[A-Z_]+|PGRST\d|PostgREST|supabase\.co|WORLD_QUERY_FAILED|stack trace|\n\s+at [\w.<>]+ \(|pre-apply\/|\.age\b|ilike\.|\bor=\(|[0-9a-f]{64}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|DROP TABLE/i;
 const HYDRATION_RE = /hydrat|Minified React error #(418|423|425)|did not match/i;
 
+// ---- F-042 共有URL: 契約(docs/product/share-url-contract.md)をアプリのコードとは独立に組み立てる ----
+function fnv1a32(text) {
+  let h = 0x811c9dc5;
+  for (const b of Buffer.from(text, "utf8")) {
+    h ^= b;
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h.toString(16).padStart(8, "0");
+}
+function shareToken(obj) {
+  const body = Buffer.from(JSON.stringify(obj), "utf8").toString("base64url");
+  return `sd1.${body}.${fnv1a32(body)}`;
+}
+const SHARE_OK = {
+  v: 1, k: "sd", r: "squad-diagnosis/2026-09-06.v1", d: "2026-09-27", f: "4-3-3", o: [71, "A"],
+  c: { attack: [40, "C"], defense: [47, "C"], aerial: [54, "C"], speed: [61, "B"], passBuildUp: [68, "B"], dribblePossession: [75, "A"], pressResistance: [82, "A"], counterAttack: [89, "S"] },
+  s: ["ability", "counterAttack"], w: ["compatibility", null],
+};
+const okToken = shareToken(SHARE_OK);
+const SHARE_BAD = [
+  ["checksum mismatch", `${okToken.slice(0, -1)}${okToken.endsWith("0") ? "1" : "0"}`, "checksum_mismatch"],
+  ["unknown version", `sd2.AAAAAAAA.${fnv1a32("AAAAAAAA")}`, "unsupported_version"],
+  ["script string", shareToken({ ...SHARE_OK, f: "<script>alert(1)</script>" }), "invalid_payload"],
+  ["URL string", shareToken({ ...SHARE_OK, r: "https://evil.example" }), "invalid_payload"],
+  ["control/NUL", shareToken({ ...SHARE_OK, f: `4-3${String.fromCharCode(0)}-3` }), "invalid_payload"],
+  ["user field", shareToken({ ...SHARE_OK, userId: "u1" }), "invalid_payload"],
+  ["missing field", shareToken({ ...SHARE_OK, w: undefined }), "invalid_payload"],
+  ["malformed encoding", "sd1.@@@@.00000000", "bad_format"],
+  ["over limit", `sd1.${"A".repeat(1600)}.00000000`, "too_long"],
+  ["empty", "", "empty"],
+];
+/** 保存スカッド(src/lib/squad/types.ts の StoredSquad)の最小fixture。guestスコープの隔離localStorageへだけ置く。 */
+function fixtureSquad(squadId) {
+  const now = new Date().toISOString();
+  return {
+    squadId, squadName: "Headless BB Share Fixture", formationId: "4-3-3", managerId: null, slots: [], substitutes: [], captainSlotId: null,
+    setPieces: { corners: null, freeKicks: null, penalties: null }, linkUp: { centerPieceSlotId: null, keyManSlotId: null },
+    rulesVersion: "progression/2026-08-28.v2", schemaVersion: 1, createdAt: now, updatedAt: now,
+  };
+}
+
 const results = [];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const fmt = (n) => Number(n).toLocaleString("en-US");
@@ -290,6 +331,9 @@ async function step(vp, route, op, fn, { allow4xx = [], audit = true } = {}) {
   const u4 = cap.s4xx.filter((s) => !allow4xx.some((re) => re.test(s)));
   if (u4.length) problems.push(`unexpected 4xx: ${u4[0]}`);
   if (cap.offOrigin.length) problems.push(`off-origin request: ${cap.offOrigin[0]}`);
+  // 書き込みの可能性がある通信(GET/HEAD以外)は、どの画面・操作でも0件であること(Production write 0)。
+  const writes = cap.reqs.filter((r) => r.method && r.method !== "GET" && r.method !== "HEAD");
+  if (writes.length) problems.push(`non-GET request: ${writes[0].method} ${writes[0].path}`);
   const dupApi = dupCount(cap.reqs.filter((r) => r.path.startsWith("/api/") && r.type !== "Image").map((r) => r.path));
   if (dupApi.length) problems.push(`duplicate API request: ${dupApi[0]}`);
   if (LEAK_RE.test(text)) problems.push(`internal information shown: ${LEAK_RE.exec(text)[0].slice(0, 30)}`);
@@ -371,7 +415,7 @@ async function main() {
     }
     const u = new URL(url);
     reqInfo.set(p.requestId, { path: u.pathname, type: p.type });
-    cap.reqs.push({ path: u.pathname + (u.pathname.startsWith("/api/") ? u.search : ""), type: p.type });
+    cap.reqs.push({ path: u.pathname + (u.pathname.startsWith("/api/") ? u.search : ""), type: p.type, method: p.request.method });
   });
   client.on("Network.responseReceived", (p) => {
     const url = p.response?.url ?? "";
@@ -642,6 +686,99 @@ async function main() {
       await settle();
       return { ok: true, detail: "support → terms → privacy" };
     });
+
+    // ---- F-042 共有URL(閲覧ページ) ----
+    const shareState = () => ev("(document.querySelector('[data-share-state]') || {}).dataset?.shareState || ''");
+    const openShare = async (token) => {
+      await nav(`/share/diagnosis#${token}`);
+      await waitFor(async () => (await shareState()) !== "", 10000, "share state");
+      return shareState();
+    };
+    await step(vp, "/share/diagnosis", "share view (ja)", async () => {
+      if ((await openShare(shareToken(SHARE_OK))) !== "ok") throw new Error("valid share link not shown");
+      for (const s of ["共有されたスカッド診断", "カウンター適性", "89", "配置適性に確認が必要な選手がいます", "読み取り専用"]) await expectText(s);
+      const t = await run(pageText);
+      if (/Messi|89138556575063|userId|@/.test(t)) throw new Error("unexpected identity in shared view");
+      const noindex = await ev("(document.querySelector('meta[name=\"robots\"]') || {}).content || ''");
+      if (!/noindex/.test(noindex)) throw new Error("share page not noindex");
+      return { ok: true, detail: "ok state, 8 categories, noindex" };
+    });
+    await step(vp, "/share/diagnosis", "share view (en) and back to ja", async () => {
+      await openShare(shareToken(SHARE_OK));
+      await ev(`localStorage.setItem("efootball-team-ai:locale:v1", "en")`);
+      await ev("location.reload()");
+      await sleep(300);
+      await settle();
+      await waitFor(async () => (await run(pageText)).includes("Shared squad diagnosis"), 10000, "English view");
+      await expectText("Counter-attack");
+      await ev(`localStorage.setItem("efootball-team-ai:locale:v1", "ja")`);
+      await ev("location.reload()");
+      await sleep(300);
+      await settle();
+      await waitFor(async () => (await run(pageText)).includes("共有されたスカッド診断"), 10000, "back to Japanese");
+      return { ok: true, detail: "English labels, restored to Japanese" };
+    });
+    await step(vp, "/share/diagnosis", "share: older rules noted", async () => {
+      await openShare(shareToken({ ...SHARE_OK, r: "squad-diagnosis/2026-01-01.v0" }));
+      // 同じページでfragmentだけが変わるため、表示の切り替わりを待つ。
+      await waitFor(async () => (await shareState()) === "ok" && (await run(pageText)).includes("異なる診断規則"), 5000, "older-rules note");
+      return { ok: true, detail: "older-rules note" };
+    });
+    for (const [label, token, reason] of SHARE_BAD) {
+      await step(vp, "/share/diagnosis", `share rejected: ${label}`, async () => {
+        await openShare(token);
+        const reasonNow = () => ev("(document.querySelector('[data-share-state]') || {}).dataset?.shareReason || ''");
+        await waitFor(async () => (await shareState()) === "error" && (await reasonNow()) === reason, 5000, `error/${reason}`);
+        const t = await run(pageText);
+        if (/<script|userId|evil\.example/.test(t)) throw new Error("payload echoed");
+        return { ok: true, detail: `safe error (${reason})` };
+      });
+    }
+    await step(vp, "/share/diagnosis", "share: hashchange, back/forward, reload", async () => {
+      await openShare(shareToken(SHARE_OK));
+      await ev(`location.hash = ${JSON.stringify(SHARE_BAD[0][1])}`);
+      await waitFor(async () => (await shareState()) === "error", 5000, "error after hashchange");
+      await ev("history.back()");
+      await waitFor(async () => (await shareState()) === "ok", 5000, "ok after back");
+      await ev("history.forward()");
+      await waitFor(async () => (await shareState()) === "error", 5000, "error after forward");
+      await ev("location.reload()");
+      await sleep(300);
+      await settle();
+      await waitFor(async () => (await shareState()) === "error", 10000, "error after reload");
+      return { ok: true, detail: "state follows the URL" };
+    });
+
+    // ---- F-042 共有URLの作成(スカッド編集画面・desktopとmobileの代表) ----
+    if (vp.name === "desktop-1280x720" || vp.name === "mobile-390x844") {
+      await step(vp, "/squads/<fixture>", "share link: preview, copy, open", async () => {
+        const squadId = "sq_bbsharefixture1";
+        await nav("/");
+        await ev(`localStorage.setItem("efootball-team-ai:local:guest:squads:v1", ${JSON.stringify(JSON.stringify([fixtureSquad(squadId)]))})`);
+        await nav(`/squads/${squadId}`);
+        await waitFor(() => selectVisible("button", "共有URLを作成"), 15000, "share button");
+        await click("button", "share button", "共有URLを作成");
+        await waitFor(() => ev("!!document.querySelector('[data-share-preview] [data-share-url]')"), 5000, "preview with URL");
+        const preview = await ev("document.querySelector('[data-share-preview]').innerText");
+        for (const s of ["このURLに含まれる情報", "スカッド名、選手名", "サーバーに保存されません", "秘密の情報を共有するためのものではありません"]) {
+          if (!preview.includes(s)) throw new Error(`preview missing: ${s}`);
+        }
+        const url = await ev("document.querySelector('[data-share-url]').value");
+        if (!/\/share\/diagnosis#sd1\.[A-Za-z0-9_-]+\.[0-9a-f]{8}$/.test(url)) throw new Error("share URL format");
+        if (/Headless|sq_bb/.test(decodeURIComponent(url))) throw new Error("squad identity in URL");
+        await click("button", "copy", "コピー");
+        await waitFor(async () => /コピーしました|手動でコピー/.test(await ev("document.querySelector('[data-share-preview]').innerText")), 5000, "copy result");
+        const copyResult = (await ev("document.querySelector('[data-share-preview]').innerText")).includes("コピーしました") ? "clipboard" : "manual fallback";
+        const shareButton = await selectVisible("button", "共有…");
+        const hasWebShare = await ev("typeof navigator.share === 'function'");
+        if (shareButton !== hasWebShare) throw new Error("Web Share button does not match availability");
+        await nav(new URL(url).pathname + new URL(url).hash);
+        await waitFor(async () => (await shareState()) !== "", 10000, "opened share state");
+        if ((await shareState()) !== "ok") throw new Error("generated link does not open");
+        await ev(`localStorage.removeItem("efootball-team-ai:local:guest:squads:v1")`);
+        return { ok: true, detail: `copy: ${copyResult}; Web Share: ${hasWebShare ? "available" : "unavailable (button hidden)"}` };
+      });
+    }
   }
 
   // ---------------------------------------------------------------------------
