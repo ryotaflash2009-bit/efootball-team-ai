@@ -89,5 +89,7 @@ If something feels wrong, note the page, device and what you did, and send it to
 
 | `./data/perf-inv/`, `./data/final-gate/`, `./data/server.pid` (performance measurements, local and public gate logs, the stopped local server's PID record) | 27 files + 2 folders | same checks; the local server (port 3100) was stopped by its verified PID before deletion |
 | `./data/planw11/`, `./data/backupw11/`, `./data/dryw12/`, `./data/applyw13/` (downloaded non-secret summaries of the 2026-09-26 World update; their facts are in `evidence/world-update-2026-09-26.json`) | 5 files + 6 folders | same checks |
+| `./data/final-gate2/` (2026-09-26 public gate after the World update) | 9 files + folder | same checks |
+| `./data/bbfull/` + `./data/server.pid` (2026-09-27 full black box: logs, reports, investigation scripts, local server logs; the local server on port 3200 was stopped by its verified PID first) | 29 files + folder, 1 file | same checks; the only "password" hits were the route names `/auth/forgot-password` and `/auth/update-password` |
 
 `./data` itself is kept. Official Evidence, Backups and R2 objects were not touched.
