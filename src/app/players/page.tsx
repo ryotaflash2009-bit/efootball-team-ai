@@ -7,6 +7,7 @@ import { PageContainer } from "@/components/ui/PageContainer";
 import { PlayersPageView, PlayersPageUnavailable, PlayersPageFailed, PlayersPageSearchRejected } from "@/components/world/PlayersPageView";
 import { SearchInputRejectedError, checkSearchInput } from "@/lib/search/search-input";
 import type { WorldPlayerCardData } from "@/components/world/WorldPlayerCard";
+import { settledInOrder } from "@/lib/settled-in-order";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -72,9 +73,9 @@ export default async function PlayersPage({ searchParams }: { searchParams: Prom
   // 3つの照会は互いに独立なので並列に行う(直列だと表示完了が合計時間だけ遅れていた。2026-09-25計測)。
   // エラーの扱いは従来の直列実行と同じ: 一覧 → facets → メタ情報の順に、最初の失敗で判定する。
   const [listR, facetsR, metaR] = await Promise.allSettled([listPlayers(query), getFacets(), getSourceMeta()]);
-  const firstFailure = [listR, facetsR, metaR].find((r): r is PromiseRejectedResult => r.status === "rejected");
-  if (firstFailure) {
-    const err: unknown = firstFailure.reason;
+  const settled = settledInOrder([listR, facetsR, metaR]);
+  if (settled.failure) {
+    const err: unknown = settled.failure.reason;
     if (err instanceof WorldDataUnavailableError) unavailable = true;
     else if (err instanceof SearchInputRejectedError) rejected = true;
     else failed = true;
