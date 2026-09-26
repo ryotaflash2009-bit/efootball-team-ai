@@ -4,7 +4,7 @@ import type { Locale } from "@/lib/i18n/locale";
 import { formatDateTime } from "@/lib/i18n/format";
 
 /** カテゴリID→英語ラベル（表示専用。squad-diagnosis.tsのcategory.labelは変更しない）。 */
-const CATEGORY_LABEL_EN: Record<string, string> = {
+export const CATEGORY_LABEL_EN: Record<string, string> = {
   attack: "Attack",
   defense: "Defense",
   aerial: "Aerial",
