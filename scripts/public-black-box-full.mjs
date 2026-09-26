@@ -86,6 +86,17 @@ const SHARE_BAD = [
   ["over limit", `sd1.${"A".repeat(1600)}.00000000`, "too_long"],
   ["empty", "", "empty"],
 ];
+/** 診断履歴(src/lib/squad/diagnosis-history.ts)の1項目。payloadは共有URLと同じ契約。 */
+function historyEntry(n, score) {
+  const tier = score >= 85 ? "S" : score >= 70 ? "A" : score >= 55 ? "B" : score >= 40 ? "C" : "D";
+  return {
+    id: `dh_bb${String(n).padStart(8, "0")}`,
+    savedAt: new Date(Date.UTC(2026, 8, 1) + n * 3600_000).toISOString(),
+    squadId: `sq_bb${n}`,
+    squadLabel: `BB Squad ${n}`,
+    payload: { ...SHARE_OK, o: [score, tier] },
+  };
+}
 /** 保存スカッド(src/lib/squad/types.ts の StoredSquad)の最小fixture。guestスコープの隔離localStorageへだけ置く。 */
 function fixtureSquad(squadId) {
   const now = new Date().toISOString();
@@ -777,6 +788,84 @@ async function main() {
         if ((await shareState()) !== "ok") throw new Error("generated link does not open");
         await ev(`localStorage.removeItem("efootball-team-ai:local:guest:squads:v1")`);
         return { ok: true, detail: `copy: ${copyResult}; Web Share: ${hasWebShare ? "available" : "unavailable (button hidden)"}` };
+      });
+    }
+
+    // ---- F-060 診断履歴(ブラウザー内のみ) ----
+    const HISTORY_KEY = "efootball-team-ai:local:guest:diagnosis-history:v1";
+    const setHistory = (value) => ev(`localStorage.setItem(${JSON.stringify(HISTORY_KEY)}, ${JSON.stringify(JSON.stringify(value))})`);
+    const historyEntries = () => ev("document.querySelectorAll('[data-history-entry]').length");
+    const historyState = () => ev("(document.querySelector('[data-history-state]') || {}).dataset?.historyState || ''");
+    await step(vp, "/diagnosis-history", "history: empty state", async () => {
+      await nav("/");
+      await ev(`localStorage.removeItem(${JSON.stringify(HISTORY_KEY)})`);
+      await nav("/diagnosis-history");
+      await waitFor(async () => (await historyState()) === "ok", 10000, "history loaded");
+      if (!(await ev("!!document.querySelector('[data-history-empty]')"))) throw new Error("empty state not shown");
+      return { ok: true, detail: "empty state" };
+    });
+    await step(vp, "/diagnosis-history", "history: corrupted item skipped, delete one, delete all, reload", async () => {
+      await setHistory({ schema: "efb-diagnosis-history/v1", entries: [historyEntry(1, 60), historyEntry(2, 75), historyEntry(3, 88), { junk: true }] });
+      await nav("/diagnosis-history");
+      await waitFor(async () => (await historyEntries()) === 3, 10000, "3 entries");
+      await expectText("読み込めない履歴が1件");
+      const text = await run(pageText);
+      if (/sq_bb|dh_bb/.test(text)) throw new Error("internal ID shown");
+      await click("[data-history-entry] button", "delete", "削除");
+      await click("[data-history-entry] button", "confirm delete", "削除する");
+      await waitFor(async () => (await historyEntries()) === 2, 5000, "2 entries");
+      await expectText("削除しました");
+      await click("main button", "delete all", "すべて削除");
+      await click("[role='alertdialog'] button", "confirm delete all", "削除する");
+      await waitFor(async () => ev("!!document.querySelector('[data-history-empty]')"), 5000, "empty after delete all");
+      await ev("location.reload()");
+      await sleep(300);
+      await settle();
+      await waitFor(async () => ev("!!document.querySelector('[data-history-empty]')"), 10000, "still empty after reload");
+      if ((await ev(`localStorage.getItem(${JSON.stringify(HISTORY_KEY)})`)) != null) throw new Error("storage not cleared");
+      return { ok: true, detail: "3 shown, 1 corrupted skipped, delete one/all verified" };
+    });
+    await step(vp, "/diagnosis-history", "history: maximum 50 entries", async () => {
+      await setHistory({ schema: "efb-diagnosis-history/v1", entries: Array.from({ length: 50 }, (_, i) => historyEntry(i + 10, (i * 7) % 100)) });
+      await nav("/diagnosis-history");
+      await waitFor(async () => (await historyEntries()) === 50, 10000, "50 entries");
+      await ev(`localStorage.removeItem(${JSON.stringify(HISTORY_KEY)})`);
+      return { ok: true, detail: "50 entries rendered" };
+    });
+    if (vp.name === "desktop-1280x720" || vp.name === "mobile-390x844") {
+      await step(vp, "/diagnosis-history", "history: storage unavailable degrades safely", async () => {
+        const { identifier } = await client.send("Page.addScriptToEvaluateOnNewDocument", {
+          source: "Object.defineProperty(window, 'localStorage', { configurable: true, get() { throw new Error('storage disabled'); } });",
+        });
+        try {
+          await nav("/diagnosis-history");
+          await waitFor(async () => (await historyState()) === "unavailable", 10000, "unavailable state");
+          await expectText("このブラウザーでは履歴を保存・表示できません");
+          if ((await run(pageText)).includes("保存しました")) throw new Error("success shown while storage is unavailable");
+        } finally {
+          await client.send("Page.removeScriptToEvaluateOnNewDocument", { identifier });
+        }
+        return { ok: true, detail: "unavailable message, no success" };
+      });
+      await step(vp, "/squads/<fixture>", "history: save from diagnosis, duplicate, list, open as share link", async () => {
+        const squadId = "sq_bbhistfixture1";
+        await nav("/");
+        await ev(`localStorage.removeItem(${JSON.stringify(HISTORY_KEY)})`);
+        await ev(`localStorage.setItem("efootball-team-ai:local:guest:squads:v1", ${JSON.stringify(JSON.stringify([fixtureSquad(squadId)]))})`);
+        await nav(`/squads/${squadId}`);
+        await waitFor(() => selectVisible("button", "診断を履歴に保存"), 15000, "save button");
+        await click("button", "save", "診断を履歴に保存");
+        await waitFor(async () => (await ev("(document.querySelector('[data-history-status]') || {}).dataset?.historyStatus || ''")) === "saved", 5000, "saved");
+        await click("button", "save again", "診断を履歴に保存");
+        await waitFor(async () => (await ev("(document.querySelector('[data-history-status]') || {}).dataset?.historyStatus || ''")) === "duplicate", 5000, "duplicate");
+        await nav("/diagnosis-history");
+        await waitFor(async () => (await historyEntries()) === 1, 10000, "1 entry");
+        if (/sq_bb/.test(await run(pageText))) throw new Error("squad ID shown");
+        await click("[data-history-entry] a", "open share", "共有URLで表示");
+        await waitFor(async () => (await locationPath()).startsWith("/share/diagnosis"), 10000, "share URL");
+        await waitFor(async () => (await shareState()) === "ok", 10000, "share ok");
+        await ev(`localStorage.removeItem(${JSON.stringify(HISTORY_KEY)}); localStorage.removeItem("efootball-team-ai:local:guest:squads:v1")`);
+        return { ok: true, detail: "saved once, duplicate skipped, listed, share link opens" };
       });
     }
   }

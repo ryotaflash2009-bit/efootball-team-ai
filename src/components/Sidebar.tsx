@@ -34,6 +34,7 @@ const GROUPS: { titleKey: NavKey; items: NavItem[] }[] = [
       { href: "/my-team", labelKey: "myTeam", icon: "shirt", status: "ready" },
       { href: "/my-builds", labelKey: "myBuilds", icon: "sliders", status: "ready" },
       { href: "/build-inventory", labelKey: "buildInventory", icon: "database", status: "ready" },
+      { href: "/diagnosis-history", labelKey: "diagnosisHistory", icon: "list", status: "ready" },
     ],
   },
   {

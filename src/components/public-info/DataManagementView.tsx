@@ -46,6 +46,14 @@ export function DataManagementView() {
       </Surface>
 
       <Surface padding="md">
+        <p className="text-sm font-semibold text-text">{t("diagnosisHistory", "dataManagementHeading")}</p>
+        <p className="mt-1.5 text-sm text-text-dim">{t("diagnosisHistory", "dataManagementBody")}</p>
+        <Link href="/diagnosis-history" className="mt-1.5 inline-flex min-h-[24px] items-center text-sm text-accent hover:underline">
+          {t("diagnosisHistory", "dataManagementLink")}
+        </Link>
+      </Surface>
+
+      <Surface padding="md">
         <p className="text-sm font-semibold text-text">{tdm("jsonBackupHeading")}</p>
         <p className="mt-1.5 text-sm text-text-dim">{tdm("jsonBackupBody")}</p>
         <p className="mt-1.5 text-sm text-text-dim">
