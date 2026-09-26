@@ -1,0 +1,34 @@
+{
+  "evidence": "F-060 diagnosis history (verified) and F-043 before/after card (pre-merge)",
+  "recordedAt": "2026-09-27",
+  "containsSecrets": false,
+  "containsRowDataOrRawHtml": false,
+  "f060": {
+    "pr": 76,
+    "mergeCommit": "8c94d6c",
+    "unitTests": 10,
+    "publicBlackBox": {
+      "checkedAt": "2026-09-26T17:33:45Z",
+      "viewports": 8,
+      "steps": 550,
+      "pass": 550,
+      "consoleErrors": 0,
+      "warnings": 0,
+      "networkErrors": 0,
+      "http5xx": 0,
+      "unexpected4xx": 0,
+      "overflowSteps": 0,
+      "nonGetRequests": 0,
+      "memoryHeapGrowth": 1.21,
+      "security": "18/18",
+      "historySteps": ["empty state", "corrupted item skipped + notice, delete one (confirmed), delete all (confirmed), reload stays empty, storage cleared", "maximum 50 entries rendered", "storage unavailable (localStorage throws): unavailable message, no success", "save from diagnosis, duplicate not added, listed without internal IDs, open as share link (desktop and mobile)"]
+    },
+    "performanceNote": "perf 12/14 in that run: mobile /compare (2) and /best-xi (1) recorded errors; the /best-xi error was React #418 (hydration). Not reproducible in 32 later loads (public cold/warm, with and without the auth test double; local next dev with TZ=UTC and Tokyo browser). The run started right after the F-060 deployment, which changed the sidebar markup; the likely cause is HTML/JS skew during the deployment switch. Re-checked in the F-043 public run.",
+    "privacy": { "storage": "localStorage only, per storage scope", "serverWrites": 0, "analytics": 0, "exportContainsIds": false }
+  },
+  "f043": {
+    "unitTests": 7,
+    "localBlackBox": { "viewports": 8, "steps": 568, "pass": 567, "onlyFailure": "known local-only manager-card flake (0/30 on the public site)" },
+    "contract": "same rules version only; before/after decided by saved time, not selection order; per-category improved/worse/unchanged/not comparable; no causal claims; comparison share link = two v1 tokens, no new payload format; PNG image without names or IDs"
+  }
+}
