@@ -96,7 +96,8 @@ describe("Backup workflow(reference-data-production-backup.yml)にも同じsmoke
   it("既存のconfirm/backup_category/secret-check/Environment/permissionsの各ステップは維持されている", () => {
     expect(BACKUP_WORKFLOW_YAML).toMatch(/inputs\.confirm\s*!=\s*'backup'/);
     expect(BACKUP_WORKFLOW_YAML).toMatch(/type:\s*choice/);
-    expect(BACKUP_WORKFLOW_YAML).toMatch(/environment:\s*production-backup-approval/);
+    // 手動実行は承認必須のproduction-backup-approval、自動実行(orchestratorのpre-applyだけ)はreference-data-automation。
+    expect(BACKUP_WORKFLOW_YAML).toContain("environment: ${{ inputs.execution == 'automation' && 'reference-data-automation' || 'production-backup-approval' }}");
     expect(BACKUP_WORKFLOW_YAML).toMatch(/contents:\s*read/);
   });
 
