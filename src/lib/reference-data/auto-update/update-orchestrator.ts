@@ -254,7 +254,8 @@ export function buildApprovalRequest(input: {
     applyRunUrl: input.applyRunUrl,
     approvalComment: comment,
   };
-  const row = (k: string, v: unknown) => `| ${k} | ${String(v).replace(/\|/g, "\\|")} |`;
+  const cell = (v: unknown) => String(v).replace(/\\/g, "\\\\").replace(/\|/g, "\\|").replace(/[\r\n]+/g, " ");
+  const row = (k: string, v: unknown) => `| ${k} | ${cell(v)} |`;
   const markdown = [
     "## 本人の承認が1回必要です（Production Apply）",
     "",
