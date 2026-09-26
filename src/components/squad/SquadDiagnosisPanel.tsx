@@ -8,6 +8,8 @@ import type {
 } from "@/lib/squad/squad-diagnosis";
 import { Badge } from "@/components/ui/Badge";
 import { SquadDiagnosisImageSaveButton } from "./SquadDiagnosisImageSaveButton";
+import { SquadDiagnosisShareUrlButton } from "./SquadDiagnosisShareUrlButton";
+import { tierBadgeTone, tierBarClass } from "./diagnosis-tier-style";
 import { SquadDiagnosisCommentCard } from "./SquadDiagnosisCommentCard";
 import type { TacticalPlacementInput } from "@/lib/squad/squad-tactical-review";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
@@ -72,40 +74,6 @@ function findingDisplay(
       ? `${label} is rated at a high level (grade ${category.tier}, ${category.score} pts).`
       : `${label} is rated at a low level (grade ${category.tier}, ${category.score} pts).`;
   return { label, detail };
-}
-
-function tierBadgeTone(tier: SquadDiagnosisTier | null): "success" | "info" | "neutral" | "warning" | "danger" {
-  switch (tier) {
-    case "S":
-      return "success";
-    case "A":
-      return "info";
-    case "B":
-      return "neutral";
-    case "C":
-      return "warning";
-    case "D":
-      return "danger";
-    default:
-      return "neutral";
-  }
-}
-
-function tierBarClass(tier: SquadDiagnosisTier | null): string {
-  switch (tier) {
-    case "S":
-      return "bg-success";
-    case "A":
-      return "bg-info";
-    case "B":
-      return "bg-text-dim";
-    case "C":
-      return "bg-warning";
-    case "D":
-      return "bg-danger";
-    default:
-      return "bg-text-muted";
-  }
 }
 
 function ScoreLine({
@@ -417,6 +385,7 @@ export function SquadDiagnosisPanel({
       ) : null}
 
       <SquadDiagnosisImageSaveButton result={result} squadName={squadName} formationLabel={formationLabel} />
+      <SquadDiagnosisShareUrlButton result={result} formationLabel={formationLabel} />
 
       <details className="mt-3 rounded-md border border-border/60 bg-surface-2/20">
         <summary className="cursor-pointer px-2.5 py-2 text-xs font-semibold text-text-dim hover:text-text">
