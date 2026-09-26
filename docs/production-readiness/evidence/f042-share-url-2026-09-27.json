@@ -1,0 +1,32 @@
+{
+  "evidence": "F-042 diagnosis share URL — Release Gate",
+  "recordedAt": "2026-09-27",
+  "containsSecrets": false,
+  "containsRowDataOrRawHtml": false,
+  "feature": "F-042",
+  "pr": 75,
+  "mergeCommit": "3ce8ac4",
+  "contract": "docs/product/share-url-contract.md",
+  "unitTests": { "file": "src/lib/squad/squad-diagnosis-share-url.test.ts", "tests": 23, "result": "pass" },
+  "unitCoverage": ["normal", "Japanese/English/Unicode (rejected as free text)", "empty", "max size", "over limit", "unknown version", "old rules version", "missing field", "unknown field", "malformed encoding", "tampered payload (checksum and consistency)", "script", "HTML", "URL", "control character", "NUL", "internal ID", "email", "secret-like", "user/auth fields (userId, profileId, accountId, email, password, token, secret, batchId, managerId, worldCardId, objectKey, session, publicId)"],
+  "publicBlackBox": {
+    "checkedAt": "2026-09-26T17:08:52Z",
+    "deployedCommit": "3ce8ac4",
+    "viewports": 8,
+    "steps": 522,
+    "pass": 522,
+    "consoleErrors": 0,
+    "warnings": 0,
+    "networkErrors": 0,
+    "http5xx": 0,
+    "unexpected4xx": 0,
+    "overflowSteps": 0,
+    "nonGetRequests": 0,
+    "performance": "14/14 OK",
+    "memoryHeapGrowth": 1.22,
+    "security": "18/18",
+    "shareSteps": ["viewer ja (noindex, 8 categories, no identity)", "viewer en and back to ja", "older rules note", "10 rejected links: checksum mismatch, unknown version, script, URL, control/NUL, user field, missing field, malformed encoding, over limit, empty (reason only, no echo)", "hashchange, back/forward, reload", "create: preview (included/excluded, no server storage, not for secrets), copy (clipboard or manual fallback), Web Share only when available, open generated link (desktop and mobile)"]
+  },
+  "privacy": { "serverStorage": false, "productionWrites": 0, "externalApis": 0, "freeTextFields": 0, "squadName": "not included", "identifiers": "none" },
+  "verdict": "F042_VERIFIED"
+}

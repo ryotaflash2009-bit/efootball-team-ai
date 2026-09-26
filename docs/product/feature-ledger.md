@@ -53,7 +53,7 @@
 | F-031 | Link-Up Play | completed | 75% | F-003 | R | — | 不要 | 不要 | Free | 監督フィルタ black-box | スカッド内の発動判定（要確認） |
 | F-032 | ポジション適性（表示） | completed | 80% | F-002 | R | — | 不要 | 不要 | Free | player-analysis tests | — |
 | F-032b | ポジション別OVR | blocked | 10% | 計算規則の確認 | R | — | 不要 | 不要 | Free | 規則が未確認なので推測で算式を作らない | 規則サンプルの収集（本人またはデータ源） |
-| F-033 | 完全ゲームプラン（戦術・役割・指示） | partially_implemented | 40% | F-024, F-003 | R | L | 不要 | 不要 | Free | 配置編集は完了 | 指示・個別戦術の原案確認（質問Q2） |
+| F-033 | 完全ゲームプラン（戦術・役割・指示） | completed（MVP：配置編集。個別指示は deferred） | 70% | F-024, F-003 | R | L | 不要 | 不要 | Free | 本人判断 2026-09-27：現在の配置編集を MVP 完成版とする | 個別指示は、公式または許諾済みの信頼できる仕様を確認できるまで deferred（推測で実装しない） |
 
 ## 3. 診断と共有（Phase 3）
 
@@ -61,7 +61,7 @@
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | F-040 | 診断結果カード（スカッド／ビルド） | completed | 80% | F-026 | — | — | 不要 | 不要 | Free | `squad-diagnosis-share.ts`（内部IDを含めない） | — |
 | F-041 | 画像保存（PNG） | completed | 80% | F-040 | — | L | 不要 | 不要 | Free | `squad-diagnosis-image.ts`、`build-diagnosis-card-image.ts` | 総合black-boxへ保存操作を追加 |
-| F-042 | 共有URL（診断カード） | implementation_ready | 0% | F-040 | — | —（URLに載る内容は利用者が選ぶ） | 不要（MVP） | 不要 | Free | 次に実装 | MVP：サーバー保存なし、URL内に安全な要約だけを載せる（integrated-roadmap §3） |
+| F-042 | 共有URL（診断カード） | verified | 100% | F-040 | — | —（サーバー保存なし・名前/ID なし） | 不要 | 不要 | Free | PR #75、`evidence/f042-share-url-2026-09-27.json`（公開 black-box 522/522） | 比較の共有URLは F-043 で追加 |
 | F-043 | 改善前後の比較カード | idea | 0% | F-026, F-060 | — | L | 不要 | 不要 | Free | — | 履歴の設計後 |
 | F-044 | Pro向け詳細診断 | designed | 20% | F-026, F-120 | — | — | 要 | 任意 | Pro | 出力は基本/詳細に分離済み | 課金の判断まで deferred |
 
@@ -83,7 +83,7 @@
 
 | ID | 機能 | 状態 | 完成率 | 依存 | Prod | UD | Auth | AI | Tier | 次の作業 |
 |---|---|---|---|---|---|---|---|---|---|---|
-| F-060 | 診断履歴 | idea | 0% | F-026 | — | L→C | 任意 | 不要 | Free | ローカル履歴で MVP 可（ID不要） |
+| F-060 | 診断履歴（ブラウザー内） | completed（公開環境での確認待ち） | 90% | F-026, F-042 | — | L（スコープ別） | 不要 | 不要 | Free | tests 10件、ローカル black-box 8 viewport | 公開確認後に verified。認証ユーザー向けの同期は別途設計（F-052） |
 | F-061 | 成長プロフィール | idea | 0% | F-060 | — | C | 要 | 不要 | Free | — |
 | F-062 | 友達との比較・ライバル | idea | 0% | F-055 | — | C | 要 | 不要 | Free | — |
 | F-070 | AI Best XI 高度化（戦術・監督・ブースター考慮） | partially_implemented | 40% | F-025 | R | L | 不要 | 不要 | Free | 監督適性の反映 |
