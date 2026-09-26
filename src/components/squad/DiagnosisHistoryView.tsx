@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { tierBadgeTone } from "./diagnosis-tier-style";
 import { diagnosisCategoryLabel } from "./SharedDiagnosisView";
+import { DiagnosisHistoryComparePanel } from "./DiagnosisHistoryComparePanel";
 import {
   clearDiagnosisHistory,
   exportDiagnosisHistoryJson,
@@ -35,8 +36,14 @@ export function DiagnosisHistoryView() {
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [confirmAll, setConfirmAll] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
+  // 比較に選んだ履歴（最大2件。3件目を選ぶと古い選択を外す）。
+  const [selected, setSelected] = useState<string[]>([]);
 
-  const reload = useCallback(() => setData(readDiagnosisHistory()), []);
+  const reload = useCallback(() => {
+    const next = readDiagnosisHistory();
+    setData(next);
+    setSelected((cur) => cur.filter((id) => next.entries.some((e) => e.id === id)));
+  }, []);
   useEffect(() => {
     reload();
     return subscribeCurrentScope(reload);
@@ -113,11 +120,22 @@ export function DiagnosisHistoryView() {
               </div>
             </div>
           ) : null}
+          <DiagnosisHistoryComparePanel entries={data.entries} selectedIds={selected} onClear={() => setSelected([])} />
           <ul className="flex flex-col gap-3" data-history-list>
             {data.entries.map((e) => (
               <li key={e.id} className="rounded-card border border-border bg-surface p-3" data-history-entry>
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <p className="min-w-0 truncate text-sm font-semibold">{e.squadLabel || "—"}</p>
+                  <label className="flex min-h-[44px] min-w-0 cursor-pointer items-center gap-2">
+                    <input
+                      type="checkbox"
+                      className="h-5 w-5"
+                      checked={selected.includes(e.id)}
+                      onChange={(ev) => setSelected((cur) => (ev.target.checked ? [...cur.filter((x) => x !== e.id), e.id].slice(-2) : cur.filter((x) => x !== e.id)))}
+                      aria-label={`${t("diagnosisCompare", "selectLabel")}: ${e.squadLabel || "—"} ${formatDateTime(new Date(e.savedAt), locale)}`}
+                      data-history-select
+                    />
+                    <span className="min-w-0 truncate text-sm font-semibold">{e.squadLabel || "—"}</span>
+                  </label>
                   <span className="text-2xs text-text-muted">
                     {h("savedAt")}: {formatDateTime(new Date(e.savedAt), locale)}
                   </span>

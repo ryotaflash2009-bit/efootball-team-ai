@@ -62,7 +62,7 @@
 | F-040 | 診断結果カード（スカッド／ビルド） | completed | 80% | F-026 | — | — | 不要 | 不要 | Free | `squad-diagnosis-share.ts`（内部IDを含めない） | — |
 | F-041 | 画像保存（PNG） | completed | 80% | F-040 | — | L | 不要 | 不要 | Free | `squad-diagnosis-image.ts`、`build-diagnosis-card-image.ts` | 総合black-boxへ保存操作を追加 |
 | F-042 | 共有URL（診断カード） | verified | 100% | F-040 | — | —（サーバー保存なし・名前/ID なし） | 不要 | 不要 | Free | PR #75、`evidence/f042-share-url-2026-09-27.json`（公開 black-box 522/522） | 比較の共有URLは F-043 で追加 |
-| F-043 | 改善前後の比較カード | idea | 0% | F-026, F-060 | — | L | 不要 | 不要 | Free | — | 履歴の設計後 |
+| F-043 | 改善前後の比較カード | completed（公開環境での確認待ち） | 95% | F-026, F-060 | — | L | 不要 | 不要 | Free | tests 7件、ローカル black-box 8 viewport 567/568（ローカル限定の既知 flake のみ） | 公開確認後に verified |
 | F-044 | Pro向け詳細診断 | designed | 20% | F-026, F-120 | — | — | 要 | 任意 | Pro | 出力は基本/詳細に分離済み | 課金の判断まで deferred |
 
 ## 4. アカウントと公開範囲（Phase 4）
@@ -83,7 +83,7 @@
 
 | ID | 機能 | 状態 | 完成率 | 依存 | Prod | UD | Auth | AI | Tier | 次の作業 |
 |---|---|---|---|---|---|---|---|---|---|---|
-| F-060 | 診断履歴（ブラウザー内） | completed（公開環境での確認待ち） | 90% | F-026, F-042 | — | L（スコープ別） | 不要 | 不要 | Free | tests 10件、ローカル black-box 8 viewport | 公開確認後に verified。認証ユーザー向けの同期は別途設計（F-052） |
+| F-060 | 診断履歴（ブラウザー内） | verified | 100% | F-026, F-042 | — | L（スコープ別） | 不要 | 不要 | Free | PR #76、`evidence/f060-f043-2026-09-27.json`（公開 black-box 550/550） | 認証ユーザー向けの同期は別途設計（F-052） |
 | F-061 | 成長プロフィール | idea | 0% | F-060 | — | C | 要 | 不要 | Free | — |
 | F-062 | 友達との比較・ライバル | idea | 0% | F-055 | — | C | 要 | 不要 | Free | — |
 | F-070 | AI Best XI 高度化（戦術・監督・ブースター考慮） | partially_implemented | 40% | F-025 | R | L | 不要 | 不要 | Free | 監督適性の反映 |

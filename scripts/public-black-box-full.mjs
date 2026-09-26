@@ -868,6 +868,72 @@ async function main() {
         return { ok: true, detail: "saved once, duplicate skipped, listed, share link opens" };
       });
     }
+
+    // ---- F-043 改善前後カード ----
+    const older = { ...historyEntry(101, 55), payload: { ...SHARE_OK, d: "2026-09-01", o: [55, "B"], c: { ...SHARE_OK.c, attack: [40, "C"] } } };
+    const newer = { ...historyEntry(102, 72), payload: { ...SHARE_OK, d: "2026-09-20", o: [72, "A"], c: { ...SHARE_OK.c, attack: [60, "B"] } } };
+    const otherRules = { ...historyEntry(103, 60), payload: { ...SHARE_OK, r: "squad-diagnosis/2026-01-01.v0", d: "2026-09-25", o: [60, "B"] } };
+    const selectEntry = (label) => run(function (l) {
+      const li = [...document.querySelectorAll("[data-history-entry]")].find((x) => x.textContent.includes(l));
+      const box = li && li.querySelector("[data-history-select]");
+      if (!box) return false;
+      box.click();
+      return true;
+    }, label);
+    let compareUrl = null;
+    await step(vp, "/diagnosis-history", "before/after: order by date, trends, rules mismatch refused", async () => {
+      await setHistory({ schema: "efb-diagnosis-history/v1", entries: [older, newer, otherRules] });
+      await nav("/diagnosis-history");
+      await waitFor(async () => (await historyEntries()) === 3, 10000, "3 entries");
+      // 新しい方を先に選んでも、古い方が「改善前」になること
+      if (!(await selectEntry("BB Squad 102")) || !(await selectEntry("BB Squad 101"))) throw new Error("select failed");
+      await waitFor(() => ev("!!document.querySelector('[data-compare-card]')"), 5000, "comparison card");
+      const dates = await ev("document.querySelector('[data-compare-dates]').textContent");
+      if (!/改善前 2026-09-01 → 改善後 2026-09-20/.test(dates)) throw new Error(`before/after order: ${dates}`);
+      const overall = await ev("document.querySelector('[data-compare-overall]').textContent");
+      if (!/\+17/.test(overall) || !overall.includes("改善")) throw new Error(`overall change: ${overall}`);
+      const improvedRows = await ev("document.querySelectorAll('[data-compare-row=improved]').length");
+      if (improvedRows !== 1) throw new Error(`improved rows ${improvedRows}`);
+      await expectText("原因");
+      if (/sq_bb|dh_bb/.test(await run(pageText))) throw new Error("internal ID shown");
+      compareUrl = await ev("(document.querySelector('[data-compare-url]') || {}).value || null");
+      if (!/\/share\/compare#sd1\.[\w-]+\.[0-9a-f]{8}~sd1\.[\w-]+\.[0-9a-f]{8}$/.test(compareUrl ?? "")) throw new Error("compare share URL format");
+      // 3件目を選ぶと古い選択(102)が外れ、規則の版が違う組み合わせは比較しない
+      await selectEntry("BB Squad 103");
+      await waitFor(async () => (await ev("(document.querySelector('[data-compare-error]') || {}).dataset?.compareError || ''")) === "rules_mismatch", 5000, "rules mismatch refused");
+      return { ok: true, detail: "older=before, +17 improved, 1 improved row, rules mismatch refused" };
+    });
+    await step(vp, "/share/compare", "comparison share link opens; bad links rejected", async () => {
+      if (!compareUrl) throw new Error("no compare URL from the previous step");
+      const u = new URL(compareUrl);
+      await nav(u.pathname + u.hash);
+      await waitFor(async () => (await shareState()) === "ok", 10000, "compare share ok");
+      await waitFor(() => ev("!!document.querySelector('[data-compare-card]')"), 5000, "card");
+      const noindex = await ev("(document.querySelector('meta[name=\"robots\"]') || {}).content || ''");
+      if (!/noindex/.test(noindex)) throw new Error("compare share page not noindex");
+      for (const [hash, reason] of [[okToken, "bad_format"], [`${okToken}~${shareToken({ ...SHARE_OK, r: "squad-diagnosis/2026-01-01.v0" })}`, "rules_mismatch"], ["", "empty"], [`${okToken}~garbage`, "invalid"]]) {
+        await nav(`/share/compare#${hash}`);
+        await waitFor(async () => (await shareState()) === "error" && (await ev("(document.querySelector('[data-share-state]') || {}).dataset?.shareReason || ''")) === reason, 5000, `compare error ${reason}`);
+      }
+      await ev(`localStorage.removeItem(${JSON.stringify(HISTORY_KEY)})`);
+      return { ok: true, detail: "opens with card and noindex; 4 bad links rejected" };
+    });
+    if (vp.name === "desktop-1280x720" || vp.name === "mobile-390x844") {
+      await step(vp, "/diagnosis-history", "before/after: save image", async () => {
+        await setHistory({ schema: "efb-diagnosis-history/v1", entries: [older, newer] });
+        await nav("/diagnosis-history");
+        await waitFor(async () => (await historyEntries()) === 2, 10000, "2 entries");
+        await selectEntry("BB Squad 101");
+        await selectEntry("BB Squad 102");
+        await waitFor(() => selectVisible("button", "画像を保存"), 5000, "save image button");
+        await click("button", "save image", "画像を保存");
+        await waitFor(async () => /画像を保存しました|画像を保存できませんでした/.test(await run(pageText)), 8000, "image result");
+        const saved = (await run(pageText)).includes("画像を保存しました");
+        await ev(`localStorage.removeItem(${JSON.stringify(HISTORY_KEY)})`);
+        if (!saved) throw new Error("image save failed");
+        return { ok: true, detail: "PNG generated and handed to the browser" };
+      });
+    }
   }
 
   // ---------------------------------------------------------------------------

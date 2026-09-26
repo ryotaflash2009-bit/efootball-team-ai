@@ -388,6 +388,14 @@ export async function saveSquadDiagnosisImageAsPng(
   filename: string,
   locale: Locale = "ja",
 ): Promise<SaveSquadDiagnosisImageResult> {
+  return saveDrawnCanvasAsPng((canvas) => drawSquadDiagnosisImage(canvas, data, locale), filename);
+}
+
+/**
+ * `draw` で描いたオフスクリーンcanvasをPNGとして端末へ保存する（スカッド診断・改善前後カードで共通）。
+ * SSR・非対応ブラウザー・例外時も画面をクラッシュさせず、失敗理由付きで返す。
+ */
+export async function saveDrawnCanvasAsPng(draw: (canvas: HTMLCanvasElement) => void, filename: string): Promise<SaveSquadDiagnosisImageResult> {
   if (typeof document === "undefined" || typeof window === "undefined") {
     return { ok: false, reason: "ssr" };
   }
@@ -397,7 +405,7 @@ export async function saveSquadDiagnosisImageAsPng(
     canvas = document.createElement("canvas"); // DOM には追加しない（オフスクリーン）
     const ctx = canvas.getContext("2d");
     if (!ctx) return { ok: false, reason: "unsupported" };
-    drawSquadDiagnosisImage(canvas, data, locale);
+    draw(canvas);
 
     const blob = await new Promise<Blob | null>((resolve) => {
       if (typeof canvas!.toBlob === "function") {
