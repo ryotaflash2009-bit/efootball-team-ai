@@ -169,13 +169,57 @@ function resetCap() {
   cap = { consoleErrors: [], warnings: [], exceptions: [], failed: [], s4xx: [], s5xx: [], offOrigin: [], reqs: [] };
 }
 resetCap();
-const call = (fn, ...args) => `(${fn.toString()})(${args.map((a) => JSON.stringify(a)).join(",")})`;
+/** 固定の式だけを評価する(値を埋め込んだコードは組み立てない。値はrunの引数で渡す)。 */
 async function ev(expression) {
   const r = await client.send("Runtime.evaluate", { expression, returnByValue: true, awaitPromise: true });
   if (r.exceptionDetails) throw new Error(`page eval: ${r.exceptionDetails.exception?.description?.split("\n")[0] ?? r.exceptionDetails.text}`);
   return r.result?.value;
 }
-const run = (fn, ...args) => ev(call(fn, ...args));
+/** ページ内で関数を実行する。引数はCDPの値として渡す(コード文字列へ埋め込まない)。 */
+async function run(fn, ...args) {
+  const g = await client.send("Runtime.evaluate", { expression: "globalThis" });
+  const r = await client.send("Runtime.callFunctionOn", {
+    functionDeclaration: fn.toString(),
+    objectId: g.result.objectId,
+    arguments: args.map((value) => ({ value })),
+    returnByValue: true,
+    awaitPromise: true,
+  });
+  if (r.exceptionDetails) throw new Error(`page call: ${r.exceptionDetails.exception?.description?.split("\n")[0] ?? r.exceptionDetails.text}`);
+  return r.result?.value;
+}
+function pageClick(selector, text, mode) {
+  const all = [...document.querySelectorAll(selector)];
+  const el = text == null ? all[0] : all.find((e) => (mode === "includes" ? e.textContent.includes(text) : e.textContent.trim() === text) && e.getBoundingClientRect().width > 0);
+  if (!el) return false;
+  el.scrollIntoView({ block: "center" });
+  el.click();
+  return true;
+}
+function pageFocusInput(selector) {
+  const el = document.querySelector(selector);
+  if (!el) return false;
+  el.scrollIntoView({ block: "center" });
+  el.focus();
+  if (el.select) el.select();
+  return true;
+}
+function pageSelect(selector, prefer, differentFromCurrent) {
+  const el = document.querySelector(selector);
+  if (!el) return null;
+  const opts = [...el.options].map((o) => o.value).filter((v) => v && !(differentFromCurrent && v === el.value));
+  const value = prefer && opts.includes(prefer) ? prefer : opts[0];
+  if (value == null) return null;
+  Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value").set.call(el, value);
+  el.dispatchEvent(new Event("change", { bubbles: true }));
+  return value;
+}
+function pageVisible(selector, text) {
+  const el = text == null ? document.querySelector(selector) : [...document.querySelectorAll(selector)].find((e) => e.textContent.trim() === text && e.getBoundingClientRect().width > 0);
+  if (!el) return false;
+  const r = el.getBoundingClientRect();
+  return r.width > 0 && r.height > 0;
+}
 const locationPath = () => ev("location.pathname + location.search");
 
 async function waitFor(predicate, timeoutMs = 15000, label = "condition") {
@@ -197,32 +241,20 @@ async function nav(p) {
   await sleep(150);
   return settle();
 }
-async function click(selectorExpr, label) {
-  const ok = await ev(`(() => { const el = ${selectorExpr}; if (!el) return false; el.scrollIntoView({ block: "center" }); el.click(); return true; })()`);
-  if (!ok) throw new Error(`not found: ${label}`);
+/** selectorの最初の要素(textを渡すと、そのテキストを持つ表示中の要素)をクリックする。 */
+async function click(selector, label, text = null, mode = "exact") {
+  if (!(await run(pageClick, selector, text, mode))) throw new Error(`not found: ${label}`);
 }
 async function typeInto(selector, text) {
-  const ok = await ev(`(() => { const el = document.querySelector(${JSON.stringify(selector)}); if (!el) return false; el.scrollIntoView({ block: "center" }); el.focus(); el.select && el.select(); return true; })()`);
-  if (!ok) throw new Error(`input not found: ${selector}`);
+  if (!(await run(pageFocusInput, selector))) throw new Error(`input not found: ${selector}`);
   await client.send("Input.insertText", { text });
 }
-async function selectOption(selector, pickExpr) {
-  const v = await ev(`(() => {
-    const el = document.querySelector(${JSON.stringify(selector)});
-    if (!el) return null;
-    const opts = [...el.options].map((o) => o.value);
-    const value = (${pickExpr})(opts, el.value);
-    if (value == null) return null;
-    Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value").set.call(el, value);
-    el.dispatchEvent(new Event("change", { bubbles: true }));
-    return value;
-  })()`);
+async function selectOption(selector, { prefer = null, differentFromCurrent = false } = {}) {
+  const v = await run(pageSelect, selector, prefer, differentFromCurrent);
   if (v == null) throw new Error(`select not usable: ${selector}`);
   return v;
 }
-async function selectVisible(selector) {
-  return ev(`(() => { const el = document.querySelector(${JSON.stringify(selector)}); if (!el) return false; const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0; })()`);
-}
+const selectVisible = (selector, text = null) => run(pageVisible, selector, text);
 
 function dupCount(list) {
   const seen = new Map();
@@ -459,17 +491,15 @@ async function main() {
     // ---- 操作 ----
     await step(vp, "/players", "language ja→en→ja", async () => {
       await nav("/players");
-      const btnEn = `[...document.querySelectorAll("button[aria-pressed]")].find((b) => b.textContent.trim() === "English" && b.getBoundingClientRect().width > 0)`;
-      const btnJa = `[...document.querySelectorAll("button[aria-pressed]")].find((b) => b.textContent.trim() === "日本語" && b.getBoundingClientRect().width > 0)`;
-      if (!(await ev(`!!(${btnEn})`))) {
+      if (!(await selectVisible("button[aria-pressed]", "English"))) {
         // モバイル: メニューの中にある場合は開く
-        await click(`document.querySelector("header button[aria-expanded='false']")`, "menu toggle");
+        await click("header button[aria-expanded='false']", "menu toggle");
         await sleep(300);
       }
-      await click(btnEn, "English button");
+      await click("button[aria-pressed]", "English button", "English");
       await waitFor(async () => (await ev("(document.querySelector('main h1')||{}).textContent||''")).includes(T.playersTitleEn), 5000, "English heading");
       const stored = await ev(`localStorage.getItem("efootball-team-ai:locale:v1")`);
-      await click(btnJa, "日本語 button");
+      await click("button[aria-pressed]", "日本語 button", "日本語");
       await waitFor(async () => (await ev("(document.querySelector('main h1')||{}).textContent||''")).includes(T.playersTitleJa), 5000, "Japanese heading");
       await ev(`document.querySelector("header button[aria-expanded='true']")?.click()`);
       return { ok: stored === "en", detail: stored === "en" ? "switched and restored" : "locale not persisted" };
@@ -512,7 +542,7 @@ async function main() {
 
     await step(vp, "/players", "search clear", async () => {
       await nav("/players?q=Messi");
-      await click(`[...document.querySelectorAll("main button")].find((b) => b.textContent.trim() === "すべて解除")`, "clear all");
+      await click("main button", "clear all", "すべて解除");
       await waitFor(async () => !(await ev("location.search")).includes("q="), 8000, "q removed");
       await settle();
       const n = (await run(worldCardIds)).length;
@@ -522,14 +552,14 @@ async function main() {
 
     const openFilters = async () => {
       if (!(await selectVisible("select[aria-label='ポジション']"))) {
-        await click(`[...document.querySelectorAll("main button[aria-expanded]")].find((b) => b.textContent.includes("フィルター"))`, "filter toggle");
+        await click("main button[aria-expanded]", "filter toggle", "フィルター", "includes");
         await waitFor(() => selectVisible("select[aria-label='ポジション']"), 5000, "filters open");
       }
     };
     for (const [label, sel, param, pick] of [
-      ["position filter", "select[aria-label='ポジション']", "position", "(o) => (o.includes('CF') ? 'CF' : o.find((v) => v))"],
-      ["card type filter", "select[aria-label='カードタイプ']", "cardType", "(o) => o.find((v) => v)"],
-      ["sort", "select[aria-label='並べ替え']", "sort", "(o, cur) => o.find((v) => v && v !== cur)"],
+      ["position filter", "select[aria-label='ポジション']", "position", { prefer: "CF" }],
+      ["card type filter", "select[aria-label='カードタイプ']", "cardType", {}],
+      ["sort", "select[aria-label='並べ替え']", "sort", { differentFromCurrent: true }],
     ]) {
       await step(vp, "/players", label, async () => {
         await nav("/players");
@@ -546,7 +576,7 @@ async function main() {
     await step(vp, "/players", "pagination", async () => {
       await nav("/players");
       const first = (await run(worldCardIds))[0];
-      await click(`document.querySelector("a[rel='next']")`, "next page");
+      await click("a[rel='next']", "next page");
       await waitFor(async () => new URL(await ev("location.href")).searchParams.get("page") === "2", 8000, "page=2");
       await settle();
       const second = (await run(worldCardIds))[0];
@@ -557,7 +587,7 @@ async function main() {
     await step(vp, "/players → detail → back", "navigate and back", async () => {
       await nav("/players");
       const id = (await run(worldCardIds))[0];
-      await click(`document.querySelector("main a[href^='/players/world/${id}']")`, "first card");
+      await click("main a[href^='/players/world/']", "first card");
       await waitFor(async () => (await locationPath()).startsWith(`/players/world/${id}`), 10000, "detail URL");
       await settle();
       if (!(await ev("!!document.querySelector('main h1')"))) throw new Error("detail heading missing");
@@ -587,7 +617,7 @@ async function main() {
     });
     await step(vp, "/managers", "manager filter", async () => {
       await nav("/managers");
-      const value = await selectOption("select[aria-label='ブースター']", "(o) => o.find((v) => v)");
+      const value = await selectOption("select[aria-label='ブースター']");
       await waitFor(async () => (await ev("location.search")).length > 1, 8000, "filter in URL");
       await settle();
       const n = (await run(managerCardIds)).length;
@@ -596,7 +626,7 @@ async function main() {
     await step(vp, "/managers → detail", "open manager", async () => {
       await nav("/managers");
       const id = (await run(managerCardIds))[0];
-      await click(`document.querySelector("main a[href^='/managers/${id}']")`, "first manager");
+      await click("main a[href^='/managers/']", "first manager");
       await waitFor(async () => (await locationPath()).startsWith(`/managers/${id}`), 10000, "manager URL");
       await settle();
       return { ok: await ev("!!document.querySelector('main h1')"), detail: "manager detail" };
@@ -604,10 +634,10 @@ async function main() {
 
     await step(vp, "/support → /terms → /privacy", "legal navigation", async () => {
       await nav("/support");
-      await click(`document.querySelector("a[href='/terms']")`, "terms link");
+      await click("a[href='/terms']", "terms link");
       await waitFor(async () => (await locationPath()) === "/terms", 10000, "/terms");
       await settle();
-      await click(`document.querySelector("a[href='/privacy']")`, "privacy link");
+      await click("a[href='/privacy']", "privacy link");
       await waitFor(async () => (await locationPath()) === "/privacy", 10000, "/privacy");
       await settle();
       return { ok: true, detail: "support → terms → privacy" };
@@ -672,7 +702,7 @@ async function main() {
   await client.send("HeapProfiler.enable");
   for (let i = 0; i < 10; i++) {
     await nav("/players");
-    await click(`document.querySelector("main a[href^='/players/world/']")`, "card");
+    await click("main a[href^='/players/world/']", "card");
     await waitFor(async () => (await locationPath()).startsWith("/players/world/"), 10000, "detail");
     await settle();
     await client.send("HeapProfiler.collectGarbage");
