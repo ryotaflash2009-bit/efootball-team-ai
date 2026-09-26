@@ -1,16 +1,22 @@
-name: Reference data Production apply (manual, approval-gated)
+name: Reference data Production apply (plan/dry-run automated; apply approval-gated)
 run-name: reference-data ${{ inputs.mode }}${{ inputs.dataset == 'world' && ' world' || '' }}
 
 # Reference-data auto-update, Stage 2 (preflight) and Stage 4 (first Production update rehearsal,
 # managers only; owner decision 2026-09-24).
 #
 # - Trigger: workflow_dispatch ONLY. No schedule, push, pull_request or workflow_run.
-# - Every mode runs in the `reference-data-production-apply` Environment (required reviewer) and uses
-#   only REFERENCE_DATA_APPLY_DB_URL / REFERENCE_DATA_APPLY_DB_CA_CERT (never the Backup secrets).
+# - Environments and credentials per mode (one-approval pipeline, owner decision 2026-09-27;
+#   docs/production-readiness/automated-update-pipeline.md):
+#     plan     -> `reference-data-automation` (no reviewer, main only): REFERENCE_DATA_PLAN_READ_DB_URL/_CA_CERT only
+#                 (a read-only role; the CLI checks role, read-only transaction and no write privilege before reading)
+#     dry-run  -> `reference-data-automation`: NO credential at all; uses the plan run's bundle + Production state
+#                 snapshot (sha256-bound) and the job-local postgres:17 only
+#     preflight / apply / verify -> `reference-data-production-apply` (required reviewer): REFERENCE_DATA_APPLY_DB_URL/_CA_CERT
+#   The Apply secrets live only in the Apply Environment and are referenced only for those modes; never the Backup secrets.
 # - Modes (the confirmation input must match the mode exactly, checked before any secret is read):
 #     preflight  "preflight"                    read-only catalog/privilege checks (Stage 2)
 #     plan       "plan-managers"                read-only Production read + ONE managers.json GET → candidate/diff/policy
-#     dry-run    "dry-run-managers"             binds plan run + new pre-apply Backup run; read-only re-read (stale check);
+#     dry-run    "dry-run-managers"             binds plan run + new pre-apply Backup run; Production state from the plan snapshot;
 #                                               isolated dry run / executor / undo simulation in the job-local postgres:17
 #     apply      "apply-managers-to-production" re-verifies every binding, then ONE transaction as reference_data_updater;
 #                                               post-apply verification; no automatic retry, undo or restore
@@ -97,7 +103,7 @@ concurrency:
 jobs:
   production:
     runs-on: ubuntu-latest
-    environment: reference-data-production-apply
+    environment: ${{ (inputs.mode == 'plan' || inputs.mode == 'dry-run') && 'reference-data-automation' || 'reference-data-production-apply' }}
     # World plan: ~443 requests at 3 s intervals (~23 min); World apply: ~6,000 row updates in one transaction.
     timeout-minutes: 90
     # Job-local, throwaway PostgreSQL for the dry-run mode only (not Production). Same convention as ci.yml.
@@ -169,11 +175,19 @@ jobs:
 
       - name: Check required secrets are configured (fails before any DB connection)
         env:
-          REFERENCE_DATA_APPLY_DB_URL: ${{ secrets.REFERENCE_DATA_APPLY_DB_URL }}
-          REFERENCE_DATA_APPLY_DB_CA_CERT: ${{ secrets.REFERENCE_DATA_APPLY_DB_CA_CERT }}
+          MODE: ${{ inputs.mode }}
+          REFERENCE_DATA_APPLY_DB_URL: ${{ (inputs.mode == 'preflight' || inputs.mode == 'apply' || inputs.mode == 'verify') && secrets.REFERENCE_DATA_APPLY_DB_URL || '' }}
+          REFERENCE_DATA_APPLY_DB_CA_CERT: ${{ (inputs.mode == 'preflight' || inputs.mode == 'apply' || inputs.mode == 'verify') && secrets.REFERENCE_DATA_APPLY_DB_CA_CERT || '' }}
+          REFERENCE_DATA_PLAN_READ_DB_URL: ${{ inputs.mode == 'plan' && secrets.REFERENCE_DATA_PLAN_READ_DB_URL || '' }}
+          REFERENCE_DATA_PLAN_READ_DB_CA_CERT: ${{ inputs.mode == 'plan' && secrets.REFERENCE_DATA_PLAN_READ_DB_CA_CERT || '' }}
         run: |
+          case "$MODE" in
+            plan) names="REFERENCE_DATA_PLAN_READ_DB_URL REFERENCE_DATA_PLAN_READ_DB_CA_CERT" ;;
+            dry-run) names="" ;;
+            *) names="REFERENCE_DATA_APPLY_DB_URL REFERENCE_DATA_APPLY_DB_CA_CERT" ;;
+          esac
           missing=0
-          for name in REFERENCE_DATA_APPLY_DB_URL REFERENCE_DATA_APPLY_DB_CA_CERT; do
+          for name in $names; do
             value="${!name}"
             if [ -z "$value" ]; then
               echo "::error::required secret not configured: $name"
@@ -228,6 +242,15 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: stage4-${{ inputs.dataset }}-bundle
+          run-id: ${{ inputs.plan_run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/stage4/plan
+
+      - name: Download the Production state snapshot from the bound plan run
+        if: ${{ inputs.mode == 'dry-run' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: stage4-${{ inputs.dataset }}-state
           run-id: ${{ inputs.plan_run_id }}
           github-token: ${{ github.token }}
           path: ${{ runner.temp }}/stage4/plan
@@ -287,8 +310,10 @@ jobs:
 
       - name: Run the selected mode
         env:
-          REFERENCE_DATA_APPLY_DB_URL: ${{ secrets.REFERENCE_DATA_APPLY_DB_URL }}
-          REFERENCE_DATA_APPLY_DB_CA_CERT: ${{ secrets.REFERENCE_DATA_APPLY_DB_CA_CERT }}
+          REFERENCE_DATA_APPLY_DB_URL: ${{ (inputs.mode == 'preflight' || inputs.mode == 'apply' || inputs.mode == 'verify') && secrets.REFERENCE_DATA_APPLY_DB_URL || '' }}
+          REFERENCE_DATA_APPLY_DB_CA_CERT: ${{ (inputs.mode == 'preflight' || inputs.mode == 'apply' || inputs.mode == 'verify') && secrets.REFERENCE_DATA_APPLY_DB_CA_CERT || '' }}
+          REFERENCE_DATA_PLAN_READ_DB_URL: ${{ inputs.mode == 'plan' && secrets.REFERENCE_DATA_PLAN_READ_DB_URL || '' }}
+          REFERENCE_DATA_PLAN_READ_DB_CA_CERT: ${{ inputs.mode == 'plan' && secrets.REFERENCE_DATA_PLAN_READ_DB_CA_CERT || '' }}
           REFERENCE_DATA_APPLY_MODE: ${{ inputs.mode }}
           REFERENCE_DATA_APPLY_DATASET: ${{ inputs.dataset }}
           REFERENCE_DATA_APPLY_CONFIRM: ${{ inputs.confirm }}
@@ -325,6 +350,16 @@ jobs:
         with:
           name: stage4-${{ inputs.dataset }}-bundle
           path: ${{ runner.temp }}/stage4/out/stage4-${{ inputs.dataset }}-bundle.json
+          if-no-files-found: ignore
+          retention-days: 7
+
+      # plan: the Production state the plan read (public reference data only; sha256 recorded in the bundle).
+      - name: Upload the Production state snapshot
+        if: ${{ always() && inputs.mode == 'plan' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage4-${{ inputs.dataset }}-state
+          path: ${{ runner.temp }}/stage4/out/stage4-${{ inputs.dataset }}-state.json
           if-no-files-found: ignore
           retention-days: 7
 

@@ -138,10 +138,15 @@ export interface WorldProductionState {
   readonly worldMaxAppearanceUpdatedAt: string | null;
 }
 
-export async function readWorldProductionState(client: Stage4Client, schema: string = PRODUCTION_REFERENCE_SCHEMA): Promise<WorldProductionState> {
+export async function readWorldProductionState(
+  client: Stage4Client,
+  schema: string = PRODUCTION_REFERENCE_SCHEMA,
+  /** 読み取りを許可するrole(既定はupdater。Planは読み取り専用roleを渡す)。 */
+  allowedRoles: readonly string[] = [UPDATER_ROLE_NAME],
+): Promise<WorldProductionState> {
   const s = targetSchema(schema);
   const who = await client.query("select current_user::text as u, current_setting('transaction_read_only') as ro");
-  if (who.rows[0]?.u !== UPDATER_ROLE_NAME) throw new Stage4Stop("wrong_role");
+  if (!allowedRoles.includes(String(who.rows[0]?.u))) throw new Stage4Stop("wrong_role");
   if (who.rows[0]?.ro !== "on") throw new Stage4Stop("not_read_only");
   const world = (await client.query(`select ${cols("world_player_cards")} from ${s}.world_player_cards`)).rows;
   const importBatches = (await client.query(`select ${cols("import_batches")} from ${s}.import_batches`)).rows;
@@ -287,12 +292,14 @@ export interface WorldSourceBundle {
   readonly planChecksum: string;
   readonly beforeChecksum: string;
   readonly productionCountsAtPlan: WorldProductionState["counts"];
+  /** Planが読んだProduction状態スナップショット(別artifact)のsha256。Dry runはこれと照合してから使う。 */
+  readonly stateSha256?: string;
 }
 
 const bodiesDigest = (pages: readonly RecordedWorldPage[]) => sha256(pages.map((p) => `${p.page}:${sha256(p.bodyText)}`).join("\n"));
 
-export function buildWorldBundle(pages: readonly RecordedWorldPage[], fetchedAt: string, b: WorldCandidateBuild, counts: WorldProductionState["counts"]): WorldSourceBundle {
-  return { schema: WORLD_BUNDLE_SCHEMA, fetchedAt, pages, bodiesSha256: bodiesDigest(pages), sourceChecksum: b.candidate.sourceChecksum, planChecksum: b.plan.planChecksum, beforeChecksum: b.plan.report.beforeChecksum, productionCountsAtPlan: counts };
+export function buildWorldBundle(pages: readonly RecordedWorldPage[], fetchedAt: string, b: WorldCandidateBuild, counts: WorldProductionState["counts"], stateSha256?: string): WorldSourceBundle {
+  return { schema: WORLD_BUNDLE_SCHEMA, fetchedAt, pages, bodiesSha256: bodiesDigest(pages), sourceChecksum: b.candidate.sourceChecksum, planChecksum: b.plan.planChecksum, beforeChecksum: b.plan.report.beforeChecksum, productionCountsAtPlan: counts, ...(stateSha256 ? { stateSha256 } : {}) };
 }
 
 export function parseWorldBundle(text: string): WorldSourceBundle {
@@ -307,6 +314,7 @@ export function parseWorldBundle(text: string): WorldSourceBundle {
     if (typeof p?.page !== "number" || typeof p.requestBody !== "string" || typeof p.status !== "number" || typeof p.contentType !== "string" || typeof p.bodyText !== "string") throw new Stage4Stop("bundle_shape");
   }
   for (const k of ["bodiesSha256", "sourceChecksum", "planChecksum", "beforeChecksum"]) if (typeof d[k] !== "string" || !SHA256_RE.test(d[k] as string)) throw new Stage4Stop("bundle_shape");
+  if (d.stateSha256 !== undefined && (typeof d.stateSha256 !== "string" || !SHA256_RE.test(d.stateSha256))) throw new Stage4Stop("bundle_shape");
   if (bodiesDigest(d.pages as RecordedWorldPage[]) !== d.bodiesSha256) throw new Stage4Stop("bundle_body_hash_mismatch");
   return d as unknown as WorldSourceBundle;
 }

@@ -2,7 +2,7 @@ import { writeFileSync } from "node:fs";
 import { Client, type ClientConfig } from "pg";
 import { buildProductionPgClientConfig } from "./backup-db-connection";
 import { runUpdaterPreflight, safeErrorCode } from "./production-apply-preflight";
-import { APPLY_SECRET_NAMES } from "./update-contract";
+import { APPLY_SECRET_NAMES, BACKUP_SECRET_NAMES, PLAN_READ_SECRET_NAMES } from "./update-contract";
 import { runStage4Mode } from "./stage4-managers-cli";
 import { runWorldMode } from "./stage4-world-cli";
 import type { Stage4Mode } from "./stage4-managers";
@@ -17,7 +17,9 @@ import type { Stage4Mode } from "./stage4-managers";
  * - plan / dry-run / apply / verify: Stage 4のProduction更新リハーサル。REFERENCE_DATA_APPLY_DATASET=managers(既定、
  *   stage4-managers-cli.ts) | world(stage4-world-cli.ts)。書き込みはapplyだけ(全binding・前提条件を満たした場合に1 transaction)。
  * - 上記以外のmodeは接続前に拒否する。
- * - 必須Secretが無ければ接続を試みずに停止する。
+ * - 必須Secretが無ければ接続を試みずに停止する。modeごとに使うcredentialは1種類だけ(承認1回化):
+ *   plan = 読み取り専用のPLAN_READ、dry-run = なし(Productionへ接続しない)、preflight/apply/verify = APPLY。
+ *   modeに合わないcredentialを受け取った場合も接続前に停止する(workflowの設定誤りに対する二重防御)。
  * - 出力・要約artifactには、段階(phase)と安全なreason code(SQLSTATE・Node.jsのerror code)だけを残し、
  *   エラー本文・URL・SQL・Secret値を含めない。
  */
@@ -32,6 +34,22 @@ export interface PreflightSummary {
   readonly reasons: readonly string[];
   readonly facts?: Readonly<Record<string, unknown>>;
   readonly checkedAt: string;
+}
+
+/** modeごとに必要なSecret名(dry-runは空=Productionへ接続しない)。 */
+export function secretNamesForMode(mode: string): readonly string[] {
+  if (mode === "plan") return PLAN_READ_SECRET_NAMES;
+  if (mode === "dry-run") return [];
+  return APPLY_SECRET_NAMES;
+}
+
+/** modeに渡してはいけないcredentialが環境にあれば、その名前を返す。 */
+export function forbiddenCredentialsForMode(mode: string, env: Readonly<Record<string, string | undefined>>): string[] {
+  const forbidden =
+    mode === "dry-run" ? [...APPLY_SECRET_NAMES, ...PLAN_READ_SECRET_NAMES, ...BACKUP_SECRET_NAMES]
+    : mode === "plan" ? [...APPLY_SECRET_NAMES, ...BACKUP_SECRET_NAMES]
+    : [...PLAN_READ_SECRET_NAMES, ...BACKUP_SECRET_NAMES];
+  return forbidden.filter((n) => !!env[n]);
 }
 
 export function readApplySecrets(env: Readonly<Record<string, string | undefined>>): Record<(typeof APPLY_SECRET_NAMES)[number], string> {
@@ -94,34 +112,42 @@ function writeSummary(path: string | undefined, s: PreflightSummary, secretValue
 export async function main(): Promise<void> {
   const env = process.env;
   let secrets: Record<string, string> = {};
-  let result: PreflightSummary;
-  if (!checkApplyMode(env.REFERENCE_DATA_APPLY_MODE)) {
+  let result: PreflightSummary | undefined;
+  const mode = env.REFERENCE_DATA_APPLY_MODE ?? "";
+  if (!checkApplyMode(mode)) {
     result = summary(false, "mode", ["mode_not_allowed"]);
   } else {
-    try {
-      secrets = readApplySecrets(env);
-    } catch {
+    const unexpected = forbiddenCredentialsForMode(mode, env);
+    const names = secretNamesForMode(mode);
+    const missing = names.filter((n) => !env[n]);
+    if (unexpected.length > 0) {
+      // 名前だけを出す(値は出さない)。
+      result = summary(false, "secrets", [`credential_not_allowed_for_mode(blocked): ${unexpected.join(", ")}`]);
+    } else if (missing.length > 0) {
       // 不足したSecretの「名前」だけを出す(値は存在しない)。
-      const missing = APPLY_SECRET_NAMES.filter((n) => !env[n]);
       result = summary(false, "secrets", [`必須環境変数が不足している(blocked): ${missing.join(", ")}`]);
-    }
-    if (!result!) {
+    } else {
+      for (const n of names) secrets[n] = env[n] as string;
       let config: ClientConfig | null = null;
-      try {
-        config = buildProductionPgClientConfig(secrets.REFERENCE_DATA_APPLY_DB_URL, secrets.REFERENCE_DATA_APPLY_DB_CA_CERT);
-      } catch {
-        result = summary(false, "config", ["config_invalid"]);
+      if (names.length === 2) {
+        try {
+          config = buildProductionPgClientConfig(secrets[names[0]], secrets[names[1]]);
+        } catch {
+          result = summary(false, "config", ["config_invalid"]);
+        }
       }
-      const mode = env.REFERENCE_DATA_APPLY_MODE as (typeof APPLY_MODES)[number];
-      if (config && mode === "preflight") result = await runPreflightWithConfig(config);
-      else if (config && mode !== "preflight") {
-        // dataset: managers(既定) | world。それ以外は接続せずに停止する。
-        const dataset = env.REFERENCE_DATA_APPLY_DATASET ?? "managers";
-        const o =
-          dataset === "world" ? await runWorldMode(mode, env, config)
-          : dataset === "managers" ? await runStage4Mode(mode, env, config)
-          : { ok: false, reasons: ["dataset_not_allowed"], facts: {} };
-        result = summary(o.ok, mode, o.reasons, o.facts);
+      if (!result) {
+        const m = mode as (typeof APPLY_MODES)[number];
+        if (m === "preflight") result = await runPreflightWithConfig(config as ClientConfig);
+        else {
+          // dataset: managers(既定) | world。それ以外は接続せずに停止する。dry-runはconfig=null(接続しない)。
+          const dataset = env.REFERENCE_DATA_APPLY_DATASET ?? "managers";
+          const o =
+            dataset === "world" ? await runWorldMode(m, env, config)
+            : dataset === "managers" ? await runStage4Mode(m, env, config)
+            : { ok: false, reasons: ["dataset_not_allowed"], facts: {} };
+          result = summary(o.ok, m, o.reasons, o.facts);
+        }
       }
     }
   }

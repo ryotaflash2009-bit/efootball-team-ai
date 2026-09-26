@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { APPLY_SECRET_NAMES, BACKUP_SECRET_NAMES, CONCURRENCY_GROUPS, SECRET_BOUNDARIES } from "./update-contract";
-import { APPLY_MODES, readApplySecrets } from "./production-apply-cli";
+import { APPLY_SECRET_NAMES, AUTOMATION_ENVIRONMENT, BACKUP_SECRET_NAMES, CONCURRENCY_GROUPS, PLAN_READ_SECRET_NAMES, SECRET_BOUNDARIES } from "./update-contract";
+import { APPLY_MODES, forbiddenCredentialsForMode, readApplySecrets, secretNamesForMode } from "./production-apply-cli";
 import { STAGE4_CONFIRM, stage4RunTitle, stage4WorldRunTitle } from "./stage4-managers";
 import { WORLD_CONFIRM } from "./stage4-world";
 import { UPDATER_COLUMN_GRANTS, UPDATER_ROLE_NAME } from "./updater-role";
@@ -19,7 +19,9 @@ describe("Production apply workflow(Stage 2 preflight + Stage 4 managers)", () =
     expect(code).not.toMatch(/^\s*(schedule|push|pull_request|pull_request_target|workflow_run|repository_dispatch)\s*:/m);
     expect(code).toMatch(/^permissions:\s*\n\s+contents: read\s*\n\s+actions: read\s*\n\s*\nconcurrency:/m);
     expect(code).not.toMatch(/:\s*write\b/);
-    expect(code).toContain(`environment: ${SECRET_BOUNDARIES.production_apply.environment}`);
+    // 承認1回化(2026-09-27): plan・dry-runは承認者なしのautomation Environment、preflight・apply・verifyは承認必須のapply Environment。
+    expect(code).toContain(`environment: \${{ (inputs.mode == 'plan' || inputs.mode == 'dry-run') && '${AUTOMATION_ENVIRONMENT}' || '${SECRET_BOUNDARIES.production_apply.environment}' }}`);
+    expect(code.match(/^\s+environment:/gm)).toHaveLength(1);
     expect(code).toContain(`group: ${CONCURRENCY_GROUPS.productionWrite}`);
     expect(code).toMatch(/cancel-in-progress: false/);
   });
@@ -76,10 +78,18 @@ describe("Production apply workflow(Stage 2 preflight + Stage 4 managers)", () =
     expect(code).toContain("PHASE2_TEST_PG_HOST: localhost");
   });
 
-  it("apply用Secretだけを参照し、Backup用Secretを参照しない", () => {
+  it("Secretはmodeごとに1種類だけ: apply用はpreflight/apply/verifyだけ、Planの読み取り専用はplanだけ、dry-runはなし。Backup用は参照しない", () => {
     const refs = [...code.matchAll(/secrets\.([A-Z0-9_]+)/g)].map((m) => m[1]);
-    expect(new Set(refs)).toEqual(new Set(APPLY_SECRET_NAMES));
+    expect(new Set(refs)).toEqual(new Set([...APPLY_SECRET_NAMES, ...PLAN_READ_SECRET_NAMES]));
     for (const b of BACKUP_SECRET_NAMES) expect(code).not.toContain(b);
+    // どの参照も、modeの条件式の中にだけある(条件なしのSecret参照は無い)。
+    const lines = code.split("\n").filter((l) => /secrets\.[A-Z]/.test(l));
+    for (const l of lines) {
+      if (/secrets\.REFERENCE_DATA_APPLY_/.test(l)) expect(l).toContain("${{ (inputs.mode == 'preflight' || inputs.mode == 'apply' || inputs.mode == 'verify') && secrets.REFERENCE_DATA_APPLY_");
+      else expect(l).toContain("${{ inputs.mode == 'plan' && secrets.REFERENCE_DATA_PLAN_READ_");
+    }
+    // dry-runはどのcredentialも必要としない。
+    expect(code).toContain('dry-run) names="" ;;');
   });
 
   it("uploadするのは要約とStage 4のartifactだけで、no-secret smoke testがある", () => {
@@ -87,6 +97,7 @@ describe("Production apply workflow(Stage 2 preflight + Stage 4 managers)", () =
     expect(uploads).toEqual([
       "reference-data-apply-${{ inputs.mode }}${{ inputs.dataset == 'world' && '-world' || '' }}-summary",
       "stage4-${{ inputs.dataset }}-bundle",
+      "stage4-${{ inputs.dataset }}-state",
       "stage4-${{ inputs.dataset }}-dry-run",
       "stage4-${{ inputs.dataset }}-apply-result",
       "stage4-${{ inputs.dataset }}-undo-plan",
@@ -97,6 +108,17 @@ describe("Production apply workflow(Stage 2 preflight + Stage 4 managers)", () =
 });
 
 describe("Production apply CLI", () => {
+  it("modeごとのcredential: planは読み取り専用だけ、dry-runはなし、それ以外はapply用。mode外のcredentialは拒否する", () => {
+    expect(secretNamesForMode("plan")).toEqual([...PLAN_READ_SECRET_NAMES]);
+    expect(secretNamesForMode("dry-run")).toEqual([]);
+    for (const m of ["preflight", "apply", "verify"]) expect(secretNamesForMode(m)).toEqual([...APPLY_SECRET_NAMES]);
+    const all = Object.fromEntries([...APPLY_SECRET_NAMES, ...PLAN_READ_SECRET_NAMES, ...BACKUP_SECRET_NAMES].map((n) => [n, "x"]));
+    expect(forbiddenCredentialsForMode("dry-run", all).sort()).toEqual([...APPLY_SECRET_NAMES, ...PLAN_READ_SECRET_NAMES, ...BACKUP_SECRET_NAMES].sort());
+    expect(forbiddenCredentialsForMode("plan", all).sort()).toEqual([...APPLY_SECRET_NAMES, ...BACKUP_SECRET_NAMES].sort());
+    expect(forbiddenCredentialsForMode("apply", all).sort()).toEqual([...PLAN_READ_SECRET_NAMES, ...BACKUP_SECRET_NAMES].sort());
+    expect(forbiddenCredentialsForMode("plan", { REFERENCE_DATA_PLAN_READ_DB_URL: "u", REFERENCE_DATA_PLAN_READ_DB_CA_CERT: "c" })).toEqual([]);
+  });
+
   it("必須Secretが無ければ接続前に停止する", () => {
     expect(() => readApplySecrets({})).toThrow(/REFERENCE_DATA_APPLY_DB_URL, REFERENCE_DATA_APPLY_DB_CA_CERT/);
     expect(readApplySecrets({ REFERENCE_DATA_APPLY_DB_URL: "u", REFERENCE_DATA_APPLY_DB_CA_CERT: "c" })).toEqual({ REFERENCE_DATA_APPLY_DB_URL: "u", REFERENCE_DATA_APPLY_DB_CA_CERT: "c" });
@@ -122,9 +144,11 @@ describe("Production apply CLI", () => {
     expect(CLI).toContain("connect_failed:${safeErrorCode(err)}");
     expect(CLI).toContain("preflight_failed:${safeErrorCode(err)}");
     expect(STAGE4_CLI).not.toMatch(/err\.message|sanitizeErrorMessage/);
-    // modeの判定はSecret読込・接続より前。
-    expect(CLI.indexOf("checkApplyMode(env.REFERENCE_DATA_APPLY_MODE)")).toBeLessThan(CLI.indexOf("readApplySecrets(env)"));
-    expect(CLI.indexOf("readApplySecrets(env)")).toBeLessThan(CLI.indexOf("runPreflightWithConfig(config)"));
+    // modeの判定・mode外credentialの拒否・必須Secretの確認は、接続より前。
+    expect(CLI.indexOf("checkApplyMode(mode)")).toBeGreaterThan(0);
+    expect(CLI.indexOf("checkApplyMode(mode)")).toBeLessThan(CLI.indexOf("forbiddenCredentialsForMode(mode, env)"));
+    expect(CLI.indexOf("forbiddenCredentialsForMode(mode, env)")).toBeLessThan(CLI.indexOf("buildProductionPgClientConfig(secrets"));
+    expect(CLI.indexOf("buildProductionPgClientConfig(secrets")).toBeLessThan(CLI.indexOf("runPreflightWithConfig(config as ClientConfig)"));
   });
 });
 

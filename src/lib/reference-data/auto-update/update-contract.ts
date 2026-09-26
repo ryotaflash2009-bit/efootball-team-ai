@@ -671,6 +671,15 @@ export const BACKUP_SECRET_NAMES = Object.freeze([
 /** 候補名(未作成・未登録)。Phase Gで本人承認を経て作成する。 */
 export const APPLY_SECRET_NAMES = Object.freeze(["REFERENCE_DATA_APPLY_DB_URL", "REFERENCE_DATA_APPLY_DB_CA_CERT"] as const);
 
+/**
+ * Planの読み取り専用credential(承認1回化)。reference-data-automation Environmentだけに置く。
+ * 値は読み取り専用role(reference_data_plan_reader、または既存のreference_data_backup_reader)のもの。書き込み権限は無い。
+ */
+export const PLAN_READ_SECRET_NAMES = Object.freeze(["REFERENCE_DATA_PLAN_READ_DB_URL", "REFERENCE_DATA_PLAN_READ_DB_CA_CERT"] as const);
+
+/** Plan・Dry run・自動Backupが動くEnvironment(承認者なし・mainだけ)。Apply用Secretは置かない。 */
+export const AUTOMATION_ENVIRONMENT = "reference-data-automation";
+
 export type PipelineComponent = "detection" | "dry_run" | "backup" | "production_apply" | "notification";
 
 export interface SecretBoundary {
