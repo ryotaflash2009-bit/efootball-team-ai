@@ -1,4 +1,5 @@
 import { calculateBuild } from "@/lib/progression/engine";
+import type { ProgressionResult } from "@/lib/progression/types";
 import { resolveAllocation as resolveBuildAllocation } from "@/lib/progression/resolve-allocation";
 import { WORLD_STAT_DEFS, WORLD_STAT_GROUP_LABELS } from "@/lib/world/stats";
 import { PROGRESSION_RULES_VERSION } from "@/lib/progression/constants";
@@ -46,19 +47,30 @@ function skillComparison(perPlayerSkills: string[][]): SkillComparison {
   };
 }
 
+/**
+ * 比較の1選手を、指定した配分で計算する（比較表と、比較画面の能力値直接操作UIのプレビューで同じ関数を使う）。
+ */
+export function calculateComparisonPlayer(input: ComparisonPlayerInput, allocation: Record<string, number>): ProgressionResult {
+  return calculateBuild({
+    card: input.card,
+    allocation,
+    manager: input.manager,
+    selectedPlayerBoosters: input.selectedPlayerBoosters ?? [],
+    selectedConditionalBoosters: input.selectedConditionalBoosters ?? [],
+    boosterApplicationMode:
+      input.boosterApplicationMode ??
+      ((input.experimentalModeEnabled ?? input.applyProvisionalBoosters) ? "experimental" : "standard"),
+  });
+}
+
+/** 比較の1選手の現在の配分（育成方針または保存・手動の配分）。 */
+export function comparisonPlayerAllocation(input: ComparisonPlayerInput): Record<string, number> {
+  return resolveAllocation(input);
+}
+
 export function buildComparison(inputs: ComparisonPlayerInput[]): ComparisonResult {
   const players = inputs.map((input) => {
-    const allocation = resolveAllocation(input);
-    const result = calculateBuild({
-      card: input.card,
-      allocation,
-      manager: input.manager,
-      selectedPlayerBoosters: input.selectedPlayerBoosters ?? [],
-      selectedConditionalBoosters: input.selectedConditionalBoosters ?? [],
-      boosterApplicationMode:
-        input.boosterApplicationMode ??
-        ((input.experimentalModeEnabled ?? input.applyProvisionalBoosters) ? "experimental" : "standard"),
-    });
+    const result = calculateComparisonPlayer(input, resolveAllocation(input));
     return { input, result };
   });
 
