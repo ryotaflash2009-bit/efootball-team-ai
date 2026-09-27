@@ -12,7 +12,7 @@ import { BUCKET_LABEL_KEY } from "@/components/world/WorldBasePercentilePanel";
 import { TitleStrip, type TitleItem } from "./TitleStrip";
 
 type TKey = keyof Dictionary["titles"];
-const RULE_LABEL_KEY: Record<PlayerTitleRuleId, TKey> = {
+export const RULE_LABEL_KEY: Record<PlayerTitleRuleId, TKey> = {
   pace: "rulePace",
   finishing: "ruleFinishing",
   dribbling: "ruleDribbling",

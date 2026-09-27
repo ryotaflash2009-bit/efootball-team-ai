@@ -3741,6 +3741,11 @@ export interface Dictionary {
     dgAttack: string;
     dgDefense: string;
   };
+  yourBest: {
+    heading: string;
+    explanation: string;
+    none: string;
+  };
   progressionTab: {
     analysisScopeDefault: string;
     eligibilityTrending: string;
@@ -8030,6 +8035,11 @@ const ja: Dictionary = {
     dgAerial: "空中戦型",
     dgAttack: "攻撃型",
     dgDefense: "堅守型",
+  },
+  yourBest: {
+    heading: "あなたの一番",
+    explanation: "My Team の中で、能力のまとまりごとに育成前の基礎能力値が最も上位のカードです（フィールドプレイヤーどうし・GK どうしで比較）。開くとカードの能力値を読み込みます。",
+    none: "表示できるカードがありません（中央値以上のカードが無いか、My Team が空です）。",
   },
   progressionTab: {
     analysisScopeDefault: "World データ",
