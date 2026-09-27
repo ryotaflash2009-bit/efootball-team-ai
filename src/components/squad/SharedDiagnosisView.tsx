@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/Badge";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { buttonClasses } from "@/components/ui/Button";
 import { tierBadgeTone, tierBarClass } from "./diagnosis-tier-style";
+import { DiagnosisTitles } from "@/components/titles/DiagnosisTitles";
 import { ABILITY_CATEGORIES, type SquadDiagnosisCategoryId } from "@/lib/squad/squad-diagnosis";
 import { CATEGORY_LABEL_EN } from "@/lib/squad/squad-diagnosis-image";
 import {
@@ -117,6 +118,9 @@ export function SharedDiagnosisView() {
               </Badge>
             </span>
           )}
+        </div>
+        <div className="mt-2">
+          <DiagnosisTitles categories={p.c} />
         </div>
       </section>
 

@@ -11,6 +11,7 @@ import { SquadDiagnosisImageSaveButton } from "./SquadDiagnosisImageSaveButton";
 import { SquadDiagnosisShareUrlButton } from "./SquadDiagnosisShareUrlButton";
 import { SquadDiagnosisHistorySaveButton } from "./SquadDiagnosisHistorySaveButton";
 import { tierBadgeTone, tierBarClass } from "./diagnosis-tier-style";
+import { DiagnosisTitles } from "@/components/titles/DiagnosisTitles";
 import { SquadDiagnosisCommentCard } from "./SquadDiagnosisCommentCard";
 import type { TacticalPlacementInput } from "@/lib/squad/squad-tactical-review";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
@@ -322,6 +323,9 @@ export function SquadDiagnosisPanel({
             </p>
           </div>
         ) : null}
+      </div>
+      <div className="mt-2">
+        <DiagnosisTitles categories={Object.fromEntries(result.categories.map((c) => [c.id, { score: c.score, tier: c.tier }]))} />
       </div>
       <p className="mt-1 max-w-3xl text-2xs text-text-muted">
         {overallNoteLocalized(result, ratedAbilityCount, abilityCategories.length, locale)}
