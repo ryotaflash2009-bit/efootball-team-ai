@@ -50,12 +50,31 @@ const STAT_KEYS = ["offensiveAwareness", "ballControl", "dribbling", "tightPosse
 const POSITIONS = ["GK", "CB", "LB", "RB", "DMF", "CMF", "LMF", "RMF", "AMF", "LWF", "RWF", "SS", "CF"];
 const HYDRATION_RE = /hydrat|Minified React error #(418|423|425)|did not match/i;
 
-/** 合成の分布（値 40〜99 に一様・母数 6,000）。表示の確認用で、実データではない。 */
+// F-072 共有カードの見本（docs/product/share-url-contract.md の sd1 をアプリのコードとは独立に組み立てる）。
+function fnv1a32(text) {
+  let h = 0x811c9dc5;
+  for (const b of Buffer.from(text, "utf8")) {
+    h ^= b;
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h.toString(16).padStart(8, "0");
+}
+const SHARE_SAMPLE = {
+  v: 1, k: "sd", r: "squad-diagnosis/2026-09-06.v1", d: "2026-09-27", f: "4-3-3", o: [71, "A"],
+  c: { attack: [40, "C"], defense: [47, "C"], aerial: [54, "C"], speed: [61, "B"], passBuildUp: [68, "B"], dribblePossession: [75, "A"], pressResistance: [82, "A"], counterAttack: [89, "S"] },
+  s: ["ability", "counterAttack"], w: ["compatibility", null],
+};
+const SHARE_TOKEN = (() => {
+  const body = Buffer.from(JSON.stringify(SHARE_SAMPLE), "utf8").toString("base64url");
+  return `sd1.${body}.${fnv1a32(body)}`;
+})();
+
+/** 合成の分布（値 40〜84 に一様・母数 4,500。上位の選手に称号が付く幅）。表示の確認用で、実データではない。 */
 function syntheticBody() {
-  const stats = Object.fromEntries(STAT_KEYS.map((k) => [k, { min: 40, counts: Array.from({ length: 60 }, () => 100) }]));
-  const scopes = { all: { n: 6000, stats }, field: { n: 6000, stats }, gk: { n: 6000, stats } };
-  for (const p of POSITIONS) scopes[`position:${p}`] = { n: 6000, stats };
-  return { status: "valid", generatedAt: "2026-09-28T00:00:00.000Z", datasetVersion: "synthetic", recordCount: 6000, scopes };
+  const stats = Object.fromEntries(STAT_KEYS.map((k) => [k, { min: 40, counts: Array.from({ length: 45 }, () => 100) }]));
+  const scopes = { all: { n: 4500, stats }, field: { n: 4500, stats }, gk: { n: 4500, stats } };
+  for (const p of POSITIONS) scopes[`position:${p}`] = { n: 4500, stats };
+  return { status: "valid", generatedAt: "2026-09-28T00:00:00.000Z", datasetVersion: "synthetic", recordCount: 4500, scopes };
 }
 
 let client;
@@ -239,6 +258,29 @@ async function main() {
           const note = await has("[data-testid=compare-percentile-note]");
           return { ok: before === 0 && after > 0 && note, detail: `badges=${after}` };
         });
+
+        // F-072: 称号・バッジ（選手詳細・合成の分布 / 共有カード・sd1 の見本）
+        await step(vp, locale, detail, "F-072 player titles strip with reasons", async () => {
+          await nav(`${detail}?tab=stats`);
+          await clickText("[role=tab], button", T.statsTab);
+          await waitFor(() => has("[data-testid=player-titles]"), 8000, "titles");
+          const strip = `[...document.querySelectorAll('[data-testid=player-titles]')].find((p) => p.offsetParent !== null)`;
+          const total = await ev(`Number((${strip}).dataset.titleCount)`);
+          const primaries = await ev(`(${strip}).querySelectorAll('[data-title-kind=primary]').length`);
+          const badges = await ev(`(${strip}).querySelectorAll('[data-title-kind=badge]').length`);
+          const hasWhy = total === 0 || (await ev(`!!(${strip}).querySelector('details summary')`));
+          // 合成の分布では、この選手（World 一覧の先頭のフィールドプレイヤー）は上位の能力が多く、称号が1つ付く。
+          return { ok: primaries === 1 && badges <= 4 && hasWhy, detail: `primary=${primaries}, badges=${badges}` };
+        });
+
+        await step(vp, locale, "/share/diagnosis", "F-072 diagnosis title from the shared token", async () => {
+          await nav(`/share/diagnosis#${SHARE_TOKEN}`);
+          await waitFor(() => has("[data-testid=diagnosis-titles]"), 10000, "titles");
+          const primaryId = await ev(`document.querySelector('[data-testid=diagnosis-titles] [data-title-kind=primary]')?.dataset.titleId ?? null`);
+          const badgeIds = await ev(`[...document.querySelectorAll('[data-testid=diagnosis-titles] [data-title-kind=badge]')].map((e) => e.dataset.titleId).join(',')`);
+          // 見本: 段階 A 以上は counterAttack 89 S・pressResistance 82 A・dribblePossession 75 A → 称号 1 + バッジ 2（点数順）。
+          return { ok: primaryId === "counterAttack" && badgeIds === "pressResistance,dribblePossession", detail: `primary=${primaryId}, badges=${badgeIds}` };
+        });
       }
     }
     await nav("/");
@@ -251,7 +293,7 @@ async function main() {
 
   const failed = results.filter((r) => !r.ok);
   const L = [
-    "# F-071 基礎能力値のパーセンタイル ブラックボックス",
+    "# F-071 基礎能力値のパーセンタイル・F-072 称号 ブラックボックス",
     "",
     `実行日時: ${new Date().toISOString()}`,
     `対象: ${IS_LOCAL ? "localhost（Production Build）" : "公開サイト"}  viewport: ${VIEWPORTS.length}  locale: ja, en  実際の成果物の状態: ${actual.status}`,

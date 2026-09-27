@@ -3711,6 +3711,36 @@ export interface Dictionary {
     compareToggle: string;
     compareScopeNote: string;
   };
+  titles: {
+    primaryLabel: string;
+    badgesLabel: string;
+    none: string;
+    whySummary: string;
+    rulesVersionTemplate: string;
+    playerExplanationTemplate: string;
+    diagnosisExplanation: string;
+    diagnosisReasonTemplate: string;
+    rulePace: string;
+    ruleFinishing: string;
+    ruleDribbling: string;
+    rulePassing: string;
+    ruleSetPieces: string;
+    ruleAerial: string;
+    ruleBallWinning: string;
+    rulePhysicality: string;
+    ruleStamina: string;
+    ruleShotStopping: string;
+    ruleHandling: string;
+    ruleGkAwareness: string;
+    dgCounterAttack: string;
+    dgPassBuildUp: string;
+    dgDribblePossession: string;
+    dgPressResistance: string;
+    dgSpeed: string;
+    dgAerial: string;
+    dgAttack: string;
+    dgDefense: string;
+  };
   progressionTab: {
     analysisScopeDefault: string;
     eligibilityTrending: string;
@@ -7970,6 +8000,36 @@ const ja: Dictionary = {
     bucketBelowMedian: "中央値未満",
     compareToggle: "基礎能力値のパーセンタイルを表示",
     compareScopeNote: "全選手を同じ範囲（全Worldカード）で比べます。",
+  },
+  titles: {
+    primaryLabel: "称号",
+    badgesLabel: "バッジ",
+    none: "条件を満たす称号はありません。",
+    whySummary: "理由を見る",
+    rulesVersionTemplate: "規則 {version}",
+    playerExplanationTemplate: "育成前の基礎能力値の位置（{scope}の中）から、決まった規則で表示しています。称号は規則の能力がすべて上位5%以内、バッジは上位10%以内のときです。",
+    diagnosisExplanation: "診断のカテゴリの段階（A 以上）から、決まった規則で表示しています。称号は点数が最も高いカテゴリです。",
+    diagnosisReasonTemplate: "{category} {score}点（{tier}）",
+    rulePace: "快速",
+    ruleFinishing: "決定力",
+    ruleDribbling: "ドリブル",
+    rulePassing: "配球",
+    ruleSetPieces: "プレースキック",
+    ruleAerial: "空中戦",
+    ruleBallWinning: "ボール奪取",
+    rulePhysicality: "フィジカル",
+    ruleStamina: "運動量",
+    ruleShotStopping: "シュートストップ",
+    ruleHandling: "キャッチ・リーチ",
+    ruleGkAwareness: "GK感覚",
+    dgCounterAttack: "カウンター型",
+    dgPassBuildUp: "ビルドアップ型",
+    dgDribblePossession: "ポゼッション型",
+    dgPressResistance: "プレス耐性型",
+    dgSpeed: "スピード型",
+    dgAerial: "空中戦型",
+    dgAttack: "攻撃型",
+    dgDefense: "堅守型",
   },
   progressionTab: {
     analysisScopeDefault: "World データ",
