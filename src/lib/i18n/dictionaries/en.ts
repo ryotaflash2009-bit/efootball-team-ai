@@ -3885,6 +3885,15 @@ const en: Dictionary = {
     explanation: "The My Team card with the highest base ability standing for each ability group (outfield players and goalkeepers are compared separately). Opening this loads your cards' abilities.",
     none: "No card to show (none is at or above the median, or My Team is empty).",
   },
+  growthProfile: {
+    heading: "Growth profile",
+    explanation: "Shows how each squad's overall score changed, from the diagnosis history saved on this device (only entries under the same diagnosis rules are compared; nothing is sent anywhere).",
+    empty: "Save a diagnosis of the same squad twice or more to see its trend.",
+    trendTemplate: "{count} diagnoses: overall {first} → {latest} ({delta})",
+    mostImprovedTemplate: "Most improved: {category} {from} → {to}",
+    overcameTemplate: "Went from a weakness to A or better: {categories}",
+    excludedRulesTemplate: "{count} entries under different diagnosis rules are not compared.",
+  },
   progressionTab: {
     analysisScopeDefault: "World data",
     eligibilityTrending: "TRENDING cards (POTW etc.) cannot be progressed.",
