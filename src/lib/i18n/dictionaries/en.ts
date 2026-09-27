@@ -3880,6 +3880,11 @@ const en: Dictionary = {
     dgAttack: "Attack-minded",
     dgDefense: "Solid defence",
   },
+  yourBest: {
+    heading: "Your best",
+    explanation: "The My Team card with the highest base ability standing for each ability group (outfield players and goalkeepers are compared separately). Opening this loads your cards' abilities.",
+    none: "No card to show (none is at or above the median, or My Team is empty).",
+  },
   progressionTab: {
     analysisScopeDefault: "World data",
     eligibilityTrending: "TRENDING cards (POTW etc.) cannot be progressed.",

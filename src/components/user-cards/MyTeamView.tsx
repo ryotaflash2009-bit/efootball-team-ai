@@ -26,6 +26,7 @@ import { buttonClasses } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
+import { YourBestPanel } from "@/components/titles/YourBestPanel";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { PageHeader } from "@/components/ui/PageHeader";
 
@@ -191,6 +192,8 @@ export function MyTeamView() {
         </dl>
         <p className="mt-1.5 text-2xs text-text-muted">{tmt("buildsSavedNote")}</p>
       </Surface>
+
+      <YourBestPanel ids={ids} nameOf={(id) => resolvePlayerDisplayName(cards.get(id) ?? {}, locale, cardFallbackName(id))} />
 
       <UserCardFilters
         state={filter}
