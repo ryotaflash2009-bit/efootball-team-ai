@@ -1,7 +1,8 @@
 "use client";
 
 import type { StatBreakdown } from "@/lib/progression/types";
-import { statLabelJa, groupLabelJa } from "@/lib/world/stat-labels";
+import { abilityName, categoryName } from "@/lib/progression/ability-editor-labels";
+import { useLocale } from "@/lib/i18n/LocaleContext";
 import { statValueForMode, type RadarMode } from "@/lib/comparison/ability-radar";
 import { getGroupDef } from "@/lib/progression/stat-groups";
 import { useT } from "@/lib/i18n/LocaleContext";
@@ -55,13 +56,14 @@ export function CompareCategoryPreview({
   series: CategoryPreviewSeries[];
 }) {
   const t = useT();
+  const { locale } = useLocale();
   const tcp = (k: keyof Dictionary["compareCategoryPreview"]) => t("compareCategoryPreview", k);
   const fillCp = (s: string, vars: Record<string, string>) =>
     Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
   const RADAR_MODE_LABEL = useRadarModeLabels();
   const g = getGroupDef(groupId);
   if (!g) return null;
-  const label = groupLabelJa(groupId);
+  const label = categoryName(groupId, locale);
 
   return (
     <div className="rounded border border-border bg-surface-2/30 p-2 text-2xs">
@@ -72,7 +74,7 @@ export function CompareCategoryPreview({
 
       <div className="flex flex-col gap-1.5">
         {g.affectedStats.map((k) => {
-          const nameJa = statLabelJa(k);
+          const nameJa = abilityName(k, locale);
           return (
             <div key={k}>
               <p className="text-text-dim">{nameJa}</p>

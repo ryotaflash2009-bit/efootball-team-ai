@@ -3,7 +3,10 @@
 import { useState } from "react";
 import type { ComparisonPlayerInput, ComparisonResult } from "@/lib/comparison/types";
 import { StatBadge } from "@/components/world/StatBadge";
-import { statLabelJa } from "@/lib/world/stat-labels";
+import { abilityName } from "@/lib/progression/ability-editor-labels";
+import { WORLD_STAT_GROUP_LABELS } from "@/lib/world/stats";
+import type { WorldStatGroup } from "@/lib/world/types";
+const GROUP_LABEL_KEY = { offense: "groupOffense", defense: "groupDefense", physical: "groupPhysical", gk: "groupGk" } as const;
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
@@ -261,12 +264,17 @@ function GroupBlock({
   conditionalView: boolean;
   rows: ComparisonResult["stats"];
 }) {
+  const t = useT();
+  const { locale } = useLocale();
+  // 比較結果の group は日本語ラベル（集計キー）。表示だけ言語に合わせる。
+  const groupId = (Object.entries(WORLD_STAT_GROUP_LABELS).find(([, v]) => v === group)?.[0] ?? null) as WorldStatGroup | null;
+  const groupLabel = groupId ? t("abilityEditor", GROUP_LABEL_KEY[groupId]) : group;
   return (
     <>
       <tr className="border-t border-border bg-surface-2/40">
         <td colSpan={n + 2} className="px-3 py-1">
           <button type="button" onClick={onToggle} className="text-xs font-bold uppercase tracking-wide text-text-dim">
-            {collapsed ? "▶" : "▼"} {group}
+            {collapsed ? "▶" : "▼"} {groupLabel}
           </button>
         </td>
       </tr>
@@ -279,7 +287,7 @@ function GroupBlock({
             return (
               <tr key={s.key} className="border-t border-border/50">
                 <td className="sticky left-0 z-10 bg-surface px-3 py-1.5 text-text" title={s.nameEn}>
-                  {statLabelJa(s.key)}
+                  {abilityName(s.key, locale)}
                 </td>
                 {s.perPlayer.map((b, i) => (
                   <td key={i} className="px-2 py-1.5 text-center">

@@ -9,6 +9,7 @@ import { CompareRadarChart } from "./CompareRadarChart";
 import { CompareCategoryPreview } from "./CompareCategoryPreview";
 import { CompareTrainingPanel } from "./CompareTrainingPanel";
 import { CompareSaveBuildDialog } from "./CompareSaveBuildDialog";
+import { CompareAbilityEditSheet } from "./CompareAbilityEditSheet";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
@@ -66,6 +67,9 @@ export function ComparisonCockpit({
   buildsRefreshKey: number;
 }) {
   const [saveDialogFor, setSaveDialogFor] = useState<number | null>(null);
+  // 能力から育成（1人ずつの編集モード）。null = 閉じている。
+  const [abilityEditFor, setAbilityEditFor] = useState<number | null>(null);
+  const closeAbilityEditor = useCallback(() => setAbilityEditFor(null), []);
   const t = useT();
   const { locale } = useLocale();
   const tcc = useCallback((k: keyof Dictionary["comparisonCockpit"]) => t("comparisonCockpit", k), [t]);
@@ -136,6 +140,10 @@ export function ComparisonCockpit({
         onReset={() => onResetTraining(idx)}
         onCategoryTouch={onActiveCategory}
         onOpenSaveDialog={() => setSaveDialogFor(idx)}
+        onOpenAbilityEditor={() => {
+          onActiveIndex(idx);
+          setAbilityEditFor(idx);
+        }}
       />
     );
   };
@@ -210,16 +218,37 @@ export function ComparisonCockpit({
 
       {twoUp ? (
         <div className="grid gap-3 lg:grid-cols-[minmax(150px,240px)_minmax(0,1fr)_minmax(150px,240px)]">
-          <div>{trainingPanel(0)}</div>
+          <div className="min-w-0">{trainingPanel(0)}</div>
           {center}
-          <div>{trainingPanel(1)}</div>
+          <div className="min-w-0">{trainingPanel(1)}</div>
         </div>
       ) : (
         <div className="grid gap-3 lg:grid-cols-[minmax(220px,340px)_minmax(0,1fr)]">
-          <div>{trainingPanel(activeIndex)}</div>
+          <div className="min-w-0">{trainingPanel(activeIndex)}</div>
           {center}
         </div>
       )}
+
+      {abilityEditFor != null && players[abilityEditFor] ? (
+        <CompareAbilityEditSheet
+          players={players}
+          comparison={comparison}
+          allocations={perBuild.map((b) => b.allocation)}
+          index={abilityEditFor}
+          onIndex={(i) => {
+            onActiveIndex(i);
+            setAbilityEditFor(i);
+          }}
+          onClose={closeAbilityEditor}
+          onSetLevel={onSetLevel}
+          onAdjustLevel={onAdjustLevel}
+          onBuildSaved={onBuildSaved}
+          onSaveAs={(i) => {
+            setAbilityEditFor(null);
+            setSaveDialogFor(i);
+          }}
+        />
+      ) : null}
 
       {dialogIdx != null && dialogPb && dialogPlayer ? (
         <CompareSaveBuildDialog

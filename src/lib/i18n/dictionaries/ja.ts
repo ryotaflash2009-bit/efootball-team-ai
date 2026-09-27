@@ -3929,6 +3929,14 @@ export interface Dictionary {
     boostFixedApplied: string;
     boostFixedVerifying: string;
     boostViewEffect: string;
+    cmpOpenEditor: string;
+    cmpOpenEditorAria: string;
+    cmpSheetTitle: string;
+    cmpSheetSubtitle: string;
+    cmpClose: string;
+    cmpSwitchPlayer: string;
+    cmpOthersHeading: string;
+    cmpOthersHint: string;
     ruB2LegacyPom: string;
     ruB2LegacyUnconfirmed: string;
     ruB2KeepAttached: string;
@@ -8128,6 +8136,14 @@ const ja: Dictionary = {
     boostFixedApplied: "固定型・適用中",
     boostFixedVerifying: "固定型・検証中",
     boostViewEffect: "効果を見る ▸",
+    cmpOpenEditor: "能力から育成",
+    cmpOpenEditorAria: "{name} を能力から育成",
+    cmpSheetTitle: "{name} を育成",
+    cmpSheetSubtitle: "比較 {index} 人目。変更はこの選手だけに反映されます",
+    cmpClose: "比較へ戻る",
+    cmpSwitchPlayer: "編集する選手",
+    cmpOthersHeading: "他の選手の {ability}",
+    cmpOthersHint: "能力をタップすると、他の選手の同じ能力値を並べて表示します",
     ruB2LegacyPom: "{name}（Power of Many・B2 選択肢からは提供終了）",
     ruB2LegacyUnconfirmed: "{name}（未確認・試算のみ・過去の選択）",
     ruB2KeepAttached: "— なし（付属: {booster}）—",

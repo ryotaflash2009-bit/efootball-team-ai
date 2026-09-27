@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/Button";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
+import { useSyncedStorageScope } from "@/lib/local-storage-scope/resolve-scope";
 
 // 表示ラベルは i18n の bench.mode* に集約。ここは順序と値のみ定義。
 const SHARED_MODES: CompareBuildMode[] = ["none", "attack", "defense", "balance", "gk"];
@@ -40,6 +41,8 @@ function useBuildModeLabels(): Record<CompareBuildMode, string> {
 }
 
 export function ComparisonBoard({ initialInputs }: { initialInputs: ComparisonPlayerInput[] }) {
+  // 保存ビルドの保存先（guest/アカウント）をこの画面でも解決する（未解決だと保存・一覧読み込みができない）。
+  useSyncedStorageScope();
   const t = useT();
   const { locale } = useLocale();
   const tcb = useCallback((k: keyof Dictionary["comparisonBoard"]) => t("comparisonBoard", k), [t]);

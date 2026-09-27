@@ -332,7 +332,7 @@ export function ProgressionPanel({
               <details open={isGk} className="mt-2.5 rounded-md border border-border bg-surface-2/20">
                 <summary className="flex min-h-[44px] cursor-pointer items-center justify-between gap-2 px-3 py-2 text-sm font-semibold">
                   <span>{tp("gkGroupsSummary")}</span>
-                  <span className="shrink-0 text-2xs font-normal text-text-dim">
+                  <span className="min-w-0 text-right text-2xs font-normal text-text-dim">
                     {tp(isGk ? "gkAllocatedGk" : "gkAllocatedNonGk").replace("{level}", String(gkAllocated))}
                   </span>
                 </summary>

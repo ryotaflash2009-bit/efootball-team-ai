@@ -39,7 +39,7 @@ export function ProgressionSlider({
   return (
     <div className="rounded-md border border-border bg-surface-2/30 p-3">
       <div className="flex items-baseline justify-between gap-2">
-        <p className="truncate text-sm font-semibold">
+        <p className="min-w-0 truncate text-sm font-semibold">
           {groupName}
           {group.statsConfidence === "confirmed" ? (
             <span className="ml-1 align-top text-[9px] text-lime-300/80">{tp("confirmedTag")}</span>
