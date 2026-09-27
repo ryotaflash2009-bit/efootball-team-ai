@@ -11,6 +11,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useSupabaseSession } from "@/lib/supabase/use-auth-session";
 import { listOwnProbes, createProbe, updateProbeLabel, deleteProbe, type RlsProbeRecord, type RlsProbeErrorReason } from "@/lib/supabase/rls-probe";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { isSignupOpen } from "@/lib/supabase/account-availability";
 
 type RlsTestKey = keyof Dictionary["rlsTest"];
 type AuthKey = keyof Dictionary["auth"];
@@ -195,7 +196,7 @@ export function RlsTestView() {
             </Link>
             <Link href="/auth/sign-up">
               <Button variant="secondary" size="sm">
-                {taAuth("navSignUp")}
+                {isSignupOpen() ? taAuth("navSignUp") : taAuth("navSignUpLimited")}
               </Button>
             </Link>
           </div>

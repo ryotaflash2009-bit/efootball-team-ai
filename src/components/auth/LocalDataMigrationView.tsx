@@ -24,6 +24,7 @@ import {
 import { saveTextFile } from "@/lib/browser-save-file";
 import { DATA_KINDS, type DataKind, type StorageScope } from "@/lib/local-storage-scope/types";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { isSignupOpen } from "@/lib/supabase/account-availability";
 
 type LdmKey = keyof Dictionary["localDataMigration"];
 type AuthKey = keyof Dictionary["auth"];
@@ -200,7 +201,7 @@ export function LocalDataMigrationView() {
             </Link>
             <Link href="/auth/sign-up">
               <Button variant="secondary" size="sm">
-                {taAuth("navSignUp")}
+                {isSignupOpen() ? taAuth("navSignUp") : taAuth("navSignUpLimited")}
               </Button>
             </Link>
           </div>

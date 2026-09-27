@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useT } from "@/lib/i18n/LocaleContext";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -12,6 +12,8 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isValidEmailFormat, validatePasswordRules } from "@/lib/supabase/password-rules";
 import { classifySignUpFailure } from "@/lib/supabase/auth-errors";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { isSignupOpen, resolveAuthRedirectOrigin } from "@/lib/supabase/account-availability";
+import { isLocalDevHostname } from "@/lib/supabase/local-dev";
 
 type AuthKey = keyof Dictionary["auth"];
 
@@ -28,6 +30,12 @@ export function SignUpView() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const supabase = getSupabaseBrowserClient();
+  // ローカル開発ホストだけ、?signupPreview=1 で登録フォームを表示する（black-box で登録フォームの挙動を検証し続けるため）。
+  // 本番ホストでは常に限定表示。マウント後に切り替えるので SSR の表示（限定）とずれない。
+  const [localPreview, setLocalPreview] = useState(false);
+  useEffect(() => {
+    if (isLocalDevHostname(window.location.hostname) && new URLSearchParams(window.location.search).get("signupPreview") === "1") setLocalPreview(true);
+  }, []);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -60,7 +68,7 @@ export function SignUpView() {
         email,
         password,
         options: {
-          emailRedirectTo: typeof window !== "undefined" ? `${window.location.origin}/auth/callback` : undefined,
+          emailRedirectTo: typeof window !== "undefined" ? `${resolveAuthRedirectOrigin(window.location.origin)}/auth/callback` : undefined,
         },
       });
 
@@ -86,6 +94,29 @@ export function SignUpView() {
     } finally {
       setSubmitting(false);
     }
+  }
+
+  // カスタム SMTP の配信確認までは新規登録を受け付けない（メールが一般の利用者へ届かないため）。
+  if (!isSignupOpen() && !localPreview) {
+    return (
+      <div className="flex flex-col gap-5" data-testid="signup-limited">
+        <PageHeader title={ta("accountLimitedTitle")} icon="shield" />
+        <Surface padding="md" className="max-w-md">
+          <p className="text-sm">{ta("accountLimitedBody")}</p>
+          <p className="mt-2 text-sm text-text-dim">{ta("accountLimitedExisting")}</p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Link href="/players">
+              <Button size="sm">{ta("accountLimitedBrowse")}</Button>
+            </Link>
+            <Link href="/auth/sign-in">
+              <Button variant="secondary" size="sm">
+                {ta("signUpSignInLink")}
+              </Button>
+            </Link>
+          </div>
+        </Surface>
+      </div>
+    );
   }
 
   return (

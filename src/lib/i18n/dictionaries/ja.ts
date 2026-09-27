@@ -3419,6 +3419,15 @@ export interface Dictionary {
     draftNotice: string;
   };
   auth: {
+    accountLimitedTitle: string;
+    accountLimitedBody: string;
+    accountLimitedExisting: string;
+    accountLimitedBrowse: string;
+    navSignUpLimited: string;
+    signInNoAccountLimitedPrompt: string;
+    signInLimitedLink: string;
+    emailSendFailedMessage: string;
+    passwordResetLimitedNotice: string;
     navSignIn: string;
     navSignUp: string;
     navAccount: string;
@@ -7555,6 +7564,15 @@ const ja: Dictionary = {
     draftNotice: "このページの内容は現行実装に基づく確認結果です。正式公開に向けた最終判断は運営者が行う必要があります。",
   },
   auth: {
+    accountLimitedTitle: "アカウント機能は限定テスト中です",
+    accountLimitedBody: "アカウント機能は現在、限定テスト中です。選手検索、比較、育成、診断などはログインせず利用できます。",
+    accountLimitedExisting: "既にアカウントをお持ちの方はログインできます。",
+    accountLimitedBrowse: "選手を探す",
+    navSignUpLimited: "アカウント機能について",
+    signInNoAccountLimitedPrompt: "アカウントの新規作成は現在、限定テスト中です。",
+    signInLimitedLink: "詳しく",
+    emailSendFailedMessage: "認証メールを送信できませんでした。しばらく待ってから再度お試しください。繰り返し送信せず、解決しない場合はサポートをご確認ください。",
+    passwordResetLimitedNotice: "メール送信は現在、限定テスト中です。再設定メールが届かない場合は、繰り返し送信せずサポートをご確認ください。",
     navSignIn: "ログイン",
     navSignUp: "新規登録",
     navAccount: "アカウント",
