@@ -3711,6 +3711,22 @@ export interface Dictionary {
     gkCollapsed: string;
     panelRegionLabel: string;
     chipsRegionLabel: string;
+    done: string;
+    doneHint: string;
+    unsaved: string;
+    savedState: string;
+    quickSave: string;
+    saveAs: string;
+    saveSucceeded: string;
+    saveFailed: string;
+    quickSaveName: string;
+    skipToPanel: string;
+    announceLevel: string;
+    announceSelected: string;
+    resetAll: string;
+    undoReset: string;
+    revertShort: string;
+    rowAffordance: string;
   };
 }
 
@@ -7484,6 +7500,22 @@ const ja: Dictionary = {
     gkCollapsed: "GK 能力（折りたたみ）",
     panelRegionLabel: "育成パネル",
     chipsRegionLabel: "カテゴリ別の配分",
+    done: "完了",
+    doneHint: "パネルを閉じます（変更はそのまま残ります）",
+    unsaved: "未保存",
+    savedState: "保存済み",
+    quickSave: "保存",
+    saveAs: "名前を付けて保存",
+    saveSucceeded: "保存しました: {name}",
+    saveFailed: "保存できません: {reason}",
+    quickSaveName: "ビルド {n}",
+    skipToPanel: "育成パネルへ移動",
+    announceLevel: "{category} レベル {level}、残り {remaining}pt",
+    announceSelected: "{ability} を選択。育成カテゴリ {category}",
+    resetAll: "育成を全部リセット",
+    undoReset: "リセットを取り消す",
+    revertShort: "↺ 戻す",
+    rowAffordance: "タップして育成",
   },
 };
 

@@ -272,3 +272,9 @@ a {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* ダブルタップ拡大の遅延・誤作動を防ぐ（育成の行とパネルのボタン）。 */
+.ability-row,
+.progression-dock button {
+  touch-action: manipulation;
+}

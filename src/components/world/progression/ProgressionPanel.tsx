@@ -1,6 +1,9 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { listBuilds } from "@/lib/progression/build-storage";
+import { sameAllocation, saveCurrentBuild } from "@/lib/progression/save-current-build";
+import { useT } from "@/lib/i18n/LocaleContext";
 import type {
   ProgressionCard,
   AutoAllocateProfile,
@@ -10,6 +13,7 @@ import type {
   SelectedPlayerBooster,
   SelectedConditionalBooster,
   BoosterApplicationMode,
+  PointsSummary,
 } from "@/lib/progression/types";
 import { validateConditionalBoosterSelection } from "@/lib/progression/conditional-boosters";
 import type { ManagerDetail } from "@/lib/managers/types";
@@ -57,6 +61,14 @@ export function ProgressionPanel({
   const [conditionalSelections, setConditionalSelections] = useState<SelectedConditionalBooster[]>([]);
   const [boosterMode, setBoosterMode] = useState<BoosterApplicationMode>("standard");
   const [pending, setPending] = useState<{ build: SavedBuild; migration: BuildMigration } | null>(null);
+  // 保存済み（または読み込んだ）配分。現在の配分と違えば「未保存」。
+  const [savedAllocation, setSavedAllocation] = useState<Record<string, number>>({});
+  const [buildsRefresh, setBuildsRefresh] = useState(0);
+  // 全リセット直前の配分（取り消し用）。次の変更で消える。
+  const [undoAllocation, setUndoAllocation] = useState<Record<string, number> | null>(null);
+  // ドラッグ中のプレビュー（上部バーの残りポイントも同じ値にするため）。
+  const [previewPoints, setPreviewPoints] = useState<PointsSummary | null>(null);
+  const t = useT();
 
   // 同じ条件（監督・ブースター・モード）での計算。能力値直接操作UIのプレビューも同じ関数を使う。
   const calculate = useCallback(
@@ -75,10 +87,12 @@ export function ProgressionPanel({
   const canProgress = result.eligibility.canProgress;
 
   function handleGroupAdjust(groupId: string, delta: number) {
+    setUndoAllocation(null);
     setAllocation((prev) => adjustGroupLevel(prev, card, groupId, delta));
   }
   /** スライダーで目標レベルへ（engine が段階コスト・残ポイント・上限で丸める）。 */
   function handleGroupSet(groupId: string, level: number) {
+    setUndoAllocation(null);
     setAllocation((prev) => adjustGroupLevel(prev, card, groupId, level - (prev[groupId] ?? 0)));
   }
   function goToSave() {
@@ -87,22 +101,53 @@ export function ProgressionPanel({
     el.scrollIntoView({ block: "center" });
     el.querySelector<HTMLElement>("button, input")?.focus({ preventScroll: true });
   }
+  function resetAll() {
+    if (Object.keys(allocation).length === 0) return;
+    setUndoAllocation(allocation);
+    setAllocation({});
+  }
+  function undoReset() {
+    if (!undoAllocation) return;
+    setAllocation(undoAllocation);
+    setUndoAllocation(null);
+  }
+  /** 育成パネルからの1タップ保存（既存の保存契約・保存欄と同じ関数）。 */
+  function quickSave(): { ok: boolean; message: string } {
+    const r = saveCurrentBuild({
+      worldCardId: card.worldCardId,
+      buildName: t("abilityEditor", "quickSaveName").replace("{n}", String(listBuilds(card.worldCardId).length + 1)),
+      allocation,
+      result,
+      selectedBooster: null,
+      conditionalBoosterSelections: conditionalSelections,
+    });
+    if (!r.ok) return { ok: false, message: t("abilityEditor", "saveFailed").replace("{reason}", r.error) };
+    setSavedAllocation({ ...allocation });
+    setBuildsRefresh((n) => n + 1);
+    return { ok: true, message: t("abilityEditor", "saveSucceeded").replace("{name}", r.build.buildName) };
+  }
   function handleAuto(profile: AutoAllocateProfile) {
+    setUndoAllocation(null);
     setAllocation(autoAllocate(card, profile).allocation);
   }
   function handleLoad(build: SavedBuild) {
     const migration = migrateBuild(build, card);
     setConditionalSelections(validateConditionalBoosterSelection(build.conditionalBoosterSelections));
+    setUndoAllocation(null);
     if (isV2RulesVersion(build.rulesVersion) && !migration.changed) {
       setPending(null);
       setAllocation(migration.migratedAllocation);
+      setSavedAllocation(migration.migratedAllocation);
       return;
     }
+    // 旧規則からの移行で値が変わる場合は、読み込んだ時点で未保存（再保存が必要）。
+    setSavedAllocation(build.progressionAllocation);
     setPending({ build, migration });
     setAllocation(migration.migratedAllocation);
   }
 
   const hasAllocation = Object.keys(allocation).length > 0;
+  const dirty = !sameAllocation(allocation, savedAllocation);
   const isGk = card.registeredPosition === "GK";
   const fieldGroups = result.groups.filter((g) => !g.groupId.startsWith("goalkeeping"));
   const gkGroups = result.groups.filter((g) => g.groupId.startsWith("goalkeeping"));
@@ -113,9 +158,10 @@ export function ProgressionPanel({
       <ProgressionStickyBar
         card={card}
         imageSources={imageSources}
-        points={result.points}
-        onReset={() => setAllocation({})}
+        points={previewPoints ?? result.points}
+        onReset={resetAll}
         canReset={hasAllocation}
+        onUndoReset={undoAllocation ? undoReset : null}
       />
 
       {pending ? (
@@ -178,7 +224,11 @@ export function ProgressionPanel({
               canProgress={canProgress}
               showConditional={result.booster.hasConditionalSelection}
               onSetLevel={handleGroupSet}
+              onAdjust={handleGroupAdjust}
               onGoToSave={goToSave}
+              onQuickSave={quickSave}
+              dirty={dirty}
+              onPreviewPoints={setPreviewPoints}
             />
           </div>
 
@@ -219,7 +269,7 @@ export function ProgressionPanel({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setAllocation({})}
+                  onClick={resetAll}
                   disabled={!hasAllocation}
                   className="text-danger"
                 >
@@ -300,6 +350,8 @@ export function ProgressionPanel({
             selectedBooster={null}
             conditionalBoosterSelections={conditionalSelections}
             onLoad={handleLoad}
+            onSaved={(b) => setSavedAllocation(b.progressionAllocation)}
+            refreshKey={buildsRefresh}
           />
           </div>
         </div>

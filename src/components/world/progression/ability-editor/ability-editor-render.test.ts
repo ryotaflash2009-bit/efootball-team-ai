@@ -23,7 +23,7 @@ import { AbilityProgressionEditor } from "./AbilityProgressionEditor";
 const noop = () => undefined;
 const render = (el: ReturnType<typeof createElement>) => renderToStaticMarkup(createElement(LocaleProvider, null, el));
 
-function dockMarkup(card: ProgressionCard, before: Record<string, number>, after: Record<string, number>, stat: string, opts: { blocked?: boolean } = {}) {
+function dockMarkup(card: ProgressionCard, before: Record<string, number>, after: Record<string, number>, stat: string, opts: { blocked?: boolean; dirty?: boolean; saveNotice?: { ok: boolean; message: string } | null } = {}) {
   const f = focusForStat(stat);
   if (!f.ok) throw new Error("focus");
   const model = groupSliderModel(after, card, f.focus.groupId);
@@ -49,6 +49,9 @@ function dockMarkup(card: ProgressionCard, before: Record<string, number>, after
       nextCost: nextCostAtLevel(level, model.absoluteMax),
       primary: a.stats.find((s) => s.key === stat) ?? null,
       relatedDiffs: f.focus.relatedStats.map((k) => diffs.get(k)!),
+      dirty: opts.dirty ?? true,
+      saveNotice: opts.saveNotice ?? null,
+      onQuickSave: noop,
       onSelectGroup: noop,
       onClear: noop,
       onStep: noop,
@@ -94,7 +97,8 @@ describe("育成パネル（ARIA・数値・状態）", () => {
     expect(html).toContain('ボールキープ 86→<span class="text-text">94</span>');
     expect(html).toContain('aria-label="ドリブル のレベルを1上げる"');
     expect(html).toContain('aria-label="ドリブル のレベルを1下げる"');
-    expect((html.match(/h-11 w-11/g) ?? []).length).toBeGreaterThanOrEqual(3);
+    expect((html.match(/h-11 w-11/g) ?? []).length).toBe(2);
+    expect(html).toMatch(/data-testid="dock-done" class="min-h-\[44px\]/);
     expect(html).toMatch(/aria-pressed="true"[^>]*aria-label="ドリブル レベル 8"/);
   });
 
@@ -124,6 +128,45 @@ describe("育成パネル（ARIA・数値・状態）", () => {
   });
 });
 
+describe("人間工学の改善（保存状態・完了・戻す・手がかり）", () => {
+  it("未保存を文字で示し、1タップ保存（保存）と名前を付けて保存がある。保存済みなら保存は無効", () => {
+    const after = allocationWithGroupLevel({}, MESSI_BIGTIME, "dribbling", 3);
+    const dirtyHtml = dockMarkup(MESSI_BIGTIME, {}, after, "tightPossession", { dirty: true });
+    expect(dirtyHtml).toMatch(/data-testid="save-state" data-dirty="true"[^>]*>● 未保存</);
+    expect(dirtyHtml).toMatch(/data-testid="quick-save"[^>]*>保存</);
+    expect(dirtyHtml).toContain("名前を付けて保存");
+    const savedHtml = dockMarkup(MESSI_BIGTIME, {}, after, "tightPossession", { dirty: false });
+    expect(savedHtml).toMatch(/data-dirty="false"[^>]*>保存済み</);
+    expect(savedHtml).toMatch(/data-testid="quick-save"[^>]*disabled=""/);
+  });
+
+  it("保存結果は成功・失敗を記号と文字で区別する（色だけに頼らない）", () => {
+    const after = allocationWithGroupLevel({}, MESSI_BIGTIME, "dribbling", 3);
+    expect(dockMarkup(MESSI_BIGTIME, {}, after, "dribbling", { saveNotice: { ok: true, message: "保存しました: ビルド 1" } })).toContain("✓ 保存しました: ビルド 1");
+    expect(dockMarkup(MESSI_BIGTIME, {}, after, "dribbling", { saveNotice: { ok: false, message: "保存できません: x" } })).toContain("⚠ 保存できません: x");
+  });
+
+  it("閉じるボタンは「完了」（変更は残る）と説明し、「↺ 戻す」はカテゴリだけを戻すと説明する", () => {
+    const after = allocationWithGroupLevel({}, MESSI_BIGTIME, "dribbling", 3);
+    const html = dockMarkup(MESSI_BIGTIME, {}, after, "dribbling");
+    expect(html).toMatch(/aria-label="完了（パネルを閉じます（変更はそのまま残ります））"/);
+    expect(html).toMatch(/data-testid="dock-revert"[^>]*>↺ 戻す</);
+    expect(html).toContain("このカテゴリを選択した時点のレベルへ戻します");
+  });
+
+  it("未選択の行に押せる手がかり（›・読み上げ「タップして育成」）、選択中の直後に「育成パネルへ移動」", () => {
+    const f = focusForStat("tightPossession");
+    if (!f.ok) throw new Error();
+    const r = calculateBuild({ card: MESSI_BIGTIME, allocation: {} });
+    const idle = render(createElement(AbilityDirectList, { stats: r.stats, diffs: new Map(), focus: null, showConditional: false, defaultOpenGk: false, onSelect: noop }));
+    expect(idle).toContain("タップして育成");
+    expect((idle.match(/›/g) ?? []).length).toBe(26);
+    const sel = render(createElement(AbilityDirectList, { stats: r.stats, diffs: new Map(), focus: f.focus, showConditional: false, defaultOpenGk: false, onSelect: noop, onSkipToPanel: noop }));
+    expect(sel).toContain("育成パネルへ移動");
+    expect(sel.indexOf('data-stat="tightPossession"')).toBeLessThan(sel.indexOf("育成パネルへ移動"));
+  });
+});
+
 describe("エディター全体（初期表示）", () => {
   it("未選択では細いバー（ヒント・残りポイント・配分チップ）だけを出す", () => {
     const calc = (alloc: Record<string, number>) => calculateBuild({ card: MESSI_BIGTIME, allocation: alloc });
@@ -135,8 +178,11 @@ describe("エディター全体（初期表示）", () => {
         calculate: calc,
         canProgress: true,
         showConditional: false,
+        dirty: false,
         onSetLevel: noop,
+        onAdjust: noop,
         onGoToSave: noop,
+        onQuickSave: () => ({ ok: true, message: "" }),
       }),
     );
     expect(html).toContain("能力値をタップして育成");
