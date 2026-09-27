@@ -15,6 +15,7 @@ import {
   nextCostAtLevel,
 } from "./ability-direct-editor";
 import { getBuild, saveBuild } from "./build-storage";
+import { sameAllocation, saveCurrentBuild } from "./save-current-build";
 import { buildSavedBuildExportFile, serializeSavedBuildExport } from "./build-export";
 import { parseImportText, validateImportBuilds } from "./build-import";
 import { setCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
@@ -299,5 +300,42 @@ describe("保存・再読込・JSON export/import（既存の保存契約をそ�
     const reverted = allocationWithGroupLevel(changed, MESSI, "passing", baseline.passing);
     expect(reverted).toEqual(baseline);
     expect(summarizeGroupPoints(reverted, MESSI)).toEqual(summarizeGroupPoints(baseline, MESSI));
+  });
+});
+
+describe("未保存の判定・1タップ保存（保存欄と同じ保存契約）", () => {
+  it("sameAllocation: 0 のカテゴリは無視し、順序に依存しない", () => {
+    expect(sameAllocation({ dribbling: 3, passing: 0 }, { dribbling: 3 })).toBe(true);
+    expect(sameAllocation({ a: 1, b: 2 }, { b: 2, a: 1 })).toBe(true);
+    expect(sameAllocation({ dribbling: 3 }, { dribbling: 4 })).toBe(false);
+    expect(sameAllocation({}, {})).toBe(true);
+  });
+
+  it("saveCurrentBuild は saveBuild と同じ内容（配分・最終値・推定OVR・規則版）を保存する", () => {
+    vi.unstubAllGlobals();
+    const map = new Map<string, string>();
+    vi.stubGlobal("window", {
+      localStorage: {
+        getItem: (k: string) => (map.has(k) ? map.get(k)! : null),
+        setItem: (k: string, v: string) => void map.set(k, String(v)),
+        removeItem: (k: string) => void map.delete(k),
+        clear: () => map.clear(),
+        key: (i: number) => [...map.keys()][i] ?? null,
+        get length() {
+          return map.size;
+        },
+      },
+    });
+    setCurrentScope({ kind: "guest" });
+    const alloc = allocationWithGroupLevel({}, MESSI, "dribbling", 3);
+    const result = calculateBuild({ card: MESSI, allocation: alloc });
+    const r = saveCurrentBuild({ worldCardId: MESSI.worldCardId, buildName: "quick", allocation: alloc, result, selectedBooster: null });
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    const b = getBuild(MESSI.worldCardId, r.build.buildId)!;
+    expect(b.progressionAllocation).toEqual(alloc);
+    expect(b.calculatedStats.tightPossession).toBe(89);
+    expect(b.calculatedOvr).toBe(result.rating.estimatedOvr);
+    expect(b.rulesVersion).toBe(result.rulesVersion);
   });
 });
