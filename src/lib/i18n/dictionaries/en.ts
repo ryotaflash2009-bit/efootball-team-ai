@@ -1163,6 +1163,7 @@ const en: Dictionary = {
     sortPlayerAsc: "By player name",
     renameTargetMissing: "The target build could not be found",
     renamedNoticeTemplate: "Renamed the build to \"{name}\".",
+    duplicateNameSuffix: " copy",
     duplicateFailedTemplate: "Could not duplicate: {error}",
     duplicatedNoticeTemplate: "Duplicated as \"{name}\".",
     deleteFailedTemplate: "Could not delete: {error}",

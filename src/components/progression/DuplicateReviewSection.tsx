@@ -18,6 +18,8 @@ import { WorldCardImage } from "@/components/world/WorldCardImage";
 import { Badge } from "@/components/ui/Badge";
 import { Icon } from "@/components/ui/Icon";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
+import { categoryName } from "@/lib/progression/ability-editor-labels";
+import { localizeBuildsText } from "@/lib/progression/builds-text-en";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 
@@ -56,6 +58,7 @@ export function DuplicateReviewSection({
   onReload: () => void;
 }) {
   const t = useT();
+  const { locale } = useLocale();
   const drs = (k: keyof Dictionary["duplicateReviewSection"]) => t("duplicateReviewSection", k);
   const fillDrs = (s: string, vars: Record<string, string>) =>
     Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
@@ -150,7 +153,7 @@ export function DuplicateReviewSection({
             <ul className="mt-1 flex flex-col gap-1">
               {review.unresolved.map((u, i) => (
                 <li key={i} className="rounded border border-border/60 p-1.5">
-                  <span className="text-text-dim">{u.reasonLabel}</span>
+                  <span className="text-text-dim">{localizeBuildsText(u.reasonLabel, locale)}</span>
                   <span className="ml-2 text-text-muted">
                     {u.worldCardId ? fillDrs(drs("worldIdTemplate"), { id: u.worldCardId }) : drs("worldIdUnknown")} /{" "}
                     {u.buildId ? fillDrs(drs("buildIdTemplate"), { id: u.buildId }) : drs("buildIdUnknown")}
@@ -314,7 +317,7 @@ function DuplicateGroupCard({ group: g }: { group: DuplicateGroup }) {
           {g.kind === "exact" ? drs("exactBadge") : drs("similarBadge")}
         </Badge>
         <Badge tone={g.ruleKind === "current" ? "neutral" : "warning"} size="xs">
-          {g.ruleLabel}
+          {localizeBuildsText(g.ruleLabel, locale)}
         </Badge>
         <span className="font-semibold">
           {g.buildCount}
@@ -342,15 +345,15 @@ function DuplicateGroupCard({ group: g }: { group: DuplicateGroup }) {
 
       <div className="mt-2 rounded border border-border/60 bg-surface-2/40 p-2">
         <p className="font-semibold text-text-dim">{drs("matchingFieldsHeading")}</p>
-        <p className="mt-0.5 text-text-dim">{g.sameFields.join(" / ")}</p>
+        <p className="mt-0.5 text-text-dim">{g.sameFields.map((d) => localizeBuildsText(d, locale)).join(" / ")}</p>
         {g.diffFields.length > 0 ? (
           <>
             <p className="mt-1 font-semibold text-text-dim">{drs("differingFieldsHeading")}</p>
-            <p className="mt-0.5 text-text-dim">{g.diffFields.join(" / ")}</p>
+            <p className="mt-0.5 text-text-dim">{g.diffFields.map((d) => localizeBuildsText(d, locale)).join(" / ")}</p>
           </>
         ) : null}
         {g.kind === "similar" && g.reasonLabel ? (
-          <p className="mt-1 text-warning">{fillDrs(drs("similarReasonTemplate"), { reason: g.reasonLabel })}</p>
+          <p className="mt-1 text-warning">{fillDrs(drs("similarReasonTemplate"), { reason: localizeBuildsText(g.reasonLabel, locale) })}</p>
         ) : null}
       </div>
 
@@ -358,7 +361,7 @@ function DuplicateGroupCard({ group: g }: { group: DuplicateGroup }) {
         {g.builds.map((b) => (
           <li key={b.build.buildId} className="rounded border border-border/60 p-1.5">
             <div className="flex flex-wrap items-center gap-1">
-              <span className="font-semibold">{b.build.buildName}</span>
+              <span className="font-semibold" data-user-content>{b.build.buildName}</span>
               {b.used ? (
                 <Badge tone="accent" size="xs">
                   {fillDrs(drs("usedRefTemplate"), { count: String(b.refCount) })}
@@ -440,12 +443,13 @@ function DuplicateGroupCard({ group: g }: { group: DuplicateGroup }) {
 
 function AllocationLine({ build }: { build: DuplicateGroup["builds"][number]["build"] }) {
   const t = useT();
+  const { locale } = useLocale();
   const active = buildAllocationRows(build.progressionAllocation).filter((r) => r.level > 0);
   return (
     <p className="mt-0.5 text-text-dim">
       {t("buildImportModal", "allocationLabelTemplate").replace(
         "{allocation}",
-        active.length > 0 ? active.map((r) => `${r.label} Lv${r.level}`).join(" / ") : t("squadBuildPanel", "noAllocationBase"),
+        active.length > 0 ? active.map((r) => `${categoryName(r.groupId, locale)} Lv${r.level}`).join(" / ") : t("squadBuildPanel", "noAllocationBase"),
       )}
     </p>
   );

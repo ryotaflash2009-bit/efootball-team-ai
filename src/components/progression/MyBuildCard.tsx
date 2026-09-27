@@ -20,6 +20,7 @@ import {
   type MyTeamBuildSelection,
 } from "@/lib/progression/my-builds";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
+import { categoryName } from "@/lib/progression/ability-editor-labels";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 
@@ -125,7 +126,7 @@ export function MyBuildCard({
           />
         </Link>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-bold" title={build.buildName}>
+          <p className="truncate text-sm font-bold" title={build.buildName} data-user-content>
             {build.buildName}
           </p>
           <Link href={detailHref} className="block truncate text-xs text-text-dim hover:text-accent" title={name}>
@@ -164,7 +165,7 @@ export function MyBuildCard({
           <ul className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
             {activeRows.map((r) => (
               <li key={r.groupId}>
-                {r.label} <span className="font-semibold tabular-nums">Lv {r.level}</span>
+                {categoryName(r.groupId, locale)} <span className="font-semibold tabular-nums">Lv {r.level}</span>
               </li>
             ))}
           </ul>
@@ -176,7 +177,7 @@ export function MyBuildCard({
           <ul className="mt-1 grid grid-cols-2 gap-x-3 gap-y-0.5 sm:grid-cols-3">
             {allocRows.map((r) => (
               <li key={r.groupId} className={r.level > 0 ? "text-text" : "text-text-muted"}>
-                {r.label}: Lv {r.level}
+                {categoryName(r.groupId, locale)}: Lv {r.level}
               </li>
             ))}
           </ul>

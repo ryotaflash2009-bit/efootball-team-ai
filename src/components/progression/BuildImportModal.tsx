@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Surface } from "@/components/ui/Surface";
 import { Icon } from "@/components/ui/Icon";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
+import { categoryName } from "@/lib/progression/ability-editor-labels";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 
@@ -607,12 +608,12 @@ function PreviewStep({
                 : t("buildUsage", "ruleUnknownLabel");
             const active = buildAllocationRows(it.build.progressionAllocation)
               .filter((r) => r.level > 0)
-              .map((r) => `${r.label} Lv${r.level}`)
+              .map((r) => `${categoryName(r.groupId, locale)} Lv${r.level}`)
               .join(" / ");
             return (
               <li key={it.originalBuildId} className="border-b border-border/60 px-3 py-2 text-2xs last:border-b-0">
                 <div className="flex flex-wrap items-center gap-1">
-                  <span className="text-xs font-semibold">{it.buildName}</span>
+                  <span className="text-xs font-semibold" data-user-content>{it.buildName}</span>
                   <Badge tone={rule.isV2 ? "neutral" : "warning"} size="xs">
                     {ruleLabel}
                   </Badge>
