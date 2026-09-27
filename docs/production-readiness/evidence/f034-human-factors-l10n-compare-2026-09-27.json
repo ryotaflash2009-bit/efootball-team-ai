@@ -1,0 +1,171 @@
+{
+  "evidence": "F-034 human-factors audit and fixes, full English progression tab, compare rollout, full public regression",
+  "recordedAt": "2026-09-27",
+  "containsSecrets": false,
+  "containsRowDataOrRawHtml": false,
+  "prs": [
+    {
+      "pr": 82,
+      "mergeCommit": "fcf06d7",
+      "scope": "human-factors fixes (World player detail)"
+    },
+    {
+      "pr": 83,
+      "mergeCommit": "aefef33",
+      "scope": "full English progression tab and abilities tab"
+    },
+    {
+      "pr": 84,
+      "mergeCommit": "ca46dff",
+      "scope": "compare screen: train one player from abilities"
+    }
+  ],
+  "humanFactorsAudit": {
+    "document": "docs/product/f034-human-factors-audit.md",
+    "method": "expert review against Nielsen's 10 heuristics, Fitts / Hick / Jakob, proximity and consistency; automated first-use scenarios A-F, error prevention, touch simulation and reach on 8 viewports (CDP touch on 390x844, 393x852, 430x932 in place of a physical iPhone)",
+    "issues": 15,
+    "severity3Fixed": [
+      "HF-01 unsaved vs saved",
+      "HF-02 save far from abilities",
+      "HF-03 no save feedback",
+      "HF-04 selected row hidden by panel",
+      "HF-06 reset-all small and without undo",
+      "HF-13 landscape list hidden"
+    ],
+    "severity2Fixed": [
+      "HF-05",
+      "HF-07",
+      "HF-08",
+      "HF-09",
+      "HF-10",
+      "HF-11",
+      "HF-12",
+      "HF-15"
+    ],
+    "severity1": [
+      "HF-14 (fixed)"
+    ],
+    "operationCounts": {
+      "selectAbility": "1 tap",
+      "plusOne": "1 tap",
+      "multipleLevels": "1 drag",
+      "minusOne": "1 tap",
+      "switchCategory": "1 tap",
+      "close": "1 tap",
+      "save": "1 tap"
+    },
+    "travelOldVsNewPx": {
+      "mobile-390x844": [
+        2134,
+        0
+      ],
+      "tablet-768x1024": [
+        1931,
+        0
+      ],
+      "desktop-1280x720": [
+        382,
+        0
+      ]
+    },
+    "reach390x844": {
+      "minus": [
+        60,
+        643
+      ],
+      "plus": [
+        330,
+        643
+      ],
+      "save": [
+        316,
+        809
+      ],
+      "done": [
+        323,
+        542
+      ],
+      "panelHeightPx": 333
+    },
+    "timeOnTaskNote": "automation timings are machine timings, not human reaction times; operation counts and travel distance are the primary measures"
+  },
+  "localization": {
+    "dictionaryNamespace": "progressionTab (346 keys incl. compare sheet)",
+    "libraryOverlays": [
+      "src/lib/progression/lib-text-en.ts",
+      "src/lib/progression/rule-registry-en.ts",
+      "src/lib/progression/build-storage-errors.ts"
+    ],
+    "coverageTests": "overlay tests read the source files; a new Japanese literal without English fails CI",
+    "probe": "English player page, 5 cards: 298 -> 0 Japanese strings (text and aria/title/placeholder/valuetext, all collapsible sections open)",
+    "userContentExcluded": "user-entered build names (data-user-content)"
+  },
+  "compareRollout": {
+    "design": "one-player edit mode: full-screen dialog sheet, player named in title, player tabs, other players' value for the selected ability, per-player drafts, same editor and calculation (calculateComparisonPlayer)",
+    "fixedAlongTheWay": [
+      "compare page now resolves the storage scope (saving failed on a fresh load)",
+      "English labels widened the compare page to 413px on a 390px phone (grid items without min-w-0)",
+      "compare tables use locale labels"
+    ]
+  },
+  "publicVerification": {
+    "fullSiteBlackBox": {
+      "script": "scripts/public-black-box-full.mjs, run serially by viewport group (desktop / tablet / mobile) to avoid memory pressure; one Chrome at a time, no leftover processes",
+      "steps": 568,
+      "pass": 568,
+      "consoleErrors": 0,
+      "warnings": 0,
+      "networkErrors": 0,
+      "http5xx": 0,
+      "unexpected4xx": 0,
+      "overflowSteps": 0,
+      "performance": "14/14",
+      "memoryGrowth": [
+        1.22,
+        1.11,
+        1.2
+      ],
+      "security": "18/18 per group (noindex, internal pages 404, non-GET 0)",
+      "worldCount": 13297,
+      "managersCount": 67
+    },
+    "abilityEditorBlackBox": {
+      "script": "scripts/black-box-ability-progression.mjs",
+      "viewports": 8,
+      "pass": 458,
+      "total": 458,
+      "longTaskTotalMsPerViewport": 0
+    },
+    "compareEditorBlackBox": {
+      "script": "scripts/black-box-compare-ability-editor.mjs",
+      "viewports": 8,
+      "players": "2 on all, 3 and 4 on desktop-1280 and mobile-390",
+      "pass": 168,
+      "total": 168
+    }
+  },
+  "productionImpact": "none (no schema, RLS, role, secret, environment, reference data or updater change; saves use the existing browser save contract)",
+  "remaining": [
+    "Build Analysis page (/build-inventory, BuildAnalysisPanel) still uses Japanese-only stat labels in English mode (outside the progression tab scope)",
+    "physical-device feel (slider touch, glow, panel height) is left to the owner's subjective review"
+  ],
+  "tempCleanup": {
+    "method": "fixed allowlist of this work's temporary files under ./data (untracked, regular files, not symlinks, resolved inside ./data); deleted one by one with rm (no recursive/wildcard delete); emptied work folders removed with rmdir",
+    "deletedFiles": 213,
+    "skipped": 0,
+    "removedEmptyFolders": [
+      "data/ade/visual",
+      "data/ade",
+      "data/cmp",
+      "data/reg",
+      "data/hyd",
+      "data/f042",
+      "data/f060",
+      "data/f043"
+    ],
+    "kept": [
+      "data/efootball.db",
+      "logs from earlier sessions (not this work)"
+    ]
+  }
+}
