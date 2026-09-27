@@ -11,6 +11,8 @@ import type { ProgressionResult, SavedBuild, SelectedConditionalBooster } from "
 import { isV2RulesVersion } from "@/lib/progression/progression-rules";
 import { subscribeCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
 import { saveCurrentBuild } from "@/lib/progression/save-current-build";
+import { localizeBuildStorageError } from "@/lib/progression/build-storage-errors";
+import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 
 /**
  * 育成ビルドの保存・読み込み・複数管理（localStorage）。
@@ -41,6 +43,9 @@ export function BuildBar({
   const [builds, setBuilds] = useState<SavedBuild[]>([]);
   const [name, setName] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
+  const t = useT();
+  const { locale } = useLocale();
+  const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
 
   useEffect(() => {
     setAvailable(isBuildStorageAvailable());
@@ -57,13 +62,13 @@ export function BuildBar({
   function handleSave() {
     const r = saveCurrentBuild({
       worldCardId,
-      buildName: name || `ビルド ${builds.length + 1}`,
+      buildName: name || tp("buildDefaultName").replace("{n}", String(builds.length + 1)),
       allocation,
       result,
       selectedBooster,
       conditionalBoosterSelections,
     });
-    setMsg(r.ok ? `保存しました: ${r.build.buildName}` : `保存できません: ${r.error}`);
+    setMsg(r.ok ? tp("buildSaved").replace("{name}", r.build.buildName) : tp("buildSaveFailed").replace("{reason}", localizeBuildStorageError(r.error, locale)));
     if (r.ok) {
       setName("");
       refresh();
@@ -72,26 +77,26 @@ export function BuildBar({
   }
 
   function handleRename(b: SavedBuild) {
-    const next = window.prompt("新しいビルド名", b.buildName);
+    const next = window.prompt(tp("buildRenamePrompt"), b.buildName);
     if (next == null) return;
     const r = renameBuild(worldCardId, b.buildId, next);
-    setMsg(r.ok ? "名前を変更しました" : `変更できません: ${r.error}`);
+    setMsg(r.ok ? tp("buildRenamed") : tp("buildRenameFailed").replace("{reason}", localizeBuildStorageError(r.error, locale)));
     refresh();
   }
 
   function handleDelete(b: SavedBuild) {
-    if (!window.confirm(`ビルド「${b.buildName}」を削除しますか？（ブラウザ内の保存のみ）`)) return;
+    if (!window.confirm(tp("buildDeleteConfirm").replace("{name}", b.buildName))) return;
     const r = deleteBuild(worldCardId, b.buildId);
-    setMsg(r.ok ? "削除しました" : `削除できません: ${r.error}`);
+    setMsg(r.ok ? tp("buildDeleted") : tp("buildDeleteFailed").replace("{reason}", localizeBuildStorageError(r.error ?? "", locale)));
     refresh();
   }
 
   return (
     <div className="rounded-md border border-border bg-surface p-3">
-      <p className="text-sm font-semibold">ビルド保存</p>
+      <p className="text-sm font-semibold">{tp("buildSaveHeading")}</p>
       {!available ? (
         <p className="mt-2 text-xs text-text-dim">
-          この環境では localStorage が使えないため、ビルドを保存できません（画面の操作は可能です）。
+          {tp("buildStorageUnavailable")}
         </p>
       ) : (
         <>
@@ -101,8 +106,8 @@ export function BuildBar({
               value={name}
               maxLength={60}
               onChange={(e) => setName(e.target.value)}
-              placeholder="ビルド名"
-              aria-label="ビルド名"
+              placeholder={tp("buildNameLabel")}
+              aria-label={tp("buildNameLabel")}
               className="min-h-[44px] min-w-0 flex-1 rounded-md border border-border bg-surface-2 px-2 py-1.5 text-sm"
             />
             <button
@@ -110,7 +115,7 @@ export function BuildBar({
               onClick={handleSave}
               className="min-h-[44px] shrink-0 rounded-md bg-accent px-4 py-1.5 text-sm font-semibold text-accent-ink"
             >
-              保存
+              {tp("buildSaveButton")}
             </button>
           </div>
 
@@ -122,30 +127,30 @@ export function BuildBar({
                   className="flex flex-wrap items-center justify-between gap-2 rounded border border-border/60 bg-surface-2/40 px-2 py-1.5 text-xs"
                 >
                   <span className="min-w-0 truncate">
-                    <span className="font-semibold">{b.buildName}</span>
+                    <span className="font-semibold" data-user-content="build-name">{b.buildName}</span>
                     {!isV2RulesVersion(b.rulesVersion) ? (
-                      <span className="ml-1 rounded bg-yellow-400/15 px-1 text-[10px] text-yellow-300">旧規則</span>
+                      <span className="ml-1 rounded bg-yellow-400/15 px-1 text-[10px] text-yellow-300">{tp("buildLegacyRules")}</span>
                     ) : null}
                     <span className="ml-2 text-text-dim">
-                      推定OVR {b.calculatedOvr ?? "—"} / {new Date(b.updatedAt).toLocaleString("ja-JP", { hour12: false })}
+                      {tp("buildListMeta").replace("{ovr}", String(b.calculatedOvr ?? "—")).replace("{date}", new Date(b.updatedAt).toLocaleString(locale === "ja" ? "ja-JP" : "en-US", { hour12: false }))}
                     </span>
                   </span>
                   <span className="flex shrink-0 gap-1.5">
                     <button type="button" onClick={() => onLoad(b)} className="min-h-[44px] min-w-[44px] rounded bg-surface px-2 py-0.5 hover:text-accent">
-                      読込
+                      {tp("buildLoad")}
                     </button>
                     <button type="button" onClick={() => handleRename(b)} className="min-h-[44px] min-w-[44px] rounded bg-surface px-2 py-0.5 hover:text-accent">
-                      名前
+                      {tp("buildRename")}
                     </button>
                     <button type="button" onClick={() => handleDelete(b)} className="min-h-[44px] min-w-[44px] rounded bg-surface px-2 py-0.5 text-danger hover:opacity-80">
-                      削除
+                      {tp("buildDelete")}
                     </button>
                   </span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-2 text-xs text-text-dim">保存済みのビルドはありません。</p>
+            <p className="mt-2 text-xs text-text-dim">{tp("buildNone")}</p>
           )}
         </>
       )}

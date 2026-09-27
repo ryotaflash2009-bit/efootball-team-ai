@@ -3658,6 +3658,346 @@ export interface Dictionary {
     rejectedDescription: string;
     clearSearch: string;
   };
+  progressionTab: {
+    analysisScopeDefault: string;
+    eligibilityTrending: string;
+    eligibilityMaxLevel1: string;
+    cannotProgressFallback: string;
+    baseValuesKept: string;
+    statComparisonTitle: string;
+    estimatedOvr: string;
+    underVerification: string;
+    calculationDetailsSummary: string;
+    detailedBreakdownTitle: string;
+    autoAllocationTitle: string;
+    resetProgression: string;
+    buildModeNone: string;
+    buildModeAttack: string;
+    buildModeDefense: string;
+    buildModeBalance: string;
+    buildModeGk: string;
+    autoAllocationNote: string;
+    groupsTitle: string;
+    groupsHint: string;
+    gkGroupsSummary: string;
+    gkAllocatedNonGk: string;
+    gkAllocatedGk: string;
+    gkGroupsNote: string;
+    cardFallbackName: string;
+    maxOvrLabel: string;
+    maxOvrShort: string;
+    levelCap: string;
+    noEnglishName: string;
+    boostersHeading: string;
+    b2Heading: string;
+    b2Note: string;
+    managerHeading: string;
+    remainingLabel: string;
+    pointsHeading: string;
+    pointsUsedSuffix: string;
+    pointsRemainingPrefix: string;
+    pointsFormulaConfirmed: string;
+    pointsFormulaUnverified: string;
+    pointsNone: string;
+    buildDefaultName: string;
+    buildSaved: string;
+    buildSaveFailed: string;
+    buildRenamePrompt: string;
+    buildRenamed: string;
+    buildRenameFailed: string;
+    buildDeleteConfirm: string;
+    buildDeleted: string;
+    buildDeleteFailed: string;
+    buildSaveHeading: string;
+    buildStorageUnavailable: string;
+    buildNameLabel: string;
+    buildSaveButton: string;
+    buildLegacyRules: string;
+    buildListMeta: string;
+    buildLoad: string;
+    buildRename: string;
+    buildDelete: string;
+    buildNone: string;
+    migrationTitle: string;
+    migrationBody1: string;
+    migrationBody2: string;
+    migrationRecalculate: string;
+    migrationKeep: string;
+    sliderCap: string;
+    sliderNextCost: string;
+    sliderValueTextMax: string;
+    sliderValueText: string;
+    confirmedTag: string;
+    targetsUnverifiedTag: string;
+    targetsLabel: string;
+    sliderDecrease: string;
+    sliderAria: string;
+    sliderIncrease: string;
+    consumedLabel: string;
+    capReached: string;
+    capLevel: string;
+    anCellRegistered: string;
+    anCellSuitable: string;
+    anCellPartial: string;
+    anRegisteredLabel: string;
+    anSuitableLabel: string;
+    anOvrByPosLabel: string;
+    anOvrByPosPending: string;
+    anOvrSummary: string;
+    anSourcePrefix: string;
+    anColPosition: string;
+    anColCategory: string;
+    anColFamiliarity: string;
+    anRegistered: string;
+    anSubPosition: string;
+    anNotInSource: string;
+    anSizeRank: string;
+    anSamePosition: string;
+    anPercentile: string;
+    anPercentileHint: string;
+    anPercentileAria: string;
+    anRelativePending: string;
+    anNotRecorded: string;
+    anShowPrimary: string;
+    anShowAll: string;
+    anModelCaveat: string;
+    anInternalTraitsHeading: string;
+    anInternalValue: string;
+    anAriaLabel: string;
+    anHeading: string;
+    anSecPositions: string;
+    anSecPhysical: string;
+    anSecModel: string;
+    anSecTraits: string;
+    anSuitOnly: string;
+    anSuitUnconfirmed: string;
+    anRankTotal: string;
+    anModelCount: string;
+    anFooter: string;
+    anSrcWithEfhub: string;
+    anSrcWorldOnly: string;
+    anOvrNote: string;
+    anSuitNoteEfhub: string;
+    anSuitNoteNone: string;
+    anPhysNoteRanks: string;
+    anPhysNoteNoRanks: string;
+    anModelNoteNone: string;
+    anTraitsNote: string;
+    anSkillsNote: string;
+    anMetricLegCoverageRadius: string;
+    anMetricArmCoverageRadius: string;
+    anMetricJumpingHeight: string;
+    anMetricTorsoCollision: string;
+    anMetricDribbleHeight: string;
+    anModelArmLength: string;
+    anModelShoulderWidth: string;
+    anModelNeckLength: string;
+    anModelChestMeasurement: string;
+    anModelNeckSize: string;
+    anModelShoulderHeight: string;
+    anModelLegLength: string;
+    anModelThighSize: string;
+    anModelWaistSize: string;
+    anModelArmSize: string;
+    anModelCalfSize: string;
+    anTraitPreferredFoot: string;
+    anTraitHeight: string;
+    anTraitWeight: string;
+    anTraitAge: string;
+    anTraitWeakFootUsage: string;
+    anTraitWeakFootAccuracy: string;
+    anTraitForm: string;
+    anTraitConditionValue: string;
+    anTraitInjuryResistance: string;
+    anSkillsTitle: string;
+    anPlayerSkillsCount: string;
+    anNoSkills: string;
+    anAiStylesCount: string;
+    anNoAiStyles: string;
+    anStrictFinal: string;
+    anStandardFinal: string;
+    anColAbility: string;
+    anColBase: string;
+    anColProgression: string;
+    anColPlayerB: string;
+    anColConditional: string;
+    anColManager: string;
+    anColAfterConditional: string;
+    anColTrialB: string;
+    anColTrialFinal: string;
+    anMeasuredPlus: string;
+    anExternalPlus: string;
+    anConfirmedB2Plus: string;
+    anCap: string;
+    anColumnsLabel: string;
+    anPeriod: string;
+    anStrictFormulaA: string;
+    anStrictBold: string;
+    anStrictFormulaB: string;
+    anStandardFormula: string;
+    anStandardNotOfficial: string;
+    anCondFormula: string;
+    anCondUserSpecified: string;
+    anCondSeparate: string;
+    anTrialFormula: string;
+    anTrialNotOfficial: string;
+    anExcludedNote: string;
+    anManagerNote: string;
+    boostNameWithEn: string;
+    boostFallbackName: string;
+    boostFixedType: string;
+    boostFixedProvisional: string;
+    boostUnresolvedNotApplied: string;
+    boostEvidenceMeasured: string;
+    boostEvidenceExternal: string;
+    boostEvidencePending: string;
+    boostActEvOfficial: string;
+    boostActEvScreenshot: string;
+    boostActEvExternal: string;
+    boostActEvConflicted: string;
+    boostActEvUnresolved: string;
+    boostActEvInferred: string;
+    boostEvidencePom: string;
+    boostEvidenceConditional: string;
+    boostEvidenceUnresolved: string;
+    boostStagePom: string;
+    boostStageUnresolved: string;
+    boostStageProvisional: string;
+    boostStageConditional: string;
+    boostStageExternal: string;
+    boostStageExternalProvisional: string;
+    boostStageScreenshot: string;
+    boostStageScreenshotProvisional: string;
+    boostStageGameClient: string;
+    boostAttachedHeading: string;
+    boostSlot: string;
+    boostCardFixed: string;
+    boostAppliedInMode: string;
+    boostNotAppliedNormal: string;
+    boostTargetsPrefix: string;
+    boostEachLevel: string;
+    boostEachCandidateLevel: string;
+    boostDetailsSummary: string;
+    boostStageLine: string;
+    boostActivationLine: string;
+    boostActivationPom: string;
+    boostActivationFixedAssumed: string;
+    boostActivationFixed: string;
+    boostSourceWorld: string;
+    boostSourceEfscout: string;
+    boostSourceScreenshot: string;
+    boostScreenshotNote: string;
+    boostConditionLine: string;
+    boostConditionalHeading: string;
+    boostPomExplain: string;
+    boostOverriddenNote: string;
+    boostUnresolvedNotAppliedNote: string;
+    boostNoAttachedPlayer: string;
+    boostFixedDialogTitle: string;
+    boostFixedIntro: string;
+    boostFixedNoTierProvisional: string;
+    boostFixedNoTier: string;
+    boostFixedAppliedStandard: string;
+    boostFixedNotAppliedMode: string;
+    boostFixedProvisionalPre: string;
+    boostFixedProvisionalBold: string;
+    boostFixedProvisionalPost: string;
+    boostIncreasePerAbility: string;
+    boostFixedSourceNote: string;
+    boostUnsetNotApplied: string;
+    boostUserSet: string;
+    boostGoldVariable: string;
+    boostWorldId: string;
+    boostMaxSummary: string;
+    boostMoreStats: string;
+    boostCurrentValue: string;
+    boostSetTier: string;
+    boostClearSelection: string;
+    boostPomDialogTitle: string;
+    boostPomLegend: string;
+    boostTierNone: string;
+    boostTierTargets: string;
+    boostTierUserNote: string;
+    boostPomFootnote: string;
+    boostIconFixed: string;
+    boostIconPom: string;
+    boostIconLiveUpdate: string;
+    boostIconUnresolved: string;
+    boostIconProvisional: string;
+    boostNoAttached: string;
+    boostFixedProvisionalApplied: string;
+    boostFixedApplied: string;
+    boostFixedVerifying: string;
+    boostViewEffect: string;
+    ruB2LegacyPom: string;
+    ruB2LegacyUnconfirmed: string;
+    ruB2KeepAttached: string;
+    ruB2KeepUnresolved: string;
+    ruB2KeepNone: string;
+    ruB2SlotLabel: string;
+    ruB2SlotSelectAria: string;
+    ruB2LevelAria: string;
+    ruB2ConfirmedGroup: string;
+    ruB2Clear: string;
+    ruB2Active: string;
+    ruB2LegacyNote: string;
+    ruB2AppliedConfirmed: string;
+    ruB2AppliedTrial: string;
+    ruB2AppliedEffect: string;
+    ruB2ClearAll: string;
+    ruB2Footer: string;
+    ruModeConfirmed: string;
+    ruModeProvisional: string;
+    ruModeUnsupported: string;
+    ruRulesVersion: string;
+    ruLegacyMigrated: string;
+    ruCapsHeading: string;
+    ruCapBase: string;
+    ruCapProgression: string;
+    ruCapBooster: string;
+    ruCapFinal: string;
+    ruCapClose: string;
+    ruCapConfirmed: string;
+    ruCapUnconfirmed: string;
+    ruCapUnconfirmedClamp: string;
+    ruShowRuleStatus: string;
+    ruListConfirmed: string;
+    ruListProvisional: string;
+    ruListUnresolved: string;
+    ruPbHeading: string;
+    ruPbModeHeading: string;
+    ruPbModeStrictLabel: string;
+    ruPbModeStrictDesc: string;
+    ruPbModeStandardLabel: string;
+    ruPbModeStandardDesc: string;
+    ruPbModeExperimentalLabel: string;
+    ruPbModeExperimentalDesc: string;
+    ruPbStandardNote: string;
+    ruPbDetailsHeading: string;
+    ruPbDetailsBody: string;
+    ruPbSourceNote: string;
+    ruExWarning: string;
+    ruExActive: string;
+    ruExDisable: string;
+    ruExOpen: string;
+    ruExModalTitle: string;
+    ruExBullet1: string;
+    ruExBullet2: string;
+    ruExBullet3: string;
+    ruExBullet4: string;
+    ruExCancel: string;
+    ruExAgree: string;
+    ruGrMax: string;
+    ruGrNextCost: string;
+    ruGrConfirmed: string;
+    ruGrStatsProvisional: string;
+    ruGrTargets: string;
+    ruGrDecAria: string;
+    ruGrIncAria: string;
+    ruGrConsumed: string;
+    ruGrMaxReached: string;
+    ruGrMaxLevel: string;
+  };
   abilityEditor: {
     sectionTitle: string;
     sectionHint: string;
@@ -7516,6 +7856,346 @@ const ja: Dictionary = {
     undoReset: "リセットを取り消す",
     revertShort: "↺ 戻す",
     rowAffordance: "タップして育成",
+  },
+  progressionTab: {
+    analysisScopeDefault: "World データ",
+    eligibilityTrending: "TRENDING カード（POTW 等）は育成できません。",
+    eligibilityMaxLevel1: "最大レベルが1のため育成ポイントがありません。",
+    cannotProgressFallback: "このカードは育成できません。",
+    baseValuesKept: "（能力値は基礎値のまま表示します）",
+    statComparisonTitle: "能力値比較（育成前後）",
+    estimatedOvr: "推定OVR",
+    underVerification: "検証中",
+    calculationDetailsSummary: "計算根拠とデータの出所を見る（モード・証拠レベル・規則バージョン・詳細な内訳）",
+    detailedBreakdownTitle: "詳細な内訳（表形式）",
+    autoAllocationTitle: "自動育成（配分方針）",
+    resetProgression: "育成リセット",
+    buildModeNone: "育成なし",
+    buildModeAttack: "攻撃重視",
+    buildModeDefense: "守備重視",
+    buildModeBalance: "バランス重視",
+    buildModeGk: "GK重視",
+    autoAllocationNote: "自動育成は「配分方針」のヒューリスティックです。ゲーム内の自動配分アルゴリズムとは異なり、OVR の最大化は保証しません。実行後も各スライダーで手動調整できます。",
+    groupsTitle: "能力値グループ（カテゴリレベル）",
+    groupsHint: "{shooting}の対象能力は確認済 / 他は検証中",
+    gkGroupsSummary: "GK育成 3 項目",
+    gkAllocatedNonGk: "配分 Lv {level}（非GK・初期折りたたみ）",
+    gkAllocatedGk: "配分 Lv {level}（GK・初期展開）",
+    gkGroupsNote: "{stats} を調整します。 折りたたんでも配分・使用ポイント・段階コストは保持します。",
+    cardFallbackName: "カード {id}",
+    maxOvrLabel: "最大 OVR",
+    maxOvrShort: "最大OVR",
+    levelCap: "Lv上限 {level}",
+    noEnglishName: "（英語名なし）",
+    boostersHeading: "ブースター",
+    b2Heading: "追加ブースター（B2・手動選択）",
+    b2Note: "カード本来の付属ブースター（B1）ではなく、ユーザーが追加で選ぶブースターです。確認済みのB2ブースターを選ぶと、対象能力・通常の最終値・比較の順位・チーム集計へ即座に反映します。未確認のB2ブースター（試算・過去の選択のみ変更可）は「試算最終値」にのみ反映し、通常の最終値・比較の順位・チーム集計は変えません。",
+    managerHeading: "監督",
+    remainingLabel: "残り",
+    pointsHeading: "育成ポイント",
+    pointsUsedSuffix: " / {total} 使用",
+    pointsRemainingPrefix: "残り ",
+    pointsFormulaConfirmed: "ポイント総数 = (最大レベル − 1) × 2（確認済）／ 消費は段階コスト（検証中）",
+    pointsFormulaUnverified: "ポイント総数（検証中）",
+    pointsNone: " — このカードは育成ポイントがありません",
+    buildDefaultName: "ビルド {n}",
+    buildSaved: "保存しました: {name}",
+    buildSaveFailed: "保存できません: {reason}",
+    buildRenamePrompt: "新しいビルド名",
+    buildRenamed: "名前を変更しました",
+    buildRenameFailed: "変更できません: {reason}",
+    buildDeleteConfirm: "ビルド「{name}」を削除しますか？（ブラウザ内の保存のみ）",
+    buildDeleted: "削除しました",
+    buildDeleteFailed: "削除できません: {reason}",
+    buildSaveHeading: "ビルド保存",
+    buildStorageUnavailable: "この環境では localStorage が使えないため、ビルドを保存できません（画面の操作は可能です）。",
+    buildNameLabel: "ビルド名",
+    buildSaveButton: "保存",
+    buildLegacyRules: "旧規則",
+    buildListMeta: "推定OVR {ovr} / {date}",
+    buildLoad: "読込",
+    buildRename: "名前",
+    buildDelete: "削除",
+    buildNone: "保存済みのビルドはありません。",
+    migrationTitle: "このビルドは旧規則（{version}）で作成されています",
+    migrationBody1: "現行規則（{version}）は配分の単位（グループ）と段階コストが異なります。",
+    migrationBody2: "下のボタンで再計算すると、元の配分を保ったまま現行規則へ変換します（自動保存はしません）。",
+    migrationRecalculate: "現行規則で再計算",
+    migrationKeep: "そのまま表示",
+    sliderCap: "上限",
+    sliderNextCost: "次の+1: {cost}pt",
+    sliderValueTextMax: "{group} レベル {level}（上限到達）・消費 {used}pt",
+    sliderValueText: "{group} レベル {level}・次の+1に {next}pt・消費 {used}pt",
+    confirmedTag: "確認済",
+    targetsUnverifiedTag: "対象能力は検証中",
+    targetsLabel: "対象: {stats}",
+    sliderDecrease: "{group} のレベルを下げる",
+    sliderAria: "{group} の育成レベル",
+    sliderIncrease: "{group} のレベルを上げる",
+    consumedLabel: "消費: {used}pt",
+    capReached: "上限到達",
+    capLevel: "上限 Lv{level}",
+    anCellRegistered: "登録",
+    anCellSuitable: "適性",
+    anCellPartial: "部分",
+    anRegisteredLabel: "登録: ",
+    anSuitableLabel: " ／ 適性: ",
+    anOvrByPosLabel: "総合値（ポジション別 OVR）: ",
+    anOvrByPosPending: "（計算規則を確認中）",
+    anOvrSummary: "ポジション別 OVR と適性について",
+    anSourcePrefix: "情報源 — ",
+    anColPosition: "ポジション",
+    anColCategory: "区分",
+    anColFamiliarity: "適性度 (生値)",
+    anRegistered: "登録",
+    anSubPosition: "副ポジション",
+    anNotInSource: "ソース未収録",
+    anSizeRank: "大きさ順位",
+    anSamePosition: "同ポジション",
+    anPercentile: "パーセンタイル",
+    anPercentileHint: "（100 に近いほど大）",
+    anPercentileAria: "パーセンタイル {value}",
+    anRelativePending: "相対評価は準備中",
+    anNotRecorded: "未収録",
+    anShowPrimary: "主要項目だけ表示",
+    anShowAll: "すべて表示（{n} 項目）",
+    anModelCaveat: "内部プレーヤーモデル値です。実寸の cm として確認された値ではありません。0 も実値です（未収録とは区別しています）。",
+    anInternalTraitsHeading: "内部特性値（段階の意味は追加検証中）",
+    anInternalValue: "内部値 ",
+    anAriaLabel: "選手分析",
+    anHeading: "選手分析（選手固有）",
+    anSecPositions: "ポジション適性",
+    anSecPhysical: "物理データ",
+    anSecModel: "プレーヤーモデル",
+    anSecTraits: "その他特性",
+    anSuitOnly: "適性のみ確認済み",
+    anSuitUnconfirmed: "適性未確認",
+    anRankTotal: "順位集計時点の全 {n} 件中",
+    anModelCount: "{n} / 11 項目",
+    anFooter: "ポジション別・物理・モデル・特性の各値は表示用データです。育成計算・ブースター計算・監督補正には影響しません。",
+    anSrcWithEfhub: "登録ポジション: eFootball World ／ 副ポジション適性: eFHUB 個別ページ",
+    anSrcWorldOnly: "登録ポジション: eFootball World（副ポジション適性はこのカードのソースに未収録）",
+    anOvrNote: "ポジション別 OVR は、計算規則を確認できていないため表示していません。KONAMI は算式・重みを公開しておらず、複数カードの表示値サンプルも 1 件しか得られていません（推測で算式を作りません）。",
+    anSuitNoteEfhub: "eFHUB 個別ページ由来の副ポジション適性です。適性度の生値 1 / 2 の意味（部分適性 / 高適性）は暫定解釈です。",
+    anSuitNoteNone: "このカードのソースには副ポジション適性が未収録です（登録ポジションのみ確認済み）。",
+    anPhysNoteRanks: "順位は eFootball World の順位集計時点の全カード実データで「値の大きい順」に並べたもの（1 位 = 最大値）。母数は集計時点の件数で、現在の収録件数とは異なる場合があります。パーセンタイルは 100 に近いほど値が大きいことを表します。ゲーム内での正確な作用は追加検証中の内部値です。",
+    anPhysNoteNoRanks: "内部モデル値です。相対評価（順位・パーセンタイル）は準備中です。",
+    anModelNoteNone: "このカードのソースにはプレーヤーモデル値が未収録です。",
+    anTraitsNote: "逆足頻度・精度・フォーム・怪我耐性は生値です。段階の意味（低い/普通/高い等）は KONAMI 公式の表記を確認できていないため、数値のまま表示します。",
+    anSkillsNote: "Highlight Skill / Skill FX の判別情報は現行データに未収録のため、すべて「選手スキル」として表示します（推測で分類しません）。",
+    anMetricLegCoverageRadius: "脚カバー半径",
+    anMetricArmCoverageRadius: "腕カバー半径",
+    anMetricJumpingHeight: "ジャンプ高",
+    anMetricTorsoCollision: "胴体衝突",
+    anMetricDribbleHeight: "脚の長さ基準の身長",
+    anModelArmLength: "腕の長さ",
+    anModelShoulderWidth: "肩幅",
+    anModelNeckLength: "首の長さ",
+    anModelChestMeasurement: "胸囲",
+    anModelNeckSize: "首のサイズ",
+    anModelShoulderHeight: "肩の高さ",
+    anModelLegLength: "脚の長さ",
+    anModelThighSize: "太もものサイズ",
+    anModelWaistSize: "ウエストサイズ",
+    anModelArmSize: "腕のサイズ",
+    anModelCalfSize: "ふくらはぎのサイズ",
+    anTraitPreferredFoot: "利き足",
+    anTraitHeight: "身長",
+    anTraitWeight: "体重",
+    anTraitAge: "年齢",
+    anTraitWeakFootUsage: "逆足頻度",
+    anTraitWeakFootAccuracy: "逆足精度",
+    anTraitForm: "フォーム",
+    anTraitConditionValue: "コンディション安定度",
+    anTraitInjuryResistance: "怪我耐性",
+    anSkillsTitle: "スキル / AI・COM プレースタイル",
+    anPlayerSkillsCount: "選手スキル（{n}）",
+    anNoSkills: "スキル情報がありません。",
+    anAiStylesCount: "AI・COM プレースタイル（{n}）",
+    anNoAiStyles: "AI・COM プレースタイルはありません。",
+    anStrictFinal: "厳密最終",
+    anStandardFinal: "標準最終",
+    anColAbility: "能力値",
+    anColBase: "基礎",
+    anColProgression: "育成",
+    anColPlayerB: "選手B",
+    anColConditional: "条件指定",
+    anColManager: "監督",
+    anColAfterConditional: "条件反映後",
+    anColTrialB: "試算B",
+    anColTrialFinal: "試算最終",
+    anMeasuredPlus: "実測+{n}",
+    anExternalPlus: "外部照合+{n}",
+    anConfirmedB2Plus: "確認済みB2+{n}",
+    anCap: "上限",
+    anColumnsLabel: "列: ",
+    anPeriod: "。",
+    anStrictFormulaA: " = 基礎 + 育成 + ",
+    anStrictBold: "ユーザー保存済みスクリーンショットで実測できたカード付属ブースター",
+    anStrictFormulaB: "（現状 2 種）+ 監督補正。",
+    anStandardFormula: " = 基礎 + 育成 + カード付属ブースター（スクリーンショット実測 2 種 ＋ eFootball World と EFScout の外部2ソースで整合 27 種）+ 確認済みB2（ユーザーが手動選択した確認済みブースター）+ 監督補正。",
+    anStandardNotOfficial: " KONAMI 公式の計算結果として確認された値ではありません。",
+    anCondFormula: " = 標準最終 + 金色・可変ブースターのユーザー指定段階（その効果名の対象能力へだけ）。",
+    anCondUserSpecified: "この値はユーザーが自身の Game Plan を確認して指定したものです。アプリが編成人数を自動検証した値ではありません。",
+    anCondSeparate: "標準最終値とは別の値です。",
+    anTrialFormula: " = 標準最終 + 検証中の付属ブースター + 条件手動指定 + 未確認の手動試算（B2）。確認済みB2は標準最終に含めているため二重加算しません。",
+    anTrialNotOfficial: "ゲーム内の正式値ではありません。",
+    anExcludedNote: "効果検証中・金色の可変ブースター（未指定時）・未解決の付属ブースターと未確認の手動試算（B2）は含めません（実験モードで別表示）。架空の上昇量は生成しません。",
+    anManagerNote: "「監督」= 選択した監督のブースター効果（複数ソースで確認済みのもののみ）。",
+    boostNameWithEn: "{ja}（{en}）",
+    boostFallbackName: "ブースター",
+    boostFixedType: "固定型",
+    boostFixedProvisional: "固定型・推定",
+    boostUnresolvedNotApplied: "未解決・未適用",
+    boostEvidenceMeasured: "参考画面で実測確認",
+    boostEvidenceExternal: "外部照合済み（KONAMI 公式未確認）",
+    boostEvidencePending: "効果検証中",
+    boostActEvOfficial: "KONAMI 公式で明記",
+    boostActEvScreenshot: "ユーザー提供の画面で確認",
+    boostActEvExternal: "外部2ソースで整合",
+    boostActEvConflicted: "証拠が矛盾",
+    boostActEvUnresolved: "未確認",
+    boostActEvInferred: "推定（状況証拠のみ）",
+    boostEvidencePom: "金色・可変（Game Plan 依存・未適用）",
+    boostEvidenceConditional: "編成条件付き・未適用",
+    boostEvidenceUnresolved: "未解決",
+    boostStagePom: "★ 金色・Power of Many 方式（Game Plan の同一リーグ人数で効果量が変化）。自動判定不可のためユーザーが段階を手動指定。指定した効果名の対象能力へだけ「条件反映後値」に反映",
+    boostStageUnresolved: "① 数値IDのみ取得（対応表に未収録）",
+    boostStageProvisional: "③ 名称・レベル確認済み／効果は公開1系統のみ（実験モードで試算）",
+    boostStageConditional: "③ 名称・レベル・効果候補は確認済み／発動条件（編成の同一リーグ人数）は判明しているが静的画面で評価不可（実験モードで最大効果を試算）",
+    boostStageExternal: "④ 名称・レベル確認済み／効果は外部2ソースで整合（標準モードで通常値へ・KONAMI 公式実測ではない）",
+    boostStageExternalProvisional: "／発動方式は固定型と推定（Power of Many である具体的証拠なし・暫定適用）",
+    boostStageScreenshot: "⑤ 保存済みスクリーンショットで対象能力・上昇量を確認（厳密モードでも通常値へ）。KONAMI のゲームクライアント画面での確認ではありません",
+    boostStageScreenshotProvisional: "／発動方式は固定型と推定",
+    boostStageGameClient: "⑥ KONAMI のゲームクライアント画面で変化量を直接確認（厳密モードでも通常値へ）",
+    boostAttachedHeading: "カード付属ブースター（カードに収録・自動）",
+    boostSlot: "スロット{slot}",
+    boostCardFixed: "カード固有・変更不可",
+    boostAppliedInMode: "現在モードで適用中",
+    boostNotAppliedNormal: "通常値へ未適用",
+    boostTargetsPrefix: "対象: ",
+    boostEachLevel: "（各 +{level}）",
+    boostEachCandidateLevel: "（各 候補 +{level}）",
+    boostDetailsSummary: "詳細を見る（解決段階・発動方式・情報源）",
+    boostStageLine: "解決段階: {stage}",
+    boostActivationLine: "発動方式: {value}",
+    boostActivationPom: "Power of Many（金色・Game Plan 依存）／ 証拠: {evidence}",
+    boostActivationFixedAssumed: "固定と推定（青/金の判別材料は未確認・ScoreBar 差分だけでは区別不可）",
+    boostActivationFixed: "固定（青色）／ 証拠: {evidence}",
+    boostSourceWorld: "情報源: eFootball World（外部コミュニティDB）の個別選手ページ表示",
+    boostSourceEfscout: " ＋ EFScout（外部DB）の定義（外部2ソースで整合）",
+    boostSourceScreenshot: " ＋ 保存済みスクリーンショット",
+    boostScreenshotNote: "補足: 保存済みスクリーンショットで対象能力と上昇量を確認。KONAMI のゲームクライアント画面での確認ではありません。",
+    boostConditionLine: "発動条件: {text}",
+    boostConditionalHeading: "条件付きブースター（Power of Many）",
+    boostPomExplain: "{name} は eFHUB 上で金色に表示される可変ブースターです。KONAMI 公式「The Power of Many」= Game Plan の同一リーグ登録人数で効果量が変化します。当アプリでは人数を自動確認できないため標準最終値へは自動適用せず、下でユーザーが段階（+0/+1/+2/+3）を指定します。指定は {nameEn} の対象能力へだけ反映します。",
+    boostOverriddenNote: "※ 追加ブースター（B2）で上書き中（この付属ブースターは計算に含めていません）",
+    boostUnresolvedNotAppliedNote: "付属ブースターは未解決のため能力値へは適用していません。",
+    boostNoAttachedPlayer: "このカードに付属する選手ブースターはありません。",
+    boostFixedDialogTitle: "{name}（固定）の効果",
+    boostFixedIntro: "これはカード本来の付属ブースターです。",
+    boostFixedNoTierProvisional: "固定型と推定しているため人数条件による段階変更は無い前提で扱っています（未確認）。",
+    boostFixedNoTier: "人数条件による段階変更はありません。",
+    boostFixedAppliedStandard: "標準最終値へ適用中です。",
+    boostFixedNotAppliedMode: "現在の適用モードでは通常値へ適用していません。",
+    boostFixedProvisionalPre: "発動方式は「固定型」と",
+    boostFixedProvisionalBold: "推定",
+    boostFixedProvisionalPost: "（発動方式未確認）。効果内容（対象能力・上昇量）は外部照合済みですが、 このブースターが青色（固定型）か金色（Power of Many）かの判別材料 （eFHUB のヘキサゴン色の元データ・eFootball World の生ペイロード・ゲーム内実測）を確認できていません。 ScoreBar 差分だけでは「固定 +N」と「Power of Many の最大 +N」を区別できないためです。 Power of Many（条件型）である具体的証拠がないため、標準モードでは固定型として暫定適用しています。",
+    boostIncreasePerAbility: "対象能力ごとの上昇量",
+    boostFixedSourceNote: "名称・レベル・効果は eFootball World（外部コミュニティDB・KONAMI 公式サイトではない）の個別選手ページ表示と EFScout（外部DB）の定義から解決しています。",
+    boostUnsetNotApplied: "未指定（能力値へ未適用）",
+    boostUserSet: "ユーザー指定 +{level}",
+    boostGoldVariable: "金色・可変（Game Plan 依存）",
+    boostWorldId: "World ブースターID {id}",
+    boostMaxSummary: "最大表示 +{max} / 対象 {count} 能力（{names}{more}）。",
+    boostMoreStats: " ほか{n}",
+    boostCurrentValue: "現在値: ",
+    boostSetTier: "適用段階を指定 ▾",
+    boostClearSelection: "選択を解除",
+    boostPomDialogTitle: "{name}（金色・可変）の適用段階を指定",
+    boostPomLegend: "KONAMI 公式「The Power of Many」= Game Plan に登録した対象リーグの選手数で効果量が変化します（金色ブースター）。 自分の Game Plan を見て相当する段階を選んでください。{name} の対象 {count} 能力へだけ反映します。",
+    boostTierNone: "適用なし（+0）",
+    boostTierTargets: "対象 {count} 能力 +{level}",
+    boostTierUserNote: "（ユーザー指定・アプリの自動判定ではありません）",
+    boostPomFootnote: "指定しても「標準最終値」は変わりません（この金色ブースターは標準へ自動適用していません）。「条件反映後値」にのみ反映し、比較の順位・チームの通常集計には含めません。 対象能力: {names}。",
+    boostIconFixed: "固定ブースター",
+    boostIconPom: "Power of Many（金色・可変）ブースター",
+    boostIconLiveUpdate: "Live Update 連動ブースター",
+    boostIconUnresolved: "未解決ブースター",
+    boostIconProvisional: "効果検証中ブースター",
+    boostNoAttached: "このカードに付属するブースターはありません。",
+    boostFixedProvisionalApplied: "固定型・推定・適用中",
+    boostFixedApplied: "固定型・適用中",
+    boostFixedVerifying: "固定型・検証中",
+    boostViewEffect: "効果を見る ▸",
+    ruB2LegacyPom: "{name}（Power of Many・B2 選択肢からは提供終了）",
+    ruB2LegacyUnconfirmed: "{name}（未確認・試算のみ・過去の選択）",
+    ruB2KeepAttached: "— なし（付属: {booster}）—",
+    ruB2KeepUnresolved: "— なし（付属は未解決）—",
+    ruB2KeepNone: "— なし（付属なし）—",
+    ruB2SlotLabel: "スロット{slot}",
+    ruB2SlotSelectAria: "スロット{slot} の追加ブースター（B2）を指定",
+    ruB2LevelAria: "スロット{slot} の追加ブースター（B2）のレベル",
+    ruB2ConfirmedGroup: "確認済み（通常反映）",
+    ruB2Clear: "B2を解除",
+    ruB2Active: "現在適用中",
+    ruB2LegacyNote: "未確認のため通常の最終値には反映されません（試算最終値のみ）。「なし」を選ぶか、確認済みの候補へ変更できます。",
+    ruB2AppliedConfirmed: "確認済み・反映中",
+    ruB2AppliedTrial: "試算のみ（未確認）",
+    ruB2AppliedEffect: "{stats} に各 +{level}",
+    ruB2ClearAll: "追加ブースター（B2）をすべて解除",
+    ruB2Footer: "確認済みのB2を選ぶと、対象能力・通常の最終値・比較の順位・チーム集計へ即座に反映します。",
+    ruModeConfirmed: "確定（基礎値のみ）",
+    ruModeProvisional: "検証中（暫定規則を使用）",
+    ruModeUnsupported: "未対応",
+    ruRulesVersion: "規則: {version}",
+    ruLegacyMigrated: "旧規則の配分を移行して表示中",
+    ruCapsHeading: "能力値上限:",
+    ruCapBase: "基礎 {value}（",
+    ruCapProgression: "育成後 {value}（",
+    ruCapBooster: "ブースター後 {value}（",
+    ruCapFinal: "最終 {value}（",
+    ruCapClose: "）",
+    ruCapConfirmed: "確認済",
+    ruCapUnconfirmed: "未確認",
+    ruCapUnconfirmedClamp: "未確認・暫定クランプ",
+    ruShowRuleStatus: "規則の確認状態を表示",
+    ruListConfirmed: "確認済み",
+    ruListProvisional: "有力だが未確定（検証中）",
+    ruListUnresolved: "未確認 / 追加調査中",
+    ruPbHeading: "選手ブースター",
+    ruPbModeHeading: "ブースター適用モード",
+    ruPbModeStrictLabel: "厳密モード",
+    ruPbModeStrictDesc: "保存済みスクリーンショットで変化量を直接確認したブースターだけを適用します。KONAMI 公式ゲーム画面での確認済みを意味しません。適用の基準は効果内容（対象能力・上昇量）の証拠であり、発動方式（固定型 / Power of Many）の証拠は要求しません。",
+    ruPbModeStandardLabel: "標準モード（既定）",
+    ruPbModeStandardDesc: "上記に加え、eFootball World と EFScout の外部 2 ソースで効果が一致し複数カードで反例がないブースターを適用します。KONAMI 公式の計算結果として確認された値ではありません。適用の基準は効果内容の照合であり、発動方式は問いません。発動方式の証拠が不足するブースターは、Power of Many（条件型）である具体的な証拠がないため固定型と推定して暫定適用しています（「外部照合済み・固定型推定を含む」）。",
+    ruPbModeExperimentalLabel: "実験モード",
+    ruPbModeExperimentalDesc: "標準モードに加え、検証中の付属ブースターと手動試算を「試算最終値」に別表示します（通常の最終値は変わりません）。有効化前に警告への同意が必要です。",
+    ruPbStandardNote: "標準モード: 効果内容を外部データベース間で照合した高信頼値を含みます（「外部照合済み・固定型推定を含む」）。KONAMI 公式の計算結果として確認された値ではありません。 適用の基準は効果内容の照合であり、発動方式は問いません。発動方式の証拠が不足するブースターは、Power of Many（条件型）である具体的証拠がないため固定型と推定して暫定適用しています。",
+    ruPbDetailsHeading: "効果の詳細・検証情報",
+    ruPbDetailsBody: "B1（カード付属ブースター）・B2（追加ブースター）の通常の選択・解除は、育成ポイント表示の直下（このカードの概要欄）で行えます。 未確認・過去の試算値やPower of Many（条件付きブースター）の互換表示・詳細もそちらに表示します。",
+    ruPbSourceNote: "付属ブースターの名称・レベル・効果は eFootball World（外部コミュニティDB・KONAMI 公式サイトではない）の個別選手ページ表示と EFScout（外部DB）の定義から得ています。ball-carrying / 攻撃の起点 のみユーザー保存済みスクリーンショットで対象能力・上昇量を直接確認。 未確認の値から架空の上昇量は生成しません。",
+    ruExWarning: "検証中のブースター効果を試算へ含めます。表示される能力値はゲーム内の正式値ではありません。通常モードの確定値とは別に扱われます。",
+    ruExActive: "検証モード（実験的なブースター試算）が有効です。",
+    ruExDisable: "検証モードを解除",
+    ruExOpen: "実験的なブースター試算を開く（検証モード）",
+    ruExModalTitle: "検証モードを有効化しますか？",
+    ruExBullet1: "通常モードの最終値（確定値）は変わりません。試算値は別列（試算最終）に表示します。",
+    ruExBullet2: "検証中の付属ブースターと、手動で選んだ試算ブースターが試算へ加わります。",
+    ruExBullet3: "ページを再読み込みすると検証モードは OFF に戻ります。",
+    ruExBullet4: "共有URLやスカッド全体へは自動的に反映されません。",
+    ruExCancel: "キャンセル",
+    ruExAgree: "同意して有効化",
+    ruGrMax: "上限",
+    ruGrNextCost: "次の+1: {cost}pt",
+    ruGrConfirmed: "確認済",
+    ruGrStatsProvisional: "対象能力は検証中",
+    ruGrTargets: "対象: {stats}",
+    ruGrDecAria: "{name} のレベルを下げる",
+    ruGrIncAria: "{name} のレベルを上げる",
+    ruGrConsumed: "消費: {points}pt",
+    ruGrMaxReached: "上限到達",
+    ruGrMaxLevel: "上限 Lv{level}",
   },
 };
 

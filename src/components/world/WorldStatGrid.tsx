@@ -1,6 +1,9 @@
+"use client";
+
 import type { WorldStatValue, WorldStatGroup } from "@/lib/world/types";
-import { WORLD_STAT_GROUP_LABELS } from "@/lib/world/stats";
-import { statLabelJa } from "@/lib/world/stat-labels";
+import { abilityName } from "@/lib/progression/ability-editor-labels";
+import { useLocale, useT } from "@/lib/i18n/LocaleContext";
+import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { StatBadge } from "./StatBadge";
 
 /**
@@ -8,8 +11,16 @@ import { StatBadge } from "./StatBadge";
  * PC は 2〜3 列、モバイルは 1 列で折り返す。値は元の World 値（育成後・監督補正は含まない）。
  */
 const GROUP_ORDER: WorldStatGroup[] = ["offense", "defense", "physical", "gk"];
+const GROUP_LABEL_KEY: Record<WorldStatGroup, keyof Dictionary["abilityEditor"]> = {
+  offense: "groupOffense",
+  defense: "groupDefense",
+  physical: "groupPhysical",
+  gk: "groupGk",
+};
 
 export function WorldStatGrid({ stats }: { stats: WorldStatValue[] }) {
+  const t = useT();
+  const { locale } = useLocale();
   const byGroup = new Map<WorldStatGroup, WorldStatValue[]>();
   for (const s of stats) {
     const list = byGroup.get(s.group) ?? [];
@@ -25,7 +36,7 @@ export function WorldStatGrid({ stats }: { stats: WorldStatValue[] }) {
         return (
           <section key={group} className="rounded-md border border-border bg-surface-2/40 p-3">
             <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-text-dim">
-              {WORLD_STAT_GROUP_LABELS[group]}
+              {t("abilityEditor", GROUP_LABEL_KEY[group])}
             </h3>
             <dl className="flex flex-col gap-1">
               {list.map((s) => (
@@ -34,7 +45,7 @@ export function WorldStatGrid({ stats }: { stats: WorldStatValue[] }) {
                   className="flex items-center justify-between gap-2 rounded px-1.5 py-1 odd:bg-black/10"
                 >
                   <dt className="min-w-0 truncate text-sm text-text" title={s.nameEn}>
-                    {statLabelJa(s.key)}
+                    {abilityName(s.key, locale)}
                   </dt>
                   <dd className="shrink-0">
                     <StatBadge value={s.value} />

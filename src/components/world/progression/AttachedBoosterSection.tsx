@@ -6,65 +6,70 @@ import type {
   SelectedPlayerBooster,
   ConditionalBoosterSelection,
 } from "@/lib/progression/types";
-import { statListJa } from "@/lib/world/stat-labels";
+import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { useLocale, useT } from "@/lib/i18n/LocaleContext";
+import { abilityName } from "@/lib/progression/ability-editor-labels";
 import { Badge } from "@/components/ui/Badge";
 import { ConditionalBoosterControl } from "./ConditionalBoosterControl";
+import { localizeLibText } from "@/lib/progression/lib-text-en";
+
+type Tp = (k: keyof Dictionary["progressionTab"]) => string;
 
 /** 発動方式の証拠レベル → 短い日本語ラベル。 */
-function activationEvidenceLabel(ev: PlayerBoosterInfo["activationEvidence"]): string {
+function activationEvidenceLabel(ev: PlayerBoosterInfo["activationEvidence"], tp: Tp): string {
   switch (ev) {
     case "official_verified":
-      return "KONAMI 公式で明記";
+      return tp("boostActEvOfficial");
     case "screenshot_verified":
-      return "ユーザー提供の画面で確認";
+      return tp("boostActEvScreenshot");
     case "external_cross_verified":
-      return "外部2ソースで整合";
+      return tp("boostActEvExternal");
     case "conflicted":
-      return "証拠が矛盾";
+      return tp("boostActEvConflicted");
     case "unresolved":
-      return "未確認";
+      return tp("boostActEvUnresolved");
     default:
-      return "推定（状況証拠のみ）";
+      return tp("boostActEvInferred");
   }
 }
 
 /** 証拠レベル → 表示ラベル・色。「確認済み」の一語で参考画面の実測と外部照合を混同しない。 */
-function evidenceBadge(b: PlayerBoosterInfo): { text: string; tone: "success" | "info" | "warning" } {
+function evidenceBadge(b: PlayerBoosterInfo, tp: Tp): { text: string; tone: "success" | "info" | "warning" } {
   if (b.activationType === "power_of_many") {
-    return { text: "金色・可変（Game Plan 依存・未適用）", tone: "warning" };
+    return { text: tp("boostEvidencePom"), tone: "warning" };
   }
   switch (b.evidenceLevel) {
     case "game_client_verified":
     case "screenshot_verified":
-      return { text: "参考画面で実測確認", tone: "success" };
+      return { text: tp("boostEvidenceMeasured"), tone: "success" };
     case "external_cross_verified":
-      return { text: "外部照合済み（KONAMI 公式未確認）", tone: "info" };
+      return { text: tp("boostEvidenceExternal"), tone: "info" };
     case "conditional_unverified":
-      return { text: "編成条件付き・未適用", tone: "warning" };
+      return { text: tp("boostEvidenceConditional"), tone: "warning" };
     case "unresolved":
-      return { text: "未解決", tone: "warning" };
+      return { text: tp("boostEvidenceUnresolved"), tone: "warning" };
     default:
-      return { text: "効果検証中", tone: "warning" };
+      return { text: tp("boostEvidencePending"), tone: "warning" };
   }
 }
 
-function stageLabel(b: PlayerBoosterInfo): string {
+function stageLabel(b: PlayerBoosterInfo, tp: Tp): string {
   if (b.activationType === "power_of_many") {
-    return "★ 金色・Power of Many 方式（Game Plan の同一リーグ人数で効果量が変化）。自動判定不可のためユーザーが段階を手動指定。指定した効果名の対象能力へだけ「条件反映後値」に反映";
+    return tp("boostStagePom");
   }
   switch (b.evidenceLevel) {
     case "unresolved":
-      return "① 数値IDのみ取得（対応表に未収録）";
+      return tp("boostStageUnresolved");
     case "effect_provisional":
-      return "③ 名称・レベル確認済み／効果は公開1系統のみ（実験モードで試算）";
+      return tp("boostStageProvisional");
     case "conditional_unverified":
-      return "③ 名称・レベル・効果候補は確認済み／発動条件（編成の同一リーグ人数）は判明しているが静的画面で評価不可（実験モードで最大効果を試算）";
+      return tp("boostStageConditional");
     case "external_cross_verified":
-      return `④ 名称・レベル確認済み／効果は外部2ソースで整合（標準モードで通常値へ・KONAMI 公式実測ではない）${b.activationConfirmed === false ? "／発動方式は固定型と推定（Power of Many である具体的証拠なし・暫定適用）" : ""}`;
+      return `${tp("boostStageExternal")}${b.activationConfirmed === false ? tp("boostStageExternalProvisional") : ""}`;
     case "screenshot_verified":
-      return `⑤ 保存済みスクリーンショットで対象能力・上昇量を確認（厳密モードでも通常値へ）。KONAMI のゲームクライアント画面での確認ではありません${b.activationConfirmed === false ? "／発動方式は固定型と推定" : ""}`;
+      return `${tp("boostStageScreenshot")}${b.activationConfirmed === false ? tp("boostStageScreenshotProvisional") : ""}`;
     case "game_client_verified":
-      return "⑥ KONAMI のゲームクライアント画面で変化量を直接確認（厳密モードでも通常値へ）";
+      return tp("boostStageGameClient");
   }
 }
 
@@ -90,6 +95,9 @@ export function AttachedBoosterSection({
   /** B2 でスロットを上書き中の場合、この付属ブースターは計算に含めない（既存仕様・変更なし）。 */
   overriddenSlots?: Set<SelectedPlayerBooster["slot"]>;
 }) {
+  const t = useT();
+  const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
+  const { locale } = useLocale();
   const condBySel = new Map(conditionalSelections.map((c) => [c.boosterKey, c.selection]));
   function setConditional(boosterKey: string, sel: ConditionalBoosterSelection) {
     const rest = conditionalSelections.filter((c) => c.boosterKey !== boosterKey);
@@ -101,73 +109,83 @@ export function AttachedBoosterSection({
     <div>
       <p className="flex flex-wrap items-center gap-1.5 text-xs font-semibold text-text-dim">
         <Badge tone="neutral" size="xs">B1</Badge>
-        カード付属ブースター（カードに収録・自動）
+        {tp("boostAttachedHeading")}
       </p>
       {attached.length > 0 ? (
         <ul className="mt-1.5 flex flex-col gap-1.5 text-xs">
           {attached.map((b) => {
-            const eb = evidenceBadge(b);
+            const eb = evidenceBadge(b, tp);
+            const stage = stageLabel(b, tp);
             return (
               <li
                 key={b.slot}
                 className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded border border-border/60 bg-surface-2/30 px-2 py-1.5"
               >
-                <span className="rounded bg-surface-2 px-1.5 py-0.5 font-medium">スロット{b.slot}</span>
+                <span className="rounded bg-surface-2 px-1.5 py-0.5 font-medium">{tp("boostSlot").replace("{slot}", String(b.slot))}</span>
                 <span className="text-text-dim">ID {b.boosterId}</span>
                 {b.boosterNameEn ? (
                   <>
                     <span className="font-semibold">
-                      {b.boosterNameJa ? `${b.boosterNameJa}（${b.boosterNameEn}）` : b.boosterNameEn}
+                      {locale === "ja" && b.boosterNameJa
+                        ? tp("boostNameWithEn").replace("{ja}", b.boosterNameJa).replace("{en}", b.boosterNameEn)
+                        : b.boosterNameEn}
                       {b.level != null ? ` +${b.level}` : ""}
                     </span>
-                    <Badge tone="outline" size="xs">カード固有・変更不可</Badge>
+                    <Badge tone="outline" size="xs">{tp("boostCardFixed")}</Badge>
                     {b.activationType !== "power_of_many" && b.activationConfirmed === false ? (
-                      <Badge tone="warning" size="xs">固定型・推定</Badge>
+                      <Badge tone="warning" size="xs">{tp("boostFixedProvisional")}</Badge>
                     ) : null}
                     <Badge tone={eb.tone} size="xs">
                       {eb.text}
                     </Badge>
                     <Badge tone={b.autoApplied ? "success" : "outline"} size="xs">
-                      {b.autoApplied ? "現在モードで適用中" : "通常値へ未適用"}
+                      {b.autoApplied ? tp("boostAppliedInMode") : tp("boostNotAppliedNormal")}
                     </Badge>
                     <span className="w-full text-2xs text-text-muted">
-                      対象: {statListJa(b.affectedStats)}
-                      {b.level != null ? `（各 ${b.autoApplied ? "" : "候補 "}+${b.level}）` : ""}
+                      {tp("boostTargetsPrefix")}
+                      {b.affectedStats.map((k) => abilityName(k, locale)).join(" / ")}
+                      {b.level != null
+                        ? tp(b.autoApplied ? "boostEachLevel" : "boostEachCandidateLevel").replace("{level}", String(b.level))
+                        : ""}
                     </span>
                     <details className="w-full text-2xs text-text-muted">
-                      <summary className="cursor-pointer text-text-dim hover:text-text">詳細を見る（解決段階・発動方式・情報源）</summary>
+                      <summary className="cursor-pointer text-text-dim hover:text-text">{tp("boostDetailsSummary")}</summary>
                       <div className="mt-1 flex flex-col gap-1">
-                        <span>解決段階: {stageLabel(b)}</span>
+                        <span>{tp("boostStageLine").replace("{stage}", stage)}</span>
                         <span>
-                          発動方式:{" "}
-                          {b.activationType === "power_of_many"
-                            ? `Power of Many（金色・Game Plan 依存）／ 証拠: ${activationEvidenceLabel(b.activationEvidence)}`
-                            : b.activationConfirmed === false
-                              ? "固定と推定（青/金の判別材料は未確認・ScoreBar 差分だけでは区別不可）"
-                              : `固定（青色）／ 証拠: ${activationEvidenceLabel(b.activationEvidence)}`}
+                          {tp("boostActivationLine").replace(
+                            "{value}",
+                            b.activationType === "power_of_many"
+                              ? tp("boostActivationPom").replace("{evidence}", activationEvidenceLabel(b.activationEvidence, tp))
+                              : b.activationConfirmed === false
+                                ? tp("boostActivationFixedAssumed")
+                                : tp("boostActivationFixed").replace("{evidence}", activationEvidenceLabel(b.activationEvidence, tp)),
+                          )}
                         </span>
                         <span className="text-text-muted/80">
-                          情報源: eFootball World（外部コミュニティDB）の個別選手ページ表示
-                          {b.evidenceLevel === "external_cross_verified" ? " ＋ EFScout（外部DB）の定義（外部2ソースで整合）" : ""}
-                          {b.evidenceLevel === "screenshot_verified" || b.evidenceLevel === "game_client_verified" ? " ＋ 保存済みスクリーンショット" : ""}
+                          {tp("boostSourceWorld")}
+                          {b.evidenceLevel === "external_cross_verified" ? tp("boostSourceEfscout") : ""}
+                          {b.evidenceLevel === "screenshot_verified" || b.evidenceLevel === "game_client_verified" ? tp("boostSourceScreenshot") : ""}
                         </span>
                         {b.evidenceLevel === "screenshot_verified" ? (
                           <span className="text-text-muted/80">
-                            補足: 保存済みスクリーンショットで対象能力と上昇量を確認。KONAMI のゲームクライアント画面での確認ではありません。
+                            {tp("boostScreenshotNote")}
                           </span>
                         ) : null}
                       </div>
                     </details>
                     {b.evidenceLevel === "conditional_unverified" && b.conditionText ? (
                       <span className="block w-full rounded border border-warning/30 bg-warning/10 px-2 py-1 text-2xs text-warning">
-                        発動条件: {b.conditionText}
+                        {tp("boostConditionLine").replace("{text}", localizeLibText(b.conditionText, locale))}
                       </span>
                     ) : null}
                     {b.activationType === "power_of_many" ? (
                       <div className="w-full">
-                        <p className="mb-1 text-2xs font-semibold text-warning">条件付きブースター（Power of Many）</p>
+                        <p className="mb-1 text-2xs font-semibold text-warning">{tp("boostConditionalHeading")}</p>
                         <span className="block w-full rounded border border-warning/30 bg-warning/10 px-2 py-1 text-2xs text-warning">
-                          {b.boosterNameJa ?? b.boosterNameEn} は eFHUB 上で金色に表示される可変ブースターです。KONAMI 公式「The Power of Many」= Game Plan の同一リーグ登録人数で効果量が変化します。当アプリでは人数を自動確認できないため標準最終値へは自動適用せず、下でユーザーが段階（+0/+1/+2/+3）を指定します。指定は {b.boosterNameEn} の対象能力へだけ反映します。
+                          {tp("boostPomExplain")
+                            .replace("{name}", (locale === "ja" ? b.boosterNameJa : null) ?? b.boosterNameEn)
+                            .replace("{nameEn}", b.boosterNameEn)}
                         </span>
                       </div>
                     ) : null}
@@ -186,17 +204,18 @@ export function AttachedBoosterSection({
                       </div>
                     ) : null}
                     {overridden.has(b.slot) ? (
-                      <span className="w-full text-2xs text-info">※ 追加ブースター（B2）で上書き中（この付属ブースターは計算に含めていません）</span>
+                      <span className="w-full text-2xs text-info">{tp("boostOverriddenNote")}</span>
                     ) : null}
                   </>
                 ) : (
                   <>
                     <Badge tone="warning" size="xs">
-                      未解決・未適用
+                      {tp("boostUnresolvedNotApplied")}
                     </Badge>
-                    <span className="w-full text-2xs text-text-muted">解決段階: {stageLabel(b)}</span>
+                    <span className="w-full text-2xs text-text-muted">{tp("boostStageLine").replace("{stage}", stage)}</span>
                     <span className="w-full text-2xs text-text-muted">
-                      付属ブースターは未解決のため能力値へは適用していません。{b.unresolvedReason}
+                      {tp("boostUnresolvedNotAppliedNote")}
+                      {localizeLibText(b.unresolvedReason ?? "", locale)}
                     </span>
                   </>
                 )}
@@ -205,9 +224,9 @@ export function AttachedBoosterSection({
           })}
         </ul>
       ) : (
-        <p className="mt-1.5 text-xs text-text-dim">このカードに付属する選手ブースターはありません。</p>
+        <p className="mt-1.5 text-xs text-text-dim">{tp("boostNoAttachedPlayer")}</p>
       )}
-      {attachedNote ? <p className="mt-1.5 text-2xs text-text-muted">{attachedNote}</p> : null}
+      {attachedNote ? <p className="mt-1.5 text-2xs text-text-muted">{localizeLibText(attachedNote, locale)}</p> : null}
     </div>
   );
 }

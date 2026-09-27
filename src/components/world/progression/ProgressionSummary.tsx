@@ -18,7 +18,8 @@ import { AttachedBoosterSection } from "./AttachedBoosterSection";
 import { B2BoosterSelector } from "./B2BoosterSelector";
 import { CurrentManagerCard } from "@/components/managers/CurrentManagerCard";
 import { FavoriteButton } from "@/components/user-cards/FavoriteButton";
-import { useT } from "@/lib/i18n/LocaleContext";
+import { useLocale, useT } from "@/lib/i18n/LocaleContext";
+import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { MyTeamButton } from "@/components/user-cards/MyTeamButton";
 
 /**
@@ -58,8 +59,11 @@ export function ProgressionSummary({
   onOpenPicker: () => void;
   onClearManager: () => void;
 }) {
+  const t = useT();
+  const { locale } = useLocale();
+  const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
   const overriddenSlots = new Set(selectedBoosters.map((s) => s.slot));
-  const name = card.nameJa || card.nameEn || `カード ${card.worldCardId}`;
+  const name = resolvePlayerDisplayName(card, locale, tp("cardFallbackName").replace("{id}", card.worldCardId));
 
   return (
     <div className="rounded-lg border border-border-strong bg-surface p-3 sm:p-4">
@@ -73,11 +77,11 @@ export function ProgressionSummary({
             <span className="text-2xl font-black leading-none text-accent tabular-nums">
               {card.ovrMax ?? card.ovrBase ?? "–"}
             </span>
-            <span className="text-2xs font-semibold text-text-dim">最大 OVR</span>
-            <span className="text-2xs text-text-dim">Lv上限 {card.maximumLevel ?? "–"}</span>
+            <span className="text-2xs font-semibold text-text-dim">{tp("maxOvrLabel")}</span>
+            <span className="text-2xs text-text-dim">{tp("levelCap").replace("{level}", String(card.maximumLevel ?? "–"))}</span>
           </div>
           <h3 className="mt-1 truncate text-lg font-bold leading-tight">{name}</h3>
-          <p className="truncate text-xs text-text-dim">{card.nameEn || "（英語名なし）"}</p>
+          {locale === "ja" ? <p className="truncate text-xs text-text-dim">{card.nameEn || tp("noEnglishName")}</p> : null}
           <div className="mt-1.5 flex flex-wrap gap-1">
             {card.registeredPosition ? <Badge tone="neutral">{card.registeredPosition}</Badge> : null}
             {card.cardType ? <Badge tone="outline">{card.cardType}</Badge> : null}
@@ -95,7 +99,7 @@ export function ProgressionSummary({
       </div>
 
       <div className="mt-3">
-        <p className="mb-1.5 text-xs font-semibold text-text-dim">ブースター</p>
+        <p className="mb-1.5 text-xs font-semibold text-text-dim">{tp("boostersHeading")}</p>
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 lg:items-start">
           <AttachedBoosterSection
             attached={attached}
@@ -107,10 +111,10 @@ export function ProgressionSummary({
           <div>
             <p className="flex flex-wrap items-center gap-1.5 text-xs font-semibold text-text-dim">
               <Badge tone="neutral" size="xs">B2</Badge>
-              追加ブースター（B2・手動選択）
+              {tp("b2Heading")}
             </p>
             <p className="mt-0.5 text-2xs text-text-muted">
-              カード本来の付属ブースター（B1）ではなく、ユーザーが追加で選ぶブースターです。確認済みのB2ブースターを選ぶと、対象能力・通常の最終値・比較の順位・チーム集計へ即座に反映します。未確認のB2ブースター（試算・過去の選択のみ変更可）は「試算最終値」にのみ反映し、通常の最終値・比較の順位・チーム集計は変えません。
+              {tp("b2Note")}
             </p>
             <div className="mt-1.5">
               <B2BoosterSelector
@@ -125,7 +129,7 @@ export function ProgressionSummary({
       </div>
 
       <div className="mt-3">
-        <p className="mb-1.5 text-xs font-semibold text-text-dim">監督</p>
+        <p className="mb-1.5 text-xs font-semibold text-text-dim">{tp("managerHeading")}</p>
         <CurrentManagerCard
           manager={manager}
           detail={managerDetail}
@@ -160,7 +164,8 @@ export function ProgressionStickyBar({
   onUndoReset?: (() => void) | null;
 }) {
   const t = useT();
-  const name = card.nameJa || card.nameEn || `カード ${card.worldCardId}`;
+  const { locale } = useLocale();
+  const name = resolvePlayerDisplayName(card, locale, t("progressionTab", "cardFallbackName").replace("{id}", card.worldCardId));
   const low = points.remainingPoints <= 0 || (points.totalPoints > 0 && points.remainingPoints <= 2);
 
   return (
@@ -169,9 +174,9 @@ export function ProgressionStickyBar({
         <WorldCardImage sources={imageSources} alt={name} size="card" />
       </div>
       <span className="min-w-0 flex-1 truncate text-xs font-semibold">{name}</span>
-      <span className="shrink-0 text-2xs text-text-dim">最大OVR {card.ovrMax ?? "–"}</span>
+      <span className="shrink-0 text-2xs text-text-dim">{t("progressionTab", "maxOvrShort")} {card.ovrMax ?? "–"}</span>
       <span className="shrink-0 text-xs tabular-nums">
-        残り{" "}
+        {t("progressionTab", "remainingLabel")}{" "}
         <b className={points.remainingPoints < 0 ? "text-danger" : low ? "text-warning" : "text-accent"}>
           {points.remainingPoints}
         </b>

@@ -8,6 +8,43 @@ import {
   type AnalysisMetric,
 } from "@/lib/world/player-analysis";
 import { Badge } from "@/components/ui/Badge";
+import { useT } from "@/lib/i18n/LocaleContext";
+import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+
+type PTKey = keyof Dictionary["progressionTab"];
+
+/** 表示ラベル（lib 側の日本語ラベル）を安定キーから辞書キーへ引く。未知キーは lib のラベルをそのまま使う。 */
+const METRIC_LABEL_KEY: Record<string, PTKey> = {
+  legCoverageRadius: "anMetricLegCoverageRadius",
+  armCoverageRadius: "anMetricArmCoverageRadius",
+  jumpingHeight: "anMetricJumpingHeight",
+  torsoCollision: "anMetricTorsoCollision",
+  dribbleHeight: "anMetricDribbleHeight",
+};
+const MODEL_LABEL_KEY: Record<string, PTKey> = {
+  armLength: "anModelArmLength",
+  shoulderWidth: "anModelShoulderWidth",
+  neckLength: "anModelNeckLength",
+  chestMeasurement: "anModelChestMeasurement",
+  neckSize: "anModelNeckSize",
+  shoulderHeight: "anModelShoulderHeight",
+  legLength: "anModelLegLength",
+  thighSize: "anModelThighSize",
+  waistSize: "anModelWaistSize",
+  armSize: "anModelArmSize",
+  calfSize: "anModelCalfSize",
+};
+const TRAIT_LABEL_KEY: Record<string, PTKey> = {
+  preferredFoot: "anTraitPreferredFoot",
+  height: "anTraitHeight",
+  weight: "anTraitWeight",
+  age: "anTraitAge",
+  weakFootUsage: "anTraitWeakFootUsage",
+  weakFootAccuracy: "anTraitWeakFootAccuracy",
+  form: "anTraitForm",
+  conditionValue: "anTraitConditionValue",
+  injuryResistance: "anTraitInjuryResistance",
+};
 
 /**
  * 選手分析レール（育成画面の右カラム）。**選手固有分析**に整理:
@@ -47,14 +84,17 @@ const CELL_STYLE: Record<AnalysisPositionCell["kind"], string> = {
   partial: "border-warning/50 border-dashed bg-warning/5 text-text-dim",
   none: "border-border bg-surface-2/30 text-text-muted",
 };
-const CELL_TAG: Record<AnalysisPositionCell["kind"], string> = {
-  registered: "登録",
-  suitable: "適性",
-  partial: "部分",
-  none: "—",
+const CELL_TAG: Record<AnalysisPositionCell["kind"], PTKey | null> = {
+  registered: "anCellRegistered",
+  suitable: "anCellSuitable",
+  partial: "anCellPartial",
+  none: null,
 };
 
 function PositionGrid({ a }: { a: PlayerAnalysis["positions"] }) {
+  const t = useT();
+  const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
+  const withEfhub = a.confirmation === "suitability_only";
   return (
     <div className="space-y-2">
       <div className="grid grid-cols-3 gap-1.5">
@@ -67,35 +107,35 @@ function PositionGrid({ a }: { a: PlayerAnalysis["positions"] }) {
               className={`flex flex-col items-center rounded border px-1 py-1.5 text-center ${CELL_STYLE[cell.kind]}`}
             >
               <span className="text-xs font-bold">{cell.code}</span>
-              <span className="text-[9px] leading-tight">{CELL_TAG[cell.kind]}</span>
+              <span className="text-[9px] leading-tight">{CELL_TAG[cell.kind] ? tp(CELL_TAG[cell.kind]!) : "—"}</span>
             </div>
           ),
         )}
       </div>
       <p className="text-2xs text-text-dim">
-        登録: <b className="text-accent">{a.registered ?? "—"}</b>
-        {a.suitableCodes.length > 0 ? <> ／ 適性: {a.suitableCodes.join(" · ")}</> : null}
+        {tp("anRegisteredLabel")}<b className="text-accent">{a.registered ?? "—"}</b>
+        {a.suitableCodes.length > 0 ? <>{tp("anSuitableLabel")}{a.suitableCodes.join(" · ")}</> : null}
       </p>
-      <p className="text-2xs text-text-muted">総合値（ポジション別 OVR）: <b>—</b>（計算規則を確認中）</p>
+      <p className="text-2xs text-text-muted">{tp("anOvrByPosLabel")}<b>—</b>{tp("anOvrByPosPending")}</p>
       <details className="text-2xs text-text-muted">
-        <summary className="cursor-pointer">ポジション別 OVR と適性について</summary>
-        <p className="mt-1">{a.ovrNote}</p>
-        <p className="mt-1">{a.suitabilityNote}</p>
-        <p className="mt-1">情報源 — {a.source}</p>
+        <summary className="cursor-pointer">{tp("anOvrSummary")}</summary>
+        <p className="mt-1">{tp("anOvrNote")}</p>
+        <p className="mt-1">{tp(withEfhub ? "anSuitNoteEfhub" : "anSuitNoteNone")}</p>
+        <p className="mt-1">{tp("anSourcePrefix")}{tp(withEfhub ? "anSrcWithEfhub" : "anSrcWorldOnly")}</p>
         {a.familiarityRows.length > 0 ? (
           <table className="mt-1.5 w-full">
             <thead className="text-text-muted">
               <tr>
-                <th className="py-0.5 pr-2 text-left font-medium">ポジション</th>
-                <th className="py-0.5 pr-2 text-left font-medium">区分</th>
-                <th className="py-0.5 text-left font-medium">適性度 (生値)</th>
+                <th className="py-0.5 pr-2 text-left font-medium">{tp("anColPosition")}</th>
+                <th className="py-0.5 pr-2 text-left font-medium">{tp("anColCategory")}</th>
+                <th className="py-0.5 text-left font-medium">{tp("anColFamiliarity")}</th>
               </tr>
             </thead>
             <tbody className="text-text-dim">
               {a.familiarityRows.map((r) => (
                 <tr key={r.code} className="border-t border-border/40">
                   <td className="py-0.5 pr-2 font-semibold">{r.code}</td>
-                  <td className="py-0.5 pr-2">{r.isRegistered ? "登録" : "副ポジション"}</td>
+                  <td className="py-0.5 pr-2">{r.isRegistered ? tp("anRegistered") : tp("anSubPosition")}</td>
                   <td className="py-0.5 tabular-nums">{r.isRegistered ? "—" : (r.familiarity ?? "—")}</td>
                 </tr>
               ))}
@@ -108,11 +148,15 @@ function PositionGrid({ a }: { a: PlayerAnalysis["positions"] }) {
 }
 
 function MetricRow({ m }: { m: AnalysisMetric }) {
+  const t = useT();
+  const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
+  const labelKey = METRIC_LABEL_KEY[m.key];
+  const label = labelKey ? tp(labelKey) : m.label;
   if (m.value == null) {
     return (
       <div className="flex items-center justify-between gap-2 border-t border-border/40 py-1.5 text-xs first:border-t-0">
-        <span className="text-text-dim">{m.label}</span>
-        <span className="text-text-muted">ソース未収録</span>
+        <span className="text-text-dim">{label}</span>
+        <span className="text-text-muted">{tp("anNotInSource")}</span>
       </div>
     );
   }
@@ -121,37 +165,37 @@ function MetricRow({ m }: { m: AnalysisMetric }) {
   return (
     <div className="border-t border-border/40 py-2 text-xs first:border-t-0">
       <div className="flex items-baseline justify-between gap-2">
-        <span className="text-text-dim">{m.label}</span>
+        <span className="text-text-dim">{label}</span>
         <span className="text-sm font-bold tabular-nums">{m.value.toFixed(1)}</span>
       </div>
       {ov ? (
         <>
           <div className="mt-1 grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 text-[10px] text-text-muted">
-            <span>大きさ順位</span>
+            <span>{tp("anSizeRank")}</span>
             <span className="tabular-nums text-text-dim">
               {ov.rank.toLocaleString()} / {ov.total.toLocaleString()}
             </span>
             {m.positionRank ? (
               <>
-                <span>同ポジション</span>
+                <span>{tp("anSamePosition")}</span>
                 <span className="tabular-nums text-text-dim">
                   {m.positionRank.rank.toLocaleString()} / {m.positionRank.total.toLocaleString()}
                 </span>
               </>
             ) : null}
-            <span>パーセンタイル</span>
-            <span className="tabular-nums text-text-dim">{pctl}（100 に近いほど大）</span>
+            <span>{tp("anPercentile")}</span>
+            <span className="tabular-nums text-text-dim">{pctl}{tp("anPercentileHint")}</span>
           </div>
           <div
             className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-surface-2"
             role="img"
-            aria-label={`パーセンタイル ${pctl}`}
+            aria-label={tp("anPercentileAria").replace("{value}", String(pctl))}
           >
             <div className="h-full rounded-full bg-info/70" style={{ width: `${Math.max(2, pctl ?? 0)}%` }} />
           </div>
         </>
       ) : (
-        <p className="mt-0.5 text-[10px] text-text-muted">相対評価は準備中</p>
+        <p className="mt-0.5 text-[10px] text-text-muted">{tp("anRelativePending")}</p>
       )}
     </div>
   );
@@ -160,19 +204,21 @@ function MetricRow({ m }: { m: AnalysisMetric }) {
 const MODEL_PRIMARY = new Set(["armLength", "legLength", "shoulderWidth", "chestMeasurement", "thighSize"]);
 
 function ModelPanel({ a }: { a: PlayerAnalysis["model"] }) {
+  const t = useT();
+  const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
   const [all, setAll] = useState(false);
   const shown = all ? a.fields : a.fields.filter((f) => MODEL_PRIMARY.has(f.key));
   if (a.source === "none") {
-    return <p className="text-xs text-text-muted">{a.note}</p>;
+    return <p className="text-xs text-text-muted">{tp("anModelNoteNone")}</p>;
   }
   return (
     <div className="space-y-2">
       <dl className="grid grid-cols-2 gap-x-3 gap-y-1">
         {shown.map((f) => (
           <div key={f.key} className="flex items-baseline justify-between gap-2 text-xs">
-            <dt className="text-text-dim">{f.label}</dt>
+            <dt className="text-text-dim">{MODEL_LABEL_KEY[f.key] ? tp(MODEL_LABEL_KEY[f.key]) : f.label}</dt>
             <dd className={f.value == null ? "text-text-muted" : "font-bold tabular-nums"}>
-              {f.value == null ? "未収録" : f.value}
+              {f.value == null ? tp("anNotRecorded") : f.value}
             </dd>
           </div>
         ))}
@@ -183,10 +229,10 @@ function ModelPanel({ a }: { a: PlayerAnalysis["model"] }) {
         aria-expanded={all}
         className="min-h-[36px] rounded border border-border px-2 py-1 text-2xs text-text-dim hover:border-accent"
       >
-        {all ? "主要項目だけ表示" : `すべて表示（${a.fields.length} 項目）`}
+        {all ? tp("anShowPrimary") : tp("anShowAll").replace("{n}", String(a.fields.length))}
       </button>
       <p className="text-[10px] text-text-muted">
-        内部プレーヤーモデル値です。実寸の cm として確認された値ではありません。0 も実値です（未収録とは区別しています）。
+        {tp("anModelCaveat")}
       </p>
     </div>
   );
@@ -195,32 +241,36 @@ function ModelPanel({ a }: { a: PlayerAnalysis["model"] }) {
 const TRAIT_INTERNAL = new Set(["weakFootUsage", "weakFootAccuracy", "form", "conditionValue", "injuryResistance"]);
 
 function TraitsPanel({ a }: { a: PlayerAnalysis["traits"] }) {
-  const facts = a.fields.filter((t) => !TRAIT_INTERNAL.has(t.key));
-  const internal = a.fields.filter((t) => TRAIT_INTERNAL.has(t.key));
+  const t = useT();
+  const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
+  const traitLabel = (tr: PlayerAnalysis["traits"]["fields"][number]) =>
+    TRAIT_LABEL_KEY[tr.key] ? tp(TRAIT_LABEL_KEY[tr.key]) : tr.label;
+  const facts = a.fields.filter((tr) => !TRAIT_INTERNAL.has(tr.key));
+  const internal = a.fields.filter((tr) => TRAIT_INTERNAL.has(tr.key));
   return (
     <div className="space-y-2.5">
       <dl className="grid grid-cols-2 gap-x-3 gap-y-1">
-        {facts.map((t) => (
-          <div key={t.key} className="flex items-baseline justify-between gap-2 text-xs">
-            <dt className="text-text-dim">{t.label}</dt>
-            <dd className={t.confirmation === "missing" ? "text-text-muted" : "font-medium tabular-nums"}>
-              {t.confirmation === "missing" ? "未収録" : t.value}
+        {facts.map((tr) => (
+          <div key={tr.key} className="flex items-baseline justify-between gap-2 text-xs">
+            <dt className="text-text-dim">{traitLabel(tr)}</dt>
+            <dd className={tr.confirmation === "missing" ? "text-text-muted" : "font-medium tabular-nums"}>
+              {tr.confirmation === "missing" ? tp("anNotRecorded") : tr.value}
             </dd>
           </div>
         ))}
       </dl>
       <div>
-        <p className="mb-1 text-2xs font-semibold text-text-dim">内部特性値（段階の意味は追加検証中）</p>
+        <p className="mb-1 text-2xs font-semibold text-text-dim">{tp("anInternalTraitsHeading")}</p>
         <ul className="space-y-0.5">
-          {internal.map((t) => (
-            <li key={t.key} className="flex items-baseline justify-between gap-2 text-xs">
-              <span className="text-text-dim">{t.label}</span>
+          {internal.map((tr) => (
+            <li key={tr.key} className="flex items-baseline justify-between gap-2 text-xs">
+              <span className="text-text-dim">{traitLabel(tr)}</span>
               <span className="text-text-muted">
-                {t.confirmation === "missing" ? (
-                  "ソース未収録"
+                {tr.confirmation === "missing" ? (
+                  tp("anNotInSource")
                 ) : (
                   <>
-                    内部値 <b className="text-text-dim tabular-nums">{t.value}</b>
+                    {tp("anInternalValue")}<b className="text-text-dim tabular-nums">{tr.value}</b>
                   </>
                 )}
               </span>
@@ -228,7 +278,7 @@ function TraitsPanel({ a }: { a: PlayerAnalysis["traits"] }) {
           ))}
         </ul>
       </div>
-      <p className="text-[10px] text-text-muted">{a.note}</p>
+      <p className="text-[10px] text-text-muted">{tp("anTraitsNote")}</p>
     </div>
   );
 }
@@ -241,20 +291,22 @@ export function PlayerAnalysisRail({
   /** 「World データ」または「World + eFHUB 詳細」。 */
   scopeLabel: string;
 }) {
+  const t = useT();
+  const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
   const p = analysis.positions;
   return (
-    <aside aria-label="選手分析" className="flex flex-col gap-2.5">
+    <aside aria-label={tp("anAriaLabel")} className="flex flex-col gap-2.5">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold">選手分析（選手固有）</h3>
+        <h3 className="text-sm font-semibold">{tp("anHeading")}</h3>
         <span className="text-2xs text-text-muted">{scopeLabel}</span>
       </div>
 
       <Section
-        title="ポジション適性"
+        title={tp("anSecPositions")}
         defaultOpen
         status={
           <Badge tone={p.confirmation === "suitability_only" ? "info" : "warning"} size="xs">
-            {p.confirmation === "suitability_only" ? "適性のみ確認済み" : "適性未確認"}
+            {p.confirmation === "suitability_only" ? tp("anSuitOnly") : tp("anSuitUnconfirmed")}
           </Badge>
         }
       >
@@ -262,11 +314,16 @@ export function PlayerAnalysisRail({
       </Section>
 
       <Section
-        title="物理データ"
+        title={tp("anSecPhysical")}
         defaultOpen
         status={
           analysis.physical.hasRanks ? (
-            <span className="text-text-muted">順位集計時点の全 {analysis.physical.metrics[0]?.overallRank?.total.toLocaleString() ?? "?"} 件中</span>
+            <span className="text-text-muted">
+              {tp("anRankTotal").replace(
+                "{n}",
+                analysis.physical.metrics[0]?.overallRank?.total.toLocaleString() ?? "?",
+              )}
+            </span>
           ) : undefined
         }
       >
@@ -274,27 +331,31 @@ export function PlayerAnalysisRail({
           {analysis.physical.metrics.map((m) => (
             <MetricRow key={m.key} m={m} />
           ))}
-          <p className="mt-2 border-t border-border/40 pt-2 text-[10px] text-text-muted">{analysis.physical.note}</p>
+          <p className="mt-2 border-t border-border/40 pt-2 text-[10px] text-text-muted">
+            {tp(analysis.physical.hasRanks ? "anPhysNoteRanks" : "anPhysNoteNoRanks")}
+          </p>
         </div>
       </Section>
 
       <Section
-        title="プレーヤーモデル"
+        title={tp("anSecModel")}
         status={
           <span className="text-text-muted">
-            {analysis.model.source === "none" ? "未収録" : `${analysis.model.availableCount} / 11 項目`}
+            {analysis.model.source === "none"
+              ? tp("anNotRecorded")
+              : tp("anModelCount").replace("{n}", String(analysis.model.availableCount))}
           </span>
         }
       >
         <ModelPanel a={analysis.model} />
       </Section>
 
-      <Section title="その他特性">
+      <Section title={tp("anSecTraits")}>
         <TraitsPanel a={analysis.traits} />
       </Section>
 
       <p className="text-[10px] text-text-muted/80">
-        ポジション別・物理・モデル・特性の各値は表示用データです。育成計算・ブースター計算・監督補正には影響しません。
+        {tp("anFooter")}
       </p>
     </aside>
   );

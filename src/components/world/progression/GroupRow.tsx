@@ -2,6 +2,7 @@
 
 import type { ProgressionGroup } from "@/lib/progression/types";
 import { getStatDef } from "@/lib/world/stats";
+import { useT } from "@/lib/i18n/LocaleContext";
 
 /**
  * 能力値グループ1行（v2）: 名前 / カテゴリレベル / +・− / 次段階コスト / 消費ポイント / 対象能力値 / 上限。
@@ -16,11 +17,13 @@ export function GroupRow({
   disabled?: boolean;
   onAdjust: (groupId: string, delta: number) => void;
 }) {
+  const t = useT();
+  const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
   const statNames = group.affectedStats.map((k) => getStatDef(k)?.nameEn ?? k).join(" / ");
   const nextCostLabel =
     group.nextLevelCost == null
-      ? "上限"
-      : `次の+1: ${group.nextLevelCost}pt`;
+      ? tp("ruGrMax")
+      : tp("ruGrNextCost").replace("{cost}", String(group.nextLevelCost));
 
   return (
     <div className="rounded-md border border-border bg-surface-2/30 p-2.5">
@@ -29,19 +32,19 @@ export function GroupRow({
           <p className="truncate text-sm font-semibold">
             {group.nameEn}
             {group.statsConfidence === "confirmed" ? (
-              <span className="ml-1 align-top text-[9px] text-lime-300/80">確認済</span>
+              <span className="ml-1 align-top text-[9px] text-lime-300/80">{tp("ruGrConfirmed")}</span>
             ) : (
-              <span className="ml-1 align-top text-[9px] text-yellow-300/80">対象能力は検証中</span>
+              <span className="ml-1 align-top text-[9px] text-yellow-300/80">{tp("ruGrStatsProvisional")}</span>
             )}
           </p>
           <p className="truncate text-[10px] text-text-dim" title={statNames}>
-            対象: {statNames}
+            {tp("ruGrTargets").replace("{stats}", statNames)}
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
           <button
             type="button"
-            aria-label={`${group.nameEn} のレベルを下げる`}
+            aria-label={tp("ruGrDecAria").replace("{name}", group.nameEn)}
             disabled={disabled || group.allocatedPoints <= 0}
             onClick={() => onAdjust(group.groupId, -1)}
             className="h-8 w-8 rounded-md border border-border text-lg leading-none text-text disabled:cursor-not-allowed disabled:text-text-dim/40 hover:enabled:border-accent"
@@ -51,7 +54,7 @@ export function GroupRow({
           <span className="w-8 text-center text-sm font-bold tabular-nums">{group.allocatedPoints}</span>
           <button
             type="button"
-            aria-label={`${group.nameEn} のレベルを上げる`}
+            aria-label={tp("ruGrIncAria").replace("{name}", group.nameEn)}
             disabled={disabled || !group.canAddLevel}
             onClick={() => onAdjust(group.groupId, 1)}
             className="h-8 w-8 rounded-md border border-border text-lg leading-none text-text disabled:cursor-not-allowed disabled:text-text-dim/40 hover:enabled:border-accent"
@@ -61,9 +64,9 @@ export function GroupRow({
         </div>
       </div>
       <div className="mt-1 flex items-center justify-between text-[10px] text-text-dim">
-        <span>消費: {group.consumedProgressionPoints}pt</span>
+        <span>{tp("ruGrConsumed").replace("{points}", String(group.consumedProgressionPoints))}</span>
         <span className={group.canAddLevel ? "text-text" : "text-text-dim/60"}>{nextCostLabel}</span>
-        <span>{group.atMax ? "上限到達" : `上限 Lv${group.maximumAllocation}`}</span>
+        <span>{group.atMax ? tp("ruGrMaxReached") : tp("ruGrMaxLevel").replace("{level}", String(group.maximumAllocation))}</span>
       </div>
     </div>
   );
