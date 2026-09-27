@@ -186,10 +186,11 @@ export function validateBuildRename(raw: unknown): RenameValidation {
 }
 
 /** 複製時の既定名（{元名} のコピー / のコピー 2 …）。名前は主キーではないので衝突は許容だが見やすさ優先。 */
-export function nextDuplicateBuildName(sourceName: string, takenNames: Iterable<string>): string {
+/** suffix: 表示言語の「のコピー」（既定は日本語。英語画面は " copy"）。 */
+export function nextDuplicateBuildName(sourceName: string, takenNames: Iterable<string>, suffix = " のコピー"): string {
   const taken = new Set<string>();
   for (const n of takenNames) if (typeof n === "string") taken.add(n);
-  const base = `${sourceName} のコピー`.slice(0, 60);
+  const base = `${sourceName}${suffix}`.slice(0, 60);
   if (!taken.has(base)) return base;
   for (let i = 2; i < 1000; i++) {
     const n = `${base} ${i}`.slice(0, 60);

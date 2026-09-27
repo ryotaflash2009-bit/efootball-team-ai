@@ -87,6 +87,7 @@ import { Icon } from "@/components/ui/Icon";
 import type { BuildInventoryItem, BuildInventoryIssue } from "@/lib/progression/build-inventory";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { categoryName } from "@/lib/progression/ability-editor-labels";
+import { localizeBuildsText } from "@/lib/progression/builds-text-en";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -1563,7 +1564,11 @@ function IssueRow({
       <span className="text-text-muted">buildId {issue.buildId}</span>
       {src.kind === "squad-starter" || src.kind === "squad-bench" ? (
         <span className="text-text-muted">
-          {src.kind === "squad-starter" ? biv("starterAreaLabel") : biv("benchAreaLabel")}・{src.squadName}（{src.squadId}）・{src.slotLabel}
+          {src.kind === "squad-starter" ? biv("starterAreaLabel") : biv("benchAreaLabel")}
+          {locale === "ja" ? "・" : " · "}
+          <span data-user-content>{src.squadName}</span>
+          {locale === "ja" ? `（${src.squadId}）・` : ` (${src.squadId}) · `}
+          {localizeBuildsText(src.slotLabel, locale)}
         </span>
       ) : (
         <span className="text-text-muted">
@@ -1572,7 +1577,7 @@ function IssueRow({
             : fillBiv(biv("myTeamFavoriteSourceTemplate"), { teamCardId: String(src.teamCardId) })}
         </span>
       )}
-      <span className="w-full text-text-dim">{issue.description}</span>
+      <span className="w-full text-text-dim">{localizeBuildsText(issue.description, locale)}</span>
       <span className="flex w-full flex-wrap gap-1.5">
         {src.kind === "squad-starter" || src.kind === "squad-bench" ? (
           <Link

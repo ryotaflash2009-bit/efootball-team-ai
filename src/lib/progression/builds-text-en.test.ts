@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { localizeBuildsText } from "./builds-text-en";
+import { nextDuplicateBuildName } from "./my-builds";
 
 const FILES = ["my-builds.ts", "build-duplicate-review.ts", "build-inventory.ts", "build-intent-analysis.ts", "build-import.ts"];
 const JP = /[぀-ヿ一-龯]/;
@@ -47,5 +48,12 @@ describe("My Builds・ビルド分析の日本語（ライブラリ由来）の�
 
   it("日本語画面では元の文のまま", () => {
     expect(localizeBuildsText("現行規則", "ja")).toBe("現行規則");
+  });
+
+  it("複製名の接尾辞は表示言語に合わせる（既定は日本語・60文字以内・重複は番号）", () => {
+    expect(nextDuplicateBuildName("Build 1", [])).toBe("Build 1 のコピー");
+    expect(nextDuplicateBuildName("Build 1", [], " copy")).toBe("Build 1 copy");
+    expect(nextDuplicateBuildName("Build 1", ["Build 1 copy"], " copy")).toBe("Build 1 copy 2");
+    expect(nextDuplicateBuildName("x".repeat(60), [], " copy").length).toBe(60);
   });
 });

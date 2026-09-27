@@ -77,6 +77,7 @@ import { Select } from "@/components/ui/Field";
 import { Icon } from "@/components/ui/Icon";
 import { useOwnershipLabels, useUsageLabels } from "@/components/user-cards/UserCardTile";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
+import { localizeBuildsText } from "@/lib/progression/builds-text-en";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
@@ -106,6 +107,8 @@ export function MyBuildsView() {
   const tmb = (k: keyof Dictionary["myBuildsView"]) => t("myBuildsView", k);
   const fillMb = (s: string, vars: Record<string, string>) =>
     Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+  /** ライブラリが返す日本語のエラー → 表示言語（英語画面では英語）。 */
+  const lbt = <T extends string | null | undefined>(s: T): T => (s ? (localizeBuildsText(s, locale) as T) : s);
   const SORT_LABEL = useSortLabels();
   const cardFallbackName = (id: string) => fillMb(t("squadBuildPanel", "cardFallbackNameTemplate"), { id });
   const [builds, setBuilds] = useState<SavedBuild[]>([]);
@@ -211,9 +214,9 @@ export function MyBuildsView() {
   function handleRename(name: string): string | null {
     if (!renameTarget) return tmb("renameTargetMissing");
     const v = validateBuildRename(name);
-    if (!v.ok) return v.error;
+    if (!v.ok) return lbt(v.error);
     const r = renameBuild(renameTarget.worldCardId, renameTarget.buildId, v.name);
-    if (!r.ok) return r.error;
+    if (!r.ok) return lbt(r.error);
     setRenameTarget(null);
     reload();
     flash(fillMb(tmb("renamedNoticeTemplate"), { name: v.name }));
@@ -222,10 +225,10 @@ export function MyBuildsView() {
 
   function handleDuplicate(build: SavedBuild) {
     const sameCardNames = builds.filter((b) => b.worldCardId === build.worldCardId).map((b) => b.buildName);
-    const name = nextDuplicateBuildName(build.buildName, sameCardNames);
+    const name = nextDuplicateBuildName(build.buildName, sameCardNames, tmb("duplicateNameSuffix"));
     const r = duplicateBuild(build.worldCardId, build.buildId, name);
     if (!r.ok) {
-      flash(fillMb(tmb("duplicateFailedTemplate"), { error: r.error }));
+      flash(fillMb(tmb("duplicateFailedTemplate"), { error: lbt(r.error) }));
       return;
     }
     reload();
@@ -236,7 +239,7 @@ export function MyBuildsView() {
     if (!deleteTarget) return;
     const r = deleteBuild(deleteTarget.worldCardId, deleteTarget.buildId);
     if (!r.ok) {
-      flash(fillMb(tmb("deleteFailedTemplate"), { error: r.error ?? tmb("unknownError") }));
+      flash(fillMb(tmb("deleteFailedTemplate"), { error: lbt(r.error) ?? tmb("unknownError") }));
       setDeleteTarget(null);
       return;
     }
@@ -268,10 +271,10 @@ export function MyBuildsView() {
         // 別タブ更新の可能性 → ダイアログを閉じ、再読込を案内
         setRegisterTarget(null);
         setStaleMyTeam(true);
-        flashError(v.error);
+        flashError(lbt(v.error));
         return null;
       }
-      return v.error;
+      return lbt(v.error);
     }
 
     const r = addToMyTeam({
@@ -289,7 +292,7 @@ export function MyBuildsView() {
         flashError(tmb("alreadyRegisteredNotice"));
         return null;
       }
-      return fillMb(tmb("registerFailedTemplate"), { error: r.error });
+      return fillMb(tmb("registerFailedTemplate"), { error: lbt(r.error) });
     }
 
     let favoriteNote = "";
@@ -321,7 +324,7 @@ export function MyBuildsView() {
     });
     if (!v.ok) {
       setAssignTarget(null);
-      flashError(v.error);
+      flashError(lbt(v.error));
       return;
     }
     if (record && record.selectedBuildId === build.buildId) {
@@ -331,7 +334,7 @@ export function MyBuildsView() {
     }
     const r = updateMyTeamRecord(v.teamCardId, { selectedBuildId: build.buildId });
     if (!r.ok) {
-      flashError(fillMb(tmb("assignFailedTemplate"), { error: r.error ?? tmb("unknownError") }));
+      flashError(fillMb(tmb("assignFailedTemplate"), { error: lbt(r.error) ?? tmb("unknownError") }));
       return;
     }
     setAssignTarget(null);
@@ -349,7 +352,7 @@ export function MyBuildsView() {
     }
     const r = updateMyTeamRecord(record.teamCardId, { selectedBuildId: null });
     if (!r.ok) {
-      flashError(fillMb(tmb("clearSelectionFailedTemplate"), { error: r.error ?? tmb("unknownError") }));
+      flashError(fillMb(tmb("clearSelectionFailedTemplate"), { error: lbt(r.error) ?? tmb("unknownError") }));
       return;
     }
     setClearTarget(null);
@@ -368,7 +371,7 @@ export function MyBuildsView() {
     });
     if (!v.ok) {
       setFavoriteTarget(null);
-      flashError(v.error);
+      flashError(lbt(v.error));
       return;
     }
     if (record && record.favoriteBuildId === build.buildId) {
@@ -378,7 +381,7 @@ export function MyBuildsView() {
     }
     const r = updateMyTeamRecord(v.teamCardId, { favoriteBuildId: build.buildId });
     if (!r.ok) {
-      flashError(fillMb(tmb("setFavoriteFailedTemplate"), { error: r.error ?? tmb("unknownError") }));
+      flashError(fillMb(tmb("setFavoriteFailedTemplate"), { error: lbt(r.error) ?? tmb("unknownError") }));
       return;
     }
     setFavoriteTarget(null);
@@ -397,12 +400,12 @@ export function MyBuildsView() {
     });
     if (!v.ok) {
       setClearFavoriteTarget(null);
-      flashError(v.error);
+      flashError(lbt(v.error));
       return;
     }
     const r = updateMyTeamRecord(v.teamCardId, { favoriteBuildId: null });
     if (!r.ok) {
-      flashError(fillMb(tmb("clearFavoriteFailedTemplate"), { error: r.error ?? tmb("unknownError") }));
+      flashError(fillMb(tmb("clearFavoriteFailedTemplate"), { error: lbt(r.error) ?? tmb("unknownError") }));
       return;
     }
     setClearFavoriteTarget(null);

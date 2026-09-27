@@ -1126,6 +1126,7 @@ export interface Dictionary {
     sortPlayerAsc: string;
     renameTargetMissing: string;
     renamedNoticeTemplate: string;
+    duplicateNameSuffix: string;
     duplicateFailedTemplate: string;
     duplicatedNoticeTemplate: string;
     deleteFailedTemplate: string;
@@ -5262,6 +5263,7 @@ const ja: Dictionary = {
     sortPlayerAsc: "選手名順",
     renameTargetMissing: "対象のビルドが見つかりません",
     renamedNoticeTemplate: "ビルド名を「{name}」に変更しました。",
+    duplicateNameSuffix: " のコピー",
     duplicateFailedTemplate: "複製できませんでした: {error}",
     duplicatedNoticeTemplate: "「{name}」として複製しました。",
     deleteFailedTemplate: "削除できませんでした: {error}",
