@@ -13,6 +13,7 @@ import { classifySignInFailure } from "@/lib/supabase/auth-errors";
 import { resolveSafeInternalPath } from "@/lib/supabase/safe-redirect";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { isSignupOpen } from "@/lib/supabase/account-availability";
+import { authErrorMessageKey } from "@/lib/supabase/email-link";
 
 type AuthKey = keyof Dictionary["auth"];
 
@@ -25,7 +26,11 @@ export function SignInView() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(() => (searchParams.get("authError") ? ta("signInFailedMessage") : null));
+  const [errorMessage, setErrorMessage] = useState<string | null>(() => {
+    // 期限切れ・無効なリンク等の理由ごとに、次の行動が分かる一般化した文言にする（生のエラー文は出さない）。
+    const key = authErrorMessageKey(searchParams.get("authError"));
+    return key ? ta(key) : null;
+  });
 
   const supabase = getSupabaseBrowserClient();
   const nextPath = resolveSafeInternalPath(searchParams.get("next"), "/account");

@@ -10,6 +10,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useSupabaseSession } from "@/lib/supabase/use-auth-session";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { isSignupOpen } from "@/lib/supabase/account-availability";
+import { EmailChangeSection } from "@/components/auth/EmailChangeSection";
 
 type AuthKey = keyof Dictionary["auth"];
 
@@ -70,6 +71,8 @@ export function AccountView() {
               {signingOut ? ta("logoutProcessingMessage") : ta("logoutButton")}
             </Button>
           </Surface>
+
+          <EmailChangeSection />
 
           <Surface tone="inset" padding="md" className="flex flex-col gap-1.5">
             <p className="text-sm font-semibold text-text">{ta("accountCloudSyncNoticeTitle")}</p>

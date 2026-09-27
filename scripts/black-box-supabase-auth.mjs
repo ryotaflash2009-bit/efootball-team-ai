@@ -201,6 +201,86 @@ async function main() {
     record("[限定テスト] パスワード再設定にメール送信の限定テスト中の案内", !!(await evalJson(client, "!!document.querySelector('[data-testid=password-reset-limited]')")), "");
     await navigateAndSettle(client, `${BASE}/auth/sign-in`);
     record("[限定テスト] ログイン画面は新規作成が限定テスト中と案内する（登録できると誤解させない）", (await bodyText(client)).includes("限定テスト中"), "");
+    await navigateAndSettle(client, `${BASE}/auth/forgot-password`);
+    record("[限定テスト] パスワード再設定にサポートへ個人情報を送らない案内", !!(await evalJson(client, "!!document.querySelector('[data-testid=support-privacy-notice]')")), "");
+    // 本番のホスト名では ?signupPreview=1 が効かないことは account-availability.test.ts（isSignupPreviewAllowed）で保証する。
+    // ここでは localhost で効くこと（=開発時だけの確認用）を見る。
+    await navigateAndSettle(client, `${BASE}/auth/sign-up?signupPreview=1`);
+    record("[限定テスト] 開発環境（localhost）では ?signupPreview=1 でフォームを確認できる", (await evalJson(client, "document.querySelectorAll('input[type=password]').length")) === 2, "");
+
+    // ============================================================
+    // メールのリンク確認（/auth/confirm）: 押すまで検証しない・URL からトークンを消す・失敗の種類ごとの案内
+    // ============================================================
+    const FAKE_TOKEN_HASH = "efbtestdouble" + "0".repeat(40); // 明示的な偽値（実トークンではない）
+    const confirmCases = [
+      ["expired", "有効期限が切れているか", false],
+      ["invalid", "確認できませんでした", false],
+      ["rate_limited", "", true],
+      ["unavailable", "一時的に接続できません", true],
+      ["timeout", "一時的に接続できません", true],
+    ];
+    for (const [mode, expectText, retryable] of confirmCases) {
+      await navigateAndSettle(client, `${BASE}/auth/confirm?token_hash=${FAKE_TOKEN_HASH}&type=email`);
+      const urlAfterLoad = await evalJson(client, "location.href");
+      if (mode === "expired") {
+        record("[リンク確認] 読み込み直後に URL からトークンを消す（履歴・Referer へ残さない）", !urlAfterLoad.includes("token_hash"), urlAfterLoad.replace(BASE, ""));
+        record("[リンク確認] 押すまで検証しない（確認ボタンを表示し、ログイン状態にならない）", !!(await evalJson(client, "!!document.querySelector('[data-testid=confirm-button]:not([disabled])')")), "");
+        record("[リンク確認] Referrer-Policy no-referrer", (await evalJson(client, "document.querySelector('meta[name=referrer]')?.content ?? ''")) === "no-referrer", "");
+      }
+      await callInPage(
+        client,
+        function (m) {
+          window.__EFB_TEST_VERIFY_MODE__ = m;
+        },
+        mode,
+      );
+      await clickSelector(client, "[data-testid=confirm-button]");
+      await waitForCondition(async () => !!(await evalJson(client, "!!document.querySelector('[data-testid=confirm-error]')")), { timeoutMs: 4000, intervalMs: 100 });
+      const msg = await evalJson(client, "document.querySelector('[data-testid=confirm-error]')?.textContent ?? ''");
+      const okText = mode === "rate_limited" ? /時間|しばらく/.test(msg) : msg.includes(expectText);
+      record(`[リンク確認] ${mode}: 種類に合った案内を表示し、生のエラー文を出さない`, okText && !/test double|otp_expired|validation_failed|unexpected_failure/i.test(msg), msg.slice(0, 60));
+      const hasRetry = !!(await evalJson(client, "!!document.querySelector('[data-testid=confirm-retry]')"));
+      record(`[リンク確認] ${mode}: 再試行ボタンは一時的な失敗のときだけ`, hasRetry === retryable, `retry=${hasRetry}`);
+      record(`[リンク確認] ${mode}: ログインとパスワード再設定への導線がある`, !!(await evalJson(client, "!!document.querySelector('a[href=\"/auth/sign-in\"]') && !!document.querySelector('a[href=\"/auth/forgot-password\"]')")), "");
+    }
+    await navigateAndSettle(client, `${BASE}/auth/confirm?token_hash=${FAKE_TOKEN_HASH}&type=evil&next=https://evil.example`);
+    record("[リンク確認] 許可されていない種類は検証せず無効と表示する", !!(await evalJson(client, "!!document.querySelector('[data-testid=confirm-error]')")) && !(await evalJson(client, "!!document.querySelector('[data-testid=confirm-button]')")), "");
+    await navigateAndSettle(client, `${BASE}/auth/confirm?token_hash=${FAKE_TOKEN_HASH}&type=email&next=https://evil.example`);
+    await callInPage(
+      client,
+      function () {
+        window.__EFB_TEST_VERIFY_MODE__ = "success";
+      },
+    );
+    await clickSelector(client, "[data-testid=confirm-button]");
+    await waitForCondition(async () => (await evalJson(client, "location.pathname")) === "/account", { timeoutMs: 5000, intervalMs: 100 });
+    const confirmLanding = await evalJson(client, "location.href");
+    record("[リンク確認] 成功時は種類ごとの固定の内部パスへ（next の外部 URL を使わない）", confirmLanding === `${BASE}/account`, confirmLanding.replace(BASE, ""));
+    await navigateAndSettle(client, `${BASE}/auth/confirm?token_hash=${FAKE_TOKEN_HASH}&type=recovery`);
+    await callInPage(
+      client,
+      function () {
+        window.__EFB_TEST_VERIFY_MODE__ = "success";
+      },
+    );
+    await clickSelector(client, "[data-testid=confirm-button]");
+    await waitForCondition(async () => (await evalJson(client, "location.pathname")) === "/auth/update-password", { timeoutMs: 5000, intervalMs: 100 });
+    record("[リンク確認] パスワード再設定のリンクは新しいパスワードの設定画面へ", (await evalJson(client, "location.pathname")) === "/auth/update-password", "");
+
+    // コールバックへ付いたエラー（期限切れなど）は、生の説明文を出さずにログイン画面で案内する。
+    await navigateAndSettle(client, `${BASE}/auth/callback?error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired`);
+    const cbUrl = await evalJson(client, "location.href");
+    const cbBody = await bodyText(client);
+    record("[コールバック] error_code=otp_expired はログイン画面で期限切れを案内する", cbUrl.includes("/auth/sign-in") && cbBody.includes("有効期限"), cbUrl.replace(BASE, ""));
+    record("[コールバック] Supabase の生の説明文を表示しない", !cbBody.includes("Email link is invalid"), "");
+
+    // ============================================================
+    // メールアドレスの変更（配信確認まで利用不可）
+    // ============================================================
+    await navigateAndSettle(client, `${BASE}/account?__efbAuth=1`);
+    await waitForCondition(async () => !!(await evalJson(client, "!!document.querySelector('[data-testid=email-change-section]')")), { timeoutMs: 4000, intervalMs: 100 });
+    record("[メール変更] ログイン中のアカウント画面にメールアドレスの変更がある", !!(await evalJson(client, "!!document.querySelector('[data-testid=email-change-section]')")), "");
+    record("[メール変更] 配信確認までは利用できない案内を表示し、入力と送信を無効にする", !!(await evalJson(client, "!!document.querySelector('[data-testid=email-change-limited]') && document.querySelector('[data-testid=email-change-section] input').disabled && document.querySelector('[data-testid=email-change-section] button[type=submit]').disabled")), "");
 
     // ============================================================
     // サインアップ画面: フォーム表示・入力検証
@@ -405,7 +485,7 @@ async function main() {
 
     await navigateAndSettle(client, `${BASE}/auth/sign-in?authError=callback_failed`);
     const signInWithErrorBody = await bodyText(client);
-    record("[ログイン] コールバック失敗クエリで安全な一般化メッセージが表示される(生のエラー詳細を含まない)", signInWithErrorBody.includes("メールアドレスまたはパスワードが正しくありません"), "");
+    record("[ログイン] コールバック失敗クエリはリンクの確認失敗として案内する(パスワード誤りと誤解させない・生のエラー詳細を含まない)", signInWithErrorBody.includes("リンクを確認できませんでした") && !signInWithErrorBody.includes("メールアドレスまたはパスワードが正しくありません"), "");
 
     await navigateAndSettle(client, `${BASE}/auth/sign-in?next=https%3A%2F%2Fevil.example.com`);
     record("[セキュリティ] next=外部URLでも/auth/sign-inが正常表示される(遷移は起きない)", (await bodyText(client)).includes("ログイン"), "");
