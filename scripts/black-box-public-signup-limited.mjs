@@ -17,6 +17,7 @@ import { writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { launchIsolatedBrowser, openTab, closeTab, connectCDP, installSupabaseAuthTestDouble } from "./lib/headless-chrome.mjs";
+import { escapeMarkdownCell } from "../src/lib/testing/markdown-table.ts";
 
 const BASE = (process.env.BASE_URL ?? "http://localhost:3000").replace(/\/+$/, "");
 if (!/^(http:\/\/localhost:\d+|https:\/\/[a-z0-9.-]+)$/.test(BASE)) throw new Error("BASE_URL must be http://localhost:<port> or an https origin");
@@ -108,7 +109,7 @@ async function step(vp, locale, route, op, fn, { allow4xx = [] } = {}) {
   if (cap.warnings.length) problems.push(`console warning: ${cap.warnings[0]}`);
   if (cap.failed.length) problems.push(`network error: ${cap.failed[0]}`);
   if (cap.s5xx.length) problems.push(`5xx: ${cap.s5xx[0]}`);
-  const u4 = cap.s4xx.filter((s) => !allow4xx.some((re) => re.test(s)));
+  const u4 = cap.s4xx.filter((s) => !allow4xx.includes(s)); // 許可は完全一致（正規表現を組み立てない）
   if (u4.length) problems.push(`unexpected 4xx: ${u4[0]}`);
   if (cap.offOrigin.length) problems.push(`off-origin request: ${cap.offOrigin[0]}`);
   if (cap.writes.length) problems.push(`non-GET request: ${cap.writes[0]}`);
@@ -246,7 +247,7 @@ async function main() {
         await nav(route);
         if (!(await bodyText()).includes("ページが見つかりません")) throw new Error("not-found view missing");
         return { ok: true, detail: "404" };
-      }, { allow4xx: [new RegExp(`^404 Document ${route.replace(/\//g, "\\/")}$`)] });
+      }, { allow4xx: [`404 Document ${route}`] });
     }
   } finally {
     await closeTab(browser.port, tab.id).catch(() => {});
@@ -265,7 +266,7 @@ async function main() {
     "",
     "| 結果 | viewport | locale | route | 確認 | 詳細 |",
     "|---|---|---|---|---|---|",
-    ...results.map((r) => `| ${r.ok ? "PASS" : "FAIL"} | ${r.viewport} | ${r.locale} | ${r.route} | ${r.op} | ${String(r.detail).replace(/\|/g, "\\|")} |`),
+    ...results.map((r) => `| ${r.ok ? "PASS" : "FAIL"} | ${r.viewport} | ${r.locale} | ${r.route} | ${r.op} | ${escapeMarkdownCell(String(r.detail))} |`),
     "",
     `## 判定: ${results.length - failed.length}/${results.length} PASS${failed.length ? `（${failed.length} 件 FAIL）` : ""}`,
     "",
