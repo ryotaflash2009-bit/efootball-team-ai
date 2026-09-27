@@ -54,7 +54,7 @@
 | F-032 | ポジション適性（表示） | completed | 80% | F-002 | R | — | 不要 | 不要 | Free | player-analysis tests | — |
 | F-032b | ポジション別OVR | blocked | 10% | 計算規則の確認 | R | — | 不要 | 不要 | Free | 規則が未確認なので推測で算式を作らない | 規則サンプルの収集（本人またはデータ源） |
 | F-033 | 完全ゲームプラン（戦術・役割・指示） | completed（MVP：配置編集。個別指示は deferred） | 70% | F-024, F-003 | R | L | 不要 | 不要 | Free | 本人判断 2026-09-27：現在の配置編集を MVP 完成版とする | 個別指示は、公式または許諾済みの信頼できる仕様を確認できるまで deferred（推測で実装しない） |
-| F-034 | 能力値直接操作・スライド式育成UI（能力タップ→関連強調→下部パネルの＋／－・スライダー・配分チップ。eFHUB を UX の基準にし、素材はコピーしない） | completed（公開確認待ち） | 90% | F-028 | R | L | 不要 | 不要 | Free | `docs/product/f034-ability-direct-progression.md`、unit/DOM tests、ローカル black-box 8 viewport 309/309 | 公開確認 → verified。比較画面への展開・育成タブの英語化 |
+| F-034 | 能力値直接操作・スライド式育成UI（能力タップ→関連強調→下部パネルの＋／－・スライダー・配分チップ。eFHUB を UX の基準にし、素材はコピーしない） | verified | 100% | F-028 | R | L | 不要 | 不要 | Free | PR #80、`docs/production-readiness/evidence/f034-ability-direct-progression-2026-09-27.json`（公開 black-box 8 viewport 309/309） | 公開確認 → verified。比較画面への展開・育成タブの英語化 |
 
 ## 3. 診断と共有（Phase 3）
 

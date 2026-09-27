@@ -1,6 +1,6 @@
 # F-034 能力値直接操作・スライド式育成UI（Mobile Ability-Direct Slider Progression Editor）
 
-状態: completed（公開環境の確認後に verified）。Phase 2 の中核UI・高優先度（本人指定 2026-09-27）。
+状態: verified（PR #80、公開 black-box 8 viewport 309/309、2026-09-27）。Phase 2 の中核UI・高優先度（本人指定 2026-09-27）。
 
 ## 1. 本人の要望
 

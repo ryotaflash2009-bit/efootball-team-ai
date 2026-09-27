@@ -1,0 +1,47 @@
+{
+  "evidence": "F-034 ability-direct slider progression editor (public verification)",
+  "recordedAt": "2026-09-27",
+  "containsSecrets": false,
+  "containsRowDataOrRawHtml": false,
+  "pr": 80,
+  "mergeCommit": "1c8273f",
+  "unitAndDomTests": {
+    "controller": "src/lib/progression/ability-direct-editor.test.ts (25)",
+    "domRender": "src/components/world/progression/ability-editor/ability-editor-render.test.ts (7)",
+    "verify": "254 files / 4462 tests"
+  },
+  "publicFeatureBlackBox": {
+    "script": "scripts/black-box-ability-progression.mjs",
+    "viewports": 8,
+    "pass": 309,
+    "total": 309,
+    "input": "touch drag on mobile/tablet, mouse drag on desktop, keyboard on the slider",
+    "checks": [
+      "tap ability: aria-pressed, related (same category, both columns), unrelated dimmed but readable",
+      "panel inside viewport, all controls >= 44px",
+      "+ / keyboard (Arrow, Home, End) / drag with live preview; commit on release",
+      "non-linear cost: remaining = 62 - cumulative cost",
+      "no network request while dragging",
+      "point shortage stops at reachable max with reason and hatched range; + disabled",
+      "category max (MAX), minus / returned points, revert to selection level",
+      "Escape and re-tap clear the selection; allocation kept",
+      "last ability not hidden behind the panel",
+      "save with the existing save bar, reload, load restores allocation and values",
+      "English without Japanese; Japanese without internal keys",
+      "landscape: panel < 50% height, selected row visible, no overflow",
+      "back / forward, console error 0, warning 0, network error 0, 5xx 0, non-GET 0"
+    ],
+    "longTaskTotalMsPerViewport": 0,
+    "note": "tap-to-select figures in the report (~305 ms) include the script's fixed 270 ms waits and CDP round trips; they are not UI latency"
+  },
+  "fixedAlongTheWay": "player-detail save bar and compare column now reload saved builds when the storage scope resolves (saved builds were missing right after a reload)",
+  "productionImpact": "none (no schema, RLS, role, secret, environment or reference-data change; saving stays in the existing explicit save)",
+  "remaining": [
+    "existing parts of the progression tab (headings, top sticky bar, auto-allocation, category slider list, calculation details) are Japanese-only",
+    "apply the same editor to the compare screen (multi-column layout needs its own design)"
+  ],
+  "siteWideRegression": {
+    "local": "scripts/public-black-box-full.mjs against local next start: 563/568; 4 = known local-only manager-card navigation flake, 1 = transient upstream reference query 500; performance 14/14, security 18/18",
+    "public": "started after deploy; stopped by Claude Code at 44/44 PASS because the machine was critically low on memory; not restarted (re-run on request)"
+  }
+}
