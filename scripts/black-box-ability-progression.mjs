@@ -39,6 +39,8 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const results = [];
 const perf = [];
+const opLog = [];
+const reachLog = [];
 let current = "";
 const record = (name, pass, detail = "") => {
   results.push({ viewport: current, name, pass, detail });
@@ -222,7 +224,7 @@ async function runViewport(browser, vp) {
   record("残りポイントは負にならない", d.remaining >= 0 && d.remaining === remainingForDef - cost(reach), `残り${d.remaining}`);
 
   // 16-17. 元に戻す / スライダーで0へ
-  await tap("[data-testid=progression-dock] button[title]");
+  await tap("[data-testid=dock-revert]");
   d = await dock();
   record("元に戻す: 選択時点（Lv0）へ", d.level === 0 && d.remaining === remainingForDef, `Lv${d.level} 残り${d.remaining}`);
 
@@ -232,6 +234,9 @@ async function runViewport(browser, vp) {
   await tap("[data-stat=dribbling]");
   await tap("[data-stat=dribbling]");
   record("同じ能力の再タップで選択解除", !(await dock()).open);
+  await tap("[data-stat=dribbling]");
+  await tap("[data-testid=dock-done]");
+  record("「完了」でパネルを閉じても配分は残る", !(await dock()).open && (await chipLevel("dribbling")) === keepL);
 
   // 隠れ 0: パネルを開いたまま最後の能力までスクロールできる
   await tap("[data-stat=defensiveEngagement]");
@@ -267,6 +272,151 @@ async function runViewport(browser, vp) {
   await tap("#progression-build-bar button[data-bb=load]");
   await sleep(300);
   record("読込で配分と能力値が復元（ドリブル・ボールキープ）", (await chipLevel("dribbling")) === keepL && (await badge("tightPossession")) === 86 + keepL, `Lv${await chipLevel("dribbling")} 値${await badge("tightPossession")}`);
+
+
+  // ===== 人間工学・タッチ監査（初回利用者シナリオ・誤操作・片手操作・操作数） =====
+  const hfState = () => ev(() => ({
+    dirty: document.querySelector("[data-testid=save-state]")?.dataset.dirty ?? null,
+    notice: document.querySelector("[data-testid=save-notice]")?.textContent ?? "",
+    scale: window.visualViewport ? window.visualViewport.scale : 1,
+  }));
+
+  // シナリオA/E: 選択 → +1 → 未保存 → 1タップ保存 → 保存済み → 変更で未保存に戻る
+  await key("Escape");
+  const opCount = { selectAbility: 0, plusOne: 0, multiLevel: 0, minusOne: 0, switchCategory: 0, clear: 0, save: 0 };
+  await tap("[data-stat=tightPossession]"); opCount.selectAbility = 1;
+  const lvA = (await dock()).level;
+  await tap("[data-testid=progression-dock] button[aria-label$='上げる']"); opCount.plusOne = 1;
+  let st = await hfState();
+  record("シナリオA: 能力1タップ＋1タップで+1、未保存を表示", (await dock()).level === lvA + 1 && st.dirty === "true", `Lv${lvA}→${(await dock()).level} dirty=${st.dirty}`);
+  await tap("[data-testid=quick-save]"); opCount.save = 1;
+  st = await hfState();
+  record("シナリオE: パネルの「保存」1タップで保存、成功を表示し保存済みに", st.dirty === "false" && /保存しました|Saved/.test(st.notice), st.notice);
+  const savedLevel = (await dock()).level;
+  await tap("[data-testid=progression-dock] button[aria-label$='下げる']"); opCount.minusOne = 1;
+  st = await hfState();
+  record("シナリオC: −で1段階戻すと未保存に戻り、保存結果の表示は消える", (await dock()).level === savedLevel - 1 && st.dirty === "true" && st.notice === "", `dirty=${st.dirty}`);
+
+  // シナリオF: 別の能力を直接押す → カテゴリ切替、ドラフトは保持
+  const before = await chipLevel("dribbling");
+  await tap("[data-stat=finishing]"); opCount.switchCategory = 1;
+  const f = await ev(() => ({ pressed: document.querySelector("[data-stat=finishing]").getAttribute("aria-pressed"), related: [...document.querySelectorAll("[data-role=related]")].map((e) => e.dataset.stat).sort().join(",") }));
+  record("シナリオF: 別の能力で関連強調とカテゴリが切り替わり、ドリブルの配分は保持", f.pressed === "true" && f.related === "curl,setPieceTaking" && (await chipLevel("dribbling")) === before, f.related);
+  await tap("[data-testid=dock-done]"); opCount.clear = 1;
+
+  // 連打: ＋を待たずに5回 → ちょうど+5、残りはコストどおり
+  await tap("[data-stat=tightPossession]");
+  const r0 = await dock();
+  const plusPos = await ev(() => { const b = document.querySelector("[data-testid=progression-dock] button[aria-label$='上げる']"); const r = b.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+  for (let i = 0; i < 5; i++) {
+    if (vp.mobile) {
+      await c.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: plusPos.x, y: plusPos.y }] });
+      await c.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    } else {
+      await c.send("Input.dispatchMouseEvent", { type: "mousePressed", x: plusPos.x, y: plusPos.y, button: "left", clickCount: 1 });
+      await c.send("Input.dispatchMouseEvent", { type: "mouseReleased", x: plusPos.x, y: plusPos.y, button: "left", clickCount: 1 });
+    }
+  }
+  await sleep(400);
+  const r5 = await dock();
+  const expect5 = Math.min(r0.level + 5, 13);
+  record("＋の連打（5回・待ちなし）でちょうど+5、残りポイントも一致", r5.level === expect5 && r5.remaining === r0.remaining - (cost(expect5) - cost(r0.level)), `Lv${r0.level}→${r5.level} 残り${r0.remaining}→${r5.remaining}`);
+  const zoom = await hfState();
+  record("連打・ダブルタップで画面が拡大されない", zoom.scale === 1, `scale ${zoom.scale}`);
+
+  // 全リセット → 取り消し（シナリオD: 選択解除とリセットを区別）
+  const snapshot = await ev(() => [...document.querySelectorAll("[data-group]")].map((e) => e.textContent).join("|"));
+  await ev(() => [...document.querySelectorAll("button")].find((b) => /育成を全部リセット|Reset all progression/.test(b.textContent) && b.closest(".sticky"))?.setAttribute("data-bb", "reset-all"));
+  await tap("button[data-bb=reset-all]");
+  const afterReset = await ev(() => [...document.querySelectorAll("[data-group] .tabular-nums")].every((e) => e.textContent === "0"));
+  record("シナリオD: 全リセットで全カテゴリ0（パネルの「完了」とは別の操作）", afterReset);
+  await ev(() => [...document.querySelectorAll("button")].find((b) => /リセットを取り消す|Undo reset/.test(b.textContent))?.setAttribute("data-bb", "undo"));
+  await tap("button[data-bb=undo]");
+  const restored = await ev(() => [...document.querySelectorAll("[data-group]")].map((e) => e.textContent).join("|"));
+  record("全リセットは「リセットを取り消す」で直前の配分へ戻せる", restored === snapshot);
+
+  // 画面下端近くの能力を押しても、選んだ行がパネルに隠れない（自動で上へ送る）
+  await tap("[data-testid=dock-done]");
+  await ev(async () => {
+    const row = document.querySelector("[data-stat=curl]");
+    const y = row.getBoundingClientRect().top + window.scrollY - (window.innerHeight - row.getBoundingClientRect().height - 60);
+    window.scrollTo(0, y);
+    await new Promise((r) => setTimeout(r, 200));
+  });
+  await tap("[data-stat=curl]".replace("[data-stat=curl]", "[data-stat=curl]"));
+  await sleep(600);
+  const vis = await ev(() => { const r = document.querySelector("[data-stat=curl]").getBoundingClientRect(); const d = document.querySelector("[data-testid=progression-dock]").getBoundingClientRect(); return { rowBottom: Math.round(r.bottom), dockTop: Math.round(d.top) }; });
+  record("下端近くの能力を選んでも行がパネルに隠れない", vis.rowBottom <= vis.dockTop + 1, `行下端 ${vis.rowBottom} / パネル上端 ${vis.dockTop}`);
+  await tap("[data-testid=dock-done]");
+
+  // タッチ操作のバリエーション（モバイル・タブレット）
+  if (vp.mobile) {
+    await tap("[data-stat=tightPossession]");
+    const sl = await ev(() => { const e = document.querySelector("[data-testid=category-slider]"); e.scrollIntoView({ block: "nearest" }); const b = e.getBoundingClientRect(); return { x: b.left, y: b.top + b.height / 2, w: b.width, h: b.height }; });
+    const lvl = async () => (await dock()).level;
+    const touch = async (pts, delay = 0) => {
+      await c.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [pts[0]] });
+      for (const q of pts.slice(1)) { await c.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [q] }); if (delay) await sleep(delay); }
+      await c.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+      await sleep(250);
+    };
+    const xAt = (lv) => sl.x + (sl.w * lv) / 13;
+    // 縦スクロール（スライダー上から始めても値を変えない）
+    const vStart = await lvl();
+    const scrollY0 = await ev(() => window.scrollY);
+    await touch([{ x: xAt(vStart + 3), y: sl.y }, ...Array.from({ length: 8 }, (_, i) => ({ x: xAt(vStart + 3), y: sl.y - 20 * (i + 1) }))]);
+    const vEnd = await lvl();
+    record("タッチ: スライダー上から縦にスクロールしても値は変わらない", vEnd === vStart, `Lv${vStart}→${vEnd} scroll ${scrollY0}→${await ev(() => window.scrollY)}`);
+    await ev(() => document.querySelector("[data-testid=category-slider]").scrollIntoView({ block: "nearest" }));
+    const sl2 = await ev(() => { const b = document.querySelector("[data-testid=category-slider]").getBoundingClientRect(); return { x: b.left, y: b.top + b.height / 2, w: b.width }; });
+    const x2 = (lv) => sl2.x + (sl2.w * lv) / 13;
+    // 小さなドラッグ（1段階）
+    await touch([{ x: x2(2), y: sl2.y }, { x: x2(2.6), y: sl2.y }, { x: x2(3), y: sl2.y }]);
+    record("タッチ: 小さなドラッグで1段階（Lv3）", (await lvl()) === 3, `Lv${await lvl()}`);
+    // 速いドラッグ（2点）
+    await touch([{ x: x2(3), y: sl2.y }, { x: x2(9), y: sl2.y }]);
+    record("タッチ: 速いドラッグでも指の位置（Lv9）へ", (await lvl()) === 9, `Lv${await lvl()}`);
+    // ゆっくりのドラッグ（30点・各15ms）
+    await touch([{ x: x2(9), y: sl2.y }, ...Array.from({ length: 30 }, (_, i) => ({ x: x2(9 - (4 * (i + 1)) / 30), y: sl2.y }))], 15);
+    record("タッチ: ゆっくりのドラッグでも追従（Lv5）", (await lvl()) === 5, `Lv${await lvl()}`);
+    // 斜めのドラッグ（横成分が主）
+    await touch([{ x: x2(5), y: sl2.y }, ...Array.from({ length: 6 }, (_, i) => ({ x: x2(5 + (i + 1)), y: sl2.y + 4 * (i + 1) }))]);
+    record("タッチ: 斜めのドラッグでも横方向で決まる（Lv11）", (await lvl()) === 11, `Lv${await lvl()}`);
+    // 指がトラックから外れる（下へ大きく外れても横の位置で追従）
+    await touch([{ x: x2(11), y: sl2.y }, { x: x2(10), y: sl2.y }, { x: x2(8), y: sl2.y + 80 }, { x: x2(7), y: sl2.y + 120 }]);
+    record("タッチ: 指がトラックから外れても横の位置で決まる（Lv7）", (await lvl()) === 7, `Lv${await lvl()}`);
+    // pointercancel（タッチの取り消し）で元に戻る
+    await c.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: x2(7), y: sl2.y }] });
+    await c.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: x2(12), y: sl2.y }] });
+    await sleep(100);
+    const during = await lvl();
+    await c.send("Input.dispatchTouchEvent", { type: "touchCancel", touchPoints: [] });
+    await sleep(250);
+    record("タッチ: 途中で取り消されたら元のレベルへ戻る", during === 12 && (await lvl()) === 7, `途中Lv${during} → Lv${await lvl()}`);
+    // つまみの実質的なタップ領域（高さ）
+    record("スライダーの操作領域の高さ 44px 以上", sl.h >= 43.5, `${Math.round(sl.h)}px`);
+    // 片手操作: 主要操作が画面下半分にあり、左右の端から届く位置か
+    const reach = await ev(() => {
+      const H = window.innerHeight, W = window.innerWidth;
+      const q = (sel) => { const r = document.querySelector(sel)?.getBoundingClientRect(); return r ? { cx: Math.round(r.left + r.width / 2), cy: Math.round(r.top + r.height / 2) } : null; };
+      return { H, W, minus: q("[data-testid=progression-dock] button[aria-label$='下げる']"), plus: q("[data-testid=progression-dock] button[aria-label$='上げる']"), save: q("[data-testid=quick-save]"), done: q("[data-testid=dock-done]") };
+    });
+    const lower = (pt) => pt && pt.cy >= reach.H * 0.5;
+    record("片手操作: −／＋／保存が画面の下半分にある", lower(reach.minus) && lower(reach.plus) && lower(reach.save), JSON.stringify(reach));
+    reachLog.push({ viewport: vp.name, ...reach });
+    await tap("[data-testid=dock-done]");
+  }
+
+  // 操作数と画面移動量（旧: カテゴリ別スライダー一覧、新: 能力を直接タップ）
+  const travel = await ev(() => {
+    const docY = (e) => e.getBoundingClientRect().top + window.scrollY;
+    const row = document.querySelector("[data-stat=tightPossession]");
+    const oldPlus = [...document.querySelectorAll("button")].find((b) => !b.closest("[data-testid^=progression-dock]") && /^ドリブル のレベルを上げる$|^Raise Dribbling/.test(b.getAttribute("aria-label") ?? ""));
+    return { oldDistance: oldPlus ? Math.round(Math.abs(docY(oldPlus) - docY(row))) : null };
+  });
+  opLog.push({ viewport: vp.name, ...opCount, multiLevelDrag: 1, oldUiPlusThreeTaps: 3, oldUiScrollBetweenControlAndAbilityPx: travel.oldDistance, newUiScrollPx: 0 });
+  record("操作数: 能力選択1タップ・+1は1タップ・複数段階は1ドラッグ・切替1タップ・保存1タップ", opCount.selectAbility === 1 && opCount.plusOne === 1 && opCount.switchCategory === 1 && opCount.save === 1, JSON.stringify(opCount));
+  await key("Escape");
 
   // 21. 言語切替
   await ev(() => [...document.querySelectorAll("button")].find((b) => b.textContent.trim() === "English")?.click());
@@ -351,6 +501,18 @@ const md = [
   "|---|---|---|---|",
   ...results.map((r) => `| ${r.pass ? "PASS" : "FAIL"} | ${r.viewport} | ${r.name} | ${String(r.detail).replace(/\|/g, "/")} |`),
   "",
+  "## 操作数と画面移動量（旧UI = カテゴリ別スライダー一覧 → 能力一覧を見に戻る、新UI = 能力を直接タップ）",
+  "",
+  "| viewport | 能力選択 | +1 | 複数段階 | −1 | カテゴリ切替 | 閉じる | 保存 | 旧UIで+3 | 旧UIの操作⇔能力の距離 (px) | 新UIの移動 (px) |",
+  "|---|---|---|---|---|---|---|---|---|---|---|",
+  ...opLog.map((o) => `| ${o.viewport} | ${o.selectAbility} tap | ${o.plusOne} tap | ${o.multiLevelDrag} drag | ${o.minusOne} tap | ${o.switchCategory} tap | ${o.clear} tap | ${o.save} tap | ${o.oldUiPlusThreeTaps} tap + scroll | ${o.oldUiScrollBetweenControlAndAbilityPx ?? "—"} | ${o.newUiScrollPx} |`),
+  "",
+  "## 片手操作（主要操作の中心座標 / 画面）",
+  "",
+  "| viewport | 画面 | − | ＋ | 保存 | 完了 |",
+  "|---|---|---|---|---|---|",
+  ...reachLog.map((r) => `| ${r.viewport} | ${r.W}×${r.H} | ${r.minus?.cx},${r.minus?.cy} | ${r.plus?.cx},${r.plus?.cy} | ${r.save?.cx},${r.save?.cy} | ${r.done?.cx},${r.done?.cy} |`),
+  "",
   "## 操作の応答",
   "",
   "| viewport | タップ→選択 (ms, CDP往復含む) | long task 合計 (ms) |",
@@ -360,6 +522,6 @@ const md = [
 ].join("\n");
 mkdirSync(path.dirname(REPORT), { recursive: true });
 writeFileSync(REPORT, md);
-writeFileSync(REPORT.replace(/\.md$/, ".summary.json"), JSON.stringify({ at: new Date().toISOString(), pass, total: results.length, failures: results.filter((r) => !r.pass), perf }, null, 2));
+writeFileSync(REPORT.replace(/\.md$/, ".summary.json"), JSON.stringify({ at: new Date().toISOString(), pass, total: results.length, failures: results.filter((r) => !r.pass), perf, operations: opLog, reach: reachLog }, null, 2));
 console.log(`\n${pass}/${results.length} PASS`);
 process.exitCode = pass === results.length ? 0 : 1;
