@@ -215,6 +215,15 @@ async function main() {
     });
 
     synthetic = true;
+    // F-073 用: 実際の UI（My Team に追加 → 追加）で1枚だけ登録する（この隔離ブラウザーの localStorage だけ）。
+    await step(vp0, "ja", detail, "seed My Team through the add dialog", async () => {
+      await nav(detail);
+      if (!(await clickText("button", "My Team に追加"))) throw new Error("add button not found");
+      await waitFor(() => has("[role=dialog]"), 5000, "dialog");
+      await ev(`(() => { const b = [...document.querySelectorAll('[role=dialog] button')]; b[b.length - 1].click(); })()`);
+      await waitFor(async () => (await bodyText()).includes("My Team 登録済み"), 5000, "registered");
+      return { ok: true, detail: "1 card" };
+    });
     for (const vp of VIEWPORTS) {
       await client.send("Emulation.setDeviceMetricsOverride", { width: vp.width, height: vp.height, deviceScaleFactor: vp.deviceScaleFactor, mobile: vp.mobile });
       for (const locale of ["ja", "en"]) {
@@ -281,6 +290,18 @@ async function main() {
           // 見本: 段階 A 以上は counterAttack 89 S・pressResistance 82 A・dribblePossession 75 A → 称号 1 + バッジ 2（点数順）。
           return { ok: primaryId === "counterAttack" && badgeIds === "pressResistance,dribblePossession", detail: `primary=${primaryId}, badges=${badgeIds}` };
         });
+
+        // F-073: My Team（この隔離ブラウザーの中だけ）に登録した選手が「あなたの一番」に出る。
+        await step(vp, locale, "/my-team", "F-073 your best (loads only when opened)", async () => {
+          await nav("/my-team");
+          await waitFor(() => has("[data-testid=your-best]"), 10000, "panel");
+          const listBefore = await has("[data-testid=your-best-list]");
+          await ev(`document.querySelector('[data-testid=your-best] summary').click()`);
+          await waitFor(async () => (await count("[data-testid=your-best-list] li")) > 0, 15000, "entries");
+          const rows = await count("[data-testid=your-best-list] li");
+          const links = await count(`[data-testid=your-best-list] a[href="/players/world/${field.worldCardId}"]`);
+          return { ok: !listBefore && rows > 0 && links === rows, detail: `rows=${rows}` };
+        });
       }
     }
     await nav("/");
@@ -293,7 +314,7 @@ async function main() {
 
   const failed = results.filter((r) => !r.ok);
   const L = [
-    "# F-071 基礎能力値のパーセンタイル・F-072 称号 ブラックボックス",
+    "# F-071 基礎能力値のパーセンタイル・F-072 称号・F-073 あなたの一番 ブラックボックス",
     "",
     `実行日時: ${new Date().toISOString()}`,
     `対象: ${IS_LOCAL ? "localhost（Production Build）" : "公開サイト"}  viewport: ${VIEWPORTS.length}  locale: ja, en  実際の成果物の状態: ${actual.status}`,
