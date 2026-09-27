@@ -42,6 +42,7 @@ export function CompareTrainingPanel({
   onReset,
   onCategoryTouch,
   onOpenSaveDialog,
+  onOpenAbilityEditor,
 }: {
   name: string;
   isGk: boolean;
@@ -57,6 +58,8 @@ export function CompareTrainingPanel({
   onCategoryTouch?: (groupId: string) => void;
   /** 「この育成を保存」（比較コックピットのみ）。未指定なら非表示。 */
   onOpenSaveDialog?: () => void;
+  /** 「能力から育成」（能力値直接操作UIを全画面で開く）。未指定なら非表示。 */
+  onOpenAbilityEditor?: () => void;
 }) {
   const [open, setOpen] = useState(embedded);
   const [announce, setAnnounce] = useState("");
@@ -85,6 +88,19 @@ export function CompareTrainingPanel({
     <div className={`flex flex-col gap-2 ${embedded ? "" : "mt-1.5"}`}>
       {!canProgress ? (
         <p className="text-[10px] text-text-dim">{ttp("cannotProgressNote")}</p>
+      ) : null}
+
+      {onOpenAbilityEditor ? (
+        <button
+          type="button"
+          onClick={onOpenAbilityEditor}
+          disabled={!canProgress}
+          aria-label={t("progressionTab", "cmpOpenEditorAria").replace("{name}", name)}
+          data-testid="compare-open-ability-editor"
+          className="min-h-[44px] w-full rounded-md border border-accent/70 bg-accent/15 px-3 text-sm font-bold text-accent hover:bg-accent/25 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {t("progressionTab", "cmpOpenEditor")}
+        </button>
       ) : null}
 
       <div className="flex flex-wrap gap-1">
@@ -144,7 +160,7 @@ export function CompareTrainingPanel({
         <details open={isGk} className="rounded border border-border bg-surface-2/20">
           <summary className="flex min-h-[32px] cursor-pointer items-center justify-between gap-2 px-2 py-1 text-[11px] font-semibold">
             <span>{ttp("gkHeading")}</span>
-            <span className="shrink-0 text-[9px] font-normal text-text-dim">
+            <span className="min-w-0 text-right text-[9px] font-normal text-text-dim">
               {fillTp(ttp("gkLevelLabelTemplate"), { level: String(gkLevel) })}
               {isGk ? ttp("gkExpandedSuffix") : ttp("gkCollapsedSuffix")}
             </span>

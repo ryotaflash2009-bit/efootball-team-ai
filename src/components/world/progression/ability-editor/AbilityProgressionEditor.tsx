@@ -11,6 +11,7 @@ import {
   editorReducer,
   groupSliderModel,
   nextCostAtLevel,
+  type AbilityFocus,
 } from "@/lib/progression/ability-direct-editor";
 import { abilityName, categoryName } from "@/lib/progression/ability-editor-labels";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
@@ -38,6 +39,7 @@ export function AbilityProgressionEditor({
   onGoToSave,
   onQuickSave,
   onPreviewPoints,
+  onFocusChange,
 }: {
   card: ProgressionCard;
   allocation: Record<string, number>;
@@ -53,6 +55,8 @@ export function AbilityProgressionEditor({
   onQuickSave: () => { ok: boolean; message: string };
   /** ドラッグ中のプレビューのポイント（ドラッグしていなければ null）。上部バーの表示を揃えるため。 */
   onPreviewPoints?: (points: PointsSummary | null) => void;
+  /** 選択中の能力・カテゴリが変わったとき（比較画面で他の選手の値を並べるため）。 */
+  onFocusChange?: (focus: AbilityFocus | null) => void;
 }) {
   const t = useT();
   const { locale } = useLocale();
@@ -80,6 +84,10 @@ export function AbilityProgressionEditor({
   useEffect(() => {
     onPreviewPoints?.(previewResult ? previewResult.points : null);
   }, [previewResult, onPreviewPoints]);
+
+  useEffect(() => {
+    onFocusChange?.(focus);
+  }, [focus, onFocusChange]);
 
   // 変更したら保存結果の表示を消す（保存前と保存後を混同しない）。
   const committedKey = JSON.stringify(allocation);
@@ -121,7 +129,12 @@ export function AbilityProgressionEditor({
       const overlap = row.getBoundingClientRect().bottom - (dock.getBoundingClientRect().top - 12) + 12;
       if (overlap > 0) {
         const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-        window.scrollBy({ top: overlap, behavior: reduce ? "auto" : "smooth" });
+        // シートの中（比較画面）ではその中のスクロール領域を送る。無ければページ。
+        let scroller: HTMLElement | null = row.parentElement;
+        while (scroller && !(/(auto|scroll)/.test(getComputedStyle(scroller).overflowY) && scroller.scrollHeight > scroller.clientHeight)) {
+          scroller = scroller.parentElement;
+        }
+        (scroller ?? window).scrollBy({ top: overlap, behavior: reduce ? "auto" : "smooth" });
       }
     });
     return () => window.cancelAnimationFrame(id);

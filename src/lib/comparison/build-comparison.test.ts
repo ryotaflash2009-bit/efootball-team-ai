@@ -335,3 +335,31 @@ describe("buildComparison: カテゴリ・メタ", () => {
     expect(c.basicInfo.find((r) => r.label === "基礎OVR")!.perPlayer).toEqual([90, 89]);
   });
 });
+
+describe("calculateComparisonPlayer（比較表と能力から育成のプレビューで同じ計算）", () => {
+  it("比較表の各選手の結果と、同じ配分での calculateComparisonPlayer が一致する", async () => {
+    const { calculateComparisonPlayer, comparisonPlayerAllocation } = await import("./build-comparison");
+    const players = [
+      input(MESSI_BIGTIME, { savedAllocation: { dribbling: 8 } }),
+      input(CANNAVARO_EPIC, { buildMode: "defense" }),
+    ];
+    const c = buildComparison(players);
+    players.forEach((p, i) => {
+      const r = calculateComparisonPlayer(p, comparisonPlayerAllocation(p));
+      expect(r.stats.map((s) => s.finalValue)).toEqual(c.players[i].result.stats.map((s) => s.finalValue));
+      expect(r.points).toEqual(c.players[i].result.points);
+    });
+  });
+
+  it("1人の配分を変えても他の選手の計算は変わらない", async () => {
+    const { calculateComparisonPlayer } = await import("./build-comparison");
+    const a = input(MESSI_BIGTIME);
+    const b = input(CANNAVARO_EPIC);
+    const before = buildComparison([a, b]).players[1].result.stats.map((s) => s.finalValue);
+    const next = adjustGroupLevel({}, MESSI_BIGTIME, "dribbling", 3);
+    const edited = { ...a, savedAllocation: next };
+    const after = buildComparison([edited, b]);
+    expect(after.players[1].result.stats.map((s) => s.finalValue)).toEqual(before);
+    expect(calculateComparisonPlayer(edited, next).stats.find((s) => s.key === "tightPossession")!.finalValue).toBe(89);
+  });
+});
