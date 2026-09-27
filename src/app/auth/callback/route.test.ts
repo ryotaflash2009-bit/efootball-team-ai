@@ -82,4 +82,19 @@ describe("GET /auth/callback", () => {
     expect(location).not.toContain("refresh_token");
     expect(location).not.toContain("abc123");
   });
+
+  it("期限切れ・無効なリンク（Supabase の error_code 付き）は理由だけを付けてサインイン画面へ（error_description は含めない）", async () => {
+    const res = await GET(makeRequest("/auth/callback?error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired"));
+    const location = res.headers.get("location") ?? "";
+    expect(new URL(location).pathname).toBe("/auth/sign-in");
+    expect(location).toContain("authError=link_expired");
+    expect(location).not.toMatch(/invalid+or|has+expired|error_description/);
+  });
+
+  it("コード交換が期限切れ（otp_expired）なら link_expired、レート制限なら rate_limited", async () => {
+    setSupabaseServerClientForTesting(async () => ({ auth: { exchangeCodeForSession: async () => ({ error: { message: "x", code: "otp_expired", status: 403 } }) } }) as unknown as SupabaseClient);
+    expect((await GET(makeRequest("/auth/callback?code=abc123"))).headers.get("location")).toContain("authError=link_expired");
+    setSupabaseServerClientForTesting(async () => ({ auth: { exchangeCodeForSession: async () => ({ error: { message: "x", status: 429 } }) } }) as unknown as SupabaseClient);
+    expect((await GET(makeRequest("/auth/callback?code=abc123"))).headers.get("location")).toContain("authError=rate_limited");
+  });
 });

@@ -1,0 +1,28 @@
+eFootball Team AI
+
+確認コード
+
+操作を続けるには、次の確認コードを画面に入力してください。
+
+確認コード: {{ .Token }}
+
+コードの有効期限は、発行から約1時間です。
+心当たりがない場合は、このメールを無視してください。操作は完了しません。
+リンクや確認コードを他の人に送らないでください。eFootball Team AI からパスワードや確認コードを尋ねることはありません。
+
+----
+
+Your verification code
+
+To continue, enter the following verification code on the screen.
+
+Verification code: {{ .Token }}
+
+The code expires about 1 hour after it is sent.
+If you did not request this, you can ignore this email and nothing will change.
+Never share this link or code with anyone. eFootball Team AI will never ask you for your password or code.
+
+----
+サポート / Support: {{ .SiteURL }}/support
+eFootball Team AI は、eFootball のファンが作る非公式のツールです。KONAMI および eFootball 公式とは関係ありません。
+eFootball Team AI is an unofficial fan-made tool. It is not affiliated with KONAMI or the official eFootball service.

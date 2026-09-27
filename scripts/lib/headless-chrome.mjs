@@ -228,6 +228,18 @@ export async function installSupabaseAuthTestDouble(client) {
         updateUser: async function () { return { data: {}, error: null }; },
         signInWithPassword: async function () { return { data: {}, error: null }; },
         resetPasswordForEmail: async function () { return { data: {}, error: null }; },
+        // メールのリンク確認（/auth/confirm）。window.__EFB_TEST_VERIFY_MODE__ で結果を切り替える（実メール・実Supabaseなし）。
+        verifyOtp: async function () {
+          var mode = window.__EFB_TEST_VERIFY_MODE__ || "success";
+          if (mode === "expired") return { data: {}, error: { status: 403, code: "otp_expired", message: "test double: Email link is invalid or has expired" } };
+          if (mode === "invalid") return { data: {}, error: { status: 400, code: "validation_failed", message: "test double: invalid" } };
+          if (mode === "rate_limited") return { data: {}, error: { status: 429, code: "over_request_rate_limit", message: "test double: rate limited" } };
+          if (mode === "unavailable") return { data: {}, error: { status: 503, code: "unexpected_failure", message: "test double: provider unavailable" } };
+          if (mode === "timeout") return new Promise(function (_resolve, reject) { setTimeout(function () { reject(new Error("test double: timeout")); }, 300); });
+          authenticated = true;
+          notify("SIGNED_IN", { user: fakeUser });
+          return { data: { user: fakeUser, session: {} }, error: null };
+        },
       };
 
       // rls_probe_records用の最小インメモリDBダブル(実Supabaseへは一切接続しない)。

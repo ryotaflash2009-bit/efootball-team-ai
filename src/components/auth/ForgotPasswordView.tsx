@@ -74,6 +74,7 @@ export function ForgotPasswordView() {
           {ta("passwordResetLimitedNotice")}
         </p>
       ) : null}
+      <p className="max-w-md text-2xs text-text-muted" data-testid="support-privacy-notice">{ta("supportPrivacyNotice")}</p>
 
       {sent ? (
         <Surface tone="inset" padding="md">
