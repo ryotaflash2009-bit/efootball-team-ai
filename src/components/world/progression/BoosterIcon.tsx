@@ -1,4 +1,6 @@
 import type { BoosterActivationType } from "@/lib/progression/types";
+import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { useT } from "@/lib/i18n/LocaleContext";
 
 /**
  * カード付属ブースターの独自アイコン（インライン SVG・外部画像/パッケージなし）。
@@ -14,33 +16,33 @@ export type BoosterIconVariant =
   | "unresolved"
   | "provisional";
 
-const META: Record<BoosterIconVariant, { label: string; ring: string; text: string; fill: string }> = {
+const META: Record<BoosterIconVariant, { labelKey: keyof Dictionary["progressionTab"]; ring: string; text: string; fill: string }> = {
   fixed: {
-    label: "固定ブースター",
+    labelKey: "boostIconFixed",
     ring: "border-info/50",
     text: "text-info",
     fill: "bg-info/10",
   },
   power_of_many: {
-    label: "Power of Many（金色・可変）ブースター",
+    labelKey: "boostIconPom",
     ring: "border-warning/60",
     text: "text-warning",
     fill: "bg-warning/10",
   },
   live_update: {
-    label: "Live Update 連動ブースター",
+    labelKey: "boostIconLiveUpdate",
     ring: "border-border-strong",
     text: "text-text-dim",
     fill: "bg-surface-3",
   },
   unresolved: {
-    label: "未解決ブースター",
+    labelKey: "boostIconUnresolved",
     ring: "border-border-strong",
     text: "text-text-muted",
     fill: "bg-surface-2",
   },
   provisional: {
-    label: "効果検証中ブースター",
+    labelKey: "boostIconProvisional",
     ring: "border-border-strong",
     text: "text-text-dim",
     fill: "bg-surface-3",
@@ -89,11 +91,13 @@ export function BoosterIcon({
   size?: number;
   className?: string;
 }) {
+  const t = useT();
+  const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
   const m = META[variant];
   return (
     <span
       role="img"
-      aria-label={m.label}
+      aria-label={tp(m.labelKey)}
       className={`inline-grid shrink-0 place-items-center rounded-md border ${m.ring} ${m.fill} ${m.text} ${className}`}
       style={{ width: size + 8, height: size + 8 }}
     >

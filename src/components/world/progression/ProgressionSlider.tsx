@@ -1,7 +1,8 @@
 "use client";
 
 import type { ProgressionGroup } from "@/lib/progression/types";
-import { groupLabelJa, statListJa } from "@/lib/world/stat-labels";
+import { abilityName, categoryName } from "@/lib/progression/ability-editor-labels";
+import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 
 /**
  * 能力値グループ1行（v2・スライダー中心）。
@@ -23,13 +24,16 @@ export function ProgressionSlider({
   /** − / ＋ で1段階。 */
   onAdjust: (groupId: string, delta: number) => void;
 }) {
-  const groupName = groupLabelJa(group.groupId);
-  const statNames = statListJa(group.affectedStats);
+  const t = useT();
+  const { locale } = useLocale();
+  const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
+  const groupName = categoryName(group.groupId, locale);
+  const statNames = group.affectedStats.map((k) => abilityName(k, locale)).join(" / ");
   const sliderMax = Math.max(group.allocatedPoints, group.maximumAllocation, 1);
-  const nextCostLabel = group.nextLevelCost == null ? "上限" : `次の+1: ${group.nextLevelCost}pt`;
+  const nextCostLabel = group.nextLevelCost == null ? tp("sliderCap") : tp("sliderNextCost").replace("{cost}", String(group.nextLevelCost));
   const valueText = group.atMax
-    ? `${groupName} レベル ${group.allocatedPoints}（上限到達）・消費 ${group.consumedProgressionPoints}pt`
-    : `${groupName} レベル ${group.allocatedPoints}・次の+1に ${group.nextLevelCost ?? "—"}pt・消費 ${group.consumedProgressionPoints}pt`;
+    ? tp("sliderValueTextMax").replace("{group}", groupName).replace("{level}", String(group.allocatedPoints)).replace("{used}", String(group.consumedProgressionPoints))
+    : tp("sliderValueText").replace("{group}", groupName).replace("{level}", String(group.allocatedPoints)).replace("{next}", String(group.nextLevelCost ?? "—")).replace("{used}", String(group.consumedProgressionPoints));
   const rangeDisabled = disabled || group.maximumAllocation <= 0;
 
   return (
@@ -38,21 +42,21 @@ export function ProgressionSlider({
         <p className="truncate text-sm font-semibold">
           {groupName}
           {group.statsConfidence === "confirmed" ? (
-            <span className="ml-1 align-top text-[9px] text-lime-300/80">確認済</span>
+            <span className="ml-1 align-top text-[9px] text-lime-300/80">{tp("confirmedTag")}</span>
           ) : (
-            <span className="ml-1 align-top text-[9px] text-yellow-300/80">対象能力は検証中</span>
+            <span className="ml-1 align-top text-[9px] text-yellow-300/80">{tp("targetsUnverifiedTag")}</span>
           )}
         </p>
         <span className="shrink-0 text-sm font-bold tabular-nums text-accent">Lv {group.allocatedPoints}</span>
       </div>
       <p className="mt-0.5 truncate text-[10px] text-text-dim" title={statNames}>
-        対象: {statNames}
+        {tp("targetsLabel").replace("{stats}", statNames)}
       </p>
 
       <div className="mt-2 flex items-center gap-2">
         <button
           type="button"
-          aria-label={`${groupName} のレベルを下げる`}
+          aria-label={tp("sliderDecrease").replace("{group}", groupName)}
           disabled={disabled || group.allocatedPoints <= 0}
           onClick={() => onAdjust(group.groupId, -1)}
           className="grid h-11 w-11 shrink-0 place-items-center rounded-md border border-border text-xl leading-none text-text transition-colors disabled:cursor-not-allowed disabled:text-text-dim/40 hover:enabled:border-accent"
@@ -67,7 +71,7 @@ export function ProgressionSlider({
           step={1}
           value={group.allocatedPoints}
           disabled={rangeDisabled}
-          aria-label={`${groupName} の育成レベル`}
+          aria-label={tp("sliderAria").replace("{group}", groupName)}
           aria-valuetext={valueText}
           onChange={(e) => onSet(group.groupId, Number(e.target.value))}
           className="h-11 min-w-0 flex-1 cursor-pointer accent-[color:var(--color-accent)] disabled:cursor-not-allowed disabled:opacity-40"
@@ -75,7 +79,7 @@ export function ProgressionSlider({
 
         <button
           type="button"
-          aria-label={`${groupName} のレベルを上げる`}
+          aria-label={tp("sliderIncrease").replace("{group}", groupName)}
           disabled={disabled || !group.canAddLevel}
           onClick={() => onAdjust(group.groupId, 1)}
           className="grid h-11 w-11 shrink-0 place-items-center rounded-md border border-border text-xl leading-none text-text transition-colors disabled:cursor-not-allowed disabled:text-text-dim/40 hover:enabled:border-accent"
@@ -85,9 +89,9 @@ export function ProgressionSlider({
       </div>
 
       <div className="mt-1 flex items-center justify-between text-[10px] text-text-dim">
-        <span>消費: {group.consumedProgressionPoints}pt</span>
+        <span>{tp("consumedLabel").replace("{used}", String(group.consumedProgressionPoints))}</span>
         <span className={group.canAddLevel ? "text-text" : "text-text-dim/60"}>{nextCostLabel}</span>
-        <span>{group.atMax ? "上限到達" : `上限 Lv${group.maximumAllocation}`}</span>
+        <span>{group.atMax ? tp("capReached") : tp("capLevel").replace("{level}", String(group.maximumAllocation))}</span>
       </div>
     </div>
   );

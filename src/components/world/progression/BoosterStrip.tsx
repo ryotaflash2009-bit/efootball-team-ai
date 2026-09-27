@@ -6,6 +6,7 @@ import type {
   ConditionalBoosterSelection,
 } from "@/lib/progression/types";
 import { Badge } from "@/components/ui/Badge";
+import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import { BoosterIcon, boosterIconVariant } from "./BoosterIcon";
 import { FixedBoosterChip } from "./FixedBoosterDetails";
 import { ConditionalBoosterControl } from "./ConditionalBoosterControl";
@@ -28,6 +29,9 @@ export function BoosterStrip({
   onConditionalChange?: (next: SelectedConditionalBooster[]) => void;
   idPrefix?: string;
 }) {
+  const t = useT();
+  const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
+  const { locale } = useLocale();
   const condBySel = new Map(conditionalSelections.map((c) => [c.boosterKey, c.selection]));
   function setConditional(boosterKey: string, sel: ConditionalBoosterSelection) {
     const rest = conditionalSelections.filter((c) => c.boosterKey !== boosterKey);
@@ -36,7 +40,7 @@ export function BoosterStrip({
 
   if (attached.length === 0) {
     return (
-      <p className="text-2xs text-text-muted">このカードに付属するブースターはありません。</p>
+      <p className="text-2xs text-text-muted">{tp("boostNoAttached")}</p>
     );
   }
 
@@ -50,9 +54,10 @@ export function BoosterStrip({
           autoApplied: b.autoApplied,
           evidenceLevel: b.evidenceLevel,
         });
-        const name = b.boosterNameJa
-          ? `${b.boosterNameJa}（${b.boosterNameEn}）`
-          : b.boosterNameEn;
+        const name =
+          locale === "ja" && b.boosterNameJa
+            ? tp("boostNameWithEn").replace("{ja}", b.boosterNameJa).replace("{en}", String(b.boosterNameEn))
+            : b.boosterNameEn;
 
         // ── Power of Many（金色）
         if (b.activationType === "power_of_many" && b.boosterKey && onConditionalChange) {
@@ -89,11 +94,11 @@ export function BoosterStrip({
               <Badge tone={provisional ? "warning" : b.autoApplied ? "info" : "warning"} size="xs">
                 {b.autoApplied
                   ? provisional
-                    ? "固定型・推定・適用中"
-                    : "固定型・適用中"
-                  : "固定型・検証中"}
+                    ? tp("boostFixedProvisionalApplied")
+                    : tp("boostFixedApplied")
+                  : tp("boostFixedVerifying")}
               </Badge>
-              <span className="text-2xs text-text-muted">効果を見る ▸</span>
+              <span className="text-2xs text-text-muted">{tp("boostViewEffect")}</span>
             </FixedBoosterChip>
           );
         }
@@ -107,7 +112,7 @@ export function BoosterStrip({
             <BoosterIcon variant="unresolved" size={18} />
             <span className="text-text-dim">ID {b.boosterId}</span>
             <Badge tone="warning" size="xs">
-              未解決・未適用
+              {tp("boostUnresolvedNotApplied")}
             </Badge>
           </div>
         );

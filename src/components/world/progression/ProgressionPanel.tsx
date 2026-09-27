@@ -3,7 +3,10 @@
 import { useCallback, useMemo, useState } from "react";
 import { listBuilds } from "@/lib/progression/build-storage";
 import { sameAllocation, saveCurrentBuild } from "@/lib/progression/save-current-build";
-import { useT } from "@/lib/i18n/LocaleContext";
+import { localizeBuildStorageError } from "@/lib/progression/build-storage-errors";
+import { useLocale, useT } from "@/lib/i18n/LocaleContext";
+import { abilityName, categoryName } from "@/lib/progression/ability-editor-labels";
+import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import type {
   ProgressionCard,
   AutoAllocateProfile,
@@ -22,7 +25,6 @@ import { adjustGroupLevel } from "@/lib/progression/group-allocation";
 import { autoAllocate } from "@/lib/progression/auto-allocate";
 import { migrateBuild } from "@/lib/progression/migrate-build";
 import { isV2RulesVersion } from "@/lib/progression/progression-rules";
-import { buildModeLabelJa, groupLabelJa, statListJa } from "@/lib/world/stat-labels";
 import { RulesNotice } from "./RulesNotice";
 import { BuildBar } from "./BuildBar";
 import { MigrationNotice } from "./MigrationNotice";
@@ -38,14 +40,20 @@ import { ManagerPicker } from "@/components/managers/ManagerPicker";
 import { Button } from "@/components/ui/Button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 
-// 表示ラベルは stat-labels.ts の buildModeLabelJa に集約。ここは順序と値のみ定義。
+// 表示ラベルは辞書（progressionTab.buildMode*）。ここは順序と値のみ定義。
 const PROFILES: AutoAllocateProfile[] = ["attack", "defense", "balance", "gk"];
+const PROFILE_LABEL_KEY: Record<AutoAllocateProfile, keyof Dictionary["progressionTab"]> = {
+  attack: "buildModeAttack",
+  defense: "buildModeDefense",
+  balance: "buildModeBalance",
+  gk: "buildModeGk",
+};
 
 export function ProgressionPanel({
   card,
   imageSources = [],
   analysis = null,
-  analysisScope = "World データ",
+  analysisScope,
 }: {
   card: ProgressionCard;
   imageSources?: string[];
@@ -69,6 +77,8 @@ export function ProgressionPanel({
   // ドラッグ中のプレビュー（上部バーの残りポイントも同じ値にするため）。
   const [previewPoints, setPreviewPoints] = useState<PointsSummary | null>(null);
   const t = useT();
+  const { locale } = useLocale();
+  const tp = (k: keyof Dictionary["progressionTab"]) => t("progressionTab", k);
 
   // 同じ条件（監督・ブースター・モード）での計算。能力値直接操作UIのプレビューも同じ関数を使う。
   const calculate = useCallback(
@@ -121,7 +131,7 @@ export function ProgressionPanel({
       selectedBooster: null,
       conditionalBoosterSelections: conditionalSelections,
     });
-    if (!r.ok) return { ok: false, message: t("abilityEditor", "saveFailed").replace("{reason}", r.error) };
+    if (!r.ok) return { ok: false, message: t("abilityEditor", "saveFailed").replace("{reason}", localizeBuildStorageError(r.error, locale)) };
     setSavedAllocation({ ...allocation });
     setBuildsRefresh((n) => n + 1);
     return { ok: true, message: t("abilityEditor", "saveSucceeded").replace("{name}", r.build.buildName) };
@@ -177,7 +187,12 @@ export function ProgressionPanel({
 
       {!canProgress ? (
         <div className="rounded-md border border-border bg-surface-2/40 p-3 text-sm text-text-dim">
-          {result.eligibility.reason ?? "このカードは育成できません。"}（能力値は基礎値のまま表示します）
+          {(card.cardType ?? "").toUpperCase() === "TRENDING"
+            ? tp("eligibilityTrending")
+            : (card.maximumLevel ?? 0) <= 1
+              ? tp("eligibilityMaxLevel1")
+              : tp("cannotProgressFallback")}
+          {tp("baseValuesKept")}
         </div>
       ) : null}
 
@@ -207,12 +222,12 @@ export function ProgressionPanel({
         <div className="flex min-w-0 flex-col gap-4 lg:col-start-2 lg:row-start-1">
           <div>
             <SectionHeader
-              title="能力値比較（育成前後）"
+              title={tp("statComparisonTitle")}
               as="h3"
               action={
                 <span className="text-xs text-text-dim">
-                  推定OVR <span className="font-bold text-accent">{result.rating.estimatedOvr ?? "—"}</span>{" "}
-                  <span className="text-2xs text-warning/80">検証中</span>
+                  {tp("estimatedOvr")} <span className="font-bold text-accent">{result.rating.estimatedOvr ?? "—"}</span>{" "}
+                  <span className="text-2xs text-warning/80">{tp("underVerification")}</span>
                 </span>
               }
             />
@@ -237,7 +252,7 @@ export function ProgressionPanel({
           {/* 計算根拠・証拠情報（通常画面から一段奥へ） */}
           <details className="rounded-md border border-border bg-surface-2/20">
             <summary className="cursor-pointer px-3 py-2 text-sm font-semibold">
-              計算根拠とデータの出所を見る（モード・証拠レベル・規則バージョン・詳細な内訳）
+              {tp("calculationDetailsSummary")}
             </summary>
             <div className="flex flex-col gap-4 border-t border-border p-3">
               <RulesNotice result={result} />
@@ -245,7 +260,7 @@ export function ProgressionPanel({
               <PlayerBoosterPanel mode={boosterMode} onModeChange={setBoosterMode} />
 
               <div>
-                <SectionHeader title="詳細な内訳（表形式）" as="h3" />
+                <SectionHeader title={tp("detailedBreakdownTitle")} as="h3" />
                 <StatComparison
                   stats={result.stats}
                   byStat={result.playerBoosterByStat}
@@ -263,7 +278,7 @@ export function ProgressionPanel({
         <div className="flex min-w-0 flex-col gap-4 lg:col-start-1 lg:row-start-1">
           <div>
             <SectionHeader
-              title="自動育成（配分方針）"
+              title={tp("autoAllocationTitle")}
               as="h3"
               action={
                 <Button
@@ -273,7 +288,7 @@ export function ProgressionPanel({
                   disabled={!hasAllocation}
                   className="text-danger"
                 >
-                  育成リセット
+                  {tp("resetProgression")}
                 </Button>
               }
             />
@@ -286,20 +301,20 @@ export function ProgressionPanel({
                   onClick={() => handleAuto(p)}
                   className="min-h-[44px] rounded-md border border-border bg-surface-2 px-3 py-1.5 text-sm transition-colors disabled:cursor-not-allowed disabled:text-text-muted hover:enabled:border-accent"
                 >
-                  {buildModeLabelJa(p)}
+                  {tp(PROFILE_LABEL_KEY[p])}
                 </button>
               ))}
             </div>
             <p className="mt-2 text-2xs text-text-muted">
-              自動育成は「配分方針」のヒューリスティックです。ゲーム内の自動配分アルゴリズムとは異なり、OVR の最大化は保証しません。実行後も各スライダーで手動調整できます。
+              {tp("autoAllocationNote")}
             </p>
           </div>
 
           <div>
             <SectionHeader
-              title="能力値グループ（カテゴリレベル）"
+              title={tp("groupsTitle")}
               as="h3"
-              hint={`${groupLabelJa("shooting")}の対象能力は確認済 / 他は検証中`}
+              hint={tp("groupsHint").replace("{shooting}", categoryName("shooting", locale))}
             />
             <div className="flex flex-col gap-2.5">
               {fieldGroups.map((g) => (
@@ -316,15 +331,17 @@ export function ProgressionPanel({
             {gkGroups.length > 0 ? (
               <details open={isGk} className="mt-2.5 rounded-md border border-border bg-surface-2/20">
                 <summary className="flex min-h-[44px] cursor-pointer items-center justify-between gap-2 px-3 py-2 text-sm font-semibold">
-                  <span>GK育成 3 項目</span>
+                  <span>{tp("gkGroupsSummary")}</span>
                   <span className="shrink-0 text-2xs font-normal text-text-dim">
-                    {`配分 Lv ${gkAllocated}${!isGk ? "（非GK・初期折りたたみ）" : "（GK・初期展開）"}`}
+                    {tp(isGk ? "gkAllocatedGk" : "gkAllocatedNonGk").replace("{level}", String(gkAllocated))}
                   </span>
                 </summary>
                 <div className="border-t border-border p-2">
                   <p className="mb-2 text-2xs text-text-muted">
-                    {statListJa(["gkAwareness", "gkCatching", "gkParrying", "gkReflexes", "gkReach"])} を調整します。
-                    折りたたんでも配分・使用ポイント・段階コストは保持します。
+                    {tp("gkGroupsNote").replace(
+                      "{stats}",
+                      ["gkAwareness", "gkCatching", "gkParrying", "gkReflexes", "gkReach"].map((k) => abilityName(k, locale)).join(" / "),
+                    )}
                   </p>
                   <div className="flex flex-col gap-2.5">
                     {gkGroups.map((g) => (
@@ -359,7 +376,7 @@ export function ProgressionPanel({
         {/* 右（PC）/ 中央下（狭幅）: 選手分析レール */}
         {analysis ? (
           <div className="lg:col-span-2 [@media(min-width:1400px)]:col-span-1">
-            <PlayerAnalysisRail analysis={analysis} scopeLabel={analysisScope} />
+            <PlayerAnalysisRail analysis={analysis} scopeLabel={analysisScope ?? tp("analysisScopeDefault")} />
           </div>
         ) : null}
       </div>

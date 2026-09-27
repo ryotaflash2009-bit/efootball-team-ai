@@ -7,7 +7,8 @@ import {
   isB2SelectableCandidate,
   isConfirmedB2Candidate,
 } from "@/lib/progression/booster-catalog";
-import { statListJa } from "@/lib/world/stat-labels";
+import { abilityName } from "@/lib/progression/ability-editor-labels";
+import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import { Badge } from "@/components/ui/Badge";
 
 /** 通常の B2 候補（確認済み・Power of Many を除く）。カタログは静的データのため一度だけ計算する。 */
@@ -29,6 +30,9 @@ export function B2BoosterSelector({
   applied: AppliedPlayerBooster[];
   onChange: (next: SelectedPlayerBooster[]) => void;
 }) {
+  const t = useT();
+  const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
+  const { locale } = useLocale();
   const bySlot = new Map(selected.map((s) => [s.slot, s]));
 
   function setSlot(slot: 1 | 2, boosterKey: string | null, level?: number) {
@@ -50,27 +54,27 @@ export function B2BoosterSelector({
         const legacySelectionLabel =
           def && !curConfirmed
             ? def.conditional
-              ? `${def.nameEn}（Power of Many・B2 選択肢からは提供終了）`
-              : `${def.nameEn}（未確認・試算のみ・過去の選択）`
+              ? tp("ruB2LegacyPom").replace("{name}", def.nameEn)
+              : tp("ruB2LegacyUnconfirmed").replace("{name}", def.nameEn)
             : null;
         const att = attached.find((a) => a.slot === slot);
         const keepLabel = att
           ? att.boosterNameEn
-            ? `— なし（付属: ${att.boosterNameEn}${att.level != null ? ` +${att.level}` : ""}）—`
-            : "— なし（付属は未解決）—"
-          : "— なし（付属なし）—";
+            ? tp("ruB2KeepAttached").replace("{booster}", `${att.boosterNameEn}${att.level != null ? ` +${att.level}` : ""}`)
+            : tp("ruB2KeepUnresolved")
+          : tp("ruB2KeepNone");
         return (
           <div key={slot} className="mt-2 flex w-full flex-wrap items-center gap-1.5 first:mt-0">
-            <span className="text-2xs text-text-muted">スロット{slot}</span>
+            <span className="text-2xs text-text-muted">{tp("ruB2SlotLabel").replace("{slot}", String(slot))}</span>
             <select
               value={cur?.boosterKey ?? ""}
               onChange={(e) => setSlot(slot, e.target.value || null)}
-              aria-label={`スロット${slot} の追加ブースター（B2）を指定`}
+              aria-label={tp("ruB2SlotSelectAria").replace("{slot}", String(slot))}
               className="min-h-[44px] min-w-0 flex-1 rounded border border-border bg-surface-2 px-2 py-2 text-xs"
             >
               <option value="">{keepLabel}</option>
               {legacySelectionLabel && def ? <option value={def.key}>{legacySelectionLabel}</option> : null}
-              <optgroup label="確認済み（通常反映）">
+              <optgroup label={tp("ruB2ConfirmedGroup")}>
                 {CONFIRMED_B2_CATALOG.map((b) => (
                   <option key={b.key} value={b.key}>
                     {b.nameEn}
@@ -82,7 +86,7 @@ export function B2BoosterSelector({
               <select
                 value={cur?.level ?? 1}
                 onChange={(e) => setSlot(slot, cur!.boosterKey, Number(e.target.value))}
-                aria-label={`スロット${slot} の追加ブースター（B2）のレベル`}
+                aria-label={tp("ruB2LevelAria").replace("{slot}", String(slot))}
                 className="min-h-[44px] rounded border border-border bg-surface-2 px-2 py-2 text-xs"
               >
                 {Array.from({ length: def.maxLevel }, (_, i) => i + 1).map((lv) => (
@@ -98,15 +102,15 @@ export function B2BoosterSelector({
                 onClick={() => setSlot(slot, null)}
                 className="min-h-[44px] rounded border border-border px-3 py-1 text-2xs text-text-dim hover:border-danger hover:text-danger"
               >
-                B2を解除
+                {tp("ruB2Clear")}
               </button>
             ) : null}
             {cur && curConfirmed ? (
-              <Badge tone="success" size="xs">現在適用中</Badge>
+              <Badge tone="success" size="xs">{tp("ruB2Active")}</Badge>
             ) : null}
             {legacySelectionLabel ? (
               <span className="w-full text-2xs text-warning">
-                未確認のため通常の最終値には反映されません（試算最終値のみ）。「なし」を選ぶか、確認済みの候補へ変更できます。
+                {tp("ruB2LegacyNote")}
               </span>
             ) : null}
           </div>
@@ -121,13 +125,15 @@ export function B2BoosterSelector({
             return (
               <li key={i} className="flex flex-wrap items-center gap-1.5">
                 <Badge tone={aConfirmed ? "success" : "warning"} size="xs">
-                  {aConfirmed ? "確認済み・反映中" : "試算のみ（未確認）"}
+                  {aConfirmed ? tp("ruB2AppliedConfirmed") : tp("ruB2AppliedTrial")}
                 </Badge>
                 <span className="font-medium">
                   {a.nameEn} +{a.level}
                 </span>
                 <span className="text-text-muted">
-                  {statListJa(a.affectedStats)} に各 +{a.level}
+                  {tp("ruB2AppliedEffect")
+                    .replace("{stats}", a.affectedStats.map((k) => abilityName(k, locale)).join(" / "))
+                    .replace("{level}", String(a.level))}
                 </span>
               </li>
             );
@@ -141,12 +147,12 @@ export function B2BoosterSelector({
           onClick={() => onChange([])}
           className="mt-2 min-h-[44px] rounded border border-border px-3 py-1 text-2xs text-text-dim hover:border-danger hover:text-danger"
         >
-          追加ブースター（B2）をすべて解除
+          {tp("ruB2ClearAll")}
         </button>
       ) : null}
 
       <p className="mt-2 text-2xs text-text-muted">
-        確認済みのB2を選ぶと、対象能力・通常の最終値・比較の順位・チーム集計へ即座に反映します。
+        {tp("ruB2Footer")}
       </p>
     </div>
   );

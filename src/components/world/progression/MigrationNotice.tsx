@@ -1,6 +1,7 @@
 "use client";
 
 import type { BuildMigration } from "@/lib/progression/types";
+import { useT } from "@/lib/i18n/LocaleContext";
 
 /**
  * 旧規則で保存されたビルドを読み込んだときの通知。
@@ -15,14 +16,16 @@ export function MigrationNotice({
   onRecalculate: () => void;
   onDismiss: () => void;
 }) {
+  const t = useT();
+  const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
   return (
     <div className="rounded-md border border-yellow-400/40 bg-yellow-400/10 p-3 text-xs">
       <p className="font-semibold text-yellow-300">
-        このビルドは旧規則（{migration.fromVersion}）で作成されています
+        {tp("migrationTitle").replace("{version}", migration.fromVersion)}
       </p>
       <p className="mt-1 text-text-dim">
-        現行規則（{migration.toVersion}）は配分の単位（グループ）と段階コストが異なります。
-        下のボタンで再計算すると、元の配分を保ったまま現行規則へ変換します（自動保存はしません）。
+        {tp("migrationBody1").replace("{version}", migration.toVersion)}
+        {tp("migrationBody2")}
       </p>
       {migration.notes.length > 0 ? (
         <ul className="mt-1 list-disc space-y-0.5 pl-4 text-text-dim">
@@ -37,14 +40,14 @@ export function MigrationNotice({
           onClick={onRecalculate}
           className="rounded-md bg-accent px-3 py-1 font-semibold text-accent-ink"
         >
-          現行規則で再計算
+          {tp("migrationRecalculate")}
         </button>
         <button
           type="button"
           onClick={onDismiss}
           className="rounded-md border border-border px-3 py-1 text-text-dim hover:text-text"
         >
-          そのまま表示
+          {tp("migrationKeep")}
         </button>
       </div>
     </div>

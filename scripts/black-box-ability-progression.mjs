@@ -425,6 +425,25 @@ async function runViewport(browser, vp) {
   const en = await ev(() => ({ list: document.querySelector("[data-testid=ability-direct-list]").textContent, dock: document.querySelector("[data-testid=progression-dock]")?.textContent ?? "" }));
   const jp = /[぀-ヿ一-龯]/;
   record("英語: 能力一覧と育成パネルに日本語が混ざらない", !jp.test(en.list) && !jp.test(en.dock) && /Train this ability/.test(en.dock), jp.test(en.dock) ? "dock に日本語" : jp.test(en.list) ? "list に日本語" : "");
+  // 英語: 選手詳細全体（育成タブの既存部分・計算根拠・ブースター・分析・能力値タブを含む）に日本語が残らない
+  const enPage = await ev(async () => {
+    document.querySelectorAll("main details").forEach((d) => { d.open = true; });
+    await new Promise((r) => setTimeout(r, 400));
+    const re = /[぀-ヿ一-龯]/;
+    const found = new Set();
+    const w = document.createTreeWalker(document.querySelector("main"), NodeFilter.SHOW_TEXT);
+    let n;
+    while ((n = w.nextNode())) { const t = n.textContent.trim(); if (t && re.test(t) && !n.parentElement.closest("[data-user-content]")) found.add(t.slice(0, 60)); }
+    for (const el of document.querySelectorAll("main [aria-label], main [title], main [placeholder], main [aria-valuetext]")) {
+      for (const a of ["aria-label", "title", "placeholder", "aria-valuetext"]) { const v = el.getAttribute(a); if (v && re.test(v)) found.add(`@${a}: ${v.slice(0, 60)}`); }
+    }
+    const over = document.documentElement.scrollWidth - window.innerWidth;
+    document.querySelectorAll("main details").forEach((d) => { d.open = false; });
+    return { found: [...found], over };
+  });
+  // 利用者が付けたビルド名（data-user-content）は利用者のデータなので対象外。選手名は対象（この選手には英語名がある）。
+  record("英語: 選手詳細の全体（開閉部分・読み上げ属性を含む）に日本語が無い", enPage.found.length === 0, enPage.found.slice(0, 5).join(" | "));
+  record("英語: 長い英語ラベルでも横方向のはみ出し 0", enPage.over <= 1, `${enPage.over}px`);
   await ev(() => [...document.querySelectorAll("button")].find((b) => b.textContent.trim() === "日本語")?.click());
   await sleep(500);
   const ja = await ev(() => document.querySelector("[data-testid=progression-dock]")?.textContent ?? "");
