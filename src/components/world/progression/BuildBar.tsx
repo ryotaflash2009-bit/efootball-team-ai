@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import {
   isBuildStorageAvailable,
   listBuilds,
-  saveBuild,
   renameBuild,
   deleteBuild,
 } from "@/lib/progression/build-storage";
 import type { ProgressionResult, SavedBuild, SelectedConditionalBooster } from "@/lib/progression/types";
 import { isV2RulesVersion } from "@/lib/progression/progression-rules";
 import { subscribeCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
+import { saveCurrentBuild } from "@/lib/progression/save-current-build";
 
 /**
  * 育成ビルドの保存・読み込み・複数管理（localStorage）。
@@ -23,6 +23,8 @@ export function BuildBar({
   selectedBooster,
   conditionalBoosterSelections,
   onLoad,
+  onSaved,
+  refreshKey = 0,
 }: {
   worldCardId: string;
   result: ProgressionResult;
@@ -30,6 +32,10 @@ export function BuildBar({
   selectedBooster: number | null;
   conditionalBoosterSelections?: SelectedConditionalBooster[];
   onLoad: (build: SavedBuild) => void;
+  /** 保存に成功したとき（未保存の変更の表示を消すため）。 */
+  onSaved?: (build: SavedBuild) => void;
+  /** 他の場所（育成パネルのクイック保存）で保存したときに一覧を読み直すためのキー。 */
+  refreshKey?: number;
 }) {
   const [available, setAvailable] = useState(true);
   const [builds, setBuilds] = useState<SavedBuild[]>([]);
@@ -42,30 +48,26 @@ export function BuildBar({
     // 保存先（guest/アカウント）は認証確認後に決まる。決まった・切り替わったときに一覧を読み直す
     // （読み直さないと、再読込直後に保存済みビルドが表示されない）。
     return subscribeCurrentScope(() => setBuilds(listBuilds(worldCardId)));
-  }, [worldCardId]);
+  }, [worldCardId, refreshKey]);
 
   function refresh() {
     setBuilds(listBuilds(worldCardId));
   }
 
   function handleSave() {
-    const finalStats: Record<string, number> = {};
-    for (const s of result.stats) finalStats[s.key] = s.finalValue;
-    const r = saveBuild({
+    const r = saveCurrentBuild({
       worldCardId,
       buildName: name || `ビルド ${builds.length + 1}`,
-      progressionAllocation: allocation,
-      selectedPlayerBooster: selectedBooster,
+      allocation,
+      result,
+      selectedBooster,
       conditionalBoosterSelections,
-      calculatedStats: finalStats,
-      calculatedOvr: result.rating.estimatedOvr,
-      calculationMode: result.calculationMode,
-      rulesVersion: result.rulesVersion,
     });
     setMsg(r.ok ? `保存しました: ${r.build.buildName}` : `保存できません: ${r.error}`);
     if (r.ok) {
       setName("");
       refresh();
+      onSaved?.(r.build);
     }
   }
 

@@ -14,7 +14,10 @@ function signed(n: number): string {
 
 /**
  * 画面下部の育成パネル（能力を選ぶと開く）。本文の最後に sticky で置くため、本文を隠さず、
- * 最後の能力まで必ずスクロールできる。未選択時は残りポイントと配分チップだけの細いバーになる。
+ * 最後の能力まで必ずスクロールできる。未選択時は残りポイント・未保存の表示・保存・配分チップだけの細いバーになる。
+ *
+ * 配置（片手操作と誤操作防止）: よく使う −／スライダー／＋ を中央、保存を右下（右手の親指側）、
+ * 「↺ 戻す」を左下（＋や保存から離す）、「完了」は右上（閉じても変更は残る）。
  */
 export function ProgressionDock({
   focus,
@@ -32,6 +35,8 @@ export function ProgressionDock({
   nextCost,
   primary,
   relatedDiffs,
+  dirty,
+  saveNotice,
   onSelectGroup,
   onClear,
   onStep,
@@ -42,6 +47,7 @@ export function ProgressionDock({
   onKeyLevel,
   onRevert,
   onGoToSave,
+  onQuickSave,
 }: {
   focus: AbilityFocus | null;
   model: GroupSliderModel | null;
@@ -61,6 +67,10 @@ export function ProgressionDock({
   nextCost: number | null;
   primary: StatBreakdown | null;
   relatedDiffs: AbilityDiff[];
+  /** 保存済み（読み込んだ）状態から変わっている。 */
+  dirty: boolean;
+  /** 直前の保存結果（変更すると消える）。 */
+  saveNotice: { ok: boolean; message: string } | null;
   onSelectGroup: (groupId: string) => void;
   onClear: () => void;
   onStep: (delta: 1 | -1) => void;
@@ -71,6 +81,7 @@ export function ProgressionDock({
   onKeyLevel: (level: number) => void;
   onRevert: () => void;
   onGoToSave: () => void;
+  onQuickSave: () => void;
 }) {
   const t = useT();
   const { locale } = useLocale();
@@ -90,15 +101,61 @@ export function ProgressionDock({
       <span className="text-text-dim">/ {totalPoints}{tx("pointsUnit")}</span>
     </span>
   );
+  // 保存前（未保存）と保存後を取り違えないための状態表示。色だけに頼らず文字で示す。
+  const saveState = (
+    <span
+      data-testid="save-state"
+      data-dirty={dirty ? "true" : "false"}
+      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold ${
+        dirty ? "bg-warning/15 text-warning ring-1 ring-warning/50" : "text-text-muted"
+      }`}
+    >
+      {dirty ? `● ${tx("unsaved")}` : tx("savedState")}
+    </span>
+  );
+  const notice = saveNotice ? (
+    <span data-testid="save-notice" className={`font-semibold ${saveNotice.ok ? "text-lime-300" : "text-danger"}`}>
+      {saveNotice.ok ? "✓" : "⚠"} {saveNotice.message}
+    </span>
+  ) : null;
+  const saveButtons = (
+    <span className="flex shrink-0 items-center gap-1">
+      <button
+        type="button"
+        onClick={onGoToSave}
+        className="min-h-[44px] rounded-md px-2 text-2xs text-text-dim underline-offset-2 hover:text-text hover:underline"
+      >
+        {tx("saveAs")}
+      </button>
+      <button
+        type="button"
+        data-testid="quick-save"
+        onClick={onQuickSave}
+        disabled={!dirty}
+        className="min-h-[44px] min-w-[64px] rounded-md border border-accent/70 bg-accent px-4 text-xs font-bold text-accent-ink transition-transform active:scale-95 disabled:border-border disabled:bg-surface disabled:text-text-dim/60"
+      >
+        {tx("quickSave")}
+      </button>
+    </span>
+  );
 
   if (!focus || !model || !groupId) {
     return (
-      <div className="progression-dock sticky bottom-0 z-20 -mx-1 mt-3 rounded-t-lg border border-border px-2 pt-2" style={style}>
+      <div className="progression-dock sticky bottom-0 z-20 -mx-1 mt-3 rounded-t-lg border border-border px-2 pt-2" style={style} data-testid="progression-dock-idle">
         <div className="flex items-center justify-between gap-2 px-1">
-          <p className="text-xs font-semibold text-text-dim">{canProgress ? tx("tapHint") : tx("cannotProgress")}</p>
-          {pointsPill}
+          <p className="min-w-0 text-xs font-semibold text-text-dim">{canProgress ? tx("tapHint") : tx("cannotProgress")}</p>
+          <span className="flex shrink-0 items-center gap-1.5">
+            {saveState}
+            {pointsPill}
+          </span>
         </div>
         <AllocationChips chips={chips} selectedGroupId={null} showGoalkeeping={showGoalkeeping} onSelect={onSelectGroup} />
+        {dirty || saveNotice ? (
+          <div className="flex items-center gap-1 px-1 pb-1">
+            <p className="min-w-0 flex-1 text-2xs" role="status" aria-live="polite">{notice}</p>
+            {saveButtons}
+          </div>
+        ) : null}
       </div>
     );
   }
@@ -115,6 +172,7 @@ export function ProgressionDock({
     .replace("{remaining}", String(remainingPoints));
   const statusId = `dock-status-${groupId}`;
   const title = primary ? abilityName(primary.key, locale) : catName;
+  const hasMessage = blocked || plusReason != null || saveNotice != null;
 
   return (
     <section
@@ -128,21 +186,28 @@ export function ProgressionDock({
           <p className="text-[10px] font-bold uppercase tracking-wider text-[rgb(var(--cat))] [@media(max-height:520px)]:hidden">
             {primary ? tx("trainThisAbility") : tx("editingProgression")}
           </p>
-          <h3 className="truncate text-base font-bold leading-tight">{title}</h3>
+          <div className="flex min-w-0 items-center gap-1.5">
+            <h3 className="truncate text-base font-bold leading-tight">{title}</h3>
+            <span className="shrink-0">{saveState}</span>
+          </div>
           <p className="text-2xs text-text-dim [@media(max-height:520px)]:hidden">
             {tx("progressionCategory")}: <span className="font-semibold text-text">{catName}</span>
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
-          {pointsPill}
-          <button
-            type="button"
-            onClick={onClear}
-            aria-label={tx("clearSelection")}
-            className="grid h-11 w-11 place-items-center rounded-md border border-border text-lg text-text-dim hover:border-accent hover:text-text"
-          >
-            ×
-          </button>
+          <div className="flex items-center gap-1.5">
+            {pointsPill}
+            <button
+              type="button"
+              onClick={onClear}
+              title={tx("doneHint")}
+              aria-label={`${tx("done")}（${tx("doneHint")}）`}
+              data-testid="dock-done"
+              className="min-h-[44px] rounded-md border border-border px-3 text-xs font-semibold text-text-dim hover:border-accent hover:text-text"
+            >
+              {tx("done")}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -210,38 +275,22 @@ export function ProgressionDock({
         </button>
       </div>
 
-      <div className={`flex items-center gap-1 px-1 ${blocked || plusReason ? "" : "[@media(max-height:520px)]:hidden"}`}>
-        <p id={statusId} className="min-w-0 flex-1 text-2xs" role="status" aria-live="polite">
-          {blocked ? (
-            <span className="font-semibold text-danger">⚠ {tx("notEnoughToReach")}</span>
-          ) : plusReason ? (
-            <span className={model.atCategoryMax ? "font-semibold text-[rgb(var(--cat))]" : "font-semibold text-warning"}>
-              {model.atCategoryMax ? "★" : "⚠"} {plusReason}
-            </span>
-          ) : minusReason && level === 0 ? (
-            <span className="sr-only">{minusReason}</span>
-          ) : null}
-        </p>
-        <button
-          type="button"
-          onClick={onRevert}
-          disabled={change === 0}
-          title={tx("resetCategoryHint")}
-          className="min-h-[44px] shrink-0 rounded-md px-2 text-xs text-text-dim hover:enabled:text-text disabled:opacity-40"
-        >
-          {tx("resetCategory")}
-        </button>
-        <button
-          type="button"
-          onClick={onGoToSave}
-          className="min-h-[44px] shrink-0 rounded-md border border-accent/60 bg-accent/10 px-4 text-xs font-semibold text-accent hover:bg-accent/20"
-        >
-          {tx("goToSave")}
-        </button>
-      </div>
+      <p id={statusId} className={`min-h-[1rem] px-1 text-2xs ${hasMessage ? "" : "[@media(max-height:520px)]:hidden"}`} role="status" aria-live="polite">
+        {blocked ? (
+          <span className="font-semibold text-danger">⚠ {tx("notEnoughToReach")}</span>
+        ) : plusReason ? (
+          <span className={model.atCategoryMax ? "font-semibold text-[rgb(var(--cat))]" : "font-semibold text-warning"}>
+            {model.atCategoryMax ? "★" : "⚠"} {plusReason}
+          </span>
+        ) : notice ? (
+          notice
+        ) : minusReason && level === 0 ? (
+          <span className="sr-only">{minusReason}</span>
+        ) : null}
+      </p>
 
       {relatedDiffs.length > 0 ? (
-        <ul className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 px-1 text-2xs tabular-nums [@media(max-height:520px)]:hidden" aria-label={tx("relatedAbilities")}>
+        <ul className="flex flex-wrap gap-x-3 gap-y-0.5 px-1 text-2xs tabular-nums [@media(max-height:520px)]:hidden" aria-label={tx("relatedAbilities")}>
           {relatedDiffs.map((d) => (
             <li key={d.key} className={d.key === primary?.key ? "font-bold text-text" : "text-text-dim"}>
               {abilityName(d.key, locale)} {d.before}→<span className="text-text">{d.after}</span>
@@ -267,6 +316,20 @@ export function ProgressionDock({
 
       <AllocationChips chips={chips} selectedGroupId={groupId} showGoalkeeping={showGoalkeeping} onSelect={onSelectGroup} />
 
+      <div className="flex items-center justify-between gap-2 px-1 pb-1 [@media(max-height:520px)]:hidden">
+        <button
+          type="button"
+          onClick={onRevert}
+          disabled={change === 0}
+          title={tx("resetCategoryHint")}
+          aria-label={`${tx("resetCategory")}（${tx("resetCategoryHint")}）`}
+          data-testid="dock-revert"
+          className="min-h-[44px] shrink-0 rounded-md px-2 text-xs text-text-dim hover:enabled:text-text disabled:opacity-40"
+        >
+          {tx("revertShort")}
+        </button>
+        {saveButtons}
+      </div>
     </section>
   );
 }

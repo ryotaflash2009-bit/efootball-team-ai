@@ -18,6 +18,7 @@ import { AttachedBoosterSection } from "./AttachedBoosterSection";
 import { B2BoosterSelector } from "./B2BoosterSelector";
 import { CurrentManagerCard } from "@/components/managers/CurrentManagerCard";
 import { FavoriteButton } from "@/components/user-cards/FavoriteButton";
+import { useT } from "@/lib/i18n/LocaleContext";
 import { MyTeamButton } from "@/components/user-cards/MyTeamButton";
 
 /**
@@ -148,18 +149,22 @@ export function ProgressionStickyBar({
   points,
   onReset,
   canReset,
+  onUndoReset = null,
 }: {
   card: ProgressionCard;
   imageSources: string[];
   points: PointsSummary;
   onReset: () => void;
   canReset: boolean;
+  /** 全リセット直後だけ表示する「取り消す」（次の変更で消える）。 */
+  onUndoReset?: (() => void) | null;
 }) {
+  const t = useT();
   const name = card.nameJa || card.nameEn || `カード ${card.worldCardId}`;
   const low = points.remainingPoints <= 0 || (points.totalPoints > 0 && points.remainingPoints <= 2);
 
   return (
-    <div className="sticky top-[calc(var(--header-h)+2.75rem)] z-10 -mx-1 mb-1 flex items-center gap-2 rounded-md border border-border bg-bg/95 px-2 py-1.5 backdrop-blur">
+    <div className="sticky top-[calc(var(--header-h)+2.75rem)] z-10 -mx-1 mb-1 flex items-center gap-2 rounded-md border border-border bg-bg/95 px-2 py-1.5 backdrop-blur [@media(max-height:520px)]:static">
       <div className="hidden h-9 w-7 shrink-0 overflow-hidden rounded sm:block">
         <WorldCardImage sources={imageSources} alt={name} size="card" />
       </div>
@@ -172,14 +177,24 @@ export function ProgressionStickyBar({
         </b>
         <span className="text-text-dim"> / {points.totalPoints} pt</span>
       </span>
-      <button
-        type="button"
-        onClick={onReset}
-        disabled={!canReset}
-        className="shrink-0 rounded border border-border px-2 py-1 text-2xs text-danger transition-colors hover:enabled:border-danger disabled:opacity-40"
-      >
-        育成リセット
-      </button>
+      {onUndoReset ? (
+        <button
+          type="button"
+          onClick={onUndoReset}
+          className="min-h-[44px] shrink-0 rounded border border-accent/60 bg-accent/10 px-2 text-2xs font-semibold text-accent"
+        >
+          {t("abilityEditor", "undoReset")}
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={onReset}
+          disabled={!canReset}
+          className="min-h-[44px] shrink-0 rounded border border-border px-2 text-2xs text-danger transition-colors hover:enabled:border-danger disabled:opacity-40"
+        >
+          {t("abilityEditor", "resetAll")}
+        </button>
+      )}
     </div>
   );
 }

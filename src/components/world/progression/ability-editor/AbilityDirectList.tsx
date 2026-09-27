@@ -35,12 +35,14 @@ function AbilityRow({
   diff,
   showConditional,
   onSelect,
+  onSkipToPanel,
 }: {
   s: StatBreakdown;
   focus: AbilityFocus | null;
   diff: AbilityDiff | undefined;
   showConditional: boolean;
   onSelect: (statKey: string) => void;
+  onSkipToPanel?: () => void;
 }) {
   const t = useT();
   const { locale } = useLocale();
@@ -52,6 +54,7 @@ function AbilityRow({
   const sessionDelta = diff?.delta ?? 0;
   const describedId = `ability-${s.key}-desc`;
   return (
+    <>
     <li className="border-t border-border/40 first:border-t-0">
       <button
         type="button"
@@ -76,7 +79,7 @@ function AbilityRow({
           <span className={`truncate ${role === "primary" ? "font-bold" : ""}`}>{abilityName(s.key, locale)}</span>
         </span>
         <span id={describedId} className="sr-only">
-          {role === "related" ? t("abilityEditor", "related") : ""}
+          {role === "related" ? t("abilityEditor", "related") : role === "none" ? t("abilityEditor", "rowAffordance") : ""}
           {diff && sessionDelta !== 0 ? ` ${diff.before} → ${diff.after}` : ""}
         </span>
         {diff && sessionDelta !== 0 ? (
@@ -95,8 +98,24 @@ function AbilityRow({
         ) : (
           <span className="w-3 shrink-0" aria-hidden="true" />
         )}
+        {/* 押せることを示す手がかり（hover の無いスマホ向け）。選択中は不要。 */}
+        <span className={`w-2 shrink-0 text-sm leading-none ${role === "primary" ? "text-transparent" : "text-text-muted"}`} aria-hidden="true">
+          ›
+        </span>
       </button>
     </li>
+    {role === "primary" && onSkipToPanel ? (
+      <li className="list-none">
+        <button
+          type="button"
+          onClick={onSkipToPanel}
+          className="sr-only focus:not-sr-only focus:block focus:w-full focus:px-3 focus:py-2 focus:text-left focus:text-xs focus:text-accent"
+        >
+          {t("abilityEditor", "skipToPanel")}
+        </button>
+      </li>
+    ) : null}
+    </>
   );
 }
 
@@ -111,6 +130,7 @@ export function AbilityDirectList({
   showConditional,
   defaultOpenGk,
   onSelect,
+  onSkipToPanel,
 }: {
   stats: StatBreakdown[];
   diffs: Map<string, AbilityDiff>;
@@ -118,6 +138,8 @@ export function AbilityDirectList({
   showConditional: boolean;
   defaultOpenGk: boolean;
   onSelect: (statKey: string) => void;
+  /** 選択中の行の直後に、キーボード・読み上げ利用者向けの「育成パネルへ移動」を出す。 */
+  onSkipToPanel?: () => void;
 }) {
   const t = useT();
   const byGroup = new Map<WorldStatGroup, StatBreakdown[]>();
@@ -129,7 +151,7 @@ export function AbilityDirectList({
   const gk = byGroup.get("gk") ?? [];
   const gkFocused = focus != null && gk.some((s) => focus.relatedStats.includes(s.key));
   const row = (s: StatBreakdown) => (
-    <AbilityRow key={s.key} s={s} focus={focus} diff={diffs.get(s.key)} showConditional={showConditional} onSelect={onSelect} />
+    <AbilityRow key={s.key} s={s} focus={focus} diff={diffs.get(s.key)} showConditional={showConditional} onSelect={onSelect} onSkipToPanel={onSkipToPanel} />
   );
 
   return (
