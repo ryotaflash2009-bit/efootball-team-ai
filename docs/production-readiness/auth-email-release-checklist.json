@@ -1,0 +1,34 @@
+{
+  "_note": "Non-secret checklist for scripts/validate-auth-email-release.mjs. Never add passwords, API keys, email addresses, links or codes.",
+  "metadata": {
+    "siteUrl": "",
+    "senderDomain": "",
+    "fromAddress": "",
+    "smtpHost": "smtp.resend.com",
+    "redirectAllowlist": []
+  },
+  "checks": {
+    "domainVerified": false,
+    "vercelDomainActive": false,
+    "siteUrlUpdated": false,
+    "redirectAllowlistUpdated": false,
+    "customSmtpEnabled": false,
+    "rateLimitConfigured": false,
+    "templatesInstalled": false,
+    "spfPass": false,
+    "dkimPass": false,
+    "dmarcConfigured": false,
+    "gmailDelivered": false,
+    "icloudDelivered": false,
+    "outlookDelivered": false,
+    "signupConfirmationPassed": false,
+    "passwordResetPassed": false,
+    "emailChangePassed": false,
+    "securityTestsPassed": false,
+    "supportReady": false,
+    "privacyReady": false,
+    "termsReady": false,
+    "ownerApproval": false
+  },
+  "ownerApprovedAt": null
+}

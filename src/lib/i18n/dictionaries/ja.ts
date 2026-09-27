@@ -3419,6 +3419,26 @@ export interface Dictionary {
     draftNotice: string;
   };
   auth: {
+    authErrorLinkExpired: string;
+    authErrorLinkInvalid: string;
+    authErrorRateLimited: string;
+    authErrorNotConfigured: string;
+    authErrorServiceUnavailable: string;
+    confirmRetryButton: string;
+    confirmPageTitle: string;
+    confirmPageBody: string;
+    confirmButton: string;
+    confirmProcessing: string;
+    confirmSuccess: string;
+    confirmWhyButton: string;
+    emailChangeHeading: string;
+    emailChangeLabel: string;
+    emailChangeSubmit: string;
+    emailChangeSent: string;
+    emailChangeLimitedNotice: string;
+    reauthenticationNeededMessage: string;
+    supportPrivacyNotice: string;
+    sessionExpiredMessage: string;
     accountLimitedTitle: string;
     accountLimitedBody: string;
     accountLimitedExisting: string;
@@ -7564,6 +7584,26 @@ const ja: Dictionary = {
     draftNotice: "このページの内容は現行実装に基づく確認結果です。正式公開に向けた最終判断は運営者が行う必要があります。",
   },
   auth: {
+    authErrorLinkExpired: "リンクの有効期限が切れているか、既に使用されています。もう一度、確認メールの再送またはパスワードの再設定からお試しください。",
+    authErrorLinkInvalid: "リンクを確認できませんでした。メールのリンクをもう一度開くか、確認メールの再送・パスワードの再設定からお試しください。",
+    authErrorRateLimited: "短時間に操作が集中しています。しばらく待ってから、もう一度お試しください。",
+    authErrorNotConfigured: "現在、アカウント機能を利用できません。ログインせずに使える機能はそのまま利用できます。",
+    authErrorServiceUnavailable: "認証サービスに一時的に接続できませんでした。しばらく待ってから、もう一度お試しください。リンクはまだ使える可能性があります。",
+    confirmRetryButton: "もう一度試す",
+    confirmPageTitle: "メールのリンクを確認",
+    confirmPageBody: "下のボタンを押すと、このメールのリンクを確認して手続きを完了します。",
+    confirmButton: "確認する",
+    confirmProcessing: "確認しています…",
+    confirmSuccess: "確認しました。移動しています…",
+    confirmWhyButton: "メールの安全確認でリンクが先に開かれて無効になるのを防ぐため、ボタンで確認します。",
+    emailChangeHeading: "メールアドレスの変更",
+    emailChangeLabel: "新しいメールアドレス",
+    emailChangeSubmit: "確認メールを送る",
+    emailChangeSent: "受け付けました。新しいメールアドレス（設定によっては現在のアドレスも）に届く確認メールのリンクを開くと、変更が完了します。",
+    emailChangeLimitedNotice: "メールアドレスの変更には確認メールが必要です。メール送信は現在限定テスト中のため、この機能はまだ利用できません。",
+    reauthenticationNeededMessage: "安全のため、この操作には本人確認が必要です。メール送信の限定テスト中は、ログアウトしてからパスワードの再設定をご利用ください。",
+    supportPrivacyNotice: "サポートへ、パスワード・確認コード・メールのリンク・個人情報を送らないでください。",
+    sessionExpiredMessage: "ログインの有効期限が切れました。もう一度ログインしてください。ログインせずに使える機能はそのまま利用できます。",
     accountLimitedTitle: "アカウント機能は限定テスト中です",
     accountLimitedBody: "アカウント機能は現在、限定テスト中です。選手検索、比較、育成、診断などはログインせず利用できます。",
     accountLimitedExisting: "既にアカウントをお持ちの方はログインできます。",

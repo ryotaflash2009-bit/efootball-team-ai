@@ -89,6 +89,8 @@
    - **Site URL**: `https://teamaixi.com`
    - **Redirect URLs**: `https://teamaixi.com/auth/callback**` の1件だけにする（Supabase は glob で照合する。`**` は `?next=/auth/update-password` のようなクエリ付きの戻り先に対応するため。ホストとパスは固定なので、ほかのサイトへは戻らない）。`*.vercel.app` のプレビュー URL や、ドメイン全体のワイルドカードは**入れない**。
    - アプリ側の戻り先の検証（`/auth/callback` は内部パスだけへ遷移）は既存の `resolveSafeInternalPath` が行う。
+   - メールのテンプレートのリンクは `{{ .SiteURL }}/auth/confirm?token_hash=…&type=…`（Site URL から組み立てる。Redirect URLs とは無関係）。`/auth/confirm` は**ボタンを押したときだけ**トークンを検証する（迷惑メール検査によるリンクの事前取得で先に使われない）。確認後の遷移先は種類ごとに固定（確認・メール変更 → `/account`、再設定・招待 → `/auth/update-password`）。
+   - Redirect URLs の `/auth/callback**` は、確認メールの再送・メール変更の `emailRedirectTo` と、将来 `{{ .ConfirmationURL }}` へ戻す場合のためにそのまま残す。
    - **Save**。
 3. **Authentication → Emails（または Email / Notifications）→ SMTP Settings → Enable Custom SMTP**
    - Sender email: `no-reply@auth.teamaixi.com`
@@ -107,7 +109,8 @@
    - Change Email Address ← `change-email.html`
    - Invite user ← `invite.html`
    - Reauthentication ← `reauthentication.html`
-   - 1つずつ **Save**。
+   - 1つずつ **Save**。テンプレートはリンクを `{{ .SiteURL }}/auth/confirm` へ向けているので、手順2の Site URL を先に保存しておくこと。
+   - 同じフォルダの `.txt` はプレーンテキスト版（Supabase は HTML だけを受け付けるため、貼らなくてよい。内容確認用）。
 6. **Authentication → Providers → Email**: **Confirm email: On**（確認メールを必須にする）のまま。
 7. （推奨）**Authentication → Attack Protection → CAPTCHA** は、利用者が増えてから検討（今は不要）。
 
@@ -131,7 +134,11 @@
 - F の結果: 受信箱に届いた（Gmail / iCloud / Outlook それぞれ ○/×）、迷惑メール判定の有無、SPF/DKIM/DMARC が PASS か
 - **書かないもの**: API キー、パスワード、メールアドレス、メール内のリンク、確認コード、スクリーンショット
 
-報告を受けたら Claude Code が行うこと:
+報告を受けたら Claude Code が行うこと（**先に** Release Validator を通す）:
+- `docs/production-readiness/auth-email-release-checklist.json` を報告の内容で更新（true/false とドメイン名だけ。Secret・メールアドレス・リンクは書かない）
+- `npm run validate:auth-email-release` → `AUTH_EMAIL_RELEASE_READY` でなければ公開しない（不足項目を本人へ返す）。READY でも自動では開かない。
+- 本人の「公開してよい」の承認（日付を `ownerApprovedAt` へ）
+- `AUTH_EMAIL_DELIVERY` を `"custom_smtp_verified"` に変える PR（メール変更も利用可能になる）
 - `ACCOUNT_SIGNUP_MODE` を `"open"` に変える PR（自動ではなく報告の後）
 - 公開サイトの認証 black-box（新規登録・再送・再設定・誤った戻り先の拒否・エラー表示）
 - Release Gate の記録

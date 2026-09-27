@@ -50,7 +50,14 @@ export function UpdatePasswordView() {
     try {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) {
-        setErrorMessage(ta("genericErrorMessage"));
+        // 理由ごとに次の行動が分かる一般化した文言（生のエラー文は出さない）。
+        const code = (error as { code?: string; status?: number }).code;
+        const status = (error as { code?: string; status?: number }).status;
+        if (code === "reauthentication_needed") setErrorMessage(ta("reauthenticationNeededMessage"));
+        else if (code === "weak_password") setErrorMessage(ta("passwordRequirementsHint"));
+        else if (status === 429 || code === "over_request_rate_limit") setErrorMessage(ta("authErrorRateLimited"));
+        else if (status === 401 || code === "session_not_found" || code === "session_expired") setErrorMessage(ta("sessionExpiredMessage"));
+        else setErrorMessage(ta("genericErrorMessage"));
         return;
       }
       await supabase.auth.signOut();

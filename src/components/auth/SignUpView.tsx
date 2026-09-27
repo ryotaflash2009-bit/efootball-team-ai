@@ -12,7 +12,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isValidEmailFormat, validatePasswordRules } from "@/lib/supabase/password-rules";
 import { classifySignUpFailure } from "@/lib/supabase/auth-errors";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
-import { isSignupOpen, resolveAuthRedirectOrigin } from "@/lib/supabase/account-availability";
+import { isSignupOpen, isSignupPreviewAllowed, resolveAuthRedirectOrigin } from "@/lib/supabase/account-availability";
 import { isLocalDevHostname } from "@/lib/supabase/local-dev";
 
 type AuthKey = keyof Dictionary["auth"];
@@ -34,7 +34,7 @@ export function SignUpView() {
   // 本番ホストでは常に限定表示。マウント後に切り替えるので SSR の表示（限定）とずれない。
   const [localPreview, setLocalPreview] = useState(false);
   useEffect(() => {
-    if (isLocalDevHostname(window.location.hostname) && new URLSearchParams(window.location.search).get("signupPreview") === "1") setLocalPreview(true);
+    if (isSignupPreviewAllowed(window.location.hostname, window.location.search, isLocalDevHostname)) setLocalPreview(true);
   }, []);
 
   async function handleSubmit(e: FormEvent) {
