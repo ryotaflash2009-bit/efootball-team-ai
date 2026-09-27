@@ -70,7 +70,7 @@
 
 | ID | 機能 | 状態 | 完成率 | 依存 | Prod | UD | Auth | AI | Tier | Release Gate / Evidence | 次の作業 |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| F-050 | 認証（Supabase Auth：登録・ログイン・再設定） | completed | 80% | Supabase | — | C | — | 不要 | Free | PR #5, #17 | 招待ベータ中の新規登録ポリシー（本人判断） |
+| F-050 | 認証（Supabase Auth：登録・ログイン・再設定） | completed | 80% | Supabase | — | C | — | 不要 | Free | PR #5, #17。認証メール: 標準 SMTP はプロジェクトのメンバー宛てのみ届くため、新規登録は「限定テスト中」（2026-09-27）。費用計画 `production-readiness/email-and-domain-cost-plan.md`・手順 `custom-domain-and-email-runbook.md`・日英テンプレート | 本人: ドメイン購入・Resend・Vercel・Supabase の設定（手順書 A〜G）→ 配信テスト → 新規登録の公開 |
 | F-051 | アカウント別データ分離（RLS・ローカル名前空間） | completed | 85% | F-050 | — | L/C | 要 | 不要 | Free | PR #9–#11, #17 | — |
 | F-052 | クラウド同期（My Team PoC → ビルド・スカッド） | partially_implemented | 30% | F-051 | — | C | 要 | 不要 | Free | My Team 手動保存の PoC | roadmap 段階7〜9 |
 | F-053 | 公開ユーザーID・公開プロフィール | idea | 0% | F-050, F-056 | — | C | 要 | 不要 | Free | — | 安全機能の後 |

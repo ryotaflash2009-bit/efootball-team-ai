@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useSupabaseSession } from "@/lib/supabase/use-auth-session";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { isSignupOpen } from "@/lib/supabase/account-availability";
 
 type AuthKey = keyof Dictionary["auth"];
 
@@ -53,7 +54,7 @@ export function AccountView() {
             </Link>
             <Link href="/auth/sign-up">
               <Button variant="secondary" size="sm">
-                {ta("navSignUp")}
+                {isSignupOpen() ? ta("navSignUp") : ta("navSignUpLimited")}
               </Button>
             </Link>
           </div>

@@ -190,9 +190,22 @@ async function main() {
     record("[ナビゲーション] ログイン中は、ヘッダーにアカウント導線がある", headerAccountLink === true, "");
 
     // ============================================================
-    // サインアップ画面: フォーム表示・入力検証
+    // 限定テスト中（カスタム SMTP の配信確認まで新規登録を受け付けない）
     // ============================================================
     await navigateAndSettle(client, `${BASE}/auth/sign-up`);
+    const limitedBody = await bodyText(client);
+    record("[限定テスト] 新規登録ページは限定テスト中の案内を表示する", !!(await evalJson(client, "!!document.querySelector('[data-testid=signup-limited]')")) && limitedBody.includes("限定テスト中"), "");
+    record("[限定テスト] 登録フォーム（パスワード入力）を表示しない", (await evalJson(client, "document.querySelectorAll('input[type=password]').length")) === 0, "");
+    record("[限定テスト] ログインせずに使える機能への導線がある", !!(await evalJson(client, "!!document.querySelector('[data-testid=signup-limited] a[href=\"/players\"]')")), "");
+    await navigateAndSettle(client, `${BASE}/auth/forgot-password`);
+    record("[限定テスト] パスワード再設定にメール送信の限定テスト中の案内", !!(await evalJson(client, "!!document.querySelector('[data-testid=password-reset-limited]')")), "");
+    await navigateAndSettle(client, `${BASE}/auth/sign-in`);
+    record("[限定テスト] ログイン画面は新規作成が限定テスト中と案内する（登録できると誤解させない）", (await bodyText(client)).includes("限定テスト中"), "");
+
+    // ============================================================
+    // サインアップ画面: フォーム表示・入力検証
+    // ============================================================
+    await navigateAndSettle(client, `${BASE}/auth/sign-up?signupPreview=1`);
     const signUpBody = await bodyText(client);
     record("[サインアップ] タイトルが表示される", signUpBody.includes("新規登録"), "");
     record(
@@ -214,7 +227,7 @@ async function main() {
     record("[サインアップ] 不正なメール形式で安全なエラーが表示される", invalidEmailErrorBody.includes("メールアドレスの形式が正しくありません"), "");
 
     // パスワード不一致の検証
-    await navigateAndSettle(client, `${BASE}/auth/sign-up`);
+    await navigateAndSettle(client, `${BASE}/auth/sign-up?signupPreview=1`);
     await setInputValue(client, 'input[type="email"]', "test@example.com");
     await evalJson(
       client,
@@ -262,7 +275,7 @@ async function main() {
       ["バックスラッシュと改行の混在", "a\\\nb@example.com"],
     ];
     const errorsBeforeProbes = errors.length;
-    await navigateAndSettle(client, `${BASE}/auth/sign-up`);
+    await navigateAndSettle(client, `${BASE}/auth/sign-up?signupPreview=1`);
     const PROBE_KEY = "efb-test-injection-probe";
     for (const [label, probeValue] of injectionProbes) {
       // localStorage往復(callInPage経由)で値そのものの完全性を検証する。
@@ -288,7 +301,7 @@ async function main() {
     // ============================================================
     // サインアップ成功画面(テストダブル: signUpは常にerror無しで成功する)
     // ============================================================
-    await navigateAndSettle(client, `${BASE}/auth/sign-up`);
+    await navigateAndSettle(client, `${BASE}/auth/sign-up?signupPreview=1`);
     await setResendMode(client, "success");
     await setInputValue(client, 'input[type="email"]', "test-signup@example.com");
     await evalJson(
@@ -353,7 +366,7 @@ async function main() {
     // ============================================================
     // 確認メール再送信: レート制限(429相当)
     // ============================================================
-    await navigateAndSettle(client, `${BASE}/auth/sign-up`);
+    await navigateAndSettle(client, `${BASE}/auth/sign-up?signupPreview=1`);
     await setResendMode(client, "rate_limited");
     await setInputValue(client, 'input[type="email"]', "test-ratelimit@example.com");
     await evalJson(
@@ -435,7 +448,8 @@ async function main() {
       { timeoutMs: 4000, intervalMs: 100 },
     );
     record("[アカウント/ログイン中] ログイン中である旨が表示される", !!authedAccountBody && authedAccountBody.includes("ログイン中"), "");
-    record("[アカウント/ログイン中] クラウド同期は未実装である旨の案内がある", !!authedAccountBody && authedAccountBody.includes("クラウド同期"), "");
+    // 6fc225d で文言が「端末間の自動同期は未実装です」（My Team の明示的なクラウド保存はアルファ提供）へ正確化された。
+    record("[アカウント/ログイン中] 端末間の自動同期は未実装である旨の案内がある", !!authedAccountBody && authedAccountBody.includes("自動同期は未実装"), "");
     record("[アカウント/ログイン中] 内部UUID・アクセストークン・リフレッシュトークンを表示しない", !!authedAccountBody && !SECRET_LEAK_RE.test(authedAccountBody), "");
     record(
       "[アカウント/ログイン中] 実際のメールアドレス形式の値を表示しない(テストダブルの偽アドレスのみ)",
@@ -465,7 +479,7 @@ async function main() {
     // 英語(i18n)
     // ============================================================
     await setLocalStorageItem(client, LOCALE_KEY, "en");
-    await navigateAndSettle(client, `${BASE}/auth/sign-up`);
+    await navigateAndSettle(client, `${BASE}/auth/sign-up?signupPreview=1`);
     const enSignUpBody = await bodyText(client);
     record("[英語] サインアップ画面が英語表示される", enSignUpBody.includes("Sign up"), "");
     record("[英語] 日本語固定文が残らない(サインアップ)", !/新規登録|パスワード（確認用）/.test(enSignUpBody), "");

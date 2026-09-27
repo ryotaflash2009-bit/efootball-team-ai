@@ -1,0 +1,26 @@
+[
+  {
+    "file": "confirm-signup.html",
+    "subject": "【eFootball Team AI】メールアドレスの確認 / Confirm your email"
+  },
+  {
+    "file": "magic-link.html",
+    "subject": "【eFootball Team AI】ログイン用リンク / Your sign-in link"
+  },
+  {
+    "file": "reset-password.html",
+    "subject": "【eFootball Team AI】パスワードの再設定 / Reset your password"
+  },
+  {
+    "file": "change-email.html",
+    "subject": "【eFootball Team AI】メールアドレス変更の確認 / Confirm your new email"
+  },
+  {
+    "file": "invite.html",
+    "subject": "【eFootball Team AI】招待のお知らせ / You're invited"
+  },
+  {
+    "file": "reauthentication.html",
+    "subject": "【eFootball Team AI】確認コード / Your verification code"
+  }
+]

@@ -10,6 +10,7 @@ import { classifyResendFailure } from "@/lib/supabase/auth-errors";
 import { getRemainingCooldownSeconds, canResendNow } from "@/lib/supabase/resend-cooldown";
 import { isLocalDevHostname } from "@/lib/supabase/local-dev";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { resolveAuthRedirectOrigin } from "@/lib/supabase/account-availability";
 
 type AuthKey = keyof Dictionary["auth"];
 
@@ -60,7 +61,7 @@ export function SignUpSuccessPanel({ email, successMessage }: { email: string; s
         type: "signup",
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${resolveAuthRedirectOrigin(window.location.origin)}/auth/callback`,
         },
       });
       setLastSentAt(Date.now());
@@ -68,7 +69,7 @@ export function SignUpSuccessPanel({ email, successMessage }: { email: string; s
         const reason = classifyResendFailure(error);
         setResendResult({
           tone: "error",
-          text: reason === "RATE_LIMITED" ? ta("resendConfirmationRateLimitedMessage") : ta("resendConfirmationFailedMessage"),
+          text: reason === "RATE_LIMITED" ? ta("resendConfirmationRateLimitedMessage") : ta("emailSendFailedMessage"),
         });
         return;
       }

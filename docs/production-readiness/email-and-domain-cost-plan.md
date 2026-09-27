@@ -1,0 +1,99 @@
+# 認証メールと独自ドメインの費用計画（2026-09-27）
+
+目的: 少人数の無料公開ベータで、認証メール（登録確認・再送・パスワード再設定・メールアドレス変更・招待・再認証）を**ドメイン以外は月額0円**で安全に届ける。
+料金は 2026-09-27 に公開ページで確認した値（下の「出典」）。**購入・契約の画面で必ず再確認する**（推測で確定しない）。
+
+## 1. 結論
+
+| 項目 | 選択 | 月額 | 年額 |
+|---|---|---|---|
+| SMTP（認証メール送信） | **Resend Free** | 0円 | 0円 |
+| ドメイン登録 | **Cloudflare Registrar**（原価販売・WHOIS 情報の非公開・DNSSEC・DNS 無料） | — | 候補1なら US$10.46 |
+| DNS / SSL | Cloudflare DNS（無料）／Vercel の自動 SSL（無料） | 0円 | 0円 |
+| Web 公開 | Vercel（現在の枠のまま） | 0円 | 0円 |
+| 認証 | Supabase Auth（現在の枠のまま） | 0円 | 0円 |
+| **合計（ドメイン以外）** | | **0円** | |
+
+## 2. Resend Free の枠（出典: resend.com/pricing, 2026-09-27）
+
+| 項目 | 値 |
+|---|---|
+| 料金 | US$0 / 月 |
+| 月間送信数 | 3,000 通 |
+| 1日の送信数 | 100 通 |
+| 独自ドメイン | 3 件 |
+| ログ保持 | 30 日 |
+| SMTP | 全プランで利用可 |
+| 上限到達時 | Free には超過課金なし。上限に達すると次の期間まで送信が止まる |
+| 送信リージョン | us-east-1 / eu-west-1 / sa-east-1 / **ap-northeast-1（東京）** |
+| クレジットカード | 公開ページに明記なし（登録時に確認し、求められても入力しない） |
+| 次のプラン | Pro US$20 / 月（50,000 通、超過 US$0.90 / 1,000 通）— **ベータ中は使わない** |
+
+想定送信量: 利用者 3〜30 人。1人あたり月に数通（登録確認・再送・再設定）で、多くても月 100〜200 通程度 → 1日 100 通・月 3,000 通の枠に十分収まる。
+
+### 無料枠の安全策
+
+- Supabase のメール送信レート制限（カスタム SMTP 有効化直後は 1 時間 30 通。公式ドキュメント）を**そのまま低めに保つ**（上げない）。1日 100 通を超えない。
+- アプリ側: 再送は 60 秒のクールダウン（既存）。サインインの失敗理由・登録済みかどうかは区別しない（既存）。
+- 監視: Resend Dashboard の使用量を週1回確認。月 3,000 通の **50% / 80% / 95%**（1,500 / 2,400 / 2,850 通）を目安に、80% で再送の案内を控えめにし、95% で新規登録を一時的に「限定テスト」へ戻す（`ACCOUNT_SIGNUP_MODE`）。
+- 有料プランへの自動移行・従量課金は**有効にしない**（Free に超過課金はない）。
+
+## 3. 第二候補（採用しない理由つき）
+
+| 事業者 | Free の枠 | 評価 |
+|---|---|---|
+| Brevo Free | 1日 300 通、クレジットカード不要、SMTP 可 | **無料プランのメールに Brevo のブランド表示が入る**（外すには有料）。認証メールとしては不向き。Resend が使えない場合の予備 |
+| Gmail 個人アカウント | — | 個人アカウント依存・送信上限・差出人と到達率の問題。**正式な認証メールには使わない** |
+
+## 4. ドメイン候補（Cloudflare Registrar の原価。出典: cfdomainpricing.com 2026-09-27 更新・Cloudflare は原価販売を公表）
+
+空き状況は RDAP（登録簿の公開情報）で「未登録」を確認したもの。**プレミアム価格かどうかは Cloudflare の検索画面でのみ確定する**。
+
+| ドメイン | TLD | 登録 | 更新 | 2年 | 3年 | 空き | 商標・誤認の懸念 | メールの信頼感 | 覚えやすさ | 判定 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| **teamaixi.com** | .com | $10.46 | $10.46 | $20.92 | $31.38 | 未登録 | 低（eFootball を含まない） | 高（.com） | 中（Team AI + XI） | **推奨1** |
+| **xibuild.app** | .app | $14.20 | $14.20 | $28.40 | $42.60 | 未登録 | 低 | 中〜高（HTTPS 必須の TLD） | 高（「XI を組む」） | **推奨2** |
+| **xilab.dev** | .dev | $12.20 | $12.20 | $24.40 | $36.60 | 未登録 | 低 | 中〜高（HTTPS 必須の TLD） | 高 | **推奨3** |
+| teamaixi.app | .app | $14.20 | $14.20 | $28.40 | $42.60 | 未登録 | 低 | 中〜高 | 中 | 予備 |
+| xibuild.dev | .dev | $12.20 | $12.20 | $24.40 | $36.60 | 未登録 | 低 | 中〜高 | 高 | 予備 |
+| xilab.app | .app | $14.20 | $14.20 | $28.40 | $42.60 | 未登録 | 低 | 中〜高 | 高 | 予備 |
+| teamai-lab.com | .com | $10.46 | $10.46 | $20.92 | $31.38 | 未登録 | 低 | 中（ハイフンは読み間違い・なりすましと混同しやすい） | 中 | 非推奨 |
+| fanteamai.com | .com | $10.46 | $10.46 | $20.92 | $31.38 | 未登録 | 低 | 高 | 低（区切りが分かりにくい） | 非推奨 |
+| efteamai.com | .com | $10.46 | $10.46 | $20.92 | $31.38 | 未登録 | **中**（「ef」が eFootball の略と受け取られうる） | 高 | 中 | 非推奨 |
+| efootballteamai.com | .com | $10.46 | $10.46 | $20.92 | $31.38 | 未登録 | **高**（KONAMI の登録商標「eFootball」をそのまま含む・公式と誤認されうる） | 高 | 高 | **採用しない** |
+
+登録済み（候補外）: teamailab.com, squadlab.app, elevenlab.app, bestxi.app, squadsmith.app, formationlab.app, teamforge.app, pitchlab.app, tacticxi.com, squadiq.app。
+
+避けた TLD（初年度だけ安く更新が高い）: .site / .online（$4.99 → 更新 $27.70）、.tech（$9.99 → $49.20）、.io（$32 → $50）。.xyz は迷惑メールでの利用が多く、認証メールの差出人として避けた。
+
+商標の評価は一般的な注意であり、法的な判断ではない。
+
+## 5. 費用の合計（推奨1: teamaixi.com の場合）
+
+| 期間 | ドメイン | SMTP | その他 | 合計 |
+|---|---|---|---|---|
+| 1年 | US$10.46 | 0 | 0 | **US$10.46** |
+| 2年 | US$20.92 | 0 | 0 | **US$20.92** |
+| 3年 | US$31.38 | 0 | 0 | **US$31.38** |
+
+- 月額の継続費用: **0円**（ドメイン以外）。
+- 自動更新: Cloudflare で有効（更新価格は登録と同額）。更新日の約1か月前にメールで通知される想定（Cloudflare の設定で確認）。
+- 隠れた費用: なし（WHOIS 情報の非公開・DNSSEC・DNS・SSL は無料）。円での請求額はカード会社の為替による。
+- 解約: 自動更新を止めれば次の更新日で失効（失効後はメールと URL が使えなくなる）。
+
+## 6. 有料化を検討する条件（ベータ中は行わない）
+
+- 月 2,400 通（80%）を 2 か月続けて超える、または 1日 100 通に近づく日が続く。
+- その場合も自動では移行せず、本人の判断で Resend Pro（US$20/月）か送信量の抑制を選ぶ。
+
+## 出典
+
+- [Resend Pricing](https://resend.com/pricing)
+- [Resend: Send with Supabase SMTP](https://resend.com/docs/send-with-supabase-smtp)
+- [Resend: Regions](https://resend.com/docs/dashboard/domains/regions)
+- [Supabase: Auth SMTP](https://supabase.com/docs/guides/auth/auth-smtp)
+- [Cloudflare Registrar](https://www.cloudflare.com/products/registrar/)
+- [Cloudflare domain pricing tracker (cfdomainpricing.com)](https://cfdomainpricing.com/)
+- [Brevo: Free plan limits](https://help.brevo.com/hc/en-us/articles/208580669-FAQs-What-are-the-limits-of-the-Free-plan)
+- [Brevo: pricing plans (branding)](https://help.brevo.com/hc/en-us/articles/208589409-About-Brevo-s-pricing-plans)
+- 空き状況: `https://rdap.org/domain/<name>`（404 = 未登録）

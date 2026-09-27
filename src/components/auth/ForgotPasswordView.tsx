@@ -11,6 +11,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isValidEmailFormat } from "@/lib/supabase/password-rules";
 import { classifyPasswordResetFailure } from "@/lib/supabase/auth-errors";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { isSignupOpen, resolveAuthRedirectOrigin } from "@/lib/supabase/account-availability";
 
 type AuthKey = keyof Dictionary["auth"];
 
@@ -45,7 +46,7 @@ export function ForgotPasswordView() {
     setSubmitting(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: typeof window !== "undefined" ? `${window.location.origin}/auth/callback?next=${encodeURIComponent("/auth/update-password")}` : undefined,
+        redirectTo: typeof window !== "undefined" ? `${resolveAuthRedirectOrigin(window.location.origin)}/auth/callback?next=${encodeURIComponent("/auth/update-password")}` : undefined,
       });
 
       if (error) {
@@ -68,6 +69,11 @@ export function ForgotPasswordView() {
   return (
     <div className="flex flex-col gap-5">
       <PageHeader title={ta("forgotPasswordPageTitle")} icon="shield" description={ta("forgotPasswordDescription")} />
+      {!isSignupOpen() ? (
+        <p className="max-w-md rounded-md border border-warning/40 bg-warning/10 p-3 text-xs text-text" data-testid="password-reset-limited">
+          {ta("passwordResetLimitedNotice")}
+        </p>
+      ) : null}
 
       {sent ? (
         <Surface tone="inset" padding="md">

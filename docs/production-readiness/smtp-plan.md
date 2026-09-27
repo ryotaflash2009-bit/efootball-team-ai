@@ -48,3 +48,10 @@
 ## 6. 次の一歩
 
 コード変更やSupabase設定変更ではなく、**ユーザー自身によるカスタムSMTP事業者の選定・ドメイン取得の意思決定**が次の一歩である。今回のタスクではここまでの計画立案に留める。
+
+## 7. 更新（2026-09-27）
+
+- 事業者・ドメイン・費用を決定した: `email-and-domain-cost-plan.md`（Resend Free + Cloudflare Registrar、ドメイン以外の月額0円）。
+- 本人向けの手順: `custom-domain-and-email-runbook.md`。
+- 認証メールのテンプレート（日英）: `email-templates/`。
+- 追加の事実: Supabase 標準 SMTP は「プロジェクトのメンバー宛てのみ・1時間に2通」で、一般の利用者へは届かない（公式ドキュメント Auth > SMTP）。そのため、カスタム SMTP の配信確認までは新規登録を「限定テスト中」にした（`src/lib/supabase/account-availability.ts` の `ACCOUNT_SIGNUP_MODE = "limited"`）。既存ユーザーのログインは変更していない。

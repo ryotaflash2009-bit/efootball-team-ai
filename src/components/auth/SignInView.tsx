@@ -12,6 +12,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { classifySignInFailure } from "@/lib/supabase/auth-errors";
 import { resolveSafeInternalPath } from "@/lib/supabase/safe-redirect";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { isSignupOpen } from "@/lib/supabase/account-availability";
 
 type AuthKey = keyof Dictionary["auth"];
 
@@ -97,9 +98,9 @@ export function SignInView() {
 
       <div className="flex flex-col gap-1.5 text-sm text-text-dim">
         <p>
-          {ta("signInNoAccountPrompt")}{" "}
+          {isSignupOpen() ? ta("signInNoAccountPrompt") : ta("signInNoAccountLimitedPrompt")}{" "}
           <Link href="/auth/sign-up" className="text-accent hover:underline">
-            {ta("signInSignUpLink")}
+            {isSignupOpen() ? ta("signInSignUpLink") : ta("signInLimitedLink")}
           </Link>
         </p>
         <p>

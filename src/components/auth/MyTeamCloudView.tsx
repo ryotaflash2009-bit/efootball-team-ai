@@ -27,6 +27,7 @@ import {
 } from "@/lib/supabase/my-team-cloud-provenance";
 import { ConfirmDialog } from "@/components/user-cards/ConfirmDialog";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { isSignupOpen } from "@/lib/supabase/account-availability";
 
 type MtcKey = keyof Dictionary["myTeamCloud"];
 type AuthKey = keyof Dictionary["auth"];
@@ -292,7 +293,7 @@ export function MyTeamCloudView() {
             </Link>
             <Link href="/auth/sign-up">
               <Button variant="secondary" size="sm">
-                {taAuth("navSignUp")}
+                {isSignupOpen() ? taAuth("navSignUp") : taAuth("navSignUpLimited")}
               </Button>
             </Link>
           </div>
