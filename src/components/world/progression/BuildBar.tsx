@@ -10,6 +10,7 @@ import {
 } from "@/lib/progression/build-storage";
 import type { ProgressionResult, SavedBuild, SelectedConditionalBooster } from "@/lib/progression/types";
 import { isV2RulesVersion } from "@/lib/progression/progression-rules";
+import { subscribeCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
 
 /**
  * 育成ビルドの保存・読み込み・複数管理（localStorage）。
@@ -38,6 +39,9 @@ export function BuildBar({
   useEffect(() => {
     setAvailable(isBuildStorageAvailable());
     setBuilds(listBuilds(worldCardId));
+    // 保存先（guest/アカウント）は認証確認後に決まる。決まった・切り替わったときに一覧を読み直す
+    // （読み直さないと、再読込直後に保存済みビルドが表示されない）。
+    return subscribeCurrentScope(() => setBuilds(listBuilds(worldCardId)));
   }, [worldCardId]);
 
   function refresh() {
@@ -97,12 +101,12 @@ export function BuildBar({
               onChange={(e) => setName(e.target.value)}
               placeholder="ビルド名"
               aria-label="ビルド名"
-              className="min-w-0 flex-1 rounded-md border border-border bg-surface-2 px-2 py-1.5 text-sm"
+              className="min-h-[44px] min-w-0 flex-1 rounded-md border border-border bg-surface-2 px-2 py-1.5 text-sm"
             />
             <button
               type="button"
               onClick={handleSave}
-              className="shrink-0 rounded-md bg-accent px-3 py-1.5 text-sm font-semibold text-accent-ink"
+              className="min-h-[44px] shrink-0 rounded-md bg-accent px-4 py-1.5 text-sm font-semibold text-accent-ink"
             >
               保存
             </button>
@@ -125,13 +129,13 @@ export function BuildBar({
                     </span>
                   </span>
                   <span className="flex shrink-0 gap-1.5">
-                    <button type="button" onClick={() => onLoad(b)} className="rounded bg-surface px-2 py-0.5 hover:text-accent">
+                    <button type="button" onClick={() => onLoad(b)} className="min-h-[44px] min-w-[44px] rounded bg-surface px-2 py-0.5 hover:text-accent">
                       読込
                     </button>
-                    <button type="button" onClick={() => handleRename(b)} className="rounded bg-surface px-2 py-0.5 hover:text-accent">
+                    <button type="button" onClick={() => handleRename(b)} className="min-h-[44px] min-w-[44px] rounded bg-surface px-2 py-0.5 hover:text-accent">
                       名前
                     </button>
-                    <button type="button" onClick={() => handleDelete(b)} className="rounded bg-surface px-2 py-0.5 text-danger hover:opacity-80">
+                    <button type="button" onClick={() => handleDelete(b)} className="min-h-[44px] min-w-[44px] rounded bg-surface px-2 py-0.5 text-danger hover:opacity-80">
                       削除
                     </button>
                   </span>
