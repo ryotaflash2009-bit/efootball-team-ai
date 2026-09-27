@@ -116,7 +116,14 @@ function decide(sourceChecksum: string, count: number, applied: AppliedDatasetSt
 }
 
 /** 定期検出の本体(transportは呼び出し側が上限付きで作る)。 */
-export async function runDetection(input: { transport: SourceTransport; fetchedAt: string; sleep: (ms: number) => Promise<void>; applied: AppliedState }): Promise<DetectionResult> {
+export async function runDetection(input: {
+  transport: SourceTransport;
+  fetchedAt: string;
+  sleep: (ms: number) => Promise<void>;
+  applied: AppliedState;
+  /** F-071: 完全な World の staging rows と、applied-state と同じ基準の checksum12（分布の候補を作るため。任意・読み取りだけ）。 */
+  onWorldRows?: (rows: readonly unknown[], sourceChecksum12: string) => void;
+}): Promise<DetectionResult> {
   const worldRaw: (string | null)[] = [];
   const w = await collectWorldFullSnapshot(input.transport, {
     fetchedAt: input.fetchedAt,
@@ -152,7 +159,9 @@ export async function runDetection(input: { transport: SourceTransport; fetchedA
   const worldQuality = qualityOf(w.snapshot, worldSignals);
   const managersSignals: string[] = [];
   const managersQuality = qualityOf(m.snapshot, managersSignals);
-  const world = decide(computeUpdateTotalChecksum({ world_player_cards: ws.sourceChecksum }), ws.rowCount, input.applied.datasets.world_player_cards, UPDATE_POLICY_THRESHOLDS.worldPlayerCards.countDropHardBlockRatio, worldSignals, worldQuality);
+  const worldTotalChecksum = computeUpdateTotalChecksum({ world_player_cards: ws.sourceChecksum });
+  input.onWorldRows?.(ws.rows, worldTotalChecksum.slice(0, 12));
+  const world = decide(worldTotalChecksum, ws.rowCount, input.applied.datasets.world_player_cards, UPDATE_POLICY_THRESHOLDS.worldPlayerCards.countDropHardBlockRatio, worldSignals, worldQuality);
   const managers = decide(computeUpdateTotalChecksum({ managers: ms.sourceChecksum }), ms.rowCount, input.applied.datasets.managers, UPDATE_POLICY_THRESHOLDS.managers.countDropHardBlockRatio, managersSignals, managersQuality);
   return {
     ok: true,

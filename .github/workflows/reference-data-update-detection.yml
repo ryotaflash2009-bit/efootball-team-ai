@@ -11,6 +11,7 @@ name: Reference data update detection (weekly + manual; detection only)
 # - What it does: fetch the World catalogue once (caps in stage4-world.ts) and managers.json once, normalise,
 #   and compare source checksums/counts/timestamps with docs/production-readiness/reference-data-applied-state.json.
 #   Output: a non-secret summary (no_change / update_available / attention_required); no page bodies are stored.
+#   It also uploads the F-071 base-ability distribution candidate (value counts per stat; aggregates only).
 #   attention_required or a stopped fetch fails the job (the owner gets GitHub's failure notification).
 # - It never runs plan/dry-run/apply against Production, Backup, rollback or Restore, never updates the
 #   applied-state record, never commits or opens PRs (contents: read only); those stay owner-approved steps.
@@ -74,6 +75,7 @@ jobs:
           REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED: ${{ vars.REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED }}
           REFERENCE_DATA_DETECTION_CONFIRM: ${{ inputs.confirm }}
           REFERENCE_DATA_DETECTION_SUMMARY_PATH: ${{ runner.temp }}/reference-data-detection-summary.json
+          REFERENCE_DATA_DISTRIBUTION_PATH: ${{ runner.temp }}/world-base-distribution.candidate.json
         run: node scripts/run-update-detection-entry.mjs
 
       # Non-secret summary only (counts, 12-character checksum prefixes, decisions, request statistics).
@@ -83,5 +85,18 @@ jobs:
         with:
           name: reference-data-detection-summary
           path: ${{ runner.temp }}/reference-data-detection-summary.json
+          if-no-files-found: ignore
+          retention-days: 30
+
+      # F-071 candidate: per-stat value counts of base abilities (aggregates only; no names, IDs or URLs).
+      # It reaches main only through the Evidence / applied-state PR after a verified Production apply
+      # (or, with no upstream change, when its checksum equals the applied-state record). The UI uses it only
+      # when its binding matches applied-state.
+      - name: Upload the base-ability distribution candidate
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: world-base-distribution-candidate
+          path: ${{ runner.temp }}/world-base-distribution.candidate.json
           if-no-files-found: ignore
           retention-days: 30
