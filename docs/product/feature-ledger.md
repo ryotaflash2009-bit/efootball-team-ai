@@ -54,7 +54,7 @@
 | F-032 | ポジション適性（表示） | completed | 80% | F-002 | R | — | 不要 | 不要 | Free | player-analysis tests | — |
 | F-032b | ポジション別OVR | blocked | 10% | 計算規則の確認 | R | — | 不要 | 不要 | Free | 規則が未確認なので推測で算式を作らない | 規則サンプルの収集（本人またはデータ源） |
 | F-033 | 完全ゲームプラン（戦術・役割・指示） | completed（MVP：配置編集。個別指示は deferred） | 70% | F-024, F-003 | R | L | 不要 | 不要 | Free | 本人判断 2026-09-27：現在の配置編集を MVP 完成版とする | 個別指示は、公式または許諾済みの信頼できる仕様を確認できるまで deferred（推測で実装しない） |
-| F-034 | 能力値直接操作・スライド式育成UI（能力タップ→関連強調→下部パネルの＋／－・スライダー・配分チップ・1タップ保存。選手詳細と比較画面（1人ずつの編集モード）。日英完全対応。eFHUB を UX の基準にし、素材はコピーしない） | verified | 100% | F-028 | R | L | 不要 | 不要 | Free | PR #80・#82・#83・#84、`docs/product/f034-human-factors-audit.md`（人間工学監査 15件・Sev3 全修正）、`evidence/f034-human-factors-l10n-compare-2026-09-27.json`（公開: 総合 568/568・育成 458/458・比較 168/168、8 viewport） | 本人の主観確認（発光・パネルの高さ・触り心地）。ビルド分析画面の英語化は別件 |
+| F-034 | 能力値直接操作・スライド式育成UI（能力タップ→関連強調→下部パネルの＋／－・スライダー・配分チップ・1タップ保存。選手詳細と比較画面（1人ずつの編集モード）。日英完全対応。eFHUB を UX の基準にし、素材はコピーしない） | verified | 100% | F-028 | R | L | 不要 | 不要 | Free | PR #80・#82・#83・#84、`docs/product/f034-human-factors-audit.md`（人間工学監査 15件・Sev3 全修正）、`evidence/f034-human-factors-l10n-compare-2026-09-27.json`（公開: 総合 568/568・育成 458/458・比較 168/168、8 viewport） | 本人の主観確認（発光・パネルの高さ・触り心地）。My Builds・ビルド分析の英語化は PR #89 で完了（公開 8 viewport で日本語 0） |
 
 ## 3. 診断と共有（Phase 3）
 
@@ -70,14 +70,14 @@
 
 | ID | 機能 | 状態 | 完成率 | 依存 | Prod | UD | Auth | AI | Tier | Release Gate / Evidence | 次の作業 |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| F-050 | 認証（Supabase Auth：登録・ログイン・再設定） | completed | 80% | Supabase | — | C | — | 不要 | Free | PR #5, #17。認証メール: 標準 SMTP はプロジェクトのメンバー宛てのみ届くため、新規登録は「限定テスト中」（2026-09-27）。費用計画 `production-readiness/email-and-domain-cost-plan.md`・手順 `custom-domain-and-email-runbook.md`・日英テンプレート | 本人: ドメイン購入・Resend・Vercel・Supabase の設定（手順書 A〜G）→ 配信テスト → 新規登録の公開 |
+| F-050 | 認証（Supabase Auth：登録・ログイン・再設定・メールのリンク確認・メール変更） | completed | 85% | Supabase | — | C | — | 不要 | Free | PR #5, #17, #86, #87, #88。新規登録は「限定テスト中」（標準 SMTP はメンバー宛てのみ）。/auth/confirm（押したときだけ検証）・エラー区分・メール変更は配信確認まで無効・Release Validator（`npm run validate:auth-email-release`）。ドメイン購入は本人がまとめ買いまで保留（`production-readiness/domain-purchase-queue.md`）。`evidence/auth-readiness-f071-f073-2026-09-27.json`（公開 114/114） | 本人: ドメインのまとめ買い → 手順書 A〜G → Validator が READY → 本人承認 → 新規登録の公開 |
 | F-051 | アカウント別データ分離（RLS・ローカル名前空間） | completed | 85% | F-050 | — | L/C | 要 | 不要 | Free | PR #9–#11, #17 | — |
 | F-052 | クラウド同期（My Team PoC → ビルド・スカッド） | partially_implemented | 30% | F-051 | — | C | 要 | 不要 | Free | My Team 手動保存の PoC | roadmap 段階7〜9 |
-| F-053 | 公開ユーザーID・公開プロフィール | idea | 0% | F-050, F-056 | — | C | 要 | 不要 | Free | — | 安全機能の後 |
-| F-054 | 公開範囲（非公開/URL限定/友達限定/全体公開） | idea | 0% | F-053 | — | C | 要 | 不要 | Free | — | — |
-| F-055 | 友達機能 | idea | 0% | F-053, F-056 | — | C | 要 | 不要 | Free | — | — |
-| F-056 | ブロック・ミュート・通報・安全機能 | idea（ブロック・通報は設計書 26章に記載） | 0% | F-050 | — | C | 要 | 不要 | Free | — | 公開系機能より先に実装 |
-| F-057 | 削除・退会導線（アカウント削除予約・取消） | partially_implemented | 30% | F-050 | — | C | 要 | 不要 | Free | 現状は問い合わせ窓口経由 | roadmap 段階10 |
+| F-053 | 公開ユーザーID・公開プロフィール | designed | 5% | F-050, F-056 | — | C | 要 | 不要 | Free | `docs/product/community-and-growth-design.md` §2 | 安全機能の後。本人判断: 公開IDの形式・禁止語・規約・本番マイグレーション |
+| F-054 | 公開範囲（非公開/URL限定/友達限定/全体公開） | designed | 5% | F-053 | — | C | 要 | 不要 | Free | `docs/product/community-and-growth-design.md` §2（既定は非公開・noindex） | F-053 と同時 |
+| F-055 | 友達機能 | designed | 5% | F-053, F-056 | — | C | 要 | 不要 | Free | `docs/product/community-and-growth-design.md` §3 | F-053・F-056 の後 |
+| F-056 | ブロック・ミュート・通報・安全機能 | designed | 10% | F-050 | — | C | 要 | 不要 | Free | `docs/product/community-and-growth-design.md` §1（効果・データ・RLS・レート制限） | 公開系機能より先に実装。本人判断: 通報の対応体制・規約とプライバシーポリシーの改定・本番マイグレーション |
+| F-057 | 削除・退会導線（アカウント削除予約・取消） | partially_implemented | 30% | F-050 | — | C | 要 | 不要 | Free | 現状は問い合わせ窓口経由。セルフ削除は deferred（`production-readiness/auth-deferred-items.md`：サーバー側の権限か本番の DB 関数が必要） | 本人: 方式（Edge Function / DB 関数）の承認 |
 | F-058 | データ管理（ブラウザー内データの確認・削除） | verified | 90% | — | — | L | 不要 | 不要 | Free | 総合black-box | 一括 export F-023b |
 
 ## 5. 成長・比較・個性（Phase 5〜6）
@@ -85,13 +85,13 @@
 | ID | 機能 | 状態 | 完成率 | 依存 | Prod | UD | Auth | AI | Tier | 次の作業 |
 |---|---|---|---|---|---|---|---|---|---|---|
 | F-060 | 診断履歴（ブラウザー内） | verified | 100% | F-026, F-042 | — | L（スコープ別） | 不要 | 不要 | Free | PR #76、`evidence/f060-f043-2026-09-27.json`（公開 black-box 550/550） | 認証ユーザー向けの同期は別途設計（F-052） |
-| F-061 | 成長プロフィール | idea | 0% | F-060 | — | C | 要 | 不要 | Free | — |
-| F-062 | 友達との比較・ライバル | idea | 0% | F-055 | — | C | 要 | 不要 | Free | — |
+| F-061 | 成長プロフィール | designed | 5% | F-060 | — | L（ブラウザー内の版）/ C（同期） | 不要（ブラウザー内の版） | 不要 | Free | `docs/product/community-and-growth-design.md` §4 | ブラウザー内の版は実装可能。同期は認証メールの公開後 |
+| F-062 | 友達との比較・ライバル | designed | 5% | F-055 | — | C | 要 | 不要 | Free | `docs/product/community-and-growth-design.md` §3 | F-055 の後 |
 | F-070 | AI Best XI 高度化（戦術・監督・ブースター考慮） | partially_implemented | 40% | F-025 | R | L | 不要 | 不要 | Free | 監督適性の反映 |
-| F-071 | カテゴリ別パーセンタイル（スカッド・カード全体） | designed | 10% | F-026, reference data | R | — | 不要 | 不要 | Free | 設計 `docs/product/f071-percentile-design.md`（標準最終値の全カード算出経路の確認が次） |
-| F-072 | 称号・バッジ | idea | 0% | F-026, F-071 | — | L | 不要 | 不要 | Free | 付与規則の原案確認（質問Q3） |
-| F-073 | 「あなたの一番」の自動発見 | idea | 0% | F-020, F-071 | R | L | 不要 | 不要 | Free | — |
-| F-074 | スカッド独自性評価 | idea | 0% | F-024, 利用統計 | R | C | 要 | 不要 | Free | 集計データが必要 |
+| F-071 | 基礎能力値のパーセンタイル（能力値ごと・範囲: 全World/同ポジション/フィールド・GK） | completed | 85% | F-026, reference data | R | — | 不要 | 不要 | Free | PR #90、`docs/product/f071-percentile-design.md` §7、`evidence/auth-readiness-f071-f073-2026-09-27.json`（公開 50/50）。カテゴリ・スカッド単位は確定した計算式が無いため deferred | 最初の定期検出（2026-09-28）の候補を main へ（checksum が applied-state と一致すれば）→ verified |
+| F-072 | 称号・バッジ（選手・スカッド診断・共有カード） | completed | 90% | F-026, F-071 | — | L | 不要 | 不要 | Free | PR #91、`docs/product/f072-titles-badges.md`、`evidence/auth-readiness-f071-f073-2026-09-27.json`（公開 82/82。診断・共有カードは公開環境で確認済み） | 選手の称号は F-071 の成果物の取り込み後に公開環境で表示 |
+| F-073 | 「あなたの一番」の自動発見（My Team） | completed | 90% | F-020, F-071, F-072 | R | L | 不要 | 不要 | Free | PR #92、`evidence/auth-readiness-f071-f073-2026-09-27.json`（公開 99/99） | F-071 の成果物の取り込み後に公開環境で表示 |
+| F-074 | スカッド独自性評価 | designed | 5% | F-024, 利用統計 | R | C | 要 | 不要 | Free | `docs/product/community-and-growth-design.md` §5（公開を選んだスカッドだけを匿名集計・k-匿名性） | 本人判断: 集計の同意・保持期間・プライバシーポリシー。判断まで実装しない |
 | F-075 | ランキング | idea | 0% | F-053, F-056 | — | C | 要 | 不要 | Free | コミュニティの後 |
 
 ## 6. コミュニティ（Phase 7）
