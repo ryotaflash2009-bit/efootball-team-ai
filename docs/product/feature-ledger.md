@@ -85,7 +85,7 @@
 | ID | 機能 | 状態 | 完成率 | 依存 | Prod | UD | Auth | AI | Tier | 次の作業 |
 |---|---|---|---|---|---|---|---|---|---|---|
 | F-060 | 診断履歴（ブラウザー内） | verified | 100% | F-026, F-042 | — | L（スコープ別） | 不要 | 不要 | Free | PR #76、`evidence/f060-f043-2026-09-27.json`（公開 black-box 550/550） | 認証ユーザー向けの同期は別途設計（F-052） |
-| F-061 | 成長プロフィール | designed | 5% | F-060 | — | L（ブラウザー内の版）/ C（同期） | 不要（ブラウザー内の版） | 不要 | Free | `docs/product/community-and-growth-design.md` §4 | ブラウザー内の版は実装可能。同期は認証メールの公開後 |
+| F-061 | 成長プロフィール（ブラウザー内の版） | completed | 70% | F-060 | — | L（スコープ別） | 不要 | 不要 | Free | PR #94（診断履歴から、スカッドごとの総合点の推移・最も伸びたカテゴリ・克服した弱点。同じ診断規則の履歴だけを比較）、black-box 115/115（8 viewport × 日英） | クラウド同期の版は認証メールの公開と本番マイグレーションの後（`community-and-growth-design.md` §4） |
 | F-062 | 友達との比較・ライバル | designed | 5% | F-055 | — | C | 要 | 不要 | Free | `docs/product/community-and-growth-design.md` §3 | F-055 の後 |
 | F-070 | AI Best XI 高度化（戦術・監督・ブースター考慮） | partially_implemented | 40% | F-025 | R | L | 不要 | 不要 | Free | 監督適性の反映 |
 | F-071 | 基礎能力値のパーセンタイル（能力値ごと・範囲: 全World/同ポジション/フィールド・GK） | completed | 85% | F-026, reference data | R | — | 不要 | 不要 | Free | PR #90、`docs/product/f071-percentile-design.md` §7、`evidence/auth-readiness-f071-f073-2026-09-27.json`（公開 50/50）。カテゴリ・スカッド単位は確定した計算式が無いため deferred | 最初の定期検出（2026-09-28）の候補を main へ（checksum が applied-state と一致すれば）→ verified |
