@@ -1,0 +1,55 @@
+{
+  "evidence": "Auth readiness while the domain purchase is deferred; build analysis English; F-071 base percentiles; F-072 titles and badges; F-073 Your best",
+  "recordedAt": "2026-09-27",
+  "containsSecrets": false,
+  "containsRowDataOrRawHtml": false,
+  "prs": [
+    { "pr": 87, "mergeCommit": "0d696fc", "scope": "auth: /auth/confirm (TokenHash, press-to-verify), error classes incl. service unavailable, email change disabled until SMTP verified, email release validator, restricted-signup black box" },
+    { "pr": 88, "mergeCommit": "fc4cb03", "scope": "docs: domain purchase deferred (queue, cost ledger section 7, multi-project runbook, deferred auth items)" },
+    { "pr": 89, "mergeCommit": "a25fc25", "scope": "full English for My Builds and build analysis (ported from wip/build-inventory-english, no rebase)" },
+    { "pr": 90, "mergeCommit": "5086eab", "scope": "F-071 base-ability percentiles: distribution math, artifact + validator bound to applied-state, detection candidate upload (contents: read), UI on detail / F-034 / compare" },
+    { "pr": 91, "mergeCommit": "b98ada5", "scope": "F-072 rule-based titles and badges (players, squad diagnosis, share card)" },
+    { "pr": 92, "mergeCommit": "f6b3129", "scope": "F-073 Your best on My Team" }
+  ],
+  "verification": {
+    "unitTests": { "files": 268, "tests": 4575, "result": "pass", "command": "npm run verify" },
+    "localBlackBox": {
+      "supabaseAuthTestDouble": "173/173",
+      "restrictedSignup8Viewports": "114/114",
+      "basePercentileTitlesYourBest8Viewports": "99/99",
+      "buildAnalysisEnglishProbe": "0 Japanese strings outside user content on /my-builds and /build-inventory, 8 viewports, 0 console errors"
+    },
+    "publicBlackBox": {
+      "site": "https://efootball-team-ai.vercel.app",
+      "restrictedSignupAfterPR87": "114/114 (form never shown in production; ?signupPreview=1 ignored; 0 emails sent; no form submitted)",
+      "fullRegressionAfterPR87": "568/568 route steps on 8 viewports; the final memory loop hit a transient 'card not found' once and passed on re-run (steps 74/74, memory OK, security 18/18)",
+      "buildAnalysisEnglishAfterPR89": "0 Japanese strings, 0 console errors, 16 page x viewport combinations",
+      "basePercentileAfterPR90": "50/50",
+      "basePercentileTitlesAfterPR91": "82/82",
+      "basePercentileTitlesYourBestAfterPR92": "99/99"
+    }
+  },
+  "f071ArtifactState": {
+    "committedArtifact": null,
+    "meaning": "not generated yet; the UI shows the owner's fallback text and no values",
+    "nextStep": "first scheduled detection 2026-09-28 03:17 JST uploads world-base-distribution-candidate; if its checksum equals applied-state (ed068757c555, 13,297 cards) it is brought to main in a follow-up PR"
+  },
+  "unchangedWhileDomainDeferred": [
+    "Supabase Custom SMTP", "Site URL", "Redirect URLs", "confirm-email public open", "Vercel custom domain", "Cloudflare DNS", "Resend domain", "SMTP secret", "public signup flags (ACCOUNT_SIGNUP_MODE=limited, AUTH_EMAIL_DELIVERY=builtin_members_only)", "production schema / RLS / roles", "reference data", "backup / apply / schedule permissions"
+  ],
+  "knownIssues": [
+    {
+      "id": "KI-TMP-OUTSIDE-WORKSPACE",
+      "summary": "In an earlier session a PR body was written to /tmp/pr4-<number>.md and a subagent may have created an empty /tmp/x, both outside the workspace. Per the owner's instruction they are left untouched (not read, not deleted) and recorded here.",
+      "prevention": "Temporary files are written only to ./data/work inside the repository (gitignored); PR bodies use ./data/work/pr-body.md."
+    },
+    {
+      "id": "KI-APPLY-CLI-TEST-UNDER-LOAD",
+      "summary": "src/lib/reference-data/auto-update/apply-cli.test.ts (spawns a real CLI) failed once when run together with the whole reference-data suite and passed alone and in the next full verify; treated as a load-related timing flake."
+    },
+    {
+      "id": "KI-PUBLIC-BB-MEMORY-LOOP",
+      "summary": "public-black-box-full.mjs memory loop once could not find a player card link right after navigation; re-run passed. One perf sample reported an error during /squads with normal timings."
+    }
+  ]
+}
