@@ -1,0 +1,21 @@
+import type { Locale } from "@/lib/i18n/locale";
+import { getStatDef } from "@/lib/world/stats";
+import { groupLabelJa, statLabelJa } from "@/lib/world/stat-labels";
+import { getGroupDef } from "./stat-groups";
+
+/**
+ * 能力値直接操作UIの表示名（言語別）。日本語は stat-labels.ts、英語は stats.ts / stat-groups.ts の正式名を使う。
+ * 日本語画面に英語の内部キーを出さない・英語画面に日本語を混ぜないための唯一の入口。
+ */
+export function abilityName(statKey: string, locale: Locale): string {
+  return locale === "ja" ? statLabelJa(statKey) : getStatDef(statKey)?.nameEn ?? statKey;
+}
+
+export function categoryName(groupId: string, locale: Locale): string {
+  return locale === "ja" ? groupLabelJa(groupId) : getGroupDef(groupId)?.nameEn ?? groupId;
+}
+
+/** カテゴリの表示色（CSS 変数名）。未知のカテゴリは accent。 */
+export function categoryColorVar(groupId: string): string {
+  return getGroupDef(groupId) ? `--cat-${groupId}` : "--color-accent-rgb";
+}
