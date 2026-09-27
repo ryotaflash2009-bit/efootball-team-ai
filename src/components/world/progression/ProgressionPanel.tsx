@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type {
   ProgressionCard,
   AutoAllocateProfile,
@@ -25,7 +25,7 @@ import { MigrationNotice } from "./MigrationNotice";
 import { PlayerBoosterPanel } from "./PlayerBoosterPanel";
 import { StatComparison } from "./StatComparison";
 import { ProgressionSlider } from "./ProgressionSlider";
-import { CompactStatGrid } from "./CompactStatGrid";
+import { AbilityProgressionEditor } from "./ability-editor/AbilityProgressionEditor";
 import { ProgressionSummary, ProgressionStickyBar } from "./ProgressionSummary";
 import { PlayerAnalysisRail } from "./PlayerAnalysisRail";
 import { PlayerSkillsPanel } from "./PlayerSkillsPanel";
@@ -58,18 +58,20 @@ export function ProgressionPanel({
   const [boosterMode, setBoosterMode] = useState<BoosterApplicationMode>("standard");
   const [pending, setPending] = useState<{ build: SavedBuild; migration: BuildMigration } | null>(null);
 
-  const result = useMemo(
-    () =>
+  // 同じ条件（監督・ブースター・モード）での計算。能力値直接操作UIのプレビューも同じ関数を使う。
+  const calculate = useCallback(
+    (alloc: Record<string, number>) =>
       calculateBuild({
         card,
-        allocation,
+        allocation: alloc,
         manager,
         selectedPlayerBoosters: selectedBoosters,
         selectedConditionalBoosters: conditionalSelections,
         boosterApplicationMode: boosterMode,
       }),
-    [card, allocation, manager, selectedBoosters, conditionalSelections, boosterMode],
+    [card, manager, selectedBoosters, conditionalSelections, boosterMode],
   );
+  const result = useMemo(() => calculate(allocation), [calculate, allocation]);
   const canProgress = result.eligibility.canProgress;
 
   function handleGroupAdjust(groupId: string, delta: number) {
@@ -78,6 +80,12 @@ export function ProgressionPanel({
   /** スライダーで目標レベルへ（engine が段階コスト・残ポイント・上限で丸める）。 */
   function handleGroupSet(groupId: string, level: number) {
     setAllocation((prev) => adjustGroupLevel(prev, card, groupId, level - (prev[groupId] ?? 0)));
+  }
+  function goToSave() {
+    const el = typeof document !== "undefined" ? document.getElementById("progression-build-bar") : null;
+    if (!el) return;
+    el.scrollIntoView({ block: "center" });
+    el.querySelector<HTMLElement>("button, input")?.focus({ preventScroll: true });
   }
   function handleAuto(profile: AutoAllocateProfile) {
     setAllocation(autoAllocate(card, profile).allocation);
@@ -149,8 +157,60 @@ export function ProgressionPanel({
       />
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)] [@media(min-width:1400px)]:grid-cols-[minmax(0,320px)_minmax(0,1fr)_minmax(0,300px)] 2xl:grid-cols-[minmax(0,400px)_minmax(0,1fr)_minmax(0,340px)]">
-        {/* 左: 配分方針・育成スライダー */}
-        <div className="flex flex-col gap-4">
+        {/* 中央: 能力値一覧（育成の入口）+ スキル + 計算根拠。DOM 先頭 = モバイルで最初に表示。PC では2列目。 */}
+        <div className="flex min-w-0 flex-col gap-4 lg:col-start-2 lg:row-start-1">
+          <div>
+            <SectionHeader
+              title="能力値比較（育成前後）"
+              as="h3"
+              action={
+                <span className="text-xs text-text-dim">
+                  推定OVR <span className="font-bold text-accent">{result.rating.estimatedOvr ?? "—"}</span>{" "}
+                  <span className="text-2xs text-warning/80">検証中</span>
+                </span>
+              }
+            />
+            <AbilityProgressionEditor
+              card={card}
+              allocation={allocation}
+              result={result}
+              calculate={calculate}
+              canProgress={canProgress}
+              showConditional={result.booster.hasConditionalSelection}
+              onSetLevel={handleGroupSet}
+              onGoToSave={goToSave}
+            />
+          </div>
+
+          {analysis ? <PlayerSkillsPanel skills={analysis.skills} /> : null}
+
+          {/* 計算根拠・証拠情報（通常画面から一段奥へ） */}
+          <details className="rounded-md border border-border bg-surface-2/20">
+            <summary className="cursor-pointer px-3 py-2 text-sm font-semibold">
+              計算根拠とデータの出所を見る（モード・証拠レベル・規則バージョン・詳細な内訳）
+            </summary>
+            <div className="flex flex-col gap-4 border-t border-border p-3">
+              <RulesNotice result={result} />
+
+              <PlayerBoosterPanel mode={boosterMode} onModeChange={setBoosterMode} />
+
+              <div>
+                <SectionHeader title="詳細な内訳（表形式）" as="h3" />
+                <StatComparison
+                  stats={result.stats}
+                  byStat={result.playerBoosterByStat}
+                  mode={boosterMode}
+                  showExperimental={boosterMode === "experimental" && result.booster.hasExperimentalExtra}
+                  showConditional={result.booster.hasConditionalSelection}
+                  conditionalSelections={result.booster.conditionalSelections}
+                />
+              </div>
+            </div>
+          </details>
+        </div>
+
+        {/* 左: 配分方針・カテゴリ別スライダー一覧・保存 */}
+        <div className="flex min-w-0 flex-col gap-4 lg:col-start-1 lg:row-start-1">
           <div>
             <SectionHeader
               title="自動育成（配分方針）"
@@ -232,6 +292,7 @@ export function ProgressionPanel({
             ) : null}
           </div>
 
+          <div id="progression-build-bar" className="scroll-mt-32">
           <BuildBar
             worldCardId={card.worldCardId}
             result={result}
@@ -240,55 +301,7 @@ export function ProgressionPanel({
             conditionalBoosterSelections={conditionalSelections}
             onLoad={handleLoad}
           />
-        </div>
-
-        {/* 中央: 能力値一覧 + スキル + 計算根拠 */}
-        <div className="flex flex-col gap-4">
-          <div>
-            <SectionHeader
-              title="能力値比較（育成前後）"
-              as="h3"
-              action={
-                <span className="text-xs text-text-dim">
-                  推定OVR <span className="font-bold text-accent">{result.rating.estimatedOvr ?? "—"}</span>{" "}
-                  <span className="text-2xs text-warning/80">検証中</span>
-                </span>
-              }
-            />
-            <CompactStatGrid
-              stats={result.stats}
-              mode={boosterMode}
-              showConditional={result.booster.hasConditionalSelection}
-              showExperimental={boosterMode === "experimental" && result.booster.hasExperimentalExtra}
-              defaultOpenGk={isGk}
-            />
           </div>
-
-          {analysis ? <PlayerSkillsPanel skills={analysis.skills} /> : null}
-
-          {/* 計算根拠・証拠情報（通常画面から一段奥へ） */}
-          <details className="rounded-md border border-border bg-surface-2/20">
-            <summary className="cursor-pointer px-3 py-2 text-sm font-semibold">
-              計算根拠とデータの出所を見る（モード・証拠レベル・規則バージョン・詳細な内訳）
-            </summary>
-            <div className="flex flex-col gap-4 border-t border-border p-3">
-              <RulesNotice result={result} />
-
-              <PlayerBoosterPanel mode={boosterMode} onModeChange={setBoosterMode} />
-
-              <div>
-                <SectionHeader title="詳細な内訳（表形式）" as="h3" />
-                <StatComparison
-                  stats={result.stats}
-                  byStat={result.playerBoosterByStat}
-                  mode={boosterMode}
-                  showExperimental={boosterMode === "experimental" && result.booster.hasExperimentalExtra}
-                  showConditional={result.booster.hasConditionalSelection}
-                  conditionalSelections={result.booster.conditionalSelections}
-                />
-              </div>
-            </div>
-          </details>
         </div>
 
         {/* 右（PC）/ 中央下（狭幅）: 選手分析レール */}

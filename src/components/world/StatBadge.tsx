@@ -12,17 +12,17 @@ const TIER_CLASS: Record<StatTier, string> = {
   poor: "bg-red-400/15 text-red-300 ring-red-400/40",
 };
 
-export function StatBadge({ value }: { value: number | null }) {
+export function StatBadge({ value, className = "" }: { value: number | null; className?: string }) {
   if (value == null) {
     return (
-      <span className="inline-flex min-w-[2.25rem] items-center justify-center rounded-md px-1.5 py-0.5 text-sm font-bold text-text-dim ring-1 ring-border">
+      <span className={`inline-flex min-w-[2.25rem] items-center justify-center rounded-md px-1.5 py-0.5 text-sm font-bold text-text-dim ring-1 ring-border ${className}`}>
         —
       </span>
     );
   }
   return (
     <span
-      className={`inline-flex min-w-[2.25rem] items-center justify-center rounded-md px-1.5 py-0.5 text-sm font-bold tabular-nums ring-1 ${TIER_CLASS[statTier(value)]}`}
+      className={`inline-flex min-w-[2.25rem] items-center justify-center rounded-md px-1.5 py-0.5 text-sm font-bold tabular-nums ring-1 ${TIER_CLASS[statTier(value)]} ${className}`}
     >
       {value}
     </span>

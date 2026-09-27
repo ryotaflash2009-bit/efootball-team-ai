@@ -138,6 +138,130 @@ a {
   background-size: 100% 16.66%, 100% 100%;
 }
 
+/*
+ * 育成カテゴリ色（能力値直接操作・スライド式育成UI）。RGB 三つ組で定義し、rgb(var(--cat-x) / a) で使う。
+ * 色だけで状態を表さない（必ず数値・ラベル・印を併記する）。
+ */
+:root {
+  --cat-shooting: 255 93 115;
+  --cat-passing: 79 195 255;
+  --cat-dribbling: 179 136 255;
+  --cat-dexterity: 255 213 74;
+  --cat-lowerBodyStrength: 255 159 67;
+  --cat-aerialStrength: 62 230 176;
+  --cat-defending: 91 140 255;
+  --cat-goalkeeping1: 199 240 0;
+  --cat-goalkeeping2: 150 220 60;
+  --cat-goalkeeping3: 110 200 120;
+}
+
+/* 能力行: primary = 強い発光、related = カテゴリ色の枠と弱い発光、dim = 少し暗く（読める・押せる）。 */
+.ability-row {
+  transition: background-color 140ms ease, box-shadow 160ms ease, opacity 160ms ease, transform 120ms ease;
+}
+.ability-row[data-role="primary"] {
+  background: linear-gradient(90deg, rgb(var(--cat) / 0.28), rgb(var(--cat) / 0.08));
+  box-shadow: inset 3px 0 0 rgb(var(--cat)), 0 0 0 1px rgb(var(--cat) / 0.75), 0 0 18px -2px rgb(var(--cat) / 0.55);
+}
+.ability-row[data-role="related"] {
+  background: rgb(var(--cat) / 0.1);
+  box-shadow: inset 3px 0 0 rgb(var(--cat) / 0.8), 0 0 10px -4px rgb(var(--cat) / 0.45);
+}
+.ability-row[data-role="unrelated"] {
+  opacity: 0.62;
+}
+.ability-row:active {
+  transform: scale(0.99);
+}
+.ability-row[data-role="primary"] .ability-badge {
+  transform: scale(1.08);
+  box-shadow: 0 0 12px -2px rgb(var(--cat) / 0.8);
+}
+.ability-badge {
+  transition: transform 140ms ease, box-shadow 160ms ease;
+}
+
+/* 数値変化の短い演出（上方向へ）。 */
+@keyframes ability-delta-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.ability-delta-pop {
+  animation: ability-delta-pop 200ms ease-out;
+}
+
+/* 育成パネル（画面下部に固定。ガラス風・カテゴリ色の上辺）。 */
+.progression-dock {
+  background: linear-gradient(180deg, rgb(var(--color-surface-2-rgb) / 0.92), rgb(var(--color-bg-rgb) / 0.96));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 -10px 30px -12px rgb(0 0 0 / 0.8), inset 0 1px 0 rgb(var(--cat, var(--color-accent-rgb)) / 0.6);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
+}
+@keyframes dock-in {
+  from {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.progression-dock-open {
+  animation: dock-in 180ms ease-out;
+}
+
+/* スライダー: 使用済み区間は発光、到達不能区間は斜線。 */
+.cat-slider-track {
+  background: rgb(var(--color-surface-3-rgb));
+}
+.cat-slider-fill {
+  background: linear-gradient(90deg, rgb(var(--cat) / 0.55), rgb(var(--cat)));
+  box-shadow: 0 0 12px -1px rgb(var(--cat) / 0.7);
+}
+.cat-slider-blocked {
+  background: repeating-linear-gradient(135deg, rgb(var(--color-danger-rgb) / 0.35) 0 4px, transparent 4px 8px);
+}
+.cat-slider-thumb {
+  background: rgb(var(--color-text-rgb));
+  box-shadow: 0 0 0 3px rgb(var(--cat)), 0 0 14px 0 rgb(var(--cat) / 0.8);
+  transition: transform 120ms ease;
+}
+.cat-slider[data-dragging="true"] .cat-slider-thumb {
+  --thumb-scale: 1.18;
+}
+
+/* 配分チップの横スクロール（端をフェード）。 */
+.chip-scroller {
+  mask-image: linear-gradient(90deg, transparent 0, #000 12px, #000 calc(100% - 12px), transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 12px, #000 calc(100% - 12px), transparent 100%);
+  scrollbar-width: none;
+}
+.chip-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+/* ハイコントラスト環境では発光を枠線に置き換える。 */
+@media (forced-colors: active) {
+  .ability-row[data-role="primary"],
+  .ability-row[data-role="related"] {
+    outline: 2px solid CanvasText;
+  }
+  .ability-row[data-role="unrelated"] {
+    opacity: 1;
+  }
+}
+
 /* モーション削減の尊重 */
 @media (prefers-reduced-motion: reduce) {
   *,

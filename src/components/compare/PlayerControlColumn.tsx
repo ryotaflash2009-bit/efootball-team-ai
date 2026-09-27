@@ -12,6 +12,7 @@ import type {
   ConditionalBoosterSelection,
 } from "@/lib/progression/types";
 import { listBuilds } from "@/lib/progression/build-storage";
+import { subscribeCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
 import { BOOSTER_CATALOG, getBoosterDef } from "@/lib/progression/booster-catalog";
 import { resolveAttachedBooster } from "@/lib/progression/booster-resolution";
 import { ConditionalBoosterControl } from "@/components/world/progression/ConditionalBoosterControl";
@@ -96,6 +97,8 @@ export function PlayerControlColumn({
   const [builds, setBuilds] = useState<SavedBuild[]>([]);
   useEffect(() => {
     setBuilds(listBuilds(d.worldCardId));
+    // 保存先スコープ（guest/アカウント）が決まった・切り替わったときにも読み直す
+    return subscribeCurrentScope(() => setBuilds(listBuilds(d.worldCardId)));
   }, [d.worldCardId, buildsRefreshKey]);
 
   const name = resolvePlayerDisplayName(d, locale, fillPc(t("squadBuildPanel", "cardFallbackNameTemplate"), { id: d.worldCardId }));

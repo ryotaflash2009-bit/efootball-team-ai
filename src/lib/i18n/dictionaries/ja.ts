@@ -3658,6 +3658,60 @@ export interface Dictionary {
     rejectedDescription: string;
     clearSearch: string;
   };
+  abilityEditor: {
+    sectionTitle: string;
+    sectionHint: string;
+    trainThisAbility: string;
+    relatedAbilities: string;
+    selected: string;
+    related: string;
+    nextUpgrade: string;
+    remainingPoints: string;
+    remainingShort: string;
+    requiredPoints: string;
+    refundPoints: string;
+    progressionCategory: string;
+    clearSelection: string;
+    notEnoughPoints: string;
+    notEnoughToReach: string;
+    categoryAtMax: string;
+    atMinimum: string;
+    before: string;
+    after: string;
+    preview: string;
+    maximumReachable: string;
+    allocationSummary: string;
+    editingProgression: string;
+    levelPrefix: string;
+    pointsUnit: string;
+    maxBadge: string;
+    decreaseLabel: string;
+    increaseLabel: string;
+    sliderLabel: string;
+    sliderValueText: string;
+    chipLabel: string;
+    levelChange: string;
+    resetCategory: string;
+    resetCategoryHint: string;
+    goToSave: string;
+    tapHint: string;
+    breakdownToggle: string;
+    breakdownBase: string;
+    breakdownProgression: string;
+    breakdownBooster: string;
+    breakdownManager: string;
+    breakdownOther: string;
+    breakdownFinal: string;
+    cannotProgress: string;
+    unreachable: string;
+    groupOffense: string;
+    groupPhysical: string;
+    groupDefense: string;
+    groupGk: string;
+    gkCollapsed: string;
+    panelRegionLabel: string;
+    chipsRegionLabel: string;
+  };
 }
 
 const ja: Dictionary = {
@@ -7376,6 +7430,60 @@ const ja: Dictionary = {
     rejectedTitle: "この検索語では検索できません",
     rejectedDescription: "記号や特殊な文字を減らして、もう一度お試しください。",
     clearSearch: "検索条件をクリア",
+  },
+  abilityEditor: {
+    sectionTitle: "能力値から育成",
+    sectionHint: "能力値をタップすると、同じ育成カテゴリで変わる能力が光り、下のパネルでその場で育成できます。",
+    trainThisAbility: "この能力を育成",
+    relatedAbilities: "関連する能力",
+    selected: "選択中",
+    related: "関連",
+    nextUpgrade: "次の強化",
+    remainingPoints: "残り育成ポイント",
+    remainingShort: "残り",
+    requiredPoints: "必要ポイント",
+    refundPoints: "返却ポイント",
+    progressionCategory: "育成カテゴリ",
+    clearSelection: "選択を解除",
+    notEnoughPoints: "ポイントが不足しています",
+    notEnoughToReach: "この位置まで上げるにはポイントが不足しています",
+    categoryAtMax: "このカテゴリは最大です",
+    atMinimum: "これ以上下げられません",
+    before: "変更前",
+    after: "変更後",
+    preview: "プレビュー",
+    maximumReachable: "最大到達",
+    allocationSummary: "合計配分",
+    editingProgression: "育成中",
+    levelPrefix: "Lv",
+    pointsUnit: "pt",
+    maxBadge: "MAX",
+    decreaseLabel: "{category} のレベルを1下げる",
+    increaseLabel: "{category} のレベルを1上げる",
+    sliderLabel: "{category} の育成レベル",
+    sliderValueText: "{category} レベル {level}（最大到達 {reachable}、残り {remaining}pt）",
+    chipLabel: "{category} レベル {level}",
+    levelChange: "{from} → {to}（{delta}）",
+    resetCategory: "元に戻す",
+    resetCategoryHint: "このカテゴリを選択した時点のレベルへ戻します",
+    goToSave: "保存へ",
+    tapHint: "能力値をタップして育成",
+    breakdownToggle: "内訳",
+    breakdownBase: "基礎",
+    breakdownProgression: "育成",
+    breakdownBooster: "ブースター",
+    breakdownManager: "監督",
+    breakdownOther: "その他",
+    breakdownFinal: "最終",
+    cannotProgress: "このカードは育成できません",
+    unreachable: "到達不能",
+    groupOffense: "攻撃",
+    groupPhysical: "身体能力",
+    groupDefense: "守備",
+    groupGk: "GK",
+    gkCollapsed: "GK 能力（折りたたみ）",
+    panelRegionLabel: "育成パネル",
+    chipsRegionLabel: "カテゴリ別の配分",
   },
 };
 
