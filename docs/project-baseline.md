@@ -6,6 +6,20 @@
 値は「直前の完全成功マイルストーンの完了報告」＋「現在のファイル状態」を根拠に更新する。
 ベースライン確認のために全テスト・全ブラックボックスを無条件で再実行しない。
 
+## 最新の検証値（2026-09-27・PR #87〜#92 の後）
+
+下の表（2026-09-06）より新しい値。詳細は `docs/production-readiness/evidence/auth-readiness-f071-f073-2026-09-27.json`。
+
+| 項目 | 値 |
+|---|---|
+| `npm run verify`（ja-labels・i18n キー・typecheck・lint・unit test） | PASS（**268 テストファイル・4575 テスト**） |
+| 公開 black-box（総合・8 viewport） | 568/568 ステップ・security 18/18（PR #87 の後） |
+| 公開 black-box（F-071〜F-073・8 viewport × 日英） | 99/99（PR #92 の後） |
+| 公開 black-box（新規登録の限定テスト・8 viewport × 日英） | 114/114（PR #87 の後） |
+| 認証 black-box（テストダブル・ローカル） | 173/173 |
+| 新規登録 | 限定テスト中（`ACCOUNT_SIGNUP_MODE=limited`・`AUTH_EMAIL_DELIVERY=builtin_members_only`）。ドメイン購入は保留 |
+| F-071 分布の成果物 | 未生成（`null`）。最初の定期検出の後に取り込み |
+
 ## ワークスペース
 
 - **正本ワークスペース**: `C:\Development\eFootball-Team-AI`（OneDrive 同期対象外）

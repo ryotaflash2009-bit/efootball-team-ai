@@ -41,10 +41,10 @@
 | 診断結果カード・画像保存（P・O） | F-040, F-041 | completed |
 | 共有URL（O）、公開スカッド・ビルド `shared_squads`/`shared_builds`（D 第17章） | F-042（URL 共有 MVP）、F-080（公開） | implementation_ready / idea |
 | Pro 向け詳細診断（O）、基本/詳細の出力分離（P：診断基盤） | F-044 | designed |
-| 改善前後の比較カード・診断履歴・成長プロフィール（O） | F-043, F-060, F-061 | idea |
+| 改善前後の比較カード・診断履歴・成長プロフィール（O） | F-043, F-060, F-061 | verified / verified / designed |
 | AI Best XI（O・UI 表示名） | F-025（ルールベース）、F-070（高度化） | completed / partially |
-| パーセンタイル（O）、物理データの順位（P） | F-071（カテゴリ別）、F-010（選手単位） | idea / completed |
-| 称号・バッジ・「あなたの一番」・独自性評価（O） | F-072, F-073, F-074 | idea |
+| パーセンタイル（O）、物理データの順位（P） | F-071（能力値ごと。カテゴリ別は deferred）、F-010（選手単位） | completed / completed |
+| 称号・バッジ・「あなたの一番」・独自性評価（O） | F-072, F-073, F-074 | completed / completed / designed |
 | 友達・ライバル・友達比較（O） | F-055, F-062 | idea |
 | 公開ユーザーID・公開プロフィール・公開範囲（O）、公開範囲設定（D 第26章） | F-053, F-054 | idea |
 | ブロック・通報（D 第26章）、ミュート・安全機能（O） | F-056 | idea |
