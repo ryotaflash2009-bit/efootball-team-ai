@@ -3,6 +3,7 @@
 import type { ProgressionCard } from "@/lib/progression/types";
 import type { PlayerAnalysis } from "@/lib/world/player-analysis";
 import { WorldStatGrid } from "@/components/world/WorldStatGrid";
+import { WorldBasePercentilePanel } from "@/components/world/WorldBasePercentilePanel";
 import { WorldPlayerHero, type SafeWorldPlayerDetail } from "@/components/world/WorldPlayerHero";
 import { ProgressionPanel } from "@/components/world/progression/ProgressionPanel";
 import { PageContainer } from "@/components/ui/PageContainer";
@@ -78,6 +79,7 @@ export function WorldPlayerDetailView({
     <Surface>
       <SectionHeader title={tp("statsHeading")} as="h2" hint={tp("statsHint")} />
       <WorldStatGrid stats={player.stats} />
+      <WorldBasePercentilePanel stats={player.stats} registeredPosition={player.registeredPosition ?? null} />
     </Surface>
   );
 
@@ -122,6 +124,8 @@ export function WorldPlayerDetailView({
         imageSources={progressionImageSources}
         analysis={playerAnalysis}
         analysisScope={analysisScope}
+        worldStats={player.stats}
+        registeredPosition={player.registeredPosition ?? null}
       />
     </Surface>
   );

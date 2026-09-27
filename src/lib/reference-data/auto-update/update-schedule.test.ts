@@ -96,7 +96,9 @@ describe("検出workflowの静的監査", () => {
     // 変数なしのsmoke testで、upstreamへ1件も送らずに止まることを毎回確認する。
     expect(body).toMatch(/Runtime smoke test[\s\S]*REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED: ""[\s\S]*"not_enabled"[\s\S]*"upstreamRequests": 0/);
     const uploads = [...body.matchAll(/uses: actions\/upload-artifact@v4\s*\n\s+with:\s*\n\s+name: ([^\n]+)/g)].map((m) => m[1].trim());
-    expect(uploads).toEqual(["reference-data-detection-summary"]);
+    // 要約と、F-071 の分布の候補（能力値ごとの件数だけ。行データなし）の2つだけ。
+    expect(uploads).toEqual(["reference-data-detection-summary", "world-base-distribution-candidate"]);
+    expect(body).toMatch(/REFERENCE_DATA_DISTRIBUTION_PATH: \$\{\{ runner\.temp \}\}\/world-base-distribution\.candidate\.json/);
   });
 
   it("取得はWorld・managers.jsonの2 sourceだけ(検出CLIの上限設定)", () => {

@@ -3688,6 +3688,29 @@ export interface Dictionary {
     rejectedDescription: string;
     clearSearch: string;
   };
+  basePercentile: {
+    heading: string;
+    explanation: string;
+    notBuildNotice: string;
+    fallback: string;
+    loading: string;
+    scopeLabel: string;
+    scopeAll: string;
+    scopePositionTemplate: string;
+    scopeField: string;
+    scopeGk: string;
+    populationTemplate: string;
+    scopeTooSmall: string;
+    bucketTopLt1: string;
+    bucketTop1: string;
+    bucketTop5: string;
+    bucketTop10: string;
+    bucketTop25: string;
+    bucketTop50: string;
+    bucketBelowMedian: string;
+    compareToggle: string;
+    compareScopeNote: string;
+  };
   progressionTab: {
     analysisScopeDefault: string;
     eligibilityTrending: string;
@@ -7924,6 +7947,29 @@ const ja: Dictionary = {
     undoReset: "リセットを取り消す",
     revertShort: "↺ 戻す",
     rowAffordance: "タップして育成",
+  },
+  basePercentile: {
+    heading: "基礎能力値の位置（パーセンタイル）",
+    explanation: "この順位は育成前の基礎能力値を、現在のWorldカード分布と比較したものです",
+    notBuildNotice: "表示中のビルドや育成プレビューの値ではありません。",
+    fallback: "パーセンタイルデータを現在の選手データと照合できません",
+    loading: "読み込み中…",
+    scopeLabel: "比べる範囲",
+    scopeAll: "全Worldカード",
+    scopePositionTemplate: "同じ登録ポジション（{pos}）",
+    scopeField: "フィールドプレイヤー",
+    scopeGk: "GK",
+    populationTemplate: "母数 {n} 枚・{date} 時点の分布",
+    scopeTooSmall: "この範囲はカードが少ないため表示しません。",
+    bucketTopLt1: "上位1%未満",
+    bucketTop1: "上位1%",
+    bucketTop5: "上位5%",
+    bucketTop10: "上位10%",
+    bucketTop25: "上位25%",
+    bucketTop50: "上位50%",
+    bucketBelowMedian: "中央値未満",
+    compareToggle: "基礎能力値のパーセンタイルを表示",
+    compareScopeNote: "全選手を同じ範囲（全Worldカード）で比べます。",
   },
   progressionTab: {
     analysisScopeDefault: "World データ",

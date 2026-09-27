@@ -4,6 +4,40 @@ import { APPLIED_STATE_FILE, parseAppliedState, runDetection, type DetectionResu
 import { decideDetectionRun, decideDetectionTrigger } from "./update-schedule";
 import { WORLD_LIMITS } from "./stage4-world";
 import { DETECTION_APPROVAL_TOKEN, createUpstreamHttpTransport, type UpstreamRequestLogEntry } from "./upstream-http-transport";
+import { WORLD_STAT_KEYS } from "./source-world";
+import { buildDistributionArtifact, type DistributionSourceRow } from "../../percentiles/generate";
+import { checkDistributionArtifact, type DistributionArtifact } from "../../percentiles/artifact";
+
+/**
+ * F-071: 完全な World の行から、基礎能力値の分布の候補（非秘密の集計値だけ）を書き出す。
+ * 検出の結果には影響させない（失敗しても検出は続ける）。main へ入れるのは Production Apply 後の Evidence の PR。
+ */
+export function buildDistributionCandidate(rows: readonly unknown[], sourceChecksum12: string, generatedAt: string): DistributionArtifact | null {
+  try {
+    const artifact = buildDistributionArtifact(rows as readonly DistributionSourceRow[], WORLD_STAT_KEYS, {
+      sourceChecksum12,
+      generatedAt,
+      datasetVersion: `world_player_cards@${sourceChecksum12}`,
+    });
+    // 候補自体の形だけを確かめる（applied-state との一致は main へ入れるときに確かめる）。
+    const check = checkDistributionArtifact(artifact, { sourceChecksum12, recordCount: rows.length });
+    return check.verdict === "DISTRIBUTION_ARTIFACT_VALID" ? artifact : null;
+  } catch {
+    return null;
+  }
+}
+
+export function writeDistributionCandidate(rows: readonly unknown[], sourceChecksum12: string, filePath: string, generatedAt: string): "written" | "invalid" | "skipped" {
+  if (!/\.json$/.test(filePath) || /[\r\n\0]/.test(filePath)) return "skipped";
+  const artifact = buildDistributionCandidate(rows, sourceChecksum12, generatedAt);
+  if (!artifact) return "invalid";
+  try {
+    writeFileSync(filePath, `${JSON.stringify(artifact)}\n`, "utf8");
+    return "written";
+  } catch {
+    return "invalid";
+  }
+}
 
 /**
  * 定期検出のCLI(`reference-data-update-detection.yml`から実行)。Secret・Environment・Productionを使わない。
@@ -105,7 +139,16 @@ export async function main(env: Readonly<Record<string, string | undefined>> = p
     maxTotalBytes: WORLD_LIMITS.maxTotalBytes,
   });
   const fetchedAt = new Date().toISOString();
-  const result = await runDetection({ transport, fetchedAt, sleep: realSleep, applied });
+  const distributionPath = env.REFERENCE_DATA_DISTRIBUTION_PATH;
+  let distribution: "written" | "invalid" | "skipped" = "skipped";
+  const result = await runDetection({
+    transport,
+    fetchedAt,
+    sleep: realSleep,
+    applied,
+    onWorldRows: distributionPath ? (rows, checksum12) => (distribution = writeDistributionCandidate(rows, checksum12, distributionPath, fetchedAt)) : undefined,
+  });
+  process.stderr.write(`world base distribution candidate: ${distribution}\n`);
   const summary = buildDetectionSummary({ trigger, fetchedAt, result, log: transport.log });
   out(summary);
   return summary.overall === "no_change" || summary.overall === "update_available" ? 0 : 1;

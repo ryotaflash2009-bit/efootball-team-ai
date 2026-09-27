@@ -36,6 +36,8 @@ import { ProgressionSummary, ProgressionStickyBar } from "./ProgressionSummary";
 import { PlayerAnalysisRail } from "./PlayerAnalysisRail";
 import { PlayerSkillsPanel } from "./PlayerSkillsPanel";
 import type { PlayerAnalysis } from "@/lib/world/player-analysis";
+import type { WorldStatValue } from "@/lib/world/types";
+import { WorldBasePercentilePanel } from "@/components/world/WorldBasePercentilePanel";
 import { ManagerPicker } from "@/components/managers/ManagerPicker";
 import { Button } from "@/components/ui/Button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -54,8 +56,13 @@ export function ProgressionPanel({
   imageSources = [],
   analysis = null,
   analysisScope,
+  worldStats,
+  registeredPosition = null,
 }: {
   card: ProgressionCard;
+  /** F-071: 育成前の World の能力値（欠けた値を既定値で埋めていないもの）。あれば基礎能力値のパーセンタイルを別枠で出す。 */
+  worldStats?: WorldStatValue[];
+  registeredPosition?: string | null;
   imageSources?: string[];
   /** 選手分析レール用の整形済み表示データ（無ければレールを出さない）。 */
   analysis?: PlayerAnalysis | null;
@@ -246,6 +253,15 @@ export function ProgressionPanel({
               onPreviewPoints={setPreviewPoints}
             />
           </div>
+
+          {worldStats && worldStats.length > 0 ? (
+            <details className="rounded-md border border-border bg-surface-2/20" data-testid="progression-base-percentile">
+              <summary className="cursor-pointer px-3 py-2 text-sm font-semibold">{t("basePercentile", "heading")}</summary>
+              <div className="border-t border-border px-3 pb-3">
+                <WorldBasePercentilePanel stats={worldStats} registeredPosition={registeredPosition} />
+              </div>
+            </details>
+          ) : null}
 
           {analysis ? <PlayerSkillsPanel skills={analysis.skills} /> : null}
 

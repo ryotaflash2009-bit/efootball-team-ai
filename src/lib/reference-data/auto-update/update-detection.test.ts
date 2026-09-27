@@ -7,7 +7,8 @@ import { buildWorldSearchRequest } from "./source-world";
 import { buildStagingDataset } from "./source-snapshot";
 import { collectManagersSnapshot } from "./update-dry-run";
 import { APPLIED_STATE_FILE, parseAppliedState, runDetection, type AppliedState } from "./update-detection";
-import { main as detectionMain } from "./update-detection-cli";
+import { main as detectionMain, buildDistributionCandidate } from "./update-detection-cli";
+import { checkDistributionArtifact } from "../../percentiles/artifact";
 import { SYNTHETIC_MANAGERS, managersResponse } from "./__fixtures__/stage4-fixtures";
 import { buildManagersCandidate } from "./stage4-managers";
 import { buildWorldCandidate } from "./stage4-world";
@@ -96,6 +97,23 @@ describe("定期検出(Productionなし)", () => {
     const t = createRecordedFixtureTransport([{ request: buildWorldSearchRequest(1, "CREATED_AT"), responses: [{ status: 503, headers: {}, bodyText: "" }, { status: 503, headers: {}, bodyText: "" }, { status: 503, headers: {}, bodyText: "" }] }]);
     const r = await runDetection({ transport: t, fetchedAt: FETCHED, sleep: noSleep, applied: applied() });
     expect(r.ok).toBe(false);
+  });
+
+  it("F-071: 完全なWorldの行をapplied-stateと同じchecksum基準で渡し、分布の候補は集計値だけ", async () => {
+    let got: { rows: readonly unknown[]; checksum12: string } | null = null;
+    const r = await runDetection({ transport: transport(), fetchedAt: FETCHED, sleep: noSleep, applied: applied(), onWorldRows: (rows, checksum12) => (got = { rows, checksum12 }) });
+    expect(r.ok).toBe(true);
+    if (!r.ok || !got) throw new Error("hook not called");
+    const g = got as { rows: readonly unknown[]; checksum12: string };
+    expect(g.checksum12).toBe(r.world.sourceChecksum12);
+    expect(g.checksum12).toBe(await worldChecksum12());
+    const candidate = buildDistributionCandidate(g.rows, g.checksum12, FETCHED);
+    expect(candidate).not.toBeNull();
+    expect(candidate!.binding).toEqual({ dataset: "world_player_cards", sourceChecksum12: g.checksum12, recordCount: r.world.recordCount });
+    expect(checkDistributionArtifact(candidate, { sourceChecksum12: g.checksum12, recordCount: r.world.recordCount }).verdict).toBe("DISTRIBUTION_ARTIFACT_VALID");
+    // 名前・ID・画像 URL などの行データを含まない（値ごとの件数だけ）。
+    expect(JSON.stringify(candidate)).not.toMatch(/Synthetic|合成|world_card_id|https?:/);
+    expect(buildDistributionCandidate([{ registered_position: "CF", stats: { speed: 999 } }], g.checksum12, FETCHED)).toBeNull();
   });
 
   it("リポジトリのapplied-state記録は形式が正しく、managersはStage 4のEvidenceと一致する", () => {
