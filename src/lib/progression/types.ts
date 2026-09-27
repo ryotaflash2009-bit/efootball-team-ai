@@ -231,6 +231,8 @@ export interface ProgressionCard {
   maximumLevel: number | null;
   /** 26 キーの基礎能力値 */
   baseStats: Record<string, number>;
+  /** World に値が無く、baseStats を既定値で埋めたキー（F-071 のパーセンタイルに使わない）。無ければ省略。 */
+  missingBaseStatKeys?: string[];
   boost1: number | null;
   boost2: number | null;
 }

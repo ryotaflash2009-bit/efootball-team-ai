@@ -9,9 +9,12 @@ import type { ProgressionCard } from "./types";
 export function toProgressionCard(detail: WorldPlayerDetail): ProgressionCard {
   const byKey = new Map(detail.stats.map((s) => [s.key, s.value]));
   const baseStats: Record<string, number> = {};
+  const missing: string[] = [];
   for (const key of WORLD_STAT_KEYS) {
     const v = byKey.get(key);
-    baseStats[key] = typeof v === "number" && Number.isFinite(v) ? v : 40;
+    const ok = typeof v === "number" && Number.isFinite(v);
+    baseStats[key] = ok ? v : 40;
+    if (!ok) missing.push(key);
   }
   return {
     worldCardId: detail.worldCardId,
@@ -23,6 +26,7 @@ export function toProgressionCard(detail: WorldPlayerDetail): ProgressionCard {
     ovrMax: detail.ovrMax,
     maximumLevel: detail.maximumLevel,
     baseStats,
+    ...(missing.length > 0 ? { missingBaseStatKeys: missing } : {}),
     boost1: detail.boost1,
     boost2: detail.boost2,
   };

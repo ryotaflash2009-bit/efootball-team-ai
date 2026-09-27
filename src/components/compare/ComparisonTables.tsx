@@ -10,6 +10,10 @@ const GROUP_LABEL_KEY = { offense: "groupOffense", defense: "groupDefense", phys
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
+import { Badge } from "@/components/ui/Badge";
+import { useWorldBasePercentiles } from "@/lib/percentiles/use-world-base-percentiles";
+import { cardBasePercentiles, type CardPercentile } from "@/lib/percentiles/card-percentiles";
+import { BUCKET_LABEL_KEY } from "@/components/world/WorldBasePercentilePanel";
 
 function useShortName() {
   const t = useT();
@@ -56,6 +60,17 @@ export function ComparisonTables({
   const categoryLabel = (id: string) => t("compareCategory", id as keyof Dictionary["compareCategory"]);
   const n = players.length;
   const [conditionalView, setConditionalView] = useState(false);
+  // F-071: 基礎能力値（育成前）のパーセンタイル。全選手を同じ範囲（全 World カード）で比べる。
+  const [showPercentile, setShowPercentile] = useState(false);
+  const percentileData = useWorldBasePercentiles(showPercentile);
+  const percentiles: (Map<string, CardPercentile> | null)[] = players.map((p) => {
+    if (!showPercentile || percentileData.state !== "ready") return null;
+    const missing = new Set(p.card.missingBaseStatKeys ?? []);
+    const stats = Object.entries(p.card.baseStats)
+      .filter(([k]) => !missing.has(k))
+      .map(([key, value]) => ({ key, value }));
+    return cardBasePercentiles(percentileData.scopes.get("all"), stats);
+  });
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const toggle = (g: string) =>
     setCollapsed((prev) => {
@@ -189,7 +204,24 @@ export function ComparisonTables({
               {tct("conditionalToggleLabel")}
             </label>
           ) : null}
+          <label className="flex min-h-[24px] cursor-pointer items-center gap-1.5 text-[11px] text-text-dim">
+            <input
+              type="checkbox"
+              checked={showPercentile}
+              onChange={(e) => setShowPercentile(e.target.checked)}
+              className="accent-[color:var(--color-accent)]"
+              data-testid="compare-percentile-toggle"
+            />
+            {t("basePercentile", "compareToggle")}
+          </label>
         </div>
+        {showPercentile ? (
+          <div className="mb-1 rounded border border-border bg-surface-2/40 px-2 py-1 text-[10px] text-text-dim" data-testid="compare-percentile-note">
+            <p>{t("basePercentile", "explanation")}</p>
+            <p>{t("basePercentile", "compareScopeNote")} {t("basePercentile", "notBuildNotice")}</p>
+            {percentileData.state === "unavailable" ? <p className="text-warning">{t("basePercentile", "fallback")}</p> : null}
+          </div>
+        ) : null}
         {conditionalView ? (
           <p className="mb-1 rounded border border-accent/30 bg-accent-soft/40 px-2 py-1 text-[10px] text-accent">
             {tct("conditionalNote")}
@@ -218,6 +250,7 @@ export function ComparisonTables({
                   n={n}
                   conditionalView={conditionalView}
                   rows={comparison.stats.filter((s) => s.group === g)}
+                  percentiles={percentiles}
                 />
               ))}
             </tbody>
@@ -256,6 +289,7 @@ function GroupBlock({
   n,
   conditionalView,
   rows,
+  percentiles,
 }: {
   group: string;
   collapsed: boolean;
@@ -263,6 +297,8 @@ function GroupBlock({
   n: number;
   conditionalView: boolean;
   rows: ComparisonResult["stats"];
+  /** F-071: 選手ごとの基礎能力値の区分（表示しないときは null）。 */
+  percentiles: (Map<string, CardPercentile> | null)[];
 }) {
   const t = useT();
   const { locale } = useLocale();
@@ -300,6 +336,13 @@ function GroupBlock({
                       mB={b.managerBoosterDelta}
                       cB={conditionalView ? b.conditionalBoosterDelta : 0}
                     />
+                    {percentiles[i]?.get(s.key) ? (
+                      <span className="mt-0.5 block" data-bucket={percentiles[i]!.get(s.key)!.bucket}>
+                        <Badge tone="outline" size="xs">
+                          {t("basePercentile", BUCKET_LABEL_KEY[percentiles[i]!.get(s.key)!.bucket])}
+                        </Badge>
+                      </span>
+                    ) : null}
                   </td>
                 ))}
                 <td className="px-2 py-1.5 text-center tabular-nums text-text-dim">{max - min}</td>
