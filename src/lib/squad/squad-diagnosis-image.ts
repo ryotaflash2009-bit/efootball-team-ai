@@ -16,7 +16,7 @@ export const CATEGORY_LABEL_EN: Record<string, string> = {
   squadCompleteness: "Squad Placement Completeness",
 };
 
-const IMAGE_TEXT = {
+export const IMAGE_TEXT = {
   ja: {
     heading: "スカッド診断（スカッド構成評価）",
     formationPrefix: "フォーメーション: ",
@@ -64,7 +64,7 @@ const IMAGE_TEXT = {
 
 /** カテゴリ起因（categoryIdあり）のfindingは英語ラベルを再構成し、選手名を含む可能性のあるfindingは
  * 安全のため日本語のまま表示する（表示言語が英語でも、選手名を含む自由文を推測で英訳しない）。 */
-function findingLabelForImage(finding: SquadDiagnosisShareFinding, locale: Locale): string {
+export function findingLabelForImage(finding: SquadDiagnosisShareFinding, locale: Locale): string {
   if (locale === "en" && finding.categoryId) {
     return CATEGORY_LABEL_EN[finding.categoryId] ?? finding.label;
   }
@@ -89,7 +89,7 @@ function categoryLabelForImage(category: SquadDiagnosisShareCategory, locale: Lo
 
 // globals.css のダークテーマ配色（CSS変数は canvas から直接参照できないため、同値を明示的に複製する。
 // テーマの配色を変更した場合はここも合わせて更新すること）。
-const COLORS = {
+export const COLORS = {
   bgOuter: "#090c0f",
   surface: "#12171c",
   surface2: "#1a2129",
@@ -107,7 +107,7 @@ const COLORS = {
   info: "#5cb8e6",
 };
 
-function tierColor(tier: SquadDiagnosisTier | null): string {
+export function tierColor(tier: SquadDiagnosisTier | null): string {
   switch (tier) {
     case "S":
       return COLORS.success;
@@ -130,7 +130,7 @@ export const SQUAD_DIAGNOSIS_IMAGE_HEIGHT = 960;
 /** 最終PNGの解像度倍率（1440x1920 相当・SNS共有カードとして一般的な範囲に収める）。 */
 export const SQUAD_DIAGNOSIS_IMAGE_SCALE = 2;
 
-function wrapText(
+export function wrapText(
   ctx: CanvasRenderingContext2D,
   text: string,
   x: number,
@@ -167,7 +167,7 @@ function wrapText(
   return cursorY + lineHeight;
 }
 
-function drawCategoryRow(
+export function drawCategoryRow(
   ctx: CanvasRenderingContext2D,
   c: SquadDiagnosisShareCategory,
   x: number,
@@ -214,7 +214,7 @@ function drawCategoryRow(
   return rowHeight;
 }
 
-function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+export function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
   const radius = Math.min(r, w / 2, h / 2);
   ctx.beginPath();
   ctx.moveTo(x + radius, y);
@@ -226,7 +226,7 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
 }
 
 /** Intl標準APIで作成日時を表示言語に応じて整形する（能力値・スコア等の内部保存形式は変更しない）。 */
-function formatGeneratedAt(iso: string, locale: Locale): string {
+export function formatGeneratedAt(iso: string, locale: Locale): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
   const formatted = formatDateTime(d, locale);

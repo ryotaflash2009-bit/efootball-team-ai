@@ -8,7 +8,7 @@ import { diagnosisCategoryLabel } from "@/components/squad/SharedDiagnosisView";
 import { TitleStrip, type TitleItem } from "./TitleStrip";
 
 type TKey = keyof Dictionary["titles"];
-const LABEL_KEY: Record<DiagnosisTitleCategory, TKey> = {
+export const DIAGNOSIS_TITLE_LABEL_KEY: Record<DiagnosisTitleCategory, TKey> = {
   counterAttack: "dgCounterAttack",
   passBuildUp: "dgPassBuildUp",
   dribblePossession: "dgDribblePossession",
@@ -30,7 +30,7 @@ export function DiagnosisTitles({
   const result = evaluateDiagnosisTitles(categories);
   const toItem = (x: DiagnosisTitle): TitleItem => ({
     id: x.categoryId,
-    label: t("titles", LABEL_KEY[x.categoryId]),
+    label: t("titles", DIAGNOSIS_TITLE_LABEL_KEY[x.categoryId]),
     reason: t("titles", "diagnosisReasonTemplate")
       .replace("{category}", diagnosisCategoryLabel(x.categoryId, locale))
       .replace("{score}", String(x.score))

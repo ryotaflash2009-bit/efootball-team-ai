@@ -3798,6 +3798,20 @@ export interface Dictionary {
     deleteFailed: string;
     cancel: string;
   };
+  shareCard: {
+    optionsSummary: string;
+    ratioLabel: string;
+    ratio34: string;
+    ratio11: string;
+    ratio916: string;
+    ratio169: string;
+    previewLoading: string;
+    previewAltTemplate: string;
+    shareButton: string;
+    shareTitle: string;
+    shared: string;
+    privacyNote: string;
+  };
   progressionTab: {
     analysisScopeDefault: string;
     eligibilityTrending: string;
@@ -8144,6 +8158,20 @@ const ja: Dictionary = {
     deleteDone: "この領域のデータを削除しました。",
     deleteFailed: "一部のデータを削除できませんでした。",
     cancel: "キャンセル",
+  },
+  shareCard: {
+    optionsSummary: "比率を選ぶ・プレビュー",
+    ratioLabel: "画像の比率",
+    ratio34: "縦 3:4（標準）",
+    ratio11: "正方形 1:1",
+    ratio916: "縦長 9:16（ストーリー）",
+    ratio169: "横長 16:9",
+    previewLoading: "プレビューを作っています…",
+    previewAltTemplate: "スカッド診断カードのプレビュー（{ratio}）",
+    shareButton: "共有",
+    shareTitle: "スカッド診断",
+    shared: "共有しました。",
+    privacyNote: "画像にはスカッド名・フォーメーション・評価だけを載せます（URL・ID・アカウントの情報は載せません）。スカッド名に個人情報を入れないでください。",
   },
   progressionTab: {
     analysisScopeDefault: "World データ",
