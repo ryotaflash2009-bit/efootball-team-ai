@@ -26,7 +26,7 @@
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | F-001 | 選手・カード検索（日英・Unicode・記号・絞り込み・並べ替え・ページ送り） | verified | 95% | reference data | R | — | 不要 | 不要 | Free | 総合black-box 8 viewport（2026-09-27）| 国籍絞り込みは未実装（原案に明記なし → F-001a idea） |
 | F-002 | 選手詳細（能力・育成・物理データ・適性） | verified | 90% | F-001 | R | — | 不要 | 不要 | Free | 同上、物理順位の母数は時点を明示 | ポジション別OVRは F-032b（blocked） |
-| F-003 | 監督検索・詳細（戦術適性・ブースター・Link-Up） | verified | 90% | reference data | R | — | 不要 | 不要 | Free | 同上 | 監督写真は保留中（権利確認） |
+| F-003 | 監督検索・詳細（戦術適性・ブースター・Link-Up） | verified | 90% | reference data | R | — | 不要 | 不要 | Free | 同上 | 監督画像は実装しない（イニシャルアバターが正式。`docs/phase-manager-picker.md`・`phase-manager-photos-efdb.md`） |
 | F-004 | 選手比較（2〜4人・レーダー・育成比較） | verified | 90% | F-002 | R | L | 不要 | 不要 | Free | 同上 | 友達比較は F-062 |
 | F-005 | お気に入り | completed | 90% | F-001 | — | L/C | 任意 | 不要 | Free | 未認証表示は black-box 済み | クラウド同期は F-052 |
 | F-006 | データ更新・差分管理（週次の自動検出＋承認式の適用） | verified | 90% | GitHub Actions | R/W(承認時) | — | — | 不要 | — | `evidence/world-update-2026-09-26.json` | appearance（順位）の再取得方針（本人判断） |
@@ -43,17 +43,22 @@
 | F-021 | My Builds（保存ビルド・育成案） | completed | 85% | F-028 | R | L | 任意 | 不要 | Free | `docs/my-builds.md` | クラウド同期 F-052 |
 | F-022 | ビルド分析（`/build-inventory`：使用状況・重複・旧規則・参照異常） | completed | 85% | F-021 | R | L | 不要 | 不要 | Free | milestones 2026-09-01/02 | 診断カード共有は F-042 |
 | F-023 | JSON export / import（保存ビルド） | completed | 90% | F-021 | — | L | 不要 | 不要 | Free | milestones 2026-09-02/05 | 全データ一括 export は F-023b（roadmap 段階11） |
+| F-023b | 全データの一括 export / import（My Team・お気に入り・ビルド・スカッド・診断履歴・設定） | idea → 実装対象（2026-10-01） | 0% | F-023, F-060 | — | L | 不要 | 不要 | Free | 監査で未実装を確認（`/data-management` は削除のみ） | 版つき JSON・検証・破損行の隔離・上書き前の確認 |
 | F-024 | Squads（編集・テンプレート・比較・Game Plan風の配置編集） | completed | 80% | F-020 | R | L/C | 任意 | 不要 | Free | `docs/phase-squad.md`、`docs/squad-game-plan-editing.md` | 完全ゲームプラン F-033 |
 | F-025 | Best XI（所持カードからのルールベース最適化。表示名は「AI Best XI」） | completed | 75% | F-020 | R | L | 不要 | 不要（ルール） | Free | `src/lib/best-xi/*` tests | 高度化 F-070 |
 | F-026 | スカッド診断（総合・攻撃・守備・空中戦・スピード等8カテゴリ＋配置充足・強み・弱点・改善提案） | completed | 80% | F-024 | R | L | 不要 | 不要（ルール） | Free（詳細はPro候補） | milestone 2026-09-06 | 診断履歴 F-060 |
 | F-027 | 通常/辛口コメント（詳細な戦術監査つき） | completed | 85% | F-026 | — | — | 不要 | 不要（ルール） | Free | progress.md 2026-09-06 | 改善前後カード F-043 |
 | F-028 | 育成・能力計算（Progression・ルール版管理） | completed | 85% | reference data | R | L | 不要 | 不要 | Free | `docs/phase-progression-rules.md` | 規則更新時の再検証 |
 | F-029 | Booster（B1/B2・条件付き・発動タイプ） | completed | 85% | F-028 | R | L | 不要 | 不要 | Free | milestones 2026-09-05 | — |
+| F-029b | B2 UI の統一（比較画面と `PlayerBoosterPanel`） | idea | 0% | F-029 | — | — | 不要 | 不要 | Free | `milestones/2026-09-05-b2-standard-integration.md` | 表示の差分の棚卸し |
+| F-030b | Total Package の条件評価エンジン・Game Plan からの Power of Many 自動段階 | idea | 0% | F-030, F-033 | R | L | 不要 | 不要 | Free | `phase-total-package.md`・`phase-conditional-boosters.md`（`levelForRegisteredPlayers` は UI 未接続） | 効果量の出典確認（F-030）の後 |
 | F-030 | Power of Many（複数ブースターの発動方式） | completed（要確認：人数別の効果量） | 70% | F-029 | R | L | 不要 | 不要 | Free | `docs/phase-total-package.md` | 効果量の出典確認 |
 | F-031 | Link-Up Play | completed | 75% | F-003 | R | — | 不要 | 不要 | Free | 監督フィルタ black-box | スカッド内の発動判定（要確認） |
 | F-032 | ポジション適性（表示） | completed | 80% | F-002 | R | — | 不要 | 不要 | Free | player-analysis tests | — |
 | F-032b | ポジション別OVR | blocked | 10% | 計算規則の確認 | R | — | 不要 | 不要 | Free | 規則が未確認なので推測で算式を作らない | 規則サンプルの収集（本人またはデータ源） |
 | F-033 | 完全ゲームプラン（戦術・役割・指示） | completed（MVP：配置編集。個別指示は deferred） | 70% | F-024, F-003 | R | L | 不要 | 不要 | Free | 本人判断 2026-09-27：現在の配置編集を MVP 完成版とする | 個別指示は、公式または許諾済みの信頼できる仕様を確認できるまで deferred（推測で実装しない） |
+| F-035 | プレースタイル発動可否・選手間連携の分析 | idea（将来提案） | 0% | F-026 | R | L | 不要 | 不要 | Free | `docs/playing-style-ledger.md` | 公式の発動条件の確認後 |
+| F-036 | 配置補助の次候補（複数選択・選択ミラー・位置のコピー/貼り付け・整列） | idea | 0% | F-024 | — | L | 不要 | 不要 | Free | `docs/squad-placement-assist.md` | 実装可能（規則不要） |
 | F-034 | 能力値直接操作・スライド式育成UI（能力タップ→関連強調→下部パネルの＋／－・スライダー・配分チップ・1タップ保存。選手詳細と比較画面（1人ずつの編集モード）。日英完全対応。eFHUB を UX の基準にし、素材はコピーしない） | verified | 100% | F-028 | R | L | 不要 | 不要 | Free | PR #80・#82・#83・#84、`docs/product/f034-human-factors-audit.md`（人間工学監査 15件・Sev3 全修正）、`evidence/f034-human-factors-l10n-compare-2026-09-27.json`（公開: 総合 568/568・育成 458/458・比較 168/168、8 viewport） | 本人の主観確認（発光・パネルの高さ・触り心地）。My Builds・ビルド分析の英語化は PR #89 で完了（公開 8 viewport で日本語 0） |
 
 ## 3. 診断と共有（Phase 3）
@@ -61,8 +66,10 @@
 | ID | 機能 | 状態 | 完成率 | 依存 | Prod | UD | Auth | AI | Tier | Release Gate / Evidence | 次の作業 |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | F-040 | 診断結果カード（スカッド／ビルド） | completed | 80% | F-026 | — | — | 不要 | 不要 | Free | `squad-diagnosis-share.ts`（内部IDを含めない） | — |
-| F-041 | 画像保存（PNG） | completed | 80% | F-040 | — | L | 不要 | 不要 | Free | `squad-diagnosis-image.ts`、`build-diagnosis-card-image.ts` | 総合black-boxへ保存操作を追加 |
+| F-041 | 画像保存（PNG） | completed | 80% | F-040 | — | L | 不要 | 不要 | Free | `squad-diagnosis-image.ts`（3:4・1440×1920）、`build-diagnosis-card-image.ts`（9:16・16:9） | 共有カードのサイズ追加は F-041b |
 | F-042 | 共有URL（診断カード） | verified | 100% | F-040 | — | —（サーバー保存なし・名前/ID なし） | 不要 | 不要 | Free | PR #75、`evidence/f042-share-url-2026-09-27.json`（公開 black-box 522/522） | 比較の共有URLは F-043 で追加 |
+| F-041b | 共有カードのサイズ（1:1・9:16・16:9）と OS 共有（LINE 等は OS の共有シート経由） | partially_implemented | 40% | F-041 | — | L | 不要 | 不要 | Free | ビルドカード 9:16/16:9 あり。スカッド診断カードは 3:4 のみ。`navigator.share` は共有 URL で利用（`SquadDiagnosisShareUrlButton.tsx`） | スカッド診断カードの 1:1・9:16・16:9 と画像の OS 共有 |
+| F-045 | 診断の追加観点（左右バランス・監督適合・フォーメーション適合・控えを含む役割重複・GK 専用カテゴリ・空中戦の身長/利き足補正） | designed | 5% | F-026 | R | L | 不要 | 不要 | Free | 候補は `milestones/2026-09-06-squad-diagnosis-foundation.md`・比較画面は左右の人数を事実として表示（評価しない） | **計算式は本人判断**（${RA} §5 に候補・必要データ・長所/短所） |
 | F-043 | 改善前後の比較カード | verified | 100% | F-026, F-060 | — | L | 不要 | 不要 | Free | PR #77、`docs/production-readiness/evidence/f060-f043-2026-09-27.json`（公開 black-box 568/568） | 公開環境の稀な hydration 警告は既知の問題として記録（機能影響なし） |
 | F-044 | Pro向け詳細診断 | designed | 20% | F-026, F-120 | — | — | 要 | 任意 | Pro | 出力は基本/詳細に分離済み | 課金の判断まで deferred |
 
@@ -82,17 +89,17 @@
 
 ## 5. 成長・比較・個性（Phase 5〜6）
 
-| ID | 機能 | 状態 | 完成率 | 依存 | Prod | UD | Auth | AI | Tier | 次の作業 |
-|---|---|---|---|---|---|---|---|---|---|---|
+| ID | 機能 | 状態 | 完成率 | 依存 | Prod | UD | Auth | AI | Tier | Release Gate / Evidence | 次の作業 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
 | F-060 | 診断履歴（ブラウザー内） | verified | 100% | F-026, F-042 | — | L（スコープ別） | 不要 | 不要 | Free | PR #76、`evidence/f060-f043-2026-09-27.json`（公開 black-box 550/550） | 認証ユーザー向けの同期は別途設計（F-052） |
 | F-061 | 成長プロフィール（ブラウザー内の版） | completed | 70% | F-060 | — | L（スコープ別） | 不要 | 不要 | Free | PR #94（診断履歴から、スカッドごとの総合点の推移・最も伸びたカテゴリ・克服した弱点。同じ診断規則の履歴だけを比較）、black-box 115/115（8 viewport × 日英） | クラウド同期の版は認証メールの公開と本番マイグレーションの後（`community-and-growth-design.md` §4） |
 | F-062 | 友達との比較・ライバル | designed | 5% | F-055 | — | C | 要 | 不要 | Free | `docs/product/community-and-growth-design.md` §3 | F-055 の後 |
-| F-070 | AI Best XI 高度化（戦術・監督・ブースター考慮） | partially_implemented | 40% | F-025 | R | L | 不要 | 不要 | Free | 監督適性の反映 |
+| F-070 | AI Best XI 高度化（戦術・監督・ブースター考慮） | partially_implemented | 40% | F-025 | R | L | 不要 | 不要 | Free | `src/lib/best-xi/*`。**監督補正は未対応**（`candidates.ts` は常に null。2026-10-01 監査で確認） | 戦術・監督ごとの評価式は未確定（本人判断）。推測の重みで順位を付けない |
 | F-071 | 基礎能力値のパーセンタイル（能力値ごと・範囲: 全World/同ポジション/フィールド・GK） | verified | 100% | F-026, reference data | R | — | 不要 | 不要 | Free | PR #90・#95（定期検出 run 36340696128 の候補・applied-state と一致・VALID）、`evidence/f071-artifact-2026-10-01.json`（公開 115/115・実データ） | カテゴリ・スカッド単位は確定した計算式が無いため deferred。次の更新は Production Apply 後の Evidence PR で成果物も更新 |
 | F-072 | 称号・バッジ（選手・スカッド診断・共有カード） | verified | 100% | F-026, F-071 | — | L | 不要 | 不要 | Free | PR #91・#95、`docs/product/f072-titles-badges.md`、`evidence/f071-artifact-2026-10-01.json`（公開 115/115。選手の称号も実データで表示） | 本人の主観確認（称号の名前・閾値の手応え） |
 | F-073 | 「あなたの一番」の自動発見（My Team） | verified | 100% | F-020, F-071, F-072 | R | L | 不要 | 不要 | Free | PR #92・#95、`evidence/f071-artifact-2026-10-01.json`（公開 115/115） | — |
 | F-074 | スカッド独自性評価 | designed | 5% | F-024, 利用統計 | R | C | 要 | 不要 | Free | `docs/product/community-and-growth-design.md` §5（公開を選んだスカッドだけを匿名集計・k-匿名性） | 本人判断: 集計の同意・保持期間・プライバシーポリシー。判断まで実装しない |
-| F-075 | ランキング | idea | 0% | F-053, F-056 | — | C | 要 | 不要 | Free | コミュニティの後 |
+| F-075 | ランキング | idea | 0% | F-053, F-056 | — | C | 要 | 不要 | Free | — | コミュニティ・安全機能・小規模母数の保護の後 |
 
 ## 6. コミュニティ（Phase 7）
 
@@ -104,6 +111,8 @@
 | F-081 | 反応・コメント・保存・フォロー | idea（設計書 26章） | F-080 | 要 | — |
 | F-082 | モデレーション（NGワード・通報キュー・管理操作） | idea（設計書 26・27章） | F-056 | 要 | — |
 | F-083 | コミュニティ発見・不正利用対策 | idea | F-082 | 要 | — |
+| F-084 | 写真付き投稿（カメラ・写真ライブラリ・トリミング・回転・圧縮・EXIF/GPS 除去・下書き・関連スカッド/選手/監督/ビルド/診断） | 要件追加（2026-10-01 本人指示） | F-056, F-082 | 要（2 段階目以降） | 1: ローカル/モック（自動で実装）→ 2: 本人のみ → 3: URL 限定 → 4: 友達 → 5: 全体。本番 Storage・RLS は本人承認 |
+| F-085 | 投稿フィード（カテゴリ・選手・監督・フォーメーション別）・投稿検索 | idea | F-084 | 要 | ローカル/モックのフィードから |
 
 ## 7. メタ・分析（Phase 8）
 
@@ -114,6 +123,7 @@
 | F-092 | Pack・ガチャ診断（ナビは「準備中」） | designed（設計書 23章 スコアリング） | Pack データ, F-020 | 不要（計算）・任意（説明文） | Pack データ源の確認 |
 | F-093 | 相手分析 | idea（設計書 22章） | F-026 | 任意 | — |
 | F-094 | AI 戦術分析 | idea | F-033 | 任意 | — |
+| F-095 | チーム力（Team Strength）・監督相性の計算 | idea（設計書 §4・§13） | F-026, F-003 | 不要 | 計算式は本人判断（推測で確定しない） |
 
 ## 8. 生成AI・画像・個人最適化・アプリ（Phase 9〜10）と横断機能
 
@@ -124,13 +134,17 @@
 | F-102 | 画像認識によるスカッド入力 | deferred（設計書 24章） | 要 | 従量 | 画像の個人情報・保存方針の後。確認画面は必須 |
 | F-103 | 個人最適化 | deferred | 任意 | — | 利用履歴の同意設計の後 |
 | F-104 | Wiki（用語・ルール解説） | idea（設計書 P4） | 不要 | 0 | — |
-| F-110 | PWA・ネイティブアプリ | deferred（設計書 9-5 は PWA を将来とする） | 不要 | ストア費用 | 利用価値と収益性の確認後 |
+| F-105 | AI 生成系（ビルド生成・育成提案・監督診断・ブースター診断・試合後分析） | deferred（設計書 §21・§22） | 要 | LLM 従量 | F-100 と同じ条件（API 契約・費用上限・安全方針） |
+| F-110 | PWA・ネイティブアプリ | deferred（設計書 9-5 は PWA を将来とする。`decision-record.md` §4 は iPhone 向け React Native を候補） | 不要 | ストア費用 | 利用価値と収益性の確認後 |
 | F-120 | 課金・Pro 版 | deferred | — | 決済手数料 | 法務・特商法・税の確認後（本人判断） |
 | F-121 | 通知 | idea | 不要 | 0〜 | 友達・コミュニティの後 |
 | F-122 | 管理画面（データ競合・同期管理） | idea（設計書 27章） | 不要 | 0 | 現状は GitHub Actions ＋ Evidence で代替 |
 | F-123 | 監視（Sentry 等） | idea（roadmap 段階14） | 不要 | 無料枠 | 本人のアカウント作成が必要 |
+| F-124 | 利用範囲の制限（参照データの自動更新が完成・検証されるまで本人だけで検証。他人・家族への試用、招待、新規登録、コミュニティ公開をしない） | 有効（2026-10-01 本人指示） | 不要 | 0 | 自動更新の完成（`automated-update-pipeline.md` の Level 2 の実運用確認）まで |
 | F-001a | 国籍での絞り込み | proposal（2026-09-27 の本人指示で操作名として言及。既存資料に記載なし） | 不要 | 0 | 原案確認後 |
 
 ## 9. 変更履歴
+
+- 2026-10-01 再監査（`docs/product/reaudit-2026-10-01.md`）: §5 の列ずれを修正。F-003・F-041・F-070 を訂正。F-023b・F-029b・F-030b・F-035・F-036・F-041b・F-045・F-084・F-085・F-095・F-105・F-124 を追加。
 
 - 2026-09-27 初版（棚卸し：設計書・roadmap・progress・milestones・src・PR 履歴）。
