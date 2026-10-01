@@ -3787,6 +3787,7 @@ export interface Dictionary {
     importConfirmBody: string;
     importExportFirst: string;
     importConfirmButton: string;
+    importScopeChanged: string;
     importDone: string;
     importFailedRolledBack: string;
     importFailedPartial: string;
@@ -8133,6 +8134,7 @@ const ja: Dictionary = {
     importConfirmBody: "ファイルにある項目について、「{region}」の今のデータを置き換えます。ファイルに無い項目は変わりません。元に戻せません。",
     importExportFirst: "念のため、先に今のデータを書き出しておくことをおすすめします。",
     importConfirmButton: "読み込む",
+    importScopeChanged: "ログイン状態が変わったため、読み込みを取り消しました。もう一度ファイルを選んでください。",
     importDone: "読み込みました。",
     importFailedRolledBack: "読み込めませんでした。データは読み込む前の状態のままです。",
     importFailedPartial: "読み込みの途中で失敗し、一部を元に戻せませんでした。書き出したファイルから読み込み直してください。",

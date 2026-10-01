@@ -5,7 +5,7 @@ import { parseFavoritesStorage } from "@/lib/user-cards/favorites-storage";
 import { parseTemplatesStorage } from "@/lib/squad/templates";
 import { validateBuildsPayload } from "@/lib/progression/build-storage";
 import { validateSquadsPayload } from "@/lib/squad/squad-storage";
-import { diagnosisHistoryKey, readDiagnosisHistory } from "@/lib/squad/diagnosis-history";
+import { DIAGNOSIS_HISTORY_MAX_BYTES, DIAGNOSIS_HISTORY_MAX_ENTRIES, diagnosisHistoryKey, readDiagnosisHistory } from "@/lib/squad/diagnosis-history";
 
 /**
  * F-023b: 現在の領域（未ログインのゲスト / ログイン中のアカウント）のローカルデータを、まとめて
@@ -71,10 +71,13 @@ export function validateSection(section: BackupSection, value: unknown): { ok: t
           removeItem: (k: string) => void mem.delete(k),
         } as unknown as Storage;
         const scope: StorageScope = { kind: "guest" };
-        mem.set(diagnosisHistoryKey(scope), JSON.stringify(value));
+        const text = JSON.stringify(value);
+        // 通常の保存と同じ上限（件数・容量）を超える履歴は読み込まない（通常の保存では作れない形のため）。
+        if (new TextEncoder().encode(text).length > DIAGNOSIS_HISTORY_MAX_BYTES) return { ok: false };
+        mem.set(diagnosisHistoryKey(scope), text);
         const read = readDiagnosisHistory({ storage: () => storage, scope: () => scope, now: () => new Date(0), randomId: () => "x" });
         const inputCount = Array.isArray((value as { entries?: unknown })?.entries) ? (value as { entries: unknown[] }).entries.length : -1;
-        return read.corrupted === 0 && read.entries.length === inputCount ? { ok: true, count: inputCount } : { ok: false };
+        return read.corrupted === 0 && read.entries.length === inputCount && inputCount <= DIAGNOSIS_HISTORY_MAX_ENTRIES ? { ok: true, count: inputCount } : { ok: false };
       }
     }
   } catch {
@@ -119,6 +122,9 @@ export function parseLocalBackup(text: string): { ok: true; file: LocalBackupFil
     return { ok: false, reason: "not_json" };
   }
   const f = json as Partial<LocalBackupFile> | null;
+  // 想定外の項目は受け付けない（`__proto__` などの名前も含めて、自分の項目名だけを見る）。
+  const TOP_KEYS = ["schema", "app", "exportedAt", "sections"];
+  if (f && typeof f === "object" && !Array.isArray(f) && Object.keys(f).some((k) => !TOP_KEYS.includes(k))) return { ok: false, reason: "not_backup" };
   if (!f || typeof f !== "object" || f.schema !== LOCAL_BACKUP_SCHEMA || f.app !== "efootball-team-ai" || typeof f.exportedAt !== "string" || Number.isNaN(Date.parse(f.exportedAt)) || !f.sections || typeof f.sections !== "object" || Array.isArray(f.sections)) {
     return { ok: false, reason: "not_backup" };
   }

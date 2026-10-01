@@ -3926,6 +3926,7 @@ const en: Dictionary = {
     importConfirmBody: "For the items in the file, the current data in the {region} will be replaced. Items not in the file stay as they are. This can't be undone.",
     importExportFirst: "We recommend exporting your current data first.",
     importConfirmButton: "Import",
+    importScopeChanged: "Your sign-in state changed, so the import was cancelled. Please choose the file again.",
     importDone: "Imported.",
     importFailedRolledBack: "Couldn't import. Your data is as it was before.",
     importFailedPartial: "The import failed part-way and some items couldn't be restored. Please import from your exported file again.",

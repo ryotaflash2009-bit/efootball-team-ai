@@ -96,6 +96,13 @@ describe("F-023b 全データの書き出し・読み込み・削除", () => {
     expect(parseLocalBackup(JSON.stringify({ ...ok, sections: {} }))).toMatchObject({ ok: false, reason: "empty" });
     expect(parseLocalBackup("x".repeat(LOCAL_BACKUP_MAX_BYTES + 1))).toMatchObject({ ok: false, reason: "too_large" });
     expect(parseLocalBackup(JSON.stringify(ok))).toMatchObject({ ok: true });
+    // 想定外の項目・__proto__ の項目名（JSON.parse では自分の項目になる）を拒否する。
+    expect(parseLocalBackup(JSON.stringify({ ...ok, extra: 1 }))).toMatchObject({ ok: false, reason: "not_backup" });
+    expect(parseLocalBackup(`{"schema":"efb-local-backup/v1","app":"efootball-team-ai","exportedAt":"${T}","sections":{"__proto__":{"polluted":true}}}`)).toMatchObject({ ok: false, reason: "unknown_section" });
+    expect(({} as Record<string, unknown>).polluted).toBeUndefined();
+    // 診断履歴は通常の保存と同じ上限（50 件）を超えると拒否する。
+    const many = { ...history, entries: Array.from({ length: 51 }, (_, i) => ({ ...history.entries[0], id: `dh_abcd${String(i).padStart(8, "0")}` })) };
+    expect(parseLocalBackup(JSON.stringify({ ...ok, sections: { diagnosisHistory: many } }))).toMatchObject({ ok: false, reason: "invalid_section" });
   });
 
   it("書き込み中に失敗したら、書き込む前の値へ戻す", () => {

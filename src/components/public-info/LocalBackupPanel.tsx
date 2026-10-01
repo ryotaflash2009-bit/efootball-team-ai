@@ -58,7 +58,8 @@ export function LocalBackupPanel() {
   const scope = scopeState.status === "resolved" ? scopeState.scope : null;
   const [counts, setCounts] = useState<SectionCounts>({});
   const [message, setMessage] = useState<{ tone: "ok" | "error"; text: string } | null>(null);
-  const [pending, setPending] = useState<{ file: LocalBackupFile; counts: SectionCounts } | null>(null);
+  // 読み込む領域は、ファイルを選んだ時点の領域に固定する（確認までの間にログイン状態が変わったら取り消す）。
+  const [pending, setPending] = useState<{ file: LocalBackupFile; counts: SectionCounts; scopeKey: string } | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -91,6 +92,15 @@ export function LocalBackupPanel() {
     window.location.reload();
   };
 
+  const scopeKey = scope ? (scope.kind === "guest" ? "guest" : `account:${scope.scopeId}`) : null;
+  useEffect(() => {
+    if (pending && pending.scopeKey !== scopeKey) {
+      setPending(null);
+      setMessage({ tone: "error", text: lb("importScopeChanged") });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scopeKey]);
+
   const ls = getSafeLocalStorage();
   const regionName = scope?.kind === "account" ? lb("regionAccount") : lb("regionGuest");
   const hasData = Object.keys(counts).length > 0;
@@ -116,11 +126,12 @@ export function LocalBackupPanel() {
       setMessage({ tone: "error", text: parsed.reason === "invalid_section" && parsed.section ? lb("importInvalidSectionTemplate").replace("{section}", lb(SECTION_LABEL[parsed.section])) : parsed.reason === "too_large" ? lb("importTooLarge") : lb("importNotBackup") });
       return;
     }
-    setPending({ file: parsed.file, counts: parsed.counts });
+    if (!scopeKey) return;
+    setPending({ file: parsed.file, counts: parsed.counts, scopeKey });
   }
 
   function handleImport() {
-    if (!ls || !scope || !pending || busy) return;
+    if (!ls || !scope || !pending || busy || pending.scopeKey !== scopeKey) return;
     setBusy(true);
     const r = importLocalBackup(ls, scope, pending.file);
     setBusy(false);
