@@ -69,12 +69,15 @@ export function HomePageView({
   managerCount,
   topOvr,
   recent,
+  temporaryError = false,
 }: {
   world: HomePageWorldSummary | null;
   efhubTotal: number | null;
   managerCount: number | null;
   topOvr: HomeMiniCardData[];
   recent: HomeMiniCardData[];
+  /** 一時的な照会の失敗で、一部（または全部）を読み込めなかった。 */
+  temporaryError?: boolean;
 }) {
   const t = useT();
   const { locale } = useLocale();
@@ -118,6 +121,14 @@ export function HomePageView({
   return (
     <PageContainer>
       <div className="flex flex-col gap-8">
+        {temporaryError ? (
+          <p role="status" className="rounded-md border border-warning/50 bg-warning/10 px-3 py-2 text-sm text-warning" data-testid="home-temporary-error">
+            {th("temporaryErrorNotice")}{" "}
+            <Link href="/" prefetch={false} className="underline">
+              {th("temporaryErrorReload")}
+            </Link>
+          </p>
+        ) : null}
         <Surface tone="inset" padding="sm" className="text-xs text-warning">
           {th("alphaNoticeBanner")}{" "}
           <Link href="/privacy" className="underline">
@@ -193,7 +204,7 @@ export function HomePageView({
               })}
             </div>
           ) : (
-            <Surface tone="outline">
+            temporaryError ? null : <Surface tone="outline">
               <p className="text-sm font-semibold">{th("worldUnavailableTitle")}</p>
               <p className="mt-1 text-sm text-text-dim">
                 {th("worldUnavailableCommandPrefix")}

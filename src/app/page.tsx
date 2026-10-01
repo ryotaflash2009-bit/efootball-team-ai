@@ -1,11 +1,11 @@
 import { loadPlayers } from "@/lib/players";
 import { getSourceMeta, listPlayers } from "@/lib/world/repository";
 import { getManagerCount } from "@/lib/managers/repository";
-import { WorldDataUnavailableError } from "@/lib/world/db";
 import type { WorldPlayerListItem } from "@/lib/world/types";
 import { resolveCardImageSources } from "@/lib/world/image";
 import { HomePageView, type HomeMiniCardData, type HomePageWorldSummary } from "@/components/HomePageView";
 import { settledInOrder } from "@/lib/settled-in-order";
+import { classifyHomeFailure } from "@/lib/home-failure";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -38,7 +38,9 @@ export default async function HomePage() {
   let managerCount: number | null = null;
   // 4つの照会は互いに独立なので並列に行う(直列だと表示完了が合計時間だけ遅れていた。2026-09-27計測)。
   // エラーの扱いは従来の直列実行と同じ: 照会順(メタ → 上位OVR → 最近の更新 → 監督数)で最初の失敗だけを判定し、
-  // WorldDataUnavailableErrorなら部分表示、それ以外はerror boundaryへ投げる。
+  // WorldDataUnavailableErrorなら部分表示。WorldQueryError（一時的な照会の失敗。サーバー側には分類つきで記録済み）も、
+  // ホームは要約の画面なので error boundary へ投げず、失敗より前に得た値だけで表示して「一時的に読み込めなかった」と示す
+  // （2026-10-02 の公開 black-box で一度だけ観測。再現 0/60）。それ以外の例外は従来どおり error boundary へ。
   const base = { page: 1, pageSize: 14, query: "", position: null, cardType: null, playingStyle: null, playingStyleDefensive: null, minOvr: null, maxOvr: null, hasBooster: null } as const;
   const [metaR, topR, recentR, managersR] = await Promise.allSettled([
     getSourceMeta(),
@@ -47,7 +49,9 @@ export default async function HomePage() {
     getManagerCount(),
   ]);
   const settled = settledInOrder([metaR, topR, recentR, managersR]);
-  if (settled.failure && !(settled.failure.reason instanceof WorldDataUnavailableError)) throw settled.failure.reason;
+  const handling = classifyHomeFailure(settled.failure ? settled.failure.reason : undefined);
+  if (handling === "throw") throw settled.failure!.reason;
+  const temporaryError = handling === "temporary";
   // 従来は最初の失敗までに得た値だけを表示していた。照会順で失敗より前の結果だけを使う。
   if (settled.usable(0) && metaR.status === "fulfilled") {
     world = { totalCount: metaR.value.totalCount, source: metaR.value.source, syncFinishedAt: metaR.value.syncFinishedAt };
@@ -63,6 +67,7 @@ export default async function HomePage() {
       managerCount={managerCount}
       topOvr={topOvr}
       recent={recent}
+      temporaryError={temporaryError}
     />
   );
 }

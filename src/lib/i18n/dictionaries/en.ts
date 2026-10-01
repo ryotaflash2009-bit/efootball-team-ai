@@ -51,6 +51,8 @@ const en: Dictionary = {
     managersLabel: "Managers",
     syncedAtLabel: "World data imported",
     worldUnavailableTitle: "World data isn't set up yet",
+    temporaryErrorNotice: "Some data couldn't be loaded right now. Please wait a moment and reload.",
+    temporaryErrorReload: "Reload",
     worldUnavailableCommandPrefix: "Run ",
     worldUnavailableCommandSuffix: " in the terminal.",
     topOvrHeading: "Highest Max OVR Cards",
