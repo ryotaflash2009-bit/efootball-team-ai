@@ -48,8 +48,15 @@ describe("buildContentSecurityPolicy(本番)", () => {
     expect(csp).toContain("object-src 'none'");
   });
 
-  it("画像はselfとdata:のみ許可する(自ドメインの画像プロキシ経路のみ)", () => {
-    expect(csp).toContain("img-src 'self' data:");
+  it("画像はself・data:・blob:（ページが作った画像のプレビュー）だけ。外部の画像は許可しない", () => {
+    expect(csp).toContain("img-src 'self' data: blob:;");
+    expect(csp).not.toMatch(/img-src[^;]*(https?:|\*)/);
+  });
+
+  it("blob: は img-src だけ（スクリプト・接続・既定へは広げない）", () => {
+    for (const d of csp.split(";").map((x) => x.trim())) {
+      if (!d.startsWith("img-src")) expect(d, d).not.toContain("blob:");
+    }
   });
 });
 
