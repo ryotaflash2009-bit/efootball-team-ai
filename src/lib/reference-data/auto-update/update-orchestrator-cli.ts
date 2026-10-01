@@ -4,6 +4,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import {
   buildApprovalRequest,
+  checkDetectionRun,
   decideFromDetection,
   evaluateBackupGate,
   evaluateDryRunGate,
@@ -208,6 +209,21 @@ export async function main(env: Readonly<Record<string, string | undefined>> = p
     return 1;
   }
   const deps = ghDeps(repo, workDir);
+  // 手動起動でも、指定された検出 run が main 上の検出 workflow の成功した初回の実行であることを確かめる。
+  let detectionFacts: Record<string, unknown> = {};
+  try {
+    detectionFacts = JSON.parse((await exec("gh", ["run", "view", detectionRunId, "--repo", repo, "--json", "workflowName,headBranch,conclusion,attempt,event"])).stdout) as Record<string, unknown>;
+  } catch {
+    detectionFacts = {};
+  }
+  const detCheck = checkDetectionRun(detectionFacts);
+  if (!detCheck.ok) {
+    const stopped: OrchestratorOutcome = { kind: "stopped", stage: "detection_run", reasons: detCheck.reasons, runs: { detection: detectionRunId } };
+    if (env.GITHUB_STEP_SUMMARY) appendFileSync(env.GITHUB_STEP_SUMMARY, markdownFor(stopped));
+    writeFileSync(path.join(workDir, "reference-data-update-approval.json"), `${JSON.stringify(stopped, null, 2)}\n`);
+    process.stdout.write(markdownFor(stopped));
+    return 1;
+  }
   const detectionText = await deps.downloadArtifact(detectionRunId, "reference-data-detection-summary");
   const outcome = await runOrchestrator(deps, { detectionSummaryText: detectionText });
   const summary = markdownFor(outcome);
