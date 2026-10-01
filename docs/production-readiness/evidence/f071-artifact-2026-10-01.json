@@ -1,0 +1,39 @@
+{
+  "evidence": "F-071 flow B: first base-ability distribution artifact brought to main; F-061 growth profile; public verification",
+  "recordedAt": "2026-10-01",
+  "containsSecrets": false,
+  "containsRowDataOrRawHtml": false,
+  "prs": [
+    { "pr": 93, "mergeCommit": "ff8d55e", "scope": "docs: evidence, ledger, roadmap, community and growth design" },
+    { "pr": 94, "mergeCommit": "2ced597", "scope": "F-061 browser-local growth profile" },
+    { "pr": 95, "mergeCommit": "df3b10f", "scope": "F-071 artifact from scheduled detection run 36340696128" }
+  ],
+  "artifact": {
+    "source": "GitHub Actions run 36340696128 (schedule, 2026-09-27T18:27Z), artifact world-base-distribution-candidate",
+    "detectionOverall": "no_change",
+    "upstreamRequests": 445,
+    "binding": { "dataset": "world_player_cards", "sourceChecksum12": "ed068757c555", "recordCount": 13297 },
+    "appliedStateMatch": true,
+    "verdict": "DISTRIBUTION_ARTIFACT_VALID",
+    "scopes": 16,
+    "statKeys": 26,
+    "sizeBytes": 54611,
+    "contents": "value counts per stat only (no names, IDs or URLs)"
+  },
+  "verification": {
+    "unitTests": { "files": 269, "tests": 4578, "result": "pass" },
+    "localBlackBoxWithRealArtifact": "115/115",
+    "publicAfterPR95": {
+      "basePercentileTitlesYourBestGrowth": "115/115 (actual state valid; 52 real badges on the sample player)",
+      "restrictedSignup": "114/114",
+      "fullRegression": "steps 568/568, security 18/18, memory OK, perf 13/14"
+    },
+    "plausibilityCheck": "Lionel Messi (outfield scope, base values): curl top 1.8%, set-piece taking top 2.6%, dribbling top 5.4%, tackling top 99.1%"
+  },
+  "knownIssues": [
+    {
+      "id": "KI-REACT-418-INTERMITTENT",
+      "summary": "One of the warm reload samples of /best-xi on mobile-390x844 logged Minified React error #418 (hydration text mismatch); timings were normal (warm 130 ms, CLS 0). Same intermittent framework-level issue recorded earlier; /best-xi was not changed in this work. All functional steps passed."
+    }
+  ]
+}

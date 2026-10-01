@@ -18,7 +18,7 @@
 | 公開 black-box（新規登録の限定テスト・8 viewport × 日英） | 114/114（PR #87 の後） |
 | 認証 black-box（テストダブル・ローカル） | 173/173 |
 | 新規登録 | 限定テスト中（`ACCOUNT_SIGNUP_MODE=limited`・`AUTH_EMAIL_DELIVERY=builtin_members_only`）。ドメイン購入は保留 |
-| F-071 分布の成果物 | 未生成（`null`）。最初の定期検出の後に取り込み |
+| F-071 分布の成果物 | VALID（`ed068757c555`・13,297 枚・定期検出 run 36340696128、PR #95） |
 
 ## ワークスペース
 
