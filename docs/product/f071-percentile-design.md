@@ -101,4 +101,6 @@
 
 ### 現在の状態
 
-成果物は**未生成**（`null`）。最初の定期検出（2026-09-28 03:17 JST）の後、候補の checksum が applied-state（`ed068757c555`・13,297 枚）と一致すれば、B の PR で main へ入れる。それまで画面は照合できない旨を表示する。
+2026-10-01: 定期検出 run 36340696128（2026-09-27T18:27Z・`no_change`）の候補を PR #95 で main へ入れた。binding `world_player_cards`・`ed068757c555`・13,297 枚が applied-state と一致し、`DISTRIBUTION_ARTIFACT_VALID`。公開サイトで実際の値を表示している。
+
+次の更新: upstream が変わり Production Apply を行ったら、その Evidence / applied-state の PR で、同じ checksum の候補へ差し替える（差し替えないと STALE になり、画面は照合できない旨の表示へ戻る）。
