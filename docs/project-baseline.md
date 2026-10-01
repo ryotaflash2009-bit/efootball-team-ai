@@ -8,16 +8,17 @@
 
 ## 最新の検証値（2026-10-02・PR #104 の後）
 
-詳細は `docs/production-readiness/evidence/2026-10-02-backup-cards-posts.json`。
+詳細は `docs/production-readiness/evidence/2026-10-02-overnight.json`（前回: `2026-10-02-backup-cards-posts.json`）。
 
 | 項目 | 値 |
 |---|---|
-| `npm run verify` | PASS（276 テストファイル・4630 テスト） |
-| 公開 black-box（総合・8 viewport） | 568/568 ステップ・security 18/18・メモリ OK・性能 11/14（React #418 の観測 2 件・遅い 1 件） |
-| 公開 black-box（新規登録の限定テスト・内部ページの 404） | 115/115 |
+| `npm run verify` | PASS（286 テストファイル・4687 テスト・Vitest 5.0.3） |
+| 全13ブラックボックス（`next start`） | 715/715 ステップ |
+| 公開 black-box（総合・8 viewport） | 568/568 ステップ・security 18/18・メモリ OK・性能 11/14（React #418 の観測 2 件・遅い 1 件）。2026-10-02 夜間の 2 viewport: 148/148・性能 14/14・#418 は 0 件 |
+| 公開 black-box（新規登録の限定テスト・内部ページの 404） | 117/117（内部ページ 5 件） |
 | 公開 black-box（F-061〜F-073） | 115/115 |
 | ローカル black-box | 認証 173・バックアップ 28・共有カード 24・写真投稿/安全機能 32 |
-| npm audit | critical 0・high 1（Next 15 内の postcss・ビルド時のみ）・moderate 3 |
+| npm audit | critical 0・high 1（Next 15 内の postcss・ビルド時のみ）・moderate 1 |
 | Next.js | 15.5.27 |
 
 ## 最新の検証値（2026-09-27・PR #87〜#92 の後）

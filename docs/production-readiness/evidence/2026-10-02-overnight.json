@@ -1,0 +1,87 @@
+{
+  "schema": "efta-evidence/v1",
+  "date": "2026-10-02",
+  "scope": "Overnight autonomous run: reference-data auto-update completion work, then the safe feature backlog (owner decisions A-D of 2026-10-02).",
+  "productionWrites": 0,
+  "secretsRead": 0,
+  "mergedPullRequests": [106, 107, 108, 109, 110, 111, 113, 114],
+  "autoUpdate": {
+    "verdict": "AUTO_UPDATE_SETTINGS_BLOCKED",
+    "applyVerdict": "not_run (settings missing; no Plan/Backup/Dry run dispatched to avoid GitHub auto-creating the missing Environment unprotected)",
+    "rootCauseFixed": "workflow_run filter pattern: the detection workflow name contained '+', so the notify and orchestrator workflows never ran (PR #106, regression test workflow-run-references.test.ts)",
+    "detectionRun": {
+      "id": "36901363553",
+      "commit": "5c87870",
+      "overall": "update_available",
+      "world": { "recordCount": 13372, "applied": 13297, "sourceChecksum12": "60fdd79fb61f" },
+      "managers": { "recordCount": 69, "applied": 67, "sourceChecksum12": "62a21bd2086a" }
+    },
+    "followUpRuns": {
+      "notify": { "id": "36904669681", "conclusion": "success", "issue": 112 },
+      "orchestrator": { "id": "36904669648", "conclusion": "skipped", "reason": "REFERENCE_DATA_AUTO_UPDATE_PIPELINE_ENABLED not set" },
+      "pipelineNotify": { "id": "36904676750", "conclusion": "skipped", "reason": "triggering run was skipped" }
+    },
+    "addedInPr107": [
+      "Production apply and Backup jobs run only on main",
+      "Apply records the Environment approver from the run approvals API and stops before any DB connection without one",
+      "evidence.json for every apply-workflow mode (run, attempt, commit, ref, actor, approver, outcome, input/output sha256), 90 days",
+      "applied-state.candidate.json after applied_verified",
+      "pipeline notifications: orchestrator stopped, Apply waiting, Apply verified / rollback_required / failed, plan or dry-run failure"
+    ],
+    "missingOwnerSettings": {
+      "environment": "reference-data-automation",
+      "secretNames": [
+        "REFERENCE_DATA_PLAN_READ_DB_URL",
+        "REFERENCE_DATA_PLAN_READ_DB_CA_CERT",
+        "REFERENCE_DATA_BACKUP_* (7 names, docs/production-readiness/automated-update-pipeline.md §2/§5)"
+      ],
+      "variable": "REFERENCE_DATA_AUTO_UPDATE_PIPELINE_ENABLED"
+    },
+    "f124": { "A_technical": "verified", "B_settings": "missing", "C_liveOperation": "not_run", "released": false }
+  },
+  "features": {
+    "F-045": "provisional 8-perspective candidates, comparison only, no composite score (PR #108)",
+    "F-053": "public ID / display-name rules + internal preview (PR #110)",
+    "F-084-stage2": "proposal SQL + rollback, Storage bucket/policy, RLS; owner separation verified on CI PostgreSQL 7/7 (PR #111); not applied",
+    "F-090-F-092": "synthetic-only model, display rules, internal preview (PR #113)",
+    "React-418": "black-box diagnostics added (PR #109); 0 occurrences on production 2-viewport run",
+    "Vitest": "3.2.6 -> 5.0.3 (PR #114): same test totals (unit 4677 incl. 37 DB-only skips in CI, PostgreSQL 76), audit 4 -> 2, prod deps unchanged"
+  },
+  "qualityGate": {
+    "npmRunVerify": { "result": "PASS", "testFiles": 286, "tests": 4687, "vitest": "5.0.3" },
+    "build": "PASS (next build, existing .next kept)",
+    "blackBoxRails13": {
+      "result": "PASS", "steps": 715,
+      "rails": { "my-builds": 100, "compare": 74, "progression": 99, "squads": 51, "boosters": 54, "world-ui": 82, "favorites": 32, "ui": 70, "managers": 43, "manager-picker": 35, "phase-b5": 23, "phase-c": 17, "world-sync": 35 }
+    },
+    "localOnlyRails": { "local-backup": "28/28", "share-card": "24/24", "local-posts": "32/32" },
+    "publicProduction": {
+      "fullBlackBox2Viewports": "steps 148/148, perf 14/14, security 18/18, memory OK",
+      "signupLimited": "117/117 (internal pages incl. /account/public-id-preview and /tier-pack-preview are 404)",
+      "deployment": "773b8dc"
+    },
+    "homeRemeasure": { "desktop1280WarmMs": 1336, "mobile390WarmMs": 1675, "previousOutlierMs": 5100 },
+    "sqlite": { "integrityCheck": "ok", "world_player_cards": 13009, "managers": 66 },
+    "npmAudit": { "critical": 0, "high": 1, "moderate": 1, "low": 0 }
+  },
+  "findings": [
+    {
+      "id": "LOCAL-BACKUP-UNKNOWN-FIELDS",
+      "severity": "low",
+      "summary": "A local backup whose records carry extra unknown fields is accepted and those fields are stored as-is (React renders them as text; readers ignore them). Proposal: write the normalised form on import after an owner decision.",
+      "test": "src/lib/data-management/local-backup-security.test.ts"
+    }
+  ],
+  "processes": {
+    "nodeStopped": [
+      { "pid": 48996, "command": "next start -p 3200", "how": "data/work/restart.sh (verified command line)" },
+      { "pid": 82880, "command": "next start -p 3200", "how": "data/work/restart.sh (verified command line)" },
+      { "pid": 63948, "command": "next start -p 3200", "how": "taskkill //PID 63948 //F after command-line check" },
+      { "pid": 91716, "command": "next start -p 3000", "how": "taskkill //PID 91716 //F after command-line check" }
+    ],
+    "running": "none"
+  },
+  "leftForOwner": [
+    "data/work/vt5: git worktree of the merged Vitest 5 trial (contains node_modules; not removed because it is a large recursive delete). Remove with: git worktree remove data/work/vt5"
+  ]
+}
