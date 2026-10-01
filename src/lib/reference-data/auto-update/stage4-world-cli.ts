@@ -1,3 +1,4 @@
+import { resolveApprovedBy } from "./approved-by";
 import type { ClientConfig } from "pg";
 import type { Client } from "pg";
 import { buildTestOnlyPgConfigFromEnv } from "./postgres-adapter";
@@ -204,7 +205,7 @@ async function apply(env: Env, db: ClientConfig): Promise<Stage4Outcome> {
     dryRunFacts: facts(dir, "facts-dry-run.json"),
     dryRun: record,
     applyCommitSha: sha,
-    approvedBy: /^[0-9A-Za-z._@-]{1,64}$/.test(env.GITHUB_ACTOR ?? "") ? (env.GITHUB_ACTOR as string) : "environment-approval",
+    approvedBy: resolveApprovedBy(env),
     now: new Date().toISOString(),
   };
   const r = await withClient(db, (client) => runWorldApply(client, input));

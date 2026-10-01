@@ -101,6 +101,9 @@ permissions:
 
 jobs:
   backup:
+    # main only (manual and automation): a run dispatched from any other branch is skipped before the
+    # Environment is entered, so its secrets are never exposed to unreviewed branch code.
+    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     environment: ${{ inputs.execution == 'automation' && 'reference-data-automation' || 'production-backup-approval' }}
     timeout-minutes: 15

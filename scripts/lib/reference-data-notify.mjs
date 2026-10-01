@@ -60,3 +60,95 @@ export function buildDetectionNotification(summary, run) {
   ];
   return { notify: true, title: titles[kind], body: lines.join("\n") };
 }
+
+const RUN_KEYS = ["detection", "plan", "backup", "dryRun", "apply"];
+const REASON = /^[0-9A-Za-z_:.,=-]{1,120}$/;
+const runIds = (runs) =>
+  RUN_KEYS.filter((k) => runs && typeof runs === "object" && typeof runs[k] === "string" && /^\d{1,20}$/.test(runs[k])).map((k) => `${k} ${runs[k]}`);
+const reasons = (list) => (Array.isArray(list) ? list.filter((r) => typeof r === "string" && REASON.test(r)).slice(0, 10) : []);
+
+/** Production apply workflow の run 名（run-name）から mode と dataset を読む。 */
+export function parseApplyRunTitle(title) {
+  const m = /^reference-data (preflight|plan|dry-run|apply|verify)( world)?$/.exec(String(title ?? ""));
+  return m ? { mode: m[1], dataset: m[2] ? "world" : "managers" } : null;
+}
+
+/**
+ * 自動進行（orchestrator）と Production apply の結果の通知。
+ * - orchestrator: 停止（Apply run を作らずに止まった）・Apply 承認待ち・job の失敗を通知。no_action と skip は通知しない。
+ * - apply workflow: apply と verify は結果によらず通知（承認の却下・取り消しも含む）。plan・dry-run は失敗だけ。preflight は通知しない。
+ *
+ * @param {{ source: "orchestrator" | "apply", conclusion: string, runId: string, runUrl: string, title?: string, approval?: unknown, evidence?: unknown }} p
+ */
+export function buildPipelineNotification(p) {
+  const runId = /^\d{1,20}$/.test(String(p?.runId ?? "")) ? String(p.runId) : "?";
+  const runUrl = /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/actions\/runs\/\d+$/.test(String(p?.runUrl ?? "")) ? p.runUrl : null;
+  const conclusion = token(p?.conclusion) ?? "unknown";
+  const head = `run: ${runId}${runUrl ? ` (${runUrl})` : ""} — conclusion: ${conclusion}`;
+  const footer = "この通知は自動作成です（非秘密の要約だけ。この通知の workflow は Production へ接続しません）。";
+  if (conclusion === "skipped") return { notify: false, reason: "skipped" };
+
+  if (p?.source === "orchestrator") {
+    const a = p.approval && typeof p.approval === "object" ? p.approval : null;
+    if (conclusion === "cancelled") return { notify: false, reason: "cancelled" };
+    if (a?.kind === "no_action" && conclusion === "success") return { notify: false, reason: "no_action" };
+    if (a?.kind === "awaiting_approval") {
+      const ids = runIds(a.runs);
+      return {
+        notify: true,
+        title: "参照データの Apply が承認待ちです / Reference data Apply is waiting for approval",
+        body: [
+          head,
+          "",
+          `dataset: ${token(a.dataset) ?? "?"} — 追加 ${int(a.added) ?? "?"} 件・更新 ${int(a.updated) ?? "?"} 件・削除 ${int(a.removed) ?? "?"} 件`,
+          `binding: ${ids.join(" / ") || "?"}`,
+          "",
+          "次: Apply run の画面で内容と Backup の期限を確認し、問題がなければ `reference-data-production-apply` Environment で Approve and deploy を押す（1 回だけ）。承認しなければ何も書き込まれない。",
+          "",
+          footer,
+        ].join("\n"),
+      };
+    }
+    const stopped = a?.kind === "stopped";
+    return {
+      notify: true,
+      title: "参照データの自動更新が停止しました / Reference data pipeline stopped",
+      body: [
+        head,
+        "",
+        `段階: ${stopped ? (token(a.stage) ?? "?") : "unknown"}`,
+        `理由: ${stopped ? reasons(a.reasons).join(", ") || "?" : "要約を読めなかった（job の失敗）"}`,
+        `起動した run: ${stopped ? runIds(a.runs).join(" / ") || "なし" : "?"}`,
+        "",
+        "Apply run は作成していません。Production への書き込みはありません。次: run の要約を確認し、原因を直してから検出をやり直す。",
+        "",
+        footer,
+      ].join("\n"),
+    };
+  }
+
+  if (p?.source === "apply") {
+    const t = parseApplyRunTitle(p.title);
+    if (!t || t.mode === "preflight") return { notify: false, reason: "not_notified_mode" };
+    if ((t.mode === "plan" || t.mode === "dry-run") && conclusion === "success") return { notify: false, reason: "success" };
+    const e = p.evidence && typeof p.evidence === "object" ? p.evidence : null;
+    const outcome = token(e?.outcome) ?? "unknown";
+    const applied = t.mode === "apply" && conclusion === "success" && outcome === "applied_verified";
+    const title = applied
+      ? "参照データの Apply が完了し検証済みです / Reference data applied and verified"
+      : t.mode === "apply" && outcome === "rollback_required"
+        ? "参照データの Apply 後の検証に失敗しました（要対応） / Reference data apply needs rollback review"
+        : `参照データの ${t.mode} が成功しませんでした / Reference data ${t.mode} did not succeed`;
+    const next = applied
+      ? "次: Evidence artifact の applied-state.candidate.json を確認し、Evidence PR で applied-state と F-071 の分布を更新する。"
+      : outcome === "rollback_required"
+        ? "次: 自動の取り消しはしません。undo plan artifact と Backup を確認し、Rollback は本人の別の判断で行う。"
+        : "次: run の要約を確認する。部分的な結果を成功として扱わない。";
+    return {
+      notify: true,
+      title,
+      body: [head, "", `mode: ${t.mode} / dataset: ${t.dataset} / outcome: ${outcome} / 承認者: ${typeof e?.approvedBy === "string" && /^[0-9A-Za-z._@-]{1,64}$/.test(e.approvedBy) ? e.approvedBy : "-"}`, "", next, "", footer].join("\n"),
+    };
+  }
+  return { notify: false, reason: "unknown_source" };
+}
