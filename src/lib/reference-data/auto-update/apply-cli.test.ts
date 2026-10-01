@@ -36,7 +36,8 @@ function writeJson(name: string, data: unknown): string {
 
 function runCli(args: string[]): { stdout: string; status: number } {
   try {
-    const stdout = execFileSync("node", [SCRIPT_PATH, ...args], { encoding: "utf8" });
+    // PATH の node ではなく、テストを実行している同じ Node で起動する（版の食い違いを避ける）。
+    const stdout = execFileSync(process.execPath, [SCRIPT_PATH, ...args], { encoding: "utf8", timeout: CLI_SPAWN_TIMEOUT_MS });
     return { stdout, status: 0 };
   } catch (err) {
     const e = err as { stdout?: string; status?: number };
@@ -86,7 +87,15 @@ function buildFixtures(prefix: string) {
   return { previous, staging, job, approval };
 }
 
-describe("reference-data-auto-update-apply.mjs(実CLI起動、実SQLite、実Supabase接続なし)", () => {
+/**
+ * 1回の CLI 起動は TypeScript の読み込みを含む cold start（並列実行の負荷下では 1〜2 秒）。
+ * 6回続けて起動するテストがあるため、既定の 5 秒では負荷時に断続的に失敗していた（2026-10-01 の調査）。
+ * 1起動あたりの上限と、テスト全体の上限を明示する。
+ */
+const CLI_SPAWN_TIMEOUT_MS = 30_000;
+const CLI_TEST_TIMEOUT_MS = 120_000;
+
+describe("reference-data-auto-update-apply.mjs(実CLI起動、実SQLite、実Supabase接続なし)", { timeout: CLI_TEST_TIMEOUT_MS }, () => {
   it("禁止フラグ(--production)は即座に拒否される", () => {
     const result = runCli(["--production", "--sqlite-db", path.join(tmpDir, "x.sqlite")]);
     expect(result.status).not.toBe(0);
@@ -161,7 +170,7 @@ describe("reference-data-auto-update-apply.mjs(実CLI起動、実SQLite、実Sup
     fixtures.approval.diffChecksum = computeDiffChecksum(diff);
 
     const dbPath = path.join(tmpDir, "apply-rollback.sqlite");
-    runCli([
+    const applied = runCli([
       "--sqlite-db", dbPath,
       "--staging", writeJson("staging-rb.json", fixtures.staging),
       "--previous", writeJson("previous-rb.json", fixtures.previous),
@@ -170,6 +179,9 @@ describe("reference-data-auto-update-apply.mjs(実CLI起動、実SQLite、実Sup
       "--approval", writeJson("approval-rb.json", fixtures.approval),
       "--max-increase-ratio", "1",
     ]);
+    // 先の適用が実際に成功したことを確かめてから rollback を試す（失敗を見落とさない）。
+    expect(applied.status).toBe(0);
+    expect(applied.stdout).toContain("decision: commit");
 
     const rollbackPlan = { jobId: fixtures.job.jobId, beforeSnapshot: [], addedIds: ["wc-1"] };
     const result = runCli(["--sqlite-db", dbPath, "--rollback-plan", writeJson("rollback-plan.json", rollbackPlan)]);
