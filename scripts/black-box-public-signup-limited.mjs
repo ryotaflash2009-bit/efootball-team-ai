@@ -242,7 +242,7 @@ async function main() {
     const vp0 = VIEWPORTS[0];
     await nav("/");
     await ev(`localStorage.setItem(${JSON.stringify(LOCALE_KEY)}, "ja")`);
-    for (const route of ["/account/rls-test", "/release-readiness"]) {
+    for (const route of ["/account/rls-test", "/release-readiness", "/community/local-posts"]) {
       await step(vp0, "ja", route, "internal page is 404", async () => {
         await nav(route);
         if (!(await bodyText()).includes("ページが見つかりません")) throw new Error("not-found view missing");

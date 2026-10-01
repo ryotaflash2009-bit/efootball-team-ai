@@ -23,8 +23,8 @@ describe("内部ページの表示可否(fail-closed)", () => {
     }
   });
 
-  it("対象は開発者向けの2ページだけ(データ削除機能を持つ/data-managementは対象外)", () => {
-    expect([...INTERNAL_PAGE_PATHS]).toEqual(["/account/rls-test", "/release-readiness"]);
+  it("対象は開発者向けの2ページと、F-084 写真付き投稿の試作だけ(データ削除機能を持つ/data-managementは対象外)", () => {
+    expect([...INTERNAL_PAGE_PATHS]).toEqual(["/account/rls-test", "/release-readiness", "/community/local-posts"]);
     expect(isInternalPagePath("/data-management")).toBe(false);
   });
 

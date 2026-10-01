@@ -3812,6 +3812,138 @@ export interface Dictionary {
     shared: string;
     privacyNote: string;
   };
+  localPosts: {
+    pageTitle: string;
+    pageDescription: string;
+    localOnlyBanner: string;
+    scopePending: string;
+    composeHeading: string;
+    offlineNote: string;
+    draftsLabel: string;
+    untitledDraft: string;
+    cameraButton: string;
+    libraryButton: string;
+    formatNote: string;
+    checking: string;
+    processing: string;
+    cancelProcessing: string;
+    previewAlt: string;
+    imageInfoTemplate: string;
+    privacyCheck: string;
+    rotateLeft: string;
+    rotateRight: string;
+    cropSquare: string;
+    removeImage: string;
+    altLabel: string;
+    bodyLabel: string;
+    categoryLabel: string;
+    cat_squad: string;
+    cat_gacha: string;
+    cat_build: string;
+    cat_before_after: string;
+    cat_question: string;
+    cat_other: string;
+    purposeLabel: string;
+    purpose_show: string;
+    purpose_advice: string;
+    purpose_record: string;
+    squadLabel: string;
+    none: string;
+    diagnosisLabel: string;
+    beforeLabel: string;
+    afterLabel: string;
+    gachaLabel: string;
+    cardsLabel: string;
+    visibilityLabel: string;
+    vis_private: string;
+    vis_url: string;
+    vis_friends: string;
+    vis_public: string;
+    visibilityMockNote: string;
+    commentsAllowed: string;
+    saving: string;
+    postButton: string;
+    draftButton: string;
+    draftSaved: string;
+    posted: string;
+    draftLoaded: string;
+    errEmpty: string;
+    errTooLarge: string;
+    errNotImage: string;
+    errGif: string;
+    errMismatch: string;
+    errCorrupt: string;
+    errTooManyPixels: string;
+    errTooSmall: string;
+    errHeic: string;
+    errEncode: string;
+    errAborted: string;
+    errTooSoon: string;
+    errHourly: string;
+    errBodyTooLong: string;
+    errAltTooLong: string;
+    errNothing: string;
+    errStorageFull: string;
+    errSaveFailed: string;
+    errLoad: string;
+    myPostsHeading: string;
+    myPostsEmpty: string;
+    statusDraft: string;
+    statusPosted: string;
+    zoomImage: string;
+    noAlt: string;
+    linkedSummary: string;
+    deleteButton: string;
+    deleteConfirm: string;
+    deleted: string;
+    errDelete: string;
+    cancel: string;
+    close: string;
+  };
+  safetyMock: {
+    heading: string;
+    fictionalNote: string;
+    ownLabel: string;
+    sampleUser: string;
+    sample1: string;
+    sample2: string;
+    sample3: string;
+    sample4: string;
+    hidden_hidden_deleted: string;
+    hidden_hidden_by_admin: string;
+    hidden_hidden_blocked: string;
+    hidden_hidden_muted: string;
+    reportButton: string;
+    block: string;
+    unblock: string;
+    mute: string;
+    unmute: string;
+    reasonLabel: string;
+    reason_spam: string;
+    reason_harassment: string;
+    reason_personal_info: string;
+    reason_impersonation: string;
+    reason_inappropriate_image: string;
+    reason_rights_violation: string;
+    reason_minor_safety: string;
+    reason_other: string;
+    noteLabel: string;
+    submitReport: string;
+    cancel: string;
+    myReports: string;
+    status_open: string;
+    status_reviewing: string;
+    status_actioned: string;
+    status_dismissed: string;
+    status_withdrawn: string;
+    withdraw: string;
+    reportDone: string;
+    reportOwn: string;
+    reportDuplicate: string;
+    reportRateLimited: string;
+    reportFailed: string;
+    relationFailed: string;
+  };
   progressionTab: {
     analysisScopeDefault: string;
     eligibilityTrending: string;
@@ -8172,6 +8304,138 @@ const ja: Dictionary = {
     shareTitle: "スカッド診断",
     shared: "共有しました。",
     privacyNote: "画像にはスカッド名・フォーメーション・評価だけを載せます（URL・ID・アカウントの情報は載せません）。スカッド名に個人情報を入れないでください。",
+  },
+  localPosts: {
+    pageTitle: "写真付き投稿（ローカル試作）",
+    pageDescription: "写真付き投稿の試作です。この端末の中だけに保存し、どこへも送信・公開しません。",
+    localOnlyBanner: "試作: この端末だけに保存されます。公開範囲を選んでも、誰にも公開されません。",
+    scopePending: "データの領域を確認しています…",
+    composeHeading: "新しい投稿",
+    offlineNote: "オフラインです。この試作は送信しないので、端末内への保存はそのままできます。",
+    draftsLabel: "下書き:",
+    untitledDraft: "（本文なし）",
+    cameraButton: "カメラで撮る",
+    libraryButton: "写真を選ぶ",
+    formatNote: "JPEG・PNG・WebP（20 MB まで）。HEIC は端末のブラウザーが読める場合だけ使えます。投稿用に作り直すため、位置情報などの撮影情報は残りません。",
+    checking: "ファイルを確認しています…",
+    processing: "投稿用の画像を作っています…",
+    cancelProcessing: "中止",
+    previewAlt: "投稿する画像のプレビュー",
+    imageInfoTemplate: "{w}×{h}・約 {kb} KB（撮影情報を除いた画像）",
+    privacyCheck: "投稿前に確認してください: 本名・住所・学校・電話番号・メールアドレス・ゲームのアカウント ID・他の人の顔が写っていませんか。",
+    rotateLeft: "左へ回転",
+    rotateRight: "右へ回転",
+    cropSquare: "正方形に切り取る",
+    removeImage: "画像を外す",
+    altLabel: "画像の説明（読み上げ用・任意）",
+    bodyLabel: "本文",
+    categoryLabel: "カテゴリ",
+    cat_squad: "スカッド",
+    cat_gacha: "ガチャ結果",
+    cat_build: "育成・ビルド",
+    cat_before_after: "改善前後",
+    cat_question: "質問",
+    cat_other: "その他",
+    purposeLabel: "投稿の目的",
+    purpose_show: "見せたい",
+    purpose_advice: "意見がほしい",
+    purpose_record: "記録",
+    squadLabel: "関連するスカッド（監督も連携）",
+    none: "なし",
+    diagnosisLabel: "診断結果",
+    beforeLabel: "改善前（診断履歴）",
+    afterLabel: "改善後（診断履歴）",
+    gachaLabel: "ガチャ結果のメモ（120 文字まで）",
+    cardsLabel: "関連する選手（My Team から最大 5 人）",
+    visibilityLabel: "公開範囲",
+    vis_private: "非公開",
+    vis_url: "URL を知っている人",
+    vis_friends: "友達",
+    vis_public: "全体",
+    visibilityMockNote: "試作のため、どれを選んでも公開されません（将来の設定の確認用）。",
+    commentsAllowed: "コメントを受け付ける",
+    saving: "保存しています…",
+    postButton: "投稿する（この端末だけ）",
+    draftButton: "下書きを保存",
+    draftSaved: "下書きを保存しました。",
+    posted: "この端末に投稿として保存しました（公開はしていません）。",
+    draftLoaded: "下書きを読み込みました。画像はもう一度選んでください。",
+    errEmpty: "ファイルが空です。",
+    errTooLarge: "ファイルが大きすぎます（20 MB まで）。",
+    errNotImage: "画像（JPEG・PNG・WebP）ではないため使えません。",
+    errGif: "GIF は使えません。JPEG・PNG・WebP を選んでください。",
+    errMismatch: "ファイルの種類と中身が一致しないため使えません。",
+    errCorrupt: "画像が壊れているか、読み込めません。",
+    errTooManyPixels: "画像の画素数が大きすぎます。小さくしてから選んでください。",
+    errTooSmall: "画像が小さすぎます。",
+    errHeic: "このブラウザーは HEIC を読めません。写真アプリで JPEG にして選ぶか、カメラの設定で「互換性優先」にしてください。",
+    errEncode: "投稿用の画像を作れませんでした。別の写真でお試しください。",
+    errAborted: "画像の準備を中止しました。",
+    errTooSoon: "続けて投稿できません。30 秒ほど待ってください。",
+    errHourly: "1 時間に投稿できる数（10 件）を超えました。",
+    errBodyTooLong: "本文が長すぎます（1000 文字まで）。",
+    errAltTooLong: "画像の説明が長すぎます（200 文字まで）。",
+    errNothing: "画像か本文を入れてください。",
+    errStorageFull: "この端末に保存できる投稿の数を超えました。古い投稿を削除してください。",
+    errSaveFailed: "保存できませんでした。何も保存していません。",
+    errLoad: "投稿を読み込めませんでした。",
+    myPostsHeading: "この端末の投稿と下書き",
+    myPostsEmpty: "まだありません。",
+    statusDraft: "下書き",
+    statusPosted: "投稿（未公開）",
+    zoomImage: "画像を拡大",
+    noAlt: "説明のない画像",
+    linkedSummary: "スカッド・選手・診断と関連付けています。",
+    deleteButton: "削除",
+    deleteConfirm: "この投稿と画像を削除します。元に戻せません。",
+    deleted: "削除しました。",
+    errDelete: "削除できませんでした。",
+    cancel: "キャンセル",
+    close: "閉じる",
+  },
+  safetyMock: {
+    heading: "安全機能の試作（架空のサンプル）",
+    fictionalNote: "下のユーザーと投稿は架空のサンプルです。通報・ブロック・ミュートはこの端末の中だけで動き、誰にも送られません。",
+    ownLabel: "あなた（この端末）",
+    sampleUser: "サンプルユーザー",
+    sample1: "4-2-1-3 で守備が安定しました。",
+    sample2: "今週のガチャの結果です。",
+    sample3: "（管理者が非表示にした投稿）",
+    sample4: "自分のサンプル投稿です。",
+    hidden_hidden_deleted: "削除された投稿です。",
+    hidden_hidden_by_admin: "運営により非表示になっています。",
+    hidden_hidden_blocked: "ブロック中のユーザーの投稿は表示しません。",
+    hidden_hidden_muted: "ミュート中のユーザーの投稿は表示しません。",
+    reportButton: "通報",
+    block: "ブロック",
+    unblock: "ブロックを解除",
+    mute: "ミュート",
+    unmute: "ミュートを解除",
+    reasonLabel: "理由",
+    reason_spam: "スパム・宣伝",
+    reason_harassment: "嫌がらせ・攻撃",
+    reason_personal_info: "個人情報",
+    reason_impersonation: "なりすまし",
+    reason_inappropriate_image: "不適切な画像",
+    reason_rights_violation: "権利の侵害",
+    reason_minor_safety: "未成年の安全",
+    reason_other: "その他",
+    noteLabel: "補足（任意・500 文字まで）",
+    submitReport: "通報する",
+    cancel: "キャンセル",
+    myReports: "自分の通報",
+    status_open: "受付",
+    status_reviewing: "確認中",
+    status_actioned: "対応済み",
+    status_dismissed: "対応なし",
+    status_withdrawn: "取り下げ",
+    withdraw: "取り下げる",
+    reportDone: "通報を受け付けました（試作のため、この端末にだけ記録しています）。",
+    reportOwn: "自分の投稿は通報できません。消したいときは削除してください。",
+    reportDuplicate: "この投稿は通報済みです。",
+    reportRateLimited: "今日はこれ以上通報できません。",
+    reportFailed: "通報できませんでした。",
+    relationFailed: "変更できませんでした。",
   },
   progressionTab: {
     analysisScopeDefault: "World データ",
