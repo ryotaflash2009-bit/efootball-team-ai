@@ -16,7 +16,7 @@ name: Reference data update orchestrator (automatic up to the Apply approval)
 
 on:
   workflow_run:
-    workflows: ["Reference data update detection (weekly + manual; detection only)"]
+    workflows: ["Reference data update detection"]
     types: [completed]
   workflow_dispatch:
     inputs:

@@ -8,7 +8,7 @@ name: Reference data update notification (issue)
 
 on:
   workflow_run:
-    workflows: ["Reference data update detection (weekly + manual; detection only)"]
+    workflows: ["Reference data update detection"]
     types: [completed]
 
 permissions:

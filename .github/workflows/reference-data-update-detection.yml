@@ -1,4 +1,7 @@
-name: Reference data update detection (weekly + manual; detection only)
+name: Reference data update detection
+# This name is referenced by workflow_run in the notify and orchestrator workflows. GitHub treats those values as
+# filter patterns, so the name must not contain * ? + [ ] or !. The former name contained "+" and never matched,
+# so neither follow-up workflow had ever run (found and fixed 2026-10-02).
 
 # Automatic update DETECTION only (no Secrets, no Environment, no Production connection).
 #

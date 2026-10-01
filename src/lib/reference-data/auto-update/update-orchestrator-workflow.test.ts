@@ -21,10 +21,10 @@ describe("reference-data-update-orchestrator.yml", () => {
   });
 
   it("起動は検出workflowの完了と確認入力付きの手動だけ(schedule・push・pull_request なし)", () => {
-    expect(code).toMatch(/^on:\s*\n\s+workflow_run:\s*\n\s+workflows: \["Reference data update detection \(weekly \+ manual; detection only\)"\]\s*\n\s+types: \[completed\]\s*\n\s+workflow_dispatch:/m);
+    expect(code).toMatch(/^on:\s*\n\s+workflow_run:\s*\n\s+workflows: \["Reference data update detection"\]\s*\n\s+types: \[completed\]\s*\n\s+workflow_dispatch:/m);
     expect(code).not.toMatch(/^\s*(schedule|push|pull_request|pull_request_target|repository_dispatch|workflow_call)\s*:/m);
     const detection = readFileSync(path.join(ROOT, ".github", "workflows", "reference-data-update-detection.yml"), "utf8");
-    expect(detection).toMatch(/^name: Reference data update detection \(weekly \+ manual; detection only\)$/m);
+    expect(detection).toMatch(/^name: Reference data update detection$/m);
   });
 
   it("変数 'true'・main・検出成功(または確認入力 'orchestrate')でなければjobを実行しない", () => {

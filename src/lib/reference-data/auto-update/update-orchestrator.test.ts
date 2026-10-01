@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildApprovalRequest, decideFromDetection, evaluateBackupGate, evaluateDryRunGate, evaluatePlanGate, type PlanFacts } from "./update-orchestrator";
+import { DETECTION_WORKFLOW_NAME, buildApprovalRequest, checkDetectionRun, decideFromDetection, evaluateBackupGate, evaluateDryRunGate, evaluatePlanGate, type PlanFacts } from "./update-orchestrator";
 
 import { PLAN, SHA, SRC, backupSummary, dryRunSummary, planSummary } from "./__fixtures__/orchestrator-fixtures";
 
@@ -58,6 +58,29 @@ describe("Backup gate", () => {
     expect(evaluateBackupGate(backupSummary((s) => { s.storageVerified = false; }), "36248197028", counts).ok).toBe(false);
     expect(evaluateBackupGate(backupSummary(), "36248197028", { ...counts, managers: 68 })).toMatchObject({ ok: false, reasons: expect.arrayContaining(["backup_counts_differ_from_plan:managers"]) });
     expect(evaluateBackupGate(backupSummary(), "99999999999", counts)).toMatchObject({ ok: false, reasons: expect.arrayContaining(["backup_summary_not_from_this_run"]) });
+  });
+  it("Plan の件数が無い表があれば照合を飛ばさずに停止（2026-10-02）", () => {
+    const { managers: _m, ...noManagers } = counts;
+    void _m;
+    expect(evaluateBackupGate(backupSummary(), "36248197028", noManagers)).toMatchObject({ ok: false, reasons: expect.arrayContaining(["plan_counts_missing:managers"]) });
+    expect(evaluateBackupGate(backupSummary(), "36248197028", {})).toMatchObject({ ok: false, reasons: expect.arrayContaining(["plan_counts_missing:world_player_cards", "plan_counts_missing:import_batches"]) });
+  });
+  it("Plan が player_card_analysis の件数を持つときは Backup と一致を確かめる", () => {
+    expect(evaluateBackupGate(backupSummary(), "36248197028", { ...counts, player_card_analysis: 999999 })).toMatchObject({ ok: false, reasons: expect.arrayContaining(["backup_counts_differ_from_plan:player_card_analysis"]) });
+  });
+});
+
+describe("検出 run の確認（手動起動・workflow_run とも）", () => {
+  const ok = { workflowName: DETECTION_WORKFLOW_NAME, headBranch: "main", conclusion: "success", attempt: 1, event: "schedule" };
+  it("main 上の検出 workflow の成功した初回の実行だけを受け付ける", () => {
+    expect(checkDetectionRun(ok)).toEqual({ ok: true });
+    expect(checkDetectionRun({ ...ok, event: "workflow_dispatch" })).toEqual({ ok: true });
+    expect(checkDetectionRun({ ...ok, workflowName: "Something else" })).toMatchObject({ ok: false, reasons: ["detection_run_wrong_workflow"] });
+    expect(checkDetectionRun({ ...ok, headBranch: "feature" })).toMatchObject({ ok: false, reasons: ["detection_run_not_on_main"] });
+    expect(checkDetectionRun({ ...ok, conclusion: "failure" })).toMatchObject({ ok: false, reasons: ["detection_run_not_successful"] });
+    expect(checkDetectionRun({ ...ok, attempt: 2 })).toMatchObject({ ok: false, reasons: ["detection_run_is_rerun"] });
+    expect(checkDetectionRun({ ...ok, event: "pull_request" })).toMatchObject({ ok: false, reasons: ["detection_run_unexpected_event"] });
+    expect(checkDetectionRun({}).ok).toBe(false);
   });
 });
 

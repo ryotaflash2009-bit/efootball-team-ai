@@ -68,7 +68,7 @@ The expected result is `"verdict": "DETECTION_SUMMARY_VALID"`. The validator che
 
 ## Owner operations
 
-- **Manual detection:** Actions → **"Reference data update detection (weekly + manual; detection only)"**
+- **Manual detection:** Actions → **"Reference data update detection"**
   → **Run workflow** → branch `main`, confirm `detect`. No Environment approval is needed.
 - **When the result is `update_available`:** decide whether to update. If you do, follow the Stage 4
   runbook (Plan → Backup → Dry run → Apply, each approval-gated). The Plan summary shows which fields

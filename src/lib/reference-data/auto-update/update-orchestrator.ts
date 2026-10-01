@@ -87,6 +87,7 @@ export function evaluatePlanGate(text: string, dataset: Dataset, expectedSha: st
   if (!p) return { ok: false, reasons: [...reasons, "plan_facts_missing"] };
   if (f.commitSha !== expectedSha) reasons.push("plan_commit_sha_mismatch");
   if (dataset === "world" && f.dataset !== "world") reasons.push("plan_dataset_mismatch");
+  if (dataset === "managers" && f.dataset !== undefined && f.dataset !== "managers") reasons.push("plan_dataset_mismatch");
   const targets = Array.isArray(p.targetTables) ? p.targetTables.map(String) : [];
   if (targets.length !== 1 || targets[0] !== TARGET[dataset]) reasons.push("plan_unexpected_target_tables");
   for (const k of ["sourceChecksum", "planChecksum"]) if (typeof p[k] !== "string" || !SHA256.test(p[k] as string)) reasons.push(`plan_${k}_invalid`);
@@ -138,6 +139,23 @@ export function evaluatePlanGate(text: string, dataset: Dataset, expectedSha: st
   };
 }
 
+/** 検出 workflow の正式な名前（`reference-data-update-detection.yml` の name）。 */
+export const DETECTION_WORKFLOW_NAME = "Reference data update detection";
+
+/**
+ * 手動起動で指定された検出 run の確認（main 上の検出 workflow・成功・初回の実行・schedule か手動）。
+ * workflow_run で起動したときも同じ確認を通す。
+ */
+export function checkDetectionRun(facts: Record<string, unknown>): { ok: true } | { ok: false; reasons: string[] } {
+  const reasons: string[] = [];
+  if (facts.workflowName !== DETECTION_WORKFLOW_NAME) reasons.push("detection_run_wrong_workflow");
+  if (facts.headBranch !== "main") reasons.push("detection_run_not_on_main");
+  if (facts.conclusion !== "success") reasons.push("detection_run_not_successful");
+  if (Number(facts.attempt ?? 0) !== 1) reasons.push("detection_run_is_rerun");
+  if (facts.event !== "schedule" && facts.event !== "workflow_dispatch") reasons.push("detection_run_unexpected_event");
+  return reasons.length === 0 ? { ok: true } : { ok: false, reasons };
+}
+
 // ---------------------------------------------------------------------------
 // 3. Backup
 // ---------------------------------------------------------------------------
@@ -156,7 +174,13 @@ export function evaluateBackupGate(text: string, runId: string, planCounts: Reco
   if (!v.ok) reasons.unshift("backup_not_valid");
   const rowCounts = isObj(v.facts.rowCounts) ? (v.facts.rowCounts as Record<string, number>) : {};
   for (const t of ["world_player_cards", "managers", "import_batches"]) {
-    if (planCounts[t] !== undefined && rowCounts[t] !== planCounts[t]) reasons.push(`backup_counts_differ_from_plan:${t}`);
+    // Plan の件数が無いときは Backup の対象を照合できないため止める（照合を飛ばさない。2026-10-02 監査）。
+    if (planCounts[t] === undefined) reasons.push(`plan_counts_missing:${t}`);
+    else if (rowCounts[t] !== planCounts[t]) reasons.push(`backup_counts_differ_from_plan:${t}`);
+  }
+  // player_card_analysis は更新しない表。Plan が件数を持つときは Backup と一致することも確かめる。
+  if (planCounts.player_card_analysis !== undefined && rowCounts.player_card_analysis !== planCounts.player_card_analysis) {
+    reasons.push("backup_counts_differ_from_plan:player_card_analysis");
   }
   const s = parse(text, "backup");
   const jobId = typeof s === "string" ? null : isObj(s.summary) ? s.summary.jobId : null;
