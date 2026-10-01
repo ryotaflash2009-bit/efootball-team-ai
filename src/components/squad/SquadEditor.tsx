@@ -932,9 +932,15 @@ export function SquadEditor({
     if (!diagnosisInput) return [];
     const tactics = managerContext?.tacticalProficiencies ?? null;
     return buildDiagnosisPerspectives(
-      toPerspectiveInput({ starters: diagnosisInput.starters, bench: diagnosisInput.bench, placements: tacticalPlacements, managerTactics: tactics }),
+      toPerspectiveInput({
+        starters: diagnosisInput.starters,
+        bench: diagnosisInput.bench,
+        placements: tacticalPlacements,
+        managerTactics: tactics,
+        benchPlayingStyles: new Map(computed.substitutes.map((s) => [s.subId, s.display.playingStyle])),
+      }),
     );
-  }, [diagnosisInput, tacticalPlacements, managerContext]);
+  }, [diagnosisInput, tacticalPlacements, managerContext, computed]);
 
   const selectedSlot = computed.slots.find((s) => s.slotId === selectedSlotId) ?? null;
   const selectedStoredSlot = squad?.slots.find((x) => x.slotId === selectedSlotId) ?? null;

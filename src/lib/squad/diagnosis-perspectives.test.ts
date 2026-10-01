@@ -126,3 +126,11 @@ describe("toPerspectiveInput（既存の診断入力からの変換）", () => {
     expect(lineRoleOfPosition("??")).toBeNull();
   });
 });
+
+describe("toPerspectiveInput（ベンチのプレースタイル）", () => {
+  it("ベンチは subId ごとのプレースタイルを正規化して使う", () => {
+    const bn = [{ key: "sub0", nameJa: "C", nameEn: null, registeredPosition: "CB", assignedPosition: null, role: null, compatibilityStatus: null, stats: null }];
+    const input = toPerspectiveInput({ starters: [], bench: bn, placements: [], managerTactics: null, benchPlayingStyles: new Map([["sub0", "Build Up"]]) });
+    expect(input.players[0].playingStyle).toBe("buildUp");
+  });
+});

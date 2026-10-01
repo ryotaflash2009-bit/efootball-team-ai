@@ -378,6 +378,8 @@ export function toPerspectiveInput(params: {
   bench: readonly DiagnosisPlayerLike[];
   placements: readonly { slotId: string; x: number; playingStyle: string | null; filled: boolean }[];
   managerTactics: PerspectiveInput["managerTactics"];
+  /** ベンチの subId → プレースタイル（World の表記）。 */
+  benchPlayingStyles?: ReadonlyMap<string, string | null>;
 }): PerspectiveInput {
   const bySlot = new Map(params.placements.map((p) => [p.slotId, p]));
   const toStats = (s: DiagnosisPlayerLike["stats"]) => (s ? Object.fromEntries(s.map((x) => [x.key, x.finalValue])) : null);
@@ -393,7 +395,7 @@ export function toPerspectiveInput(params: {
   for (const b of params.bench) {
     players.push({
       key: b.key, name: b.nameJa ?? b.nameEn ?? b.key, slot: "bench", position: b.registeredPosition, role: lineRoleOfPosition(b.registeredPosition),
-      x: null, playingStyle: null, compatibility: null, heightCm: null, strongFoot: null, stats: toStats(b.stats),
+      x: null, playingStyle: normalizePlayingStyle(params.benchPlayingStyles?.get(b.key), "offensive", "world").canonicalId, compatibility: null, heightCm: null, strongFoot: null, stats: toStats(b.stats),
     });
   }
   return { players, managerTactics: params.managerTactics };
