@@ -191,6 +191,25 @@ export interface Dictionary {
     problem_personal_info: string;
     problem_control_chars: string;
   };
+  diagnosisPerspectives: {
+    title: string;
+    badge: string;
+    note: string;
+    jaOnlyNote: string;
+    formulas: string;
+    kindFact: string;
+    kindProvisional: string;
+    causes: string;
+    missingData: string;
+    improvements: string;
+    confidence: string;
+    confidenceHigh: string;
+    confidenceMedium: string;
+    confidenceLow: string;
+    confidenceInsufficient: string;
+    notComputed: string;
+    rulesVersion: string;
+  };
   diagnosisCompare: {
     selectLabel: string;
     selectHint: string;
@@ -4579,6 +4598,25 @@ const ja: Dictionary = {
     problem_banned: "運営・公式を連想させる語や不適切な語は使えません",
     problem_personal_info: "メールアドレス・電話番号・URL は使えません",
     problem_control_chars: "見えない文字や制御文字は使えません",
+  },
+  diagnosisPerspectives: {
+    title: "診断の追加観点",
+    badge: "暫定 / 比較検証用",
+    note: "計算式を比べるための暫定の表示です。総合評価・順位・共有画像には使いません。観点ごとに独立していて、合計しません。",
+    jaOnlyNote: "観点の詳細は日本語だけで表示します。",
+    formulas: "計算式の候補",
+    kindFact: "事実",
+    kindProvisional: "暫定",
+    causes: "原因の選手・ポジション",
+    missingData: "足りないデータ",
+    improvements: "改善したときの変化",
+    confidence: "信頼度",
+    confidenceHigh: "高",
+    confidenceMedium: "中",
+    confidenceLow: "低",
+    confidenceInsufficient: "判定できない",
+    notComputed: "計算しない",
+    rulesVersion: "規則の版",
   },
   diagnosisCompare: {
     selectLabel: "比較に選ぶ",
