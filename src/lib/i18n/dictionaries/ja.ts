@@ -3746,6 +3746,15 @@ export interface Dictionary {
     explanation: string;
     none: string;
   };
+  growthProfile: {
+    heading: string;
+    explanation: string;
+    empty: string;
+    trendTemplate: string;
+    mostImprovedTemplate: string;
+    overcameTemplate: string;
+    excludedRulesTemplate: string;
+  };
   progressionTab: {
     analysisScopeDefault: string;
     eligibilityTrending: string;
@@ -8040,6 +8049,15 @@ const ja: Dictionary = {
     heading: "あなたの一番",
     explanation: "My Team の中で、能力のまとまりごとに育成前の基礎能力値が最も上位のカードです（フィールドプレイヤーどうし・GK どうしで比較）。開くとカードの能力値を読み込みます。",
     none: "表示できるカードがありません（中央値以上のカードが無いか、My Team が空です）。",
+  },
+  growthProfile: {
+    heading: "成長プロフィール",
+    explanation: "この端末に保存した診断履歴から、スカッドごとの総合点の推移を表示します（同じ診断規則の履歴どうしだけを比べます。外部へは送信しません）。",
+    empty: "同じスカッドの診断を2回以上保存すると、推移が表示されます。",
+    trendTemplate: "{count}回の診断: 総合 {first} → {latest}（{delta}）",
+    mostImprovedTemplate: "最も伸びたカテゴリ: {category} {from} → {to}",
+    overcameTemplate: "弱点から A 以上になったカテゴリ: {categories}",
+    excludedRulesTemplate: "診断規則が違う {count} 件は比べていません。",
   },
   progressionTab: {
     analysisScopeDefault: "World データ",

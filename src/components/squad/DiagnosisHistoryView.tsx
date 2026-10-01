@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { tierBadgeTone } from "./diagnosis-tier-style";
 import { diagnosisCategoryLabel } from "./SharedDiagnosisView";
 import { DiagnosisHistoryComparePanel } from "./DiagnosisHistoryComparePanel";
+import { GrowthProfilePanel } from "./GrowthProfilePanel";
 import {
   clearDiagnosisHistory,
   exportDiagnosisHistoryJson,
@@ -120,6 +121,7 @@ export function DiagnosisHistoryView() {
               </div>
             </div>
           ) : null}
+          <GrowthProfilePanel entries={data.entries} />
           <DiagnosisHistoryComparePanel entries={data.entries} selectedIds={selected} onClear={() => setSelected([])} />
           <ul className="flex flex-col gap-3" data-history-list>
             {data.entries.map((e) => (

@@ -64,6 +64,18 @@ const SHARE_SAMPLE = {
   c: { attack: [40, "C"], defense: [47, "C"], aerial: [54, "C"], speed: [61, "B"], passBuildUp: [68, "B"], dribblePossession: [75, "A"], pressResistance: [82, "A"], counterAttack: [89, "S"] },
   s: ["ability", "counterAttack"], w: ["compatibility", null],
 };
+// F-061 用: 同じスカッドの診断履歴 3 件（src/lib/squad/diagnosis-history.ts の形。payload は sd1 と同じ契約）。
+const HISTORY_KEY = "efootball-team-ai:local:guest:diagnosis-history:v1";
+const GROWTH_HISTORY = {
+  schema: "efb-diagnosis-history/v1",
+  entries: [60, 66, 72].map((score, i) => ({
+    id: `dh_bbgrowth${i}`,
+    savedAt: new Date(Date.UTC(2026, 8, 10 + i)).toISOString(),
+    squadId: "sq_bbgrowth",
+    squadLabel: "BB Growth Squad",
+    payload: { ...SHARE_SAMPLE, d: `2026-09-${10 + i}`, o: [score, score >= 70 ? "A" : "B"], c: { ...SHARE_SAMPLE.c, attack: [40 + i * 20, i === 2 ? "A" : "C"] } },
+  })),
+};
 const SHARE_TOKEN = (() => {
   const body = Buffer.from(JSON.stringify(SHARE_SAMPLE), "utf8").toString("base64url");
   return `sd1.${body}.${fnv1a32(body)}`;
@@ -291,6 +303,18 @@ async function main() {
           return { ok: primaryId === "counterAttack" && badgeIds === "pressResistance,dribblePossession", detail: `primary=${primaryId}, badges=${badgeIds}` };
         });
 
+        // F-061: 同じスカッドの診断履歴 3 件（隔離ブラウザーの guest スコープだけ）から成長プロフィール。
+        await step(vp, locale, "/diagnosis-history", "F-061 growth profile from 3 history entries", async () => {
+          await ev(`localStorage.setItem(${JSON.stringify(HISTORY_KEY)}, ${JSON.stringify(JSON.stringify(GROWTH_HISTORY))})`);
+          await nav("/diagnosis-history");
+          await waitFor(() => has("[data-testid=growth-profile] [data-growth-squad]"), 10000, "growth");
+          const rows = await count("[data-testid=growth-profile] [data-growth-squad]");
+          const text = await ev("document.querySelector('[data-testid=growth-profile]').innerText");
+          const svg = await ev("document.querySelector('[data-testid=growth-profile] svg[role=img]')?.getAttribute('aria-label') ?? ''");
+          await ev(`localStorage.removeItem(${JSON.stringify(HISTORY_KEY)})`);
+          return { ok: rows === 1 && text.includes("60 → 72") && text.includes("+12") && svg.includes("60 → 72"), detail: `rows=${rows}` };
+        });
+
         // F-073: My Team（この隔離ブラウザーの中だけ）に登録した選手が「あなたの一番」に出る。
         await step(vp, locale, "/my-team", "F-073 your best (loads only when opened)", async () => {
           await nav("/my-team");
@@ -314,7 +338,7 @@ async function main() {
 
   const failed = results.filter((r) => !r.ok);
   const L = [
-    "# F-071 基礎能力値のパーセンタイル・F-072 称号・F-073 あなたの一番 ブラックボックス",
+    "# F-071 パーセンタイル・F-072 称号・F-073 あなたの一番・F-061 成長プロフィール ブラックボックス",
     "",
     `実行日時: ${new Date().toISOString()}`,
     `対象: ${IS_LOCAL ? "localhost（Production Build）" : "公開サイト"}  viewport: ${VIEWPORTS.length}  locale: ja, en  実際の成果物の状態: ${actual.status}`,
