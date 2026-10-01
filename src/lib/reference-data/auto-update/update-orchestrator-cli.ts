@@ -46,7 +46,11 @@ export interface OrchestratorDeps {
 export const APPLY_WORKFLOW = "reference-data-production-apply.yml";
 export const BACKUP_WORKFLOW = "reference-data-production-backup.yml";
 const POLL_MS = 30_000;
-const LIMIT_MS = { plan: 75 * 60_000, backup: 30 * 60_000, dryRun: 30 * 60_000, applyQueued: 10 * 60_000 } as const;
+export const LIMIT_MS = { plan: 75 * 60_000, backup: 30 * 60_000, dryRun: 30 * 60_000, applyQueued: 10 * 60_000 } as const;
+/** dispatch した run を見つけるまでの上限（1 dispatch ごと）。 */
+export const DISPATCH_FIND_MS = 5 * 60_000;
+/** dispatch の回数（plan・backup・dry run・apply）。workflow の timeout-minutes はこの合計より長くする（テストで確認）。 */
+export const DISPATCH_COUNT = 4;
 
 export type OrchestratorOutcome =
   | { kind: "no_action"; reasons: string[] }
@@ -57,7 +61,7 @@ async function dispatchAndFind(deps: OrchestratorDeps, workflow: string, inputs:
   const before = new Set((await deps.listRuns(workflow)).map((r) => r.id));
   const since = deps.now() - 5_000;
   await deps.dispatch(workflow, inputs);
-  const deadline = deps.now() + 5 * 60_000;
+  const deadline = deps.now() + DISPATCH_FIND_MS;
   while (deps.now() < deadline) {
     await deps.sleep(10_000);
     const fresh = (await deps.listRuns(workflow)).filter((r) => !before.has(r.id) && Date.parse(r.createdAt) >= since && (title == null || r.displayTitle === title));

@@ -57,7 +57,19 @@ It stops **without creating an Apply run** if any of the following occurs:
 
 Nothing is retried automatically. After Apply is approved:
 - the Apply run re-verifies everything against live Production (stale plan, Backup age and counts) and then post-verifies;
-- Claude Code writes the Evidence and applied-state PR.
+- Claude Code writes the Evidence and applied-state PR. **The same PR must also replace the F-071 distribution**:
+  download the `world-base-distribution-candidate` artifact of the detection run whose checksum was applied, then run
+  `npm run import:world-distribution -- data/work/<dir>/world-base-distribution.candidate.json` after updating applied-state.
+  It writes the file only when the validator returns `DISTRIBUTION_ARTIFACT_VALID`; otherwise the public UI would show
+  the "could not be matched" fallback. Candidates are kept for 30 days.
+
+### Notification (added 2026-10-01)
+
+`reference-data-update-notify.yml` runs when detection completes. It opens one issue labelled `reference-data-update`, or comments on the open one, when detection finds `update_available`, `attention_required` or fails. A `no_change` success creates nothing. It uses only `GITHUB_TOKEN` (`issues: write`, `actions: read`), reads only the non-secret summary, and never starts Plan, Backup or Apply.
+
+### Job budget (fixed 2026-10-01)
+
+The orchestrator's worst-case wait is 165 minutes (Plan 75, Backup 30, Dry run 30, Apply queued 10, and 4 × 5 minutes to find dispatched runs). Its `timeout-minutes` is 180, so a slow stage ends with an orderly `stopped` instead of the job being killed. A test keeps the limit in step with the code.
 
 ## 4. What the owner sees (one screen)
 

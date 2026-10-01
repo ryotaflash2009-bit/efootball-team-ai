@@ -1,10 +1,10 @@
 name: Reference data Production backup (manual approval-gated, or automated pre-apply)
 
 # ============================================================================
-# 2026-09-21: execution steps implemented. This workflow has NEVER been run
-# (no workflow_dispatch execution exists in this repository's Actions history
-# as of this commit). This session did not connect to Production, did not
-# connect to R2, and did not execute `age`.
+# 2026-09-21: execution steps implemented.
+# Run history (owner-approved): Production backups ran on 2026-09-24 and
+# 2026-09-26 (see docs/production-readiness/evidence/). The 2026-09-21 note that
+# it had never run is historical.
 # ============================================================================
 #
 # Trigger: workflow_dispatch ONLY. No `schedule:`, no `pull_request:`, no `push:`.

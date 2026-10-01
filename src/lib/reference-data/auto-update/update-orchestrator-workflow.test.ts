@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { DISPATCH_COUNT, DISPATCH_FIND_MS, LIMIT_MS } from "./update-orchestrator-cli";
 
 /** 承認1回化の自動進行workflowの静的監査(実行はしない)。 */
 
@@ -12,6 +13,13 @@ const TSCONFIG = readFileSync(path.join(ROOT, "tsconfig.update-orchestrator.json
 const CLI = readFileSync(path.join(__dirname, "update-orchestrator-cli.ts"), "utf8");
 
 describe("reference-data-update-orchestrator.yml", () => {
+  it("job の timeout-minutes は、各段階の待ち上限と run 検出の上限の合計より長い（途中で打ち切られず stopped を残せる）", () => {
+    const m = code.match(/timeout-minutes:\s*(\d+)/);
+    expect(m).not.toBeNull();
+    const worstMinutes = (Object.values(LIMIT_MS).reduce((a, b) => a + b, 0) + DISPATCH_FIND_MS * DISPATCH_COUNT) / 60_000;
+    expect(Number(m![1])).toBeGreaterThanOrEqual(worstMinutes + 10);
+  });
+
   it("起動は検出workflowの完了と確認入力付きの手動だけ(schedule・push・pull_request なし)", () => {
     expect(code).toMatch(/^on:\s*\n\s+workflow_run:\s*\n\s+workflows: \["Reference data update detection \(weekly \+ manual; detection only\)"\]\s*\n\s+types: \[completed\]\s*\n\s+workflow_dispatch:/m);
     expect(code).not.toMatch(/^\s*(schedule|push|pull_request|pull_request_target|repository_dispatch|workflow_call)\s*:/m);
