@@ -218,7 +218,7 @@ function managerCardIds() {
 let client;
 let cap;
 function resetCap() {
-  cap = { consoleErrors: [], warnings: [], exceptions: [], failed: [], s4xx: [], s5xx: [], offOrigin: [], reqs: [] };
+  cap = { consoleErrors: [], warnings: [], exceptions: [], failed: [], s4xx: [], s5xx: [], offOrigin: [], reqs: [], doc: null };
 }
 resetCap();
 /** 固定の式だけを評価する(値を埋め込んだコードは組み立てない。値はrunの引数で渡す)。 */
@@ -434,6 +434,11 @@ async function main() {
     const u = new URL(url);
     const s = p.response.status;
     const tag = `${s} ${p.type} ${u.pathname}`;
+    // 断続的な React #418 の切り分け用: 文書の配信元（キャッシュ・デプロイ）を記録する（値は公開ヘッダーだけ）。
+    if (p.type === "Document") {
+      const h = Object.fromEntries(Object.entries(p.response.headers ?? {}).map(([k, v]) => [k.toLowerCase(), v]));
+      cap.doc = { path: u.pathname, cache: h["x-vercel-cache"] ?? null, age: h["age"] ?? null, nextCache: h["x-nextjs-cache"] ?? h["x-nextjs-prerender"] ?? null, etag: h["etag"] ? String(h["etag"]).slice(0, 24) : null };
+    }
     if (s >= 500) cap.s5xx.push(tag);
     else if (s >= 400) cap.s4xx.push(tag);
   });
@@ -969,7 +974,7 @@ async function main() {
         await settle(30000);
         const loadingDoneMs = Date.now() - t0;
         await sleep(800);
-        runs.push({ kind: i === 0 ? "cold" : "warm", ...(await ev(PERF_COLLECT)), loadingIndicatorMs: loadingDoneMs, readyMs: loadingMs, errors: cap.consoleErrors.length + cap.exceptions.length + cap.failed.length + cap.s5xx.length, errorDetails: [...cap.consoleErrors, ...cap.exceptions, ...cap.failed, ...cap.s5xx].map((x) => String(x).slice(0, 160)) });
+        runs.push({ kind: i === 0 ? "cold" : "warm", ...(await ev(PERF_COLLECT)), loadingIndicatorMs: loadingDoneMs, readyMs: loadingMs, errors: cap.consoleErrors.length + cap.exceptions.length + cap.failed.length + cap.s5xx.length, errorDetails: [...cap.consoleErrors, ...cap.exceptions, ...cap.failed, ...cap.s5xx].map((x) => String(x).slice(0, 160)), document: cap.doc });
       }
       const warm = runs.filter((r) => r.kind === "warm");
       const med = (k) => Math.round(warm.map((r) => r[k]).sort((a, b) => a - b)[Math.floor(warm.length / 2)]);
@@ -980,6 +985,8 @@ async function main() {
         requests: runs[0].requests, duplicatesMax: Math.max(...runs.map((r) => r.duplicates)), slowestMs: Math.max(...runs.map((r) => r.slowestMs)),
         apiCount: runs[0].apiCount, apiMaxMs: Math.max(...runs.map((r) => r.apiMaxMs)), loadingIndicatorWarm: med("loadingIndicatorMs"), errors: runs.reduce((a, r) => a + r.errors, 0),
         errorDetails: [...new Set(runs.flatMap((r) => r.errorDetails))].slice(0, 5),
+        // エラーが出た読み込みだけ、その文書の配信元（x-vercel-cache・age・etag の先頭）と何回目の読み込みかを残す。
+        errorRuns: runs.flatMap((r, i) => (r.errors > 0 ? [{ run: i, kind: r.kind, document: r.document }] : [])),
       };
       // 重大: warm load中央値 > 3000ms、long task合計 > 1000ms、CLS > 0.25、エラー。
       row.ok = row.warmLoadMedian <= 3000 && row.longTaskTotalMax <= 1000 && row.clsMax <= 0.25 && row.errors === 0;
