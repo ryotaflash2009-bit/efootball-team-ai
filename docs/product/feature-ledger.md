@@ -43,7 +43,7 @@
 | F-021 | My Builds（保存ビルド・育成案） | completed | 85% | F-028 | R | L | 任意 | 不要 | Free | `docs/my-builds.md` | クラウド同期 F-052 |
 | F-022 | ビルド分析（`/build-inventory`：使用状況・重複・旧規則・参照異常） | completed | 85% | F-021 | R | L | 不要 | 不要 | Free | milestones 2026-09-01/02 | 診断カード共有は F-042 |
 | F-023 | JSON export / import（保存ビルド） | completed | 90% | F-021 | — | L | 不要 | 不要 | Free | milestones 2026-09-02/05 | 全データ一括 export は F-023b（roadmap 段階11） |
-| F-023b | 全データの一括 export / import（My Team・お気に入り・ビルド・スカッド・診断履歴・設定） | idea → 実装対象（2026-10-01） | 0% | F-023, F-060 | — | L | 不要 | 不要 | Free | 監査で未実装を確認（`/data-management` は削除のみ） | 版つき JSON・検証・破損行の隔離・上書き前の確認 |
+| F-023b | 現在の領域（ゲスト / アカウント）の全データの書き出し・読み込み・削除 | verified | 100% | F-023, F-060 | — | L | 不要 | 不要 | Free | PR #100（版つき JSON・厳密な検証・全部か何もしないかの読み込み・失敗時に元へ戻す・`__proto__` と上限超えを拒否・確認までに領域が変わったら取り消し）、black-box 28/28、`evidence/2026-10-02-backup-cards-posts.json` | — |
 | F-024 | Squads（編集・テンプレート・比較・Game Plan風の配置編集） | completed | 80% | F-020 | R | L/C | 任意 | 不要 | Free | `docs/phase-squad.md`、`docs/squad-game-plan-editing.md` | 完全ゲームプラン F-033 |
 | F-025 | Best XI（所持カードからのルールベース最適化。表示名は「AI Best XI」） | completed | 75% | F-020 | R | L | 不要 | 不要（ルール） | Free | `src/lib/best-xi/*` tests | 高度化 F-070 |
 | F-026 | スカッド診断（総合・攻撃・守備・空中戦・スピード等8カテゴリ＋配置充足・強み・弱点・改善提案） | completed | 80% | F-024 | R | L | 不要 | 不要（ルール） | Free（詳細はPro候補） | milestone 2026-09-06 | 診断履歴 F-060 |
@@ -68,7 +68,7 @@
 | F-040 | 診断結果カード（スカッド／ビルド） | completed | 80% | F-026 | — | — | 不要 | 不要 | Free | `squad-diagnosis-share.ts`（内部IDを含めない） | — |
 | F-041 | 画像保存（PNG） | completed | 80% | F-040 | — | L | 不要 | 不要 | Free | `squad-diagnosis-image.ts`（3:4・1440×1920）、`build-diagnosis-card-image.ts`（9:16・16:9） | 共有カードのサイズ追加は F-041b |
 | F-042 | 共有URL（診断カード） | verified | 100% | F-040 | — | —（サーバー保存なし・名前/ID なし） | 不要 | 不要 | Free | PR #75、`evidence/f042-share-url-2026-09-27.json`（公開 black-box 522/522） | 比較の共有URLは F-043 で追加 |
-| F-041b | 共有カードのサイズ（1:1・9:16・16:9）と OS 共有（LINE 等は OS の共有シート経由） | partially_implemented | 40% | F-041 | — | L | 不要 | 不要 | Free | ビルドカード 9:16/16:9 あり。スカッド診断カードは 3:4 のみ。`navigator.share` は共有 URL で利用（`SquadDiagnosisShareUrlButton.tsx`） | スカッド診断カードの 1:1・9:16・16:9 と画像の OS 共有 |
+| F-041b | 診断カードの比率（3:4・1:1・9:16・16:9）とプレビュー・OS 共有 | verified | 100% | F-041 | — | L | 不要 | 不要 | Free | PR #101（3:4 は従来と同一・称号つき・Web Share（取り消しはエラーにしない・非対応は保存）・CSP の img-src に blob: を追加）、black-box 24/24、`evidence/2026-10-02-backup-cards-posts.json` | 本人の主観確認（カードの見た目） |
 | F-045 | 診断の追加観点（左右バランス・監督適合・フォーメーション適合・控えを含む役割重複・GK 専用カテゴリ・空中戦の身長/利き足補正） | designed | 5% | F-026 | R | L | 不要 | 不要 | Free | 候補は `milestones/2026-09-06-squad-diagnosis-foundation.md`・比較画面は左右の人数を事実として表示（評価しない） | **計算式は本人判断**（${RA} §5 に候補・必要データ・長所/短所） |
 | F-043 | 改善前後の比較カード | verified | 100% | F-026, F-060 | — | L | 不要 | 不要 | Free | PR #77、`docs/production-readiness/evidence/f060-f043-2026-09-27.json`（公開 black-box 568/568） | 公開環境の稀な hydration 警告は既知の問題として記録（機能影響なし） |
 | F-044 | Pro向け詳細診断 | designed | 20% | F-026, F-120 | — | — | 要 | 任意 | Pro | 出力は基本/詳細に分離済み | 課金の判断まで deferred |
@@ -83,7 +83,7 @@
 | F-053 | 公開ユーザーID・公開プロフィール | designed | 5% | F-050, F-056 | — | C | 要 | 不要 | Free | `docs/product/community-and-growth-design.md` §2 | 安全機能の後。本人判断: 公開IDの形式・禁止語・規約・本番マイグレーション |
 | F-054 | 公開範囲（非公開/URL限定/友達限定/全体公開） | designed | 5% | F-053 | — | C | 要 | 不要 | Free | `docs/product/community-and-growth-design.md` §2（既定は非公開・noindex） | F-053 と同時 |
 | F-055 | 友達機能 | designed | 5% | F-053, F-056 | — | C | 要 | 不要 | Free | `docs/product/community-and-growth-design.md` §3 | F-053・F-056 の後 |
-| F-056 | ブロック・ミュート・通報・安全機能 | designed | 10% | F-050 | — | C | 要 | 不要 | Free | `docs/product/community-and-growth-design.md` §1（効果・データ・RLS・レート制限） | 公開系機能より先に実装。本人判断: 通報の対応体制・規約とプライバシーポリシーの改定・本番マイグレーション |
+| F-056 | ブロック・ミュート・通報・安全機能 | partially_implemented（ローカルの型・モック） | 30% | F-050 | — | L（モック） | 要（本番） | 不要 | Free | PR #102（通報の理由・自分の投稿は不可・重複は1件・1日の上限・ブロックは双方向・ミュートは片方向・管理者の非表示・異議申し立ての型）、black-box（モック）、`docs/product/owner-decisions-2026-10-02.md` C | 本人判断: 通報の対応体制・規約・本番マイグレーション |
 | F-057 | 削除・退会導線（アカウント削除予約・取消） | partially_implemented | 30% | F-050 | — | C | 要 | 不要 | Free | 現状は問い合わせ窓口経由。セルフ削除は deferred（`production-readiness/auth-deferred-items.md`：サーバー側の権限か本番の DB 関数が必要） | 本人: 方式（Edge Function / DB 関数）の承認 |
 | F-058 | データ管理（ブラウザー内データの確認・削除） | verified | 90% | — | — | L | 不要 | 不要 | Free | 総合black-box | 一括 export F-023b |
 
@@ -111,7 +111,7 @@
 | F-081 | 反応・コメント・保存・フォロー | idea（設計書 26章） | F-080 | 要 | — |
 | F-082 | モデレーション（NGワード・通報キュー・管理操作） | idea（設計書 26・27章） | F-056 | 要 | — |
 | F-083 | コミュニティ発見・不正利用対策 | idea | F-082 | 要 | — |
-| F-084 | 写真付き投稿（カメラ・写真ライブラリ・トリミング・回転・圧縮・EXIF/GPS 除去・下書き・関連スカッド/選手/監督/ビルド/診断） | 要件追加（2026-10-01 本人指示） | F-056, F-082 | 要（2 段階目以降） | 1: ローカル/モック（自動で実装）→ 2: 本人のみ → 3: URL 限定 → 4: 友達 → 5: 全体。本番 Storage・RLS は本人承認 |
+| F-084 | 写真付き投稿（カメラ・写真ライブラリ・回転・正方形の切り取り・再エンコードでメタデータ除去・下書き・関連付け） | 段階1（ローカル/モック）完了 | 1/5 段階 | F-056, F-082 | 要（段階2以降） | 段階1は内部ページ（本番は 404）。PR #102、black-box 32/32（GPS 入り EXIF が保存画像に残らない・偽装ファイルを拒否） | 段階2（認証済みの本人だけ）は本番 Storage・RLS の本人承認が必要 |
 | F-085 | 投稿フィード（カテゴリ・選手・監督・フォーメーション別）・投稿検索 | idea | F-084 | 要 | ローカル/モックのフィードから |
 
 ## 7. メタ・分析（Phase 8）

@@ -6,6 +6,20 @@
 値は「直前の完全成功マイルストーンの完了報告」＋「現在のファイル状態」を根拠に更新する。
 ベースライン確認のために全テスト・全ブラックボックスを無条件で再実行しない。
 
+## 最新の検証値（2026-10-02・PR #104 の後）
+
+詳細は `docs/production-readiness/evidence/2026-10-02-backup-cards-posts.json`。
+
+| 項目 | 値 |
+|---|---|
+| `npm run verify` | PASS（276 テストファイル・4630 テスト） |
+| 公開 black-box（総合・8 viewport） | 568/568 ステップ・security 18/18・メモリ OK・性能 11/14（React #418 の観測 2 件・遅い 1 件） |
+| 公開 black-box（新規登録の限定テスト・内部ページの 404） | 115/115 |
+| 公開 black-box（F-061〜F-073） | 115/115 |
+| ローカル black-box | 認証 173・バックアップ 28・共有カード 24・写真投稿/安全機能 32 |
+| npm audit | critical 0・high 1（Next 15 内の postcss・ビルド時のみ）・moderate 3 |
+| Next.js | 15.5.27 |
+
 ## 最新の検証値（2026-09-27・PR #87〜#92 の後）
 
 下の表（2026-09-06）より新しい値。詳細は `docs/production-readiness/evidence/auth-readiness-f071-f073-2026-09-27.json`。
