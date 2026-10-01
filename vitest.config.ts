@@ -3,7 +3,8 @@ import { fileURLToPath } from "node:url";
 
 export default defineConfig({
   // .tsx を import するテスト（UI ヘルパー等）向けに自動 JSX ランタイムを使う
-  esbuild: { jsx: "automatic", jsxImportSource: "react" },
+  // Vitest 5（Vite 8）は esbuild の代わりに oxc で変換する（tsconfig の jsx: preserve に従わせない）。
+  oxc: { jsx: { runtime: "automatic", importSource: "react" } },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
