@@ -1,6 +1,6 @@
 # お気に入り / My Team 基盤 ブラックボックステスト結果
 
-実行日時: 2026-09-24T11:07:48.003Z
+実行日時: 2026-10-01T18:19:40.851Z
 対象: http://localhost:3000（localhost のみ）  外部アクセス: **0 回**
 
 注: お気に入り / My Team は localStorage 保存のため、SSR では「空状態シェル」までを検証。
@@ -39,7 +39,7 @@ src/lib/user-cards/user-cards.test.ts（vitest 28件）で担保。
 | PASS | 回帰: 比較 /compare 2人 200 + 26能力値 |  |
 | PASS | 回帰: World 選手詳細 200 + 育成タブ |  |
 | PASS | 回帰: 監督一覧 200 |  |
-| PASS | 回帰: 選手検索API 到達・件数あり | total=44 |
+| PASS | 回帰: 選手検索API 到達・件数あり | total=46 |
 | PASS | 回帰: 選手詳細API 26能力値 |  |
 
 ## 判定: 全項目 PASS
