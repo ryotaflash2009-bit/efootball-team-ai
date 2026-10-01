@@ -1,14 +1,14 @@
 # F-071 パーセンタイル・F-072 称号・F-073 あなたの一番・F-061 成長プロフィール ブラックボックス
 
-実行日時: 2026-09-27T12:11:49.158Z
-対象: localhost（Production Build）  viewport: 8  locale: ja, en  実際の成果物の状態: not_generated
+実行日時: 2026-10-01T09:26:55.451Z
+対象: localhost（Production Build）  viewport: 8  locale: ja, en  実際の成果物の状態: valid
 
 表示の確認は、ブラウザー内で分布 API の応答だけを合成の分布へ差し替えて行う（サーバー・DB は変えない）。書き込み・ログインなし。
 
 | 結果 | viewport | locale | route | 確認 | 詳細 |
 |---|---|---|---|---|---|
-| PASS | desktop-1280x720 | ja | /api/percentiles/world-base | actual state: not_generated | not_generated |
-| PASS | desktop-1280x720 | ja | /players/world/89138556575063 | actual state shown without guessed values | fallback=true |
+| PASS | desktop-1280x720 | ja | /api/percentiles/world-base | actual state: valid | valid |
+| PASS | desktop-1280x720 | ja | /players/world/89138556575063 | actual state shown without guessed values | badges=52 |
 | PASS | desktop-1280x720 | ja | /players/world/89138556575063 | seed My Team through the add dialog | 1 card |
 | PASS | desktop-1280x720 | ja | /players/world/89138556575063 | stats tab: buckets, explanation, scope toggle | badges=26/26, scopes=3, small=0 |
 | PASS | desktop-1280x720 | ja | /players/world/89138556575063 | F-034: base percentile shown separately from the build preview | badges=26 |
