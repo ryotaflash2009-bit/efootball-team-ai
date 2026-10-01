@@ -165,6 +165,32 @@ export interface Dictionary {
     dataManagementBody: string;
     dataManagementLink: string;
   };
+  publicIdPreview: {
+    pageTitle: string;
+    pageDescription: string;
+    localOnlyBanner: string;
+    publicIdLabel: string;
+    publicIdHint: string;
+    displayNameLabel: string;
+    displayNameHint: string;
+    previewUrl: string;
+    ok: string;
+    visibilityLabel: string;
+    visibilityPrivateOnly: string;
+    changeRule: string;
+    rulesVersion: string;
+    problem_empty: string;
+    problem_too_short: string;
+    problem_too_long: string;
+    problem_invalid_chars: string;
+    problem_must_start_with_letter: string;
+    problem_consecutive_underscores: string;
+    problem_edge_underscore: string;
+    problem_reserved: string;
+    problem_banned: string;
+    problem_personal_info: string;
+    problem_control_chars: string;
+  };
   diagnosisPerspectives: {
     title: string;
     badge: string;
@@ -4563,6 +4589,32 @@ const ja: Dictionary = {
     dataManagementHeading: "診断履歴",
     dataManagementBody: "スカッド診断の履歴はこのブラウザー内だけに保存されます。診断履歴ページで1件ずつ、またはすべて削除できます。",
     dataManagementLink: "診断履歴を開く",
+  },
+  publicIdPreview: {
+    pageTitle: "公開 ID の設定（試作）",
+    pageDescription: "公開 ID と表示名の規則を確かめる試作です。保存・送信はしません。",
+    localOnlyBanner: "試作: この画面の入力はどこにも保存・送信されません。公開プロフィールは安全機能の確認と本人の承認の後に提供します。",
+    publicIdLabel: "公開 ID",
+    publicIdHint: "英小文字で始まる、英小文字・数字・_ の 3〜20 文字。URL に使います。メールアドレスや本名は使わないでください。",
+    displayNameLabel: "表示名",
+    displayNameHint: "1〜20 文字。本名・学校名・連絡先は書かないでください。",
+    previewUrl: "URL の例",
+    ok: "形式は使えます（ほかの人との重複は公開時に確認）",
+    visibilityLabel: "公開範囲",
+    visibilityPrivateOnly: "非公開（現在はこれだけ選べます）",
+    changeRule: "公開 ID の変更は 30 日に 1 回です。",
+    rulesVersion: "規則の版",
+    problem_empty: "入力してください",
+    problem_too_short: "3 文字以上にしてください",
+    problem_too_long: "20 文字以内にしてください",
+    problem_invalid_chars: "英小文字・数字・_ だけを使ってください",
+    problem_must_start_with_letter: "英小文字で始めてください",
+    problem_consecutive_underscores: "_ を続けて使えません",
+    problem_edge_underscore: "_ で終われません",
+    problem_reserved: "この ID は予約されています",
+    problem_banned: "運営・公式を連想させる語や不適切な語は使えません",
+    problem_personal_info: "メールアドレス・電話番号・URL は使えません",
+    problem_control_chars: "見えない文字や制御文字は使えません",
   },
   diagnosisPerspectives: {
     title: "診断の追加観点",

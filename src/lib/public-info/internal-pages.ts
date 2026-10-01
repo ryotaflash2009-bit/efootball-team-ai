@@ -7,7 +7,7 @@
  * `NEXT_PUBLIC_*` はクライアントへ埋め込まれるが、真偽の切替だけで秘密情報ではない。
  */
 
-export const INTERNAL_PAGE_PATHS = Object.freeze(["/account/rls-test", "/release-readiness", "/community/local-posts", "/tier-pack-preview"] as const);
+export const INTERNAL_PAGE_PATHS = Object.freeze(["/account/rls-test", "/release-readiness", "/community/local-posts", "/account/public-id-preview", "/tier-pack-preview"] as const);
 
 export interface InternalPagesEnv {
   readonly NODE_ENV?: string;
