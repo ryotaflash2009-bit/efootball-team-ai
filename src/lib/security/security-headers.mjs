@@ -21,7 +21,8 @@ export function buildContentSecurityPolicy(isDev) {
     "default-src 'self'",
     isDev ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'" : "script-src 'self' 'unsafe-inline'",
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data:",
+    // blob: はページ自身が作った画像（共有カードのプレビュー・投稿写真のプレビュー）だけ。画像以外へは広げない。
+    "img-src 'self' data: blob:",
     "font-src 'self'",
     isDev
       ? `connect-src 'self' ${SUPABASE_CONNECT_SRC} ws://localhost:* wss://localhost:*`
