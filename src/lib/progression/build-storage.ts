@@ -111,6 +111,13 @@ const storeSchema = z.record(z.string().regex(WORLD_CARD_ID_RE), z.array(savedBu
 
 type Store = z.infer<typeof storeSchema>;
 
+/** F-023b: 全データの import 前の検証（保存形式そのものを厳密に確認する。1件でも壊れていれば拒否）。 */
+export function validateBuildsPayload(json: unknown): { ok: true; count: number } | { ok: false } {
+  const parsed = storeSchema.safeParse(json);
+  if (!parsed.success) return { ok: false };
+  return { ok: true, count: Object.values(parsed.data).reduce((n, list) => n + list.length, 0) };
+}
+
 function getStorage(): Storage | null {
   try {
     if (typeof window === "undefined" || !window.localStorage) return null;
