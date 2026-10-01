@@ -218,9 +218,25 @@ function managerCardIds() {
 let client;
 let cap;
 function resetCap() {
-  cap = { consoleErrors: [], warnings: [], exceptions: [], failed: [], s4xx: [], s5xx: [], offOrigin: [], reqs: [], doc: null };
+  cap = { consoleErrors: [], warnings: [], exceptions: [], excFrames: [], failed: [], s4xx: [], s5xx: [], offOrigin: [], reqs: [], doc: null, docRequestId: null };
 }
 resetCap();
+
+/**
+ * React #418 の切り分け用（エラーが出た読み込みのときだけ評価）: streaming の境界がどこまで差し替わったか。
+ * 値は要素の数と読み込み状態だけ（本文・利用者のデータは読まない）。
+ */
+function streamState() {
+  return {
+    readyState: document.readyState,
+    pendingTemplates: document.querySelectorAll('template[id^="B:"]').length,
+    hiddenSegments: document.querySelectorAll('div[hidden][id^="S:"]').length,
+    rcDefined: typeof globalThis.$RC === "function",
+    scripts: document.scripts.length,
+    bodyChildren: document.body ? document.body.children.length : -1,
+    mainCount: document.querySelectorAll("main").length,
+  };
+}
 /** 固定の式だけを評価する(値を埋め込んだコードは組み立てない。値はrunの引数で渡す)。 */
 async function ev(expression) {
   const r = await client.send("Runtime.evaluate", { expression, returnByValue: true, awaitPromise: true });
@@ -314,6 +330,17 @@ function dupCount(list) {
   return [...seen.entries()].filter(([, n]) => n > 1).map(([k, n]) => `${k} x${n}`);
 }
 
+/** #418 などの hydration エラーが出たときだけ残す切り分け情報（公開ヘッダー・呼び出し位置・streaming の状態）。 */
+async function hydrationDiag() {
+  let stream = null;
+  try {
+    stream = await run(streamState);
+  } catch {
+    /* 遷移中 */
+  }
+  return { document: cap.doc, frames: cap.excFrames.slice(0, 3), stream };
+}
+
 async function step(vp, route, op, fn, { allow4xx = [], audit = true } = {}) {
   resetCap();
   const started = Date.now();
@@ -372,6 +399,7 @@ async function step(vp, route, op, fn, { allow4xx = [], audit = true } = {}) {
     overflow: layout ? Math.max(0, layout.overflow) : null,
     detail: problems.length ? problems.join(" ; ") : res.detail || "",
   };
+  if (problems.includes("hydration mismatch")) row.hydrationDiag = await hydrationDiag();
   results.push(row);
   console.log(`${row.ok ? "PASS" : "FAIL"}  [${vp.name}] ${route} ${op}${row.detail ? `  — ${row.detail}` : ""}`);
   return row;
@@ -409,7 +437,21 @@ async function main() {
     if (p.type === "error" || p.type === "assert") cap.consoleErrors.push(fmtArgs(p));
     else if (p.type === "warning") cap.warnings.push(fmtArgs(p));
   });
-  client.on("Runtime.exceptionThrown", (p) => cap.exceptions.push(String(p.exceptionDetails?.exception?.description ?? p.exceptionDetails?.text ?? "exception").split("\n")[0].slice(0, 200)));
+  client.on("Runtime.exceptionThrown", (p) => {
+    cap.exceptions.push(String(p.exceptionDetails?.exception?.description ?? p.exceptionDetails?.text ?? "exception").split("\n")[0].slice(0, 200));
+    // #418 の切り分け用: 例外の上位の呼び出し位置（同一オリジンのパスと行・列、関数名だけ）。
+    const frames = (p.exceptionDetails?.stackTrace?.callFrames ?? []).slice(0, 4).map((f) => {
+      let file = "";
+      try {
+        const u = new URL(f.url);
+        file = u.origin === new URL(BASE).origin ? u.pathname.slice(-60) : "(other origin)";
+      } catch {
+        file = f.url ? "(inline)" : "";
+      }
+      return `${String(f.functionName || "?").slice(0, 40)}@${file}:${f.lineNumber + 1}:${f.columnNumber + 1}`;
+    });
+    if (frames.length) cap.excFrames.push(frames.join(" < "));
+  });
   client.on("Log.entryAdded", (p) => {
     // networkの失敗はNetworkイベントで数える(4xxの"Failed to load resource"を二重に数えない)。
     if (p.entry.source === "network") return;
@@ -437,10 +479,16 @@ async function main() {
     // 断続的な React #418 の切り分け用: 文書の配信元（キャッシュ・デプロイ）を記録する（値は公開ヘッダーだけ）。
     if (p.type === "Document") {
       const h = Object.fromEntries(Object.entries(p.response.headers ?? {}).map(([k, v]) => [k.toLowerCase(), v]));
-      cap.doc = { path: u.pathname, cache: h["x-vercel-cache"] ?? null, age: h["age"] ?? null, nextCache: h["x-nextjs-cache"] ?? h["x-nextjs-prerender"] ?? null, etag: h["etag"] ? String(h["etag"]).slice(0, 24) : null };
+      // regions: x-vercel-id の地域部分だけ（末尾の request id は残さない）。bytes は loadingFinished で埋める。
+      const regions = h["x-vercel-id"] ? String(h["x-vercel-id"]).split("::").slice(0, -1).join(">").slice(0, 40) : null;
+      cap.doc = { path: u.pathname, cache: h["x-vercel-cache"] ?? null, age: h["age"] ?? null, nextCache: h["x-nextjs-cache"] ?? h["x-nextjs-prerender"] ?? null, etag: h["etag"] ? String(h["etag"]).slice(0, 24) : null, regions, matchedPath: h["x-matched-path"] ? String(h["x-matched-path"]).slice(0, 60) : null, protocol: p.response.protocol ?? null, bytes: null };
+      cap.docRequestId = p.requestId;
     }
     if (s >= 500) cap.s5xx.push(tag);
     else if (s >= 400) cap.s4xx.push(tag);
+  });
+  client.on("Network.loadingFinished", (p) => {
+    if (cap.doc && p.requestId === cap.docRequestId) cap.doc.bytes = p.encodedDataLength ?? null;
   });
   client.on("Network.loadingFailed", (p) => {
     if (p.canceled || /ERR_ABORTED/.test(p.errorText ?? "")) return;
@@ -974,7 +1022,7 @@ async function main() {
         await settle(30000);
         const loadingDoneMs = Date.now() - t0;
         await sleep(800);
-        runs.push({ kind: i === 0 ? "cold" : "warm", ...(await ev(PERF_COLLECT)), loadingIndicatorMs: loadingDoneMs, readyMs: loadingMs, errors: cap.consoleErrors.length + cap.exceptions.length + cap.failed.length + cap.s5xx.length, errorDetails: [...cap.consoleErrors, ...cap.exceptions, ...cap.failed, ...cap.s5xx].map((x) => String(x).slice(0, 160)), document: cap.doc });
+        runs.push({ kind: i === 0 ? "cold" : "warm", ...(await ev(PERF_COLLECT)), loadingIndicatorMs: loadingDoneMs, readyMs: loadingMs, errors: cap.consoleErrors.length + cap.exceptions.length + cap.failed.length + cap.s5xx.length, errorDetails: [...cap.consoleErrors, ...cap.exceptions, ...cap.failed, ...cap.s5xx].map((x) => String(x).slice(0, 160)), document: cap.doc, diag: cap.consoleErrors.length + cap.exceptions.length > 0 ? await hydrationDiag() : null });
       }
       const warm = runs.filter((r) => r.kind === "warm");
       const med = (k) => Math.round(warm.map((r) => r[k]).sort((a, b) => a - b)[Math.floor(warm.length / 2)]);
@@ -986,7 +1034,7 @@ async function main() {
         apiCount: runs[0].apiCount, apiMaxMs: Math.max(...runs.map((r) => r.apiMaxMs)), loadingIndicatorWarm: med("loadingIndicatorMs"), errors: runs.reduce((a, r) => a + r.errors, 0),
         errorDetails: [...new Set(runs.flatMap((r) => r.errorDetails))].slice(0, 5),
         // エラーが出た読み込みだけ、その文書の配信元（x-vercel-cache・age・etag の先頭）と何回目の読み込みかを残す。
-        errorRuns: runs.flatMap((r, i) => (r.errors > 0 ? [{ run: i, kind: r.kind, document: r.document }] : [])),
+        errorRuns: runs.flatMap((r, i) => (r.errors > 0 ? [{ run: i, kind: r.kind, document: r.document, frames: r.diag?.frames ?? [], stream: r.diag?.stream ?? null }] : [])),
       };
       // 重大: warm load中央値 > 3000ms、long task合計 > 1000ms、CLS > 0.25、エラー。
       row.ok = row.warmLoadMedian <= 3000 && row.longTaskTotalMax <= 1000 && row.clsMax <= 0.25 && row.errors === 0;
