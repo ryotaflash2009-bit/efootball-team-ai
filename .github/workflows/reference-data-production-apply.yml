@@ -102,6 +102,9 @@ concurrency:
 
 jobs:
   production:
+    # main only: a run dispatched from any other branch is skipped before either Environment is entered,
+    # so Production credentials are never exposed to unreviewed branch code.
+    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     environment: ${{ (inputs.mode == 'plan' || inputs.mode == 'dry-run') && 'reference-data-automation' || 'reference-data-production-apply' }}
     # World plan: ~443 requests at 3 s intervals (~23 min); World apply: ~6,000 row updates in one transaction.
@@ -308,6 +311,24 @@ jobs:
               --jq '[.workflow_runs[] | {id, displayTitle: .display_title, createdAt: .created_at, conclusion}]' > "$dir/plan-runs.json"
           fi
 
+      # apply only: the approver is the reviewer who approved this run's Environment deployment, not the
+      # dispatching actor (the orchestrator dispatches as github-actions[bot]). No approval record → stop
+      # before any Production connection.
+      - name: Record the Environment approver (read-only GitHub API)
+        if: ${{ inputs.mode == 'apply' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          approver=$(gh api "repos/$REPO/actions/runs/$RUN_ID/approvals" --jq '[.[] | select(.state == "approved") | select(any(.environments[]; .name == "reference-data-production-apply")) | .user.login] | last // ""')
+          if ! [[ "$approver" =~ ^[0-9A-Za-z._-]{1,64}$ ]]; then
+            echo "::error::no Environment approval is recorded for this apply run; stopping before any Production connection"
+            exit 1
+          fi
+          echo "STAGE4_APPROVED_BY=$approver" >> "$GITHUB_ENV"
+
       - name: Run the selected mode
         env:
           REFERENCE_DATA_APPLY_DB_URL: ${{ (inputs.mode == 'preflight' || inputs.mode == 'apply' || inputs.mode == 'verify') && secrets.REFERENCE_DATA_APPLY_DB_URL || '' }}
@@ -389,5 +410,27 @@ jobs:
         with:
           name: stage4-${{ inputs.dataset }}-undo-plan
           path: ${{ runner.temp }}/stage4/out/stage4-${{ inputs.dataset }}-undo-plan.json
+          if-no-files-found: ignore
+          retention-days: 90
+
+      # Machine-readable Evidence for every mode (no secrets: only allowed shapes of run/commit/actor/approver,
+      # mode, dataset, outcome and the sha256 of each input/output file). After a verified apply it also writes
+      # the applied-state candidate used by the Evidence PR. Never changes the job result.
+      - name: Build the machine-readable Evidence
+        if: always()
+        env:
+          EVIDENCE_MODE: ${{ inputs.mode }}
+          EVIDENCE_DATASET: ${{ inputs.dataset }}
+          EVIDENCE_WORK_DIR: ${{ runner.temp }}/stage4
+          EVIDENCE_SUMMARY_PATH: ${{ runner.temp }}/reference-data-apply-summary.json
+          EVIDENCE_OUT_DIR: ${{ runner.temp }}/evidence
+        run: node scripts/reference-data-evidence.mjs
+
+      - name: Upload the Evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reference-data-apply-${{ inputs.mode }}${{ inputs.dataset == 'world' && '-world' || '' }}-evidence
+          path: ${{ runner.temp }}/evidence
           if-no-files-found: ignore
           retention-days: 90

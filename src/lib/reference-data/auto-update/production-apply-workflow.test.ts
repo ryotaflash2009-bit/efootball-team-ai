@@ -101,6 +101,7 @@ describe("Production apply workflow(Stage 2 preflight + Stage 4 managers)", () =
       "stage4-${{ inputs.dataset }}-dry-run",
       "stage4-${{ inputs.dataset }}-apply-result",
       "stage4-${{ inputs.dataset }}-undo-plan",
+      "reference-data-apply-${{ inputs.mode }}${{ inputs.dataset == 'world' && '-world' || '' }}-evidence",
     ]);
     expect(code).toContain("REFERENCE_DATA_APPLY_DATASET: ${{ inputs.dataset }}");
     expect(code).toMatch(/Runtime smoke test[\s\S]*REFERENCE_DATA_APPLY_DB_URL: ""/);

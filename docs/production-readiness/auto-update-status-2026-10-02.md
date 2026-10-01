@@ -11,9 +11,12 @@
 | Dry run（使い捨て PostgreSQL・Production の資格情報なし） | 実装・テスト済み。自動進行では未実施 | apply workflow `dry-run` |
 | Apply | 実装済み。2026-09-26 に旧手順（4承認）で本番適用・事後検証 `applied_verified` | `evidence/world-update-2026-09-26.json` |
 | 事後検証 | Apply の中で実行（`applied_verified` / `rollback_required`） | `stage4-world.ts` |
-| applied-state | Apply 後の Evidence PR で Claude Code が更新（設計どおり手動） | `automated-update-pipeline.md` |
+| applied-state | Apply 後の Evidence PR で更新（設計どおり人のレビューつき）。Apply の run が `applied_verified` のとき Evidence artifact に `applied-state.candidate.json`（source checksum12・件数・apply run id）を自動で出す | `scripts/reference-data-evidence.mjs` |
 | F-071 分布の成果物 | 候補は検出で自動生成。取り込みは `npm run import:world-distribution`（VALID のときだけ書き込む）。現在 VALID | PR #95・#97 |
-| 通知（GitHub Issue） | **追加済み**（更新あり・要確認・失敗で1件の Issue を作成または追記。`no_change` は何もしない）。`GITHUB_TOKEN` だけ | PR #97 |
+| 通知（GitHub Issue） | 検出: 更新あり・要確認・失敗（PR #97）。**PR #106 まで一度も起動していなかった**（検出 workflow の名前の `+` が workflow_run のパターン文字だったため）。自動進行の停止・Apply 承認待ち・Apply の結果（検証済み / 要 rollback / 失敗）も通知（`reference-data-pipeline-notify.yml`）。`GITHUB_TOKEN` だけ | PR #97・#106・本 PR |
+| main 限定 | 自動進行・検出の起動条件に加え、Production apply と Backup の job も main 以外からは Environment に入る前に skip | apply / backup workflow |
+| 承認者の記録 | Apply は Environment の承認記録（run approvals API）から承認者を取り、無ければ DB 接続前に停止。起動者（bot）とは別に記録 | `approved-by.ts` |
+| 機械可読 Evidence | すべての mode で `evidence.json`（run・attempt・commit・ref・起動者・承認者・mode・dataset・結果・入出力ファイルの sha256）を 90 日保存 | `scripts/lib/reference-data-evidence.mjs` |
 | タイムアウト | 最悪 165 分に対し job の上限 180 分（テストで固定） | PR #97 |
 | ロールバック | 取り消し計画を生成。本番での実行モード・リハーサルは無い（Level 3 の条件） | apply workflow |
 | 失敗時の停止 | 各段階で `stopped`（Apply の run を作らない）。テスト済み・本番未経験 | `update-orchestrator-cli.ts` |

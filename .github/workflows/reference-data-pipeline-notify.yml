@@ -1,0 +1,71 @@
+name: Reference data pipeline notification (issue)
+
+# Comments on (or opens) the reference-data-update Issue when the orchestrator stops or leaves an Apply run waiting
+# for approval, and when a Production apply / verify finishes (or a plan / dry-run fails).
+# - Trigger: completion of the orchestrator or the Production apply workflow only (no schedule, push or pull_request).
+# - Reads only the non-secret approval summary / Evidence artifacts of that run.
+# - Uses GITHUB_TOKEN only (issues: write, actions: read). No Secrets, no Environment, no Production connection,
+#   and it never dispatches, approves, re-runs or rolls back anything.
+# The names below are workflow_run filter patterns: they must equal the workflows' `name:` exactly and must not
+# contain * ? + [ ] or ! (checked by workflow-run-references.test.ts).
+
+on:
+  workflow_run:
+    workflows: ["Reference data update orchestrator (automatic up to the Apply approval)", "Reference data Production apply (plan/dry-run automated; apply approval-gated)"]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+  issues: write
+
+concurrency:
+  group: reference-data-update-notify
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    if: github.event.workflow_run.conclusion != 'skipped' && github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Download the non-secret summaries of that run
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          WORKFLOW_PATH: ${{ github.event.workflow_run.path }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/n"
+          case "$WORKFLOW_PATH" in
+            .github/workflows/reference-data-update-orchestrator.yml)
+              gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name reference-data-update-approval --dir "$RUNNER_TEMP/n" || true ;;
+            .github/workflows/reference-data-production-apply.yml)
+              gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --pattern "reference-data-apply-*-evidence" --dir "$RUNNER_TEMP/n" || true ;;
+          esac
+
+      - name: Comment on or open the notification issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          WORKFLOW_PATH: ${{ github.event.workflow_run.path }}
+          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          RUN_TITLE: ${{ github.event.workflow_run.display_title }}
+        run: |
+          case "$WORKFLOW_PATH" in
+            .github/workflows/reference-data-update-orchestrator.yml) export NOTIFY_SOURCE=orchestrator ;;
+            .github/workflows/reference-data-production-apply.yml) export NOTIFY_SOURCE=apply ;;
+            *) echo "unexpected workflow"; exit 0 ;;
+          esac
+          export APPROVAL_PATH="$RUNNER_TEMP/n/reference-data-update-approval.json"
+          export EVIDENCE_PATH="$(find "$RUNNER_TEMP/n" -maxdepth 2 -name evidence.json | head -n 1)"
+          node scripts/reference-data-pipeline-notify.mjs
