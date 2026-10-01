@@ -81,6 +81,8 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { DiagnosisPerspectivesPanel } from "./DiagnosisPerspectivesPanel";
+import { buildDiagnosisPerspectives, toPerspectiveInput } from "@/lib/squad/diagnosis-perspectives";
 
 type LoadedCard = { card: ReturnType<typeof toProgressionCard>; display: ReturnType<typeof worldDetailToSquadDisplay> };
 type CardState = LoadedCard | "loading" | "error";
@@ -910,20 +912,29 @@ export function SquadEditor({
 
   // ---- スカッド診断（読み取り専用・純関数）----
   const managerResolved = squad?.managerId == null || managerContext != null;
-  const diagnosis = useMemo(() => {
+  const diagnosisInput = useMemo(() => {
     if (!squad) return null;
     const buildsById = new Map<string, SavedBuild>();
     for (const list of Object.values(savedBuildsByCard)) {
       for (const b of list) buildsById.set(b.buildId, b);
     }
-    const input = buildSquadDiagnosisInput({ squad, computed, buildsById, managerResolved });
-    return diagnoseSquad(input);
+    return buildSquadDiagnosisInput({ squad, computed, buildsById, managerResolved });
   }, [squad, computed, savedBuildsByCard, managerResolved]);
+  const diagnosis = useMemo(() => (diagnosisInput ? diagnoseSquad(diagnosisInput) : null), [diagnosisInput]);
 
   const tacticalPlacements = useMemo(
     () => buildTacticalPlacementInputs({ formation: computed.formation, slots: computed.slots }),
     [computed],
   );
+
+  // F-045 追加観点（暫定 / 比較検証用）。総合評価・共有には使わない。
+  const perspectives = useMemo(() => {
+    if (!diagnosisInput) return [];
+    const tactics = managerContext?.tacticalProficiencies ?? null;
+    return buildDiagnosisPerspectives(
+      toPerspectiveInput({ starters: diagnosisInput.starters, bench: diagnosisInput.bench, placements: tacticalPlacements, managerTactics: tactics }),
+    );
+  }, [diagnosisInput, tacticalPlacements, managerContext]);
 
   const selectedSlot = computed.slots.find((s) => s.slotId === selectedSlotId) ?? null;
   const selectedStoredSlot = squad?.slots.find((x) => x.slotId === selectedSlotId) ?? null;
@@ -1818,6 +1829,7 @@ export function SquadEditor({
           formationLabel={computed.formation.name}
           tacticalPlacements={tacticalPlacements}
         />
+        <DiagnosisPerspectivesPanel results={perspectives} />
       </div>
 
       {buildPanelTarget
