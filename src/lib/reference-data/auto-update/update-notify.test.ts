@@ -50,7 +50,7 @@ describe("reference-data-update-notify.yml の静的監査", () => {
   const code = wf.split("\n").filter((l) => !/^\s*#/.test(l)).join("\n");
 
   it("起動は検出 workflow の完了だけ", () => {
-    expect(code).toMatch(/workflow_run:\s*\n\s+workflows: \["Reference data update detection \(weekly \+ manual; detection only\)"\]\s*\n\s+types: \[completed\]/);
+    expect(code).toMatch(/workflow_run:\s*\n\s+workflows: \["Reference data update detection"\]\s*\n\s+types: \[completed\]/);
     expect(code).not.toMatch(/^\s*(schedule|push|pull_request|pull_request_target|workflow_dispatch|repository_dispatch)\s*:/m);
   });
 
