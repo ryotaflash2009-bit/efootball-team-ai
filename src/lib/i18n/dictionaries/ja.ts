@@ -210,6 +210,23 @@ export interface Dictionary {
     notComputed: string;
     rulesVersion: string;
   };
+  tierPackPreview: {
+    pageTitle: string;
+    pageDescription: string;
+    banner: string;
+    tierHeading: string;
+    packHeading: string;
+    source: string;
+    updatedAt: string;
+    rights: string;
+    rights_synthetic: string;
+    rights_own_data: string;
+    rights_pending: string;
+    rights_cleared: string;
+    hiddenPending: string;
+    period: string;
+    jaOnlyNote: string;
+  };
   diagnosisCompare: {
     selectLabel: string;
     selectHint: string;
@@ -4617,6 +4634,23 @@ const ja: Dictionary = {
     confidenceInsufficient: "判定できない",
     notComputed: "計算しない",
     rulesVersion: "規則の版",
+  },
+  tierPackPreview: {
+    pageTitle: "ティアリスト・パック（表示の試作）",
+    pageDescription: "合成データだけで表示の形を確かめる試作です。外部のデータは取得・保存していません。",
+    banner: "試作: 表示している名前と値はすべて架空です。外部の情報源は権利の確認が済むまで使いません。",
+    tierHeading: "ティアリスト",
+    packHeading: "パック",
+    source: "情報源",
+    updatedAt: "更新",
+    rights: "権利",
+    rights_synthetic: "合成（例）",
+    rights_own_data: "自前のデータ",
+    rights_pending: "確認待ち",
+    rights_cleared: "確認済み",
+    hiddenPending: "権利の確認待ちのため表示しません",
+    period: "期間",
+    jaOnlyNote: "表示例の文言は日本語だけです。",
   },
   diagnosisCompare: {
     selectLabel: "比較に選ぶ",
