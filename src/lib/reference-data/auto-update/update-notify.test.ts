@@ -35,7 +35,11 @@ describe("参照データ更新の通知（Issue 本文）", () => {
     const evil = summary("update_available", { sourceChecksum12: "<script>alert(1)</script>", signals: ["https://evil.example/x", "ok_signal"], recordCount: "13300; rm -rf" });
     const n = buildDetectionNotification(evil, { ...RUN, runUrl: "https://evil.example/runs/1" });
     if (!n.notify) throw new Error("expected notification");
-    expect(n.body).not.toMatch(/<script>|evil\.example|rm -rf/);
+    // 要約から来た値に山かっこ・外部 URL・任意の文字列が残らない（許可した形だけを通す）。
+    expect(n.body).not.toContain("<");
+    expect(n.body).not.toContain(">");
+    expect(n.body).not.toContain("evil.example");
+    expect(n.body).not.toContain("rm -rf");
     expect(n.body).toContain("ok_signal");
     expect(n.body).toContain("checksum ?");
   });
