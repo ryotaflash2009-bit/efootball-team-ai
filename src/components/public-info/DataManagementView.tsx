@@ -8,6 +8,7 @@ import { Surface } from "@/components/ui/Surface";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { LocalBackupPanel } from "@/components/public-info/LocalBackupPanel";
 import {
   MANAGED_LOCAL_DATA_KEYS,
   isLocalDataStorageAvailable,
@@ -83,6 +84,8 @@ export function DataManagementView() {
           <li>{tdm("howToDeleteIntentOnly")}</li>
         </ul>
       </Surface>
+
+      <LocalBackupPanel />
 
       <DeleteAllDataPanel tdm={tdm} />
     </div>

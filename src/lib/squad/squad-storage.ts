@@ -233,6 +233,18 @@ function normalizeSquad(raw: StoredSquad): StoredSquad {
   };
 }
 
+/** F-023b: 全データの import 前の検証（配列・全件が保存形式どおり・squadId が重複しない。1件でも壊れていれば拒否）。 */
+export function validateSquadsPayload(json: unknown): { ok: true; count: number } | { ok: false } {
+  if (!Array.isArray(json)) return { ok: false };
+  const ids = new Set<string>();
+  for (const item of json) {
+    const parsed = squadSchema.safeParse(item);
+    if (!parsed.success || ids.has(parsed.data.squadId)) return { ok: false };
+    ids.add(parsed.data.squadId);
+  }
+  return { ok: true, count: json.length };
+}
+
 function readStore(): Store {
   const ls = getStorage();
   if (!ls) return [];
