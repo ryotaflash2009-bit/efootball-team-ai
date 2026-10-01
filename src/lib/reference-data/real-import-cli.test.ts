@@ -4,6 +4,9 @@ import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import path from "node:path";
 
+// 実 CLI を起動するテスト（1起動ごとに TypeScript を読み込む cold start）。並列実行の負荷下では既定の 5 秒を超えうる。
+vi.setConfig({ testTimeout: 120_000 });
+
 /**
  * `scripts/migration/pg-real-import.mjs`を実際に子プロセスとして起動し、
  * 「既定はdry-run」「--validate-only/--executeなしでは接続0回」「環境変数が無ければ
@@ -115,7 +118,7 @@ function runCli(args: string[], extraEnv: Record<string, string> = {}): { stdout
   env.MIGRATION_EXPECTED_ANALYSIS_COUNT = String(FIXTURE_ANALYSIS_COUNT);
   Object.assign(env, extraEnv);
   try {
-    const stdout = execFileSync("node", [SCRIPT_PATH, ...args], {
+    const stdout = execFileSync(process.execPath, [SCRIPT_PATH, ...args], {
       cwd: ROOT,
       encoding: "utf8",
       env: env as NodeJS.ProcessEnv,

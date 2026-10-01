@@ -45,7 +45,9 @@ jobs:
       (github.event_name == 'workflow_dispatch' && inputs.confirm == 'orchestrate')) }}
     runs-on: ubuntu-latest
     # World plan ~25 min + Backup ~10 min + Dry run ~20 min + waits.
-    timeout-minutes: 150
+    # 最悪の待ち時間 = plan 75 + backup 30 + dry run 30 + apply 待機 10 + run の検出 5×4 = 165 分。
+    # これより短いと、段階の途中で job ごと打ち切られ「stopped」を残せないため 180 分にする（テストで確認）。
+    timeout-minutes: 180
     steps:
       - name: Checkout
         uses: actions/checkout@v4

@@ -1,0 +1,55 @@
+name: Reference data update notification (issue)
+
+# Opens or updates one GitHub Issue when the weekly detection finds an update, needs attention, or fails.
+# - Trigger: completion of the detection workflow only (no schedule, no push, no pull_request).
+# - Reads only the detection's non-secret summary artifact (counts, 12-character checksum prefixes, decisions).
+# - Uses GITHUB_TOKEN only (issues: write, actions: read). No Secrets, no Environment, no Production connection,
+#   and it never runs plan/backup/apply. A no_change success creates nothing.
+
+on:
+  workflow_run:
+    workflows: ["Reference data update detection (weekly + manual; detection only)"]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+  issues: write
+
+concurrency:
+  group: reference-data-update-notify
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    if: github.event.workflow_run.conclusion != 'skipped' && github.event.workflow_run.conclusion != 'cancelled'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Download the detection summary (non-secret)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/summary"
+          gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name reference-data-detection-summary --dir "$RUNNER_TEMP/summary" || true
+
+      - name: Open or update the notification issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+        run: |
+          SUMMARY="$RUNNER_TEMP/summary/reference-data-detection-summary.json"
+          [ -f "$SUMMARY" ] || SUMMARY="-"
+          node scripts/reference-data-notify.mjs "$SUMMARY" "$CONCLUSION" "$RUN_ID" "$RUN_URL"

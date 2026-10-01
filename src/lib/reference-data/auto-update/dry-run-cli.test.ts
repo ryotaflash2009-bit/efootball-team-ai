@@ -1,8 +1,11 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+
+// 実 CLI を起動するテスト（1起動ごとに TypeScript を読み込む cold start）。並列実行の負荷下では既定の 5 秒を超えうる。
+vi.setConfig({ testTimeout: 120_000 });
 
 /**
  * `scripts/migration/reference-data-auto-update-dry-run.mjs`を実際に子プロセスとして起動し、
@@ -32,7 +35,7 @@ function writeJson(name: string, data: unknown): string {
 
 function runCli(args: string[]): { stdout: string; status: number } {
   try {
-    const stdout = execFileSync("node", [SCRIPT_PATH, ...args], { encoding: "utf8" });
+    const stdout = execFileSync(process.execPath, [SCRIPT_PATH, ...args], { encoding: "utf8" });
     return { stdout, status: 0 };
   } catch (err) {
     const e = err as { stdout?: string; status?: number };
