@@ -49,6 +49,8 @@ export interface Dictionary {
     managersLabel: string;
     syncedAtLabel: string;
     worldUnavailableTitle: string;
+    temporaryErrorNotice: string;
+    temporaryErrorReload: string;
     worldUnavailableCommandPrefix: string;
     worldUnavailableCommandSuffix: string;
     topOvrHeading: string;
@@ -4409,6 +4411,8 @@ const ja: Dictionary = {
     managersLabel: "監督",
     syncedAtLabel: "World 取り込み日時",
     worldUnavailableTitle: "World データがまだ用意されていません",
+    temporaryErrorNotice: "一部のデータを一時的に読み込めませんでした。少し待ってから再読み込みしてください。",
+    temporaryErrorReload: "再読み込み",
     worldUnavailableCommandPrefix: "ターミナルで ",
     worldUnavailableCommandSuffix: " を実行してください。",
     topOvrHeading: "最大OVRの高いカード",
