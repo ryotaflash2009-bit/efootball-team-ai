@@ -39,20 +39,21 @@
 | AI スカッド分析（D 第22章）、AIスカッド診断・総合/攻撃/守備/空中戦・弱点・改善提案（O） | F-026（ルールベース） | completed |
 | 通常コメント・辛口コメント（P・O） | F-027 | completed |
 | 診断結果カード・画像保存（P・O） | F-040, F-041 | completed |
-| 共有URL（O）、公開スカッド・ビルド `shared_squads`/`shared_builds`（D 第17章） | F-042（URL 共有 MVP）、F-080（公開） | implementation_ready / idea |
+| 共有URL（O）、公開スカッド・ビルド `shared_squads`/`shared_builds`（D 第17章） | F-042（URL 共有 MVP）、F-080（公開） | verified / idea / idea |
 | Pro 向け詳細診断（O）、基本/詳細の出力分離（P：診断基盤） | F-044 | designed |
 | 改善前後の比較カード・診断履歴・成長プロフィール（O） | F-043, F-060, F-061 | verified / verified / completed（ブラウザー内の版） |
 | AI Best XI（O・UI 表示名） | F-025（ルールベース）、F-070（高度化） | completed / partially |
-| パーセンタイル（O）、物理データの順位（P） | F-071（能力値ごと。カテゴリ別は deferred）、F-010（選手単位） | completed / completed |
-| 称号・バッジ・「あなたの一番」・独自性評価（O） | F-072, F-073, F-074 | completed / completed / designed |
-| 友達・ライバル・友達比較（O） | F-055, F-062 | idea |
-| 公開ユーザーID・公開プロフィール・公開範囲（O）、公開範囲設定（D 第26章） | F-053, F-054 | idea |
-| ブロック・通報（D 第26章）、ミュート・安全機能（O） | F-056 | idea |
+| パーセンタイル（O）、物理データの順位（P） | F-071（能力値ごと。カテゴリ別は deferred）、F-010（選手単位） | verified / completed |
+| 称号・バッジ・「あなたの一番」・独自性評価（O） | F-072, F-073, F-074 | verified / verified / designed |
+| 友達・ライバル・友達比較（O） | F-055, F-062 | designed |
+| 公開ユーザーID・公開プロフィール・公開範囲（O）、公開範囲設定（D 第26章） | F-053, F-054 | designed |
+| ブロック・通報（D 第26章）、ミュート・安全機能（O） | F-056 | designed |
 | ランキング（O） | F-075 | idea |
 | コミュニティ：投稿・コメント・返信・いいね・保存・フォロー（D 第26章）、反応（O） | F-080〜F-083 | idea |
+| 写真付き投稿（カメラ・写真ライブラリ）、投稿と選手・監督・ビルド・診断の関連付け（本人指示 2026-10-01） | F-084, F-085 | 要件追加（ローカル/モックから） |
 | モデレーション・NG ワード・通報キュー（D 第26〜27章） | F-082 | idea |
 | メタ分析・相手分析・試合後分析（D 第22章） | F-091, F-093 | idea |
-| 完全ゲームプラン・戦術（O）、Game Plan 風の配置編集（P） | F-033 | partially |
+| 完全ゲームプラン・戦術（O）、Game Plan 風の配置編集（P） | F-033 | completed（MVP：配置編集。個別指示は deferred） |
 | AI コーチ・自然言語の戦術相談（D 第22章・O）、U8「クロス中心で戦いたい」 | F-100（AI）、F-101（Build Intent：ルールベース） | deferred / partially |
 | 画像認識によるスカッド入力（D 第24章）、U6 | F-102 | deferred |
 | 個人最適化（D 第22章・O） | F-103 | deferred |
