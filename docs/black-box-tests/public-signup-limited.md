@@ -1,6 +1,6 @@
 # 新規登録の限定テスト 公開ブラックボックス
 
-実行日時: 2026-09-27T10:51:03.103Z
+実行日時: 2026-10-01T15:21:31.248Z
 対象: localhost（Production Build）  viewport: 8  locale: ja, en
 
 フォームは送信しない（ログイン・新規登録・再設定メール・リンク確認を実行しない。本番メール送信 0・書き込み 0）。
@@ -121,5 +121,6 @@
 | PASS | mobile-430x932 | en | /account | signed-out view | sign-in prompt |
 | PASS | desktop-1280x720 | ja | /account/rls-test | internal page is 404 | 404 |
 | PASS | desktop-1280x720 | ja | /release-readiness | internal page is 404 | 404 |
+| PASS | desktop-1280x720 | ja | /community/local-posts | internal page is 404 | 404 |
 
-## 判定: 114/114 PASS
+## 判定: 115/115 PASS

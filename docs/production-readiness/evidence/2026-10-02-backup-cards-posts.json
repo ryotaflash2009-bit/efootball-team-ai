@@ -1,0 +1,74 @@
+{
+  "evidence": "F-023b local backup, F-041b share-card ratios, F-084 local photo posts (stage 1), F-056 safety mock, CSP blob: images, npm audit fix, Home transient-failure fix, quality gate",
+  "recordedAt": "2026-10-02",
+  "containsSecrets": false,
+  "containsRowDataOrRawHtml": false,
+  "startOriginMain": "b26be9c",
+  "prs": [
+    { "pr": 100, "mergeCommit": "f33e8ce", "scope": "F-023b back up / restore / delete the current data area (hardened: extra keys, __proto__, history caps, area bound to the chosen file)" },
+    { "pr": 101, "mergeCommit": "ceebe44", "scope": "F-041b diagnosis card 1:1 / 9:16 / 16:9 with preview and OS share; CSP img-src blob:" },
+    { "pr": 102, "mergeCommit": "d24ff14", "scope": "F-084 local photo posts (internal page, 404 in production) and F-056 safety mock" },
+    { "pr": 103, "mergeCommit": "f0d9033", "scope": "npm audit fix: brace-expansion; next 15.5.24 -> 15.5.27 (patch)" },
+    { "pr": 104, "mergeCommit": "f701866", "scope": "Home: partial page on a transient reference-data query failure" }
+  ],
+  "verification": {
+    "unitTests": { "files": 276, "tests": 4630, "result": "pass", "note": "npm run verify on each PR; 4629 before PR #104 added 1" },
+    "localBlackBox": {
+      "supabaseAuth": "173/173",
+      "restrictedSignupIncludingInternal404": "115/115",
+      "localBackup": "28/28",
+      "shareCard": "24/24 (preview pixel sizes 1440x1920, 1920x1920, 1440x2560, 2560x1440; object URLs revoked 4/4)",
+      "basePercentileTitlesYourBestGrowth": "115/115",
+      "localPostsAndSafetyMock": "32/32 (GPS-tagged 3024x4032 JPEG stored as 1536x2048 WebP without GPS/EXIF; disguised SVG/EXE/GIF rejected; 0 off-origin and 0 non-GET requests)"
+    },
+    "publicAfterPR104": {
+      "site": "https://efootball-team-ai.vercel.app",
+      "restrictedSignupIncludingLocalPosts404": "115/115",
+      "basePercentileTitlesYourBestGrowth": "115/115",
+      "fullRegression": "steps 568/568, security 18/18, memory OK (growth 1.2), perf 11/14"
+    },
+    "secretScan": "tracked files scanned for Supabase secret keys, Resend/Stripe/AWS/GitHub tokens, private keys, JWTs and DB URLs with passwords: all hits are deliberate test fakes, documented synthetic TLS fixtures, or <placeholder> docs; no real secret",
+    "npmAudit": {
+      "before": { "critical": 0, "high": 2, "moderate": 3 },
+      "after": { "critical": 0, "high": 1, "moderate": 3 },
+      "deferred": [
+        "postcss inside next 15 (high): build-time only on our own CSS; fix needs next 16 (major)",
+        "vitest / @vitest/mocker (moderate): test-only; fix needs vitest 5 (major)"
+      ]
+    }
+  },
+  "fixedDefects": [
+    "Share-card previews were blocked by CSP (img-src lacked blob:) and showed as broken images",
+    "Share-card preview effect re-ran on parent re-render and could revoke the URL mid-load (now keyed on content)",
+    "Safety store shared default arrays across reads, which could leak state between data areas (found by tests)",
+    "Home went to the error boundary on a single transient reference-data query failure (now a partial page with a visible reload notice)"
+  ],
+  "knownIssues": [
+    {
+      "id": "KI-REACT-418-INTERMITTENT",
+      "status": "under observation (not resolved)",
+      "observations": [
+        "2026-10-01: /best-xi warm sample (mobile)",
+        "2026-10-02 final full run: /managers cold load on desktop-1280x720 and mobile-390x844, each with 'Cannot read properties of null (reading parentNode)'; document x-vercel-cache MISS, age 0 (fresh server render, so not CDN deploy skew)"
+      ],
+      "notReproducedIn": "105 reloads (2026-10-01) + 30 cold loads of /managers + 24 loads replaying the perf sequence with the same observer script (2026-10-02)",
+      "codeReview": "no render-time Date/random/locale/storage differences in /best-xi, /managers or the shell; formatDateTime pins the time zone",
+      "next": "keep the black-box diagnostics; if it recurs, capture the DOM around the mismatch with a non-minified build"
+    },
+    {
+      "id": "KI-HOME-TRANSIENT-QUERY",
+      "status": "mitigated (PR #104)",
+      "summary": "two Home server-render failures in one full run (2026-10-02), not reproduced in 60 loads; root cause (likely a transient Supabase query error) can be confirmed by the owner in Vercel logs (reference_data_query_failed)"
+    },
+    {
+      "id": "KI-PERF-SAMPLES",
+      "summary": "single slow samples: / warm 5.1 s once; /managers rows failed because of the #418 errors above, not timings (warm 1.1 s)"
+    },
+    { "id": "KI-TMP-OUTSIDE-WORKSPACE", "status": "unchanged", "summary": "unreferenced by the repository; not read or deleted (CLAUDE.md); owner action listed" }
+  ],
+  "unchanged": ["Production schema / RLS / Storage / reference data", "Supabase SMTP / Site URL / Redirect URLs", "DNS", "signup flags", "community not public (F-124)"],
+  "productionWrites": 0,
+  "productionEmails": 0,
+  "secretsHandled": false,
+  "cost": 0
+}
