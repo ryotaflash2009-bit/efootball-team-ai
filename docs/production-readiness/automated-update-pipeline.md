@@ -132,3 +132,91 @@ Implementation sketch for later:
 - a stricter policy gate (plan must contain only those change kinds);
 - a weekly cap on rows changed;
 - the same Backup, Dry run and post-verify.
+
+## 7. Fully automatic Apply (owner decision 2026-10-03)
+
+"Fully automatic" means: **an update that matches the known safety contract is applied with no human approval; anything else
+stops before Apply** (or falls back to the manual approval route). Deletions, unknown structure changes, failed quality
+gates, Backup problems and diff mismatches are never applied automatically.
+
+**Policy:** `src/lib/reference-data/auto-update/auto-apply-policy.ts` (pure, deterministic).
+- Contract and thresholds: `auto-apply-policy-config.ts`, version `auto-apply-policy/2026-10-03.v1`.
+- Decisions:
+  - `AUTO_APPLY_ELIGIBLE` → automatic route.
+  - `MANUAL_APPLY_REQUIRED` → manual route: the Apply run waits for approval, as before.
+  - `AUTO_APPLY_BLOCKED` → stop; no Apply run.
+  - `INVALID_INPUT` → stop.
+- Every result records:
+  - the contract version, reason codes, threshold results, and allowed/blocked operations;
+  - the expected writes and after count;
+  - the binding SHA, checksums, Backup/Dry-run run IDs and the evaluation time.
+
+| | World (`world_player_cards` + 1 `import_batches` row) | Managers (`managers` + 1 `import_batches` row) |
+|---|---|---|
+| Operations | INSERT; UPDATE of `card_rating`, `maximum_level`, `ovr_max` only | INSERT only |
+| Thresholds | added ≤ 2 % of before; updated ≤ 50 % of before; structural ≤ 100; unknown changed field 0 | added ≤ 10; updated 0 |
+| Allowed manual-review codes | `baseline_missing` (structural, every World apply) | `baseline_missing`, `manager_change` |
+| Outside the contract | manual route | manual route (any UPDATE) |
+
+**Always blocked**, for both datasets:
+- **Binding and freshness:**
+  - main SHA changed, or plan commit ≠ binding;
+  - candidate stale (detection ≠ plan source);
+  - candidate already applied.
+- **Diff content:**
+  - removed, duplicate or invalid > 0;
+  - hard block or schema drift;
+  - unexpected target table;
+  - count drop, or after ≠ before + added;
+  - future timestamp or timestamp regression.
+- **Backup:**
+  - invalid, not encrypted, restore or storage unverified, expired (24 h), or count mismatch.
+- **Dry run:**
+  - failed, re-diff ≠ 0, or checksum mismatch.
+- **Readiness:** post-verifier, Evidence, notification or cleanup not ready.
+- **No changes:** nothing to apply.
+
+**Verified history, as regression fixtures:**
+- World 13,297 → 13,372 (+75, 5,675 updated, 6 structural) and Managers 67 → 69 (+2) are both `AUTO_APPLY_ELIGIBLE`.
+- All rejection fixtures behave as expected (`auto-apply-policy.test.ts`).
+
+### Routes and Environments
+| Route | When | Environment | Approval |
+|---|---|---|---|
+| Manual (fallback) | policy says MANUAL, or any kill switch is not `true`, or a halt Issue is open | `reference-data-production-apply` (unchanged) | owner's Approve and deploy |
+| Automatic | policy `AUTO_APPLY_ELIGIBLE` **and** all three kill switches `true` **and** no open halt Issue | `reference-data-production-apply-automatic` (main only, no reviewer, admin bypass off) | none |
+
+**How the automatic route runs:**
+- The orchestrator dispatches the Apply run with the confirmation `auto-apply-<dataset>-to-production`. The confirmation is used instead of a new input because of the workflow_dispatch input limit.
+- The Apply workflow accepts that confirmation only from `github-actions[bot]`.
+- Before the write step, the job re-checks the kill switches and re-evaluates the policy from the bound runs' artifacts (`auto-apply-check-cli.ts`). If the result is not ELIGIBLE, the job stops before the credential is used.
+
+**The automatic Environment holds only:**
+- `REFERENCE_DATA_APPLY_DB_URL`
+- `REFERENCE_DATA_APPLY_DB_CA_CERT`
+
+These are the write role `reference_data_updater`. There are no Backup, R2, Rollback or Restore credentials.
+
+### After an automatic Apply
+1. The Apply job's own post-verify runs (`applied_verified` / `rollback_required`).
+2. The orchestrator reads `evidence.json` and checks the public site count against the expected after count; it allows up to 5 minutes for caches.
+3. Verdicts:
+   - `AUTO_APPLY_APPLIED_VERIFIED`: summary comment on the update Issue.
+   - `AUTO_APPLY_POST_VERIFY_FAILED` / `AUTO_APPLY_ROLLBACK_REVIEW_REQUIRED`: urgent comment, plus a **halt Issue** (label `reference-data-auto-apply-halt`). New automatic applies stop until the owner closes it.
+4. **No automatic Rollback or Restore, ever.**
+5. Double apply is prevented in three ways:
+   - the orchestrator skips a candidate whose checksum equals the newest successful Apply run's applied-state candidate;
+   - the Plan stops on "no changes";
+   - one production-write concurrency group serializes writes.
+
+### Kill switches and emergency stop (no Secret needed)
+- Repository variables:
+  - `REFERENCE_DATA_AUTO_APPLY_ENABLED`
+  - `REFERENCE_DATA_AUTO_APPLY_WORLD_ENABLED`
+  - `REFERENCE_DATA_AUTO_APPLY_MANAGERS_ENABLED`
+- Only `true` enables the route. Anything else means Plan, Backup and Dry run still run, but the Apply waits for approval.
+- **Emergency stop:** Settings → Secrets and variables → Actions → Variables → set `REFERENCE_DATA_AUTO_APPLY_ENABLED` to `false`. This takes effect from the next run, and also inside a queued automatic Apply job, which re-checks the switches before writing.
+- **Halt:** open any Issue with the `reference-data-auto-apply-halt` label.
+
+### Manual Apply (always available)
+Run the Apply workflow with the normal confirmation (`apply-world-to-production` / `apply-managers-to-production`). It uses the reviewer-gated Environment, as before.
