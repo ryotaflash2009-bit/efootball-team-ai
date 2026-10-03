@@ -29,6 +29,13 @@ import {
   type PlacementAssistAction,
 } from "@/lib/squad/placement-assist";
 import {
+  copyPlacement,
+  pastePlacement,
+  readPlacementClipboard,
+  writePlacementClipboard,
+  type PlacementClipboard,
+} from "@/lib/squad/placement-clipboard";
+import {
   clampCoord,
   inferFreshRole,
   inferPlacementRole,
@@ -170,6 +177,11 @@ export function SquadEditor({
   // 複数選択（F-036）: 選んだ先発だけを整列・均等配置・左右反転する。スカッドには保存しない（画面の状態だけ）。
   const [multiSelect, setMultiSelect] = useState(false);
   const [multiIds, setMultiIds] = useState<string[]>([]);
+  // 配置のコピー（このタブの sessionStorage）。マウント後に読む（SSR と一致させる）。
+  const [placementClip, setPlacementClip] = useState<PlacementClipboard | null>(null);
+  useEffect(() => {
+    setPlacementClip(readPlacementClipboard());
+  }, []);
   /** 配置編集の表示設定（スカッド固有ではない・別 localStorage キー）。 */
   const [prefs, setPrefs] = useState<EditorPreferences>(DEFAULT_EDITOR_PREFERENCES);
   useEffect(() => {
@@ -709,6 +721,36 @@ export function SquadEditor({
     },
     [multiIds, snapshotForUndo, flashToast, tse, fillSe],
   );
+
+  /** 配置のコピー／貼り付け（同じフォーメーションの間だけ・貼り付けは Undo 1 段・自動保存）。 */
+  const doCopyPlacement = useCallback(() => {
+    const cur = squadRef.current;
+    const clip = cur ? copyPlacement(cur) : null;
+    if (!clip || !writePlacementClipboard(clip)) {
+      flashToast(tse("placementCopyFailed"));
+      return;
+    }
+    setPlacementClip(clip);
+    flashToast(fillSe(tse("placementCopiedTemplate"), { formationId: clip.formationId }));
+  }, [flashToast, tse, fillSe]);
+  const doPastePlacement = useCallback(() => {
+    const cur = squadRef.current;
+    const clip = readPlacementClipboard() ?? placementClip;
+    if (!cur || !clip) return;
+    const r = pastePlacement(cur, clip);
+    if (!r.ok) {
+      flashToast(
+        r.reason === "formation_mismatch"
+          ? fillSe(tse("placementPasteMismatchTemplate"), { formationId: clip.formationId })
+          : tse("placementAssistNoChange"),
+      );
+      return;
+    }
+    snapshotForUndo(tse("pastePlacementButton"));
+    setSquad(r.squad);
+    setPosAdjust(null);
+    flashToast(tse("placementPasted"));
+  }, [placementClip, snapshotForUndo, flashToast, tse, fillSe]);
 
   /** 先発配置だけを左右反転（選手・ビルド・ブースター・キャプテン・セットプレー・ベンチは維持）。 */
   const doMirror = useCallback(() => {
@@ -1496,6 +1538,21 @@ export function SquadEditor({
               className="rounded border border-border px-2 py-0.5 text-text-dim hover:border-accent"
             >
               {tse("mirrorPlacementButton")}
+            </button>
+            <button
+              type="button"
+              onClick={doCopyPlacement}
+              className="rounded border border-border px-2 py-0.5 text-text-dim hover:border-accent"
+            >
+              {tse("copyPlacementButton")}
+            </button>
+            <button
+              type="button"
+              disabled={!placementClip}
+              onClick={doPastePlacement}
+              className="rounded border border-border px-2 py-0.5 text-text-dim hover:border-accent disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {tse("pastePlacementButton")}
             </button>
             {hasCustomPositioningNow ? (
               <button

@@ -766,6 +766,12 @@ export interface Dictionary {
     guidesToggleTemplate: string;
     gridToggleTemplate: string;
     mirrorPlacementButton: string;
+    copyPlacementButton: string;
+    pastePlacementButton: string;
+    placementCopiedTemplate: string;
+    placementPasted: string;
+    placementPasteMismatchTemplate: string;
+    placementCopyFailed: string;
     multiSelectToggleTemplate: string;
     multiSelectHint: string;
     multiSelectCountTemplate: string;
@@ -5233,6 +5239,12 @@ const ja: Dictionary = {
     guidesToggleTemplate: "ガイド {state}",
     gridToggleTemplate: "グリッド {state}",
     mirrorPlacementButton: "配置を左右反転",
+    copyPlacementButton: "配置をコピー",
+    pastePlacementButton: "配置を貼り付け",
+    placementCopiedTemplate: "配置をコピーしました（同じフォーメーション {formationId} のスカッドへ貼り付けできます）。",
+    placementPasted: "配置を貼り付けました（選手・ビルド・キャプテン等はそのまま）。",
+    placementPasteMismatchTemplate: "コピーした配置は {formationId} 用です。同じフォーメーションのスカッドにだけ貼り付けできます。",
+    placementCopyFailed: "この環境では配置をコピーできません（ブラウザーの保存領域が使えません）。",
     multiSelectToggleTemplate: "複数選択 {state}",
     multiSelectHint: "ピッチの選手をタップして選びます（もう一度タップで解除）。選んだ選手だけを揃えたり、均等に並べたり、左右反転できます。",
     multiSelectCountTemplate: "選択中: {count} 人",

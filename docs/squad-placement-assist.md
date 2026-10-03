@@ -91,13 +91,23 @@ UI（`SquadEditor` の「配置補助」バー）:
 - 操作の欄に「選択中: N 人」と 5 つの操作・「選択を解除」。選択が足りない操作は無効。
 - 1 回の操作 = Undo 1 段・自動保存。選択は画面の状態だけで、スカッドには保存しない。
 
+## F. 配置のコピー／貼り付け（F-036 の残り、2026-10-04）
+
+`src/lib/squad/placement-clipboard.ts`:
+- 「配置をコピー」: 先発 11 枠の座標（x / y、小数 1 桁）と配置ロールの手動上書きだけを、このタブの sessionStorage
+  （`efootball-team-ai:squad-placement-clipboard:v1`、`squad-placement-clipboard/2026-10-04.v1`）へ保存する。選手・ビルド等は含めない。
+- 「配置を貼り付け」: **同じフォーメーションのスカッドにだけ**写す（枠の ID が一致するので対応づけの規則が要らない）。
+  違うフォーメーションでは「{formationId} 用です」と案内し、何も変えない（推測で枠を対応させない）。
+- 選手がいない枠には roleOverride を写さない（保存時の正規化と同じ）。同じ配置なら no_change。貼り付けは Undo 1 段・自動保存。
+- sessionStorage の値は検証してから使う（版・フォーメーション・枠の ID の重複/欠け・範囲外の座標・不正なロールは拒否）。
+
 ## 未実装（次候補）
 
-- 配置座標だけのコピー／貼り付け（別のスカッドへ）。スカッド間で枠の構成が違うときの対応づけの規則が必要なため見送り。
+- 違うフォーメーションの間の配置の写し（枠の対応づけの規則が必要。本人の判断）。
 
 ## テスト
 
-- `src/lib/squad/placement-assist.test.ts`（8件）・`scripts/black-box-squad-placement-assist.mjs`（16項目・隔離ヘッドレス Chrome で実際に操作）。
+- `src/lib/squad/placement-assist.test.ts`（8件）・`placement-clipboard.test.ts`（5件）・`scripts/black-box-squad-placement-assist.mjs`（隔離ヘッドレス Chrome で実際に操作。コピー／貼り付け・違うフォーメーションの拒否を含む）。
 
 - `src/lib/squad/position-snapping.test.ts`（16件）: スナップ無効時の生座標、Alt 無効化、中央/水平ライン/左右対称、
   横に近すぎる相手の除外、y 閾値外、中央線上の選手は対称候補外、NaN/Infinity/範囲外の clamp、0/100 端、
