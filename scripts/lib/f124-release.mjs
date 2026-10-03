@@ -9,7 +9,7 @@
 export const F124_CHECKS = Object.freeze({
   A: ["autoUpdateTestsPassed", "ciAndCodeqlPassed", "failClosedVerified", "notificationsVerified", "evidenceVerified"],
   B: ["automationEnvironmentMainOnly", "automationSecretNames9", "pipelineVariableTrue", "applyEnvironmentReviewer"],
-  C: ["orchestratedPlanSucceeded", "orchestratedBackupValid", "orchestratedDryRunSucceeded", "applyApprovedByOwner", "applyVerified", "appliedStateUpdated", "publicSiteMatchesAppliedState"],
+  C: ["orchestratedPlanSucceeded", "orchestratedBackupValid", "orchestratedDryRunSucceeded", "applyApprovedByOwner", "applyVerified", "appliedStateUpdated", "publicSiteMatchesAppliedState", "allDatasetsCurrent"],
 });
 
 const RUN_ID = /^[0-9]{1,20}$/;

@@ -1,5 +1,5 @@
 {
-  "_note": "Non-secret checklist for scripts/validate-f124-release.mjs (2026-10-03). Only booleans and run ids. READY still means the owner decides; nothing is opened automatically.",
+  "_note": "Non-secret checklist for scripts/validate-f124-release.mjs (updated 2026-10-03 after the first orchestrated World apply). Only booleans and run ids. READY still means the owner decides; nothing is opened automatically.",
   "checks": {
     "autoUpdateTestsPassed": true,
     "ciAndCodeqlPassed": true,
@@ -7,16 +7,22 @@
     "notificationsVerified": true,
     "evidenceVerified": true,
     "automationEnvironmentMainOnly": true,
-    "automationSecretNames9": false,
+    "automationSecretNames9": true,
     "pipelineVariableTrue": true,
     "applyEnvironmentReviewer": true,
-    "orchestratedPlanSucceeded": false,
-    "orchestratedBackupValid": false,
-    "orchestratedDryRunSucceeded": false,
-    "applyApprovedByOwner": false,
-    "applyVerified": false,
-    "appliedStateUpdated": false,
-    "publicSiteMatchesAppliedState": false
+    "orchestratedPlanSucceeded": true,
+    "orchestratedBackupValid": true,
+    "orchestratedDryRunSucceeded": true,
+    "applyApprovedByOwner": true,
+    "applyVerified": true,
+    "appliedStateUpdated": true,
+    "publicSiteMatchesAppliedState": true,
+    "allDatasetsCurrent": false
   },
-  "evidence": {}
+  "evidence": {
+    "planRunId": "37116813274",
+    "backupRunId": "37118268591",
+    "dryRunRunId": "37118367153",
+    "applyRunId": "37118431576"
+  }
 }
