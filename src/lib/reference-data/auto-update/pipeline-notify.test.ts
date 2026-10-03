@@ -78,3 +78,48 @@ describe("reference-data-pipeline-notify.yml の静的監査", () => {
     expect(runBlocks).not.toMatch(/\$\{\{/);
   });
 });
+
+describe("自動 Apply の通知（2026-10-03）", () => {
+  const policy = { contractVersion: "auto-apply-policy/2026-10-03.v1", decision: "AUTO_APPLY_ELIGIBLE", reasonCodes: [], expectedWrites: "world_player_cards: insert 75, update 5675 (1 transaction); import_batches: 1 audit row; no DELETE/TRUNCATE", expectedAfterCount: 13372, sourceChecksum: "f7206c1ee9e6" + "0".repeat(52), planChecksum: "3d5a9c596ecb" + "0".repeat(52) };
+  const base = { kind: "auto_applied", dataset: "world", applyOutcome: "applied_verified", runs: { plan: "1", backup: "2", dryRun: "3", apply: "4" }, policy, appliedStateCandidate: { entry: { sourceChecksum12: "f7206c1ee9e6", recordCount: 13372 } } };
+
+  it("検証済みは要約だけ（halt なし）", () => {
+    const n = buildPipelineNotification({ ...RUN, source: "orchestrator", conclusion: "success", approval: { ...base, verdict: "AUTO_APPLY_APPLIED_VERIFIED", publicCheck: { expected: 13372, observed: 13372, ok: true } } });
+    expect(n).toMatchObject({ notify: true, halt: false });
+    if (!n.notify) return;
+    expect(n.title).toContain("自動で適用し、検証しました");
+    expect(n.body).toContain("AUTO_APPLY_APPLIED_VERIFIED");
+    expect(n.body).toContain("公開サイト: 13372（一致）");
+    expect(n.body).toContain("applied-state の候補: f7206c1ee9e6・13372 件");
+    expect(n.body).toContain("apply 4");
+  });
+
+  it("事後検証の失敗は緊急の通知と halt（Rollback・Restore は未実施と明記）", () => {
+    const n = buildPipelineNotification({ ...RUN, source: "orchestrator", conclusion: "failure", approval: { ...base, verdict: "AUTO_APPLY_POST_VERIFY_FAILED", publicCheck: { expected: 13372, observed: 13371, ok: false } } });
+    expect(n).toMatchObject({ notify: true, halt: true });
+    if (!n.notify) return;
+    expect(n.title).toContain("【要対応】");
+    expect(n.body).toContain("Rollback・Restore は実行していません");
+    expect(n.body).toContain("不一致");
+  });
+
+  it("手動の承認待ちには shadow の判定と手動の理由を書く", () => {
+    const n = buildPipelineNotification({ ...RUN, source: "orchestrator", conclusion: "success", approval: { kind: "awaiting_approval", dataset: "world", added: 1, updated: 0, removed: 0, runs: { apply: "9" }, autoApplyPolicy: { decision: "MANUAL_APPLY_REQUIRED", reasonCodes: ["unknown_changed_field"] }, route: { automatic: false, why: ["policy_manual_apply_required"] } } });
+    if (!n.notify) throw new Error("expected notify");
+    expect(n.body).toContain("自動 Apply の判定（shadow）: MANUAL_APPLY_REQUIRED（unknown_changed_field）");
+    expect(n.body).toContain("policy_manual_apply_required");
+  });
+
+  it("通知の値は許可した形だけ（URL・山かっこを出さない）", () => {
+    const n = buildPipelineNotification({ ...RUN, source: "orchestrator", conclusion: "success", approval: { ...base, verdict: "AUTO_APPLY_APPLIED_VERIFIED", dataset: "<x>", policy: { ...policy, expectedWrites: "https://evil.example/<x>" }, publicCheck: { ok: true, observed: 1 } } });
+    if (!n.notify) throw new Error("expected notify");
+    expect(n.body).not.toContain("evil.example");
+    expect(n.body).not.toContain("<");
+  });
+
+  it("halt の label は自動 Apply の設定と同じ", async () => {
+    const { HALT_LABEL } = await import("../../../../scripts/lib/reference-data-notify.mjs");
+    const { AUTO_APPLY_POLICY } = await import("./auto-apply-policy-config");
+    expect(HALT_LABEL).toBe(AUTO_APPLY_POLICY.haltIssueLabel);
+  });
+});
