@@ -55,6 +55,7 @@ export function SquadPitch({
   onFreeDrop,
   posAdjustSlotId = null,
   snapContext,
+  multiSelectedSlotIds = null,
 }: {
   slots: SquadSlotResult[];
   selectedSlotId: string | null;
@@ -68,6 +69,8 @@ export function SquadPitch({
   posAdjustSlotId?: string | null;
   /** 配置補助（スナップ・ガイド・グリッド） */
   snapContext?: SquadPitchSnapContext;
+  /** 複数選択モード（F-036）。null 以外のとき、各スロットは選択の切り替えボタンになる（aria-pressed）。 */
+  multiSelectedSlotIds?: readonly string[] | null;
 }) {
   const t = useT();
   const compatTitles = useCompatTitles();
@@ -243,7 +246,9 @@ export function SquadPitch({
         ) : null}
 
         {slots.map((s) => {
-          const selected = s.slotId === selectedSlotId;
+          const multiOn = multiSelectedSlotIds != null;
+          const multiSelected = multiOn && multiSelectedSlotIds.includes(s.slotId);
+          const selected = multiOn ? multiSelected : s.slotId === selectedSlotId;
           const isMoveSource = moveActive && s.slotId === moveSourceSlotId;
           const isMoveTarget = moveActive && s.slotId !== moveSourceSlotId;
           const e = s.entry;
@@ -269,6 +274,7 @@ export function SquadPitch({
                 if (posAdjustSlotId) ev.stopPropagation();
                 onSlotClick(s.slotId);
               }}
+              aria-pressed={multiOn && e ? multiSelected : undefined}
               draggable={!!e && !!onSlotDragStart}
               onDragStart={() => onSlotDragStart?.(s.slotId)}
               onDragEnd={clearPreview}
@@ -315,6 +321,11 @@ export function SquadPitch({
                     className={`absolute right-0 top-0 h-2 w-2 rounded-bl ${COMPAT_DOT[s.compatibility.status]}`}
                     title={compatTitles[s.compatibility.status]}
                   />
+                  {multiSelected ? (
+                    <span className="absolute bottom-0 right-0 rounded-tl bg-accent px-1 text-[9px] font-black text-accent-ink" aria-hidden="true">
+                      ✓
+                    </span>
+                  ) : null}
                   {s.isCaptain ? (
                     <span className="absolute bottom-0 left-0 rounded-tr bg-accent px-1 text-[9px] font-black text-accent-ink">
                       C

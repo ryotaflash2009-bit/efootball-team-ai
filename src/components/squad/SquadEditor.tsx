@@ -23,6 +23,12 @@ import {
   type SquadMoveErrorCode,
 } from "@/lib/squad/moves";
 import {
+  applyPlacementAssist,
+  selectablePlacementIds,
+  PLACEMENT_ASSIST_MIN_SELECTION,
+  type PlacementAssistAction,
+} from "@/lib/squad/placement-assist";
+import {
   clampCoord,
   inferFreshRole,
   inferPlacementRole,
@@ -161,6 +167,9 @@ export function SquadEditor({
   const [posAdjust, setPosAdjust] = useState<string | null>(null);
   const [confirmResetPos, setConfirmResetPos] = useState(false);
   const [confirmMirror, setConfirmMirror] = useState(false);
+  // 複数選択（F-036）: 選んだ先発だけを整列・均等配置・左右反転する。スカッドには保存しない（画面の状態だけ）。
+  const [multiSelect, setMultiSelect] = useState(false);
+  const [multiIds, setMultiIds] = useState<string[]>([]);
   /** 配置編集の表示設定（スカッド固有ではない・別 localStorage キー）。 */
   const [prefs, setPrefs] = useState<EditorPreferences>(DEFAULT_EDITOR_PREFERENCES);
   useEffect(() => {
@@ -679,6 +688,28 @@ export function SquadEditor({
     flashToast(tse("freePositionReset"));
   }, [snapshotForUndo, flashToast, tse]);
 
+  /** 複数選択の操作（F-036）。1 回の操作 = Undo 1 段・自動保存。揃っていれば何もしない。 */
+  const doPlacementAssist = useCallback(
+    (action: PlacementAssistAction, label: string) => {
+      const cur = squadRef.current;
+      if (!cur) return;
+      const ids = selectablePlacementIds(cur, multiIds);
+      const r = applyPlacementAssist(cur, ids, action);
+      if (!r.ok) {
+        flashToast(
+          r.reason === "too_few"
+            ? fillSe(tse("placementAssistMinTemplate"), { action: label, min: String(PLACEMENT_ASSIST_MIN_SELECTION[action]) })
+            : tse("placementAssistNoChange"),
+        );
+        return;
+      }
+      snapshotForUndo(label);
+      setSquad(r.squad);
+      flashToast(fillSe(tse("placementAssistAppliedTemplate"), { action: label, count: String(ids.length) }));
+    },
+    [multiIds, snapshotForUndo, flashToast, tse, fillSe],
+  );
+
   /** 先発配置だけを左右反転（選手・ビルド・ブースター・キャプテン・セットプレー・ベンチは維持）。 */
   const doMirror = useCallback(() => {
     const cur = squadRef.current;
@@ -761,6 +792,13 @@ export function SquadEditor({
 
   const onSlotClick = useCallback(
     (slotId: string) => {
+      // 複数選択モード: 選手が入っている先発だけを選択の切り替えにする（空き枠の追加・移動はしない）
+      if (multiSelect) {
+        if (squad?.slots.some((x) => x.slotId === slotId && x.worldCardId)) {
+          setMultiIds((ids) => (ids.includes(slotId) ? ids.filter((i) => i !== slotId) : [...ids, slotId]));
+        }
+        return;
+      }
       // 移動・交代モード中はスロットを移動先として扱う
       if (moveSource) {
         applyMove(moveSource, { area: "starter", slotId });
@@ -780,7 +818,7 @@ export function SquadEditor({
       if (empty) setPickTarget({ kind: "slot", slotId });
       else setPickTarget(null);
     },
-    [moveSource, applyMove, squad, pendingAdd, pendingAddBuildId, pendingAddBuildInvalid, placeInSlot, clearPendingAdd, flashToast, tse],
+    [multiSelect, moveSource, applyMove, squad, pendingAdd, pendingAddBuildId, pendingAddBuildInvalid, placeInSlot, clearPendingAdd, flashToast, tse],
   );
 
   /** ベンチ枠（選手 or 空き）をクリック。 */
@@ -1441,6 +1479,19 @@ export function SquadEditor({
             </button>
             <button
               type="button"
+              aria-pressed={multiSelect}
+              onClick={() => {
+                setMultiSelect((v) => !v);
+                setMultiIds([]);
+                setMoveSource(null);
+                setPosAdjust(null);
+              }}
+              className={`rounded border px-2 py-0.5 ${multiSelect ? "border-accent bg-accent-soft text-accent" : "border-border text-text-dim"}`}
+            >
+              {fillSe(tse("multiSelectToggleTemplate"), { state: multiSelect ? "ON" : "OFF" })}
+            </button>
+            <button
+              type="button"
               onClick={() => setConfirmMirror(true)}
               className="rounded border border-border px-2 py-0.5 text-text-dim hover:border-accent"
             >
@@ -1457,13 +1508,52 @@ export function SquadEditor({
             ) : null}
           </div>
 
+          {multiSelect ? (
+            <div className="flex flex-col gap-2 rounded-md border border-accent/50 bg-accent/5 p-2 text-xs" data-testid="squad-multi-select">
+              <p className="text-text-dim">{tse("multiSelectHint")}</p>
+              <p aria-live="polite" className="font-semibold text-accent">
+                {fillSe(tse("multiSelectCountTemplate"), { count: String(selectablePlacementIds(squad, multiIds).length) })}
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {(
+                  [
+                    ["align_row", tse("alignRowButton")],
+                    ["align_column", tse("alignColumnButton")],
+                    ["distribute_x", tse("distributeXButton")],
+                    ["distribute_y", tse("distributeYButton")],
+                    ["mirror_selected", tse("mirrorSelectedButton")],
+                  ] as [PlacementAssistAction, string][]
+                ).map(([action, label]) => (
+                  <button
+                    key={action}
+                    type="button"
+                    disabled={selectablePlacementIds(squad, multiIds).length < PLACEMENT_ASSIST_MIN_SELECTION[action]}
+                    onClick={() => doPlacementAssist(action, label)}
+                    className="rounded border border-border px-2 py-1 text-text hover:border-accent disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    {label}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  disabled={multiIds.length === 0}
+                  onClick={() => setMultiIds([])}
+                  className="rounded border border-border px-2 py-1 text-text-dim hover:border-accent disabled:opacity-40"
+                >
+                  {tse("clearSelectionButton")}
+                </button>
+              </div>
+            </div>
+          ) : null}
+
           <SquadPitch
             slots={computed.slots}
             selectedSlotId={selectedSlotId}
             onSlotClick={onSlotClick}
+            multiSelectedSlotIds={multiSelect ? selectablePlacementIds(squad, multiIds) : null}
             moveActive={moveSource != null}
             moveSourceSlotId={moveSource?.area === "starter" ? moveSource.slotId : null}
-            onSlotDragStart={(slotId) => beginMove({ area: "starter", slotId })}
+            onSlotDragStart={multiSelect ? undefined : (slotId) => beginMove({ area: "starter", slotId })}
             onSlotDrop={(slotId) =>
               moveSource ? applyMove(moveSource, { area: "starter", slotId }) : undefined
             }

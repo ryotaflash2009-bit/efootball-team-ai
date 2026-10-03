@@ -766,6 +766,18 @@ export interface Dictionary {
     guidesToggleTemplate: string;
     gridToggleTemplate: string;
     mirrorPlacementButton: string;
+    multiSelectToggleTemplate: string;
+    multiSelectHint: string;
+    multiSelectCountTemplate: string;
+    alignRowButton: string;
+    alignColumnButton: string;
+    distributeXButton: string;
+    distributeYButton: string;
+    mirrorSelectedButton: string;
+    clearSelectionButton: string;
+    placementAssistAppliedTemplate: string;
+    placementAssistNoChange: string;
+    placementAssistMinTemplate: string;
     resetToFormationButton: string;
     pitchCaptionMain: string;
     pitchLegendMatch: string;
@@ -5221,6 +5233,18 @@ const ja: Dictionary = {
     guidesToggleTemplate: "ガイド {state}",
     gridToggleTemplate: "グリッド {state}",
     mirrorPlacementButton: "配置を左右反転",
+    multiSelectToggleTemplate: "複数選択 {state}",
+    multiSelectHint: "ピッチの選手をタップして選びます（もう一度タップで解除）。選んだ選手だけを揃えたり、均等に並べたり、左右反転できます。",
+    multiSelectCountTemplate: "選択中: {count} 人",
+    alignRowButton: "横一列に揃える",
+    alignColumnButton: "縦一列に揃える",
+    distributeXButton: "左右に均等",
+    distributeYButton: "上下に均等",
+    mirrorSelectedButton: "選択を左右反転",
+    clearSelectionButton: "選択を解除",
+    placementAssistAppliedTemplate: "{action}（{count} 人）",
+    placementAssistNoChange: "すでにその配置です。",
+    placementAssistMinTemplate: "{action}は {min} 人以上を選んでください。",
     resetToFormationButton: "フォーメーション位置に戻す",
     pitchCaptionMain:
       "枠をタップして選手を追加・変更。選手カードはピッチ内の任意位置へドラッグでき、位置に応じて配置ロールが自動判定されます。スナップ ON のときは近くのライン・中央・左右対称位置へ弱く吸着します（Alt を押しながらドラッグで一時無効）。",
