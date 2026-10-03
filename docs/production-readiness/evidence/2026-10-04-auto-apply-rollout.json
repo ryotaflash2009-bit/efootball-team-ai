@@ -1,0 +1,25 @@
+{
+  "schema": "efta-evidence/v1",
+  "date": "2026-10-04",
+  "kind": "auto-apply-rollout",
+  "ownerDecision": "2026-10-03: fully automatic Apply for updates that match the known safety contract; everything else stops before Apply",
+  "policyVersion": "auto-apply-policy/2026-10-03.v1",
+  "phaseA": { "status": "passed", "tests": "policy 38, in-job check 4, orchestrator automatic route 10, notifications 5, workflow audits; npm run verify 4756+ passed; PostgreSQL validation unchanged and passing (apply path itself unchanged)" },
+  "phaseB": {
+    "status": "passed after one contract fix",
+    "shadowOnRealRuns": [
+      { "dataset": "world", "planRun": "37116813274", "backupRun": "37118268591", "dryRunRun": "37118367153", "decision": "AUTO_APPLY_ELIGIBLE", "thresholds": { "addRatio": "0.00564 <= 0.02", "updateRatio": "0.426788 <= 0.5", "structural": "6 <= 100", "unknownChangedFields": "0" } },
+      { "dataset": "managers", "planRun": "37128272503", "backupRun": "37128342536", "dryRunRun": "37128444969", "decisionBeforeFix": "AUTO_APPLY_BLOCKED (invalid_count_missing)", "decisionAfterFix": "AUTO_APPLY_ELIGIBLE" }
+    ],
+    "fix": "Managers plan summary now exports invalidCount (the plan already stopped on invalid records; the policy never assumes 0)"
+  },
+  "phaseC": {
+    "automaticEnvironment": { "name": "reference-data-production-apply-automatic", "branches": ["main"], "requiredReviewers": 0, "waitTimer": 0, "canAdminsBypass": false, "secrets": "0 / 2 (owner entry pending)" },
+    "manualEnvironment": "reference-data-production-apply unchanged (required reviewer kept)",
+    "killSwitches": { "REFERENCE_DATA_AUTO_APPLY_ENABLED": "unset until the automatic Environment has its 2 secrets", "REFERENCE_DATA_AUTO_APPLY_WORLD_ENABLED": "unset", "REFERENCE_DATA_AUTO_APPLY_MANAGERS_ENABLED": "unset" },
+    "status": "implemented; enabling waits for the owner's 2 secret entries"
+  },
+  "productionWrites": 0,
+  "rollbackRestore": "never automatic",
+  "secretValuesSeenByClaudeCode": 0
+}
