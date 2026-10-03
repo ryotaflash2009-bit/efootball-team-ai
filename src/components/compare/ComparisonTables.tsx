@@ -8,6 +8,7 @@ import { WORLD_STAT_GROUP_LABELS } from "@/lib/world/stats";
 import type { WorldStatGroup } from "@/lib/world/types";
 const GROUP_LABEL_KEY = { offense: "groupOffense", defense: "groupDefense", physical: "groupPhysical", gk: "groupGk" } as const;
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
+import { localizeLibText } from "@/lib/progression/lib-text-en";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { Badge } from "@/components/ui/Badge";
@@ -56,6 +57,7 @@ export function ComparisonTables({
   const tct = (k: keyof Dictionary["comparisonTables"]) => t("comparisonTables", k);
   const fillCt = (s: string, vars: Record<string, string>) =>
     Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+  const { locale } = useLocale();
   const shortName = useShortName();
   const categoryLabel = (id: string) => t("compareCategory", id as keyof Dictionary["compareCategory"]);
   const n = players.length;
@@ -96,7 +98,7 @@ export function ComparisonTables({
         </p>
         <ul className="mt-1 list-disc pl-4">
           {comparison.warnings.map((w, i) => (
-            <li key={i}>{w}</li>
+            <li key={i}>{localizeLibText(w, locale)}</li>
           ))}
         </ul>
       </div>
@@ -119,7 +121,7 @@ export function ComparisonTables({
             <tbody>
               {comparison.basicInfo.map((row) => (
                 <tr key={row.label} className="border-t border-border/60">
-                  <td className="sticky left-0 z-10 bg-surface px-3 py-1.5 text-text-dim">{row.label}</td>
+                  <td className="sticky left-0 z-10 bg-surface px-3 py-1.5 text-text-dim">{localizeLibText(row.label, locale)}</td>
                   {row.perPlayer.map((v, i) => (
                     <td key={i} className="px-2 py-1.5 text-center">
                       {v ?? "—"}

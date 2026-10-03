@@ -2387,6 +2387,8 @@ export interface Dictionary {
     ariaLabel: string;
   };
   squadTemplatesBoard: {
+    pageTitle: string;
+    pageDescription: string;
     scopeLoadingMessage: string;
     storageUnavailableHeading: string;
     storageUnavailableNote: string;
@@ -4456,6 +4458,233 @@ export interface Dictionary {
     undoReset: string;
     revertShort: string;
     rowAffordance: string;
+  };
+  managerDetail: {
+    unavailableTitle: string;
+    backToList: string;
+    releaseBadgeTemplate: string;
+    unknown: string;
+    sourceBadgeTemplate: string;
+    bestTactic: string;
+    proficiencyTitle: string;
+    proficiencyHint: string;
+    boosterTitle: string;
+    boosterConfirmed: string;
+    boosterUnconfirmed: string;
+    boosterUnconditional: string;
+    boosterKeyUnmapped: string;
+    boosterNone: string;
+    boosterNote: string;
+    linkUpHint: string;
+    centerPieceLabel: string;
+    keyManLabel: string;
+    linkUpNone: string;
+    notInSourceTitle: string;
+    notInSourceValue: string;
+    labelAge: string;
+    labelNationality: string;
+    labelTeam: string;
+    labelRating: string;
+    labelFormation: string;
+    dataSourceTemplate: string;
+    openSource: string;
+  };
+  squadCompareBoard: {
+    startersBenchValueTemplate: string;
+    pageTitle: string;
+    pageDescription: string;
+    pageBackLabel: string;
+    pageLoading: string;
+    tabOverview: string;
+    tabShape: string;
+    tabPlayers: string;
+    tabMetrics: string;
+    tabRoles: string;
+    tabBoosters: string;
+    tabSkills: string;
+    tabWarnings: string;
+    cardFallbackTemplate: string;
+    selectorAriaTemplate: string;
+    selectPlaceholder: string;
+    optionTemplate: string;
+    managerYes: string;
+    managerNo: string;
+    customSuffix: string;
+    updatedTemplate: string;
+    open: string;
+    clearSelection: string;
+    backToList: string;
+    storageUnavailable: string;
+    sideA: string;
+    sideB: string;
+    swapAria: string;
+    swap: string;
+    clearComparison: string;
+    urlNote: string;
+    dupParams: string;
+    needTwo: string;
+    createNew: string;
+    createFromTemplate: string;
+    toList: string;
+    sameSquad: string;
+    notFound: string;
+    andSeparator: string;
+    reselectTemplate: string;
+    selectTwo: string;
+    selectOther: string;
+    loadingAll: string;
+    externalUpdate: string;
+    reload: string;
+    loadingCards: string;
+    diffOnly: string;
+    retryLater: string;
+    commonCards: string;
+    onlyATemplate: string;
+    onlyBTemplate: string;
+    noAutoVerdict: string;
+    formation: string;
+    customParen: string;
+    startersBench: string;
+    manager: string;
+    loadingParen: string;
+    none: string;
+    captain: string;
+    notSet: string;
+    parenTemplate: string;
+    updated: string;
+    warningCount: string;
+    zonesTemplate: string;
+    customYes: string;
+    presetPlacement: string;
+    sameFormation: string;
+    differentFormation: string;
+    roleBreakdownSame: string;
+    zonesFact: string;
+    keyMetrics: string;
+    noMetricDiff: string;
+    metric: string;
+    diffHeader: string;
+    lowerIsCalmer: string;
+    notesSummary: string;
+    placementDiffTitle: string;
+    noPlacementDiff: string;
+    roleChangeTemplate: string;
+    coordDiffTemplate: string;
+    noAreaChange: string;
+    areaChangeTitle: string;
+    fetchFailed: string;
+    registeredTemplate: string;
+    placementSuffixTemplate: string;
+    benchSuffix: string;
+    ovrTemplate: string;
+    buildSuffixTemplate: string;
+    pomConditional: string;
+    playerDetail: string;
+    progression: string;
+    startersBothTemplate: string;
+    noStarterSettingDiff: string;
+    noCommonStarters: string;
+    notePlacementTemplate: string;
+    noteArea: string;
+    noteBuildMode: string;
+    noteSavedBuild: string;
+    noteCaptain: string;
+    noteSetPiece: string;
+    notePom: string;
+    startersOnlyATemplate: string;
+    startersOnlyBTemplate: string;
+    sameNameTitle: string;
+    sameNameNote: string;
+    cardOfA: string;
+    cardOfB: string;
+    benchTitleTemplate: string;
+    benchOrderNote: string;
+    commonWithB: string;
+    onlyABench: string;
+    onlyBBench: string;
+    starterBenchChange: string;
+    partialFetchFail: string;
+    avgMetrics: string;
+    categoryAvgTitle: string;
+    noCategoryDiff: string;
+    diff: string;
+    suitability: string;
+    exactTemplate: string;
+    unresolvedTemplate: string;
+    mismatchTemplate: string;
+    suitabilityNote: string;
+    stateSame: string;
+    stateDifferent: string;
+    stateOnlyA: string;
+    stateOnlyB: string;
+    stateNeither: string;
+    managerTitleTemplate: string;
+    boosterDeltaTemplate: string;
+    confirmedTemplate: string;
+    noConfirmedManagerBoosters: string;
+    noManagerImage: string;
+    captainTitleTemplate: string;
+    nameRoleTemplate: string;
+    captainNote: string;
+    setPieceTitle: string;
+    kind: string;
+    verdict: string;
+    setPieceNote: string;
+    linkUpTitleTemplate: string;
+    linkUpSet: string;
+    notConfigured: string;
+    statusTemplate: string;
+    kindFixed: string;
+    kindFixedProvisional: string;
+    kindConditional: string;
+    kindUnresolved: string;
+    kindOther: string;
+    boostersTitle: string;
+    boostersNote: string;
+    noBoosterDiff: string;
+    noTargetCommonCards: string;
+    selectionTemplate: string;
+    notSelected: string;
+    standardApplied: string;
+    provisionalNote: string;
+    savedBuildsTitle: string;
+    noBuildDiff: string;
+    policyTemplate: string;
+    buildNameTemplate: string;
+    noSavedBuild: string;
+    rulesTemplate: string;
+    deletedRef: string;
+    staleBuild: string;
+    conditionalTrial: string;
+    standardOvrTemplate: string;
+    sharedSkillsTitle: string;
+    skillKindsTemplate: string;
+    bothListTemplate: string;
+    onlyAAllTemplate: string;
+    onlyBAllTemplate: string;
+    skillHoldersTitle: string;
+    skill: string;
+    allStarters: string;
+    skillsNote: string;
+    commonSuitabilityTitle: string;
+    warningsTitleTemplate: string;
+    noWinByWarnings: string;
+    both: string;
+    onlyAShort: string;
+    onlyBShort: string;
+    fetchFailedTitle: string;
+    starterTemplate: string;
+    benchNumberTemplate: string;
+    failedNote: string;
+    miniTitleTemplate: string;
+    miniStartersTemplate: string;
+    miniAriaTemplate: string;
+    miniCaptainSuffix: string;
+    miniCommonSuffix: string;
+    miniOnlyThisSuffix: string;
+    miniLegendCommon: string;
+    miniLegendOnlyThis: string;
+    miniLegendNote: string;
   };
 }
 
@@ -6888,6 +7117,8 @@ const ja: Dictionary = {
     ariaLabel: "フォーメーションを選択",
   },
   squadTemplatesBoard: {
+    pageTitle: "スカッドテンプレート",
+    pageDescription: "フォーメーションや選手配置（自由配置座標を含む）をテンプレートとして保存し、新しいスカッドの雛形にできます。テンプレートはこの端末のブラウザ内（localStorage）にのみ保存され、通常のスカッドとは別に管理されます。",
     scopeLoadingMessage: "アカウント情報を確認しています…",
     storageUnavailableHeading: "この環境ではテンプレートを保存できません",
     storageUnavailableNote: "ブラウザの localStorage が使用できません（プライベートモード等）。",
@@ -8974,6 +9205,233 @@ const ja: Dictionary = {
     ruGrConsumed: "消費: {points}pt",
     ruGrMaxReached: "上限到達",
     ruGrMaxLevel: "上限 Lv{level}",
+  },
+  managerDetail: {
+    unavailableTitle: "監督データが利用できません",
+    backToList: "マネージャー一覧へ戻る",
+    releaseBadgeTemplate: "リリース {date}",
+    unknown: "不明",
+    sourceBadgeTemplate: "ソース {id}",
+    bestTactic: "得意戦術",
+    proficiencyTitle: "戦術適性",
+    proficiencyHint: "数値・バー・順位。色だけに依存しません",
+    boosterTitle: "監督ブースター",
+    boosterConfirmed: "複数ソースで確認済み",
+    boosterUnconfirmed: "効果未確認",
+    boosterUnconditional: "無条件",
+    boosterKeyUnmapped: "・キー未変換",
+    boosterNone: "この監督に能力値ブースターはありません。",
+    boosterNote: "確認済みブースターのみ育成・比較・スカッドの能力値へ適用します。適用順序（育成前 / 後）は未確認です。",
+    linkUpHint: "発動条件は検証中・能力値へは適用しません",
+    centerPieceLabel: "Center Piece 条件",
+    keyManLabel: "Key Man 条件",
+    linkUpNone: "この監督に Link-Up Play はありません。",
+    notInSourceTitle: "ソース非収録（追加調査中）",
+    notInSourceValue: "追加調査中",
+    labelAge: "年齢",
+    labelNationality: "国籍",
+    labelTeam: "チーム",
+    labelRating: "監督レーティング",
+    labelFormation: "フォーメーション",
+    dataSourceTemplate: "データ提供: {source} / 取得日時: {fetchedAt}",
+    openSource: "出典を開く",
+  },
+  squadCompareBoard: {
+    pageTitle: "スカッド比較",
+    pageDescription: "保存済みの通常スカッドを 2 つ選び、フォーメーション・配置・先発 / ベンチ・監督・キャプテン・セットプレー・保存ビルド・ブースター・平均能力値・共通スキル・警告の違いを横並びで確認します。読み取り専用で、既存のスカッドは変更しません。比較対象は URL（?a=&b=）で復元されます。",
+    pageBackLabel: "スカッド一覧へ",
+    pageLoading: "読み込み中…",
+    startersBenchValueTemplate: "{starters}/11・{bench}",
+    tabOverview: "概要",
+    tabShape: "配置",
+    tabPlayers: "選手",
+    tabMetrics: "能力値",
+    tabRoles: "役割",
+    tabBoosters: "ブースター",
+    tabSkills: "スキル / 適性",
+    tabWarnings: "警告",
+    cardFallbackTemplate: "カード {id}",
+    selectorAriaTemplate: "{label}のスカッド",
+    selectPlaceholder: "スカッドを選択…",
+    optionTemplate: "{name}（{formation} / 先発{starters} / ベンチ{bench} / {manager}{custom}）",
+    managerYes: "監督あり",
+    managerNo: "監督なし",
+    customSuffix: " / カスタム配置",
+    updatedTemplate: "更新 {date}",
+    open: "開く",
+    clearSelection: "選択を解除",
+    backToList: "← スカッド一覧へ",
+    storageUnavailable: "この環境ではスカッドを保存・比較できません（localStorage 不可・プライベートモード等）。",
+    sideA: "比較対象A",
+    sideB: "比較対象B",
+    swapAria: "比較対象AとBを入れ替える",
+    swap: "⇄ 入れ替え",
+    clearComparison: "比較を解除",
+    urlNote: "比較URLはこのブラウザ内の保存スカッドを参照します。別端末では同じスカッドを表示できない場合があります。",
+    dupParams: "URL に同じパラメーターが重複しています。最初の値だけを使用します。",
+    needTwo: "比較には 2 つ以上の保存済みスカッドが必要です。",
+    createNew: "新しいスカッドを作成",
+    createFromTemplate: "テンプレートから作成",
+    toList: "スカッド一覧へ",
+    sameSquad: "同じスカッド同士は比較できません。",
+    notFound: "指定されたスカッドが見つかりません（削除済み、または存在しない ID）。",
+    andSeparator: " と ",
+    reselectTemplate: "{sides} を選び直してください。",
+    selectTwo: "比較するスカッドを 2 つ選択してください。",
+    selectOther: "もう 1 つのスカッドを選択してください。",
+    loadingAll: "スカッドと選手データを読み込み中…",
+    externalUpdate: "別のタブでスカッドが更新されました。比較結果が古くなっている可能性があります。",
+    reload: "再読込",
+    loadingCards: "選手データを読み込み中…",
+    diffOnly: "差分のみ表示",
+    retryLater: "時間をおいて再読込してください。",
+    commonCards: "共通カード",
+    onlyATemplate: "Aだけ {n}",
+    onlyBTemplate: "Bだけ {n}",
+    noAutoVerdict: "スカッドの優劣は自動判定しません。数値は「Aの値 / Bの値 / 差」で並べています。",
+    formation: "フォーメーション",
+    customParen: "（カスタム配置）",
+    startersBench: "先発 / ベンチ",
+    manager: "監督",
+    loadingParen: "（取得中）",
+    none: "なし",
+    captain: "キャプテン",
+    notSet: "未設定",
+    parenTemplate: "（{v}）",
+    updated: "更新",
+    warningCount: "警告数",
+    zonesTemplate: "左 {left} / 中央 {center} / 右 {right}",
+    customYes: "カスタム配置あり",
+    presetPlacement: "プリセット配置",
+    sameFormation: "同じフォーメーション ID です。",
+    differentFormation: "フォーメーション ID が異なります。",
+    roleBreakdownSame: " FW/MF/DF/GK の人数構成は同じです（配置座標はミニピッチで確認）。",
+    zonesFact: "左右バランス・中央配置数は事実として並べています（自動評価はしません）。",
+    keyMetrics: "主要指標",
+    noMetricDiff: "差分のある指標はありません。",
+    metric: "指標",
+    diffHeader: "差 (A−B)",
+    lowerIsCalmer: "(少ない方が穏当)",
+    notesSummary: "平均値・比較の注意書き",
+    placementDiffTitle: "共通カードの配置差（先発同士）",
+    noPlacementDiff: "先発で共通するカードの配置差はありません。",
+    roleChangeTemplate: "変化: {a} → {b}・",
+    coordDiffTemplate: "x差 {dx} / y差 {dy}（正規化座標）",
+    noAreaChange: "先発 / ベンチの入れ替わりはありません。",
+    areaChangeTitle: "先発 / ベンチの変化（共通カード）",
+    fetchFailed: "取得失敗",
+    registeredTemplate: "登録 {pos}",
+    placementSuffixTemplate: " / 配置 {role}",
+    benchSuffix: " / ベンチ",
+    ovrTemplate: "表示OVR {shown} / 基礎OVR {base}",
+    buildSuffixTemplate: " / ビルド「{name}」",
+    pomConditional: "PoM/条件指定",
+    playerDetail: "選手詳細",
+    progression: "育成",
+    startersBothTemplate: "先発 — 両方にいる（{n}）",
+    noStarterSettingDiff: "設定差のある共通先発はいません。",
+    noCommonStarters: "共通する先発はいません。",
+    notePlacementTemplate: "配置 {a}→{b}",
+    noteArea: "先発↔ベンチ",
+    noteBuildMode: "育成方針差",
+    noteSavedBuild: "保存ビルド差",
+    noteCaptain: "キャプテン差",
+    noteSetPiece: "セットプレー差",
+    notePom: "Power of Many 指定差",
+    startersOnlyATemplate: "先発 — Aだけ（{n}）",
+    startersOnlyBTemplate: "先発 — Bだけ（{n}）",
+    sameNameTitle: "同名の別カード",
+    sameNameNote: "worldCardId が異なるため共通カードとしては扱いません（確認済みの選手識別子が無いため「同名の別カード」）。",
+    cardOfA: "Aのカード",
+    cardOfB: "Bのカード",
+    benchTitleTemplate: "ベンチ（A {a} / B {b}）",
+    benchOrderNote: "ベンチの並び順が異なります（順序は優劣ではありません）。",
+    commonWithB: "Bと共通",
+    onlyABench: "Aのベンチだけ",
+    onlyBBench: "Bのベンチだけ",
+    starterBenchChange: "先発↔ベンチの変化",
+    partialFetchFail: "一部の選手情報を取得できませんでした（「警告」タブに対象を表示）。保存済みの worldCardId は保持しています。",
+    avgMetrics: "平均・指標",
+    categoryAvgTitle: "カテゴリ平均（単純平均）",
+    noCategoryDiff: "差分のあるカテゴリはありません。",
+    diff: "差",
+    suitability: "適性",
+    exactTemplate: "登録一致 {n}",
+    unresolvedTemplate: "適性未確認 {n}",
+    mismatchTemplate: "不適性の可能性 {n}",
+    suitabilityNote: "副ポジション適性データは未収録です。適性が多い方を自動的に優秀とは判定しません。ポジション別 OVR は推測しません。",
+    stateSame: "同一",
+    stateDifferent: "相違",
+    stateOnlyA: "Aのみ",
+    stateOnlyB: "Bのみ",
+    stateNeither: "両方なし",
+    managerTitleTemplate: "監督（{state}）",
+    boosterDeltaTemplate: "managerBoosterDelta 合計 {n}",
+    confirmedTemplate: "確認済み: {list}",
+    noConfirmedManagerBoosters: "確認済み監督ブースターなし",
+    noManagerImage: "監督画像は表示しません。",
+    captainTitleTemplate: "キャプテン（{state}）",
+    nameRoleTemplate: "{name}（{role}）",
+    captainNote: "キャプテンは役割情報として比較します（能力効果は加算しません）。",
+    setPieceTitle: "セットプレー担当",
+    kind: "種別",
+    verdict: "判定",
+    setPieceNote: "既存キー（CK / FK / PK）のみを比較します。左右 FK・近距離 FK は扱いません。",
+    linkUpTitleTemplate: "Link-Up（{state}）",
+    linkUpSet: "Link-Up 設定あり",
+    notConfigured: "設定なし",
+    statusTemplate: "{name}: {status}（{conf}）",
+    kindFixed: "固定型",
+    kindFixedProvisional: "固定型（推定）",
+    kindConditional: "条件型（Total Package）",
+    kindUnresolved: "未解決",
+    kindOther: "その他",
+    boostersTitle: "fixed booster / Power of Many（共通カード）",
+    boostersNote: "カード付属ブースターの効果は同一カードなら同じです。ここでは主に Power of Many（金色）・Total Package の ユーザー指定段階の違いを比較します。ユーザー指定値は標準値として扱いません。",
+    noBoosterDiff: "指定差のあるブースターはありません。",
+    noTargetCommonCards: "対象の共通カードがありません。",
+    selectionTemplate: " · 指定 {v}",
+    notSelected: "未指定",
+    standardApplied: " · 標準適用",
+    provisionalNote: "「固定型（推定）」= 効果内容は外部照合済みですが、Power of Many である具体的証拠がないため固定型と推定して標準値へ暫定適用しています（「確認済み固定型」ではありません）。",
+    savedBuildsTitle: "保存ビルド（共通カード）",
+    noBuildDiff: "ビルド差のある共通カードはありません。",
+    policyTemplate: "方針 {v}",
+    buildNameTemplate: "ビルド「{name}」",
+    noSavedBuild: "保存ビルドなし",
+    rulesTemplate: "規則 {v}",
+    deletedRef: "参照先ビルドが削除されています（計算は方針のみ）。",
+    staleBuild: "旧規則ビルド（現行規則で再計算）",
+    conditionalTrial: "条件段階の指定あり（試算）",
+    standardOvrTemplate: "標準表示OVR {v}",
+    sharedSkillsTitle: "先発全員が持つ共通スキル",
+    skillKindsTemplate: "{name}: {n} 種",
+    bothListTemplate: "両方: {list}",
+    onlyAAllTemplate: "Aだけ（全先発共通）: {list}",
+    onlyBAllTemplate: "Bだけ（全先発共通）: {list}",
+    skillHoldersTitle: "スキル所有人数（先発）",
+    skill: "スキル",
+    allStarters: "全先発共通",
+    skillsNote: "カード本来のスキルは同じ worldCardId なら同一として扱います。スキル効果からスカッドの優劣は判定しません。",
+    commonSuitabilityTitle: "共通カードの適性",
+    warningsTitleTemplate: "警告（A {a} / B {b}）",
+    noWinByWarnings: "警告数が少ない方を自動的に「勝ち」とはしません。",
+    both: "両方",
+    onlyAShort: "Aだけ",
+    onlyBShort: "Bだけ",
+    fetchFailedTitle: "選手情報を取得できなかったカード",
+    starterTemplate: "先発 {v}",
+    benchNumberTemplate: "ベンチ {n}番",
+    failedNote: "平均・スキル集計からは除外されています。時間をおいて再読込すると再取得します。保存済み worldCardId は削除していません。",
+    miniTitleTemplate: "比較対象{side}: {name}",
+    miniStartersTemplate: "先発 {n}/11",
+    miniAriaTemplate: "比較対象{side}（{name}）の配置。先発 {n} 人。{list}",
+    miniCaptainSuffix: "・キャプテン",
+    miniCommonSuffix: "・共通カード",
+    miniOnlyThisSuffix: "・この側だけ",
+    miniLegendCommon: "共通カード",
+    miniLegendOnlyThis: "この側だけ",
+    miniLegendNote: "「C」= キャプテン。座標は正規化値（ピッチ幅比 0–100）。",
   },
 };
 

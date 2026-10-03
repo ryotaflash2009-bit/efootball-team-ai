@@ -1,4 +1,7 @@
+"use client";
+
 import type { TacticalProficiencies } from "@/lib/managers/types";
+import { useLocale } from "@/lib/i18n/LocaleContext";
 import { TACTICS, tacticTier, TACTIC_BAR, TACTIC_TEXT } from "./tactics";
 
 /**
@@ -14,6 +17,8 @@ export function ProficiencyBar({
   compact?: boolean;
   showRank?: boolean;
 }) {
+  // 戦術名は英名を主に表示し、和名は日本語表示のときだけ添える（英語表示で日本語を出さない）。
+  const { locale } = useLocale();
   const ranked = [...TACTICS]
     .map((t) => ({ ...t, value: proficiencies[t.key] }))
     .filter((t) => t.value != null)
@@ -27,7 +32,7 @@ export function ProficiencyBar({
           const v = proficiencies[t.key];
           const tier = tacticTier(v);
           return (
-            <li key={t.key} title={`${t.en}（${t.ja}）`}>
+            <li key={t.key} title={locale === "ja" ? `${t.en}（${t.ja}）` : t.en}>
               <span className="inline-flex items-center gap-1 rounded bg-surface-2 px-1.5 py-0.5 text-2xs">
                 <span className="text-text-muted">{t.abbr}</span>
                 <span className={`font-bold tabular-nums ${TACTIC_TEXT[tier]}`}>{v ?? "—"}</span>
@@ -50,7 +55,7 @@ export function ProficiencyBar({
             <div>
               <dt className="flex items-baseline gap-1.5 text-sm">
                 <span className="font-medium">{t.en}</span>
-                <span className="text-2xs text-text-muted">{t.ja}</span>
+                {locale === "ja" ? <span className="text-2xs text-text-muted">{t.ja}</span> : null}
                 {showRank && rankMap.has(t.key) ? (
                   <span className="text-2xs text-text-muted">#{rankMap.get(t.key)}</span>
                 ) : null}
@@ -69,11 +74,13 @@ export function ProficiencyBar({
 
 /** 略称の凡例。 */
 export function TacticsLegend() {
+  const { locale } = useLocale();
   return (
     <p className="flex flex-wrap gap-x-3 gap-y-1 text-2xs text-text-muted">
       {TACTICS.map((t) => (
         <span key={t.key}>
-          <span className="font-semibold text-text-dim">{t.abbr}</span> {t.en}（{t.ja}）
+          <span className="font-semibold text-text-dim">{t.abbr}</span> {t.en}
+          {locale === "ja" ? `（${t.ja}）` : ""}
         </span>
       ))}
     </p>

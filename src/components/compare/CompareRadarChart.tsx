@@ -2,7 +2,8 @@
 
 import type { ComparisonRadarData, RadarMode } from "@/lib/comparison/ability-radar";
 import { radarPointForAxis } from "@/lib/comparison/ability-radar";
-import { useT } from "@/lib/i18n/LocaleContext";
+import { useT, useLocale } from "@/lib/i18n/LocaleContext";
+import { localizeLibText } from "@/lib/progression/lib-text-en";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 
 function useRadarModeLabels(): Record<RadarMode, string> {
@@ -94,6 +95,7 @@ export function CompareRadarChart({
 }) {
   const t = useT();
   const tcr = (k: keyof Dictionary["compareRadarChart"]) => t("compareRadarChart", k);
+  const { locale } = useLocale();
   const fillCr = (s: string, vars: Record<string, string>) =>
     Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
   const RADAR_MODE_LABEL = useRadarModeLabels();
@@ -278,13 +280,13 @@ export function CompareRadarChart({
       <figcaption className="text-[9px] leading-tight text-text-muted">
         {data.notes.map((n, i) => (
           <span key={i} className="block">
-            {n}
+            {localizeLibText(n, locale)}
           </span>
         ))}
         {hasManagerAny ? <span className="block">{tcr("managerNote")}</span> : null}
         {data.warnings.map((w, i) => (
           <span key={`w${i}`} className="block text-warning">
-            {w}
+            {localizeLibText(w, locale)}
           </span>
         ))}
       </figcaption>

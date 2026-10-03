@@ -7,6 +7,33 @@ import { UNSUPPORTED_RULES_EN } from "./rule-registry-en";
  * 漏れは lib-text-en.test.ts が対象ファイルの日本語リテラルを読み取って検出する。
  */
 const FIXED_EN: Record<string, string> = {
+  // comparison/ability-radar.ts・comparison/build-comparison.ts（選手比較の注記・基本情報の項目名。2026-10-04）
+  "基礎": "Base",
+  "育成後": "Progressed",
+  "標準": "Standard",
+  "条件反映後": "With conditions applied",
+  "実験": "Experimental",
+  "一部カテゴリの能力値を取得できませんでした（該当軸は代替表で「—」・グラフは 0 として描画）。":
+    "Some category values could not be retrieved (shown as “—” in the alternative table and drawn as 0 in the chart).",
+  "ゲーム公式の総合値、ポジション別 OVR、AI 評価ではありません。": "This is not the game's official overall rating, a position-specific OVR or an AI rating.",
+  "正確な各能力値は下の 26 能力値表で確認できます。": "See the 26-ability table below for exact values.",
+  "カテゴリ合計・平均・総合は単純計算です（eFootball の公式カテゴリ重み・総合評価とは異なります）。":
+    "Category totals, averages and overall values are simple calculations (they differ from eFootball's official category weights and overall ratings).",
+  "カードタイプ": "Card type",
+  "登録ポジション": "Registered position",
+  "基礎OVR": "Base OVR",
+  "最大OVR": "Max OVR",
+  "最大レベル": "Max level",
+  "攻撃プレースタイル": "Attacking playing style",
+  "守備プレースタイル": "Defensive playing style",
+  "国籍": "Nationality",
+  "地域": "Region",
+  "リーグ": "League",
+  "チーム": "Team",
+  "年齢": "Age",
+  "身長": "Height",
+  "体重": "Weight",
+  "利き足": "Preferred foot",
   // calculate-player-booster.ts
   "このカードの数値IDは付属ブースター対応表（eFootball World の個別選手ページ由来）に含まれていません。名称を解決できないため能力値へは適用していません。":
     "This card's numeric ID is not in the attached-booster table (from eFootball World player pages). The name cannot be resolved, so it is not applied to abilities.",
@@ -83,6 +110,8 @@ const FIXED_EN: Record<string, string> = {
 type Rule = [RegExp, (m: RegExpMatchArray, locale: Locale) => string];
 
 const PATTERNS: Rule[] = [
+  [/^能力値グラフは、現在選択している能力値モード（(.+)）のカテゴリ単純平均を表示しています。$/, (m) => `The ability chart shows simple category averages for the selected ability mode (${FIXED_EN[m[1]] ?? m[1]}).`],
+  [/^能力値が 99 を超える系列があります（目盛り上限を (.+) に拡張して描画・正確値は代替表と 26 能力値表を参照）。$/, (m) => `Some series exceed 99 (the scale is extended to ${m[1]}; see the alternative table and the 26-ability table for exact values).`],
   [/^監督「(.*)」のブースターを適用しました（対象能力へ \+N・複数ソースで確認済み）。$/, (m) => `Applied manager "${m[1]}" boosters (+N to target abilities, confirmed in multiple sources).`],
   [/^監督「(.*)」の一部ブースターのみ適用（未確認の効果は適用していません）。$/, (m) => `Applied only some of manager "${m[1]}" boosters (unconfirmed effects are not applied).`],
   [/^監督「(.*)」のブースター効果は未確認のため適用していません。$/, (m) => `Manager "${m[1]}" booster effects are unconfirmed, so they are not applied.`],
