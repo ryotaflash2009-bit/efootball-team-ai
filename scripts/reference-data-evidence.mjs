@@ -40,7 +40,7 @@ function main(env) {
   if (!work || !outDir) throw new Error("evidence_paths_missing");
   const dataset = env.EVIDENCE_DATASET === "world" ? "world" : "managers";
   const inputs = ["plan", "backup", "dry-run", "apply"].flatMap((d) => hashDir(work, d)).concat(
-    readdirSync(work).filter((n) => /^facts-[a-z-]+\.json$|^plan-runs\.json$/.test(n)).sort().map((n) => ({ path: n, sha256: sha256(path.join(work, n)) })),
+    (existsSync(work) ? readdirSync(work) : []).filter((n) => /^facts-[a-z-]+\.json$|^plan-runs\.json$/.test(n)).sort().map((n) => ({ path: n, sha256: sha256(path.join(work, n)) })),
   );
   const outputs = hashDir(work, "out");
   const summaryPath = env.EVIDENCE_SUMMARY_PATH ?? "";
@@ -59,7 +59,7 @@ function main(env) {
   if (candidate) writeFileSync(path.join(outDir, "applied-state.candidate.json"), `${JSON.stringify(candidate, null, 2)}\n`, { encoding: "utf8", mode: 0o600 });
   const lines = [
     "### Evidence",
-    `- outcome: \`${evidence.outcome}\` / mode: \`${evidence.mode}\` / dataset: \`${evidence.dataset}\``,
+    `- job: \`${evidence.jobStatus ?? "-"}\` / outcome: \`${evidence.outcome}\` / mode: \`${evidence.mode}\` / dataset: \`${evidence.dataset}\``,
     `- run: ${evidence.runId} (attempt ${evidence.runAttempt}) / commit: ${evidence.commitSha?.slice(0, 12) ?? "-"} / actor: ${evidence.actor ?? "-"} / approver: ${evidence.approvedBy ?? "-"}`,
     `- inputs: ${evidence.inputs.length} files / outputs: ${evidence.outputs.length} files`,
     `- applied-state candidate: ${candidate ? `${candidate.dataset} ${candidate.entry.sourceChecksum12} (${candidate.entry.recordCount})` : "none"}`,

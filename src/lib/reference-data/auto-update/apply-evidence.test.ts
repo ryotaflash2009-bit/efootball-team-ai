@@ -100,6 +100,25 @@ describe("Production apply・Backup workflow の main 限定と承認者の記�
     expect(step).not.toMatch(/secrets\./);
   });
 
+  it("secret の確認などで Checkout の前に止まっても Evidence を作る（Evidence 用の Checkout だけを行う。2026-10-03）", () => {
+    const code = strip(APPLY);
+    expect(code).toMatch(/- name: Checkout\n\s+id: checkout\n\s+uses: actions\/checkout@v4/);
+    const fallback = code.indexOf("- name: Checkout for the Evidence step (only after an early stop)");
+    expect(fallback).toBeGreaterThan(code.indexOf("- name: Run the selected mode"));
+    expect(fallback).toBeLessThan(code.indexOf("- name: Build the machine-readable Evidence"));
+    const step = code.slice(fallback, code.indexOf("- name: Build the machine-readable Evidence"));
+    expect(step).toContain("if: ${{ always() && steps.checkout.outcome != 'success' }}");
+    expect(step).not.toMatch(/secrets\.|run:/);
+    expect(code).toContain("EVIDENCE_JOB_STATUS: ${{ job.status }}");
+  });
+
+  it("CLI の前に止まった run は job=failure・outcome=no_summary・Production へは書いていない", () => {
+    const { evidence, candidate } = buildApplyEvidence({ env: { ...ENV, EVIDENCE_MODE: "plan", EVIDENCE_JOB_STATUS: "failure" }, summary: undefined, inputs: [], outputs: [], now: "t" });
+    expect(evidence).toMatchObject({ jobStatus: "failure", outcome: "no_summary", productionWritten: false, approvedBy: null });
+    expect(candidate).toBeNull();
+    expect(buildApplyEvidence({ env: { ...ENV, EVIDENCE_JOB_STATUS: "weird" }, summary: verified, inputs: [], outputs: [], now: "t" }).evidence.jobStatus).toBeNull();
+  });
+
   it("Evidence は always() で作り 90 日保存し、Secret を渡さない", () => {
     const code = strip(APPLY);
     const step = code.slice(code.indexOf("- name: Build the machine-readable Evidence"), code.indexOf("- name: Upload the Evidence"));

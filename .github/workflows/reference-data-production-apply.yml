@@ -203,6 +203,7 @@ jobs:
           fi
 
       - name: Checkout
+        id: checkout
         uses: actions/checkout@v4
 
       - name: Set up Node.js
@@ -416,9 +417,16 @@ jobs:
       # Machine-readable Evidence for every mode (no secrets: only allowed shapes of run/commit/actor/approver,
       # mode, dataset, outcome and the sha256 of each input/output file). After a verified apply it also writes
       # the applied-state candidate used by the Evidence PR. Never changes the job result.
+      # When the job stopped before Checkout (for example at the secret check), fetch the repository only to run
+      # the Evidence script. No secret is referenced; nothing else runs.
+      - name: Checkout for the Evidence step (only after an early stop)
+        if: ${{ always() && steps.checkout.outcome != 'success' }}
+        uses: actions/checkout@v4
+
       - name: Build the machine-readable Evidence
         if: always()
         env:
+          EVIDENCE_JOB_STATUS: ${{ job.status }}
           EVIDENCE_MODE: ${{ inputs.mode }}
           EVIDENCE_DATASET: ${{ inputs.dataset }}
           EVIDENCE_WORK_DIR: ${{ runner.temp }}/stage4
