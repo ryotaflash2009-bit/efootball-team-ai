@@ -20,7 +20,6 @@
  * 「認証確認中」へ巻き戻してしまう不具合の原因になるため、単一の共有購読へ統一する。
  */
 import { useSyncExternalStore } from "react";
-import { getSupabaseBrowserClient } from "./client";
 
 export type AuthSessionState =
   | { status: "unconfigured" }
@@ -47,8 +46,18 @@ function setState(next: AuthSessionState): void {
 function ensureStarted(): void {
   if (started) return;
   started = true;
+  // Supabase のクライアント（@supabase/ssr・supabase-js）は動的 import で後から読み込む（2026-10-04）。
+  // 全画面の殻（ヘッダーのアカウント導線・保存領域の解決）が使うため、静的 import だと
+  // ログイン不要の画面にも全ページの初回 JS として載っていた。読み込みの間は "loading" のまま（従来と同じ表示）。
+  import("./client")
+    .then(({ getSupabaseBrowserClient }) => startWithClient(getSupabaseBrowserClient()))
+    .catch(() => {
+      // chunk の取得に失敗した場合も読み込み中で止めず、安全側（未ログイン扱い）にする。
+      setState({ status: "unauthenticated" });
+    });
+}
 
-  const supabase = getSupabaseBrowserClient();
+function startWithClient(supabase: ReturnType<typeof import("./client").getSupabaseBrowserClient>): void {
   if (!supabase) {
     setState({ status: "unconfigured" });
     return;

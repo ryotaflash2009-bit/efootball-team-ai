@@ -8,7 +8,7 @@ import {
   normalizeLocale,
   type Locale,
 } from "./locale";
-import { dictionaryOf, translate } from "./translate";
+import { dictionaryOf, hasDictionary, loadDictionary, translate } from "./translate";
 import type { Dictionary } from "./dictionaries/ja";
 
 /**
@@ -56,10 +56,6 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     setLocaleState(detected);
   }, []);
 
-  useEffect(() => {
-    document.documentElement.lang = locale;
-  }, [locale]);
-
   const setLocale = useCallback((next: Locale) => {
     const safe = normalizeLocale(next);
     setLocaleState(safe);
@@ -70,15 +66,36 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // 英語の辞書は後から読み込む。読み込みが終わるまでは ja のまま表示し、終わったら切り替える
+  // （一部だけ英語になる中間の表示を出さない）。
+  const [loadedTick, setLoadedTick] = useState(0);
+  useEffect(() => {
+    if (hasDictionary(locale)) return;
+    let alive = true;
+    void loadDictionary(locale).then(() => {
+      if (alive) setLoadedTick((n) => n + 1);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [locale]);
+  const effectiveLocale: Locale = hasDictionary(locale) ? locale : DEFAULT_LOCALE;
+
+  useEffect(() => {
+    document.documentElement.lang = effectiveLocale;
+  }, [effectiveLocale]);
+
   const value = useMemo<LocaleContextValue>(() => {
-    const dictionary = dictionaryOf(locale);
+    const dictionary = dictionaryOf(effectiveLocale);
     return {
-      locale,
+      locale: effectiveLocale,
       setLocale,
       dictionary,
-      t: (namespace, key) => translate(locale, namespace, key),
+      t: (namespace, key) => translate(effectiveLocale, namespace, key),
     };
-  }, [locale, setLocale]);
+    // loadedTick: 辞書の読み込み完了で再計算する
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [effectiveLocale, setLocale, loadedTick]);
 
   return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>;
 }
