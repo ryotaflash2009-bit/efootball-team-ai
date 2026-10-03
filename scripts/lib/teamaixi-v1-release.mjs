@@ -18,6 +18,7 @@ export function checkRepo(files) {
   const has = (k) => typeof files[k] === "string";
   if (!has("layout") || !/title: "TeamAIXI"/.test(files.layout)) problems.push("brand_title_missing");
   if (!has("layout") || !/SITE_ROBOTS_METADATA/.test(files.layout)) problems.push("noindex_metadata_missing");
+  if (has("layout") && /openGraph:|alternates:/.test(files.layout)) problems.push("og_or_canonical_with_noindex");
   for (const d of ["ja", "en"]) {
     const s = files[`dict_${d}`] ?? "";
     if (/eFootball Team AI/.test(s)) problems.push(`old_brand_in_dictionary:${d}`);
@@ -58,6 +59,7 @@ export async function checkLive(fetchText, appliedState) {
   if (!/noindex/i.test(h["x-robots-tag"] ?? "")) problems.push("x_robots_tag_missing");
   if (!/TeamAIXI/.test(home.body ?? "")) problems.push("brand_not_on_home");
   if (/eFootball Team AI/.test(home.body ?? "")) problems.push("old_brand_on_home");
+  if (/rel="canonical"|property="og:/.test(home.body ?? "")) problems.push("og_or_canonical_on_home");
   if (!/content-security-policy/i.test(Object.keys(h).join(" "))) problems.push("csp_missing");
   if ((h["x-content-type-options"] ?? "") !== "nosniff") problems.push("nosniff_missing");
   if (!/DENY|SAMEORIGIN/i.test(h["x-frame-options"] ?? "") && !/frame-ancestors/i.test(h["content-security-policy"] ?? "")) problems.push("frame_protection_missing");
