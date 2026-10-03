@@ -4,7 +4,7 @@ import { worldCardIdSchema } from "@/lib/world/schemas";
 import { BUILD_ID_RE } from "@/lib/squad/types";
 
 export const metadata = {
-  title: "スカッド | eFootball Team AI",
+  title: "スカッド | TeamAIXI",
 };
 
 export default async function SquadsPage({

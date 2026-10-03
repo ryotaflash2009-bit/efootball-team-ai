@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 export const dynamic = "force-static";
 
 export const metadata = {
-  title: "スカッド比較 | eFootball Team AI",
+  title: "スカッド比較 | TeamAIXI",
 };
 
 export default function SquadComparePage() {

@@ -4,7 +4,7 @@ import { BuildInventoryView } from "@/components/progression/BuildInventoryView"
 export const dynamic = "force-static";
 
 export const metadata = {
-  title: "保存ビルド分析 | eFootball Team AI",
+  title: "保存ビルド分析 | TeamAIXI",
 };
 
 export default function BuildInventoryPage() {

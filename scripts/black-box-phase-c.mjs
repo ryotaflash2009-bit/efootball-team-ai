@@ -51,7 +51,7 @@ async function main() {
 
   {
     const r = await get("/");
-    record("ホームが表示される", r.status === 200 && /eFootball Team AI/.test(r.body), `HTTP ${r.status}`);
+    record("ホームが表示される", r.status === 200 && /TeamAIXI/.test(r.body), `HTTP ${r.status}`);
   }
   {
     const r = await get("/players");

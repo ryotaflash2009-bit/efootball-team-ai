@@ -103,7 +103,7 @@ describe("認証メールテンプレート（HTML・プレーンテキスト）
 
   it("件名: ブランド名・日英・短い・改行なし（ヘッダーインジェクション防止）・過剰な宣伝表現なし", () => {
     for (const { subject } of subjects) {
-      expect(subject).toContain("eFootball Team AI");
+      expect(subject).toContain("TeamAIXI");
       expect(subject).toMatch(/[぀-ヿ]/);
       expect(subject).toMatch(/[A-Za-z]+ [a-z]+/);
       expect(subject.length).toBeLessThanOrEqual(60);

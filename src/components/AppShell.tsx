@@ -60,7 +60,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-accent text-sm font-black leading-none text-accent-ink">
               27
             </span>
-            {!collapsed ? <span className="text-sm font-bold tracking-wide">Team AI</span> : null}
+            {!collapsed ? <span className="text-sm font-bold tracking-wide">TeamAIXI</span> : null}
           </Link>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto">

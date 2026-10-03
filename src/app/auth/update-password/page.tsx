@@ -2,7 +2,7 @@ import { PageContainer } from "@/components/ui/PageContainer";
 import { UpdatePasswordView } from "@/components/auth/UpdatePasswordView";
 
 export const metadata = {
-  title: "新しいパスワードを設定 | eFootball Team AI",
+  title: "新しいパスワードを設定 | TeamAIXI",
   description: "新しいパスワードを設定します（技術検証段階）。",
 };
 

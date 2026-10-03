@@ -32,13 +32,13 @@ const CONFIGURED_SUPPORT_EMAIL = "efootballteamAIsuportteam@outlook.jp";
 const COMPARISON_KEY = "efootball-team-ai:squad-comparison:v1";
 
 const PUBLIC_PAGES = [
-  { path: "/about", jaTitle: "サービス概要 | eFootball Team AI", jaH1: "サービス概要" },
-  { path: "/terms", jaTitle: "利用規約(草案) | eFootball Team AI", jaH1: "利用規約(草案)" },
-  { path: "/privacy", jaTitle: "プライバシーポリシー(草案) | eFootball Team AI", jaH1: "プライバシーポリシー(草案)" },
-  { path: "/disclaimer", jaTitle: "免責事項 | eFootball Team AI", jaH1: "免責事項" },
-  { path: "/data-management", jaTitle: "データ管理 | eFootball Team AI", jaH1: "データ管理" },
-  { path: "/support", jaTitle: "問い合わせ | eFootball Team AI", jaH1: "問い合わせ" },
-  { path: "/release-readiness", jaTitle: "公開準備状況 | eFootball Team AI", jaH1: "公開準備状況" },
+  { path: "/about", jaTitle: "サービス概要 | TeamAIXI", jaH1: "サービス概要" },
+  { path: "/terms", jaTitle: "利用規約 | TeamAIXI", jaH1: "利用規約" },
+  { path: "/privacy", jaTitle: "プライバシーポリシー | TeamAIXI", jaH1: "プライバシーポリシー" },
+  { path: "/disclaimer", jaTitle: "免責事項 | TeamAIXI", jaH1: "免責事項" },
+  { path: "/data-management", jaTitle: "データ管理 | TeamAIXI", jaH1: "データ管理" },
+  { path: "/support", jaTitle: "問い合わせ | TeamAIXI", jaH1: "問い合わせ" },
+  { path: "/release-readiness", jaTitle: "公開準備状況 | TeamAIXI", jaH1: "公開準備状況" },
 ];
 
 const results = [];

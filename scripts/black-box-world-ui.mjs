@@ -249,7 +249,7 @@ async function main() {
 
   // ---- 既存機能の回帰 ----
   const home = await http("/");
-  record("回帰: ホーム 200", home.status === 200 && /eFootball Team AI/.test(home.body), `HTTP ${home.status}`);
+  record("回帰: ホーム 200", home.status === 200 && /TeamAIXI/.test(home.body), `HTTP ${home.status}`);
   record("回帰: ホームにサイドメニュー", /プレイヤー/.test(home.body) && /マネージャー/.test(home.body), "");
   for (const legacy of await checkLegacySampleDetail(BASE, 2)) record(legacy.name, legacy.pass, legacy.detail);
   const oldApi = await json("/api/players?q=messi&sort=ovr_desc&limit=5");

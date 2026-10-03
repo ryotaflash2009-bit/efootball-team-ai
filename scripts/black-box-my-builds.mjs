@@ -488,7 +488,7 @@ async function main() {
 
   // 4. 既存機能の回帰
   const home = await get("/");
-  record("回帰: ホーム 200", home.status === 200 && /eFootball Team AI/.test(home.text), "");
+  record("回帰: ホーム 200", home.status === 200 && /TeamAIXI/.test(home.text), "");
   const players = await get("/players");
   record("回帰: プレイヤー一覧 200 + 詳細リンク", players.status === 200 && /\/players\/world\/\d+/.test(players.body), "");
   const detail = await get(`/players/world/${MESSI}`);

@@ -10,8 +10,8 @@ export const dynamic = "force-dynamic";
 export function generateMetadata(): Metadata {
   if (!areInternalPagesVisible()) notFound();
   return {
-    title: "公開準備状況 | eFootball Team AI",
-    description: "eFootball Team AIの現在の提供段階と、公開前に必要な残作業をまとめたページです。",
+    title: "公開準備状況 | TeamAIXI",
+    description: "TeamAIXIの現在の提供段階と、公開前に必要な残作業をまとめたページです。",
     robots: { index: false, follow: false },
   };
 }

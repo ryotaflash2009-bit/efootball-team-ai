@@ -24,7 +24,7 @@ const P = (o: number, attack: number | null, d: string): SquadDiagnosisSharePayl
 });
 
 const TEXTS: CompareImageTexts = {
-  serviceName: "eFootball Team AI", title: "改善前後の比較", before: "改善前", after: "改善後", overall: "総合評価",
+  serviceName: "TeamAIXI", title: "改善前後の比較", before: "改善前", after: "改善後", overall: "総合評価",
   trend: { improved: "改善", worsened: "悪化", unchanged: "変化なし", not_comparable: "比較不可" },
   notRated: "判定対象外", summary: "改善 1・悪化 0・変化なし 6・比較不可 1", disclaimer: "差だけを示します。原因は判定していません。",
   categoryLabel: (id) => `cat:${id}`,

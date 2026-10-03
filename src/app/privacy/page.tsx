@@ -4,8 +4,8 @@ import { PrivacyView } from "@/components/public-info/PrivacyView";
 export const dynamic = "force-static";
 
 export const metadata = {
-  title: "プライバシーポリシー(草案) | eFootball Team AI",
-  description: "eFootball Team AIが現在取り扱うデータと保存場所についての説明(ベータ公開準備用の草案)です。",
+  title: "プライバシーポリシー | TeamAIXI",
+  description: "TeamAIXI v1.0 が扱うデータ・保存場所・外部送信についての説明です。",
 };
 
 export default function PrivacyPage() {

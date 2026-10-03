@@ -4,7 +4,7 @@ import { PageContainer } from "@/components/ui/PageContainer";
 export const dynamic = "force-static";
 
 export const metadata = {
-  title: "AIベスト11 | eFootball Team AI",
+  title: "AIベスト11 | TeamAIXI",
 };
 
 export default function BestXiPage() {

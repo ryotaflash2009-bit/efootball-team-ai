@@ -186,7 +186,7 @@ async function main() {
 
   // 11. 既存機能の回帰
   const home = await get("/");
-  record("回帰: ホーム 200 + サイドメニュー", home.status === 200 && /eFootball Team AI/.test(home.body), "");
+  record("回帰: ホーム 200 + サイドメニュー", home.status === 200 && /TeamAIXI/.test(home.body), "");
   record("回帰: プレイヤー一覧 200 + 総件数 + 詳細リンク", listPage.status === 200 && /人の選手/.test(listPage.body) && /\/players\/world\/\d+/.test(listPage.body), "");
   const wja = await json(`/api/world/players?q=${encodeURIComponent("メッシ")}&pageSize=5`);
   record("回帰: World 日本語検索", wja.status === 200 && wja.data?.totalCount > 0, "");

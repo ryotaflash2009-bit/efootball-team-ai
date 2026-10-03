@@ -5,7 +5,7 @@ import { DiagnosisHistoryView } from "@/components/squad/DiagnosisHistoryView";
 export const dynamic = "force-static";
 
 export const metadata = {
-  title: "診断履歴 | eFootball Team AI",
+  title: "診断履歴 | TeamAIXI",
   description: "このブラウザーに保存したスカッド診断の履歴です。",
 };
 

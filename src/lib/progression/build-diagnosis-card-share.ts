@@ -10,7 +10,7 @@
  * - 同じ入力からは常に同じ結果を返す(Math.random・現在日時分岐なし。ファイル名も日時を含めない)。
  */
 
-export const BUILD_DIAGNOSIS_SHARE_SERVICE_NAME = "eFootball Team AI";
+export const BUILD_DIAGNOSIS_SHARE_SERVICE_NAME = "TeamAIXI";
 
 export type ImageOrientation = "portrait" | "landscape";
 export type ImageMode = "normal" | "harsh";

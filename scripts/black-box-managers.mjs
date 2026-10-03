@@ -131,7 +131,7 @@ async function main() {
   record("統合検算: Messi の基礎 Defensive Awareness に Conte の +1 を足すと最終値", typeof baseDA === "number" && conteBoost === 1 && Math.min(99, baseDA + 1) >= baseDA, `base=${baseDA} +${conteBoost}`);
 
   // 9. 既存機能の回帰（画面 / API のみ）
-  record("回帰: ホーム 200 + サイドメニュー", home.status === 200 && /eFootball Team AI/.test(home.body), "");
+  record("回帰: ホーム 200 + サイドメニュー", home.status === 200 && /TeamAIXI/.test(home.body), "");
   const players = await get("/players");
   record("回帰: プレイヤー一覧 200 + 総件数 + 詳細リンク", players.status === 200 && /人の選手/.test(players.body) && /\/players\/world\/\d+/.test(players.body), "");
   const wja = await json(`/api/world/players?q=${encodeURIComponent("メッシ")}&pageSize=5`);

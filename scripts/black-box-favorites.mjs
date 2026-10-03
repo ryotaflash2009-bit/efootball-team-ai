@@ -143,7 +143,7 @@ async function main() {
 
   // 8. 既存機能の回帰
   const home = await get("/");
-  record("回帰: ホーム 200", home.status === 200 && /eFootball Team AI/.test(home.text), "");
+  record("回帰: ホーム 200", home.status === 200 && /TeamAIXI/.test(home.text), "");
   record("回帰: プレイヤー一覧 200 + 詳細リンク", players.status === 200 && /\/players\/world\/\d+/.test(players.body), "");
   const cmp = await get(`/compare?ids=${MESSI},${CANNAVARO}`);
   record("回帰: 比較 /compare 2人 200 + 26能力値", cmp.status === 200 && cmp.text.includes("能力値（26項目）"), "");
