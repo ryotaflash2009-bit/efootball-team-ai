@@ -1,5 +1,5 @@
 {
-  "_note": "Non-secret checklist for scripts/validate-f124-release.mjs (updated 2026-10-03 after the first orchestrated World apply). Only booleans and run ids. READY still means the owner decides; nothing is opened automatically.",
+  "_note": "Non-secret checklist for scripts/validate-f124-release.mjs (updated 2026-10-03 after the orchestrated World and Managers applies). Only booleans and run ids. READY still means the owner decides; nothing is opened automatically.",
   "checks": {
     "autoUpdateTestsPassed": true,
     "ciAndCodeqlPassed": true,
@@ -17,7 +17,7 @@
     "applyVerified": true,
     "appliedStateUpdated": true,
     "publicSiteMatchesAppliedState": true,
-    "allDatasetsCurrent": false
+    "allDatasetsCurrent": true
   },
   "evidence": {
     "planRunId": "37116813274",

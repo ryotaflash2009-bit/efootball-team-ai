@@ -11,10 +11,10 @@
       "evidence": "docs/production-readiness/evidence/world-update-2026-10-03.json"
     },
     "managers": {
-      "sourceChecksum12": "8c1d654ec48e",
-      "recordCount": 67,
-      "appliedAt": "2026-09-24T10:44:27.601Z",
-      "evidence": "docs/production-readiness/evidence/stage4-managers-rehearsal-2026-09-24.json"
+      "sourceChecksum12": "62a21bd2086a",
+      "recordCount": 69,
+      "appliedAt": "2026-10-03T14:26:12.497Z",
+      "evidence": "docs/production-readiness/evidence/managers-update-2026-10-03.json"
     }
   }
 }

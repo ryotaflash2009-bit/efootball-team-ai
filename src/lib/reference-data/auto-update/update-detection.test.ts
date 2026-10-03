@@ -116,10 +116,13 @@ describe("定期検出(Productionなし)", () => {
     expect(buildDistributionCandidate([{ registered_position: "CF", stats: { speed: 999 } }], g.checksum12, FETCHED)).toBeNull();
   });
 
-  it("リポジトリのapplied-state記録は形式が正しく、managersはStage 4のEvidenceと一致する", () => {
+  it("リポジトリのapplied-state記録は形式が正しく、managers・Worldはそれぞれ最新のEvidenceと一致する", () => {
     const root = path.resolve(__dirname, "..", "..", "..", "..");
     const state = parseAppliedState(readFileSync(path.join(root, APPLIED_STATE_FILE), "utf8"));
-    const ev = JSON.parse(readFileSync(path.join(root, "docs", "production-readiness", "evidence", "stage4-managers-rehearsal-2026-09-24.json"), "utf8"));
+    // managersも自動更新で適用されるようになった（2026-10-03）ため、applied-stateが指す最新のEvidenceと照合する。
+    const managersEvidence = state.datasets.managers.evidence;
+    expect(managersEvidence).toMatch(/^docs\/production-readiness\/evidence\/[a-z0-9-]+\.json$/);
+    const ev = JSON.parse(readFileSync(path.join(root, managersEvidence as string), "utf8"));
     expect(state.datasets.managers).toMatchObject({ sourceChecksum12: ev.candidate.sourceChecksum12, recordCount: ev.diff.after });
     // Worldは適用のたびにEvidenceが増えるため、applied-stateが指す最新のEvidenceと照合する。
     const worldEvidence = state.datasets.world_player_cards.evidence;

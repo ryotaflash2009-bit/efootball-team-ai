@@ -27,12 +27,10 @@ describe("F-124 Release Validator", () => {
     expect(evaluateF124(null).verdict).toBe("F124_BLOCKED");
   });
 
-  it("リポジトリのチェックリスト（2026-10-03 World 適用後）は HOLD（A・B は確認済み、C は Managers が未適用）", () => {
+  it("リポジトリのチェックリスト（2026-10-03 World・Managers 適用後）は本人の判断待ち（A・B・C 確認済み。自動では何も開かない）", () => {
     const input = JSON.parse(readFileSync(path.resolve(__dirname, "..", "..", "..", "docs", "production-readiness", "f124-release-checklist.json"), "utf8"));
     const r = evaluateF124(input);
-    expect(r.verdict).toBe("F124_HOLD");
-    expect(r.parts.A.ok).toBe(true);
-    expect(r.parts.B.ok).toBe(true);
-    expect(r.parts.C.missing).toEqual(["allDatasetsCurrent"]);
+    expect(r.verdict).toBe("F124_READY_FOR_OWNER_DECISION");
+    expect(r.parts.A.ok && r.parts.B.ok && r.parts.C.ok).toBe(true);
   });
 });
