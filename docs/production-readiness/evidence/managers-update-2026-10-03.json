@@ -1,0 +1,72 @@
+{
+  "schema": "efta-evidence/v1",
+  "date": "2026-10-03",
+  "kind": "managers-production-update",
+  "pipeline": "one-approval orchestrated auto-update",
+  "result": "applied_verified",
+  "approval": {
+    "environment": "reference-data-production-apply",
+    "approvedByOwner": true,
+    "approverRecorded": true
+  },
+  "runs": {
+    "detection": "37126751171",
+    "orchestrator": "37128239710",
+    "plan": "37128272503",
+    "backup": "37128342536",
+    "dryRun": "37128444969",
+    "apply": "37128515014"
+  },
+  "mainSha": "5b7976c",
+  "candidate": {
+    "sourceChecksum12": "62a21bd2086a",
+    "recordCount": 69
+  },
+  "diff": {
+    "before": 67,
+    "after": 69,
+    "added": 2,
+    "changed": 0,
+    "removed": 0
+  },
+  "apply": {
+    "run": "37128515014",
+    "status": "applied_verified",
+    "appliedAt": "2026-10-03T14:26:12.497Z"
+  },
+  "counts": {
+    "duplicate": 0,
+    "schemaDrift": 0,
+    "hardBlock": 0
+  },
+  "manualReview": [
+    "baseline_missing",
+    "manager_change"
+  ],
+  "planChecksum12": "ebc789b614f6",
+  "postVerify": {
+    "ok": true,
+    "problems": []
+  },
+  "automaticUndo": false,
+  "backup": {
+    "run": "37128342536",
+    "version": "2",
+    "category": "pre-apply",
+    "encryption": "age-x25519",
+    "restoreVerified": true,
+    "storageVerified": true,
+    "rowCounts": {
+      "world_player_cards": 13372,
+      "managers": 67,
+      "player_card_analysis": 19,
+      "import_batches": 12
+    }
+  },
+  "dryRun": {
+    "run": "37128444969",
+    "rediff": 0
+  },
+  "writes": "managers insert 2 in one transaction; import_batches 1 audit row; no DELETE/TRUNCATE; world_player_cards and player_card_analysis untouched",
+  "secretValuesSeenByClaudeCode": 0
+}

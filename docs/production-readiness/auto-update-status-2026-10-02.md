@@ -113,3 +113,7 @@ A・B・C がすべて確認できるまで、家族・友人・第三者への�
 - applied-state（World f7206c1ee9e6・13,372 件）と F-071 の分布（VALID）を更新。公開サイトの件数 13,372 を確認。
 - F-124: A・B は確認済み。C は World で確認済み、Managers（69 件）の適用が残り → `allDatasetsCurrent` が false で HOLD。
 - 次: Managers の自動進行（World は no_change になり、Managers だけが進む）→ Apply 承認待ち。
+- Managers: 検出 37126751171（World は no_change）→ 自動進行 37128239710 → Plan 37128272503 → Backup v2 37128342536 →
+  Dry run 37128444969 → Apply 37128515014（本人が承認）→ **applied_verified**（追加 2・更新 0・削除 0）。applied-state を 62a21bd2086a・69 件へ。
+- 公開サイト: World 13,372・Managers 69 を確認。
+- **F-124 の確認ツール: F124_READY_FOR_OWNER_DECISION**（A・B・C すべて確認済み）。解除するかは本人の判断（Claude Code は解除しない）。
