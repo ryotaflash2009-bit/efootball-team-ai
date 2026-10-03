@@ -1,0 +1,18 @@
+{
+  "schema": "efta-evidence/v1",
+  "date": "2026-10-03",
+  "verdict": "AUTO_UPDATE_APPLY_READY_WAITING_FOR_OWNER",
+  "productionWrites": 0,
+  "secrets": { "environment": "reference-data-automation", "count": 9, "registeredAt": "2026-10-03T10:06Z", "method": "owner-run local script, masked input, gh secret set via stdin; script deleted afterwards", "valuesSeenByClaudeCode": 0 },
+  "r2Credential": "new bucket-scoped Account API token (Object Read & Write), created by the owner; old token untouched (still used by production-backup-approval)",
+  "runs": { "detection": "37115352891", "orchestrator": "37116790841", "plan": "37116813274", "backup": "37118268591", "dryRun": "37118367153", "apply": "37118431576 (waiting for Environment approval)" },
+  "mainSha": "bb15a20",
+  "detection": { "world": { "records": 13372, "applied": 13297, "sourceChecksum12": "f7206c1ee9e6" }, "managers": { "records": 69, "applied": 67, "sourceChecksum12": "62a21bd2086a" } },
+  "plan": { "dataset": "world", "before": 13297, "after": 13372, "added": 75, "updated": 5675, "structuralChanged": 6, "cardRatingOnlyChanged": 5669, "changedFields": ["card_rating", "maximum_level", "ovr_max"], "removed": 0, "duplicate": 0, "schemaDrift": 0, "hardBlock": 0, "manualReview": ["baseline_missing"], "planChecksum12": "3d5a9c596ecb" },
+  "manualReviewNote": "baseline_missing is structural: the World Stage 4 path never stores a payload-size baseline (stage4-world.ts history.baselinePayloadBytes = null), so every World apply carries it; the 2026-09-26 verified World apply had the same single code.",
+  "backup": { "ok": true, "backupVersion": "2", "category": "pre-apply", "encryption": "age-x25519", "restoreVerified": true, "storageVerified": true, "rowCounts": { "world_player_cards": 13297, "managers": 67, "player_card_analysis": 19, "import_batches": 11 }, "firstBackupWithNewR2Credential": true, "approvalExpiresAt": "2026-10-04T11:02:24Z" },
+  "dryRun": { "ok": true, "rediff": 0 },
+  "writesIfApproved": "world_player_cards: insert 75, update 5675 (1 transaction); import_batches: 1 audit row; no DELETE/TRUNCATE",
+  "notApproved": ["managers", "player_card_analysis", "delete", "rollback", "restore"],
+  "f124": { "A": "verified", "B": "verified (9 secrets, variable, main-only)", "C": "pending (apply + applied_verified + applied-state update)" }
+}
