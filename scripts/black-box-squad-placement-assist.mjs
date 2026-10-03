@@ -43,6 +43,29 @@ const clickByText = (client, text) =>
 const isDisabled = (client, text) =>
   evalJson(client, `(() => { const b = [...document.querySelectorAll("button")].find((x) => x.textContent.trim() === ${JSON.stringify(text)}); return b ? b.disabled : null; })()`);
 const stored = (client) => evalJson(client, `JSON.parse(localStorage.getItem(${JSON.stringify(KEY)}) || "[]")[0] || null`);
+const storedById = (client, id) =>
+  evalJson(client, `JSON.parse(localStorage.getItem(${JSON.stringify(KEY)}) || "[]").find((s) => s.squadId === ${JSON.stringify(id)}) || null`);
+const CLIP_KEY = "efootball-team-ai:squad-placement-clipboard:v1";
+async function createSquad(client, formationId) {
+  await navigateAndSettle(client, `${BASE}/squads`);
+  await waitForCondition(async () => (await isDisabled(client, "作成して編集")) === false, { timeoutMs: 10000, intervalMs: 150 });
+  if (formationId) {
+    // 作成フォーム（「作成して編集」と同じ form）のフォーメーション選択を変える。
+    await evalJson(
+      client,
+      `(() => { const btn = [...document.querySelectorAll("button")].find((x) => x.textContent.trim() === "作成して編集");
+        const root = btn.closest("form") || btn.parentElement.parentElement; const sel = root.querySelector("select");
+        const set = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value").set; set.call(sel, ${JSON.stringify(formationId)});
+        sel.dispatchEvent(new Event("change", { bubbles: true })); return sel.value; })()`,
+    );
+    await sleep(150);
+  }
+  await clickByText(client, "作成して編集");
+  await waitForCondition(async () => /\/squads\/sq_/.test(await evalJson(client, "location.pathname")), { timeoutMs: 10000, intervalMs: 150 });
+  const p = await evalJson(client, "location.pathname");
+  await waitForCondition(async () => (await evalJson(client, `[...document.querySelectorAll("button")].some((b) => b.textContent.trim() === "配置をコピー")`)) === true, { timeoutMs: 10000, intervalMs: 150 });
+  return p.split("/").pop();
+}
 const coords = (sq) => Object.fromEntries((sq?.slots ?? []).map((s) => [s.slotId, [s.x, s.y, s.roleOverride ?? null]]));
 async function waitStored(client, pred, timeoutMs = 6000) {
   let last = null;
@@ -96,6 +119,11 @@ async function main() {
     await waitForCondition(async () => (await evalJson(client, `!!document.querySelector('[data-testid="squad-multi-select"]')`)) === true, { timeoutMs: 4000, intervalMs: 100 });
     record("複数選択 ON で操作の欄が出る", (await evalJson(client, `!!document.querySelector('[data-testid="squad-multi-select"]')`)) === true);
     record("選択が足りない間は操作のボタンが無効", (await isDisabled(client, "横一列に揃える")) === true && (await isDisabled(client, "左右に均等")) === true);
+    // 選手カードの情報（/api/world/players/by-ids）が届くと、選手のいる枠が切り替えボタンになる。4 枠そろうまで待つ。
+    await waitForCondition(
+      async () => (await evalJson(client, `[...document.querySelectorAll('button[aria-pressed="false"][aria-label]')].filter((b) => b.style.left).length`)) >= 4,
+      { timeoutMs: 10000, intervalMs: 150 },
+    );
     const pressable = await evalJson(client, `document.querySelectorAll('button[aria-pressed="false"][aria-label]').length`);
     const clicked = await evalJson(
       client,
@@ -137,6 +165,41 @@ async function main() {
     await clickByText(client, "複数選択 ON");
     await sleep(200);
     record("複数選択 OFF で操作の欄が消え、aria-pressed も外れる", (await evalJson(client, `!document.querySelector('[data-testid="squad-multi-select"]') && document.querySelectorAll('button[aria-pressed][aria-label][style]').length === 0`)) === true);
+
+    // 7b) 配置のコピー／貼り付け（同じフォーメーションの間だけ）。
+    const firstId = squadPath.split("/").pop();
+    const firstCoords = coords(await storedById(client, firstId));
+    await clickByText(client, "配置をコピー");
+    await sleep(200);
+    const clip = await evalJson(client, `sessionStorage.getItem(${JSON.stringify(CLIP_KEY)})`);
+    record("配置をコピー: このタブの sessionStorage に座標だけが入る（選手の ID を含まない）", !!clip && !ids.some((id) => clip.includes(id)), clip ? `${clip.length} bytes` : "なし");
+    const secondId = await createSquad(client, null);
+    await waitForCondition(async () => (await isDisabled(client, "配置を貼り付け")) === false, { timeoutMs: 6000, intervalMs: 150 });
+    record("同じタブの別のスカッドでは「配置を貼り付け」が使える", (await isDisabled(client, "配置を貼り付け")) === false);
+    await clickByText(client, "配置を貼り付け");
+    const second = coords(
+      await (async () => {
+        let last = null;
+        await waitForCondition(async () => {
+          last = await storedById(client, secondId);
+          return PICKED.every((id) => coords(last)[id]?.[0] === firstCoords[id][0] && coords(last)[id]?.[1] === firstCoords[id][1]);
+        }, { timeoutMs: 6000, intervalMs: 150 });
+        return last;
+      })(),
+    );
+    record(
+      "配置を貼り付け: 同じ 4-3-3 の新しいスカッドに、全 11 枠の座標が写る（自動保存）",
+      Object.keys(firstCoords).every((id) => second[id]?.[0] === firstCoords[id][0] && second[id]?.[1] === firstCoords[id][1]),
+      JSON.stringify(PICKED.map((id) => second[id])),
+    );
+    record("配置を貼り付け: 選手がいない枠には配置ロールの上書きを写さない", Object.values(second).every((c) => c[2] === null));
+    const thirdId = await createSquad(client, "4-4-2");
+    const third = await storedById(client, thirdId);
+    const thirdBefore = JSON.stringify(coords(third));
+    await clickByText(client, "配置を貼り付け");
+    await sleep(500);
+    const toast = await evalJson(client, "document.body.innerText");
+    record("違うフォーメーション（4-4-2）へは貼り付けない（案内だけ・座標は不変）", third?.formationId === "4-4-2" && toast.includes("4-3-3 用です") && JSON.stringify(coords(await storedById(client, thirdId))) === thirdBefore, `formation=${third?.formationId}`);
 
     // 8) モバイル幅で横スクロールが出ない（操作の欄を出した状態）。
     await client.send("Emulation.setDeviceMetricsOverride", { width: 375, height: 812, deviceScaleFactor: 2, mobile: true });
