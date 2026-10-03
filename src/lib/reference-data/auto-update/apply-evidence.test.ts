@@ -92,7 +92,7 @@ describe("Production apply・Backup workflow の main 限定と承認者の記�
     expect(i).toBeGreaterThan(0);
     expect(i).toBeLessThan(code.indexOf("- name: Run the selected mode"));
     const step = code.slice(i, code.indexOf("- name: Run the selected mode"));
-    expect(step).toContain("if: ${{ inputs.mode == 'apply' }}");
+    expect(step).toContain("if: ${{ inputs.mode == 'apply' && !startsWith(inputs.confirm, 'auto-apply-') }}");
     expect(step).toContain('actions/runs/$RUN_ID/approvals');
     expect(step).toContain('.name == "reference-data-production-apply"');
     expect(step).toContain("exit 1");
@@ -117,6 +117,21 @@ describe("Production apply・Backup workflow の main 限定と承認者の記�
     expect(evidence).toMatchObject({ jobStatus: "failure", outcome: "no_summary", productionWritten: false, approvedBy: null });
     expect(candidate).toBeNull();
     expect(buildApplyEvidence({ env: { ...ENV, EVIDENCE_JOB_STATUS: "weird" }, summary: verified, inputs: [], outputs: [], now: "t" }).evidence.jobStatus).toBeNull();
+  });
+
+  it("自動の経路は、kill switch と自動 Apply の判定を書き込みの step の前に再確認し、承認記録を求めない（2026-10-03）", () => {
+    const code = strip(APPLY);
+    const i = code.indexOf("- name: Re-check the kill switches and the auto-apply policy (no secret)");
+    expect(i).toBeGreaterThan(code.indexOf("- name: Record the bound runs' facts"));
+    expect(i).toBeLessThan(code.indexOf("- name: Run the selected mode"));
+    const step = code.slice(i, code.indexOf("- name: Record the Environment approver"));
+    expect(step).toContain("if: ${{ inputs.mode == 'apply' && startsWith(inputs.confirm, 'auto-apply-') }}");
+    for (const v of ["REFERENCE_DATA_AUTO_APPLY_ENABLED", "REFERENCE_DATA_AUTO_APPLY_WORLD_ENABLED", "REFERENCE_DATA_AUTO_APPLY_MANAGERS_ENABLED"]) expect(step).toContain(`vars.${v}`);
+    expect(step).toContain("node scripts/run-auto-apply-check-entry.mjs");
+    expect(step).not.toMatch(/secrets\./);
+    // 自動の経路は orchestrator（github-actions[bot]）だけが起動できる。
+    expect(code).toContain('if [ "$MODE" = "apply" ] && [ "$CONFIRM" = "auto-$expected" ]; then');
+    expect(code).toContain('if [ "$ACTOR" != "github-actions[bot]" ]; then');
   });
 
   it("Evidence は always() で作り 90 日保存し、Secret を渡さない", () => {

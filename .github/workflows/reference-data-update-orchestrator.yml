@@ -10,9 +10,15 @@ name: Reference data update orchestrator (automatic up to the Apply approval)
 #     detection summary -> Plan run -> pre-apply Backup run (execution=automation) -> Dry run -> Apply run
 #   Each run is a normal workflow_dispatch of the existing workflows on main; each summary is re-validated here
 #   (update-orchestrator.ts) and the pipeline stops at the first failed condition WITHOUT creating the Apply run.
-#   The Apply run then waits for the owner's single "Approve and deploy" on the `reference-data-production-apply`
-#   Environment (required reviewer, unchanged). This workflow never approves, never re-runs, never rolls back.
-# - Level 3 (automatic Apply without approval) is NOT implemented.
+#   Manual route: the Apply run waits for the owner's single "Approve and deploy" on the `reference-data-production-apply`
+#   Environment (required reviewer, unchanged).
+# - Automatic route (owner decision 2026-10-03; auto-apply-policy.ts, version in auto-apply-policy-config.ts): only when
+#   the policy returns AUTO_APPLY_ELIGIBLE, all three kill-switch variables are "true" and no open Issue carries the
+#   `reference-data-auto-apply-halt` label. The Apply run then uses the reviewer-less `reference-data-production-apply-automatic`
+#   Environment, re-checks the policy inside its job, and this workflow verifies applied_verified and the public counts.
+#   Any failure -> the notification workflow opens a halt Issue; new automatic applies stop until the owner closes it.
+#   This workflow never approves a manual run, never re-runs, never rolls back and never restores.
+# - The name above is referenced by workflow_run in the notification workflow; do not rename it.
 
 on:
   workflow_run:
@@ -32,6 +38,7 @@ on:
 permissions:
   actions: write
   contents: read
+  issues: read
 
 concurrency:
   group: reference-data-update-orchestrator
@@ -45,9 +52,9 @@ jobs:
       (github.event_name == 'workflow_dispatch' && inputs.confirm == 'orchestrate')) }}
     runs-on: ubuntu-latest
     # World plan ~25 min + Backup ~10 min + Dry run ~20 min + waits.
-    # 最悪の待ち時間 = plan 75 + backup 30 + dry run 30 + apply 待機 10 + run の検出 5×4 = 165 分。
-    # これより短いと、段階の途中で job ごと打ち切られ「stopped」を残せないため 180 分にする（テストで確認）。
-    timeout-minutes: 180
+    # 最悪の待ち時間 = plan 75 + backup 30 + dry run 30 + apply 待機 10 + 自動 Apply 45 + 公開サイトの確認 5 + run の検出 5×4 = 215 分。
+    # これより短いと、段階の途中で job ごと打ち切られ「stopped」を残せないため 240 分にする（テストで確認）。
+    timeout-minutes: 240
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -78,11 +85,16 @@ jobs:
             exit 1
           fi
 
-      - name: Run Plan, Backup and Dry run, then create the Apply run (waits for the owner's approval)
+      - name: Run Plan, Backup and Dry run, then Apply (automatic when eligible and enabled; otherwise waits for the owner's approval)
         env:
           GH_TOKEN: ${{ github.token }}
           ORCHESTRATOR_DETECTION_RUN_ID: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || inputs.detection_run_id }}
           ORCHESTRATOR_WORK_DIR: ${{ runner.temp }}/orchestrator
+          # Kill switches (Repository variables, not secrets). Only "true" enables the automatic Apply route;
+          # otherwise the Apply run waits for the owner's approval as before.
+          AUTO_APPLY_ENABLED: ${{ vars.REFERENCE_DATA_AUTO_APPLY_ENABLED }}
+          AUTO_APPLY_WORLD_ENABLED: ${{ vars.REFERENCE_DATA_AUTO_APPLY_WORLD_ENABLED }}
+          AUTO_APPLY_MANAGERS_ENABLED: ${{ vars.REFERENCE_DATA_AUTO_APPLY_MANAGERS_ENABLED }}
         run: |
           mkdir -p "$ORCHESTRATOR_WORK_DIR"
           node scripts/run-update-orchestrator-entry.mjs

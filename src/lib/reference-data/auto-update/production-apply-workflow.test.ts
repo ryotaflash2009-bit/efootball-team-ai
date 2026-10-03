@@ -6,6 +6,7 @@ import { APPLY_MODES, forbiddenCredentialsForMode, readApplySecrets, secretNames
 import { STAGE4_CONFIRM, stage4RunTitle, stage4WorldRunTitle } from "./stage4-managers";
 import { WORLD_CONFIRM } from "./stage4-world";
 import { UPDATER_COLUMN_GRANTS, UPDATER_ROLE_NAME } from "./updater-role";
+import { AUTO_APPLY_POLICY } from "./auto-apply-policy-config";
 
 const ROOT = path.resolve(__dirname, "..", "..", "..", "..");
 const YAML = readFileSync(path.join(ROOT, ".github", "workflows", "reference-data-production-apply.yml"), "utf8");
@@ -20,7 +21,9 @@ describe("Production apply workflow(Stage 2 preflight + Stage 4 managers)", () =
     expect(code).toMatch(/^permissions:\s*\n\s+contents: read\s*\n\s+actions: read\s*\n\s*\nconcurrency:/m);
     expect(code).not.toMatch(/:\s*write\b/);
     // 承認1回化(2026-09-27): plan・dry-runは承認者なしのautomation Environment、preflight・apply・verifyは承認必須のapply Environment。
-    expect(code).toContain(`environment: \${{ (inputs.mode == 'plan' || inputs.mode == 'dry-run') && '${AUTOMATION_ENVIRONMENT}' || '${SECRET_BOUNDARIES.production_apply.environment}' }}`);
+    // 自動 Apply（2026-10-03）: apply かつ確認入力が auto-apply- のときだけ、承認者なしの自動の Environment。それ以外の apply は承認必須の手動の Environment。
+    expect(code).toContain(`environment: \${{ (inputs.mode == 'plan' || inputs.mode == 'dry-run') && '${AUTOMATION_ENVIRONMENT}' || (inputs.mode == 'apply' && startsWith(inputs.confirm, 'auto-apply-')) && '${AUTO_APPLY_POLICY.automaticEnvironment}' || '${SECRET_BOUNDARIES.production_apply.environment}' }}`);
+    expect(AUTO_APPLY_POLICY.manualEnvironment).toBe(SECRET_BOUNDARIES.production_apply.environment);
     expect(code.match(/^\s+environment:/gm)).toHaveLength(1);
     expect(code).toContain(`group: ${CONCURRENCY_GROUPS.productionWrite}`);
     expect(code).toMatch(/cancel-in-progress: false/);
