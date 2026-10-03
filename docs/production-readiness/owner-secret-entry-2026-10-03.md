@@ -91,3 +91,53 @@ secret 確認で止まり、Issue に通知が来る（安全に止まる・書�
 4. Apply 承認待ちの 1 画面（Run URL・件数・差分・Backup の期限・承認コメント・押すボタン・承認対象と対象外）を報告する。
 
 関門を 1 つでも満たさなければ、Apply run は作らずに停止し、理由を報告する。
+
+## Backup DB URL（`REFERENCE_DATA_BACKUP_DB_URL`）の取得元（2026-10-03 追記）
+
+登録スクリプトの 1 件目で止まったときの案内。**値は Claude Code・チャット・Issue に貼らない。**
+
+### 正式な契約（runbook・コードから確認）
+
+| 項目 | 内容 | 根拠 |
+|---|---|---|
+| ロール | `reference_data_backup_reader`（読み取り専用・LOGIN・superuser 等なし・4 表の SELECT だけ） | `sql/create-reference-data-backup-role.sql`・`reference-data-production-backup-role-runbook.md` |
+| パスワード | 本人が作成時に生成し、本人が直接 GitHub に登録（Claude Code はどこにも保存していない） | runbook §3 |
+| 接続方式 | Supabase の **Session pooler**（GitHub の runner は IPv4。Direct connection は IPv6 のため使わない） | runbook §9（pooler 経由で接続）・Backup Run #8 で成功 |
+| URL の形 | `postgresql://reference_data_backup_reader.<project ref>:<パスワード>@<region>.pooler.supabase.com:5432/postgres` | Supabase の Session pooler の形式 |
+| 受け付ける形 | `postgresql://` と `postgres://` の両方。ユーザー名・パスワードは percent-encode 可（`@` → `%40` など） | `backup-db-connection.ts` |
+| 拒否される形 | `sslmode` などの TLS の query parameter（TLS は CA 証明書の Secret だけで決める）・管理者 `postgres` ユーザー | 同上・Backup の preflight は接続後に `current_user = reference_data_backup_reader` も確認する |
+
+### 取得の手順
+
+1. **まず保管元を探す**（2026-09 の Backup の設定のとき）: パスワードマネージャーで
+   `reference_data_backup_reader` / `Supabase backup` / `REFERENCE_DATA_BACKUP_DB_URL` を検索する。
+   URL 全体か、パスワードだけが保存されているはず。
+2. **パスワードが見つかった場合**: Supabase Dashboard → 対象のプロジェクト → 上部の **Connect** →
+   **Session pooler** の URI をコピーし、次の 2 か所を置き換える（メモ帳などに貼らず、置き換えは入力の直前に行う）:
+   - ユーザー名 `postgres.<project ref>` → `reference_data_backup_reader.<project ref>`（`.<project ref>` は残す）
+   - `[YOUR-PASSWORD]` → そのパスワード（`@ : / ? # %` を含むなら percent-encode）
+3. **パスワードが見つからない場合**（パスワードの再設定・本人の操作）:
+   - Supabase Dashboard → **SQL Editor** で、次の 1 文だけを実行する（ロールの権限・RLS・スキーマは変わらない）:
+     `alter role reference_data_backup_reader with password '<新しいパスワード>';`
+     新しいパスワードはパスワードマネージャーで生成（英数字 32 文字以上にすると encode が不要）。
+     この文をチャット・コミット・ファイルに残さない。成功条件: `Success. No rows returned`。
+   - **影響**: 古いパスワードは使えなくなる。使っているのは GitHub の
+     `production-backup-approval` の `REFERENCE_DATA_BACKUP_DB_URL`（手動の Backup）だけ
+     （Vercel・アプリ・他の workflow は使っていない）。Apply 用の資格情報は別のロールで、影響なし。
+   - そのため、登録スクリプトを `-AlsoUpdateManualBackupUrl` 付きで実行し、同じ新しい URL を手動の Backup 用にも
+     1 回の入力で登録する（下のコマンド）。
+   - 作り直し・削除・権限の変更はしない（`drop role` は不要）。
+
+### 確認だけしたいとき（何も登録しない）
+
+```
+cd C:\Development\eFootball-Team-AI; powershell -NoProfile -ExecutionPolicy Bypass -File .\data\work\set-automation-secrets.ps1 -CheckUrlOnly
+```
+
+URL を貼ると `OK` か、理由の種類だけが表示される（例: 管理者ユーザー・`[YOUR-PASSWORD]` が残っている・TLS の parameter）。
+値は表示されない。パスワードが正しいかは、workflow が接続したときに分かる。
+
+### 登録
+
+- 通常: `... -File .\data\work\set-automation-secrets.ps1`
+- パスワードを再設定した場合: `... -File .\data\work\set-automation-secrets.ps1 -AlsoUpdateManualBackupUrl`
