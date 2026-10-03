@@ -1,6 +1,6 @@
 # React #418（hydration の不一致）の観測契約 — 2026-10-03
 
-状態: **観測中（未解決）**。既知の問題 `KI-REACT-418-INTERMITTENT`。
+状態: **原因を特定・対策済み（2026-10-04、本番での 3 回連続 0 件の確認待ち）**。既知の問題 `KI-REACT-418-INTERMITTENT`。§5 を参照。
 
 ## 1. これまでの観測
 
@@ -45,3 +45,30 @@ hydration のエラー（#418・#423・#425・`did not match`）が出た読み�
 
 - 各回の結果: `docs/production-readiness/evidence/*.json` の `knownIssues` と `qualityGate.publicProduction`。
 - 0 件の回も数える（3 回連続の判定に使う）。
+
+## 5. 原因の特定と対策（2026-10-04）
+
+追加の観測: v1.0 公開後の本番 8 viewport で 1 件（mobile-390x844・`/squads`・cold・MISS・args `HTML`）。
+
+**ローカルでの再現**（`scripts/probe-react-418-local.mjs`）:
+- ローカルの `next start` の前に置いた proxy が、HTML 文書を segment の位置（`<div hidden id="S:1">`）の直前で 200〜1500 ms 止める（cold の遅い streaming を模す）。
+- `/managers` で約 10%（11/110）の読み込みで同じ #418（args `HTML`）が出た。
+
+**不一致の位置**（React の throw に記録を差し込んで取得）:
+- hydration は殻の `<main>`（AppShell）の中にいた。client では `<main>` の children（ページの segment）が何も claim しなかった。
+- `<main>` の先頭に、`app/loading.tsx` の未完了の境界（`<!--$?--><template id="B:0">` + skeleton）がそのまま残っていた。
+- つまり、segment の streaming が遅れた読み込みで、Next 15.5（同梱の React 19.2 canary）の client が、殻の hydration の時点で segment を空で描いていた。server は loading の境界を送っている。
+- 自前のコードの非決定性（日時・乱数・storage）ではない。
+- 2026-10-03 の `$RS` / `parentNode` の例外は、この後に client が描き直した結果。
+
+**対策**（`AppShell.tsx`）:
+- `<main>` の中で children を `<Suspense fallback={null}>` で囲む。
+- 殻の hydration と segment の hydration が別の境界になり、segment が遅れても不一致にならない。
+- 画面遷移の skeleton（`app/loading.tsx`）は内側のまま変わらない。
+- 回帰の確認: `AppShell.hydration.test.ts`。
+
+**検証**:
+- 同じ再現の条件で、対策後は 0/480（`/managers`・`/squads`・`/players/world/<id>`、segment の位置 S:0〜S:3、遅れ 200 ms と 1500 ms）。
+- 対策前は 11/110。
+
+**解決の判定**: §3 のとおり、本番の総合 black-box（8 viewport）で 3 回連続 0 件を確認してから「解決」にする。
