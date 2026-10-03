@@ -8,7 +8,7 @@ afterEach(() => vi.unstubAllGlobals());
 
 const LONG = "とても長いチーム名".repeat(14);
 const DATA: SquadDiagnosisShareData = {
-  serviceName: "eFootball Team AI",
+  serviceName: "TeamAIXI",
   squadName: LONG,
   formationLabel: "4-2-1-3",
   generatedAtIso: "2026-10-01T12:00:00.000Z",

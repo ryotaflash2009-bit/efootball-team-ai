@@ -113,7 +113,7 @@ async function main() {
   if (home.status === -1) {
     record("dev/本番サーバー疎通", false, home.err);
   } else {
-    record("ホームが表示される", home.status === 200 && /eFootball Team AI/.test(home.body), `HTTP ${home.status}`);
+    record("ホームが表示される", home.status === 200 && /TeamAIXI/.test(home.body), `HTTP ${home.status}`);
     const list = await get("/players");
     record("プレイヤー一覧が表示される", list.status === 200 && /プレイヤー/.test(list.body), `HTTP ${list.status}`);
     record("選手画像参照が存在する", (list.body.match(/\/api\/player-image\//g) || []).length > 0, "");

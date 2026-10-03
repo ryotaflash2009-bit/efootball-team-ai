@@ -4,7 +4,7 @@ import { FavoritesView } from "@/components/user-cards/FavoritesView";
 export const dynamic = "force-static";
 
 export const metadata = {
-  title: "お気に入り | eFootball Team AI",
+  title: "お気に入り | TeamAIXI",
 };
 
 export default function FavoritesPage() {

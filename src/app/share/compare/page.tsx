@@ -5,7 +5,7 @@ import { SharedCompareView } from "@/components/squad/SharedCompareView";
 export const dynamic = "force-static";
 
 export const metadata = {
-  title: "共有された改善前後の比較 | eFootball Team AI",
+  title: "共有された改善前後の比較 | TeamAIXI",
   description: "共有されたスカッド診断の改善前後の比較（読み取り専用）です。",
   robots: { index: false, follow: false, nocache: true },
   referrer: "no-referrer" as const,

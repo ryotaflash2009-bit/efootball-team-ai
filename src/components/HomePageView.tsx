@@ -35,6 +35,16 @@ export interface HomeMiniCardData {
   imageSources: string[];
 }
 
+/** v1.0 の優先導線（探す → 育成 → 比較 → My Team → 診断 → 共有）。将来機能は載せない。 */
+const QUICK_STEPS: { href: string; icon: IconName; title: keyof Dictionary["homePage"]; body: keyof Dictionary["homePage"] }[] = [
+  { href: "/players", icon: "search", title: "quickStep1Title", body: "quickStep1Body" },
+  { href: "/players", icon: "sliders", title: "quickStep2Title", body: "quickStep2Body" },
+  { href: "/compare", icon: "compare", title: "quickStep3Title", body: "quickStep3Body" },
+  { href: "/my-team", icon: "shirt", title: "quickStep4Title", body: "quickStep4Body" },
+  { href: "/squads", icon: "squad", title: "quickStep5Title", body: "quickStep5Body" },
+  { href: "/diagnosis-history", icon: "external", title: "quickStep6Title", body: "quickStep6Body" },
+];
+
 function MiniCard({ p }: { p: HomeMiniCardData }) {
   const { locale } = useLocale();
   const t = useT();
@@ -129,9 +139,9 @@ export function HomePageView({
             </Link>
           </p>
         ) : null}
-        <Surface tone="inset" padding="sm" className="text-xs text-warning">
+        <Surface tone="inset" padding="sm" className="text-xs text-text-dim" data-testid="home-v1-notice">
           {th("alphaNoticeBanner")}{" "}
-          <Link href="/privacy" className="underline">
+          <Link href="/about" className="underline">
             {th("alphaNoticeDetailsLinkLabel")}
           </Link>
         </Surface>
@@ -177,6 +187,27 @@ export function HomePageView({
               </Link>
             </div>
           </div>
+        </section>
+
+        {/* できること（v1.0 の優先導線: 探す → 育成 → 比較 → My Team → 診断 → 共有） */}
+        <section data-testid="home-quick-start">
+          <SectionHeader title={th("quickStartHeading")} as="h2" />
+          <ol className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {QUICK_STEPS.map((s, i) => (
+              <li key={s.href + i}>
+                <Link href={s.href} className="block h-full">
+                  <Surface tone="raised" padding="sm" className="h-full" interactive>
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/15 text-xs font-bold text-accent tabular-nums">{i + 1}</span>
+                      <Icon name={s.icon} size={15} className="text-text-dim" />
+                      <span className="text-sm font-semibold">{th(s.title)}</span>
+                    </div>
+                    <p className="mt-1.5 text-xs leading-relaxed text-text-dim">{th(s.body)}</p>
+                  </Surface>
+                </Link>
+              </li>
+            ))}
+          </ol>
         </section>
 
         {/* データ指標 */}

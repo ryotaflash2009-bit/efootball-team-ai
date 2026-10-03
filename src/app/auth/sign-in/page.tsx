@@ -3,8 +3,8 @@ import { PageContainer } from "@/components/ui/PageContainer";
 import { SignInView } from "@/components/auth/SignInView";
 
 export const metadata = {
-  title: "ログイン | eFootball Team AI",
-  description: "eFootball Team AIへログインします（技術検証段階）。",
+  title: "ログイン | TeamAIXI",
+  description: "TeamAIXIへログインします（技術検証段階）。",
 };
 
 export default function SignInPage() {

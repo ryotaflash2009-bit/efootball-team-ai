@@ -1032,7 +1032,7 @@ function buildDiagnosisImageContent(
     .slice(0, 2);
 
   return {
-    serviceName: "eFootball Team AI",
+    serviceName: "TeamAIXI",
     modeLabel: model.analysisMode === "harsh" ? ba("imageHarshDiagnosisLabel") : ba("imageNormalDiagnosisLabel"),
     playerName: safePlayerNameForImage(model.playerDisplayName),
     buildName: model.buildDisplayName,

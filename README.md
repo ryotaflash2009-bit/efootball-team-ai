@@ -1,17 +1,15 @@
-# eFootball Team AI
+# TeamAIXI
 
-eFootball（サッカーゲーム）の選手・監督・ブースター・Tier データを集約し、
-検索・比較・育成・スカッド編成を行える Web サービス。
-最終目標は「ユーザーの目的・所持選手・コイン数・戦術を理解し、根拠付きで助言する AI サービス」。
+**TeamAIXI v1.0** — 非公式の eFootball™ スカッド分析ツール（無料・ログイン不要） / An unofficial squad analysis tool for eFootball™ (free, no sign-in).
 
-- UI と機能の基準: **eFHUB**
-- 主要データソース: **eFHUB**
-- 補完・照合データソース: **eFootball World**
-- 通常の画面表示: **自前データ**（外部サイトを毎回は呼ばない）
+KONAMI および eFootball™ の公式サービスではなく、KONAMI による公認・提携・運営を受けていません。商標・製品名は各権利者に帰属します。
 
-> 招待ベータの準備中です（2026-10-01）。機能ごとの状態は [`docs/product/feature-ledger.md`](docs/product/feature-ledger.md)、
-> 実装順は [`docs/product/integrated-roadmap.md`](docs/product/integrated-roadmap.md) が正本です。全体の設計は
-> [`docs/efootball-team-ai-design.md`](docs/efootball-team-ai-design.md) にあります。
+- 公開範囲・素材・既知の問題: [`docs/release/teamaixi-v1.md`](docs/release/teamaixi-v1.md)
+- 変更履歴: [`CHANGELOG.md`](CHANGELOG.md)・リリースノート: [`RELEASE_NOTES.md`](RELEASE_NOTES.md)
+- 参照データの自動更新: [`docs/production-readiness/automated-update-pipeline.md`](docs/production-readiness/automated-update-pipeline.md)
+- 機能の状態: [`docs/product/feature-ledger.md`](docs/product/feature-ledger.md)・実装順: [`docs/product/integrated-roadmap.md`](docs/product/integrated-roadmap.md)
+
+> リポジトリ名・保存データのキー・共有 URL などの内部識別子は、互換性のため旧名（eFootball Team AI / efootball-team-ai）のままです。
 
 ---
 

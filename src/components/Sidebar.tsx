@@ -37,17 +37,8 @@ const GROUPS: { titleKey: NavKey; items: NavItem[] }[] = [
       { href: "/diagnosis-history", labelKey: "diagnosisHistory", icon: "list", status: "ready" },
     ],
   },
-  {
-    titleKey: "groupAnalysis",
-    items: [
-      { href: "/tier-lists", labelKey: "tierLists", icon: "tier", status: "soon" },
-      { href: "/packs", labelKey: "packs", icon: "pack", status: "soon" },
-    ],
-  },
-  {
-    titleKey: "groupCommunity",
-    items: [{ href: "/community", labelKey: "community", icon: "community", status: "soon" }],
-  },
+  // TeamAIXI v1.0（2026-10-04）: Tier・Pack（権利未確認）と Community（未公開）は、準備中の表示も含めてナビに出さない。
+  // 将来の公開時は、ここへ "ready" の項目として戻す（ページ・設計は残している）。
 ];
 
 function isActive(pathname: string, href: string): boolean {

@@ -20,7 +20,7 @@ afterEach(() => {
 });
 
 const SAMPLE_DATA: SquadDiagnosisShareData = {
-  serviceName: "eFootball Team AI",
+  serviceName: "TeamAIXI",
   squadName: "テストスカッド",
   formationLabel: "4-3-3",
   generatedAtIso: "2026-09-06T12:00:00.000Z",

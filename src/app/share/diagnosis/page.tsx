@@ -5,7 +5,7 @@ import { SharedDiagnosisView } from "@/components/squad/SharedDiagnosisView";
 export const dynamic = "force-static";
 
 export const metadata = {
-  title: "共有されたスカッド診断 | eFootball Team AI",
+  title: "共有されたスカッド診断 | TeamAIXI",
   description: "共有されたスカッド診断の要約（読み取り専用）です。",
   robots: { index: false, follow: false, nocache: true },
   referrer: "no-referrer" as const,

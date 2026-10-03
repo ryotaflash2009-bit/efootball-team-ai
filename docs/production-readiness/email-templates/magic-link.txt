@@ -1,8 +1,8 @@
-eFootball Team AI
+TeamAIXI
 
 ログイン用リンク
 
-下のボタンから eFootball Team AI にログインできます。
+下のボタンから TeamAIXI にログインできます。
 
 ログインする:
 {{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email
@@ -11,13 +11,13 @@ eFootball Team AI
 
 リンクとコードの有効期限は、発行から約1時間です。
 心当たりがない場合は、このメールを無視してください。操作は完了しません。
-リンクや確認コードを他の人に送らないでください。eFootball Team AI からパスワードや確認コードを尋ねることはありません。
+リンクや確認コードを他の人に送らないでください。TeamAIXI からパスワードや確認コードを尋ねることはありません。
 
 ----
 
 Your sign-in link
 
-Use the button below to sign in to eFootball Team AI.
+Use the button below to sign in to TeamAIXI.
 
 Sign in:
 {{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email
@@ -26,9 +26,9 @@ Verification code: {{ .Token }}
 
 The link and code expire about 1 hour after they are sent.
 If you did not request this, you can ignore this email and nothing will change.
-Never share this link or code with anyone. eFootball Team AI will never ask you for your password or code.
+Never share this link or code with anyone. TeamAIXI will never ask you for your password or code.
 
 ----
 サポート / Support: {{ .SiteURL }}/support
-eFootball Team AI は、eFootball のファンが作る非公式のツールです。KONAMI および eFootball 公式とは関係ありません。
-eFootball Team AI is an unofficial fan-made tool. It is not affiliated with KONAMI or the official eFootball service.
+TeamAIXI は、eFootball のファンが作る非公式のツールです。KONAMI および eFootball 公式とは関係ありません。
+TeamAIXI is an unofficial fan-made tool. It is not affiliated with KONAMI or the official eFootball service.

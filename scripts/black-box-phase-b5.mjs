@@ -56,7 +56,7 @@ async function main() {
   // 1. ホーム
   {
     const r = await get("/");
-    record("ホームが表示される", r.status === 200 && /eFootball Team AI/.test(r.body), `HTTP ${r.status}`);
+    record("ホームが表示される", r.status === 200 && /TeamAIXI/.test(r.body), `HTTP ${r.status}`);
     record("ホームにデータ状態が出る", /データの状態|データソース|まだデータを取得/.test(r.body), "");
   }
 

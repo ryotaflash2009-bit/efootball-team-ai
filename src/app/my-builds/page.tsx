@@ -4,7 +4,7 @@ import { MyBuildsView } from "@/components/progression/MyBuildsView";
 export const dynamic = "force-static";
 
 export const metadata = {
-  title: "My Builds | eFootball Team AI",
+  title: "My Builds | TeamAIXI",
 };
 
 export default function MyBuildsPage() {

@@ -2,37 +2,37 @@
   {
     "file": "confirm-signup.html",
     "text": "confirm-signup.txt",
-    "subject": "【eFootball Team AI】メールアドレスの確認 / Confirm your email",
+    "subject": "【TeamAIXI】メールアドレスの確認 / Confirm your email",
     "verifyType": "email"
   },
   {
     "file": "magic-link.html",
     "text": "magic-link.txt",
-    "subject": "【eFootball Team AI】ログイン用リンク / Your sign-in link",
+    "subject": "【TeamAIXI】ログイン用リンク / Your sign-in link",
     "verifyType": "email"
   },
   {
     "file": "reset-password.html",
     "text": "reset-password.txt",
-    "subject": "【eFootball Team AI】パスワードの再設定 / Reset your password",
+    "subject": "【TeamAIXI】パスワードの再設定 / Reset your password",
     "verifyType": "recovery"
   },
   {
     "file": "change-email.html",
     "text": "change-email.txt",
-    "subject": "【eFootball Team AI】メールアドレス変更の確認 / Confirm your new email",
+    "subject": "【TeamAIXI】メールアドレス変更の確認 / Confirm your new email",
     "verifyType": "email_change"
   },
   {
     "file": "invite.html",
     "text": "invite.txt",
-    "subject": "【eFootball Team AI】招待のお知らせ / You're invited",
+    "subject": "【TeamAIXI】招待のお知らせ / You're invited",
     "verifyType": "invite"
   },
   {
     "file": "reauthentication.html",
     "text": "reauthentication.txt",
-    "subject": "【eFootball Team AI】確認コード / Your verification code",
+    "subject": "【TeamAIXI】確認コード / Your verification code",
     "verifyType": null
   }
 ]

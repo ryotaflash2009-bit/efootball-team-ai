@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 export const dynamic = "force-static";
 
 export const metadata = {
-  title: "スカッドテンプレート | eFootball Team AI",
+  title: "スカッドテンプレート | TeamAIXI",
 };
 
 export default function SquadTemplatesPage() {

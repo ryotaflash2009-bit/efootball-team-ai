@@ -13,7 +13,7 @@ afterEach(() => {
 });
 
 const SAMPLE_CONTENT: BuildDiagnosisImageContent = {
-  serviceName: "eFootball Team AI",
+  serviceName: "TeamAIXI",
   modeLabel: "通常診断",
   playerName: "Lionel Messi",
   buildName: "Fixture Build",

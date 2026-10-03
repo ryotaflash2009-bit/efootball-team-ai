@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export function generateMetadata(): Metadata {
   if (!areInternalPagesVisible()) notFound();
   return {
-    title: "開発用RLS検証 | eFootball Team AI",
+    title: "開発用RLS検証 | TeamAIXI",
     description: "Supabase Row Level Securityによるユーザー別データ分離を確認する開発者向け技術検証ページ(PoC)。",
     robots: { index: false, follow: false },
   };

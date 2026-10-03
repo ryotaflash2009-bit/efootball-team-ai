@@ -54,18 +54,20 @@ describe("/release-readiness: 実装済み機能が正確に説明されてい�
 });
 
 describe("/release-readiness・/about: 参照データSupabase経路・SQLite切戻し・自動更新dry-run・Cron未実装が説明される", () => {
-  it("参照データがSupabaseを既定経路とし、SQLite切戻しが可能と説明される(ja/en)", () => {
-    expect(ja.about.availableReferenceDataSupabase).toMatch(/Supabase/);
-    expect(ja.about.availableReferenceDataSupabase).toMatch(/SQLite/);
-    expect(en.about.availableReferenceDataSupabase).toMatch(/Supabase/);
-    expect(en.about.availableReferenceDataSupabase).toMatch(/SQLite/);
+  it("参照データが自動で更新され、安全条件を満たす更新だけが適用されると説明される(ja/en)", () => {
+    // TeamAIXI v1.0（2026-10-04）: 利用者向けには、データが自動で更新され、安全条件を満たす更新だけが自動で適用されることを説明する。
+    expect(ja.about.availableReferenceDataSupabase).toMatch(/自動で更新/);
+    expect(ja.about.availableReferenceDataSupabase).toMatch(/安全条件/);
+    expect(en.about.availableReferenceDataSupabase).toMatch(/updated automatically/);
+    expect(en.about.availableReferenceDataSupabase).toMatch(/safety checks/);
   });
 
-  it("自動更新がdry-run限定でCron未実装と説明される(ja/en)", () => {
-    expect(ja.about.betaReferenceDataAutoUpdateDryRun).toMatch(/dry-run/);
-    expect(ja.about.betaReferenceDataAutoUpdateDryRun).toMatch(/Cron/);
-    expect(en.about.betaReferenceDataAutoUpdateDryRun).toMatch(/dry-run/);
-    expect(en.about.betaReferenceDataAutoUpdateDryRun).toMatch(/Cron/);
+  it("自動更新が週 1 回の検出に基づき、遅れがありうると説明される(ja/en)", () => {
+    // 自動更新は週 1 回の検出（定期実行）に基づくため、ゲームより遅れる場合があることを既知の制約として示す。
+    expect(ja.about.betaReferenceDataAutoUpdateDryRun).toMatch(/週 1 回/);
+    expect(ja.about.betaReferenceDataAutoUpdateDryRun).toMatch(/遅れる/);
+    expect(en.about.betaReferenceDataAutoUpdateDryRun).toMatch(/weekly/);
+    expect(en.about.betaReferenceDataAutoUpdateDryRun).toMatch(/lag/);
   });
 
   it("新設したaboutキーがAVAILABLE/BETA_FEATURE_KEYSに登録されている", () => {
