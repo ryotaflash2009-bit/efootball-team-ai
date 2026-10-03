@@ -85,6 +85,13 @@
 
 F-124: 自動更新が完成するまで、本人だけで検証する（他人に試してもらわない・新規登録とコミュニティを公開しない）。
 
+### 3f. 2026-10-04 TeamAIXI v1.0
+
+1. 本人の決定で、招待ベータではなく、ログイン不要・無料・非公式の正式製品版 TeamAIXI v1.0 として既存の Production URL で公開（noindex 維持）。範囲・素材・既知の問題は `docs/release/teamaixi-v1.md`。
+2. 品質ゲート（CI・CodeQL・verify・build・PostgreSQL・公開 black-box・8 viewport・a11y・性能・セキュリティ）は合格。npm audit は build 時だけの依存でレビュー済み（Next 16 の計画: `docs/release/next16-migration-plan.md`）。
+3. 残り: 本人の最終確認（素材の許諾の範囲・法務文書・サービス名・問い合わせ窓口・公開 URL）→ Git tag `v1.0.0` と GitHub Release。
+4. 引き続き未公開: 新規登録・認証メール・公開 ID・友達・写真投稿・コミュニティ・ランキング・課金・Tier / Pack。
+
 ### 3e. 2026-10-04 完全無人の自動 Apply
 
 1. Phase A（判定・mock・静的監査）と Phase B（実際の run での shadow 判定: World・Managers とも ELIGIBLE、Managers の要約の不足を 1 件修正）は合格。
