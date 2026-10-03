@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClasses } from "@/components/ui/Button";
 import { MiniPitch } from "./MiniPitch";
 import { useT } from "@/lib/i18n/LocaleContext";
+import { PageHeader } from "@/components/ui/PageHeader";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 
 export function SquadTemplatesBoard() {
@@ -247,5 +248,17 @@ export function SquadTemplatesBoard() {
         </div>
       </section>
     </div>
+  );
+}
+
+/** テンプレート一覧の見出し（表示言語に合わせる。ページ本体はサーバーの静的ページ）。 */
+export function SquadTemplatesPageHeader() {
+  const t = useT();
+  return (
+    <PageHeader
+      title={t("squadTemplatesBoard", "pageTitle")}
+      icon="squad"
+      description={t("squadTemplatesBoard", "pageDescription")}
+    />
   );
 }

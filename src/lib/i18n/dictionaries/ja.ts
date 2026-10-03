@@ -2387,6 +2387,8 @@ export interface Dictionary {
     ariaLabel: string;
   };
   squadTemplatesBoard: {
+    pageTitle: string;
+    pageDescription: string;
     scopeLoadingMessage: string;
     storageUnavailableHeading: string;
     storageUnavailableNote: string;
@@ -4456,6 +4458,36 @@ export interface Dictionary {
     undoReset: string;
     revertShort: string;
     rowAffordance: string;
+  };
+  managerDetail: {
+    unavailableTitle: string;
+    backToList: string;
+    releaseBadgeTemplate: string;
+    unknown: string;
+    sourceBadgeTemplate: string;
+    bestTactic: string;
+    proficiencyTitle: string;
+    proficiencyHint: string;
+    boosterTitle: string;
+    boosterConfirmed: string;
+    boosterUnconfirmed: string;
+    boosterUnconditional: string;
+    boosterKeyUnmapped: string;
+    boosterNone: string;
+    boosterNote: string;
+    linkUpHint: string;
+    centerPieceLabel: string;
+    keyManLabel: string;
+    linkUpNone: string;
+    notInSourceTitle: string;
+    notInSourceValue: string;
+    labelAge: string;
+    labelNationality: string;
+    labelTeam: string;
+    labelRating: string;
+    labelFormation: string;
+    dataSourceTemplate: string;
+    openSource: string;
   };
 }
 
@@ -6888,6 +6920,8 @@ const ja: Dictionary = {
     ariaLabel: "フォーメーションを選択",
   },
   squadTemplatesBoard: {
+    pageTitle: "スカッドテンプレート",
+    pageDescription: "フォーメーションや選手配置（自由配置座標を含む）をテンプレートとして保存し、新しいスカッドの雛形にできます。テンプレートはこの端末のブラウザ内（localStorage）にのみ保存され、通常のスカッドとは別に管理されます。",
     scopeLoadingMessage: "アカウント情報を確認しています…",
     storageUnavailableHeading: "この環境ではテンプレートを保存できません",
     storageUnavailableNote: "ブラウザの localStorage が使用できません（プライベートモード等）。",
@@ -8974,6 +9008,36 @@ const ja: Dictionary = {
     ruGrConsumed: "消費: {points}pt",
     ruGrMaxReached: "上限到達",
     ruGrMaxLevel: "上限 Lv{level}",
+  },
+  managerDetail: {
+    unavailableTitle: "監督データが利用できません",
+    backToList: "マネージャー一覧へ戻る",
+    releaseBadgeTemplate: "リリース {date}",
+    unknown: "不明",
+    sourceBadgeTemplate: "ソース {id}",
+    bestTactic: "得意戦術",
+    proficiencyTitle: "戦術適性",
+    proficiencyHint: "数値・バー・順位。色だけに依存しません",
+    boosterTitle: "監督ブースター",
+    boosterConfirmed: "複数ソースで確認済み",
+    boosterUnconfirmed: "効果未確認",
+    boosterUnconditional: "無条件",
+    boosterKeyUnmapped: "・キー未変換",
+    boosterNone: "この監督に能力値ブースターはありません。",
+    boosterNote: "確認済みブースターのみ育成・比較・スカッドの能力値へ適用します。適用順序（育成前 / 後）は未確認です。",
+    linkUpHint: "発動条件は検証中・能力値へは適用しません",
+    centerPieceLabel: "Center Piece 条件",
+    keyManLabel: "Key Man 条件",
+    linkUpNone: "この監督に Link-Up Play はありません。",
+    notInSourceTitle: "ソース非収録（追加調査中）",
+    notInSourceValue: "追加調査中",
+    labelAge: "年齢",
+    labelNationality: "国籍",
+    labelTeam: "チーム",
+    labelRating: "監督レーティング",
+    labelFormation: "フォーメーション",
+    dataSourceTemplate: "データ提供: {source} / 取得日時: {fetchedAt}",
+    openSource: "出典を開く",
   },
 };
 

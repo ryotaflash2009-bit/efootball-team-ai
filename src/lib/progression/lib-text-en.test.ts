@@ -11,6 +11,8 @@ const FILES = [
   "card-eligibility.ts",
   "group-allocation.ts",
   "booster-catalog.ts",
+  "../comparison/ability-radar.ts",
+  "../comparison/build-comparison.ts",
 ];
 const JP = /[぀-ヿ一-龯]/;
 

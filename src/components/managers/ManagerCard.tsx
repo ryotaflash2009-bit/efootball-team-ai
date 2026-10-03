@@ -51,7 +51,7 @@ export function ManagerCard({ manager }: { manager: ManagerListItem }) {
         <div className="mt-3 flex items-center gap-2">
           <span className="text-2xs text-text-muted">{t("managerCard", "bestTacticLabel")}</span>
           <span className="text-sm font-semibold">{top.en}</span>
-          <span className="text-2xs text-text-dim">{top.ja}</span>
+          {locale === "ja" ? <span className="text-2xs text-text-dim">{top.ja}</span> : null}
           <span className={`ml-auto text-lg font-black tabular-nums ${TACTIC_TEXT[tacticTier(top.value)]}`}>
             {top.value}
           </span>
