@@ -147,3 +147,39 @@ describe("artifact からの判定（orchestrator・Apply job の再確認で使
     expect(r.reasonCodes).toContain("gate:dry_run_rediff_not_zero");
   });
 });
+
+describe("Managers の実際の要約の形（2026-10-03 の shadow で判明）", () => {
+  // Plan run 37128272503 と同じ形（値も同じ・行データなし）。2026-10-03 時点の要約は invalidCount を出していなかった。
+  const managersPlan = (withInvalid: boolean) => JSON.stringify({
+    ok: true, phase: "plan", reasons: [],
+    facts: {
+      commitSha: SHA, productionCounts: { world_player_cards: 13372, managers: 67, import_batches: 11 },
+      plan: {
+        targetTables: ["managers"], receivedRecordCount: 69, beforeCount: 67, afterCount: 69, addedCount: 2, changedCount: 0, removedCount: 0,
+        unchangedCount: 67, duplicateCount: 0, ...(withInvalid ? { invalidCount: 0 } : {}), changedFieldFrequency: {},
+        sourceChecksum: SRC, planChecksum: PLAN, policySeverity: "manual_review",
+        findings: [{ severity: "manual_review", code: "manager_change" }, { severity: "manual_review", code: "baseline_missing" }],
+        manualReviewCodes: ["manager_change", "baseline_missing"], planProblems: [],
+      },
+    },
+  });
+  const backup = backupSummary((s) => {
+    s.rowCounts = { world_player_cards: 13372, managers: 67, player_card_analysis: 19, import_batches: 11 };
+    const cols = (s.columnCoverage as { addedColumns: Record<string, { rows: number; nonNullRows: number }> }).addedColumns;
+    for (const k of ["world_player_cards.appearance_updated_at", "world_player_cards.import_batch_id"]) cols[k] = { ...cols[k], rows: 13372, nonNullRows: 13372 };
+  });
+  const dry = dryRunSummary((f) => { delete f.dataset; });
+  const run = (withInvalid: boolean) => evaluateAutoApplyFromArtifacts({
+    dataset: "managers", bindingSha: SHA, currentMainSha: SHA, detectionChecksum12: SRC12, appliedChecksum12: null,
+    planSummaryText: managersPlan(withInvalid), backupSummaryText: backup, backupRunId: "36248197028", backupCompletedAt: "2026-09-26T14:28:00.000Z",
+    dryRunSummaryText: dry, dryRunRunId: "36248400000", now: "2026-09-26T15:00:00.000Z",
+  });
+
+  it("invalidCount が無い要約は推測で 0 にせず BLOCKED", () => {
+    expect(run(false)).toMatchObject({ decision: "AUTO_APPLY_BLOCKED", reasonCodes: ["invalid_count_missing"] });
+  });
+
+  it("invalidCount: 0 を出す要約（修正後）は ELIGIBLE", () => {
+    expect(run(true).decision).toBe("AUTO_APPLY_ELIGIBLE");
+  });
+});

@@ -145,6 +145,8 @@
 
 ## 9. 変更履歴
 
+- 2026-10-04: 参照データの**完全無人の自動 Apply** を実装（本人の決定 2026-10-03）。既知の安全契約に一致する World（追加・確定列の更新）と Managers（追加だけ）は承認なしで適用、それ以外は Apply の前に停止または手動の承認の経路。Kill switch・halt Issue・事後検証（公開サイトの件数まで）。Rollback・Restore は自動にしない。有効化は自動用 Environment の Secret 2 件（本人）の後（`automated-update-pipeline.md` §7）。
+
 - 2026-10-03: 自動更新の最初の実運用（World・Managers ともに applied_verified、本人の承認つき）。本人の判断で **F-124 を招待制の少人数ベータとして解除**（`docs/production-readiness/invite-beta-2026-10-03.md`）。
 
 - 2026-10-02 夜間（本人の判断 A〜D に沿って自動で実施。Production の書き込み・公開なし）:

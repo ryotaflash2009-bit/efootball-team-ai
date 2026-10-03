@@ -85,6 +85,12 @@
 
 F-124: 自動更新が完成するまで、本人だけで検証する（他人に試してもらわない・新規登録とコミュニティを公開しない）。
 
+### 3e. 2026-10-04 完全無人の自動 Apply
+
+1. Phase A（判定・mock・静的監査）と Phase B（実際の run での shadow 判定: World・Managers とも ELIGIBLE、Managers の要約の不足を 1 件修正）は合格。
+2. Phase C（自動 Apply）は実装済み。自動用 Environment の Secret 2 件を本人が登録した後に kill switch を有効にする。
+3. 最初の無人の適用は、次に upstream が更新されたとき（毎週の検出）。
+
 ### 3d. 2026-10-03 自動更新の実運用と F-124 の解除
 
 1. 自動更新: Secret 9 件を登録し、自動進行（検出 → Plan → Backup v2 → Dry run → 本人の承認つき Apply → 事後検証）を World（+75・更新 5,675）と Managers（+2）で実行。どちらも applied_verified。applied-state・F-071 の分布・Evidence を更新し、公開サイトと一致。

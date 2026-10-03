@@ -223,6 +223,8 @@ export function summarizeManagersPlan(b: ManagersCandidateBuild, e: ManagersPlan
     removedCount: r.removedCount,
     unchangedCount: r.unchangedCount,
     duplicateCount: r.duplicateCount,
+    // 0 より大きいと Plan は invalid_source_records で止まる。自動 Apply の判定が値を確かめられるよう、World と同じく要約へ出す（2026-10-03）。
+    invalidCount: r.invalidCount,
     changedFieldFrequency: hist,
     addedIdentities: b.plan.inserts.slice(0, STAGE4_MAX_IDENTITIES_IN_SUMMARY).map((x) => x.identity),
     addedIdentitiesTruncated: b.plan.inserts.length > STAGE4_MAX_IDENTITIES_IN_SUMMARY,
