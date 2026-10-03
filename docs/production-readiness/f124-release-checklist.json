@@ -1,5 +1,5 @@
 {
-  "_note": "Non-secret checklist for scripts/validate-f124-release.mjs (updated 2026-10-03 after the orchestrated World and Managers applies). Only booleans and run ids. READY still means the owner decides; nothing is opened automatically.",
+  "_note": "Non-secret checklist for scripts/validate-f124-release.mjs. Only booleans, run ids and the owner decision record. The validator never creates ownerDecision; it only checks it against the verified A/B/C.",
   "checks": {
     "autoUpdateTestsPassed": true,
     "ciAndCodeqlPassed": true,
@@ -24,5 +24,45 @@
     "backupRunId": "37118268591",
     "dryRunRunId": "37118367153",
     "applyRunId": "37118431576"
+  },
+  "ownerDecision": {
+    "verdict": "F124_RELEASED_FOR_LIMITED_INVITE_BETA",
+    "decidedBy": "owner",
+    "date": "2026-10-03",
+    "scope": "invite-only beta for 3-5 trusted people; login-free existing features only; free; noindex kept",
+    "allowed": [
+      "player_search",
+      "player_detail",
+      "compare",
+      "progression",
+      "managers",
+      "squads",
+      "best_xi",
+      "squad_diagnosis",
+      "share_url",
+      "diagnosis_history",
+      "before_after_card",
+      "share_image",
+      "percentiles",
+      "titles_badges",
+      "your_best",
+      "growth_profile",
+      "share_url_with_trusted_few"
+    ],
+    "stillProhibited": [
+      "public_signup",
+      "account_signup_before_custom_smtp",
+      "photo_posts_stage2_production",
+      "production_schema_rls_storage_changes",
+      "community_public",
+      "photo_posts_public",
+      "public_announcement",
+      "noindex_removal",
+      "search_engine_listing",
+      "billing",
+      "unapproved_production_apply",
+      "automated_rollback_restore"
+    ],
+    "nextStage": "re-decide expansion to 10-30 people after reviewing usage"
   }
 }

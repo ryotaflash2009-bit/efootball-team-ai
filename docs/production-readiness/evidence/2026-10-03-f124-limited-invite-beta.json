@@ -1,0 +1,17 @@
+{
+  "schema": "efta-evidence/v1",
+  "date": "2026-10-03",
+  "kind": "f124-owner-decision",
+  "verdict": "F124_RELEASED_FOR_LIMITED_INVITE_BETA",
+  "decidedBy": "owner",
+  "basis": {
+    "A": "auto-update implementation, tests, CI, CodeQL, notifications, Evidence, Apply gates",
+    "B": "reference-data-automation (main only, 9 secrets), pipeline variable true",
+    "C": { "world": { "applyRun": "37118431576", "result": "applied_verified", "inserted": 75, "updated": 5675 }, "managers": { "applyRun": "37128515014", "result": "applied_verified", "inserted": 2 }, "publicSite": { "world": 13372, "managers": 69 } }
+  },
+  "scope": { "audience": "3-5 trusted people, invite only (URL shared directly)", "cost": "free", "features": "login-free existing features only", "noindex": "kept" },
+  "stillProhibited": ["public signup", "account signup before custom SMTP", "photo posts stage 2 in Production", "Production schema/RLS/storage changes", "community public", "photo posts public", "public announcement", "noindex removal", "search engine listing", "billing", "unapproved Production apply", "automated rollback/restore"],
+  "productionChecks": { "signupMode": "limited (src/lib/supabase/account-availability.ts unchanged)", "xRobotsTag": "noindex, nofollow, noarchive", "robotsTxt": "Disallow: /" },
+  "nextDecision": "expand to 10-30 people after reviewing usage (owner)",
+  "productionChangesInThisStep": 0
+}

@@ -12,6 +12,14 @@ export const F124_CHECKS = Object.freeze({
   C: ["orchestratedPlanSucceeded", "orchestratedBackupValid", "orchestratedDryRunSucceeded", "applyApprovedByOwner", "applyVerified", "appliedStateUpdated", "publicSiteMatchesAppliedState", "allDatasetsCurrent"],
 });
 
+/** 本人の判断（2026-10-03）: 招待制の少人数ベータだけを許可する。解除の範囲は記録の stillProhibited で固定する。 */
+export const F124_RELEASE_VERDICT = "F124_RELEASED_FOR_LIMITED_INVITE_BETA";
+export const F124_REQUIRED_PROHIBITIONS = Object.freeze([
+  "public_signup", "account_signup_before_custom_smtp", "photo_posts_stage2_production", "production_schema_rls_storage_changes",
+  "community_public", "photo_posts_public", "public_announcement", "noindex_removal", "search_engine_listing", "billing",
+  "unapproved_production_apply", "automated_rollback_restore",
+]);
+
 const RUN_ID = /^[0-9]{1,20}$/;
 const SECRET_LIKE = [/sb_secret_/i, /^eyJ[A-Za-z0-9_-]{10,}\./, /-----BEGIN [A-Z ]*(PRIVATE KEY|CERTIFICATE)-----/, /^(postgres|postgresql):\/\//i, /AGE-SECRET-KEY-/i, /@[a-z0-9-]+\.[a-z]{2,}/i];
 
@@ -25,7 +33,7 @@ function scanSecrets(value, pathName, problems) {
 
 /**
  * @param {unknown} input { checks: Record<string, boolean>, evidence: { applyRunId?, planRunId?, backupRunId?, dryRunRunId? } }
- * @returns {{ verdict: "F124_HOLD" | "F124_READY_FOR_OWNER_DECISION" | "F124_BLOCKED", parts: Record<"A"|"B"|"C", { ok: boolean, missing: string[] }>, problems: string[] }}
+ * @returns {{ verdict: "F124_HOLD" | "F124_READY_FOR_OWNER_DECISION" | "F124_RELEASED_FOR_LIMITED_INVITE_BETA" | "F124_BLOCKED", parts: Record<"A"|"B"|"C", { ok: boolean, missing: string[] }>, problems: string[] }}
  */
 export function evaluateF124(input) {
   const problems = [];
@@ -49,7 +57,20 @@ export function evaluateF124(input) {
       parts.C = { ok: false, missing: needed.map((k) => `evidence.${k}`) };
     }
   }
+  // 本人の判断（ownerDecision）は記録を読むだけで、このコードが作ることはない。A・B・C が揃っていないのに
+  // 解除の記録がある、または判断の値・範囲が契約と違う場合は BLOCKED（記録と事実の食い違い）。
+  const decision = input.ownerDecision;
+  if (decision !== undefined && decision !== null) {
+    if (typeof decision !== "object" || decision.verdict !== F124_RELEASE_VERDICT || decision.decidedBy !== "owner" || !/^\d{4}-\d{2}-\d{2}$/.test(String(decision.date ?? ""))) {
+      problems.push("owner_decision_invalid");
+    } else {
+      const forbidden = Array.isArray(decision.stillProhibited) ? decision.stillProhibited : [];
+      const missingProhibitions = F124_REQUIRED_PROHIBITIONS.filter((x) => !forbidden.includes(x));
+      if (missingProhibitions.length) problems.push(`owner_decision_missing_prohibitions:${missingProhibitions.join(",")}`);
+    }
+  }
   if (problems.length) return { verdict: "F124_BLOCKED", parts, problems };
   const ok = parts.A.ok && parts.B.ok && parts.C.ok;
+  if (decision) return ok ? { verdict: F124_RELEASE_VERDICT, parts, problems } : { verdict: "F124_BLOCKED", parts, problems: ["owner_decision_without_verified_checks"] };
   return { verdict: ok ? "F124_READY_FOR_OWNER_DECISION" : "F124_HOLD", parts, problems };
 }

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 /**
  * F-053 公開 ID の試作（内部ページ）。Production では表示しない（middleware と、ここでの notFound の二重）。
- * F-124: 参照データの自動更新が完成するまで、コミュニティ機能は一般に出さない。
+ * F-124 は 2026-10-03 に招待制の少人数ベータとして解除されたが、コミュニティ機能の公開は引き続き禁止（本人の判断）。
  */
 export default function PublicIdPreviewPage() {
   if (!areInternalPagesVisible()) notFound();

@@ -117,3 +117,4 @@ A・B・C がすべて確認できるまで、家族・友人・第三者への�
   Dry run 37128444969 → Apply 37128515014（本人が承認）→ **applied_verified**（追加 2・更新 0・削除 0）。applied-state を 62a21bd2086a・69 件へ。
 - 公開サイト: World 13,372・Managers 69 を確認。
 - **F-124 の確認ツール: F124_READY_FOR_OWNER_DECISION**（A・B・C すべて確認済み）。解除するかは本人の判断（Claude Code は解除しない）。
+- **2026-10-03 本人の判断: F-124 を招待制の少人数ベータとして解除**（`F124_RELEASED_FOR_LIMITED_INVITE_BETA`・`invite-beta-2026-10-03.md`）。
