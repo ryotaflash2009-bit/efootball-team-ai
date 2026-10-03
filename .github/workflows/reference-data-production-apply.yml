@@ -106,7 +106,10 @@ jobs:
     # so Production credentials are never exposed to unreviewed branch code.
     if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
-    environment: ${{ (inputs.mode == 'plan' || inputs.mode == 'dry-run') && 'reference-data-automation' || 'reference-data-production-apply' }}
+    # Automatic Apply (owner decision 2026-10-03): only mode=apply with the confirmation "auto-apply-<dataset>-to-production",
+    # dispatched by the orchestrator (github-actions[bot]), runs in the reviewer-less automatic Environment. Every other
+    # apply/verify/preflight keeps the reviewer-gated manual Environment.
+    environment: ${{ (inputs.mode == 'plan' || inputs.mode == 'dry-run') && 'reference-data-automation' || (inputs.mode == 'apply' && startsWith(inputs.confirm, 'auto-apply-')) && 'reference-data-production-apply-automatic' || 'reference-data-production-apply' }}
     # World plan: ~443 requests at 3 s intervals (~23 min); World apply: ~6,000 row updates in one transaction.
     timeout-minutes: 90
     # Job-local, throwaway PostgreSQL for the dry-run mode only (not Production). Same convention as ci.yml.
@@ -130,6 +133,7 @@ jobs:
           MODE: ${{ inputs.mode }}
           DATASET: ${{ inputs.dataset }}
           CONFIRM: ${{ inputs.confirm }}
+          ACTOR: ${{ github.actor }}
         run: |
           case "$MODE:$DATASET" in
             preflight:managers|preflight:world) expected="preflight" ;;
@@ -143,7 +147,13 @@ jobs:
             verify:world) expected="verify-world" ;;
             *) echo "::error::unknown mode or dataset"; exit 1 ;;
           esac
-          if [ "$CONFIRM" != "$expected" ]; then
+          # Automatic route: only for apply, only "auto-<expected>", only when the orchestrator dispatched it.
+          if [ "$MODE" = "apply" ] && [ "$CONFIRM" = "auto-$expected" ]; then
+            if [ "$ACTOR" != "github-actions[bot]" ]; then
+              echo "::error::the automatic apply route can only be dispatched by the orchestrator"
+              exit 1
+            fi
+          elif [ "$CONFIRM" != "$expected" ]; then
             echo "::error::confirmation input does not match the selected mode; aborting before touching any secret"
             exit 1
           fi
@@ -315,8 +325,50 @@ jobs:
       # apply only: the approver is the reviewer who approved this run's Environment deployment, not the
       # dispatching actor (the orchestrator dispatches as github-actions[bot]). No approval record → stop
       # before any Production connection.
+      # Automatic route only: download the plan and dry-run summaries of the bound runs, then re-check the kill switches
+      # and the auto-apply policy BEFORE the step that uses the write credential. Not ELIGIBLE -> the job stops here.
+      - name: Download the plan summary for the auto-apply re-check
+        if: ${{ inputs.mode == 'apply' && startsWith(inputs.confirm, 'auto-apply-') }}
+        uses: actions/download-artifact@v4
+        with:
+          name: reference-data-apply-plan${{ inputs.dataset == 'world' && '-world' || '' }}-summary
+          run-id: ${{ inputs.plan_run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/stage4/autocheck/plan
+
+      - name: Download the dry-run summary for the auto-apply re-check
+        if: ${{ inputs.mode == 'apply' && startsWith(inputs.confirm, 'auto-apply-') }}
+        uses: actions/download-artifact@v4
+        with:
+          name: reference-data-apply-dry-run${{ inputs.dataset == 'world' && '-world' || '' }}-summary
+          run-id: ${{ inputs.dry_run_run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/stage4/autocheck/dry-run
+
+      - name: Re-check the kill switches and the auto-apply policy (no secret)
+        if: ${{ inputs.mode == 'apply' && startsWith(inputs.confirm, 'auto-apply-') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          REFERENCE_DATA_APPLY_ROUTE: automatic
+          REFERENCE_DATA_APPLY_MODE: ${{ inputs.mode }}
+          REFERENCE_DATA_APPLY_DATASET: ${{ inputs.dataset }}
+          AUTO_APPLY_ENABLED: ${{ vars.REFERENCE_DATA_AUTO_APPLY_ENABLED }}
+          AUTO_APPLY_WORLD_ENABLED: ${{ vars.REFERENCE_DATA_AUTO_APPLY_WORLD_ENABLED }}
+          AUTO_APPLY_MANAGERS_ENABLED: ${{ vars.REFERENCE_DATA_AUTO_APPLY_MANAGERS_ENABLED }}
+          STAGE4_WORK_DIR: ${{ runner.temp }}/stage4
+          STAGE4_BACKUP_RUN_ID: ${{ inputs.backup_run_id }}
+          STAGE4_DRY_RUN_RUN_ID: ${{ inputs.dry_run_run_id }}
+          AUTO_APPLY_CHECK_PATH: ${{ runner.temp }}/stage4/out/auto-apply-check.json
+        run: |
+          set -euo pipefail
+          CURRENT_MAIN_SHA="$(gh api "repos/$REPO/commits/main" --jq .sha)"
+          export CURRENT_MAIN_SHA
+          node scripts/run-auto-apply-check-entry.mjs
+          echo "STAGE4_APPROVED_BY=auto-apply-policy" >> "$GITHUB_ENV"
+
       - name: Record the Environment approver (read-only GitHub API)
-        if: ${{ inputs.mode == 'apply' }}
+        if: ${{ inputs.mode == 'apply' && !startsWith(inputs.confirm, 'auto-apply-') }}
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -338,7 +390,8 @@ jobs:
           REFERENCE_DATA_PLAN_READ_DB_CA_CERT: ${{ inputs.mode == 'plan' && secrets.REFERENCE_DATA_PLAN_READ_DB_CA_CERT || '' }}
           REFERENCE_DATA_APPLY_MODE: ${{ inputs.mode }}
           REFERENCE_DATA_APPLY_DATASET: ${{ inputs.dataset }}
-          REFERENCE_DATA_APPLY_CONFIRM: ${{ inputs.confirm }}
+          # The automatic route was validated above; the CLI receives the normal apply confirmation.
+          REFERENCE_DATA_APPLY_CONFIRM: ${{ startsWith(inputs.confirm, 'auto-apply-') && inputs.mode == 'apply' && (inputs.dataset == 'world' && 'apply-world-to-production' || 'apply-managers-to-production') || inputs.confirm }}
           REFERENCE_DATA_APPLY_SUMMARY_PATH: ${{ runner.temp }}/reference-data-apply-summary.json
           STAGE4_WORK_DIR: ${{ runner.temp }}/stage4
           STAGE4_PLAN_RUN_ID: ${{ inputs.plan_run_id }}

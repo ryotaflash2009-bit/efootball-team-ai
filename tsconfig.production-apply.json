@@ -13,5 +13,5 @@
     "declaration": false,
     "types": ["node"]
   },
-  "files": ["src/lib/reference-data/auto-update/production-apply-cli.ts"]
+  "files": ["src/lib/reference-data/auto-update/production-apply-cli.ts", "src/lib/reference-data/auto-update/auto-apply-check-cli.ts"]
 }

@@ -7,6 +7,8 @@
  */
 
 export const NOTIFY_LABEL = "reference-data-update";
+/** 自動 Apply を止める Issue の label（auto-apply-policy-config.ts の haltIssueLabel と同じ。テストで一致を確認）。 */
+export const HALT_LABEL = "reference-data-auto-apply-halt";
 
 const SAFE_TOKEN = /^[a-z0-9_]{1,64}$/;
 const CHECKSUM = /^[0-9a-f]{12}$/;
@@ -67,6 +69,9 @@ const runIds = (runs) =>
   RUN_KEYS.filter((k) => runs && typeof runs === "object" && typeof runs[k] === "string" && /^\d{1,20}$/.test(runs[k])).map((k) => `${k} ${runs[k]}`);
 const reasons = (list) => (Array.isArray(list) ? list.filter((r) => typeof r === "string" && REASON.test(r)).slice(0, 10) : []);
 
+const DECISIONS = ["AUTO_APPLY_ELIGIBLE", "AUTO_APPLY_BLOCKED", "MANUAL_APPLY_REQUIRED", "INVALID_INPUT"];
+const decisionOf = (p) => (p && typeof p === "object" && DECISIONS.includes(p.decision) ? p.decision : "?");
+
 /** Production apply workflow の run 名（run-name）から mode と dataset を読む。 */
 export function parseApplyRunTitle(title) {
   const m = /^reference-data (preflight|plan|dry-run|apply|verify)( world)?$/.exec(String(title ?? ""));
@@ -92,6 +97,36 @@ export function buildPipelineNotification(p) {
     const a = p.approval && typeof p.approval === "object" ? p.approval : null;
     if (conclusion === "cancelled") return { notify: false, reason: "cancelled" };
     if (a?.kind === "no_action" && conclusion === "success") return { notify: false, reason: "no_action" };
+    if (a?.kind === "auto_applied") {
+      // 自動 Apply（承認なし）の結果。値は許可した形だけ（件数・checksum の先頭・判定・run id）。
+      const pol = a.policy && typeof a.policy === "object" ? a.policy : {};
+      const verdict = ["AUTO_APPLY_APPLIED_VERIFIED", "AUTO_APPLY_POST_VERIFY_FAILED", "AUTO_APPLY_ROLLBACK_REVIEW_REQUIRED"].includes(a.verdict) ? a.verdict : "unknown";
+      const ok = verdict === "AUTO_APPLY_APPLIED_VERIFIED";
+      const pc = a.publicCheck && typeof a.publicCheck === "object" ? a.publicCheck : {};
+      const cand = a.appliedStateCandidate && typeof a.appliedStateCandidate === "object" && a.appliedStateCandidate.entry && typeof a.appliedStateCandidate.entry === "object" ? a.appliedStateCandidate.entry : {};
+      const lines = [
+        head,
+        "",
+        `判定: ${verdict} / dataset: ${token(a.dataset) ?? "?"} / Apply の結果: ${token(a.applyOutcome) ?? "?"}`,
+        `expected writes: ${typeof pol.expectedWrites === "string" && /^[\w ,;:()/-]{1,200}$/.test(pol.expectedWrites) ? pol.expectedWrites : "?"}`,
+        `適用後の件数: ${int(pol.expectedAfterCount) ?? "?"} / 公開サイト: ${int(pc.observed) ?? "?"}（${pc.ok === true ? "一致" : "不一致"}）`,
+        `source ${checksum(typeof pol.sourceChecksum === "string" ? pol.sourceChecksum.slice(0, 12) : null) ?? "?"} / plan ${checksum(typeof pol.planChecksum === "string" ? pol.planChecksum.slice(0, 12) : null) ?? "?"} / policy ${typeof pol.contractVersion === "string" && /^[\w./-]{1,60}$/.test(pol.contractVersion) ? pol.contractVersion : "?"}`,
+        `applied-state の候補: ${checksum(cand.sourceChecksum12) ?? "?"}・${int(cand.recordCount) ?? "?"} 件`,
+        `run: ${runIds(a.runs).join(" / ") || "?"}`,
+        "",
+        ok
+          ? "次: Evidence PR で applied-state と（World なら）F-071 の分布を更新する。本人の操作は不要。"
+          : "**新しい自動 Apply は停止しました（halt Issue）。Rollback・Restore は実行していません。** 本人が Evidence（apply result・undo plan・Backup）を確認して判断する。再開は halt Issue を閉じる。",
+        "",
+        footer,
+      ];
+      return {
+        notify: true,
+        halt: !ok,
+        title: ok ? "参照データを自動で適用し、検証しました / Reference data auto-applied and verified" : "【要対応】参照データの自動 Apply の事後検証に失敗しました / Auto-apply post-verify failed",
+        body: lines.join("\n"),
+      };
+    }
     if (a?.kind === "awaiting_approval") {
       const ids = runIds(a.runs);
       return {
@@ -102,6 +137,7 @@ export function buildPipelineNotification(p) {
           "",
           `dataset: ${token(a.dataset) ?? "?"} — 追加 ${int(a.added) ?? "?"} 件・更新 ${int(a.updated) ?? "?"} 件・削除 ${int(a.removed) ?? "?"} 件`,
           `binding: ${ids.join(" / ") || "?"}`,
+          `自動 Apply の判定（shadow）: ${decisionOf(a.autoApplyPolicy)}${reasons(a.autoApplyPolicy?.reasonCodes).length ? `（${reasons(a.autoApplyPolicy.reasonCodes).join(", ")}）` : ""} / 手動の経路の理由: ${reasons(a.route?.why).join(", ") || "?"}`,
           "",
           "次: Apply run の画面で内容と Backup の期限を確認し、問題がなければ `reference-data-production-apply` Environment で Approve and deploy を押す（1 回だけ）。承認しなければ何も書き込まれない。",
           "",

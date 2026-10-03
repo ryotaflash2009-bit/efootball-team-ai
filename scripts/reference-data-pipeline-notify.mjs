@@ -8,7 +8,7 @@
  */
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { execFileSync } from "node:child_process";
-import { buildPipelineNotification, NOTIFY_LABEL } from "./lib/reference-data-notify.mjs";
+import { buildPipelineNotification, NOTIFY_LABEL, HALT_LABEL } from "./lib/reference-data-notify.mjs";
 
 const readJson = (p) => {
   try {
@@ -40,4 +40,12 @@ if (open.length > 0) {
 } else {
   const url = gh(["issue", "create", "--title", n.title, "--body", n.body, "--label", NOTIFY_LABEL]);
   console.log(`created ${url}`);
+}
+
+// 自動 Apply の事後検証の失敗: 新しい自動 Apply を止める halt Issue を別に作る（orchestrator はこの label の open Issue を見て自動 Apply をしない）。
+// 解除は本人が Issue を閉じる。値は通知と同じ許可した形だけ。
+if (n.halt === true) {
+  gh(["label", "create", HALT_LABEL, "--color", "B60205", "--description", "Stops automatic reference-data applies until closed", "--force"]);
+  const url = gh(["issue", "create", "--title", `[halt] ${n.title}`, "--body", `${n.body}\n\nこの Issue が open の間、自動 Apply は行われません（手動の承認の経路だけ）。確認後に閉じると再開します。`, "--label", HALT_LABEL]);
+  console.log(`halt issue ${url}`);
 }

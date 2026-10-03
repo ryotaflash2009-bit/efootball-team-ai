@@ -38,8 +38,10 @@ describe("reference-data-update-orchestrator.yml", () => {
   it("Secret・Environmentを一切使わず、GITHUB_TOKENの actions: write と contents: read だけ", () => {
     expect(code).not.toMatch(/secrets\./);
     expect(code).not.toMatch(/^\s*environment\s*:/m);
-    expect(code).toMatch(/^permissions:\s*\n\s+actions: write\s*\n\s+contents: read\s*\n\s*\nconcurrency:/m);
+    // issues: read は halt Issue（自動 Apply の停止）を読むためだけ（2026-10-03）。書き込み権限は actions だけ。
+    expect(code).toMatch(/^permissions:\s*\n\s+actions: write\s*\n\s+contents: read\s*\n\s+issues: read\s*\n\s*\nconcurrency:/m);
     expect(code.match(/:\s*write\b/g)).toHaveLength(1);
+    for (const v of ["REFERENCE_DATA_AUTO_APPLY_ENABLED", "REFERENCE_DATA_AUTO_APPLY_WORLD_ENABLED", "REFERENCE_DATA_AUTO_APPLY_MANAGERS_ENABLED"]) expect(code).toContain(`vars.${v}`);
     expect(code).toContain("GH_TOKEN: ${{ github.token }}");
   });
 

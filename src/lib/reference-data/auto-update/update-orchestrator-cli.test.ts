@@ -1,8 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { APPLY_WORKFLOW, BACKUP_WORKFLOW, runOrchestrator, type OrchestratorDeps, type RunInfo } from "./update-orchestrator-cli";
-import { SHA, backupSummary, dryRunSummary, planSummary } from "./__fixtures__/orchestrator-fixtures";
+import { SHA, SRC, backupSummary, dryRunSummary, planSummary } from "./__fixtures__/orchestrator-fixtures";
 
-const DETECTION = JSON.stringify({ ok: true, world: { decision: "update_available" }, managers: { decision: "no_change" } });
+const DETECTION = JSON.stringify({ ok: true, world: { decision: "update_available", sourceChecksum12: SRC.slice(0, 12) }, managers: { decision: "no_change" } });
+const ON = { enabled: true, world: true, managers: true };
 const BACKUP_RUN = "36248197028";
 
 interface Fake {
@@ -17,10 +18,16 @@ function fake(opts: {
   applyStatus?: string;
   mainShas?: string[];
   runSha?: string;
+  latestApplied?: string | null;
+  halt?: boolean;
+  publicCount?: number | null;
+  autoApplyConclusion?: string;
+  evidence?: Record<string, unknown> | null;
 } = {}): Fake {
   let clock = Date.parse("2026-09-27T00:00:00.000Z");
   const runs: Record<string, RunInfo[]> = { [APPLY_WORKFLOW]: [], [BACKUP_WORKFLOW]: [] };
   const byId = new Map<string, RunInfo>();
+  const inputsById = new Map<string, Record<string, string>>();
   const dispatched: Fake["dispatched"] = [];
   const shas = [...(opts.mainShas ?? [])];
   let next = 100;
@@ -43,12 +50,16 @@ function fake(opts: {
       };
       runs[workflow].push(run);
       byId.set(id, run);
+      inputsById.set(id, inputs);
     },
     listRuns: async (workflow) => runs[workflow].map((r) => ({ ...r })),
     getRun: async (id) => {
       const r = byId.get(id)!;
       const mode = r.displayTitle.split(" ")[1] ?? "backup";
-      if (mode === "apply") r.status = opts.applyStatus ?? "waiting";
+      if (mode === "apply" && inputsById.get(id)?.confirm?.startsWith("auto-apply-")) {
+        r.status = "completed";
+        r.conclusion = opts.autoApplyConclusion ?? "success";
+      } else if (mode === "apply") r.status = opts.applyStatus ?? "waiting";
       else {
         r.status = "completed";
         r.conclusion = opts.conclusion?.[mode] ?? "success";
@@ -61,6 +72,16 @@ function fake(opts: {
       if (a === undefined) throw new Error(`no artifact ${name}`);
       return a;
     },
+    downloadArtifactFiles: async () => {
+      const files: Record<string, string> = {};
+      const ev = opts.evidence === undefined ? { outcome: "applied_verified", productionWritten: true } : opts.evidence;
+      if (ev) files["evidence.json"] = JSON.stringify(ev);
+      files["applied-state.candidate.json"] = JSON.stringify({ entry: { sourceChecksum12: SRC.slice(0, 12), recordCount: 13297 } });
+      return files;
+    },
+    latestAutoApplied: async () => opts.latestApplied ?? null,
+    haltOpen: async () => opts.halt ?? false,
+    publicCount: async () => (opts.publicCount === undefined ? 13297 : opts.publicCount),
     now: () => clock,
     sleep: async (ms) => {
       clock += ms;
@@ -152,5 +173,78 @@ describe("runOrchestrator（Plan → Backup → Dry run → Apply run 作成）"
     const f = fake({ applyStatus: "completed" });
     const out = await runOrchestrator(f.deps, { detectionSummaryText: DETECTION });
     expect(out).toMatchObject({ kind: "stopped", stage: "apply-run" });
+  });
+});
+
+describe("自動 Apply の経路（kill switch・halt・事後検証）", () => {
+  it("kill switch が off なら従来どおり手動の承認待ち。判定は shadow として記録する", async () => {
+    const f = fake();
+    const out = await runOrchestrator(f.deps, { detectionSummaryText: DETECTION });
+    expect(out.kind).toBe("awaiting_approval");
+    if (out.kind === "awaiting_approval") {
+      expect(out.policy.decision).toBe("AUTO_APPLY_ELIGIBLE");
+      expect(out.route.why).toEqual(expect.arrayContaining(["kill_switch_off:REFERENCE_DATA_AUTO_APPLY_ENABLED"]));
+    }
+    expect(f.dispatched.find((d) => d.inputs.mode === "apply")?.inputs.confirm).toBe("apply-world-to-production");
+  });
+
+  it("kill switch がすべて on・ELIGIBLE・halt なしなら、承認なしの経路で Apply し、事後検証と公開サイトの件数まで確かめる", async () => {
+    const f = fake();
+    const out = await runOrchestrator(f.deps, { detectionSummaryText: DETECTION, autoApply: ON });
+    expect(out).toMatchObject({ kind: "auto_applied", verdict: "AUTO_APPLY_APPLIED_VERIFIED", applyOutcome: "applied_verified", publicCheck: { expected: 13297, observed: 13297, ok: true } });
+    expect(f.dispatched.find((d) => d.inputs.mode === "apply")?.inputs).toMatchObject({ mode: "apply", confirm: "auto-apply-world-to-production" });
+  });
+
+  it("dataset の kill switch だけが off でも手動の経路", async () => {
+    const out = await runOrchestrator(fake().deps, { detectionSummaryText: DETECTION, autoApply: { ...ON, world: false } });
+    expect(out.kind === "awaiting_approval" && out.route.why).toEqual(["kill_switch_off:REFERENCE_DATA_AUTO_APPLY_WORLD_ENABLED"]);
+  });
+
+  it("halt Issue が open なら手動の経路（新しい自動 Apply をしない）", async () => {
+    const out = await runOrchestrator(fake({ halt: true }).deps, { detectionSummaryText: DETECTION, autoApply: ON });
+    expect(out.kind === "awaiting_approval" && out.route.why).toEqual(["halt_issue_open"]);
+  });
+
+  it("契約の外（許可外の列）なら kill switch が on でも手動の経路", async () => {
+    const f = fake({ artifacts: { "reference-data-apply-plan-world-summary": planSummary((p) => { p.changedFieldFrequency = { ovr_max: 2, appearance_updated_at: 2 }; }) } });
+    const out = await runOrchestrator(f.deps, { detectionSummaryText: DETECTION, autoApply: ON });
+    expect(out.kind).toBe("awaiting_approval");
+    if (out.kind === "awaiting_approval") {
+      expect(out.policy.decision).toBe("MANUAL_APPLY_REQUIRED");
+      expect(out.route.why).toContain("policy_manual_apply_required");
+    }
+  });
+
+  it("候補が検出と食い違う（古い）なら、Apply run を作らずに停止する", async () => {
+    const stale = JSON.stringify({ ok: true, world: { decision: "update_available", sourceChecksum12: "0123456789ab" }, managers: { decision: "no_change" } });
+    const f = fake();
+    const out = await runOrchestrator(f.deps, { detectionSummaryText: stale, autoApply: ON });
+    expect(out).toMatchObject({ kind: "stopped", stage: "policy" });
+    expect(out.kind === "stopped" && out.reasons).toContain("candidate_stale");
+    expect(f.dispatched.some((d) => d.inputs.mode === "apply")).toBe(false);
+  });
+
+  it("自動 Apply で適用済みの候補はもう一度は処理しない（二重適用の防止）", async () => {
+    const f = fake({ latestApplied: SRC.slice(0, 12) });
+    const out = await runOrchestrator(f.deps, { detectionSummaryText: DETECTION, autoApply: ON });
+    expect(out).toEqual({ kind: "no_action", reasons: ["already_applied_by_auto_apply:world"] });
+    expect(f.dispatched).toEqual([]);
+  });
+
+  it("公開サイトの件数が一致しなければ POST_VERIFY_FAILED（Rollback・Restore はしない）", async () => {
+    const out = await runOrchestrator(fake({ publicCount: 13296 }).deps, { detectionSummaryText: DETECTION, autoApply: ON });
+    expect(out).toMatchObject({ kind: "auto_applied", verdict: "AUTO_APPLY_POST_VERIFY_FAILED", publicCheck: { ok: false, observed: 13296 } });
+  });
+
+  it("事後検証の失敗・Evidence が無い場合は ROLLBACK_REVIEW_REQUIRED（本人の判断待ち）", async () => {
+    const rb = await runOrchestrator(fake({ evidence: { outcome: "rollback_required", productionWritten: true }, autoApplyConclusion: "failure" }).deps, { detectionSummaryText: DETECTION, autoApply: ON });
+    expect(rb).toMatchObject({ kind: "auto_applied", verdict: "AUTO_APPLY_ROLLBACK_REVIEW_REQUIRED" });
+    const none = await runOrchestrator(fake({ evidence: null, autoApplyConclusion: "failure" }).deps, { detectionSummaryText: DETECTION, autoApply: ON });
+    expect(none).toMatchObject({ kind: "auto_applied", verdict: "AUTO_APPLY_ROLLBACK_REVIEW_REQUIRED", applyOutcome: "no_evidence" });
+  });
+
+  it("自動の Apply job が書き込みの前に止まった（kill switch・再確認・Secret 不足）なら停止として報告する", async () => {
+    const out = await runOrchestrator(fake({ evidence: { outcome: "no_summary", productionWritten: false }, autoApplyConclusion: "failure" }).deps, { detectionSummaryText: DETECTION, autoApply: ON });
+    expect(out).toMatchObject({ kind: "stopped", stage: "auto-apply", reasons: ["auto_apply_not_applied:no_summary"] });
   });
 });
