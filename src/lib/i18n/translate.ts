@@ -1,12 +1,37 @@
 import type { Locale } from "./locale";
 import ja from "./dictionaries/ja";
-import en from "./dictionaries/en";
 import type { Dictionary } from "./dictionaries/ja";
 
-const DICTIONARIES: Record<Locale, Dictionary> = { ja, en };
+/**
+ * 既定言語（ja）は静的に持つ（SSR と hydration は常に ja）。英語の辞書は、英語を選んだ利用者のときだけ
+ * `loadDictionary("en")` で後から読み込む（2026-10-04: 全画面の初回 JS から英語の辞書を外す）。
+ * 読み込み前の英語の要求は ja へフォールバックする（生のキーは出さない）。テストは setup で登録する。
+ */
+const DICTIONARIES: Partial<Record<Locale, Dictionary>> = { ja };
+const LOADING: Partial<Record<Locale, Promise<void>>> = {};
+
+export function registerDictionary(locale: Locale, dictionary: Dictionary): void {
+  DICTIONARIES[locale] = dictionary;
+}
+
+export function hasDictionary(locale: Locale): boolean {
+  return DICTIONARIES[locale] != null;
+}
+
+/** 辞書を読み込む（済みなら即時）。失敗しても例外にしない（呼び出し側は ja のまま表示する）。 */
+export function loadDictionary(locale: Locale): Promise<void> {
+  if (hasDictionary(locale)) return Promise.resolve();
+  if (locale !== "en") return Promise.resolve();
+  LOADING.en ??= import("./dictionaries/en")
+    .then((m) => registerDictionary("en", m.default))
+    .catch(() => {
+      delete LOADING.en; // 次の切り替えで再試行できるようにする
+    });
+  return LOADING.en;
+}
 
 export function dictionaryOf(locale: Locale): Dictionary {
-  return DICTIONARIES[locale];
+  return DICTIONARIES[locale] ?? ja;
 }
 
 type Namespace = keyof Dictionary;
@@ -21,7 +46,7 @@ export function translate<N extends Namespace>(locale: Locale, namespace: N, key
   const value = dict?.[namespace]?.[key];
   if (typeof value === "string") return value;
 
-  if (process.env.NODE_ENV !== "production") {
+  if (dict && process.env.NODE_ENV !== "production") {
     // eslint-disable-next-line no-console
     console.warn(`[i18n] missing key: ${String(namespace)}.${String(key)} for locale "${locale}"`);
   }

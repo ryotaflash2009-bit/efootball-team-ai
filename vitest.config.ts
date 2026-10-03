@@ -13,6 +13,8 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["src/**/*.test.ts"],
+    // 英語の辞書は本番では後から読み込む（translate.ts）。テストでは最初から登録しておく。
+    setupFiles: ["./src/test-setup/register-dictionaries.ts"],
     // *.postgres.test.ts は実PostgreSQL接続が必須(PHASE2_TEST_PG_*環境変数)のため、
     // 通常のUnit Test(PostgreSQL不要が前提)からは除外する。実行する場合は
     // `npx vitest run --config vitest.postgres.config.ts` を明示的に使うこと

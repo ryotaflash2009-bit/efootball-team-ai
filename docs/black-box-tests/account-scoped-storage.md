@@ -1,7 +1,7 @@
 # アカウント別localStorage名前空間(Stage 1/2) ブラックボックステスト結果
 
-実行日時: 2026-09-14T08:52:46.165Z
-対象: http://localhost:3001（Production Build上の隔離ヘッドレスChrome確認。ブラウザー側Supabaseクライアント(auth・DBとも)はテストダブルへ差し替え、実Supabaseへは接続しない）
+実行日時: 2026-10-03T19:11:20.102Z
+対象: http://localhost:3000（Production Build上の隔離ヘッドレスChrome確認。ブラウザー側Supabaseクライアント(auth・DBとも)はテストダブルへ差し替え、実Supabaseへは接続しない）
 
 実ユーザーのMy Team・保存ビルド・保存スカッド・SQLiteは一切変更しない。テストダブルの`__efbUserId`パラメーターで、単一の固定テストダブルのままユーザーA/B相当のアカウント切り替えを再現する。
 
