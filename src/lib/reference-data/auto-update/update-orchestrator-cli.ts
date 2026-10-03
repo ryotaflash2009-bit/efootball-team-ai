@@ -94,19 +94,21 @@ class StageError extends Error {
   }
 }
 
-export async function runOrchestrator(deps: OrchestratorDeps, input: { detectionSummaryText: string }): Promise<OrchestratorOutcome> {
+export async function runOrchestrator(deps: OrchestratorDeps, input: { detectionSummaryText: string; detectionRunId?: string }): Promise<OrchestratorOutcome> {
   const d = decideFromDetection(input.detectionSummaryText);
   if (!d.ok) return { kind: "no_action", reasons: d.reasons };
   const dataset = d.value.dataset;
-  const runs: Record<string, string> = {};
+  // 起動した run は、完了を待つ前に記録する（失敗した run も停止の報告と通知に残すため）。
+  const runs: Record<string, string> = input.detectionRunId ? { detection: input.detectionRunId } : {};
   let stage = "start";
   try {
     const sha = await deps.mainSha();
     const title = (mode: string) => `reference-data ${mode}${dataset === "world" ? " world" : ""}`;
 
     stage = "plan";
-    const planRun = await waitCompleted(deps, await dispatchAndFind(deps, APPLY_WORKFLOW, { mode: "plan", dataset, confirm: `plan-${dataset}` }, title("plan"), sha), LIMIT_MS.plan);
-    runs.plan = planRun.id;
+    const planDispatched = await dispatchAndFind(deps, APPLY_WORKFLOW, { mode: "plan", dataset, confirm: `plan-${dataset}` }, title("plan"), sha);
+    runs.plan = planDispatched.id;
+    const planRun = await waitCompleted(deps, planDispatched, LIMIT_MS.plan);
     const planSummaryName = `reference-data-apply-plan${dataset === "world" ? "-world" : ""}-summary`;
     const pg = evaluatePlanGate(await deps.downloadArtifact(planRun.id, planSummaryName), dataset, sha);
     if (!pg.ok) return { kind: "stopped", stage, reasons: pg.reasons, runs };
@@ -115,8 +117,9 @@ export async function runOrchestrator(deps: OrchestratorDeps, input: { detection
 
     stage = "backup";
     if ((await deps.mainSha()) !== sha) return { kind: "stopped", stage, reasons: ["main_sha_changed"], runs };
-    const backupRun = await waitCompleted(deps, await dispatchAndFind(deps, BACKUP_WORKFLOW, { confirm: "backup", backup_category: "pre-apply", execution: "automation" }, null, sha), LIMIT_MS.backup);
-    runs.backup = backupRun.id;
+    const backupDispatched = await dispatchAndFind(deps, BACKUP_WORKFLOW, { confirm: "backup", backup_category: "pre-apply", execution: "automation" }, null, sha);
+    runs.backup = backupDispatched.id;
+    const backupRun = await waitCompleted(deps, backupDispatched, LIMIT_MS.backup);
     const bg = evaluateBackupGate(await deps.downloadArtifact(backupRun.id, "reference-data-backup-summary"), backupRun.id, plan.productionCounts);
     if (!bg.ok) return { kind: "stopped", stage, reasons: bg.reasons, runs };
     if (Date.parse(backupRun.createdAt) < Date.parse(planRun.updatedAt)) return { kind: "stopped", stage, reasons: ["backup_not_after_plan"], runs };
@@ -124,8 +127,9 @@ export async function runOrchestrator(deps: OrchestratorDeps, input: { detection
     stage = "dry-run";
     if ((await deps.mainSha()) !== sha) return { kind: "stopped", stage, reasons: ["main_sha_changed"], runs };
     const bindings = { plan_run_id: planRun.id, backup_run_id: backupRun.id, source_checksum: plan.sourceChecksum, plan_checksum: plan.planChecksum };
-    const dryRun = await waitCompleted(deps, await dispatchAndFind(deps, APPLY_WORKFLOW, { mode: "dry-run", dataset, confirm: `dry-run-${dataset}`, ...bindings }, title("dry-run"), sha), LIMIT_MS.dryRun);
-    runs.dryRun = dryRun.id;
+    const dryDispatched = await dispatchAndFind(deps, APPLY_WORKFLOW, { mode: "dry-run", dataset, confirm: `dry-run-${dataset}`, ...bindings }, title("dry-run"), sha);
+    runs.dryRun = dryDispatched.id;
+    const dryRun = await waitCompleted(deps, dryDispatched, LIMIT_MS.dryRun);
     const dryName = `reference-data-apply-dry-run${dataset === "world" ? "-world" : ""}-summary`;
     const dg = evaluateDryRunGate(await deps.downloadArtifact(dryRun.id, dryName), plan, backupRun.id);
     if (!dg.ok) return { kind: "stopped", stage, reasons: dg.reasons, runs };
@@ -225,7 +229,7 @@ export async function main(env: Readonly<Record<string, string | undefined>> = p
     return 1;
   }
   const detectionText = await deps.downloadArtifact(detectionRunId, "reference-data-detection-summary");
-  const outcome = await runOrchestrator(deps, { detectionSummaryText: detectionText });
+  const outcome = await runOrchestrator(deps, { detectionSummaryText: detectionText, detectionRunId });
   const summary = markdownFor(outcome);
   if (env.GITHUB_STEP_SUMMARY) appendFileSync(env.GITHUB_STEP_SUMMARY, summary);
   writeFileSync(path.join(workDir, "reference-data-update-approval.json"), `${JSON.stringify(outcome.kind === "awaiting_approval" ? { kind: outcome.kind, runs: outcome.runs, ...outcome.approval.json } : outcome, null, 2)}\n`);

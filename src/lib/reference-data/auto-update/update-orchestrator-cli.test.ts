@@ -115,6 +115,12 @@ describe("runOrchestrator（Plan → Backup → Dry run → Apply run 作成）"
     expect(f.dispatched).toHaveLength(1);
   });
 
+  it("失敗した run も停止の報告に残す（起動した run を完了の前に記録・検出 run も含める。2026-10-03）", async () => {
+    const f = fake({ conclusion: { plan: "failure" } });
+    const out = await runOrchestrator(f.deps, { detectionSummaryText: DETECTION, detectionRunId: "36901363553" });
+    expect(out).toMatchObject({ kind: "stopped", stage: "plan", runs: { detection: "36901363553", plan: "100" } });
+  });
+
   it("Backup が無効なら Dry run を起動しない", async () => {
     const f = fake({ artifacts: { "reference-data-backup-summary": backupSummary((s) => { s.restoreVerified = false; }) } });
     const out = await runOrchestrator(f.deps, { detectionSummaryText: DETECTION });

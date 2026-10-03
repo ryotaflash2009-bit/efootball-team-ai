@@ -97,3 +97,10 @@
 | C 実運用 | 自動進行での Plan → Backup → Dry run → 承認 → applied_verified を 1 回 | ❌ 未実施 |
 
 A・B・C がすべて確認できるまで、家族・友人・第三者への試用・新規登録の開放・コミュニティの公開をしない。
+
+## 2026-10-03 更新
+
+- Environment `reference-data-automation` を本人が作成（main だけ・レビューなし・admin bypass 無効）。Secret は 0 件。
+- 変数 `REFERENCE_DATA_AUTO_UPDATE_PIPELINE_ENABLED=true` を設定（Claude Code）。
+- Secret が無い状態での実際の停止を確認（orchestrator run 37107900931 → Plan run 37107931538 が secret の確認で停止・書き込みなし）。
+- 本人の操作は Secret 9 件の登録だけ: `owner-secret-entry-2026-10-03.md`。登録後は「設定完了」で再開する。

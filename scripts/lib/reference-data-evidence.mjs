@@ -89,6 +89,8 @@ export function buildApplyEvidence({ env, summary, inputs, outputs, applyResult,
     schema: EVIDENCE_SCHEMA,
     createdAt: now,
     ...ctx,
+    // job の結果（success / failure / cancelled）。secret の確認などで CLI の前に止まったときは outcome が no_summary になる。
+    jobStatus: ["success", "failure", "cancelled"].includes(env.EVIDENCE_JOB_STATUS) ? env.EVIDENCE_JOB_STATUS : null,
     outcome,
     summary: isObj(summary)
       ? { ok: summary.ok === true, phase: typeof summary.phase === "string" ? summary.phase.slice(0, 40) : null, reasons: safeReasons(summary.reasons), status: isObj(summary.facts) && typeof summary.facts.status === "string" ? summary.facts.status.slice(0, 40) : null, checkedAt: typeof summary.checkedAt === "string" ? summary.checkedAt.slice(0, 40) : null }
