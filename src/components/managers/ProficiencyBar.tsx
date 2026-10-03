@@ -74,11 +74,13 @@ export function ProficiencyBar({
 
 /** 略称の凡例。 */
 export function TacticsLegend() {
+  const { locale } = useLocale();
   return (
     <p className="flex flex-wrap gap-x-3 gap-y-1 text-2xs text-text-muted">
       {TACTICS.map((t) => (
         <span key={t.key}>
-          <span className="font-semibold text-text-dim">{t.abbr}</span> {t.en}（{t.ja}）
+          <span className="font-semibold text-text-dim">{t.abbr}</span> {t.en}
+          {locale === "ja" ? `（${t.ja}）` : ""}
         </span>
       ))}
     </p>

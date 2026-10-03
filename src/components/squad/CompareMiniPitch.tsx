@@ -1,4 +1,7 @@
+"use client";
+
 import { getFormation } from "@/lib/squad/formations";
+import { useSquadCompareText } from "./useSquadCompareText";
 import type { CompareCardUnit } from "@/lib/squad/compare-squads";
 
 /**
@@ -20,6 +23,7 @@ export function CompareMiniPitch({
   isCommon: (worldCardId: string) => boolean;
   className?: string;
 }) {
+  const { tx, name } = useSquadCompareText();
   const f = getFormation(formationId);
   const starters = units.filter((u) => u.area === "starter");
   const accent = side === "A" ? "var(--accent, #37f)" : "#e0a43b";
@@ -27,20 +31,25 @@ export function CompareMiniPitch({
   return (
     <figure className={`flex flex-col gap-1 ${className}`}>
       <figcaption className="text-xs font-semibold text-text-dim">
-        比較対象{side}: {f.name}
-        <span className="ml-1 font-normal text-text-muted">先発 {starters.length}/11</span>
+        {tx("miniTitleTemplate", { side, name: f.name })}
+        <span className="ml-1 font-normal text-text-muted">{tx("miniStartersTemplate", { n: starters.length })}</span>
       </figcaption>
       <div
         className="pitch-turf relative aspect-[68/105] w-full overflow-hidden rounded-md border border-border"
         role="img"
-        aria-label={`比較対象${side}（${f.name}）の配置。先発 ${starters.length} 人。${starters
-          .map(
-            (u) =>
-              `${u.nameJa || u.nameEn || `カード${u.worldCardId}`}: ${u.placementRole ?? "?"}${
-                u.isCaptain ? "・キャプテン" : ""
-              }${isCommon(u.worldCardId) ? "・共通カード" : "・この側だけ"}`,
-          )
-          .join(" / ")}`}
+        aria-label={tx("miniAriaTemplate", {
+          side,
+          name: f.name,
+          n: starters.length,
+          list: starters
+            .map(
+              (u) =>
+                `${name(u)}: ${u.placementRole ?? "?"}${u.isCaptain ? tx("miniCaptainSuffix") : ""}${
+                  isCommon(u.worldCardId) ? tx("miniCommonSuffix") : tx("miniOnlyThisSuffix")
+                }`,
+            )
+            .join(" / "),
+        })}
       >
         <div className="absolute inset-2 rounded border border-white/15" />
         <div className="absolute left-2 right-2 top-1/2 h-px bg-white/15" />
@@ -71,8 +80,8 @@ export function CompareMiniPitch({
         })}
       </div>
       <p className="text-[10px] leading-tight text-text-muted">
-        <span aria-hidden="true">●</span> 共通カード / <span aria-hidden="true">▫</span> この側だけ /
-        「C」= キャプテン。座標は正規化値（ピッチ幅比 0–100）。
+        <span aria-hidden="true">●</span> {tx("miniLegendCommon")} / <span aria-hidden="true">▫</span> {tx("miniLegendOnlyThis")} /{" "}
+        {tx("miniLegendNote")}
       </p>
     </figure>
   );

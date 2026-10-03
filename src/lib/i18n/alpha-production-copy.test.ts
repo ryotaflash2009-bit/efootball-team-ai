@@ -35,14 +35,17 @@ describe("マネージャー一覧: 内部ファイルパスを露出しない",
 });
 
 describe("マネージャー詳細: 生のraw GitHub URLを本文表示しない", () => {
-  const source = readFileSync(resolve(REPO_ROOT, "src/app/managers/[managerId]/page.tsx"), "utf8");
+  // 2026-10-04: 表示部分は ManagerDetailView（英語表示に対応）へ移した。ページはデータ取得だけ。
+  const source =
+    readFileSync(resolve(REPO_ROOT, "src/app/managers/[managerId]/page.tsx"), "utf8") +
+    readFileSync(resolve(REPO_ROOT, "src/components/managers/ManagerDetailView.tsx"), "utf8");
 
   it("raw.githubusercontent.comのURLを直接埋め込んでいない", () => {
     expect(source).not.toMatch(/raw\.githubusercontent\.com/);
   });
 
   it("manager.sourceUrlを生のテキストとして表示せず、リンクのhrefとしてのみ使う", () => {
-    expect(source).toContain("データ提供: {manager.source}");
+    expect(source).toContain('fill(tm("dataSourceTemplate"), { source: String(manager.source)');
     expect(source).toMatch(/href=\{manager\.sourceUrl\}/);
     expect(source).not.toMatch(/\{manager\.sourceUrl\}<\/span>/);
   });

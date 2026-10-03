@@ -167,6 +167,8 @@ export interface MetricRow {
 
 export interface CategoryRow {
   id: string;
+  /** 表示名の翻訳用（compareCategory の ID）。id / label は従来どおり日本語のカテゴリ名。 */
+  categoryId: string;
   label: string;
   a: number | null;
   b: number | null;
@@ -899,6 +901,7 @@ export function compareSquads(a: CompareSideInput, b: CompareSideInput): SquadCo
     const bv = catB.get(c.category) ?? null;
     return {
       id: c.category,
+      categoryId: c.categoryId,
       label: c.category,
       a: roundTo(c.avg, 1),
       b: roundTo(bv, 1),
