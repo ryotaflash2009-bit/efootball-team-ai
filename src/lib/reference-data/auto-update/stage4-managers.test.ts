@@ -61,7 +61,7 @@ describe("Stage 4: candidate planner(Productionの現在行が基準)", () => {
     expect(e.problems).toEqual([]);
     expect(e.manualReviewCodes.length).toBeGreaterThan(0);
     const summary = summarizeManagersPlan(a, e);
-    expect(summary).toMatchObject({ addedCount: 1, changedCount: 0, addedIdentities: [a.plan.inserts[0].identity], addedIdentitiesTruncated: false });
+    expect(summary).toMatchObject({ addedCount: 1, changedCount: 0, invalidCount: 0, addedIdentities: [a.plan.inserts[0].identity], addedIdentitiesTruncated: false });
     expect(JSON.stringify(summary)).not.toMatch(/Synthetic|images\//);
   });
 
