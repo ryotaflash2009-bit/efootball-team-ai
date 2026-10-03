@@ -1,0 +1,93 @@
+{
+  "schema": "efta-evidence/v1",
+  "date": "2026-10-03",
+  "kind": "world-production-update",
+  "pipeline": "one-approval orchestrated auto-update (first live run)",
+  "result": "applied_verified",
+  "approval": {
+    "environment": "reference-data-production-apply",
+    "approvedByOwner": true,
+    "approverRecorded": true
+  },
+  "runs": {
+    "detection": "37115352891",
+    "orchestrator": "37116790841",
+    "plan": "37116813274",
+    "backup": "37118268591",
+    "dryRun": "37118367153",
+    "apply": "37118431576"
+  },
+  "mainSha": "bb15a20",
+  "source": {
+    "sourceChecksum12": "f7206c1ee9e6",
+    "planChecksum12": "3d5a9c596ecb",
+    "maxAppearanceUpdatedAt": "2026-10-01T16:42:06.399Z"
+  },
+  "counts": {
+    "before": 13297,
+    "after": 13372,
+    "inserted": 75,
+    "updated": 5675,
+    "structuralChanged": 6,
+    "cardRatingOnlyChanged": 5669,
+    "removed": 0,
+    "duplicate": 0,
+    "schemaDrift": 0,
+    "hardBlock": 0
+  },
+  "changedFields": [
+    "card_rating",
+    "maximum_level",
+    "ovr_max"
+  ],
+  "manualReview": [
+    "baseline_missing"
+  ],
+  "postVerify": {
+    "ok": true,
+    "problems": []
+  },
+  "automaticUndo": false,
+  "undoPlan": "artifact stage4-world-undo-plan of run 37118431576 (90 days); not executed",
+  "backup": {
+    "run": "37118268591",
+    "version": "2",
+    "category": "pre-apply",
+    "encryption": "age-x25519",
+    "restoreVerified": true,
+    "storageVerified": true,
+    "rowCounts": {
+      "world_player_cards": 13297,
+      "managers": 67,
+      "player_card_analysis": 19,
+      "import_batches": 11
+    },
+    "newR2Credential": true
+  },
+  "dryRun": {
+    "run": "37118367153",
+    "rediff": 0
+  },
+  "writes": "world_player_cards insert 75 / update 5675 in one transaction; import_batches 1 audit row; no DELETE/TRUNCATE; managers and player_card_analysis untouched",
+  "appliedState": "docs/production-readiness/reference-data-applied-state.json world_player_cards updated from the run's applied-state.candidate.json",
+  "secretValuesSeenByClaudeCode": 0,
+  "candidate": {
+    "sourceChecksum12": "f7206c1ee9e6",
+    "recordCount": 13372
+  },
+  "diff": {
+    "before": 13297,
+    "after": 13372,
+    "added": 75,
+    "changed": 5675,
+    "removed": 0
+  },
+  "apply": {
+    "run": "37118431576",
+    "status": "applied_verified",
+    "appliedAt": "2026-10-03T13:27:33.726Z"
+  },
+  "sourceTimestamps": {
+    "max": "2026-10-01T16:42:06.399Z"
+  }
+}

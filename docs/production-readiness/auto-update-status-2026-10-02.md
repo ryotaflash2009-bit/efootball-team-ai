@@ -104,3 +104,12 @@ A・B・C がすべて確認できるまで、家族・友人・第三者への�
 - 変数 `REFERENCE_DATA_AUTO_UPDATE_PIPELINE_ENABLED=true` を設定（Claude Code）。
 - Secret が無い状態での実際の停止を確認（orchestrator run 37107900931 → Plan run 37107931538 が secret の確認で停止・書き込みなし）。
 - 本人の操作は Secret 9 件の登録だけ: `owner-secret-entry-2026-10-03.md`。登録後は「設定完了」で再開する。
+
+## 2026-10-03 最初の実運用（承認 1 回）
+
+- Secret 9 件を本人が登録（10:06 UTC）。新しい R2 Token（対象 Bucket だけの Object Read & Write）。
+- 検出 37115352891 → 自動進行 37116790841 → Plan 37116813274 → Backup v2 37118268591（restore・storage 検証済み）→
+  Dry run 37118367153（re-diff 0）→ Apply 37118431576（本人が承認）→ **applied_verified**（追加 75・更新 5,675・削除 0・事後検証の問題 0）。
+- applied-state（World f7206c1ee9e6・13,372 件）と F-071 の分布（VALID）を更新。公開サイトの件数 13,372 を確認。
+- F-124: A・B は確認済み。C は World で確認済み、Managers（69 件）の適用が残り → `allDatasetsCurrent` が false で HOLD。
+- 次: Managers の自動進行（World は no_change になり、Managers だけが進む）→ Apply 承認待ち。
