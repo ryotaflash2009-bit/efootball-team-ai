@@ -40,8 +40,10 @@ describe("問い合わせページ: ベータ版の既知の制限", () => {
     expect(en.support.betaLimitsFeedback).toContain(`"${en.support.bugReportHeading}"`);
   });
 
-  it("未実装の機能を実装済みと書かない(自動更新・完全同期)", () => {
-    expect(ja.support.betaLimitData).toMatch(/手動で取り込んで/);
+  it("実装の状態と一致させる（自動更新は実装済み・完全同期は未実装）", () => {
+    // 2026-10-04: 参照データの自動更新は実装済み（週 1 回の検出）。完全な端末間同期は未実装のまま。
+    expect(ja.support.betaLimitData).toMatch(/週 1 回の自動検出/);
+    expect(en.support.betaLimitData).toMatch(/weekly automatic check/);
     expect(ja.support.betaLimitStorage).toMatch(/完全な自動同期はありません/);
     expect(en.support.betaLimitStorage).toMatch(/not available/);
   });
