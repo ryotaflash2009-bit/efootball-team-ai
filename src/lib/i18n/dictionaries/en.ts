@@ -3372,7 +3372,7 @@ const en: Dictionary = {
     section12Heading: "12. Changes to these terms",
     section12Body: "These terms may be updated. Important changes will be announced within the Service and the last-updated date will be revised.",
     section13Heading: "13. Contact and governing law",
-    section13Body: "See the Support page for contact. Japanese law is intended to govern; jurisdiction and operator details will be added after the operator's confirmation.",
+    section13Body: "See the Support page for contact. Governing law, jurisdiction, and the operator's legal name and address are not stated yet because the operator's confirmation is not complete; they will be added after that confirmation and a professional review.",
     ownerConfirmationNotice: "Governing law, jurisdiction, and the operator's legal name and address will be added after the operator's final confirmation and a professional review.",
   },
   dataManagement: {

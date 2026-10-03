@@ -1,7 +1,7 @@
 # 招待制アルファ表示修正 ブラックボックステスト結果
 
-実行日時: 2026-09-19T01:29:20.311Z
-対象: http://localhost:3001（Production Build上の隔離ヘッドレスChrome確認。Supabase Authはテストダブルへ差し替え、実Supabaseへは接続しない）
+実行日時: 2026-10-03T19:11:28.312Z
+対象: http://localhost:3000（Production Build上の隔離ヘッドレスChrome確認。Supabase Authはテストダブルへ差し替え、実Supabaseへは接続しない）
 
 実ユーザーのMy Team・保存ビルド・保存スカッド・SQLiteは一切変更しない。
 
@@ -14,10 +14,10 @@
 | PASS | [共通] /managers は1280px幅で横スクロールが発生しない | overflow=-10 |
 | PASS | [共通] /managers は390x844で横スクロールが発生しない | overflow=0 |
 | PASS | [共通] /my-team がHTTP 200 | status=200 |
-| PASS | [共通] /my-team は1280px幅で横スクロールが発生しない | overflow=0 |
+| PASS | [共通] /my-team は1280px幅で横スクロールが発生しない | overflow=-10 |
 | PASS | [共通] /my-team は390x844で横スクロールが発生しない | overflow=0 |
 | PASS | [共通] /account がHTTP 200 | status=200 |
-| PASS | [共通] /account は1280px幅で横スクロールが発生しない | overflow=0 |
+| PASS | [共通] /account は1280px幅で横スクロールが発生しない | overflow=-10 |
 | PASS | [共通] /account は390x844で横スクロールが発生しない | overflow=0 |
 | PASS | [共通] /privacy がHTTP 200 | status=200 |
 | PASS | [共通] /privacy は1280px幅で横スクロールが発生しない | overflow=-10 |

@@ -1,44 +1,44 @@
 # 公開準備基盤フェーズ ブラックボックステスト結果
 
-実行日時: 2026-09-19T02:19:03.869Z
-対象: http://localhost:3001（Production Build上の隔離ヘッドレスChrome確認。実機ではない）
+実行日時: 2026-10-03T19:13:47.748Z
+対象: http://localhost:3000（Production Build上の隔離ヘッドレスChrome確認。実機ではない）
 
 実ユーザーのMy Team・保存ビルド・保存スカッド・SQLiteは一切変更しない(隔離プロファイルのlocalStorageのみ操作)。
 
 | 結果 | 項目 | 詳細 |
 |---|---|---|
 | PASS | [シナリオ1] トップページにフッターリンクが表示される | links=7 |
-| PASS | [シナリオ1] /about が正しいタイトルで表示される | title="サービス概要 \| eFootball Team AI" |
+| PASS | [シナリオ1] /about が正しいタイトルで表示される | title="サービス概要 \| TeamAIXI" |
 | PASS | [シナリオ1] /about のh1は1つ | count=1 |
 | PASS | [シナリオ1] /about のh1が期待通り | h1="サービス概要" |
 | PASS | [シナリオ1] /about に内部ID・内部情報が露出しない |  |
 | PASS | [シナリオ1] /about に未置換変数・ダミー値が露出しない |  |
-| PASS | [シナリオ1] /terms が正しいタイトルで表示される | title="利用規約(草案) \| eFootball Team AI" |
+| PASS | [シナリオ1] /terms が正しいタイトルで表示される | title="利用規約 \| TeamAIXI" |
 | PASS | [シナリオ1] /terms のh1は1つ | count=1 |
-| PASS | [シナリオ1] /terms のh1が期待通り | h1="利用規約(草案)" |
+| PASS | [シナリオ1] /terms のh1が期待通り | h1="利用規約" |
 | PASS | [シナリオ1] /terms に内部ID・内部情報が露出しない |  |
 | PASS | [シナリオ1] /terms に未置換変数・ダミー値が露出しない |  |
-| PASS | [シナリオ1] /privacy が正しいタイトルで表示される | title="プライバシーポリシー(草案) \| eFootball Team AI" |
+| PASS | [シナリオ1] /privacy が正しいタイトルで表示される | title="プライバシーポリシー \| TeamAIXI" |
 | PASS | [シナリオ1] /privacy のh1は1つ | count=1 |
-| PASS | [シナリオ1] /privacy のh1が期待通り | h1="プライバシーポリシー(草案)" |
+| PASS | [シナリオ1] /privacy のh1が期待通り | h1="プライバシーポリシー" |
 | PASS | [シナリオ1] /privacy に内部ID・内部情報が露出しない |  |
 | PASS | [シナリオ1] /privacy に未置換変数・ダミー値が露出しない |  |
-| PASS | [シナリオ1] /disclaimer が正しいタイトルで表示される | title="免責事項 \| eFootball Team AI" |
+| PASS | [シナリオ1] /disclaimer が正しいタイトルで表示される | title="免責事項 \| TeamAIXI" |
 | PASS | [シナリオ1] /disclaimer のh1は1つ | count=1 |
 | PASS | [シナリオ1] /disclaimer のh1が期待通り | h1="免責事項" |
 | PASS | [シナリオ1] /disclaimer に内部ID・内部情報が露出しない |  |
 | PASS | [シナリオ1] /disclaimer に未置換変数・ダミー値が露出しない |  |
-| PASS | [シナリオ1] /data-management が正しいタイトルで表示される | title="データ管理 \| eFootball Team AI" |
+| PASS | [シナリオ1] /data-management が正しいタイトルで表示される | title="データ管理 \| TeamAIXI" |
 | PASS | [シナリオ1] /data-management のh1は1つ | count=1 |
 | PASS | [シナリオ1] /data-management のh1が期待通り | h1="データ管理" |
 | PASS | [シナリオ1] /data-management に内部ID・内部情報が露出しない |  |
 | PASS | [シナリオ1] /data-management に未置換変数・ダミー値が露出しない |  |
-| PASS | [シナリオ1] /support が正しいタイトルで表示される | title="問い合わせ \| eFootball Team AI" |
+| PASS | [シナリオ1] /support が正しいタイトルで表示される | title="問い合わせ \| TeamAIXI" |
 | PASS | [シナリオ1] /support のh1は1つ | count=1 |
 | PASS | [シナリオ1] /support のh1が期待通り | h1="問い合わせ" |
 | PASS | [シナリオ1] /support に内部ID・内部情報が露出しない |  |
 | PASS | [シナリオ1] /support に未置換変数・ダミー値が露出しない |  |
-| PASS | [シナリオ1] /release-readiness が正しいタイトルで表示される | title="公開準備状況 \| eFootball Team AI" |
+| PASS | [シナリオ1] /release-readiness が正しいタイトルで表示される | title="公開準備状況 \| TeamAIXI" |
 | PASS | [シナリオ1] /release-readiness のh1は1つ | count=1 |
 | PASS | [シナリオ1] /release-readiness のh1が期待通り | h1="公開準備状況" |
 | PASS | [シナリオ1] /release-readiness に内部ID・内部情報が露出しない |  |
@@ -51,10 +51,10 @@
 | PASS | [シナリオ2] 勝率保証をしないことの明示 |  |
 | PASS | [シナリオ2] 未提供機能(端末間の自動同期・課金等)が「未提供」として明示される |  |
 | PASS | [シナリオ2] 未提供機能(同期・課金)が「利用可能な機能」欄には含まれない |  |
-| PASS | [シナリオ2] アカウント登録・ログイン(Supabase Auth)が「利用可能な機能」欄に含まれる(実装済みのため) |  |
+| PASS | [シナリオ2] アカウント登録が「利用可能な機能」欄に含まれない(v1.0 はログイン不要) |  |
 | PASS | [シナリオ3] ブラウザー内保存(localStorage)の明示 |  |
 | PASS | [シナリオ3] 端末間同期なしの明示 |  |
-| FAIL | [シナリオ3] クラウドバックアップなしの明示 |  |
+| PASS | [シナリオ3] クラウドバックアップなしの明示 |  |
 | PASS | [シナリオ3] データ削除リスクの明示 |  |
 | PASS | [シナリオ3] アクセス解析を使用していないことの明示 |  |
 | PASS | [シナリオ3] 広告を表示していないことの明示 |  |
@@ -82,8 +82,8 @@
 | PASS | [シナリオ6] 未置換変数が表示されない |  |
 | PASS | [シナリオ6] 本名・住所・電話番号等の個人情報が表示されない |  |
 | PASS | [シナリオ6] mailtoリンクが少なくとも1つ表示される | count=4 |
-| PASS | [シナリオ6] すべてのmailtoリンクの宛先が設定済みメールアドレスと一致する | ["mailto:efootballteamAIsuportteam@outlook.jp?subject=eFootball%20Team%20AI%20%E4%B8%80%E8%88%AC%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B","mailto:efootballteamAIsuportteam@outlook.jp?subject=eFootball%20Team%20AI%20%E4%B8%8D%E5%85%B7%E5%90%88%E5%A0%B1%E5%91%8A","mailto:efootballteamAIsuportteam@outlook.jp?subject=eFootball%20Team%20AI%20%E6%A8%A9%E5%88%A9%E3%81%AB%E9%96%A2%E3%81%99%E3%82%8B%E9%80%A3%E7%B5%A1","mailto:efootballteamAIsuportteam@outlook.jp?subject=eFootball%20Team%20AI%20%E3%83%97%E3%83%A9%E3%82%A4%E3%83%90%E3%82%B7%E3%83%BC%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B"] |
-| PASS | [シナリオ6] 一般問い合わせ・不具合報告・権利者連絡・プライバシー問い合わせで用途別の件名(subject)が設定されている | ["mailto:efootballteamAIsuportteam@outlook.jp?subject=eFootball%20Team%20AI%20%E4%B8%80%E8%88%AC%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B","mailto:efootballteamAIsuportteam@outlook.jp?subject=eFootball%20Team%20AI%20%E4%B8%8D%E5%85%B7%E5%90%88%E5%A0%B1%E5%91%8A","mailto:efootballteamAIsuportteam@outlook.jp?subject=eFootball%20Team%20AI%20%E6%A8%A9%E5%88%A9%E3%81%AB%E9%96%A2%E3%81%99%E3%82%8B%E9%80%A3%E7%B5%A1","mailto:efootballteamAIsuportteam@outlook.jp?subject=eFootball%20Team%20AI%20%E3%83%97%E3%83%A9%E3%82%A4%E3%83%90%E3%82%B7%E3%83%BC%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B"] |
+| PASS | [シナリオ6] すべてのmailtoリンクの宛先が設定済みメールアドレスと一致する | ["mailto:efootballteamAIsuportteam@outlook.jp?subject=TeamAIXI%20%E4%B8%80%E8%88%AC%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B","mailto:efootballteamAIsuportteam@outlook.jp?subject=TeamAIXI%20%E4%B8%8D%E5%85%B7%E5%90%88%E5%A0%B1%E5%91%8A","mailto:efootballteamAIsuportteam@outlook.jp?subject=TeamAIXI%20%E6%A8%A9%E5%88%A9%E3%81%AB%E9%96%A2%E3%81%99%E3%82%8B%E9%80%A3%E7%B5%A1","mailto:efootballteamAIsuportteam@outlook.jp?subject=TeamAIXI%20%E3%83%97%E3%83%A9%E3%82%A4%E3%83%90%E3%82%B7%E3%83%BC%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B"] |
+| PASS | [シナリオ6] 一般問い合わせ・不具合報告・権利者連絡・プライバシー問い合わせで用途別の件名(subject)が設定されている | ["mailto:efootballteamAIsuportteam@outlook.jp?subject=TeamAIXI%20%E4%B8%80%E8%88%AC%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B","mailto:efootballteamAIsuportteam@outlook.jp?subject=TeamAIXI%20%E4%B8%8D%E5%85%B7%E5%90%88%E5%A0%B1%E5%91%8A","mailto:efootballteamAIsuportteam@outlook.jp?subject=TeamAIXI%20%E6%A8%A9%E5%88%A9%E3%81%AB%E9%96%A2%E3%81%99%E3%82%8B%E9%80%A3%E7%B5%A1","mailto:efootballteamAIsuportteam@outlook.jp?subject=TeamAIXI%20%E3%83%97%E3%83%A9%E3%82%A4%E3%83%90%E3%82%B7%E3%83%BC%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B"] |
 | PASS | [シナリオ6] 問い合わせ時の注意(パスワード等を送らない)が表示される |  |
 | PASS | [シナリオ8] フッターに非公式サービス表記がある |  |
 | PASS | [シナリオ8] 免責事項ページに非公式サービス表記がある |  |
@@ -125,11 +125,5 @@
 | PASS | [共通] ページ内でJS例外が発生していない(全シナリオ通算) |  |
 | PASS | [共通] コンソールエラーが発生していない(全シナリオ通算) |  |
 
-## 判定: 1 件 FAIL
-
-**既知の1件(今回の変更とは無関係)**: 「[シナリオ3] クラウドバックアップなしの明示」は、`/privacy`の実際の文言が
-「クラウド保存機能を利用しない場合、サーバー側でのバックアップは現在ありません」であり、テスト側が
-チェックしている連続した文字列「クラウドバックアップ」とは一致しないために発生している、既存の
-テスト側の表記不一致である(`storageLocationNoCloudBackup`は今回変更していない)。`/release-readiness`・
-`/account`の表示修正タスクの範囲外のため、今回は修正していない。
+## 判定: 全項目 PASS
 

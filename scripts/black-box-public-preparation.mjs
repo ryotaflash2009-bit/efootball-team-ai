@@ -128,32 +128,29 @@ async function main() {
     record("[シナリオ2] AIベスト11の説明が「ルールベース」であることを明示", aboutBody.includes("ルールベース"), "");
     record("[シナリオ2] 生成AI不使用の明示", aboutBody.includes("生成AI"), "");
     record("[シナリオ2] 外部AIへ送信しないことの明示", /外部AI/.test(aboutBody), "");
-    record("[シナリオ2] 公式サービスではないことの明示", aboutBody.includes("公式サービスではありません"), "");
+    // 2026-10-04 TeamAIXI v1.0: 非公式の表記は「公式サービスではなく、KONAMI による公認・提携・運営を受けていません」に統一（本人指定の文言）。
+    record("[シナリオ2] 公式サービスではないことの明示", /公式サービスでは(ありません|なく)/.test(aboutBody) && aboutBody.includes("公認・提携・運営を受けていません"), "");
     record("[シナリオ2] 勝率保証をしないことの明示", aboutBody.includes("勝率"), "");
     record(
       "[シナリオ2] 未提供機能(端末間の自動同期・課金等)が「未提供」として明示される",
       aboutBody.includes("未提供の機能") && aboutBody.includes("端末間の自動同期") && aboutBody.includes("決済・課金"),
       "",
     );
+     // v1.0: 「ベータ機能」の見出しは「既知の制約」になった。アカウント登録は v1.0 では提供しない（本人の決定 2026-10-04）ため、
+    // 「利用可能な機能」欄に含まれないことを確認する（旧: 含まれることを確認していた）。
+    const availSection = (() => {
+      const availIdx = aboutBody.indexOf("利用可能な機能");
+      const endIdx = aboutBody.indexOf("既知の制約", availIdx);
+      return availIdx === -1 || endIdx === -1 ? null : aboutBody.slice(availIdx, endIdx);
+    })();
     record(
       "[シナリオ2] 未提供機能(同期・課金)が「利用可能な機能」欄には含まれない",
-      !(() => {
-        const availIdx = aboutBody.indexOf("利用可能な機能");
-        const betaIdx = aboutBody.indexOf("ベータ機能");
-        if (availIdx === -1 || betaIdx === -1) return true;
-        const availSection = aboutBody.slice(availIdx, betaIdx);
-        return availSection.includes("端末間の自動同期") || availSection.includes("決済・課金");
-      })(),
+      availSection !== null && !availSection.includes("端末間の自動同期") && !availSection.includes("決済・課金"),
       "",
     );
     record(
-      "[シナリオ2] アカウント登録・ログイン(Supabase Auth)が「利用可能な機能」欄に含まれる(実装済みのため)",
-      (() => {
-        const availIdx = aboutBody.indexOf("利用可能な機能");
-        const betaIdx = aboutBody.indexOf("ベータ機能");
-        if (availIdx === -1 || betaIdx === -1) return false;
-        return aboutBody.slice(availIdx, betaIdx).includes("アカウント登録");
-      })(),
+      "[シナリオ2] アカウント登録が「利用可能な機能」欄に含まれない(v1.0 はログイン不要)",
+      availSection !== null && !availSection.includes("アカウント登録"),
       "",
     );
 
@@ -164,7 +161,7 @@ async function main() {
     const privacyBody = await bodyText(client);
     record("[シナリオ3] ブラウザー内保存(localStorage)の明示", privacyBody.includes("ブラウザー"), "");
     record("[シナリオ3] 端末間同期なしの明示", privacyBody.includes("同期しません") || privacyBody.includes("同期"), "");
-    record("[シナリオ3] クラウドバックアップなしの明示", privacyBody.includes("クラウドバックアップ"), "");
+    record("[シナリオ3] クラウドバックアップなしの明示", privacyBody.includes("クラウドバックアップ") || privacyBody.includes("サーバー側でのバックアップは現在ありません"), "");
     record("[シナリオ3] データ削除リスクの明示", privacyBody.includes("復元できない場合があります"), "");
     record("[シナリオ3] アクセス解析を使用していないことの明示", privacyBody.includes("アクセス解析"), "");
     record("[シナリオ3] 広告を表示していないことの明示", privacyBody.includes("広告"), "");
@@ -299,10 +296,10 @@ async function main() {
     // ============================================================
     await navigateAndSettle(client, `${BASE}/`);
     const homeFooterText = await evalJson(client, `document.querySelector('footer')?.textContent ?? ''`);
-    record("[シナリオ8] フッターに非公式サービス表記がある", homeFooterText.includes("公式サービスではありません"), "");
+    record("[シナリオ8] フッターに非公式サービス表記がある", /公式サービスでは(ありません|なく)/.test(homeFooterText) && homeFooterText.includes("公認・提携・運営を受けていません"), "");
     await navigateAndSettle(client, `${BASE}/disclaimer`);
     const disclaimerBody = await bodyText(client);
-    record("[シナリオ8] 免責事項ページに非公式サービス表記がある", disclaimerBody.includes("公式サービスではありません"), "");
+    record("[シナリオ8] 免責事項ページに非公式サービス表記がある", /公式サービスでは(ありません|なく)/.test(disclaimerBody) && disclaimerBody.includes("公認・提携・運営を受けていません"), "");
     record(
       "[シナリオ8] 「公式AI」「公認ツール」等の誇大・誤認表現を含まない",
       !/公式AI|公認ツール|公式データベース|公式ライセンス取得済み|運営会社と提携済み/.test(disclaimerBody) ||

@@ -1,7 +1,7 @@
 # 問い合わせ窓口(公開専用メールアドレス)有効化 ブラックボックステスト結果
 
-実行日時: 2026-09-14T08:52:22.040Z
-対象: http://localhost:3001（Production Build上の隔離ヘッドレスChrome確認。実機ではない）
+実行日時: 2026-10-03T19:10:50.955Z
+対象: http://localhost:3000（Production Build上の隔離ヘッドレスChrome確認。実機ではない）
 
 実ユーザーのMy Team・保存ビルド・保存スカッド・SQLiteは一切変更しない。
 
@@ -13,13 +13,13 @@
 | PASS | [日本語] プライバシー問い合わせの案内が表示される |  |
 | PASS | [日本語] 正しいメールアドレスが表示される |  |
 | PASS | [日本語] 準備中表示が消えている |  |
-| PASS | [日本語] mailtoリンクが正しい宛先を持つ | ["mailto:efootballteamAIsuportteam@outlook.jp?subject=eFootball%20Team%20AI%20%E4%B8%80%E8%88%AC%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B","mailto:efootballteamAIsuportteam@outlook.jp?subject=eFootball%20Team%20AI%20%E4%B8%8D%E5%85%B7%E5%90%88%E5%A0%B1%E5%91%8A","mailto:efootballteamAIsuportteam@outlook.jp?subject=eFootball%20Team%20AI%20%E6%A8%A9%E5%88%A9%E3%81%AB%E9%96%A2%E3%81%99%E3%82%8B%E9%80%A3%E7%B5%A1","mailto:efootballteamAIsuportteam@outlook.jp?subject=eFootball%20Team%20AI%20%E3%83%97%E3%83%A9%E3%82%A4%E3%83%90%E3%82%B7%E3%83%BC%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B"] |
+| PASS | [日本語] mailtoリンクが正しい宛先を持つ | ["mailto:efootballteamAIsuportteam@outlook.jp?subject=TeamAIXI%20%E4%B8%80%E8%88%AC%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B","mailto:efootballteamAIsuportteam@outlook.jp?subject=TeamAIXI%20%E4%B8%8D%E5%85%B7%E5%90%88%E5%A0%B1%E5%91%8A","mailto:efootballteamAIsuportteam@outlook.jp?subject=TeamAIXI%20%E6%A8%A9%E5%88%A9%E3%81%AB%E9%96%A2%E3%81%99%E3%82%8B%E9%80%A3%E7%B5%A1","mailto:efootballteamAIsuportteam@outlook.jp?subject=TeamAIXI%20%E3%83%97%E3%83%A9%E3%82%A4%E3%83%90%E3%82%B7%E3%83%BC%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B"] |
 | PASS | [日本語] 本名・住所・電話番号が表示されない |  |
 | PASS | [日本語] 未置換変数・架空メールが表示されない |  |
 | PASS | [英語] すべての問い合わせ用途が表示される |  |
 | PASS | [英語] 日本語固定文が残らない |  |
 | PASS | [英語] メールアドレスは日本語版と同一 |  |
-| PASS | [英語] mailtoリンクの宛先は日本語版と同一 | ["mailto:efootballteamAIsuportteam@outlook.jp?subject=eFootball%20Team%20AI%20General%20Inquiry","mailto:efootballteamAIsuportteam@outlook.jp?subject=eFootball%20Team%20AI%20Bug%20Report","mailto:efootballteamAIsuportteam@outlook.jp?subject=eFootball%20Team%20AI%20Rights-Related%20Contact","mailto:efootballteamAIsuportteam@outlook.jp?subject=eFootball%20Team%20AI%20Privacy%20Inquiry"] |
+| PASS | [英語] mailtoリンクの宛先は日本語版と同一 | ["mailto:efootballteamAIsuportteam@outlook.jp?subject=TeamAIXI%20General%20Inquiry","mailto:efootballteamAIsuportteam@outlook.jp?subject=TeamAIXI%20Bug%20Report","mailto:efootballteamAIsuportteam@outlook.jp?subject=TeamAIXI%20Rights-Related%20Contact","mailto:efootballteamAIsuportteam@outlook.jp?subject=TeamAIXI%20Privacy%20Inquiry"] |
 | PASS | [関係ページ] /termsは問い合わせ先を断定せず「問い合わせ」ページへ誘導する |  |
 | PASS | [関係ページ] /termsに架空の準拠法・裁判管轄を追加していない |  |
 | PASS | [関係ページ] /privacyの内容が現行実装と矛盾しない(ブラウザー内保存の明示) |  |

@@ -93,10 +93,11 @@ async function main() {
     record("[release-readiness] RLSに言及がある", /RLS/.test(rrText), "");
     record("[release-readiness] My Teamクラウド保存(アルファ機能・明示操作)への言及がある", /明示操作/.test(rrText), "");
     record("[release-readiness] 端末間の完全な自動同期は未実装と明記される", /完全な自動同期/.test(rrText) && /未実装/.test(rrText), "");
-    record("[release-readiness] Supabase参照データ経路への言及がある(利用可能な機能欄)", /Supabase.*参照データ経路|参照データ.*Supabase/.test(rrText), "");
-    record("[release-readiness] SQLite切戻しへの言及がある", /SQLite/.test(rrText), "");
-    record("[release-readiness] 自動更新dry-runへの言及がある", /dry-run/.test(rrText), "");
-    record("[release-readiness] Cronが未実装と明記される", /Cron/.test(rrText) && /未実装/.test(rrText), "");
+    // 2026-10-04: 参照データの自動更新（週 1 回の検出・安全条件つきの自動適用）は実装済み。旧い事実（Cron 未実装・dry-run だけ・SQLite 切戻し）を
+    // 期待する確認から、現在の事実の確認へ更新した（alpha-readiness-copy.test.ts と同じ根拠）。
+    record("[release-readiness] 参照データの自動更新に言及がある(利用可能な機能欄)", /自動で更新/.test(rrText), "");
+    record("[release-readiness] 安全条件を満たす更新だけを自動で適用し、それ以外は運営者が確認すると明記される", /安全条件/.test(rrText) && /運営者が確認/.test(rrText), "");
+    record("[release-readiness] Cron（定期実行）を未実装と誤記しない", !/Cron[^。]*未実装/.test(rrText), "");
     record("[release-readiness] 内部PID・SQLiteテーブル名等が露出しない", !/world_player_cards|server\.pid|localhost:3000/i.test(rrText), "");
 
     // /account: metadataとページ本文

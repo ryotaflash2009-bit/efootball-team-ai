@@ -1,7 +1,7 @@
 # 招待制アルファ最終表示整合 ブラックボックステスト結果
 
-実行日時: 2026-09-19T02:18:44.248Z
-対象: http://localhost:3001（Production Build上の隔離ヘッドレスChrome確認。Supabase Authはテストダブルへ差し替え、実Supabaseへは接続しない）
+実行日時: 2026-10-03T19:12:02.201Z
+対象: http://localhost:3000（Production Build上の隔離ヘッドレスChrome確認。Supabase Authはテストダブルへ差し替え、実Supabaseへは接続しない）
 
 実ユーザーのMy Team・保存ビルド・保存スカッド・SQLiteは一切変更しない。
 
@@ -11,7 +11,7 @@
 | PASS | [共通] /release-readiness は1280px幅で横スクロールが発生しない | overflow=-10 |
 | PASS | [共通] /release-readiness は390x844で横スクロールが発生しない | overflow=0 |
 | PASS | [共通] /account がHTTP 200 | status=200 |
-| PASS | [共通] /account は1280px幅で横スクロールが発生しない | overflow=0 |
+| PASS | [共通] /account は1280px幅で横スクロールが発生しない | overflow=-10 |
 | PASS | [共通] /account は390x844で横スクロールが発生しない | overflow=0 |
 | PASS | [共通] /privacy がHTTP 200 | status=200 |
 | PASS | [共通] /privacy は1280px幅で横スクロールが発生しない | overflow=-10 |
@@ -29,10 +29,9 @@
 | PASS | [release-readiness] RLSに言及がある |  |
 | PASS | [release-readiness] My Teamクラウド保存(アルファ機能・明示操作)への言及がある |  |
 | PASS | [release-readiness] 端末間の完全な自動同期は未実装と明記される |  |
-| PASS | [release-readiness] Supabase参照データ経路への言及がある(利用可能な機能欄) |  |
-| PASS | [release-readiness] SQLite切戻しへの言及がある |  |
-| PASS | [release-readiness] 自動更新dry-runへの言及がある |  |
-| PASS | [release-readiness] Cronが未実装と明記される |  |
+| PASS | [release-readiness] 参照データの自動更新に言及がある(利用可能な機能欄) |  |
+| PASS | [release-readiness] 安全条件を満たす更新だけを自動で適用し、それ以外は運営者が確認すると明記される |  |
+| PASS | [release-readiness] Cron（定期実行）を未実装と誤記しない |  |
 | PASS | [release-readiness] 内部PID・SQLiteテーブル名等が露出しない |  |
 | PASS | [account] metadata descriptionに古い断定(技術検証段階。クラウド同期は未実装)がない |  |
 | PASS | [account] metadata descriptionがSupabase Authに言及 |  |
@@ -46,4 +45,4 @@
 | PASS | [セキュリティ] コンソールエラーが発生していない(全シナリオ通算) |  |
 | PASS | [セキュリティ] 実Supabaseを含む新規の外部通信が発生していない |  |
 
-## 判定: 38/38 PASS
+## 判定: 37/37 PASS
