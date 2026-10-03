@@ -25,6 +25,7 @@ describe("TeamAIXI v1.0 Release Validator", () => {
     expect(checkRepo({ ...f, sidebar: f.sidebar + '\n{ href: "/community", labelKey: "community", icon: "community", status: "soon" },' })).toContain("unreleased_nav_items_present");
     expect(checkRepo({ ...f, packageJson: '{"version":"0.9.0"}' })).toContain("version_not_1_0_0");
     expect(checkRepo({ ...f, dict_en: f.dict_en + "\nKONAMI AI" })).toContain("forbidden_claim:KONAMI AI");
+    expect(checkRepo({ ...f, layout: f.layout + '\nopenGraph: { title: "TeamAIXI" },' })).toContain("og_or_canonical_with_noindex");
   });
 
   it("公開サイトの確認: 公開する画面は 200、未公開の画面は 404、noindex・robots・sitemap・セキュリティ・件数", async () => {
@@ -36,6 +37,8 @@ describe("TeamAIXI v1.0 Release Validator", () => {
       return { status: 200, headers: { "x-robots-tag": "noindex, nofollow", "content-security-policy": "frame-ancestors 'none'", "x-content-type-options": "nosniff", "x-frame-options": "DENY" }, body: "<html>TeamAIXI</html>" };
     };
     expect((await checkLive(ok, { world: 13372, managers: 69 })).problems).toEqual([]);
+    const og = async (p: string) => (p === "/" ? { ...(await ok(p)), body: '<html>TeamAIXI<meta property="og:title" content="x"></html>' } : ok(p));
+    expect((await checkLive(og, { world: 13372, managers: 69 })).problems).toContain("og_or_canonical_on_home");
     const bad = async (p: string) => (p === "/community" ? { status: 200, headers: {}, body: "" } : p === "/auth/sign-up" ? { status: 200, headers: {}, body: '<input type="password">' } : ok(p));
     const r = await checkLive(bad, { world: 13372, managers: 70 });
     expect(r.problems).toEqual(expect.arrayContaining(["hidden_route_not_404:/community:200", "signup_form_exposed", "managers_count_not_applied_state:69"]));

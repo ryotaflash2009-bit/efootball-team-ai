@@ -74,7 +74,7 @@ noindex は維持する（URL を知っている利用者は利用できる。�
 ## 5. noindex
 
 - `X-Robots-Tag: noindex, nofollow, noarchive`・`robots.txt` の `Disallow: /`・metadata の robots を維持する。
-- sitemap は出さない。canonical・Open Graph はブランドを TeamAIXI にした。
+- sitemap・canonical・Open Graph は出さない（noindex を打ち消さないため。公開 black-box の security で確認）。title・description・applicationName は TeamAIXI。
 - noindex の解除は本人の別の判断。
 
 ## 6. 本人の最終確認（リリースの手動確認の項目）

@@ -8,12 +8,7 @@ export const metadata: Metadata = {
   title: "TeamAIXI",
   description: "TeamAIXI v1.0 — 非公式の eFootball™ スカッド分析ツール。無料・ログイン不要。KONAMI および eFootball™ の公式サービスではありません。",
   applicationName: "TeamAIXI",
-  openGraph: {
-    title: "TeamAIXI",
-    description: "An unofficial squad analysis tool for eFootball™ — free, no sign-in. Not an official KONAMI or eFootball™ service.",
-    siteName: "TeamAIXI",
-    type: "website",
-  },
+  // noindex の間は canonical・Open Graph を出さない（検索・SNS のプレビューで noindex を打ち消さないため。公開 black-box の security で確認）。
   // アプリ自身が日本語/英語の表示切替を提供するため、ブラウザーの自動翻訳（Google翻訳等）による
   // 二重翻訳・表示の混乱を避ける（言語切り替えUI自体の文言まで翻訳されてしまうことを防ぐ）。
   other: { google: "notranslate" },
