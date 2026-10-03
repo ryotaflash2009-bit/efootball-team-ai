@@ -59,9 +59,10 @@ async function main() {
   }
   record("共通: ヘッダーにブランドマーク「27」", pages.home.text.includes(">27<"), "");
   record("共通: ヘッダーにグローバル検索（role=search）", /role="search"/.test(pages.home.body), "");
-  record("共通: サイドバーにグループ見出し（メイン/分析/コミュニティ）", ["メイン", "分析", "コミュニティ"].every((g) => pages.home.text.includes(g)), "");
-  record("共通: サイドバーの全メニュー項目", ["ホーム", "プレイヤー", "マネージャー", "選手比較", "スカッド", "ティアリスト", "パック", "コミュニティ"].every((l) => pages.home.text.includes(l)), "");
-  record("共通: 準備中ページはバッジで区別（ティアリスト/パック/コミュニティ）", (pages.home.text.match(/準備中/g) || []).length >= 3, "");
+  record("共通: サイドバーにグループ見出し（メイン/マイデータ）", ["メイン", "マイデータ"].every((g) => pages.home.text.includes(g)), "");
+  record("共通: サイドバーの全メニュー項目（v1.0）", ["ホーム", "プレイヤー", "マネージャー", "選手比較", "スカッド", "AIベスト11", "お気に入り", "My Team", "My Builds", "診断履歴"].every((l) => pages.home.text.includes(l)), "");
+  // TeamAIXI v1.0（2026-10-04）: 未公開の機能（ティアリスト・パック・コミュニティ）は「準備中」の表示も含めてナビに出さない。
+  record("共通: 未公開の機能はナビに出さない（ティアリスト/パック/コミュニティ・準備中なし）", !/href="\/(tier-lists|packs|community)"/.test(pages.home.body) && !/準備中/.test(pages.home.text), "");
   record("共通: 現在位置を aria-current=page で示す", /aria-current="page"/.test(pages.players.body), "");
   record("共通: モバイルメニューボタン（aria-label=メニューを開く）", /aria-label="メニューを開く"/.test(pages.home.body), "");
   record("共通: サイドバー折りたたみボタン", /サイドバーを折りたたむ|サイドバーを開く/.test(pages.home.body), "");

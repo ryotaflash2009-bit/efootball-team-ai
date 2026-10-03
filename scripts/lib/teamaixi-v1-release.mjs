@@ -10,7 +10,7 @@
 export const PUBLIC_ROUTES = ["/", "/players", "/managers", "/compare", "/squads", "/best-xi", "/my-team", "/my-builds", "/favorites", "/build-inventory", "/diagnosis-history", "/data-management", "/about", "/terms", "/privacy", "/disclaimer", "/support"];
 export const HIDDEN_ROUTES = ["/account/rls-test", "/release-readiness", "/community/local-posts", "/account/public-id-preview", "/tier-pack-preview", "/community", "/tier-lists", "/packs"];
 export const MANUAL_REVIEW_ITEMS = ["assetRights", "legalDocuments", "serviceName", "supportContact", "publicUrl"];
-export const REQUIRED_GATES = ["ciPassed", "codeqlPassed", "verifyPassed", "productionBuildPassed", "postgresValidationPassed", "npmAuditNotWorse", "secretScanClean", "blackBoxPassed", "allViewportsPassed", "accessibilityPassed", "performancePassed", "securityPassed"];
+export const REQUIRED_GATES = ["ciPassed", "codeqlPassed", "verifyPassed", "productionBuildPassed", "postgresValidationPassed", "npmAuditReviewed", "secretScanClean", "blackBoxPassed", "allViewportsPassed", "accessibilityPassed", "performancePassed", "securityPassed"];
 
 /** リポジトリ内の文書・設定の確認（入力は読み込んだファイルの内容）。 */
 export function checkRepo(files) {
