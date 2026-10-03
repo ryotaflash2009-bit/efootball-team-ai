@@ -65,7 +65,7 @@ noindex は維持する（URL を知っている利用者は利用できる。�
 
 | ID | 利用者向けの説明 | 運営向け | リリースの障害か |
 |---|---|---|---|
-| React #418（断続的） | 「一部の環境で初回表示時に画面が再読み込みされる場合があります。通常は自動的に復旧します。」 / "On some devices, the page may refresh once during the initial load. It normally recovers automatically." | 判定 **NOT_REPRODUCIBLE_WITH_DEFINED_LIMITS**。最終の観測は 2026-10-03（本番 8 viewport の 1 回で 1 件・`/players/world/<id>`・cold・MISS・`$RS`）。2026-10-04 に CPU 1×・4×・6×（+ 遅い 3G）× 4 画面 × 6 回 = 72 回の cold load で 0 件（CPU の遅さによる hydration と遅れた segment の競合の仮説を否定）。観測項目は `react-418-observation-contract.md` で自動記録。 | **障害ではない**（自動で復旧・データの損失なし・発生頻度は 568 ステップに 1 回程度） |
+| React #418（断続的） | 「一部の環境で初回表示時に画面が再読み込みされる場合があります。通常は自動的に復旧します。」 / "On some devices, the page may refresh once during the initial load. It normally recovers automatically." | 判定 **NOT_REPRODUCIBLE_WITH_DEFINED_LIMITS**。最終の観測は 2026-10-03（本番 8 viewport の 1 回で 1 件・`/players/world/<id>`・cold・MISS・`$RS`）。2026-10-04 に CPU 1×・4×・6×（+ 遅い 3G）× 4 画面 × 6 回 = 72 回の cold load で 0 件（CPU の遅さによる hydration と遅れた segment の競合の仮説を否定）。2026-10-04 の v1.0 公開後の本番 8 viewport でも 1 件（mobile-390x844・`/squads`・cold・MISS・args `HTML`・568 ステップ中 1 回）。観測項目は `react-418-observation-contract.md` で自動記録。 | **障害ではない**（自動で復旧・データの損失なし・発生頻度は 568 ステップに 1 回程度） |
 | データの遅れ | 週 1 回の自動検出のため、ゲームより遅れる場合がある | 自動更新の契約どおり | いいえ |
 | 端末間の同期なし | ブラウザー内に保存。書き出し・読み込みで移す | 設計どおり | いいえ |
 | npm audit（high 8・moderate 1、2026-10-04 時点） | （利用者への影響なし） | すべて build / dev の依存（tailwindcss → chokidar / fast-glob → micromatch → braces、eslint-config-next、next 内部の postcss）。本番の配信経路では実行されない。非破壊の修正では解消しない。Next 16 と Tailwind の更新で解消する見込み（`next16-migration-plan.md`）。この PR では依存を変えていない | いいえ（実行時の露出なし・レビュー済み） |

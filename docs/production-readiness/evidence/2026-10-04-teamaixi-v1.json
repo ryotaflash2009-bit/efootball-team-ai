@@ -1,0 +1,23 @@
+{
+  "schema": "efta-evidence/v1",
+  "date": "2026-10-04",
+  "kind": "teamaixi-v1-release-candidate",
+  "ownerDecision": "2026-10-04: TeamAIXI v1.0 as a sign-in-free, free, unofficial release on the existing Vercel Production URL; noindex kept",
+  "version": "1.0.0",
+  "pullRequests": [126, 127],
+  "productionCommit": "30051fe",
+  "validator": { "script": "scripts/validate-teamaixi-v1-release.mjs", "verdict": "TEAMAIXI_V1_MANUAL_REVIEW_REQUIRED", "blocked": [], "manualReview": ["assetRights", "legalDocuments", "serviceName", "supportContact", "publicUrl"], "liveCounts": { "world": 13372, "managers": 69 } },
+  "gates": {
+    "ci": "PR #126 and #127: Typecheck, test, and build / Reference data PostgreSQL validation / CodeQL / Vercel all pass",
+    "localVerify": "npm run verify 291 files / 4762 tests passed; production build OK; 13 local rails + local-backup, share-card, local-posts PASS (UI 70/70)",
+    "publicBlackBox": "production 30051fe: steps 568/568 (8 viewports), security 18/18, memory OK, perf 14/14 within speed budget",
+    "publicBlackBoxFirstRun": "production a74f73e: security 17/18 (Open Graph present while noindex) -> fixed in PR #127",
+    "signupLimited": "production a74f73e: 117/117 (no change to auth surfaces in PR #127)",
+    "accessibility": "production 30051fe: 32/32",
+    "secretScan": "pattern hits only in *.test.ts and __fixtures__",
+    "npmAudit": "high 8 / moderate 1, build or dev-time only, reviewed (teamaixi-v1.md section 4)"
+  },
+  "react418": { "observation": "production 30051fe, mobile-390x844, /squads, cold, x-vercel-cache MISS, regions kix1>iad1, args HTML; 1 in 568 steps; not a release blocker (known issue, auto-recovers)" },
+  "notDone": ["git tag v1.0.0", "GitHub Release", "noindex removal", "signup", "community", "payments"],
+  "unchanged": ["auto-apply policy and thresholds", "kill switches", "secrets", "environments", "rollback/restore manual only"]
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "teamaixi-v1-gates/v1",
+  "date": "2026-10-04",
+  "commit": "30051fe",
+  "gates": {
+    "ciPassed": true,
+    "codeqlPassed": true,
+    "verifyPassed": true,
+    "productionBuildPassed": true,
+    "postgresValidationPassed": true,
+    "npmAuditReviewed": true,
+    "secretScanClean": true,
+    "blackBoxPassed": true,
+    "allViewportsPassed": true,
+    "accessibilityPassed": true,
+    "performancePassed": true,
+    "securityPassed": true
+  },
+  "ownerConfirmations": {
+    "assetRights": false,
+    "legalDocuments": false,
+    "serviceName": false,
+    "supportContact": false,
+    "publicUrl": false
+  },
+  "notes": {
+    "performancePassed": "14/14 rows within the speed budget (warm load <= 3000 ms, long tasks <= 1000 ms, CLS <= 0.25). One row was marked SLOW only because of a single known React #418 (intermittent, see known issues), not because of speed.",
+    "npmAuditReviewed": "high 8 / moderate 1, all build or dev-time dependencies; documented in teamaixi-v1.md section 4"
+  }
+}
