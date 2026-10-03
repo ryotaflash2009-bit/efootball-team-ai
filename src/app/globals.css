@@ -69,6 +69,11 @@
   --content-full: 1720px;
 }
 
+/* 内容の読み込みでスクロールバーが現れても、ヘッダー等が横にずれないようにする（CLS 対策、2026-10-04）。 */
+html {
+  scrollbar-gutter: stable;
+}
+
 html,
 body {
   padding: 0;

@@ -106,7 +106,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* 本文カラム */}
       <div className="flex min-w-0 flex-1 flex-col">
         <Header onMenuClick={() => setMobileOpen(true)} />
-        <main className="min-w-0 flex-1">
+        <main className="min-h-[calc(100vh-var(--header-h))] min-w-0 flex-1">
+          {/* 最小の高さ: フッターを最初の画面の外に置き、内容の読み込みで押し下げられても CLS にしない（2026-10-04）。 */}
           {/* React #418 の対策（2026-10-04）: ページの segment（app/loading.tsx の境界を含む）を明示の Suspense で囲む。
               cold の streaming で segment が遅れて届くと、殻の hydration 中に children が空で描かれ、
               <main> 直下に残った loading の境界（<!--$?-->）と不一致になっていた（docs/production-readiness/react-418-observation-contract.md §5）。 */}

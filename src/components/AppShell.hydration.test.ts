@@ -8,7 +8,7 @@ const src = readFileSync(path.join(__dirname, "AppShell.tsx"), "utf8");
 
 describe("AppShell の hydration 境界", () => {
   it("<main> の中で children を Suspense で囲む", () => {
-    const main = /<main className="min-w-0 flex-1">([\s\S]*?)<\/main>/.exec(src)?.[1] ?? "";
+    const main = /<main className="[^"]*">([\s\S]*?)<\/main>/.exec(src)?.[1] ?? "";
     expect(main).toMatch(/<Suspense fallback=\{null\}>\{children\}<\/Suspense>/);
     expect(main.replace(/\{\/\*[\s\S]*?\*\/\}/g, "").replace(/<Suspense fallback=\{null\}>\{children\}<\/Suspense>/, "").trim()).toBe("");
   });

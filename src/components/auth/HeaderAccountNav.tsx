@@ -21,7 +21,16 @@ export function HeaderAccountNav() {
   if (session.status === "unconfigured") return null;
 
   if (session.status === "loading") {
-    return <span className="h-9 w-9 shrink-0 rounded-md bg-surface-2" aria-hidden="true" />;
+    // ログインの導線と同じ構造・同じ文言で幅を確保する（sm 以上は文字も出るため、アイコン幅だけだとヘッダーの検索欄が横にずれていた。CLS 対策 2026-10-04）。
+    return (
+      <span
+        className="invisible flex h-9 shrink-0 items-center gap-1.5 rounded-md border border-border px-2.5 text-xs"
+        aria-hidden="true"
+      >
+        <Icon name="shield" size={15} />
+        <span className="hidden sm:inline">{ta("navSignIn")}</span>
+      </span>
+    );
   }
 
   if (session.status === "authenticated") {
