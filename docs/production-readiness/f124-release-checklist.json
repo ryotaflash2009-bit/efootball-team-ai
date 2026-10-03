@@ -1,0 +1,22 @@
+{
+  "_note": "Non-secret checklist for scripts/validate-f124-release.mjs (2026-10-03). Only booleans and run ids. READY still means the owner decides; nothing is opened automatically.",
+  "checks": {
+    "autoUpdateTestsPassed": true,
+    "ciAndCodeqlPassed": true,
+    "failClosedVerified": true,
+    "notificationsVerified": true,
+    "evidenceVerified": true,
+    "automationEnvironmentMainOnly": true,
+    "automationSecretNames9": false,
+    "pipelineVariableTrue": true,
+    "applyEnvironmentReviewer": true,
+    "orchestratedPlanSucceeded": false,
+    "orchestratedBackupValid": false,
+    "orchestratedDryRunSucceeded": false,
+    "applyApprovedByOwner": false,
+    "applyVerified": false,
+    "appliedStateUpdated": false,
+    "publicSiteMatchesAppliedState": false
+  },
+  "evidence": {}
+}
