@@ -1,6 +1,6 @@
 # World データ UI 接続 ブラックボックステスト結果
 
-実行日時: 2026-10-04T12:46:14.293Z
+実行日時: 2026-10-04T13:10:51.706Z
 対象: http://localhost:3000（localhost のみ）  外部アクセス: 0 回
 
 | 結果 | 項目 | 詳細 |
@@ -86,7 +86,7 @@
 | PASS | 回帰: 画像プロキシの不正IDは 400 | HTTP 400 |
 | PASS | 回帰: eFHUB 画像プロキシ（efimg 経路）が応答 | HTTP 200 |
 | PASS | 回帰: ブラウザへ渡す src は同一オリジンのみ（cloudfront URL を露出しない） |  |
-| PASS | 画像取得の外部 GET 累計が 10 回以内 | external=0 |
+| PASS | 画像取得の外部 GET 累計が 10 回以内 | external=1 |
 
 ## 判定: 全項目 PASS
 
