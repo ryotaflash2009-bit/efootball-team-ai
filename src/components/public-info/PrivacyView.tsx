@@ -96,6 +96,11 @@ export function PrivacyView() {
         </ul>
       </Surface>
 
+      <Surface padding="md">
+        <p className="text-sm font-semibold text-text">{tp("sharedUrlHeading")}</p>
+        <p className="mt-1.5 text-sm text-text-dim">{tp("sharedUrlBody")}</p>
+      </Surface>
+
       <Surface tone="outline" padding="sm" className="text-sm text-text-dim">
         <p className="text-xs font-semibold text-text">{tp("supabaseUsageHeading")}</p>
         <p className="mt-1">{tp("supabaseUsageBody")}</p>

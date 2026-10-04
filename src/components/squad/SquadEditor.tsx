@@ -1133,13 +1133,15 @@ export function SquadEditor({
     if (moveSource.area === "starter") {
       const e = computed.slots.find((s) => s.slotId === moveSource.slotId)?.entry;
       return (
-        e?.display.nameJa ||
-        e?.display.nameEn ||
-        fillSe(t("squadBuildPanel", "cardFallbackNameTemplate"), { id: squad?.slots.find((x) => x.slotId === moveSource.slotId)?.worldCardId ?? "" })
+        resolvePlayerDisplayName(
+          e?.display ?? {},
+          locale,
+          fillSe(t("squadBuildPanel", "cardFallbackNameTemplate"), { id: squad?.slots.find((x) => x.slotId === moveSource.slotId)?.worldCardId ?? "" }),
+        )
       );
     }
     return benchRows[moveSource.index]?.name ?? `${t("bench", "benchSlotLabel")} ${moveSource.index + 1}`;
-  }, [moveSource, computed, squad, benchRows, t, fillSe]);
+  }, [moveSource, computed, squad, benchRows, t, fillSe, locale]);
   const allPlacedSet = useMemo(() => {
     const set = new Set<string>();
     if (squad) {
@@ -1164,9 +1166,7 @@ export function SquadEditor({
   const pendingCardState = pendingAdd ? cards[pendingAdd] : undefined;
   const pendingName =
     pendingCardState && pendingCardState !== "loading" && pendingCardState !== "error"
-      ? pendingCardState.display.nameJa ||
-        pendingCardState.display.nameEn ||
-        fillSe(t("squadBuildPanel", "cardFallbackNameTemplate"), { id: pendingAdd ?? "" })
+      ? resolvePlayerDisplayName(pendingCardState.display, locale, fillSe(t("squadBuildPanel", "cardFallbackNameTemplate"), { id: pendingAdd ?? "" }))
       : pendingAdd
         ? fillSe(t("squadBuildPanel", "cardFallbackNameTemplate"), { id: pendingAdd })
         : "";

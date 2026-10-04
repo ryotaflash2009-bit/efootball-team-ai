@@ -67,6 +67,8 @@ const privacy: Dictionary["privacy"] = {
   specialistReviewNotice: "このポリシーは法令適合を保証するものではありません。専門家によるレビューを推奨しています。",
   lastUpdatedLabel: "最終更新日",
   lastUpdatedDate: "2026年10月4日",
+  sharedUrlHeading: "共有 URL と共有画像",
+  sharedUrlBody: "診断の共有 URL には、診断の要約（規則の版・診断日・総合とカテゴリの点数とランク・強みと弱点の種類）だけが URL の「#」以降に入ります。選手名・スカッド名・ID・利用者を特定できる情報は入りません。「#」以降はブラウザーからサーバーへ送られず、TeamAIXI は共有 URL の内容を保存しません。URL を知っている人は誰でも内容を見られます。共有画像はお使いの端末内で作成し、サーバーへ送りません。",
   };
 
 registerJaNamespace("privacy", privacy);

@@ -1,6 +1,7 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/diagnosis";
+import { localizeSquadDiagnosisText } from "@/lib/squad/squad-diagnosis-text-en";
 import type {
   SquadDiagnosisResult,
   SquadDiagnosisCategory,
@@ -32,9 +33,8 @@ import type { Locale } from "@/lib/i18n/locale";
  *    変更していない（診断ロジックは不変）。
  *  - 画面側では、カテゴリ名（id基準）・見出し・固定ラベル・件数ベースの警告文だけを言語別に表示する。
  *  - 長所/弱点のうち`kind === "ability"`（カテゴリ起因）は、カテゴリIDとスコア/ランクから英語文を
- *    再構成できるため翻訳する。選手名を含むfinding（参照エラー・配置適性等）と改善候補
- *    （`result.suggestions`）は選手名を安全に英訳する手段が無いため、今回は日本語のまま表示する
- *    （既知の限定事項。最終報告に明記）。
+ *    再構成する。それ以外の注記・根拠・finding・改善候補は、2026-10-04 から localizeSquadDiagnosisText で
+ *    表示するときだけ英語にする（診断の計算・返す値は不変。選手名など元データの固有名詞はそのまま）。
  */
 
 const CATEGORY_LABEL_EN: Record<string, string> = {
@@ -68,9 +68,10 @@ function findingDisplay(
   locale: Locale,
   variant: "strength" | "weakness",
 ): { label: string; detail: string } {
-  if (locale !== "en" || f.kind !== "ability" || !f.categoryId) return { label: f.label, detail: f.detail };
+  const plain = { label: localizeSquadDiagnosisText(f.label, locale), detail: localizeSquadDiagnosisText(f.detail, locale) };
+  if (locale !== "en" || f.kind !== "ability" || !f.categoryId) return plain;
   const category = result.categories.find((c) => c.id === f.categoryId);
-  if (!category || category.score == null) return { label: f.label, detail: f.detail };
+  if (!category || category.score == null) return plain;
   const label = CATEGORY_LABEL_EN[category.id] ?? f.label;
   const detail =
     variant === "strength"
@@ -131,14 +132,14 @@ function CategoryDetail({ category, locale }: { category: SquadDiagnosisCategory
         tier={category.tier}
         notRatedLabel={t("diagnosis", "notRated")}
       />
-      <p className="mt-1 text-2xs text-text-muted">{category.note}</p>
+      <p className="mt-1 text-2xs text-text-muted">{localizeSquadDiagnosisText(category.note, locale)}</p>
       <details className="mt-1 text-2xs text-text-muted">
         <summary className="cursor-pointer text-text-dim hover:text-text">{t("diagnosis", "evidenceToggle")}</summary>
         <dl className="mt-1 flex flex-col gap-0.5">
           {category.evidence.map((e, i) => (
             <div key={i} className="flex flex-wrap justify-between gap-1">
-              <dt className="text-text-dim">{e.label}</dt>
-              <dd className="min-w-0 break-words text-right">{e.value}</dd>
+              <dt className="text-text-dim">{localizeSquadDiagnosisText(e.label, locale)}</dt>
+              <dd className="min-w-0 break-words text-right">{localizeSquadDiagnosisText(e.value, locale)}</dd>
             </div>
           ))}
         </dl>
@@ -382,8 +383,8 @@ export function SquadDiagnosisPanel({
           <ul className="mt-1 flex flex-col gap-1">
             {result.suggestions.map((s) => (
               <li key={s.id} className="rounded border border-info/30 bg-info/5 px-2 py-1 text-2xs">
-                <span className="font-semibold">{s.label}</span>
-                <p className="mt-0.5 text-text-muted">{s.detail}</p>
+                <span className="font-semibold">{localizeSquadDiagnosisText(s.label, locale)}</span>
+                <p className="mt-0.5 text-text-muted">{localizeSquadDiagnosisText(s.detail, locale)}</p>
               </li>
             ))}
           </ul>

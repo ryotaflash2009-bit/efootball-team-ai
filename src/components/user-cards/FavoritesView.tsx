@@ -1,6 +1,7 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/favoritesView";
+import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import "@/lib/i18n/dictionaries/ja-ns/myTeam";
 import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
 import { useMemo, useState } from "react";
@@ -16,11 +17,12 @@ import { MyTeamButton } from "./MyTeamButton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Surface } from "@/components/ui/Surface";
 import { buttonClasses } from "@/components/ui/Button";
-import { useT } from "@/lib/i18n/LocaleContext";
+import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { PageHeader } from "@/components/ui/PageHeader";
 
 export function FavoritesView() {
   const t = useT();
+  const { locale } = useLocale();
   const { favorites, available, scopeStatus } = useFavorites();
   const { myTeamIds } = useMyTeam();
   const ids = useMemo(() => favorites.map((f) => f.worldCardId), [favorites]);
@@ -117,9 +119,7 @@ export function FavoritesView() {
               const fav = favByWorldId.get(row.worldCardId);
               const player = row.card;
               const name =
-                player?.nameJa ||
-                player?.nameEn ||
-                t("squadBuildPanel", "cardFallbackNameTemplate").replace("{id}", row.worldCardId);
+                resolvePlayerDisplayName(player ?? {}, locale, t("squadBuildPanel", "cardFallbackNameTemplate").replace("{id}", row.worldCardId));
               return (
                 <li key={row.worldCardId}>
                   <UserCardTile

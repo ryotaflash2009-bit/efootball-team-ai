@@ -1,6 +1,7 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/bench";
+import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import "@/lib/i18n/dictionaries/ja-ns/compareAddButton";
 import "@/lib/i18n/dictionaries/ja-ns/slotPlayerPanel";
 import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
@@ -133,9 +134,7 @@ export function SlotPlayerPanel({
         <div className="mt-2 flex flex-col gap-2">
           <div>
             <p className="font-semibold">
-              {e.display.nameJa ||
-                e.display.nameEn ||
-                fillSp(t("squadBuildPanel", "cardFallbackNameTemplate"), { id: e.display.worldCardId })}
+              {resolvePlayerDisplayName(e.display, locale, fillSp(t("squadBuildPanel", "cardFallbackNameTemplate"), { id: e.display.worldCardId }))}
             </p>
             <p className="text-[11px] text-text-dim">
               {e.display.nameEn} · {e.display.registeredPosition ?? "?"} · {e.display.cardType ?? "?"} · ID {e.display.worldCardId}

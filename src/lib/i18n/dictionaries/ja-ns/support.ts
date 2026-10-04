@@ -71,6 +71,8 @@ const support: Dictionary["support"] = {
   privacyContactUnsetNotice: "現在、プライバシー専用の問い合わせ窓口は準備中です。",
   privacyContactEmailLabel: "プライバシー問い合わせ先",
   noSubmissionFormNotice: "この画面は送信フォームではなく、案内表示専用です。上記の連絡先が設定されている場合は、そちらへ直接ご連絡ください。",
+  safetyNoApiKey: "API キーや Secret（秘密の値）を送らないでください。",
+  bugReportOnlyFacts: "不具合の報告には、発生した画面・操作・日時・端末とブラウザーだけを書いてください。",
   };
 
 registerJaNamespace("support", support);

@@ -3261,7 +3261,7 @@ const en: Dictionary = {
     unofficialBody2: "The Service does not claim to provide official ratings or official data, to be a licensed product, or to be partnered with any rights holder.",
     rightsHeading: "About player names, cards, club names, data, and images",
     rightsBody: "Player names, card information, manager information, and images shown here reference information provided by third parties (player database sites, etc.). None of this was created by this service's operator.",
-    rightsBody2: "No contract or license document explicitly authorizing redistribution of this data or these images could be confirmed in the source repository (a pre-release confirmation item). Rights to player names, card names, club names, league names, etc. belong to their respective rights holders.",
+    rightsBody2: "Rights to player names, card names, club names, league names, images and similar content belong to their respective owners.",
     rightsContactPointer: "If you are a rights holder and would like content removed or corrected, please contact us through the rights-holder channel on the \"Support\" page.",
     analysisHeading: "About analysis results",
     analysisRuleBased: "Build Analysis, squad diagnosis, and AI Best XI currently use confirmable ability values and deterministic rules. No data is sent to a generative AI service or external AI API.",
@@ -3276,6 +3276,8 @@ const en: Dictionary = {
     bestXiPersonDedup: "It does not detect when the same real player appears on multiple different cards (a known limitation).",
     bestXiPositionData: "Additional-position aptitude data is only available for a small subset of cards (a known limitation).",
     draftNotice: "This disclaimer was written by the operator and is not legal advice or a guarantee of rights. A professional review is recommended. Data updates may be delayed, and to the extent permitted by law the operator is not liable for losses caused by suspension of the Service.",
+    dataSourceHeading: "Data sources and updates",
+    dataSourceBody: "Player and manager reference data is collected from publicly available third-party sources and normalized by TeamAIXI. The collection time is shown on each screen. Upstream changes are checked every hour, and only updates that pass the safety checks are applied automatically. The data may differ from the latest in-game state.",
   },
   privacy: {
     pageTitle: "Privacy Policy | TeamAIXI",
@@ -3342,6 +3344,8 @@ const en: Dictionary = {
     specialistReviewNotice: "This policy does not guarantee legal compliance. A professional review is recommended.",
     lastUpdatedLabel: "Last updated",
     lastUpdatedDate: "October 4, 2026",
+    sharedUrlHeading: "Share URLs and share images",
+    sharedUrlBody: "A diagnosis share URL contains only a summary of the diagnosis (rules version, date, overall and category scores and ranks, and the types of strengths and weaknesses) after the “#” in the URL. It does not include player names, squad names, IDs or anything that identifies you. The part after “#” is not sent to our server, and TeamAIXI does not store share URLs. Anyone who has the URL can see its contents. Share images are created on your device and are not sent to our server.",
   },
   terms: {
     pageTitle: "Terms of Use | TeamAIXI",
@@ -3506,6 +3510,8 @@ const en: Dictionary = {
     privacyContactUnsetNotice: "A dedicated privacy contact channel is currently being prepared.",
     privacyContactEmailLabel: "Privacy contact",
     noSubmissionFormNotice: "This page is informational only and is not a submission form. If a contact address above is set, please contact it directly.",
+    safetyNoApiKey: "Do not send API keys or secrets.",
+    bugReportOnlyFacts: "In a bug report, include only the screen, the steps, the date and time, and your device and browser.",
   },
   releaseReadiness: {
     pageTitle: "Release Readiness | TeamAIXI",
