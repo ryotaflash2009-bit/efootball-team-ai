@@ -115,6 +115,34 @@ function decide(sourceChecksum: string, count: number, applied: AppliedDatasetSt
   return { decision, recordCount: count, appliedRecordCount: applied.recordCount, sourceChecksum12: sourceChecksum.slice(0, 12), signals, quality };
 }
 
+/**
+ * Managers だけの検出（managers.json 1 件の全体を取得して applied-state と比べる。完全な比較で、軽量化しない）。
+ * 毎時の検出で World の全件取得を行わない回に使う（runDetection の Managers 部分と同じ判定）。
+ */
+export async function runManagersDetection(input: {
+  transport: SourceTransport;
+  fetchedAt: string;
+  sleep: (ms: number) => Promise<void>;
+  applied: AppliedState;
+}): Promise<{ ok: true; managers: DatasetDetection } | { ok: false; failure: { table: string; stage: string; code: string }; attention: boolean }> {
+  const m = await collectManagersSnapshot(input.transport, { fetchedAt: input.fetchedAt, sleep: input.sleep });
+  if (!m.ok) {
+    const f = failed("managers", m.failure.stage, m.failure.code);
+    return f.ok ? { ok: false, failure: { table: "managers", stage: "unknown", code: "unknown" }, attention: false } : f;
+  }
+  let ms;
+  try {
+    ms = buildStagingDataset(m.snapshot);
+  } catch {
+    const f = failed("managers", "normalize", "duplicate_or_incomplete");
+    return f.ok ? { ok: false, failure: { table: "managers", stage: "normalize", code: "duplicate_or_incomplete" }, attention: false } : f;
+  }
+  const managersSignals: string[] = [];
+  const managersQuality = qualityOf(m.snapshot, managersSignals);
+  const managers = decide(computeUpdateTotalChecksum({ managers: ms.sourceChecksum }), ms.rowCount, input.applied.datasets.managers, UPDATE_POLICY_THRESHOLDS.managers.countDropHardBlockRatio, managersSignals, managersQuality);
+  return { ok: true, managers };
+}
+
 /** 定期検出の本体(transportは呼び出し側が上限付きで作る)。 */
 export async function runDetection(input: {
   transport: SourceTransport;

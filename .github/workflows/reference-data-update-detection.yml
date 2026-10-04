@@ -5,8 +5,14 @@ name: Reference data update detection
 
 # Automatic update DETECTION only (no Secrets, no Environment, no Production connection).
 #
-# - Triggers: weekly schedule (owner-approved 2026-09-25 after the first manual detection Run #1 succeeded;
-#   low load: ~444 World page requests + 1 managers request per run) and workflow_dispatch with confirm "detect".
+# - Triggers: hourly schedule at minute 17 (owner decision 2026-10-04: check every hour, 24 times a day; previously weekly
+#   since 2026-09-25) and workflow_dispatch with confirm "detect".
+#   Every scheduled run compares managers.json fully (1 request) and fetches one World search page (1 request) as a
+#   light signal. The full World scan (~445 requests) runs only when that signal changes, when the last full scan is
+#   6 hours old, after a failed full scan (2-hour backoff), or on a manual run (update-detection-light.ts). A light run
+#   never claims "no change" for World (decision "not_scanned", overall "no_change_light").
+#   State (signal, last full scan time, last reported candidates) is kept in the Actions cache: public summaries only,
+#   no Secrets; if it is lost the next run simply does a full scan.
 #   This is the ONLY workflow with a schedule; Backup, apply, rollback and Restore are never scheduled.
 # - Both triggers pass the same gate: the job is skipped unless the repository variable
 #   REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED is exactly "true" (unset, "false", "True" → skipped, 0 requests);
@@ -21,7 +27,7 @@ name: Reference data update detection
 
 on:
   schedule:
-    - cron: "17 18 * * 0"   # Sundays 18:17 UTC = Mondays 03:17 JST (GitHub cron is UTC)
+    - cron: "17 * * * *"   # every hour at minute 17 (avoids the top-of-hour peak; UTC/JST makes no difference hourly)
   workflow_dispatch:
     inputs:
       confirm:
@@ -73,13 +79,31 @@ jobs:
             exit 1
           fi
 
+      # Light-check state from the previous run (Actions cache; public summaries only). A missing cache means a full scan.
+      - name: Restore the detection state
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/detection-state
+          key: reference-data-detection-state-${{ github.run_id }}
+          restore-keys: |
+            reference-data-detection-state-
+
       - name: Detect upstream changes (no Secrets, no Production)
         env:
           REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED: ${{ vars.REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED }}
           REFERENCE_DATA_DETECTION_CONFIRM: ${{ inputs.confirm }}
           REFERENCE_DATA_DETECTION_SUMMARY_PATH: ${{ runner.temp }}/reference-data-detection-summary.json
           REFERENCE_DATA_DISTRIBUTION_PATH: ${{ runner.temp }}/world-base-distribution.candidate.json
+          REFERENCE_DATA_DETECTION_STATE_PATH: ${{ runner.temp }}/detection-state/world-light-state.json
+          REFERENCE_DATA_DETECTION_CANDIDATES_PATH: ${{ runner.temp }}/detection-state/candidates.json
         run: node scripts/run-update-detection-entry.mjs
+
+      - name: Save the detection state
+        if: always() && hashFiles(format('{0}/detection-state/*.json', runner.temp)) != ''
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/detection-state
+          key: reference-data-detection-state-${{ github.run_id }}
 
       # Non-secret summary only (counts, 12-character checksum prefixes, decisions, request statistics).
       - name: Upload the detection summary
@@ -89,7 +113,8 @@ jobs:
           name: reference-data-detection-summary
           path: ${{ runner.temp }}/reference-data-detection-summary.json
           if-no-files-found: ignore
-          retention-days: 30
+          # Hourly runs: keep summaries for 7 days (the orchestrator reads it within minutes; Evidence uses the run of an apply).
+          retention-days: 7
 
       # F-071 candidate: per-stat value counts of base abilities (aggregates only; no names, IDs or URLs).
       # It reaches main only through the Evidence / applied-state PR after a verified Production apply

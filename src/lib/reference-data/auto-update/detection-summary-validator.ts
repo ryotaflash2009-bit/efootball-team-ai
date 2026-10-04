@@ -14,7 +14,11 @@ export const DETECTION_SUMMARY_MAX_BYTES = 16 * 1024;
 const CHECKSUM12 = /^[0-9a-f]{12}$/;
 const DECISIONS = ["no_change", "update_available", "attention_required"];
 const TOP_KEYS_V1 = ["ok", "phase", "fetchedAt", "upstream", "world", "managers", "productionAccess", "automaticApply", "nextStep", "checkedAt"];
-const TOP_KEYS_V2 = [...TOP_KEYS_V1, "schema", "trigger", "overall", "safety"];
+const TOP_KEYS_V2 = [...TOP_KEYS_V1, "schema", "trigger", "overall", "safety", "mode", "worldScan"];
+const LIGHT_SCHEMA = "reference-data-detection-summary/light-v1";
+const TOP_KEYS_LIGHT = ["schema", "phase", "mode", "trigger", "fetchedAt", "upstream", "ok", "overall", "world", "managers", "safety", "productionAccess", "automaticApply", "nextStep", "checkedAt"];
+const WORLD_SCAN_REASONS = ["no_previous_state", "invalid_state", "world_signal_changed", "full_scan_due", "retry_after_failure", "manual_trigger", "world_signal_unavailable"];
+const LIGHT_REASONS = ["world_signal_unchanged", "failure_backoff"];
 const SAFETY_EXPECTED: Readonly<Record<string, number | boolean>> = {
   productionAccess: 0,
   secretsUsed: 0,
@@ -67,6 +71,7 @@ export function validateDetectionSummary(text: string, applied: AppliedState): D
     problems.push("summary_not_json_object");
     return done();
   }
+  if (s.schema === LIGHT_SCHEMA) return validateLight(s, applied, problems, facts, done);
   const v2 = s.schema === "reference-data-detection-summary/v2";
   if (s.schema !== undefined && !v2) problems.push("unknown_schema");
   facts.summaryVersion = v2 ? 2 : 1;
@@ -100,12 +105,15 @@ export function validateDetectionSummary(text: string, applied: AppliedState): D
     if (nonNegInt(world.pages)) {
       facts.worldPages = world.pages;
       // non200が0なので再試行は無い: request数 = page数。
-      if (wr !== world.pages || (world.pages as number) > WORLD_LIMITS.maxPages) problems.push("world_requests_not_equal_pages");
+      // 毎時の検出の完全な回（worldScan あり）は、World の軽い確認の 1 request が先に入る。
+      const lightRequests = s.worldScan !== undefined ? 1 : 0;
+      if (wr !== (world.pages as number) + lightRequests || (world.pages as number) > WORLD_LIMITS.maxPages) problems.push("world_requests_not_equal_pages");
     } else problems.push("world_pages_missing");
     const safety = isObj(s.safety) ? s.safety : {};
     for (const [k, want] of Object.entries(SAFETY_EXPECTED)) if (safety[k] !== want) problems.push(`safety_${k}`);
     if (Object.keys(safety).length !== Object.keys(SAFETY_EXPECTED).length) problems.push("safety_unexpected_keys");
     if (!["schedule", "workflow_dispatch", "local"].includes(s.trigger as string)) problems.push("trigger_invalid");
+    if (s.worldScan !== undefined && (s.mode !== "full" || !WORLD_SCAN_REASONS.includes(s.worldScan as string))) problems.push("world_scan_invalid");
   }
 
   const datasets: [string, Obj, AppliedState["datasets"][keyof AppliedState["datasets"]]][] = [
@@ -151,5 +159,47 @@ export function validateDetectionSummary(text: string, applied: AppliedState): D
     facts.worldMaxAppearanceUpdatedAt = t.max;
     facts.worldMaxMatchesApplied = t.max === applied.datasets.world_player_cards.maxAppearanceUpdatedAt;
   } else problems.push("world_timestamps_missing");
+  return done();
+}
+
+/**
+ * 毎時の検出の軽い回（schema light-v1）。Managers は完全な比較、World は軽い確認だけ（decision "not_scanned"）。
+ * World を「変更なし」と書いていないこと、request が World 1 件 + Managers 1 件だけであることを確認する。
+ */
+function validateLight(s: Obj, applied: AppliedState, problems: string[], facts: Obj, done: () => DetectionSummaryValidation): DetectionSummaryValidation {
+  facts.summaryVersion = "light-v1";
+  for (const k of Object.keys(s)) if (!TOP_KEYS_LIGHT.includes(k)) problems.push(`unexpected_key:${k}`);
+  scanForPayload(s, "$", problems);
+  if (s.ok !== true) problems.push("ok_not_true");
+  if (s.phase !== "detection") problems.push("phase_not_detection");
+  if (s.mode !== "light") problems.push("mode_not_light");
+  if (s.trigger !== "schedule") problems.push("light_run_not_scheduled");
+  if (s.productionAccess !== 0) problems.push("production_access_not_zero");
+  if (s.automaticApply !== false) problems.push("automatic_apply_not_false");
+  const u = isObj(s.upstream) ? s.upstream : {};
+  if (u.worldRequests !== 1) problems.push("light_world_requests_not_one");
+  if (u.managersRequests !== 1) problems.push("managers_requests_not_one");
+  if (u.requests !== 2) problems.push("light_requests_not_two");
+  for (const k of ["non200", "http403", "http429", "challenge"]) if (u[k] !== 0) problems.push(`upstream_${k}_not_zero`);
+  const safety = isObj(s.safety) ? s.safety : {};
+  for (const [k, want] of Object.entries(SAFETY_EXPECTED)) if (safety[k] !== want) problems.push(`safety_${k}`);
+  const world = isObj(s.world) ? s.world : {};
+  if (world.decision !== "not_scanned") problems.push("light_world_decision_not_not_scanned");
+  if (!LIGHT_REASONS.includes(world.reason as string)) problems.push("light_world_reason_invalid");
+  if (!nonNegInt(world.totalCount) || (world.totalCount as number) > WORLD_LIMITS.maxRecords) problems.push("light_world_total_invalid");
+  const m = isObj(s.managers) ? s.managers : {};
+  const a = applied.datasets.managers;
+  const decision = m.decision as string;
+  if (!DECISIONS.includes(decision)) problems.push("managers_decision_invalid");
+  if (decision === "attention_required") problems.push("managers_attention_required");
+  if (m.appliedRecordCount !== a.recordCount) problems.push("managers_applied_count_mismatch");
+  if (typeof m.sourceChecksum12 !== "string" || !CHECKSUM12.test(m.sourceChecksum12)) problems.push("managers_checksum_invalid");
+  const same = a.sourceChecksum12 !== null && m.sourceChecksum12 === a.sourceChecksum12;
+  if (decision === "no_change" && !same) problems.push("managers_no_change_but_checksum_differs");
+  if (decision === "update_available" && same) problems.push("managers_update_available_but_checksum_same");
+  const want = decision === "attention_required" ? "attention_required" : decision === "update_available" ? "update_available" : "no_change_light";
+  if (s.overall !== want) problems.push("overall_inconsistent");
+  facts.managers = { decision, checksumMatchesApplied: same };
+  facts.world = { decision: world.decision, reason: world.reason };
   return done();
 }
