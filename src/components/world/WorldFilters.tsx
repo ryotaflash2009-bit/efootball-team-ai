@@ -1,7 +1,7 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/worldFilters";
-import { useAdoptPreHydrationInput } from "@/lib/hooks/use-adopt-prehydration-input";
+import { useAdoptPreHydrationInput, useAdoptPreHydrationSelects } from "@/lib/hooks/use-adopt-prehydration-input";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { WorldFacets, WorldSortKey } from "@/lib/world/types";
@@ -86,6 +86,8 @@ export function WorldFilters({ facets }: { facets: WorldFacets }) {
     };
   }, []);
   useAdoptPreHydrationInput(inputRef, q, onQueryChange);
+  const filtersRef = useRef<HTMLDivElement>(null);
+  useAdoptPreHydrationSelects(filtersRef, push);
 
   const sort = (params.get("sort") as WorldSortKey) ?? "ovr_max_desc";
   const activeChips = useMemo(() => {
@@ -101,7 +103,7 @@ export function WorldFilters({ facets }: { facets: WorldFacets }) {
     "min-w-0 rounded-md border border-border bg-surface px-2 py-2 text-sm text-text focus:border-accent";
 
   return (
-    <div className="flex flex-col gap-2">
+    <div ref={filtersRef} className="flex flex-col gap-2">
       {/* 1行目: 検索 + 並べ替え + モバイル用フィルタトグル */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <input
@@ -118,6 +120,8 @@ export function WorldFilters({ facets }: { facets: WorldFacets }) {
         <div className="flex gap-2">
           <select
             value={sort}
+            data-adopt-param="sort"
+            data-rendered-value={sort}
             onChange={(e) => push({ sort: e.target.value })}
             aria-label={twf("sortAriaLabel")}
             className={`${selectClass} shrink-0`}
@@ -146,6 +150,8 @@ export function WorldFilters({ facets }: { facets: WorldFacets }) {
       <div className={`${open ? "grid" : "hidden"} grid-cols-2 gap-2 sm:grid-cols-3 lg:grid lg:grid-cols-4 xl:grid-cols-6`}>
         <select
           value={params.get("position") ?? ""}
+          data-adopt-param="position"
+          data-rendered-value={params.get("position") ?? ""}
           onChange={(e) => push({ position: e.target.value || null })}
           aria-label={twf("positionAriaLabel")}
           className={selectClass}
@@ -160,6 +166,8 @@ export function WorldFilters({ facets }: { facets: WorldFacets }) {
 
         <select
           value={params.get("cardType") ?? ""}
+          data-adopt-param="cardType"
+          data-rendered-value={params.get("cardType") ?? ""}
           onChange={(e) => push({ cardType: e.target.value || null })}
           aria-label={twf("cardTypeAriaLabel")}
           className={selectClass}
@@ -174,6 +182,8 @@ export function WorldFilters({ facets }: { facets: WorldFacets }) {
 
         <select
           value={params.get("playingStyle") ?? ""}
+          data-adopt-param="playingStyle"
+          data-rendered-value={params.get("playingStyle") ?? ""}
           onChange={(e) => push({ playingStyle: e.target.value || null })}
           aria-label={twf("playingStyleAriaLabel")}
           className={selectClass}
@@ -188,6 +198,8 @@ export function WorldFilters({ facets }: { facets: WorldFacets }) {
 
         <select
           value={params.get("playingStyleDef") ?? ""}
+          data-adopt-param="playingStyleDef"
+          data-rendered-value={params.get("playingStyleDef") ?? ""}
           onChange={(e) => push({ playingStyleDef: e.target.value || null })}
           aria-label={twf("playingStyleDefAriaLabel")}
           className={selectClass}
