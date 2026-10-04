@@ -83,7 +83,7 @@ jobs:
       - name: Restore the detection state
         uses: actions/cache/restore@v4
         with:
-          path: ${{ runner.temp }}/detection-state
+          path: .detection-state
           key: reference-data-detection-state-${{ github.run_id }}
           restore-keys: |
             reference-data-detection-state-
@@ -94,15 +94,16 @@ jobs:
           REFERENCE_DATA_DETECTION_CONFIRM: ${{ inputs.confirm }}
           REFERENCE_DATA_DETECTION_SUMMARY_PATH: ${{ runner.temp }}/reference-data-detection-summary.json
           REFERENCE_DATA_DISTRIBUTION_PATH: ${{ runner.temp }}/world-base-distribution.candidate.json
-          REFERENCE_DATA_DETECTION_STATE_PATH: ${{ runner.temp }}/detection-state/world-light-state.json
-          REFERENCE_DATA_DETECTION_CANDIDATES_PATH: ${{ runner.temp }}/detection-state/candidates.json
+          REFERENCE_DATA_DETECTION_STATE_PATH: .detection-state/world-light-state.json
+          REFERENCE_DATA_DETECTION_CANDIDATES_PATH: .detection-state/candidates.json
         run: node scripts/run-update-detection-entry.mjs
 
       - name: Save the detection state
-        if: always() && hashFiles(format('{0}/detection-state/*.json', runner.temp)) != ''
+        # hashFiles() only sees files inside the workspace, so the state lives in .detection-state/ (not runner.temp).
+        if: always() && hashFiles('.detection-state/*.json') != ''
         uses: actions/cache/save@v4
         with:
-          path: ${{ runner.temp }}/detection-state
+          path: .detection-state
           key: reference-data-detection-state-${{ github.run_id }}
 
       # Non-secret summary only (counts, 12-character checksum prefixes, decisions, request statistics).
