@@ -373,7 +373,11 @@ async function step(vp, route, op, fn, { allow4xx = [], audit = true } = {}) {
   const writes = cap.reqs.filter((r) => r.method && r.method !== "GET" && r.method !== "HEAD");
   if (writes.length) problems.push(`non-GET request: ${writes[0].method} ${writes[0].path}`);
   const dupApi = dupCount(cap.reqs.filter((r) => r.path.startsWith("/api/") && r.type !== "Image").map((r) => r.path));
-  if (dupApi.length) problems.push(`duplicate API request: ${dupApi[0]}`);
+  if (dupApi.length) {
+    const dupPath = dupApi[0].replace(/ x\d+$/, "");
+    const how = cap.reqs.filter((r) => r.path === dupPath).map((r) => `${r.id}${r.redirect ? " redirect" : ""} ${r.from}`).join("; ");
+    problems.push(`duplicate API request: ${dupApi[0]} (${how})`);
+  }
   if (LEAK_RE.test(text)) problems.push(`internal information shown: ${LEAK_RE.exec(text)[0].slice(0, 30)}`);
   if (text.includes(T.pageError)) problems.push("error boundary shown");
   if ([...cap.consoleErrors, ...cap.exceptions].some((m) => HYDRATION_RE.test(m))) problems.push("hydration mismatch");
@@ -468,7 +472,16 @@ async function main() {
     }
     const u = new URL(url);
     reqInfo.set(p.requestId, { path: u.pathname, type: p.type });
-    cap.reqs.push({ path: u.pathname + (u.pathname.startsWith("/api/") ? u.search : ""), type: p.type, method: p.request.method });
+    // 重複の原因を追えるように、要求 ID・リダイレクトかどうか・呼び出し元（最初のフレーム）も持つ（2026-10-05）。
+    const frame = p.initiator?.stack?.callFrames?.[0];
+    cap.reqs.push({
+      path: u.pathname + (u.pathname.startsWith("/api/") ? u.search : ""),
+      type: p.type,
+      method: p.request.method,
+      id: p.requestId,
+      redirect: Boolean(p.redirectResponse),
+      from: frame ? `${frame.functionName || "?"}@${frame.url.split("/").pop()}:${frame.lineNumber}` : p.initiator?.type ?? "?",
+    });
   });
   client.on("Network.responseReceived", (p) => {
     const url = p.response?.url ?? "";
