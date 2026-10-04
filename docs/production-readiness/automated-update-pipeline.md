@@ -6,7 +6,7 @@ Owner instruction 2026-09-27: when all normal conditions hold, the update runs a
 
 | Step | Before (Stage 4) | After (this pipeline) |
 |---|---|---|
-| Detection (weekly) | automatic | automatic (unchanged) |
+| Detection (hourly since 2026-10-04, see hourly-detection.md; weekly before) | automatic | automatic (unchanged) |
 | Plan: upstream fetch, diff, policy | owner dispatch + Environment approval | **automatic**; read-only credential, no approval |
 | Pre-apply Backup v2 + restore check | owner dispatch + Environment approval | **automatic**; same read-only Backup credential, no approval |
 | Isolated Dry run | owner dispatch + Environment approval | **automatic**; no Production credential at all |
