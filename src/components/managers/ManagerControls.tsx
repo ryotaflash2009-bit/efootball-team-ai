@@ -1,6 +1,7 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/managerControls";
+import { useAdoptPreHydrationInput } from "@/lib/hooks/use-adopt-prehydration-input";
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { ManagerSortKey } from "@/lib/managers/types";
@@ -24,6 +25,7 @@ export function ManagerControls() {
   const sortOptions = useSortOptions();
   const params = useSearchParams();
   const [q, setQ] = useState(params.get("q") ?? "");
+  const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const qFromUrl = params.get("q") ?? "";
   const paramString = params.toString();
@@ -51,6 +53,7 @@ export function ManagerControls() {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => push({ q: v.trim() || null }), 300);
   }
+  useAdoptPreHydrationInput(inputRef, q, onQuery);
 
   const select = "rounded-md border border-border bg-surface px-2 py-2 text-sm text-text focus:border-accent";
 
@@ -59,6 +62,7 @@ export function ManagerControls() {
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <input
           type="search"
+          ref={inputRef}
           value={q}
           maxLength={80}
           onChange={(e) => onQuery(e.target.value)}

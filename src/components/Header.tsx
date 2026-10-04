@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useAdoptPreHydrationInput } from "@/lib/hooks/use-adopt-prehydration-input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
@@ -16,6 +17,8 @@ import { HeaderAccountNav } from "@/components/auth/HeaderAccountNav";
 export function Header({ onMenuClick }: { onMenuClick: () => void }) {
   const router = useRouter();
   const [q, setQ] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  useAdoptPreHydrationInput(inputRef, q, setQ);
   const t = useT();
 
   return (
@@ -41,6 +44,7 @@ export function Header({ onMenuClick }: { onMenuClick: () => void }) {
         <Icon name="search" size={16} className="shrink-0 text-text-dim" />
         <input
           type="search"
+          ref={inputRef}
           value={q}
           maxLength={100}
           onChange={(e) => setQ(e.target.value)}
