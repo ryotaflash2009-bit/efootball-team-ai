@@ -9,7 +9,6 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Surface } from "@/components/ui/Surface";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Field";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { classifySignInFailure } from "@/lib/supabase/auth-errors";
 import { resolveSafeInternalPath } from "@/lib/supabase/safe-redirect";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
@@ -33,7 +32,6 @@ export function SignInView() {
     return key ? ta(key) : null;
   });
 
-  const supabase = getSupabaseBrowserClient();
   const nextPath = resolveSafeInternalPath(searchParams.get("next"), "/account");
 
   async function handleSubmit(e: FormEvent) {
@@ -41,14 +39,15 @@ export function SignInView() {
     if (submitting) return; // 連打防止
 
     setErrorMessage(null);
-
-    if (!supabase) {
-      setErrorMessage(ta("genericErrorMessage"));
-      return;
-    }
-
     setSubmitting(true);
     try {
+      // Supabase の client はログインするときだけ読み込む（2026-10-05: ログイン画面の初回の JS を減らす）。
+      const { getSupabaseBrowserClient } = await import("@/lib/supabase/client");
+      const supabase = getSupabaseBrowserClient();
+      if (!supabase) {
+        setErrorMessage(ta("genericErrorMessage"));
+        return;
+      }
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         const reason = classifySignInFailure(error);
