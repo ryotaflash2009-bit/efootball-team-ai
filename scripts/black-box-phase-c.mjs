@@ -10,6 +10,7 @@
  * - 結果は docs/black-box-tests/phase-c-index.md に生成。
  */
 
+import { listImageLoading } from "./lib/black-box-images.mjs";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -58,7 +59,7 @@ async function main() {
     const imgRefs = (r.body.match(/\/api\/player-image\//g) || []).length;
     record("プレイヤー一覧が表示される", r.status === 200 && /プレイヤー/.test(r.body), `HTTP ${r.status}`);
     record("選手画像が表示される（<img src=/api/player-image/…> 参照）", imgRefs > 0, `参照 ${imgRefs} 件`);
-    record("画像は遅延読み込み / 縦横比固定", /loading="lazy"/.test(r.body) && /aspect-\[3\/4\]/.test(r.body), "");
+    record("画像は遅延読み込み（最初の最大4枚だけ即時）/ 縦横比固定", listImageLoading(r.body).ok && /aspect-\[3\/4\]/.test(r.body), listImageLoading(r.body).detail);
     // /players は World データへ移行済み。詳細リンクは /players/{id}（旧サンプル）または /players/world/{id}（World）。
     record(
       "選手詳細へ移動できる（href=/players/{id} または /players/world/{id}）",

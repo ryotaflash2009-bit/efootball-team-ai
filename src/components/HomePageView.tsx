@@ -45,7 +45,7 @@ const QUICK_STEPS: { href: string; icon: IconName; title: keyof Dictionary["home
   { href: "/diagnosis-history", icon: "external", title: "quickStep6Title", body: "quickStep6Body" },
 ];
 
-function MiniCard({ p }: { p: HomeMiniCardData }) {
+function MiniCard({ p, priority = false }: { p: HomeMiniCardData; priority?: boolean }) {
   const { locale } = useLocale();
   const t = useT();
   const fallback = t("squadBuildPanel", "cardFallbackNameTemplate").replace("{id}", p.worldCardId);
@@ -56,7 +56,7 @@ function MiniCard({ p }: { p: HomeMiniCardData }) {
       className="group w-[116px] shrink-0 overflow-hidden rounded-md border border-border bg-surface transition-colors hover:border-accent sm:w-[132px]"
     >
       <div className="relative">
-        <WorldCardImage sources={p.imageSources} alt={name} size="card" />
+        <WorldCardImage sources={p.imageSources} alt={name} size="card" priority={priority} />
         <span className="absolute left-1 top-1 rounded bg-black/75 px-1.5 py-0.5 text-sm font-black leading-none text-accent">
           {p.ovrMax ?? p.ovrBase ?? "–"}
         </span>
@@ -259,8 +259,8 @@ export function HomePageView({
               }
             />
             <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-2">
-              {topOvr.map((p) => (
-                <MiniCard key={p.worldCardId} p={p} />
+              {topOvr.map((p, i) => (
+                <MiniCard key={p.worldCardId} p={p} priority={i < 4} />
               ))}
             </div>
           </section>
@@ -279,8 +279,8 @@ export function HomePageView({
               }
             />
             <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-2">
-              {recent.map((p) => (
-                <MiniCard key={p.worldCardId} p={p} />
+              {recent.map((p, i) => (
+                <MiniCard key={p.worldCardId} p={p} priority={false} />
               ))}
             </div>
           </section>

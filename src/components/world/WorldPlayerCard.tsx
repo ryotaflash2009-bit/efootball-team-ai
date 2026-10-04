@@ -28,7 +28,7 @@ export interface WorldPlayerCardData {
  * World 選手カード。画像（3:4）+ 左上 OVR + 下部に名前。
  * OVR は「最大 OVR」を大きく、基礎 OVR を小さく併記。ホバーで比較追加を表示。
  */
-export function WorldPlayerCard({ player }: { player: WorldPlayerCardData }) {
+export function WorldPlayerCard({ player, imagePriority = false }: { player: WorldPlayerCardData; imagePriority?: boolean }) {
   const t = useT();
   const { locale } = useLocale();
   const imageSources = player.imageSources;
@@ -41,7 +41,7 @@ export function WorldPlayerCard({ player }: { player: WorldPlayerCardData }) {
       <FavoriteButton worldCardId={player.worldCardId} variant="card" />
       <Link href={`/players/world/${encodeURIComponent(player.worldCardId)}`} className="block">
         <div className="relative">
-          <WorldCardImage sources={imageSources} alt={name} size="card" />
+          <WorldCardImage sources={imageSources} alt={name} size="card" priority={imagePriority} />
           <span className="absolute left-1 top-1 flex items-baseline gap-1 rounded bg-black/75 px-1.5 py-0.5 leading-none">
             <span className="text-lg font-black text-accent tabular-nums">{ovr ?? "–"}</span>
             <span className="text-[9px] font-semibold text-text-dim">MAX</span>
