@@ -45,9 +45,12 @@ function readStoredLocale(): Locale | null {
 export function LocaleProvider({ children }: { children: ReactNode }) {
   // サーバーHTMLと同じ既定値でマウントし、hydration後に実際の言語へ切り替える。
   const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
+  // 保存値・ブラウザーの言語から実際の言語を決めたか（決める前は既定の ja のまま）。
+  const [resolved, setResolved] = useState(false);
 
   useEffect(() => {
     const stored = readStoredLocale();
+    setResolved(true);
     if (stored) {
       setLocaleState(stored);
       return;
@@ -83,7 +86,9 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.lang = effectiveLocale;
-  }, [effectiveLocale]);
+    // 実際の言語の辞書を適用したら、本文を表示する（layout の head の script が英語の利用者だけ一時的に隠している）。
+    if (resolved && effectiveLocale === locale) document.documentElement.removeAttribute("data-locale-pending");
+  }, [effectiveLocale, locale, resolved]);
 
   const value = useMemo<LocaleContextValue>(() => {
     const dictionary = dictionaryOf(effectiveLocale);

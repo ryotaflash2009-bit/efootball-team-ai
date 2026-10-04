@@ -74,6 +74,13 @@ html {
   scrollbar-gutter: stable;
 }
 
+/* 英語の利用者: 英語の辞書を適用するまで本文とヘッダーを隠す（日本語の一瞬の表示と CLS を防ぐ。最大 2 秒。layout.tsx）。
+   visibility なので場所は確保され、表示しても位置は動かない。 */
+html[data-locale-pending] main,
+html[data-locale-pending] header {
+  visibility: hidden;
+}
+
 html,
 body {
   padding: 0;
