@@ -1,7 +1,7 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/managerControls";
-import { useAdoptPreHydrationInput } from "@/lib/hooks/use-adopt-prehydration-input";
+import { useAdoptPreHydrationInput, useAdoptPreHydrationSelects } from "@/lib/hooks/use-adopt-prehydration-input";
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { ManagerSortKey } from "@/lib/managers/types";
@@ -54,11 +54,13 @@ export function ManagerControls() {
     debounceRef.current = setTimeout(() => push({ q: v.trim() || null }), 300);
   }
   useAdoptPreHydrationInput(inputRef, q, onQuery);
+  const controlsRef = useRef<HTMLDivElement>(null);
+  useAdoptPreHydrationSelects(controlsRef, push);
 
   const select = "rounded-md border border-border bg-surface px-2 py-2 text-sm text-text focus:border-accent";
 
   return (
-    <div className="flex flex-col gap-2">
+    <div ref={controlsRef} className="flex flex-col gap-2">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <input
           type="search"
@@ -72,6 +74,8 @@ export function ManagerControls() {
         />
         <select
           value={(params.get("sort") as ManagerSortKey) ?? "name"}
+          data-adopt-param="sort"
+          data-rendered-value={(params.get("sort") as ManagerSortKey) ?? "name"}
           onChange={(e) => push({ sort: e.target.value })}
           aria-label={t("managerControls", "sortAriaLabel")}
           className={`${select} shrink-0`}
@@ -86,6 +90,8 @@ export function ManagerControls() {
       <div className="flex flex-wrap gap-2">
         <select
           value={params.get("hasBooster") ?? ""}
+          data-adopt-param="hasBooster"
+          data-rendered-value={params.get("hasBooster") ?? ""}
           onChange={(e) => push({ hasBooster: e.target.value || null })}
           aria-label={t("managerControls", "boosterFilterAriaLabel")}
           className={select}
@@ -96,6 +102,8 @@ export function ManagerControls() {
         </select>
         <select
           value={params.get("hasLinkUpPlay") ?? ""}
+          data-adopt-param="hasLinkUpPlay"
+          data-rendered-value={params.get("hasLinkUpPlay") ?? ""}
           onChange={(e) => push({ hasLinkUpPlay: e.target.value || null })}
           aria-label={t("managerControls", "linkUpFilterAriaLabel")}
           className={select}
