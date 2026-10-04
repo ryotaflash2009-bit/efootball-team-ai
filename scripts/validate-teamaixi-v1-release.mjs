@@ -25,6 +25,7 @@ const files = {
   changelog: read("CHANGELOG.md"),
   releaseNotes: read("RELEASE_NOTES.md"),
   releaseDoc: read("docs/release/teamaixi-v1.md"),
+  legalChecklist: read("docs/release/legal-review-checklist.md"),
 };
 const repoProblems = checkRepo(files);
 let liveProblems = ["live_check_not_run"];

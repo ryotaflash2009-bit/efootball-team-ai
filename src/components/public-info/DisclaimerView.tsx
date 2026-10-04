@@ -41,6 +41,11 @@ export function DisclaimerView() {
         </p>
       </Surface>
 
+      <Surface padding="md">
+        <p className="text-sm font-semibold text-text">{td("dataSourceHeading")}</p>
+        <p className="mt-1.5 text-sm text-text-dim">{td("dataSourceBody")}</p>
+      </Surface>
+
       <Surface tone="outline" padding="md">
         <p className="text-sm font-semibold text-text">{td("analysisHeading")}</p>
         <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm text-text-dim">

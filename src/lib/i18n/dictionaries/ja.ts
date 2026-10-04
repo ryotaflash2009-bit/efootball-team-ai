@@ -768,6 +768,7 @@ export interface Dictionary {
     guidesToggleTemplate: string;
     gridToggleTemplate: string;
     mirrorPlacementButton: string;
+    toastWarningsParenTemplate: string;
     copyPlacementButton: string;
     pastePlacementButton: string;
     placementCopiedTemplate: string;
@@ -3207,6 +3208,8 @@ export interface Dictionary {
     bestXiPersonDedup: string;
     bestXiPositionData: string;
     draftNotice: string;
+    dataSourceHeading: string;
+    dataSourceBody: string;
   };
   privacy: {
     pageTitle: string;
@@ -3273,6 +3276,8 @@ export interface Dictionary {
     specialistReviewNotice: string;
     lastUpdatedLabel: string;
     lastUpdatedDate: string;
+    sharedUrlHeading: string;
+    sharedUrlBody: string;
   };
   terms: {
     pageTitle: string;
@@ -3437,6 +3442,8 @@ export interface Dictionary {
     privacyContactUnsetNotice: string;
     privacyContactEmailLabel: string;
     noSubmissionFormNotice: string;
+    safetyNoApiKey: string;
+    bugReportOnlyFacts: string;
   };
   releaseReadiness: {
     pageTitle: string;

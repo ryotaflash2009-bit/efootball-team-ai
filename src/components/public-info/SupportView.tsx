@@ -49,6 +49,7 @@ export function SupportView() {
             <li>{ts("safetyNoRecoveryCode")}</li>
             <li>{ts("safetyNoPaymentInfo")}</li>
             <li>{ts("safetyNoUnnecessaryPersonalInfo")}</li>
+            <li>{ts("safetyNoApiKey")}</li>
           </ul>
         </Surface>
       ) : null}
@@ -113,6 +114,7 @@ export function SupportView() {
           <li>{ts("bugReportFieldErrorMessage")}</li>
         </ul>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-text-muted">
+          <li>{ts("bugReportOnlyFacts")}</li>
           <li>{ts("bugReportNoPersonalData")}</li>
           <li>{ts("bugReportNoUnsolicitedJsonAttachment")}</li>
           <li>{ts("bugReportCheckScreenshot")}</li>

@@ -1,6 +1,7 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
+import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import "@/lib/i18n/dictionaries/ja-ns/squadPitch";
 import { useCallback, useRef, useState } from "react";
 import { resolveCardImageSources } from "@/lib/world/image";
@@ -13,7 +14,7 @@ import {
   type SnapSettings,
 } from "@/lib/squad/position-snapping";
 import type { SquadSlotResult, CompatibilityStatus } from "@/lib/squad/types";
-import { useT } from "@/lib/i18n/LocaleContext";
+import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 
 const COMPAT_DOT: Record<CompatibilityStatus, string> = {
@@ -75,6 +76,7 @@ export function SquadPitch({
   multiSelectedSlotIds?: readonly string[] | null;
 }) {
   const t = useT();
+  const { locale } = useLocale();
   const compatTitles = useCompatTitles();
   const fillSp = (s: string, vars: Record<string, string>) =>
     Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
@@ -264,9 +266,7 @@ export function SquadPitch({
               })
             : [];
           const name = e
-            ? e.display.nameJa ||
-              e.display.nameEn ||
-              fillSp(t("squadBuildPanel", "cardFallbackNameTemplate"), { id: e.display.worldCardId })
+            ? resolvePlayerDisplayName(e.display, locale, fillSp(t("squadBuildPanel", "cardFallbackNameTemplate"), { id: e.display.worldCardId }))
             : null;
           return (
             <button

@@ -20,6 +20,12 @@ import { Badge } from "@/components/ui/Badge";
 import { buttonClasses } from "@/components/ui/Button";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { useSquadCompareText, useCompareCardName, type ScKey } from "./useSquadCompareText";
+import { swapPlayerNames } from "@/lib/squad/squad-diagnosis-text-en";
+
+/** 英語の画面で、ライブラリが返す選手名（キャプテン等）を英語名にそろえる [日本語名, 英語名]。 */
+function unitNamePairs(result: SquadComparisonResult): [string, string][] {
+  return [...result.units.a, ...result.units.b].filter((u) => u.nameJa && u.nameEn).map((u) => [u.nameJa as string, u.nameEn as string]);
+}
 
 type Tab = "overview" | "shape" | "players" | "metrics" | "roles" | "boosters" | "skills" | "warnings";
 const TABS: [Tab, ScKey][] = [
@@ -322,7 +328,7 @@ function CompareSummary({ result }: { result: SquadComparisonResult }) {
   return (
     <Surface tone="raised" className="flex flex-col gap-3">
       <div className="grid grid-cols-[1fr_auto_1fr] items-start gap-2">
-        <SummaryCard s={a} tag="A" />
+        <SummaryCard s={a} tag="A" pairs={unitNamePairs(result)} />
         <div className="flex flex-col items-center gap-1 self-center text-center text-2xs text-text-dim">
           <span className="rounded border border-border px-2 py-1">
             {tx("commonCards")}<br />
@@ -331,7 +337,7 @@ function CompareSummary({ result }: { result: SquadComparisonResult }) {
           <span>{tx("onlyATemplate", { n: result.summary.onlyACardCount })}</span>
           <span>{tx("onlyBTemplate", { n: result.summary.onlyBCardCount })}</span>
         </div>
-        <SummaryCard s={b} tag="B" />
+        <SummaryCard s={b} tag="B" pairs={unitNamePairs(result)} />
       </div>
       <p className="text-2xs text-text-muted">
         {tx("noAutoVerdict")}
@@ -340,8 +346,8 @@ function CompareSummary({ result }: { result: SquadComparisonResult }) {
   );
 }
 
-function SummaryCard({ s, tag }: { s: SquadComparisonResult["summary"]["a"]; tag: "A" | "B" }) {
-  const { tx } = useSquadCompareText();
+function SummaryCard({ s, tag, pairs }: { s: SquadComparisonResult["summary"]["a"]; tag: "A" | "B"; pairs: [string, string][] }) {
+  const { tx, locale } = useSquadCompareText();
   return (
     <div className="rounded-md border border-border bg-surface-2/40 p-2.5 text-xs">
       <p className="flex items-center gap-1.5">
@@ -360,7 +366,7 @@ function SummaryCard({ s, tag }: { s: SquadComparisonResult["summary"]["a"]; tag
         <dt>{tx("manager")}</dt>
         <dd className="text-text">{s.hasManager ? s.managerName ?? tx("loadingParen") : tx("none")}</dd>
         <dt>{tx("captain")}</dt>
-        <dd className="text-text">{s.captainName ?? tx("notSet")}{s.captainRole ? tx("parenTemplate", { v: s.captainRole }) : ""}</dd>
+        <dd className="text-text">{s.captainName ? swapPlayerNames(s.captainName, locale, pairs) : tx("notSet")}{s.captainRole ? tx("parenTemplate", { v: s.captainRole }) : ""}</dd>
         <dt>{tx("updated")}</dt>
         <dd className="text-text">{fmtDate(s.updatedAt)}</dd>
         <dt>{tx("warningCount")}</dt>
@@ -797,7 +803,9 @@ function RolesTab({ result, diffOnly }: { result: SquadComparisonResult; diffOnl
   const m = result.managerComparison;
   const c = result.captainComparison;
   const lu = result.linkUpComparison;
-  const { tx, lib, t } = useSquadCompareText();
+  const { tx, lib, t, locale } = useSquadCompareText();
+  const pairs = unitNamePairs(result);
+  const nm = (v: string | null | undefined) => (v ? swapPlayerNames(v, locale, pairs) : v);
   const stateLabel = (s: string) =>
     s === "same"
       ? tx("stateSame")
@@ -846,8 +854,8 @@ function RolesTab({ result, diffOnly }: { result: SquadComparisonResult; diffOnl
       <section>
         <h3 className="mb-1.5 text-sm font-semibold">{tx("captainTitleTemplate", { state: stateLabel(c.state) })}</h3>
         <ABPair
-          a={<p>{c.aName ? tx("nameRoleTemplate", { name: c.aName, role: c.aRole ?? "?" }) : tx("notSet")}</p>}
-          b={<p>{c.bName ? tx("nameRoleTemplate", { name: c.bName, role: c.bRole ?? "?" }) : tx("notSet")}</p>}
+          a={<p>{c.aName ? tx("nameRoleTemplate", { name: nm(c.aName) ?? "", role: c.aRole ?? "?" }) : tx("notSet")}</p>}
+          b={<p>{c.bName ? tx("nameRoleTemplate", { name: nm(c.bName) ?? "", role: c.bRole ?? "?" }) : tx("notSet")}</p>}
         />
         <p className="mt-1 text-2xs text-text-muted">{tx("captainNote")}</p>
       </section>
@@ -870,8 +878,8 @@ function RolesTab({ result, diffOnly }: { result: SquadComparisonResult; diffOnl
                 .map((r) => (
                   <tr key={r.key} className="border-b border-border/50">
                     <td className="py-1 pr-2 text-text-dim">{r.label}</td>
-                    <td className="py-1 pr-2">{r.aName ?? tx("notSet")}</td>
-                    <td className="py-1 pr-2">{r.bName ?? tx("notSet")}</td>
+                    <td className="py-1 pr-2">{nm(r.aName) ?? tx("notSet")}</td>
+                    <td className="py-1 pr-2">{nm(r.bName) ?? tx("notSet")}</td>
                     <td className="py-1">{stateLabel(r.state)}</td>
                   </tr>
                 ))}
@@ -1084,7 +1092,7 @@ function SkillsTab({ result, diffOnly }: { result: SquadComparisonResult; diffOn
 }
 
 function WarningsTab({ result }: { result: SquadComparisonResult }) {
-  const { tx } = useSquadCompareText();
+  const { tx, lib } = useSquadCompareText();
   const w = result.warningComparison;
   const da = result.dataAvailability;
   return (
@@ -1099,7 +1107,7 @@ function WarningsTab({ result }: { result: SquadComparisonResult }) {
             <p className="text-2xs font-semibold text-text-muted">{tx("both")}</p>
             <ul className="list-disc space-y-0.5 pl-4 text-xs text-text-dim">
               {w.both.map((x, i) => (
-                <li key={i}>{x}</li>
+                <li key={i}>{lib(x)}</li>
               ))}
               {w.both.length === 0 ? <li className="list-none text-text-muted">{tx("none")}</li> : null}
             </ul>
@@ -1108,7 +1116,7 @@ function WarningsTab({ result }: { result: SquadComparisonResult }) {
             <p className="text-2xs font-semibold text-text-muted">{tx("onlyAShort")}</p>
             <ul className="list-disc space-y-0.5 pl-4 text-xs text-text-dim">
               {w.onlyA.map((x, i) => (
-                <li key={i}>{x}</li>
+                <li key={i}>{lib(x)}</li>
               ))}
               {w.onlyA.length === 0 ? <li className="list-none text-text-muted">{tx("none")}</li> : null}
             </ul>
@@ -1117,7 +1125,7 @@ function WarningsTab({ result }: { result: SquadComparisonResult }) {
             <p className="text-2xs font-semibold text-text-muted">{tx("onlyBShort")}</p>
             <ul className="list-disc space-y-0.5 pl-4 text-xs text-text-dim">
               {w.onlyB.map((x, i) => (
-                <li key={i}>{x}</li>
+                <li key={i}>{lib(x)}</li>
               ))}
               {w.onlyB.length === 0 ? <li className="list-none text-text-muted">{tx("none")}</li> : null}
             </ul>

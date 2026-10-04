@@ -346,9 +346,7 @@ export function MyTeamView() {
         <MyTeamAddDialog
           worldCardId={editRec.worldCardId}
           playerName={
-            cards.get(editRec.worldCardId)?.nameJa ||
-            cards.get(editRec.worldCardId)?.nameEn ||
-            cardFallbackName(editRec.worldCardId)
+            resolvePlayerDisplayName(cards.get(editRec.worldCardId) ?? {}, locale, cardFallbackName(editRec.worldCardId))
           }
           open
           editRecord={editRec}
@@ -375,9 +373,7 @@ export function MyTeamView() {
             <p>
               {fillMt(tmt("removeConfirmBodyTemplate"), {
                 name: confirmRec
-                  ? cards.get(confirmRec.worldCardId)?.nameJa ||
-                    cards.get(confirmRec.worldCardId)?.nameEn ||
-                    cardFallbackName(confirmRec.worldCardId)
+                  ? resolvePlayerDisplayName(cards.get(confirmRec.worldCardId) ?? {}, locale, cardFallbackName(confirmRec.worldCardId))
                   : "",
               })}
             </p>

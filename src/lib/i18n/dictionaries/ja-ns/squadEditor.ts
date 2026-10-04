@@ -92,6 +92,7 @@ const squadEditor: Dictionary["squadEditor"] = {
   guidesToggleTemplate: "ガイド {state}",
   gridToggleTemplate: "グリッド {state}",
   mirrorPlacementButton: "配置を左右反転",
+  toastWarningsParenTemplate: "（{warnings}）",
   copyPlacementButton: "配置をコピー",
   pastePlacementButton: "配置を貼り付け",
   placementCopiedTemplate: "配置をコピーしました（同じフォーメーション {formationId} のスカッドへ貼り付けできます）。",

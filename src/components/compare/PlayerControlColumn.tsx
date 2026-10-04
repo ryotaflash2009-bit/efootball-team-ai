@@ -250,7 +250,7 @@ export function PlayerControlColumn({
               <li key={r.slot} className="flex flex-wrap items-center gap-1 text-[10px]">
                 <span className="text-text-dim">{fillPc(tpc("attachedBoosterPrefixTemplate"), { slot: String(r.slot) })}</span>
                 <span className="font-semibold">
-                  {r.nameJa ?? r.nameEn} +{r.level}
+                  {locale === "ja" ? (r.nameJa ?? r.nameEn) : (r.nameEn ?? r.nameJa)} +{r.level}
                 </span>
                 <span className={r.appliesInStandard ? "text-info" : "text-warning"}>
                   {r.activation === "power_of_many"

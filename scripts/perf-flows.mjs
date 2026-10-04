@@ -41,7 +41,8 @@ const COLLECT = `(() => {
   const apiMs = [];
   const seen = new Map();
   for (const r of res) { const k = kind(r); bytes[k] += r.transferSize || 0; counts[k]++; if (k === "api") apiMs.push(Math.round(r.duration)); const u = r.name.split("#")[0]; seen.set(u, (seen.get(u) || 0) + 1); }
-  const duplicates = [...seen.entries()].filter(([u, c]) => c > 1 && !/_rsc=|player-image/.test(u)).length;
+  const dupList = [...seen.entries()].filter(([u, c]) => c > 1 && !/_rsc=|player-image/.test(u)).map(([u]) => u.replace(location.origin, "").slice(0, 120));
+  const duplicates = dupList.length;
   return {
     ttfb: n ? Math.round(n.responseStart - n.startTime) : null,
     dcl: n ? Math.round(n.domContentLoadedEventEnd) : null,
@@ -53,7 +54,7 @@ const COLLECT = `(() => {
     clsSources: window.__pf && window.__pf.src ? window.__pf.src.slice(0, 4) : [],
     longTasks: window.__pf ? window.__pf.lt.length : null,
     longTaskTotal: window.__pf ? Math.round(window.__pf.lt.reduce((a, b) => a + b, 0)) : null,
-    requests: res.length + 1, bytes, counts, apiMaxMs: apiMs.length ? Math.max(...apiMs) : 0, duplicates,
+    requests: res.length + 1, bytes, counts, apiMaxMs: apiMs.length ? Math.max(...apiMs) : 0, duplicates, dupList,
     domNodes: document.getElementsByTagName("*").length,
     heapMB: performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) : null,
   };

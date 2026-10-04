@@ -4,14 +4,25 @@ import "@/lib/i18n/dictionaries/ja-ns/diagnosisPerspectives";
 import type { PerspectiveConfidence, PerspectiveResult } from "@/lib/squad/diagnosis-perspectives";
 import { Badge } from "@/components/ui/Badge";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
+import { localizePerspectiveText } from "@/lib/squad/diagnosis-perspectives-text-en";
+import { swapPlayerNames } from "@/lib/squad/squad-diagnosis-text-en";
 
 /**
  * F-045 診断の追加観点（暫定 / 比較検証用）。既定で閉じた折りたたみに置き、総合評価・共有画像とは分ける。
  * 観点ごとに独立して表示し、合計しない。
  */
-export function DiagnosisPerspectivesPanel({ results }: { results: PerspectiveResult[] }) {
+export function DiagnosisPerspectivesPanel({
+  results,
+  namePairs = [],
+}: {
+  results: PerspectiveResult[];
+  /** 英語の画面で選手名を英語名にそろえる [日本語名, 英語名]。 */
+  namePairs?: readonly (readonly [string, string])[];
+}) {
   const t = useT();
   const { locale } = useLocale();
+  // 計算ライブラリの日本語は表示するときだけ英語にする（2026-10-04。それまでは英語の画面でも日本語のままだった）。
+  const lp = (text: string) => swapPlayerNames(localizePerspectiveText(text, locale), locale, namePairs);
   const confidenceLabel: Record<PerspectiveConfidence, string> = {
     high: t("diagnosisPerspectives", "confidenceHigh"),
     medium: t("diagnosisPerspectives", "confidenceMedium"),
@@ -27,19 +38,18 @@ export function DiagnosisPerspectivesPanel({ results }: { results: PerspectiveRe
       </summary>
       <div className="border-t border-border/60 p-2.5">
         <p className="text-2xs text-text-muted">{t("diagnosisPerspectives", "note")}</p>
-        {locale !== "ja" ? <p className="mt-1 text-2xs text-text-muted">{t("diagnosisPerspectives", "jaOnlyNote")}</p> : null}
         <ul className="mt-2 flex flex-col gap-3">
           {results.map((r) => (
             <li key={r.id} className="rounded border border-border/60 p-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <h4 className="text-xs font-semibold text-text">{r.label}</h4>
+                <h4 className="text-xs font-semibold text-text">{lp(r.label)}</h4>
                 <span className="text-2xs text-text-muted">
                   {t("diagnosisPerspectives", "confidence")}: {confidenceLabel[r.confidence]}
                 </span>
               </div>
               <ul className="mt-1 list-disc pl-4 text-2xs text-text-dim">
                 {r.facts.map((f, i) => (
-                  <li key={i}>{f}</li>
+                  <li key={i}>{lp(f)}</li>
                 ))}
               </ul>
               <p className="mt-1.5 text-2xs font-semibold text-text-dim">{t("diagnosisPerspectives", "formulas")}</p>
@@ -48,14 +58,14 @@ export function DiagnosisPerspectivesPanel({ results }: { results: PerspectiveRe
                   <div key={f.id} className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2">
                     <dt className="flex min-w-0 items-center gap-1.5 text-text-dim">
                       <span className="font-mono">{f.id}</span>
-                      <span>{f.label}</span>
+                      <span>{lp(f.label)}</span>
                       <Badge tone={f.kind === "fact" ? "neutral" : "outline"}>
                         {f.kind === "fact" ? t("diagnosisPerspectives", "kindFact") : t("diagnosisPerspectives", "kindProvisional")}
                       </Badge>
                     </dt>
                     <dd className="text-text">
-                      <span className="tabular-nums">{f.value === null ? t("diagnosisPerspectives", "notComputed") : `${f.value}${f.unit}`}</span>
-                      <span className="ml-2 text-text-muted">{f.description}</span>
+                      <span className="tabular-nums">{f.value === null ? t("diagnosisPerspectives", "notComputed") : `${f.value}${lp(f.unit)}`}</span>
+                      <span className="ml-2 text-text-muted">{lp(f.description)}</span>
                     </dd>
                   </div>
                 ))}
@@ -66,8 +76,8 @@ export function DiagnosisPerspectivesPanel({ results }: { results: PerspectiveRe
                   <ul className="list-disc pl-4 text-2xs text-text-dim">
                     {r.causes.map((c) => (
                       <li key={c.key}>
-                        {c.name}
-                        {c.position && c.position !== c.name ? `（${c.position}）` : ""}: {c.detail}
+                        {lp(c.name)}
+                        {c.position && c.position !== c.name ? `（${c.position}）` : ""}: {lp(c.detail)}
                       </li>
                     ))}
                   </ul>
@@ -78,14 +88,14 @@ export function DiagnosisPerspectivesPanel({ results }: { results: PerspectiveRe
                   <p className="mt-1.5 text-2xs font-semibold text-text-dim">{t("diagnosisPerspectives", "improvements")}</p>
                   <ul className="list-disc pl-4 text-2xs text-text-dim">
                     {r.improvements.map((m, i) => (
-                      <li key={i}>{m}</li>
+                      <li key={i}>{lp(m)}</li>
                     ))}
                   </ul>
                 </>
               ) : null}
               {r.missingData.length > 0 ? (
                 <p className="mt-1.5 text-2xs text-warning">
-                  {t("diagnosisPerspectives", "missingData")}: {r.missingData.join(" / ")}
+                  {t("diagnosisPerspectives", "missingData")}: {r.missingData.map(lp).join(" / ")}
                 </p>
               ) : null}
             </li>

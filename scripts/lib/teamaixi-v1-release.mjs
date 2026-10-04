@@ -40,6 +40,13 @@ export function checkRepo(files) {
     problems.push("package_json_invalid");
   }
   for (const doc of ["changelog", "releaseNotes", "releaseDoc"]) if (!has(doc) || !/TeamAIXI v1\.0/.test(files[doc])) problems.push(`release_doc_missing:${doc}`);
+  // 法務・問い合わせ（2026-10-04 の本人の決定）: 確定していない準拠法・裁判管轄を利用者向けの本文に書かない。
+  if (/日本法/.test(ja) || /Japanese law/i.test(en)) problems.push("governing_law_guess_in_public_text");
+  if (/公開前確認事項/.test(ja)) problems.push("internal_status_in_public_text");
+  for (const k of ["safetyNoPassword", "safetyNoAuthCode", "safetyNoApiKey", "safetyNoUnnecessaryPersonalInfo", "bugReportOnlyFacts", "sharedUrlBody", "dataSourceBody"]) {
+    if (!new RegExp(`\\b${k}: "`).test(ja) || !new RegExp(`\\b${k}: "`).test(en)) problems.push(`required_public_text_missing:${k}`);
+  }
+  if (!has("legalChecklist") || !/専門家/.test(files.legalChecklist) || !/準拠法/.test(files.legalChecklist)) problems.push("legal_review_checklist_missing");
   return problems;
 }
 

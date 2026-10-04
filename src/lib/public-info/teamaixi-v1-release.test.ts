@@ -9,7 +9,7 @@ const repoFiles = () => ({
   layout: read("src/app/layout.tsx"), dict_ja: [read("src/lib/i18n/dictionaries/ja.ts"), ...readdirSync(path.join(ROOT, "src/lib/i18n/dictionaries/ja-ns")).map((f) => read(`src/lib/i18n/dictionaries/ja-ns/${f}`))].join("\n"), dict_en: read("src/lib/i18n/dictionaries/en.ts"),
   accountAvailability: read("src/lib/supabase/account-availability.ts"), sidebar: read("src/components/Sidebar.tsx"),
   internalPages: read("src/lib/public-info/internal-pages.ts"), packageJson: read("package.json"),
-  changelog: read("CHANGELOG.md"), releaseNotes: read("RELEASE_NOTES.md"), releaseDoc: read("docs/release/teamaixi-v1.md"),
+  changelog: read("CHANGELOG.md"), releaseNotes: read("RELEASE_NOTES.md"), releaseDoc: read("docs/release/teamaixi-v1.md"), legalChecklist: read("docs/release/legal-review-checklist.md"),
 });
 
 describe("TeamAIXI v1.0 Release Validator", () => {
@@ -25,6 +25,9 @@ describe("TeamAIXI v1.0 Release Validator", () => {
     expect(checkRepo({ ...f, sidebar: f.sidebar + '\n{ href: "/community", labelKey: "community", icon: "community", status: "soon" },' })).toContain("unreleased_nav_items_present");
     expect(checkRepo({ ...f, packageJson: '{"version":"0.9.0"}' })).toContain("version_not_1_0_0");
     expect(checkRepo({ ...f, dict_en: f.dict_en + "\nKONAMI AI" })).toContain("forbidden_claim:KONAMI AI");
+    expect(checkRepo({ ...f, dict_ja: f.dict_ja + "\n準拠法は日本法とすることを想定" })).toContain("governing_law_guess_in_public_text");
+    expect(checkRepo({ ...f, dict_ja: f.dict_ja.replace(/safetyNoApiKey: "/g, "x: \"") })).toContain("required_public_text_missing:safetyNoApiKey");
+    expect(checkRepo({ ...f, legalChecklist: undefined as unknown as string })).toContain("legal_review_checklist_missing");
     expect(checkRepo({ ...f, layout: f.layout + '\nopenGraph: { title: "TeamAIXI" },' })).toContain("og_or_canonical_with_noindex");
   });
 
