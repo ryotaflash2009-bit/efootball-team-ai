@@ -6,7 +6,7 @@ import { CONCURRENCY_GROUPS } from "./update-contract";
  *
  * - 定期実行してよいのは検出(detection・dry run相当、Secretなし・Environmentなし)だけ。
  *   Backup・apply・rollback・Restoreは常に手動(workflow_dispatch + Environment承認)で、scheduleしない。
- * - `schedule:`トリガーは検出workflowだけに置く(週1回、初回手動検出の成功後に本人承認で追加。2026-09-25)。
+ * - `schedule:`トリガーは検出workflowだけに置く(2026-09-25に週1回で追加、2026-10-04に本人の決定で毎時へ変更)。
  * - scheduleでも手動でも、repository variableが正確に"true"でなければjobごとskipし、CLIも取得前に停止する。
  *   手動実行は確認入力"detect"が必須、scheduleは確認入力なし(workflowの`if:`とCLIの両方で判定する)。
  * - 検出の実transport(update-detection-cli.ts)は検出専用の承認token・上限(World全件1回 + managers.json 1件)で動き、
@@ -17,10 +17,12 @@ export const DETECTION_WORKFLOW_FILE = "reference-data-update-detection.yml";
 export const DETECTION_ENABLE_VARIABLE = "REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED";
 
 /**
- * 検出のschedule: 週1回(日曜 UTC 18:17 = 月曜 JST 03:17)。World全件はincremental取得が使えない
- * (sortBy UPDATED_ATはHTTP 400)ため1回あたり約443 requestになり、上流の負荷を抑えて低頻度にする。
+ * 検出のschedule: 毎時17分（本人の決定 2026-10-04: 24時間・1時間おき。それ以前は週1回）。毎時00分の集中を避ける。
+ * World全件はincremental取得が使えない(sortBy UPDATED_ATはHTTP 400)ため1回あたり約445 requestになる。そのため毎時は
+ * Managersの完全な比較(1 request)とWorldの軽い確認(1 request)だけを行い、World全件はWorldの信号の変化・6時間ごと・
+ * 失敗後の再試行(2時間)・手動実行のときだけ行う(update-detection-light.ts)。
  */
-export const DETECTION_CRON = "17 18 * * 0";
+export const DETECTION_CRON = "17 * * * *";
 
 export type ScheduledStage = "detection";
 export type NeverScheduledStage = "backup" | "production_apply" | "rollback" | "restore";

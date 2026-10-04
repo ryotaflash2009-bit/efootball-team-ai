@@ -42,6 +42,17 @@ jobs:
           mkdir -p "$RUNNER_TEMP/summary"
           gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name reference-data-detection-summary --dir "$RUNNER_TEMP/summary" || true
 
+      # Hourly detection: start time of the previous detection run (to detect GitHub schedule delays or misses).
+      - name: Find the previous detection run
+        id: prev
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          prev="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow reference-data-update-detection.yml --limit 5 --json databaseId,createdAt \
+            --jq "[.[] | select(.databaseId != ${RUN_ID})][0].createdAt // \"\"")" || prev=""
+          echo "at=$prev" >> "$GITHUB_OUTPUT"
+
       - name: Open or update the notification issue
         env:
           GH_TOKEN: ${{ github.token }}
@@ -49,6 +60,9 @@ jobs:
           CONCLUSION: ${{ github.event.workflow_run.conclusion }}
           RUN_ID: ${{ github.event.workflow_run.id }}
           RUN_URL: ${{ github.event.workflow_run.html_url }}
+          PREV_DETECTION_RUN_AT: ${{ steps.prev.outputs.at }}
+          THIS_DETECTION_RUN_AT: ${{ github.event.workflow_run.created_at }}
+          DETECTION_EVENT: ${{ github.event.workflow_run.event }}
         run: |
           SUMMARY="$RUNNER_TEMP/summary/reference-data-detection-summary.json"
           [ -f "$SUMMARY" ] || SUMMARY="-"

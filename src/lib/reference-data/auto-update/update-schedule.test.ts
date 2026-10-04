@@ -9,15 +9,6 @@ const readWf = (f: string) => readFileSync(path.join(WORKFLOWS, f), "utf8");
 /** `#`コメントを除いたYAML本文。 */
 const code = (yaml: string) => yaml.split("\n").map((l) => l.replace(/(^|\s)#.*$/, "")).join("\n");
 
-/** cron(分 時 * * 曜日、UTC)をJSTの曜日(0=日)・時刻へ変換する。 */
-function cronToJst(cron: string): { weekday: number; hour: number; minute: number } {
-  const [min, hour, dom, mon, dow] = cron.split(" ");
-  expect([dom, mon]).toEqual(["*", "*"]);
-  const utcMinutes = Number(dow) * 24 * 60 + Number(hour) * 60 + Number(min);
-  const jst = (utcMinutes + 9 * 60) % (7 * 24 * 60);
-  return { weekday: Math.floor(jst / (24 * 60)), hour: Math.floor((jst % (24 * 60)) / 60), minute: jst % 60 };
-}
-
 describe("定期実行の判定(fail-closed)", () => {
   it("明示の'true'と承認済み実transportの両方が無ければ実行しない", () => {
     expect(decideDetectionRun({ stage: "detection", enableVariable: undefined })).toEqual({ run: false, reason: "not_enabled" });
@@ -51,16 +42,31 @@ describe("検出workflowの静的監査", () => {
   const yaml = readWf(DETECTION_WORKFLOW_FILE);
   const body = code(yaml);
 
-  it("トリガーは週1回のscheduleと確認入力付きworkflow_dispatchだけ(push・pull_request等を持たない)", () => {
-    expect(body).toMatch(/^on:\s*\n\s+schedule:\s*\n\s+- cron: "17 18 \* \* 0"\s*\n\s+workflow_dispatch:\s*\n\s+inputs:/m);
+  it("トリガーは毎時のscheduleと確認入力付きworkflow_dispatchだけ(push・pull_request等を持たない)", () => {
+    expect(body).toMatch(/^on:\s*\n\s+schedule:\s*\n\s+- cron: "17 \* \* \* \*"\s*\n\s+workflow_dispatch:\s*\n\s+inputs:/m);
     expect(body.match(/- cron:/g)).toHaveLength(1);
     expect(body).not.toMatch(/^\s*(push|pull_request|pull_request_target|workflow_run|repository_dispatch|workflow_call)\s*:/m);
   });
 
-  it("cronは月曜03:17 JST(GitHubのcronはUTC)", () => {
-    expect(DETECTION_CRON).toBe("17 18 * * 0");
-    expect(cronToJst(DETECTION_CRON)).toEqual({ weekday: 1, hour: 3, minute: 17 });
+  it("cronは毎時17分(本人の決定 2026-10-04: 24時間・1時間おき・1日最大24回。毎時00分を避ける)", () => {
+    expect(DETECTION_CRON).toBe("17 * * * *");
+    const [min, hour, dom, mon, dow] = DETECTION_CRON.split(" ");
+    expect(min).toBe("17");
+    expect(min.split(",")).toHaveLength(1);
+    // 毎時・毎日（1時間おきなので UTC/JST の差は結果に影響しない）
+    expect([hour, dom, mon, dow]).toEqual(["*", "*", "*", "*"]);
     expect(body).toContain(`- cron: "${DETECTION_CRON}"`);
+  });
+
+  it("毎時の検出の状態は Actions cache（restore → 検出 → save）。重い段階は起動しない・進行中を取り消さない", () => {
+    expect(body).toMatch(/uses: actions\/cache\/restore@v4[\s\S]*key: reference-data-detection-state-\$\{\{ github\.run_id \}\}[\s\S]*restore-keys: \|\s*\n\s*reference-data-detection-state-/);
+    expect(body).toMatch(/uses: actions\/cache\/save@v4/);
+    expect(body).toContain("REFERENCE_DATA_DETECTION_STATE_PATH:");
+    expect(body).toContain("REFERENCE_DATA_DETECTION_CANDIDATES_PATH:");
+    expect(body.indexOf("actions/cache/restore@v4")).toBeLessThan(body.indexOf("name: Detect upstream changes"));
+    expect(body.indexOf("actions/cache/save@v4")).toBeGreaterThan(body.indexOf("name: Detect upstream changes"));
+    expect(body).not.toMatch(/reference-data-production-(apply|backup)\.yml/);
+    expect(body).toMatch(/cancel-in-progress: false/);
   });
 
   it("read-only権限・Secretなし・Environmentなし・検出用concurrency group", () => {
