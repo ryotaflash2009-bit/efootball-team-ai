@@ -1,6 +1,7 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/worldFilters";
+import { useAdoptPreHydrationInput } from "@/lib/hooks/use-adopt-prehydration-input";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { WorldFacets, WorldSortKey } from "@/lib/world/types";
@@ -50,6 +51,7 @@ export function WorldFilters({ facets }: { facets: WorldFacets }) {
   const [q, setQ] = useState(params.get("q") ?? "");
   const [open, setOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const qFromUrl = params.get("q") ?? "";
 
   useEffect(() => {
@@ -83,6 +85,7 @@ export function WorldFilters({ facets }: { facets: WorldFacets }) {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, []);
+  useAdoptPreHydrationInput(inputRef, q, onQueryChange);
 
   const sort = (params.get("sort") as WorldSortKey) ?? "ovr_max_desc";
   const activeChips = useMemo(() => {
@@ -102,6 +105,7 @@ export function WorldFilters({ facets }: { facets: WorldFacets }) {
       {/* 1行目: 検索 + 並べ替え + モバイル用フィルタトグル */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <input
+          ref={inputRef}
           type="search"
           inputMode="search"
           value={q}
