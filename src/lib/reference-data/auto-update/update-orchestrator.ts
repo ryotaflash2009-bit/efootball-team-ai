@@ -38,10 +38,13 @@ export function decideFromDetection(text: string): Gate<{ dataset: Dataset; pend
   const world = decision(s.world);
   const managers = decision(s.managers);
   if (world === "attention_required" || managers === "attention_required") return { ok: false, reasons: ["detection_attention_required"] };
+  // 毎時の検出: 24 時間以内に同じ checksum で報告済みの候補（repeatCandidate）は、もう一度は Pipeline へ渡さない（重複起動の防止）。
+  const repeat = (d: unknown) => isObj(d) && d.repeatCandidate === true;
   const want: Dataset[] = [];
-  if (world === "update_available") want.push("world");
-  if (managers === "update_available") want.push("managers");
-  if (want.length === 0) return { ok: false, reasons: ["no_update_available"] };
+  const repeats: string[] = [];
+  if (world === "update_available") (repeat(s.world) ? repeats.push("repeat_candidate_within_24h:world") : want.push("world"));
+  if (managers === "update_available") (repeat(s.managers) ? repeats.push("repeat_candidate_within_24h:managers") : want.push("managers"));
+  if (want.length === 0) return { ok: false, reasons: repeats.length ? repeats : ["no_update_available"] };
   return { ok: true, value: { dataset: want[0], pending: want.slice(1) } };
 }
 

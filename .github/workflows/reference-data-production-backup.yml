@@ -99,6 +99,11 @@ on:
 permissions:
   contents: read
 
+# One Backup at a time (hourly detection, 2026-10-04): a second Backup waits; a running Backup is never cancelled.
+concurrency:
+  group: reference-data-production-backup
+  cancel-in-progress: false
+
 jobs:
   backup:
     # main only (manual and automation): a run dispatched from any other branch is skipped before the

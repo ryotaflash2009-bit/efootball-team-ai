@@ -25,7 +25,7 @@ function datasetLine(name, d) {
 /**
  * @param {unknown} summary 検出の要約（読めなければ null）
  * @param {{ conclusion: string, runId: string, runUrl: string }} run
- * @returns {{ notify: false, reason: string } | { notify: true, title: string, body: string }}
+ * @returns {{ notify: false, reason: string } | { notify: true, kind: string, title: string, body: string }}
  */
 export function buildDetectionNotification(summary, run) {
   const runId = /^\d{1,20}$/.test(String(run?.runId ?? "")) ? String(run.runId) : "?";
@@ -35,6 +35,13 @@ export function buildDetectionNotification(summary, run) {
   const overall = token(s?.overall);
 
   if (conclusion === "success" && overall === "no_change") return { notify: false, reason: "no_change" };
+  // 毎時の検出の軽い回（World は全件を比べていない・Managers は変化なし）は通知しない。
+  if (conclusion === "success" && overall === "no_change_light") return { notify: false, reason: "no_change_light" };
+  // 24 時間以内に通知済みの同じ候補だけなら、もう一度は通知しない（毎時の重複通知の防止）。
+  if (conclusion === "success" && overall === "update_available") {
+    const ups = ["world", "managers"].map((k) => s?.[k]).filter((d) => d && typeof d === "object" && d.decision === "update_available");
+    if (ups.length > 0 && ups.every((d) => d.repeatCandidate === true)) return { notify: false, reason: "repeat_candidate" };
+  }
   if (conclusion === "skipped" || conclusion === "cancelled") return { notify: false, reason: conclusion };
 
   const kind = conclusion !== "success" ? "failed" : overall === "update_available" ? "update_available" : overall === "attention_required" ? "attention_required" : "unknown";
@@ -60,7 +67,7 @@ export function buildDetectionNotification(summary, run) {
     "",
     "この通知は自動作成です（非秘密の要約だけ。Production への接続・適用は行っていません）。",
   ];
-  return { notify: true, title: titles[kind], body: lines.join("\n") };
+  return { notify: true, kind, title: titles[kind], body: lines.join("\n") };
 }
 
 const RUN_KEYS = ["detection", "plan", "backup", "dryRun", "apply"];
@@ -187,4 +194,54 @@ export function buildPipelineNotification(p) {
     };
   }
   return { notify: false, reason: "unknown_source" };
+}
+
+/** 同じ種類の失敗・要確認の通知を、この間はもう一度は出さない（毎時の検出での同じ内容の繰り返しを防ぐ）。 */
+export const REPEAT_NOTIFICATION_WINDOW_MS = 6 * 60 * 60 * 1000;
+
+/**
+ * 直前のコメントと同じ題の通知を 6 時間以内に出していれば抑える（failed / attention_required / unknown / schedule_gap だけ）。
+ * update_available は候補の checksum で重複を判定する（repeatCandidate）ため、ここでは抑えない。
+ * @param {{ kind?: string, title: string }} n
+ * @param {{ body?: string, createdAt?: string } | null} last
+ * @param {string} now
+ */
+export function shouldThrottleNotification(n, last, now) {
+  if (!n || !["failed", "attention_required", "unknown", "schedule_gap"].includes(n.kind)) return false;
+  if (!last || typeof last.body !== "string" || typeof last.createdAt !== "string") return false;
+  const age = Date.parse(now) - Date.parse(last.createdAt);
+  return last.body.startsWith(`**${n.title}**`) && Number.isFinite(age) && age >= 0 && age < REPEAT_NOTIFICATION_WINDOW_MS;
+}
+
+/** 毎時の検出の間隔の上限（1 時間 + GitHub の schedule の遅れの余裕）。これを超えたら通知する。 */
+export const SCHEDULE_GAP_THRESHOLD_MS = 130 * 60 * 1000;
+
+/**
+ * 検出の定期実行の間隔の確認（GitHub の schedule の遅れ・欠落）。前回の検出 run の開始から今回までが 130 分を超えたら通知する。
+ * 同じ GitHub の schedule の中の確認なので、schedule 自体が止まった場合は検知できない（外部の確認は運用文書を参照）。
+ * @param {string | null | undefined} prevAt
+ * @param {string | null | undefined} thisAt
+ * @param {string} event
+ */
+export function buildScheduleGapNotice(prevAt, thisAt, event) {
+  if (event !== "schedule") return { notify: false, reason: "not_scheduled" };
+  const a = Date.parse(String(prevAt ?? ""));
+  const b = Date.parse(String(thisAt ?? ""));
+  if (!Number.isFinite(a) || !Number.isFinite(b) || b < a) return { notify: false, reason: "no_previous_run" };
+  const gap = b - a;
+  if (gap <= SCHEDULE_GAP_THRESHOLD_MS) return { notify: false, reason: "on_schedule" };
+  const gapMinutes = Math.round(gap / 60000);
+  return {
+    notify: true,
+    kind: "schedule_gap",
+    title: "参照データの毎時の検出に間隔があきました / Hourly detection schedule gap",
+    body: [
+      `前回の検出 run から ${gapMinutes} 分あきました（基準: 130 分）。GitHub の schedule の遅れ・欠落の可能性があります。`,
+      "",
+      "次: Actions の detection workflow が有効か、既定ブランチが main か、Actions の利用枠を確認する。自動では何も適用しません。",
+      "",
+      "この通知は自動作成です（非秘密の情報だけ）。",
+    ].join("\n"),
+    gapMinutes,
+  };
 }

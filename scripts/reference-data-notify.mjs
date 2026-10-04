@@ -8,7 +8,7 @@
  */
 import { readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
-import { buildDetectionNotification, NOTIFY_LABEL } from "./lib/reference-data-notify.mjs";
+import { buildDetectionNotification, buildScheduleGapNotice, shouldThrottleNotification, NOTIFY_LABEL } from "./lib/reference-data-notify.mjs";
 
 const [summaryPath, conclusion, runId, runUrl] = process.argv.slice(2);
 let summary = null;
@@ -17,18 +17,29 @@ try {
 } catch {
   summary = null;
 }
-const n = buildDetectionNotification(summary, { conclusion, runId, runUrl });
-if (!n.notify) {
-  console.log(`no notification (${n.reason})`);
+const gh = (args) => execFileSync("gh", args, { encoding: "utf8" }).trim();
+const now = new Date().toISOString();
+// 毎時の検出: 定期実行の間隔（GitHub の schedule の遅れ・欠落）を確認する。値は run の開始時刻だけ（非秘密）。
+const gap = buildScheduleGapNotice(process.env.PREV_DETECTION_RUN_AT, process.env.THIS_DETECTION_RUN_AT, process.env.DETECTION_EVENT ?? "");
+const notices = [buildDetectionNotification(summary, { conclusion, runId, runUrl }), gap].filter((x) => x.notify);
+if (notices.length === 0) {
+  console.log("no notification");
   process.exit(0);
 }
-const gh = (args) => execFileSync("gh", args, { encoding: "utf8" }).trim();
 gh(["label", "create", NOTIFY_LABEL, "--color", "0E8A16", "--description", "Reference data update detection", "--force"]);
-const open = JSON.parse(gh(["issue", "list", "--label", NOTIFY_LABEL, "--state", "open", "--json", "number", "--limit", "1"]));
-if (open.length > 0) {
-  gh(["issue", "comment", String(open[0].number), "--body", `**${n.title}**\n\n${n.body}`]);
-  console.log(`commented on #${open[0].number}`);
-} else {
-  const url = gh(["issue", "create", "--title", n.title, "--body", n.body, "--label", NOTIFY_LABEL]);
-  console.log(`created ${url}`);
+for (const n of notices) {
+  const open = JSON.parse(gh(["issue", "list", "--label", NOTIFY_LABEL, "--state", "open", "--json", "number", "--limit", "1"]));
+  if (open.length > 0) {
+    const comments = JSON.parse(gh(["issue", "view", String(open[0].number), "--json", "comments"])).comments ?? [];
+    const last = comments.length ? comments[comments.length - 1] : null;
+    if (shouldThrottleNotification(n, last && { body: last.body, createdAt: last.createdAt }, now)) {
+      console.log(`throttled (${n.kind}): same notification within 6 hours on #${open[0].number}`);
+      continue;
+    }
+    gh(["issue", "comment", String(open[0].number), "--body", `**${n.title}**\n\n${n.body}`]);
+    console.log(`commented on #${open[0].number}`);
+  } else {
+    const url = gh(["issue", "create", "--title", n.title, "--body", n.body, "--label", NOTIFY_LABEL]);
+    console.log(`created ${url}`);
+  }
 }
