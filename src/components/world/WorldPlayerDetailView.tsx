@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/playerDetailPage";
 import type { ProgressionCard } from "@/lib/progression/types";
 import type { PlayerAnalysis } from "@/lib/world/player-analysis";
 import { WorldStatGrid } from "@/components/world/WorldStatGrid";

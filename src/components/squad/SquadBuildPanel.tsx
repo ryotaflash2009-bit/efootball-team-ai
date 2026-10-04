@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/buildUsage";
+import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import type { SavedBuild } from "@/lib/progression/types";

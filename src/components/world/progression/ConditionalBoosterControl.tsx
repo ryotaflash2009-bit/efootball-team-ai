@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/progressionTab";
 import { useId, useState } from "react";
 import type { ConditionalBoosterSelection } from "@/lib/progression/types";
 import {

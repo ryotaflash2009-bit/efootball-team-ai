@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/comparePlayerIdentityCard";
+import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
 import Link from "next/link";
 import type { ComparisonPlayerInput } from "@/lib/comparison/types";
 import { resolveCardImageSources } from "@/lib/world/image";

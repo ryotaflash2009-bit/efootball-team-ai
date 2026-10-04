@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/bench";
 import type { SquadBuildMode } from "@/lib/squad/types";
 import { SQUAD_BUILD_MODES, MAX_SUBSTITUTES } from "@/lib/squad/types";
 import { useT } from "@/lib/i18n/LocaleContext";

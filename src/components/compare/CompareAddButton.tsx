@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/compareAddButton";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { addCompareId, getCompareIds, removeCompareId } from "@/lib/comparison/compare-cart";

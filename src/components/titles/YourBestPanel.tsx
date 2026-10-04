@@ -1,5 +1,8 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/basePercentile";
+import "@/lib/i18n/dictionaries/ja-ns/titles";
+import "@/lib/i18n/dictionaries/ja-ns/yourBest";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useT } from "@/lib/i18n/LocaleContext";

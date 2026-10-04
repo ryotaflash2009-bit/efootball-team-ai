@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/bestXi";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useMyTeam } from "@/lib/user-cards/hooks";

@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/duplicateReviewTeaser";
 import Link from "next/link";
 import { Surface } from "@/components/ui/Surface";
 import { Icon } from "@/components/ui/Icon";

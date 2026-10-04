@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/favoriteButton";
 import { useState } from "react";
 import { useFavorites } from "@/lib/user-cards/hooks";
 import { Icon } from "@/components/ui/Icon";

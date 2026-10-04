@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/diagnosis";
 import type {
   SquadDiagnosisResult,
   SquadDiagnosisCategory,

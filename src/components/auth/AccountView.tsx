@@ -1,5 +1,8 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/auth";
+import "@/lib/i18n/dictionaries/ja-ns/localDataMigration";
+import "@/lib/i18n/dictionaries/ja-ns/myTeamCloud";
 import { useState } from "react";
 import Link from "next/link";
 import { useT } from "@/lib/i18n/LocaleContext";

@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/myTeamButton";
 import { useState } from "react";
 import Link from "next/link";
 import { useMyTeam } from "@/lib/user-cards/hooks";

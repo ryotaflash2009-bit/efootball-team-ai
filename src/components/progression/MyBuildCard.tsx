@@ -1,5 +1,9 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/buildUsage";
+import "@/lib/i18n/dictionaries/ja-ns/myBuildCard";
+import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
+import "@/lib/i18n/dictionaries/ja-ns/userCardTile";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { SavedBuild } from "@/lib/progression/types";

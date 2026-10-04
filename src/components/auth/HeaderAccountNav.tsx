@@ -6,7 +6,7 @@ import { useT } from "@/lib/i18n/LocaleContext";
 import { useSupabaseSession } from "@/lib/supabase/use-auth-session";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 
-type AuthKey = keyof Dictionary["auth"];
+type HeaderKey = keyof Dictionary["header"];
 
 /**
  * ヘッダー右側の最小限のアカウント導線(PC・モバイル共通、モバイルでもテキストは省略しアイコンのみ表示)。
@@ -15,7 +15,7 @@ type AuthKey = keyof Dictionary["auth"];
  */
 export function HeaderAccountNav() {
   const t = useT();
-  const ta = (key: AuthKey) => t("auth", key);
+  const ta = (key: HeaderKey) => t("header", key);
   const session = useSupabaseSession();
 
   if (session.status === "unconfigured") return null;
@@ -28,7 +28,7 @@ export function HeaderAccountNav() {
         aria-hidden="true"
       >
         <Icon name="shield" size={15} />
-        <span className="hidden sm:inline">{ta("navSignIn")}</span>
+        <span className="hidden sm:inline">{ta("accountNavSignIn")}</span>
       </span>
     );
   }
@@ -37,11 +37,11 @@ export function HeaderAccountNav() {
     return (
       <Link
         href="/account"
-        title={ta("navAccount")}
+        title={ta("accountNavAccount")}
         className="flex h-9 shrink-0 items-center gap-1.5 rounded-md border border-border bg-surface-2 px-2.5 text-xs text-text-dim transition-colors hover:border-accent hover:text-text"
       >
         <Icon name="shield" size={15} />
-        <span className="hidden sm:inline">{ta("navAccount")}</span>
+        <span className="hidden sm:inline">{ta("accountNavAccount")}</span>
       </Link>
     );
   }
@@ -49,11 +49,11 @@ export function HeaderAccountNav() {
   return (
     <Link
       href="/auth/sign-in"
-      title={ta("navSignIn")}
+      title={ta("accountNavSignIn")}
       className="flex h-9 shrink-0 items-center gap-1.5 rounded-md border border-border bg-surface-2 px-2.5 text-xs text-text-dim transition-colors hover:border-accent hover:text-text"
     >
       <Icon name="shield" size={15} />
-      <span className="hidden sm:inline">{ta("navSignIn")}</span>
+      <span className="hidden sm:inline">{ta("accountNavSignIn")}</span>
     </Link>
   );
 }

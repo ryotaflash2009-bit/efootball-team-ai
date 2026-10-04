@@ -1,5 +1,8 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/bench";
+import "@/lib/i18n/dictionaries/ja-ns/compareTrainingPanel";
+import "@/lib/i18n/dictionaries/ja-ns/progressionTab";
 import { useId, useState } from "react";
 import type { AutoAllocateProfile, PointsSummary, ProgressionGroup } from "@/lib/progression/types";
 import { ProgressionSlider } from "@/components/world/progression/ProgressionSlider";

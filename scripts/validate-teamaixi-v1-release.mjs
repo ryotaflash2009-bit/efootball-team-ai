@@ -6,7 +6,7 @@
  *
  * 品質ゲートの結果と本人の確認は docs/release/teamaixi-v1-gates.json（true/false だけ）。
  */
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkRepo, checkLive, decideRelease } from "./lib/teamaixi-v1-release.mjs";
@@ -15,7 +15,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = (p) => (existsSync(path.join(ROOT, p)) ? readFileSync(path.join(ROOT, p), "utf8") : undefined);
 const files = {
   layout: read("src/app/layout.tsx"),
-  dict_ja: read("src/lib/i18n/dictionaries/ja.ts"),
+  // 日本語の辞書は核（ja.ts）と分割した名前空間（ja-ns/*.ts）。すべてを合わせて確認する。
+  dict_ja: [read("src/lib/i18n/dictionaries/ja.ts"), ...readdirSync(path.join(ROOT, "src/lib/i18n/dictionaries/ja-ns")).map((f) => read(`src/lib/i18n/dictionaries/ja-ns/${f}`))].join("\n"),
   dict_en: read("src/lib/i18n/dictionaries/en.ts"),
   accountAvailability: read("src/lib/supabase/account-availability.ts"),
   sidebar: read("src/components/Sidebar.tsx"),

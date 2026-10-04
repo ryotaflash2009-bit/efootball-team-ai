@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/myTeam";
+import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useMyTeam, useFavorites } from "@/lib/user-cards/hooks";

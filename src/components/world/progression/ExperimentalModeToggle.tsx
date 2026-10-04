@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/progressionTab";
 import { useId, useState } from "react";
 import { Modal } from "@/components/ui/Overlay";
 import { Button } from "@/components/ui/Button";

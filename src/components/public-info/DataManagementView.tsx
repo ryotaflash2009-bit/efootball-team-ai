@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/dataManagement";
+import "@/lib/i18n/dictionaries/ja-ns/diagnosisHistory";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useT } from "@/lib/i18n/LocaleContext";

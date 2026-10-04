@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/disclaimer";
 import Link from "next/link";
 import { useT } from "@/lib/i18n/LocaleContext";
 import { PageHeader } from "@/components/ui/PageHeader";

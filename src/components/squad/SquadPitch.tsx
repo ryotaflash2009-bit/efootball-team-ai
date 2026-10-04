@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
+import "@/lib/i18n/dictionaries/ja-ns/squadPitch";
 import { useCallback, useRef, useState } from "react";
 import { resolveCardImageSources } from "@/lib/world/image";
 import { WorldCardImage } from "@/components/world/WorldCardImage";

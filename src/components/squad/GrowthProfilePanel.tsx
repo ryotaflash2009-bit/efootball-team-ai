@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/growthProfile";
+import "@/lib/i18n/dictionaries/ja-ns/titles";
 import { useMemo } from "react";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";

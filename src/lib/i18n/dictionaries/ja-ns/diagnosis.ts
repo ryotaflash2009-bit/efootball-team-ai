@@ -1,0 +1,59 @@
+import type { Dictionary } from "../ja";
+import { registerJaNamespace } from "../ja-registry";
+
+/** 日本語の辞書の名前空間 diagnosis（2026-10-04: 全画面の初回 JS から外し、使う画面だけが読み込む）。 */
+const diagnosis: Dictionary["diagnosis"] = {
+  heading: "スカッド診断（スカッド構成評価）",
+  unavailableTitle: "スカッド診断",
+  unavailableMessage: "スカッド情報を読み込めなかったため診断できません。",
+  mainDisclaimer:
+    "この評価は、登録された選手能力・育成・配置にもとづくスカッド構成評価です。試合結果やプレイヤースキル、全国順位・勝率を保証するものではありません。",
+  overallScore: "総合評価",
+  tierBadgePrefix: "評価",
+  notRated: "判定対象外",
+  ratedItems: "判定可能項目",
+  placementCoverage: "配置充足率",
+  savedBuildMissingStat: "保存ビルド未設定",
+  savedBuildMissingUnitSuffix: "人（先発）",
+  coverageMetricsNote:
+    "「判定可能項目」「配置充足率」は選手配置とカードの解決状況のみを表し、保存ビルドの設定状況とは別の指標です。育成やブースターを反映した保存ビルドが未設定の選手がいても、これらの値は変化しません。",
+  commentModeNormal: "通常",
+  commentModeHarsh: "辛口",
+  commentModeDisplayingSuffix: "（表示中）",
+  commentModeHarshBadge: "辛口モード",
+  improvementPrioritiesHeading: "改善優先順位（最大3件・提案のみ・自動適用しません）",
+  keepStrengthPrefix: "維持すべき長所",
+  commentSectionHeading: "コメント",
+  categoriesHeadingSuffix: "項目",
+  detailsToggle: "項目別の詳細な根拠を見る",
+  evidenceToggle: "根拠を見る",
+  strengthsHeading: "最大の長所（最大3件）",
+  strengthsEmpty: "明確な長所は検出されませんでした。",
+  weaknessesHeading: "最大の弱点（最大3件）",
+  weaknessesEmpty: "明確な弱点は検出されませんでした。",
+  suggestionsHeading: "改善候補（最大3件・提案のみ・自動適用しません）",
+  criticalWarningsHeading: "確認が必要な項目",
+  findingBadgeReferenceError: "参照エラー",
+  findingBadgeCompatibility: "配置適性",
+  findingBadgeConfig: "データ不足・設定",
+  pngSaveButton: "診断結果を画像で保存",
+  pngSaveButtonAriaLabel: "スカッド診断の結果をPNG画像として保存",
+  pngSaveGenerating: "画像を生成中…",
+  pngSaveSuccess: "画像を保存しました。",
+  pngSaveError: "画像の保存に失敗しました。時間をおいて再度お試しください。",
+  dataQualityStarters: "先発配置",
+  dataQualityBench: "ベンチ人数",
+  dataQualityMissingBuild: "保存ビルド未設定",
+  dataQualityBrokenRef: "保存ビルド参照エラー",
+  dataQualityUnresolvedCard: "未解決カード",
+  dataQualityManagerUnresolved: "監督未解決",
+  dataQualityYes: "あり",
+  dataQualityNo: "なし",
+  unratedCategoriesPrefix: "評価不能項目",
+  footerNote:
+    "この診断は読み取り専用です。スカッド・保存ビルド・My Team・カードお気に入りは変更しません。表示のたびに現在の保存内容から再計算します（自動保存はしません）。",
+  };
+
+registerJaNamespace("diagnosis", diagnosis);
+
+export default diagnosis;

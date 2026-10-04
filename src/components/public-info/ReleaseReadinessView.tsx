@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/about";
+import "@/lib/i18n/dictionaries/ja-ns/releaseReadiness";
 import { useMemo } from "react";
 import { useT } from "@/lib/i18n/LocaleContext";
 import { PageHeader } from "@/components/ui/PageHeader";

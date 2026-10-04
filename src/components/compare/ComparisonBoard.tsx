@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/bench";
+import "@/lib/i18n/dictionaries/ja-ns/comparisonBoard";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ComparisonPlayerInput, CompareBuildMode, ComparisonState } from "@/lib/comparison/types";
 import { COMPARISON_MAX } from "@/lib/comparison/types";

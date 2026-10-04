@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/progressionTab";
 import type { AppliedPlayerBooster, PlayerBoosterInfo, SelectedPlayerBooster } from "@/lib/progression/types";
 import {
   BOOSTER_CATALOG,

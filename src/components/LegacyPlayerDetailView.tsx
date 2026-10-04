@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/legacyPlayerDetail";
+import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
 import Link from "next/link";
 import { PlayerImage } from "@/components/PlayerImage";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";

@@ -1,3 +1,4 @@
+import "@/lib/i18n/dictionaries/ja-ns/about";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 
 /**

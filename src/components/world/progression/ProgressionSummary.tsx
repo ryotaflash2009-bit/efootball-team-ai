@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/abilityEditor";
+import "@/lib/i18n/dictionaries/ja-ns/progressionTab";
 import type {
   ProgressionCard,
   PointsSummary,

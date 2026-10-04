@@ -17,7 +17,7 @@ import {
 } from "./build-intent-presets";
 import { PRIMARY_GOAL_IDS, emptyBuildIntent } from "./build-intent-analysis";
 import { PROGRESSION_GROUPS } from "./stat-groups";
-import ja from "@/lib/i18n/dictionaries/ja";
+import ja from "@/lib/i18n/dictionaries/ja-full";
 import en from "@/lib/i18n/dictionaries/en";
 
 /**

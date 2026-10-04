@@ -8,7 +8,10 @@
  *
  * 終了コード: 0 = 問題なし / 1 = キー不一致・空値あり
  */
-import ja from "../src/lib/i18n/dictionaries/ja.ts";
+import { register } from "node:module";
+// 分割した日本語の辞書（ja-ns/*.ts は拡張子なしの相対 import）を Node の型の除去で読むための resolve hook。
+register("./lib/ts-extension-resolve.mjs", import.meta.url);
+const { default: ja } = await import("../src/lib/i18n/dictionaries/ja-full.ts");
 import en from "../src/lib/i18n/dictionaries/en.ts";
 
 let ok = true;

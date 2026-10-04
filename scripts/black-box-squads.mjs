@@ -10,6 +10,7 @@
  */
 
 import { promises as fs } from "node:fs";
+import { readJaDictionarySource } from "./lib/ja-dictionary-source.mjs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkLegacySampleDetail } from "./lib/legacy-sample-detail.mjs";
@@ -24,7 +25,7 @@ const BASE = process.env.BASE_URL ?? "http://localhost:3000";
 // 非同期処理のため)。一覧本体の文言は、black-box-my-builds.mjs/black-box-favorites.mjsと同じ方針で
 // 辞書ファイルに実際に存在することを直接確認する(SSR層ではなく辞書層の検証へ切り替え。弱体化ではない)。
 const jaDictPath = path.join(ROOT, "src", "lib", "i18n", "dictionaries", "ja.ts");
-const jaDict = await fs.readFile(jaDictPath, "utf8");
+const jaDict = await readJaDictionarySource(ROOT); // 核 ja.ts + 分割した ja-ns/*.ts（jaDictPath は核のファイル）
 
 const results = [];
 const record = (name, pass, detail = "") => {

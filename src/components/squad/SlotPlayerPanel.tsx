@@ -1,5 +1,9 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/bench";
+import "@/lib/i18n/dictionaries/ja-ns/compareAddButton";
+import "@/lib/i18n/dictionaries/ja-ns/slotPlayerPanel";
+import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
 import Link from "next/link";
 import type {
   SavedBuild,

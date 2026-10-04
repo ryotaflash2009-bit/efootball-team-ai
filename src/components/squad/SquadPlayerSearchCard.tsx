@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/playerSearchPanel";
 import type { WorldPlayerListItem } from "@/lib/world/types";
 import { WorldPlayerSearchCard } from "@/components/world/WorldPlayerSearchCard";
 import { useT } from "@/lib/i18n/LocaleContext";

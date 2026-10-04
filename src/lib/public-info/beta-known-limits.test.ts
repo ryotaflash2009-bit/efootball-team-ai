@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import ja from "@/lib/i18n/dictionaries/ja";
+import ja from "@/lib/i18n/dictionaries/ja-full";
 import en from "@/lib/i18n/dictionaries/en";
 
 const SUPPORT_VIEW = readFileSync(path.resolve(__dirname, "..", "..", "components", "public-info", "SupportView.tsx"), "utf8");

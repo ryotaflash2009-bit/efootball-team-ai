@@ -1,5 +1,12 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/buildExportModal";
+import "@/lib/i18n/dictionaries/ja-ns/buildImportModal";
+import "@/lib/i18n/dictionaries/ja-ns/buildInventoryView";
+import "@/lib/i18n/dictionaries/ja-ns/duplicateReviewSection";
+import "@/lib/i18n/dictionaries/ja-ns/myBuildCard";
+import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
+import "@/lib/i18n/dictionaries/ja-ns/worldPlayerSearchCard";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import {

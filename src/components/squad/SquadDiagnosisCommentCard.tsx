@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/diagnosis";
+import "@/lib/i18n/dictionaries/ja-ns/tactical";
 import { useMemo, useState } from "react";
 import type { SquadDiagnosisResult } from "@/lib/squad/squad-diagnosis";
 import { analyzeSquadDiagnosis, type SquadDiagnosisCommentMode } from "@/lib/squad/squad-diagnosis-comments";

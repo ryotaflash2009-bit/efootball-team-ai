@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/managerCard";
+import "@/lib/i18n/dictionaries/ja-ns/managerPicker";
 import Link from "next/link";
 import type { ManagerListItem } from "@/lib/managers/types";
 import { Icon } from "@/components/ui/Icon";

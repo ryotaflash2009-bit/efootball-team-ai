@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/progressionTab";
 import { useEffect, useState } from "react";
 import {
   isBuildStorageAvailable,

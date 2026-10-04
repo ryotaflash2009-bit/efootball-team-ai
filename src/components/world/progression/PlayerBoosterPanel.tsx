@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/progressionTab";
 import type { BoosterApplicationMode } from "@/lib/progression/types";
 import { BOOSTER_APPLICATION_MODES } from "@/lib/progression/booster-resolution";
 import { useT } from "@/lib/i18n/LocaleContext";

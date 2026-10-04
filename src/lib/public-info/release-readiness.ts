@@ -1,3 +1,4 @@
+import "@/lib/i18n/dictionaries/ja-ns/releaseReadiness";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { resolveSupportChannels, type ResolvedSupportChannels } from "./support-config";
 

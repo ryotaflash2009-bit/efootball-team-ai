@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/basePercentile";
 import { useMemo, useState } from "react";
 import type { WorldStatValue, WorldStatGroup } from "@/lib/world/types";
 import { abilityName } from "@/lib/progression/ability-editor-labels";

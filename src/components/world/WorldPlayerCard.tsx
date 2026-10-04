@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
+import "@/lib/i18n/dictionaries/ja-ns/worldPlayerCard";
 import Link from "next/link";
 import { WorldCardImage } from "./WorldCardImage";
 import { CompareAddButton } from "@/components/compare/CompareAddButton";

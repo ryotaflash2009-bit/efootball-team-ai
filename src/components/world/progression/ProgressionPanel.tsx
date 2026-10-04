@@ -1,5 +1,8 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/abilityEditor";
+import "@/lib/i18n/dictionaries/ja-ns/basePercentile";
+import "@/lib/i18n/dictionaries/ja-ns/progressionTab";
 import { useCallback, useMemo, useState } from "react";
 import { listBuilds } from "@/lib/progression/build-storage";
 import { sameAllocation, saveCurrentBuild } from "@/lib/progression/save-current-build";

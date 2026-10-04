@@ -1,5 +1,6 @@
 import type { Locale } from "./locale";
 import ja from "./dictionaries/ja";
+import { jaSplitNamespace } from "./dictionaries/ja-registry";
 import type { Dictionary } from "./dictionaries/ja";
 
 /**
@@ -7,7 +8,17 @@ import type { Dictionary } from "./dictionaries/ja";
  * `loadDictionary("en")` で後から読み込む（2026-10-04: 全画面の初回 JS から英語の辞書を外す）。
  * 読み込み前の英語の要求は ja へフォールバックする（生のキーは出さない）。テストは setup で登録する。
  */
-const DICTIONARIES: Partial<Record<Locale, Dictionary>> = { ja };
+/**
+ * 日本語は核（ja.ts）と、画面ごとに import して登録する名前空間（ja-ns/*）に分けている（2026-10-04）。
+ * JA_VIEW はその 2 つを合わせて 1 つの辞書として見せる。
+ */
+const JA_VIEW = new Proxy(ja as unknown as Dictionary, {
+  get(target, prop) {
+    const own = (target as unknown as Record<string | symbol, unknown>)[prop];
+    return own !== undefined ? own : typeof prop === "string" ? jaSplitNamespace(prop as keyof Dictionary) : undefined;
+  },
+});
+const DICTIONARIES: Partial<Record<Locale, Dictionary>> = { ja: JA_VIEW };
 const LOADING: Partial<Record<Locale, Promise<void>>> = {};
 
 export function registerDictionary(locale: Locale, dictionary: Dictionary): void {
@@ -31,7 +42,7 @@ export function loadDictionary(locale: Locale): Promise<void> {
 }
 
 export function dictionaryOf(locale: Locale): Dictionary {
-  return DICTIONARIES[locale] ?? ja;
+  return DICTIONARIES[locale] ?? JA_VIEW;
 }
 
 type Namespace = keyof Dictionary;
@@ -50,6 +61,13 @@ export function translate<N extends Namespace>(locale: Locale, namespace: N, key
     // eslint-disable-next-line no-console
     console.warn(`[i18n] missing key: ${String(namespace)}.${String(key)} for locale "${locale}"`);
   }
-  const fallback = ja[namespace]?.[key];
-  return typeof fallback === "string" ? fallback : "";
+  const fallback = JA_VIEW[namespace]?.[key];
+  if (typeof fallback === "string") return fallback;
+  // 日本語の名前空間が読み込まれていない（その画面が ja-ns/<名前空間> を import していない）。本番でも console に出し、
+  // 公開 black-box の console error で検出できるようにする（空の文字を黙って出さない）。
+  if (typeof window !== "undefined" && JA_VIEW[namespace] === undefined) {
+    // eslint-disable-next-line no-console
+    console.error(`[i18n] namespace not loaded: ${String(namespace)}`);
+  }
+  return "";
 }

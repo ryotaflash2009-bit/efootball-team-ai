@@ -9,6 +9,7 @@
  */
 
 import { promises as fs } from "node:fs";
+import { readJaDictionarySource } from "./lib/ja-dictionary-source.mjs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkLegacySampleDetail } from "./lib/legacy-sample-detail.mjs";
@@ -22,7 +23,7 @@ const BASE = process.env.BASE_URL ?? "http://localhost:3000";
 // 返すため、見出し・空状態のUI文言はSSR本文には出ない(black-box-my-builds.mjs等と同じ方針で、
 // 辞書に文言自体が残っていることを直接確認する経路へ切り替える)。
 const jaDictPath = path.join(ROOT, "src", "lib", "i18n", "dictionaries", "ja.ts");
-const jaDict = await fs.readFile(jaDictPath, "utf8");
+const jaDict = await readJaDictionarySource(ROOT); // 核 ja.ts + 分割した ja-ns/*.ts（jaDictPath は核のファイル）
 
 const results = [];
 const record = (name, pass, detail = "") => {
