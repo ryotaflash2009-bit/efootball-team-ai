@@ -782,6 +782,28 @@ async function main() {
       await waitFor(async () => (await run(pageText)).includes("共有されたスカッド診断"), 10000, "back to Japanese");
       return { ok: true, detail: "English labels, restored to Japanese" };
     });
+    // React #418 の最終確認（2026-10-05）: /squads/compare?a=&b= は force-static のため、以前は検索パラメーター付きの読み込みで
+    // hydration の不一致が毎回出ていた（PR #134 で修正）。アプリの作成の流れで 2 つのスカッドを作り（この隔離した browser の
+    // localStorage だけ・サーバーへは書かない）、パラメーター付きで読み込む。日本語と英語の両方。
+    await step(vp, "/squads/compare?a=&b=", "squad compare with query parameters (ja, en)", async () => {
+      const ids = [];
+      for (let n = 0; n < 2; n++) {
+        await nav("/squads");
+        await waitFor(async () => await ev(`[...document.querySelectorAll("button")].some((b) => b.textContent.trim() === "作成して編集" && !b.disabled)`), 10000, "create button");
+        await ev(`[...document.querySelectorAll("button")].find((b) => b.textContent.trim() === "作成して編集").click()`);
+        await waitFor(async () => /\/squads\/sq_/.test(await ev("location.pathname")), 10000, "editor opened");
+        ids.push((await ev("location.pathname")).split("/").pop());
+      }
+      await nav(`/squads/compare?a=${ids[0]}&b=${ids[1]}`);
+      await waitFor(async () => (await run(pageText)).includes("共通カード"), 10000, "comparison (ja)");
+      await ev(`localStorage.setItem("efootball-team-ai:locale:v1", "en")`);
+      await ev("location.reload()");
+      await sleep(300);
+      await settle();
+      await waitFor(async () => (await run(pageText)).includes("Common cards"), 10000, "comparison (en)");
+      await ev(`localStorage.setItem("efootball-team-ai:locale:v1", "ja")`);
+      return { ok: true, detail: "two squads in browser storage only; ja and en with ?a=&b=" };
+    });
     await step(vp, "/share/diagnosis", "share: older rules noted", async () => {
       await openShare(shareToken({ ...SHARE_OK, r: "squad-diagnosis/2026-01-01.v0" }));
       // 同じページでfragmentだけが変わるため、表示の切り替わりを待つ。
