@@ -1,4 +1,5 @@
 import { parseWorldListQuery } from "@/lib/world/schemas";
+import { cachedGetFacets, cachedGetSourceMeta, cachedListPlayers } from "@/lib/reference-data/runtime/cached-queries";
 import { listPlayers, getFacets, getSourceMeta } from "@/lib/world/repository";
 import { WorldDataUnavailableError } from "@/lib/world/db";
 import type { WorldFacets, WorldPlayerListItem } from "@/lib/world/types";
@@ -72,7 +73,7 @@ export default async function PlayersPage({ searchParams }: { searchParams: Prom
 
   // 3つの照会は互いに独立なので並列に行う(直列だと表示完了が合計時間だけ遅れていた。2026-09-25計測)。
   // エラーの扱いは従来の直列実行と同じ: 一覧 → facets → メタ情報の順に、最初の失敗で判定する。
-  const [listR, facetsR, metaR] = await Promise.allSettled([listPlayers(query), getFacets(), getSourceMeta()]);
+  const [listR, facetsR, metaR] = await Promise.allSettled([cachedListPlayers(query), cachedGetFacets(), cachedGetSourceMeta()]);
   const settled = settledInOrder([listR, facetsR, metaR]);
   if (settled.failure) {
     const err: unknown = settled.failure.reason;

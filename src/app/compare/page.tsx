@@ -1,4 +1,5 @@
 import { getPlayerByWorldId } from "@/lib/world/repository";
+import { cachedGetManagerById, cachedGetPlayerByWorldId } from "@/lib/reference-data/runtime/cached-queries";
 import { getManagerById } from "@/lib/managers/repository";
 import { WorldDataUnavailableError } from "@/lib/world/db";
 import { parseComparisonState } from "@/lib/comparison/schemas";
@@ -28,15 +29,19 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
   const inputs: ComparisonPlayerInput[] = [];
   let dataError = false;
   try {
+    // 選手・監督の照会は互いに独立なので並行して行う（直列だと選手の数だけ待ちが積み重なっていた。2026-10-04）。
+    // 表示の順序は URL の順のまま。照会の失敗は従来どおり下の catch で扱う。
+    const loaded = await Promise.all(
+      state.ids.map(async (id, i) => {
+        const mid = state.managerIds[i];
+        const [detail, m] = await Promise.all([cachedGetPlayerByWorldId(id), mid != null ? cachedGetManagerById(mid) : Promise.resolve(null)]);
+        return { detail, m };
+      }),
+    );
     for (let i = 0; i < state.ids.length; i++) {
-      const detail = await getPlayerByWorldId(state.ids[i]);
+      const { detail, m } = loaded[i];
       if (!detail) continue;
-      let managerCtx = null;
-      const mid = state.managerIds[i];
-      if (mid != null) {
-        const m = await getManagerById(mid);
-        if (m) managerCtx = managerToContext(m);
-      }
+      const managerCtx = m ? managerToContext(m) : null;
       inputs.push(
         worldDetailToComparisonInput(detail, {
           buildMode: state.buildModes[i],

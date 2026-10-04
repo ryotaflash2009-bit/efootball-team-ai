@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { cachedGetManagerById } from "@/lib/reference-data/runtime/cached-queries";
 import { getManagerById, ManagerDataUnavailableError } from "@/lib/managers/repository";
 import { MANAGER_ID_RE } from "@/lib/managers/schemas";
 import { ManagerDetailView, ManagerUnavailableView } from "@/components/managers/ManagerDetailView";
@@ -13,7 +14,7 @@ export default async function ManagerDetailPage({ params }: { params: Promise<{ 
 
   let manager: Awaited<ReturnType<typeof getManagerById>> = null;
   try {
-    manager = await getManagerById(decoded);
+    manager = await cachedGetManagerById(decoded);
   } catch (err) {
     if (err instanceof ManagerDataUnavailableError) return <ManagerUnavailableView />;
     throw err;
