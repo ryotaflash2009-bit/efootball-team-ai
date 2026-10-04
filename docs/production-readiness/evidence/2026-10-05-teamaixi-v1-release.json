@@ -1,0 +1,72 @@
+{
+  "schema": "efta-evidence/v1",
+  "date": "2026-10-05",
+  "kind": "teamaixi-v1-release",
+  "result": "TEAMAIXI_V1_RELEASE_READY",
+  "gatedCommit": "32dd057",
+  "publicUrl": "https://efootball-team-ai.vercel.app",
+  "validator": {
+    "command": "BASE_URL=https://efootball-team-ai.vercel.app node scripts/validate-teamaixi-v1-release.mjs",
+    "verdict": "TEAMAIXI_V1_RELEASE_READY",
+    "blocked": [],
+    "manualReview": [],
+    "liveCounts": { "world": 13372, "managers": 69 }
+  },
+  "react418FinalGate": {
+    "rule": "3 consecutive clean production runs after the last shell change",
+    "runs": [
+      { "steps": "576/576", "viewports": 8, "hydrationErrors": 0, "perf": "14/14", "memory": "OK", "security": "18/18" },
+      { "steps": "576/576", "viewports": 8, "hydrationErrors": 0, "perf": "14/14", "memory": "OK", "security": "18/18" },
+      { "steps": "576/576", "viewports": 8, "hydrationErrors": 0, "perf": "14/14", "memory": "OK", "security": "18/18" }
+    ],
+    "result": "passed",
+    "fixesBeforeTheGate": [
+      "#140 search text typed before hydration is kept",
+      "#141 filter dropdown choices made before hydration are kept",
+      "#142 navigation watchdog: client navigations that never commit complete with a browser navigation after 5 s"
+    ]
+  },
+  "navigationHang": {
+    "found": "2026-10-05, instrumented production probes",
+    "rate": "about 1% of client navigations (3/300 card navigations, 2/200 searches, 1/250 searches)",
+    "symptom": "RSC response completes in about 0.3 s and the JS chunks are loaded, but the Next.js 15.5.27 router transition never commits (unchanged after 75 s); no abort, pushState or error",
+    "cause": "inside Next.js/React; our code uses no Suspense-triggering APIs",
+    "mitigation": "src/instrumentation-client.ts onRouterTransitionStart → src/lib/navigation/navigation-watchdog.ts (5 s)",
+    "verified": "production simulation holding the RSC response: search 8.4 s, card link 5.7 s to complete; normal navigation unaffected"
+  },
+  "otherGates": {
+    "verify": "304 files and 4,826 tests pass",
+    "ci": "Typecheck/test/build, PostgreSQL validation, CodeQL (actions, javascript-typescript), Vercel: pass on #141 and #142",
+    "accessibility": "a11y-audit 32/32 on production",
+    "signupLimited": "black-box-public-signup-limited 117/117 on production",
+    "npmAudit": "high 8 / moderate 1, build or dev-time dependencies only (reviewed)",
+    "secretScan": "clean"
+  },
+  "performance": {
+    "tool": "scripts/perf-flows.mjs, production, 3 samples",
+    "before": { "transitions": "0.9-1.5 s", "homeDesktopColdLcp": "1.32 s (p95 5.8 s)", "homeColdWeight": "4.55 MB" },
+    "after": {
+      "transitionsMedian": "about 0.31-0.34 s",
+      "homeDesktopColdLcp": "644 ms (p95 744 ms)",
+      "homeColdWeight": "1.32 MB",
+      "cls": 0,
+      "duplicateRequests": 0,
+      "errors": 0,
+      "firstLoadJsKb": { "home": 119, "players": 142, "managers": 119, "playerDetail": 227, "compare": 229, "squadEditor": 288, "bestXi": 173, "signIn": 189 }
+    }
+  },
+  "hourlyDetection": {
+    "cron": "17 * * * *",
+    "firstScheduledRun": { "id": "37220971573", "created": "2026-10-04T17:33:37Z", "conclusion": "success", "worldScan": "no_previous_state (full)", "overall": "no_change", "stateCacheSaved": true },
+    "autoApplyPolicy": "unchanged"
+  },
+  "ownerConfirmations": {
+    "serviceName": "TeamAIXI with the unofficial notice (JA/EN)",
+    "legalDocuments": "no guessed governing law or jurisdiction; legal-review-checklist.md; professional review recommended",
+    "supportContact": "in-site Support page; no personal or custom-domain email",
+    "publicUrl": "current Vercel Production URL",
+    "assetRights": "permission documented as owner-reported; no contract assumed"
+  },
+  "unchanged": ["noindex", "public signup disabled", "Community and photo posts hidden", "no payment", "auto-apply policy and thresholds", "kill switches", "environment secrets", "manual rollback and restore", "no domain purchase", "no SMTP", "Tier/Pack unused"],
+  "deferredToV11": ["F-070 Best XI manager boosts", "card thumbnails via Vercel Image Optimization or sharp (E/F)"]
+}
