@@ -1,7 +1,7 @@
 {
   "schema": "teamaixi-v1-gates/v1",
-  "date": "2026-10-04",
-  "commit": "30051fe",
+  "date": "2026-10-05",
+  "commit": "32dd057",
   "gates": {
     "ciPassed": true,
     "codeqlPassed": true,
@@ -17,14 +17,21 @@
     "securityPassed": true
   },
   "ownerConfirmations": {
-    "assetRights": false,
-    "legalDocuments": false,
-    "serviceName": false,
-    "supportContact": false,
-    "publicUrl": false
+    "assetRights": true,
+    "legalDocuments": true,
+    "serviceName": true,
+    "supportContact": true,
+    "publicUrl": true
   },
   "notes": {
-    "performancePassed": "14/14 rows within the speed budget (warm load <= 3000 ms, long tasks <= 1000 ms, CLS <= 0.25). One row was marked SLOW only because of a single known React #418 (intermittent, see known issues), not because of speed.",
-    "npmAuditReviewed": "high 8 / moderate 1, all build or dev-time dependencies; documented in teamaixi-v1.md section 4"
+    "blackBoxPassed": "React #418 final gate: 3 consecutive production runs on 32dd057, each 576/576 steps across 8 viewports, 0 hydration errors, perf 14/14, memory OK, security 18/18 (2026-10-05).",
+    "accessibilityPassed": "a11y-audit 32/32 on production; black-box-public-signup-limited 117/117 on production.",
+    "performancePassed": "perf-flows on production (3 samples): Home desktop cold LCP 644 ms median (p95 744 ms), transitions about 0.31-0.34 s median, CLS 0, duplicate requests 0, errors 0.",
+    "npmAuditReviewed": "high 8 / moderate 1, all build or dev-time dependencies; documented in teamaixi-v1.md section 4",
+    "serviceName": "Owner decision in the v1.0 release request: TeamAIXI, with the unofficial notice (JA/EN).",
+    "legalDocuments": "Owner decision: no governing law or jurisdiction is guessed; unresolved items are tracked in legal-review-checklist.md and a professional review is recommended.",
+    "supportContact": "Owner decision: the in-site Support page is the official contact; no personal or custom-domain email; required safety notices are published.",
+    "publicUrl": "Owner decision: the current Vercel Production URL https://efootball-team-ai.vercel.app (no Preview URL).",
+    "assetRights": "Permission documented as owner-reported (data-distribution-rights-audit.md section 0); no contract is assumed; see teamaixi-v1.md section 3."
   }
 }

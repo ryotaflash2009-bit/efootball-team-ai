@@ -89,7 +89,7 @@ F-124: 自動更新が完成するまで、本人だけで検証する（他人�
 
 1. 本人の決定で、招待ベータではなく、ログイン不要・無料・非公式の正式製品版 TeamAIXI v1.0 として既存の Production URL で公開（noindex 維持）。範囲・素材・既知の問題は `docs/release/teamaixi-v1.md`。
 2. 品質ゲート（CI・CodeQL・verify・build・PostgreSQL・公開 black-box・8 viewport・a11y・性能・セキュリティ）は合格。npm audit は build 時だけの依存でレビュー済み（Next 16 の計画: `docs/release/next16-migration-plan.md`）。
-3. 残り: 本人の最終確認（素材の許諾の範囲・法務文書・サービス名・問い合わせ窓口・公開 URL）→ Git tag `v1.0.0` と GitHub Release。
+3. 2026-10-05: 本人の最終確認 5 項目を記録（`docs/release/teamaixi-v1-gates.json`）。React #418 の最終ゲート（本番 3 回連続 576/576・hydration 0）・a11y 32/32・新規登録の制限 117/117・性能（Home の cold LCP 644 ms）に合格。Release Validator の判定は `TEAMAIXI_V1_RELEASE_READY`。Git tag `v1.0.0` と GitHub Release「TeamAIXI v1.0」を作成。証跡は `docs/production-readiness/evidence/2026-10-05-teamaixi-v1-release.json`。
 4. 引き続き未公開: 新規登録・認証メール・公開 ID・友達・写真投稿・コミュニティ・ランキング・課金・Tier / Pack。
 
 ### 3e. 2026-10-04 完全無人の自動 Apply

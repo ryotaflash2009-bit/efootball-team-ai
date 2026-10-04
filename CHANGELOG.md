@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0 — TeamAIXI v1.0 (2026-10-04)
+## 1.0.0 — TeamAIXI v1.0 (2026-10-05)
 
 First official release: free, no sign-in, unofficial. Served from the existing Vercel Production URL; search engines stay excluded (noindex).
 
@@ -20,7 +20,19 @@ First official release: free, no sign-in, unofficial. Served from the existing V
 - Navigation: unreleased items (tier lists, packs, community) are no longer shown.
 - Terms, Privacy Policy, Disclaimer, About and Support were rewritten for a sign-in-free, local-first v1.0. They were written by the operator; a professional review is recommended.
 
+### Performance (production, 2026-10-04/05)
+- Route transitions 0.9–1.5 s → about 0.31–0.35 s (parallel server reads, 300 s shared cache of public reference data).
+- Cold LCP on Home (desktop) 1.32 s → 0.54 s (p95 5.8 s → 0.76 s); cold Home weight 4.55 MB → 1.32 MB (card images load near the viewport).
+- First Load JS: Home 198 → 119 kB, /players 219 → 141 kB, squad editor 342 → 288 kB (Japanese dictionary split per screen, lazy Supabase client and English dictionary).
+- CLS 0 on main screens; React #418 root causes fixed (#129, #134).
+
+### Quality
+- Navigation: a dropdown choice made before the page finished loading is no longer lost (#141); client navigations that never commit (about 1% of navigations, inside the Next.js router) now complete with a normal browser navigation after 5 s (#142).
+- React #418 final gate: 3 consecutive clean production runs (576/576 steps each, 8 viewports, 0 hydration errors).
+- English mode: no Japanese UI text on public pages and in the squad editor and comparison (engine, diagnosis and perspectives text localized in the display layer, with leak tests).
+
 ### Not included in v1.0
+- Best XI manager boosts (F-070): planned for v1.1.
 - Public sign-up, authentication emails, public IDs, friends, public profiles.
 - Photo posts, community, comments.
 - Rankings, user statistics.
@@ -29,7 +41,7 @@ First official release: free, no sign-in, unofficial. Served from the existing V
 
 ### Data
 - World 13,372 cards and 69 managers (as of 2026-10-03).
-- Reference data updates automatically: weekly detection → Plan → encrypted Backup → Dry run → automatic Apply.
+- Reference data updates automatically: hourly detection (Managers compared fully every hour; World light check every hour and a full comparison every 6 hours or when the signal changes) → Plan → encrypted Backup → Dry run → automatic Apply.
   - Automatic Apply happens only when the update matches the safety contract (`auto-apply-policy/2026-10-03.v1`). Anything else waits for the operator.
   - No automatic Rollback or Restore.
 

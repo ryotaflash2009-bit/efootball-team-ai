@@ -145,6 +145,7 @@
 
 ## 9. 変更履歴
 
+- 2026-10-05: **TeamAIXI v1.0 正式リリース**。Release Validator `TEAMAIXI_V1_RELEASE_READY`（本人の最終確認 5 項目を記録）。Git tag `v1.0.0`・GitHub Release「TeamAIXI v1.0」。最終の品質: React #418 の最終ゲート 本番 3 回連続 576/576（8 viewport・hydration 0）、a11y 32/32、新規登録の制限 117/117。画面の移動: hydration 前の絞り込みの選択を保持（PR #141）、終わらない画面の移動を 5 秒で通常の移動に切り替え（PR #142）。1 時間おきの更新検出は schedule で動作を確認（run 37220971573・no_change）。F-070（監督補正）は v1.1。証跡 `evidence/2026-10-05-teamaixi-v1-release.json`。
 - 2026-10-04: **TeamAIXI v1.0**（本人の決定）。表示名を TeamAIXI に変更（保存キー・Backup・書き出しの識別子・共有 URL は互換のため維持）。ログイン不要・無料・非公式の正式製品版として、既存の Vercel Production URL で公開（PR #126・noindex 維持）。ナビから Tier・Pack・Community を外し、内部ページは本番 404 のまま。利用規約・プライバシー・免責事項を v1.0 版に（専門家レビュー推奨）。Release Validator（`scripts/validate-teamaixi-v1-release.mjs`）の判定は `TEAMAIXI_V1_MANUAL_REVIEW_REQUIRED`（本人の最終確認 5 項目だけが残る・`docs/release/teamaixi-v1.md` §6）。Git tag `v1.0.0`・GitHub Release は本人の確認の後。
 
 - 2026-10-04: 参照データの**完全無人の自動 Apply** を実装（本人の決定 2026-10-03）。既知の安全契約に一致する World（追加・確定列の更新）と Managers（追加だけ）は承認なしで適用、それ以外は Apply の前に停止または手動の承認の経路。Kill switch・halt Issue・事後検証（公開サイトの件数まで）。Rollback・Restore は自動にしない。有効化は自動用 Environment の Secret 2 件（本人）の後（`automated-update-pipeline.md` §7）。

@@ -1,6 +1,6 @@
 # TeamAIXI v1.0 リリースノート / Release notes
 
-**リリース日 / Release date:** 2026-10-04（予定。本人の最終確認の後 / pending the owner's final review）
+**リリース日 / Release date:** 2026-10-05
 
 ## 日本語
 
@@ -17,7 +17,10 @@ KONAMI および eFootball™ の公式サービスではなく、KONAMI によ�
 
 **データ**
 - World 13,372 枚・監督 69 人（2026-10-03 時点）。
-- 週 1 回の自動検出で更新します。安全条件を満たす更新だけを自動で適用し、それ以外は運営者が確認します。
+- 1 時間おきに更新を確認します（World の全件の比較は 6 時間ごと）。安全条件を満たす更新だけを自動で適用し、それ以外は運営者が確認します。
+
+**表示の速さ**
+- 初回の表示と画面の移動を速くしました（画面の移動 約 0.3 秒・最初の画面の画像だけを先に読み込む・画面ごとに必要な文言だけを読み込む）。
 
 **v1.0 に含まれないもの**
 - アカウント機能（今後のアップデートで提供予定）、コミュニティ・写真投稿・コメント、ランキング、課金。
@@ -41,7 +44,10 @@ It is not an official KONAMI or eFootball™ service and is not endorsed by, aff
 
 **Data**
 - World 13,372 cards and 69 managers (as of 2026-10-03).
-- Updated from a weekly automatic check. Only updates that pass the safety checks are applied automatically; anything else is reviewed by the operator.
+- Updates are checked every hour (a full World comparison every 6 hours). Only updates that pass the safety checks are applied automatically; anything else is reviewed by the operator.
+
+**Speed**
+- Faster first load and navigation (about 0.3 s between screens; only on-screen images load first; each screen loads only the text it needs).
 
 **Not in v1.0**
 - Account features (planned for a future update), community, photo posts, comments, rankings and payments.
