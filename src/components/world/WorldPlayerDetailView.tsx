@@ -7,7 +7,8 @@ import { WorldStatGrid } from "@/components/world/WorldStatGrid";
 import { WorldBasePercentilePanel } from "@/components/world/WorldBasePercentilePanel";
 import { PlayerTitles } from "@/components/titles/PlayerTitles";
 import { WorldPlayerHero, type SafeWorldPlayerDetail } from "@/components/world/WorldPlayerHero";
-import { ProgressionPanel } from "@/components/world/progression/ProgressionPanel";
+import dynamic from "next/dynamic";
+import { LoadingState } from "@/components/ui/LoadingState";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { Surface } from "@/components/ui/Surface";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -18,6 +19,14 @@ import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { formatDateTime } from "@/lib/i18n/format";
 
 const NOT_YET_FIXED_KEYS = ["Weak Foot Usage", "Weak Foot Accuracy", "Form", "Injury Resistance", "Tier"];
+
+/**
+ * 育成タブ（育成の計算・ブースター・保存）は重いため、タブを開いたときに読み込む（2026-10-05: 選手詳細の初回の JS を減らす）。
+ * ?tab=progression で開いた場合はサーバーで描画される（next/dynamic の ssr は既定で有効）。
+ */
+const ProgressionPanel = dynamic(() => import("@/components/world/progression/ProgressionPanel").then((m) => m.ProgressionPanel), {
+  loading: () => <LoadingState variant="cards" />,
+});
 
 export function WorldPlayerDetailView({
   player,
