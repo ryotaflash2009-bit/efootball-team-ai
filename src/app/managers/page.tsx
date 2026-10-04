@@ -1,4 +1,5 @@
 import { parseManagerListQuery } from "@/lib/managers/schemas";
+import { cachedGetManagersLatestFetchedAt, cachedListManagers } from "@/lib/reference-data/runtime/cached-queries";
 import { getManagersLatestFetchedAt, listManagers, ManagerDataUnavailableError } from "@/lib/managers/repository";
 import { ManagersPageView, ManagersUnavailableView, ManagersFailedView, ManagersSearchRejectedView } from "@/components/managers/ManagersPageView";
 import { SearchInputRejectedError, checkSearchInput } from "@/lib/search/search-input";
@@ -26,8 +27,10 @@ export default async function ManagersPage({ searchParams }: { searchParams: Pro
   let unavailable = false;
   let failed = false;
   let rejected = false;
+  // データの時点の照会は一覧と独立なので並行して始める（直列の待ちをなくす。2026-10-04）。失敗しても一覧は表示する。
+  const importedAtPromise = cachedGetManagersLatestFetchedAt().catch(() => null);
   try {
-    result = await listManagers(q);
+    result = await cachedListManagers(q);
   } catch (err) {
     if (err instanceof ManagerDataUnavailableError) unavailable = true;
     else if (err instanceof SearchInputRejectedError) rejected = true;
@@ -39,12 +42,7 @@ export default async function ManagersPage({ searchParams }: { searchParams: Pro
   if (failed || !result) return <ManagersFailedView />;
 
   // データの時点(取り込み日時)。取得できなくても一覧は表示し、時点は「—」にする(推測の日時は出さない)。
-  let importedAt: string | null = null;
-  try {
-    importedAt = await getManagersLatestFetchedAt();
-  } catch {
-    importedAt = null;
-  }
+  const importedAt: string | null = await importedAtPromise;
 
   const hasFilters = !!(q.query || q.hasBooster != null || q.hasLinkUpPlay != null);
   const hrefFor = (p: number) => {

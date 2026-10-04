@@ -12,6 +12,7 @@
  * - 結果は docs/black-box-tests/phase-b5-sqlite.md に生成。
  */
 
+import { listImageLoading } from "./lib/black-box-images.mjs";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -66,7 +67,7 @@ async function main() {
     const imgRefs = (r.body.match(/\/api\/player-image\//g) || []).length;
     record("プレイヤー一覧が表示される", r.status === 200 && /プレイヤー/.test(r.body), `HTTP ${r.status}`);
     record("選手画像参照が存在する（<img src=/api/player-image/…>）", imgRefs > 0, `参照 ${imgRefs} 件`);
-    record("画像は遅延読み込み（loading=lazy）", /loading="lazy"/.test(r.body), "");
+    record("画像は遅延読み込み（最初の最大4枚だけ即時・残りは画面の近くで）", listImageLoading(r.body).ok, listImageLoading(r.body).detail);
     record("画像枠の縦横比固定（aspect-[3/4] = CLS対策）", /aspect-\[3\/4\]/.test(r.body), "");
   }
 

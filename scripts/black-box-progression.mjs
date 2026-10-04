@@ -10,6 +10,7 @@
  * - 結果は docs/black-box-tests/progression.md へ。
  */
 
+import { listImageLoading } from "./lib/black-box-images.mjs";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -204,7 +205,7 @@ async function main() {
   record("回帰: World 画像プロキシ 不正IDは 400（外部アクセスなし）", imgBad.status === 400, `HTTP ${imgBad.status}`);
   const imgMiss = await get("/api/world/player-image/99999999999999");
   record("回帰: World 画像プロキシ 存在しないIDはプレースホルダー200（外部アクセスなし）", imgMiss.status === 200, `HTTP ${imgMiss.status}`);
-  record("回帰: 一覧に画像プロキシ src が配線・loading=lazy", /\/api\/world\/player-image\/\d+/.test(players.body) && /loading="lazy"/.test(players.body), "");
+  record("回帰: 一覧に画像プロキシ src が配線・画面外の画像を先に読み込まない（最初の最大4枚だけ即時）", /\/api\/world\/player-image\/\d+/.test(players.body) && listImageLoading(players.body).ok, listImageLoading(players.body).detail);
   record("回帰: cloudfront URL をブラウザへ露出しない", !/d1zxa6glxh8sq9\.cloudfront\.net/.test(players.body + messi.body), "");
   for (const legacy of await checkLegacySampleDetail(BASE)) record(legacy.name, legacy.pass, legacy.detail);
 

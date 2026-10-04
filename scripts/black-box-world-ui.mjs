@@ -7,6 +7,7 @@
  * - 結果は docs/black-box-tests/world-ui.md へ。
  */
 
+import { listImageLoading } from "./lib/black-box-images.mjs";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -244,7 +245,7 @@ async function main() {
   record("画像: 並べ替え後も画像 src が配線されている", /\/api\/world\/player-image\/\d+/.test(sortPage.body), "");
   const page2Img = await http("/players?page=2&sort=ovr_max_desc");
   record("画像: ページ移動後も画像 src が配線されている", /\/api\/world\/player-image\/\d+/.test(page2Img.body), "");
-  record("画像: 一覧 HTML は loading=\"lazy\" を使う（プリロードしない）", /loading="lazy"/.test(listPage.body), "");
+  record("画像: 一覧 HTML は画面外の画像を先に読み込まない（最初の最大4枚だけ即時・残りは画面の近くで）", listImageLoading(listPage.body).ok, listImageLoading(listPage.body).detail);
   record("画像: 一覧カードレイアウトが崩れない（aspect-[3/4] 枠 + OVR/名前を保持）", /aspect-\[3\/4\]/.test(listPage.body) && /MAX/.test(listPage.body), "");
 
   // ---- 既存機能の回帰 ----

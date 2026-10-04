@@ -1,4 +1,5 @@
 import { loadPlayers } from "@/lib/players";
+import { cachedGetManagerCount, cachedGetSourceMeta, cachedListPlayers } from "@/lib/reference-data/runtime/cached-queries";
 import { getSourceMeta, listPlayers } from "@/lib/world/repository";
 import { getManagerCount } from "@/lib/managers/repository";
 import type { WorldPlayerListItem } from "@/lib/world/types";
@@ -43,10 +44,10 @@ export default async function HomePage() {
   // （2026-10-02 の公開 black-box で一度だけ観測。再現 0/60）。それ以外の例外は従来どおり error boundary へ。
   const base = { page: 1, pageSize: 14, query: "", position: null, cardType: null, playingStyle: null, playingStyleDefensive: null, minOvr: null, maxOvr: null, hasBooster: null } as const;
   const [metaR, topR, recentR, managersR] = await Promise.allSettled([
-    getSourceMeta(),
-    listPlayers({ ...base, sort: "ovr_max_desc" }),
-    listPlayers({ ...base, sort: "updated_desc" }),
-    getManagerCount(),
+    cachedGetSourceMeta(),
+    cachedListPlayers({ ...base, sort: "ovr_max_desc" }),
+    cachedListPlayers({ ...base, sort: "updated_desc" }),
+    cachedGetManagerCount(),
   ]);
   const settled = settledInOrder([metaR, topR, recentR, managersR]);
   const handling = classifyHomeFailure(settled.failure ? settled.failure.reason : undefined);
