@@ -103,6 +103,18 @@ stale lock: 独自の lock は持たない（GitHub の concurrency と DB の a
   2. Vercel の Cron（既存の Hobby の範囲・1 日 1 回）で、公開の GitHub API から最新の検出 run の時刻を取り、内部の確認ページ（本番 404 の内部ページ）に表示する。通知先（メール等）は Custom SMTP の後に検討。
   3. 公開サイトの `/api/data-status` に、最後の検出の時刻を出す（applied-state の PR の時刻ではなく）— 検出は Production に書かない契約のため、別の仕組みが必要。v1.1 の候補。
 
+### 7.1 GitHub の schedule の実測（2026-10-04〜05）
+
+- cron `17 * * * *` に変えた後、**最初の schedule の run は 2026-10-04T17:33Z**（17:17 の枠・16 分遅れ）。run 37220971573・成功・
+  `worldScan: no_previous_state`（状態が無いため完全な回）・`overall: no_change`・状態を Actions cache に保存。
+- その後の 18:17 の枠は **run が作られなかった**（GitHub 側で欠落）。19:17 の枠も 20:02Z の時点で run が無い（欠落）。workflow は active・変数は `true`・
+  ファイルは main で正しい（設定の問題ではない）。GitHub の schedule は混雑時に遅れ・欠落がある（ベストエフォート）。
+- 影響: 検出が 1〜2 時間あくことがある。次の run が状態を引き継ぐため、取りこぼしは無い（World の完全な比較は 6 時間ごとの条件で必ず走る）。
+  130 分を超えるあきは `buildScheduleGapNotice` が次の run で通知する。
+- 変えない理由: 自分で dispatch し直す方式は手動の run と同じく World の完全な検出（約 445 request）になり上流の負荷が増える。
+  外部の cron から GitHub API で起動する方式は token（Secret）が必要で、本人の判断が要る（Secret の変更は禁止事項）。
+- 本人の判断の候補: (a) 現状のまま（推奨・費用 0）、(b) 外部の cron サービス + 細かい権限の token で workflow_dispatch（軽い回の入力を追加する変更が必要）。
+
 ## 8. 変えていないもの
 
 Auto Apply Policy（版・World / Managers の閾値・変更列の allowlist・removed 0・不明な列で停止・Managers の UPDATE で停止）、
