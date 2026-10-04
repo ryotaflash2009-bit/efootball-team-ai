@@ -15,7 +15,8 @@ import type { SquadSlotResult, SquadBuildMode } from "@/lib/squad/types";
 import { SQUAD_BUILD_MODES } from "@/lib/squad/types";
 import { BOOSTER_CATALOG, getBoosterDef } from "@/lib/progression/booster-catalog";
 import { ConditionalBoosterControl } from "@/components/world/progression/ConditionalBoosterControl";
-import { useT } from "@/lib/i18n/LocaleContext";
+import { useT, useLocale } from "@/lib/i18n/LocaleContext";
+import { localizeSquadText } from "@/lib/squad/squad-text-en";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 
 const CONFIRMED_BOOSTERS = BOOSTER_CATALOG.filter((b) => b.confirmationStatus === "confirmed");
@@ -92,6 +93,7 @@ export function SlotPlayerPanel({
   onConditionalBoosters: (next: SelectedConditionalBooster[]) => void;
 }) {
   const t = useT();
+  const { locale } = useLocale();
   const tsp = (k: keyof Dictionary["slotPlayerPanel"]) => t("slotPlayerPanel", k);
   const fillSp = (s: string, vars: Record<string, string>) =>
     Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
@@ -153,12 +155,12 @@ export function SlotPlayerPanel({
             </p>
             <p className={`mt-0.5 ${COMPAT_CLASS[slot.compatibility.status] ?? "text-text-dim"}`}>
               {fillSp(tsp("suitabilityLabelTemplate"), {
-                label: slot.compatibility.label,
+                label: localizeSquadText(slot.compatibility.label, locale),
                 position: slot.compatibility.registeredPosition ?? "?",
               })}
             </p>
             {slot.compatibility.note ? (
-              <p className="text-[10px] text-text-dim/80">{slot.compatibility.note}</p>
+              <p className="text-[10px] text-text-dim/80">{localizeSquadText(slot.compatibility.note, locale)}</p>
             ) : null}
             <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
               <button

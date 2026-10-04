@@ -38,6 +38,7 @@ import {
   writePlacementClipboard,
   type PlacementClipboard,
 } from "@/lib/squad/placement-clipboard";
+import { localizeSquadText } from "@/lib/squad/squad-text-en";
 import {
   clampCoord,
   inferFreshRole,
@@ -156,6 +157,8 @@ export function SquadEditor({
   const t = useT();
   const { locale } = useLocale();
   const tse = useCallback((k: keyof Dictionary["squadEditor"]) => t("squadEditor", k), [t]);
+  // スカッド計算ライブラリの日本語（警告・操作の結果・エラー）は表示するときだけ英語にする（squad-text-en.ts）。
+  const sq = useCallback((text: string) => localizeSquadText(text, locale), [locale]);
   const fillSe = useCallback(
     (s: string, vars: Record<string, string>) => Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s),
     [],
@@ -567,9 +570,9 @@ export function SquadEditor({
       snapshotForUndo(r.operation);
       setSquad(r.squad);
       if (to.area === "starter") setSelectedSlotId(to.slotId);
-      flashToast(r.warnings.length ? `${r.operation}（${r.warnings.join(" / ")}）` : r.operation);
+      flashToast(r.warnings.length ? `${sq(r.operation)}${fillSe(tse("toastWarningsParenTemplate"), { warnings: r.warnings.map(sq).join(" / ") })}` : sq(r.operation));
     },
-    [flashToast, snapshotForUndo, MOVE_ERROR_MESSAGE],
+    [flashToast, snapshotForUndo, MOVE_ERROR_MESSAGE, sq, tse, fillSe],
   );
 
   const removeFromSlot = useCallback(
@@ -580,9 +583,9 @@ export function SquadEditor({
       if (!r.ok) return;
       snapshotForUndo(r.operation);
       setSquad(r.squad);
-      if (r.warnings.length) flashToast(r.warnings.join(" / "));
+      if (r.warnings.length) flashToast(r.warnings.map(sq).join(" / "));
     },
-    [flashToast, snapshotForUndo],
+    [flashToast, snapshotForUndo, sq],
   );
 
   const removeFromBench = useCallback(
@@ -803,11 +806,11 @@ export function SquadEditor({
       if (u) {
         setSquad(u.squad);
         setMoveSource(null);
-        flashToast(fillSe(tse("undoDoneTemplate"), { label: u.label }));
+        flashToast(fillSe(tse("undoDoneTemplate"), { label: sq(u.label) }));
       }
       return null;
     });
-  }, [flashToast, tse, fillSe]);
+  }, [flashToast, tse, fillSe, sq]);
 
   const setFormation = useCallback(
     (formationId: string) => {
@@ -1243,7 +1246,7 @@ export function SquadEditor({
               if (r.ok) {
                 setSavedFlash(true);
                 setTimeout(() => setSavedFlash(false), 1500);
-              } else flashToast(r.error);
+              } else flashToast(sq(r.error));
             }}
           >
             {savedFlash ? tse("savedButtonLabel") : tse("saveButtonLabel")}
@@ -1276,7 +1279,7 @@ export function SquadEditor({
               onClick={() => {
                 if (autosaveRef.current) clearTimeout(autosaveRef.current);
                 const r = runSave(squad);
-                if (!r.ok) flashToast(r.error);
+                if (!r.ok) flashToast(sq(r.error));
               }}
               className="rounded-md border border-danger px-2 py-0.5 text-danger hover:opacity-80"
             >
@@ -1288,7 +1291,7 @@ export function SquadEditor({
             onClick={() => {
               const r = duplicateSquad(squad.squadId);
               if (r.ok) router.push(`/squads/${r.squad.squadId}`);
-              else flashToast(r.error);
+              else flashToast(sq(r.error));
             }}
             className="rounded-md border border-border px-2.5 py-1 hover:border-accent"
           >
@@ -1300,7 +1303,7 @@ export function SquadEditor({
               const name = window.prompt(tse("templateNamePromptLabel"), `${squad.squadName}${tse("templateNamePromptSuffix")}`);
               if (name == null) return;
               const r = saveTemplateFromSquad(squad, name);
-              flashToast(r.ok ? tse("templateSavedNotice") : r.error);
+              flashToast(r.ok ? tse("templateSavedNotice") : sq(r.error));
             }}
             className="rounded-md border border-border px-2.5 py-1 hover:border-accent"
           >
@@ -1326,7 +1329,7 @@ export function SquadEditor({
                 savedSquadRef.current = r.squad;
                 setSquad(r.squad);
                 setSaveState("saved");
-              } else flashToast(r.error);
+              } else flashToast(sq(r.error));
             }}
             className="rounded-md border border-border px-2.5 py-1 hover:border-accent"
           >
@@ -1428,7 +1431,7 @@ export function SquadEditor({
             </p>
           ) : undo ? (
             <p className="flex items-center gap-2 rounded border border-border bg-surface-2/40 px-2 py-1 text-xs text-text-dim">
-              {fillSe(tse("undoBannerTemplate"), { label: undo.label })}
+              {fillSe(tse("undoBannerTemplate"), { label: sq(undo.label) })}
               <button
                 type="button"
                 onClick={doUndo}
@@ -1969,7 +1972,7 @@ export function SquadEditor({
               <p className="font-semibold">{fillSe(tse("warningsHeadingTemplate"), { count: String(computed.warnings.length) })}</p>
               <ul className="mt-1 list-disc space-y-0.5 pl-4 text-text-dim">
                 {computed.warnings.map((w, i) => (
-                  <li key={i}>{w}</li>
+                  <li key={i}>{sq(w)}</li>
                 ))}
               </ul>
             </div>

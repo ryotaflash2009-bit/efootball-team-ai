@@ -1084,7 +1084,7 @@ function SkillsTab({ result, diffOnly }: { result: SquadComparisonResult; diffOn
 }
 
 function WarningsTab({ result }: { result: SquadComparisonResult }) {
-  const { tx } = useSquadCompareText();
+  const { tx, lib } = useSquadCompareText();
   const w = result.warningComparison;
   const da = result.dataAvailability;
   return (
@@ -1099,7 +1099,7 @@ function WarningsTab({ result }: { result: SquadComparisonResult }) {
             <p className="text-2xs font-semibold text-text-muted">{tx("both")}</p>
             <ul className="list-disc space-y-0.5 pl-4 text-xs text-text-dim">
               {w.both.map((x, i) => (
-                <li key={i}>{x}</li>
+                <li key={i}>{lib(x)}</li>
               ))}
               {w.both.length === 0 ? <li className="list-none text-text-muted">{tx("none")}</li> : null}
             </ul>
@@ -1108,7 +1108,7 @@ function WarningsTab({ result }: { result: SquadComparisonResult }) {
             <p className="text-2xs font-semibold text-text-muted">{tx("onlyAShort")}</p>
             <ul className="list-disc space-y-0.5 pl-4 text-xs text-text-dim">
               {w.onlyA.map((x, i) => (
-                <li key={i}>{x}</li>
+                <li key={i}>{lib(x)}</li>
               ))}
               {w.onlyA.length === 0 ? <li className="list-none text-text-muted">{tx("none")}</li> : null}
             </ul>
@@ -1117,7 +1117,7 @@ function WarningsTab({ result }: { result: SquadComparisonResult }) {
             <p className="text-2xs font-semibold text-text-muted">{tx("onlyBShort")}</p>
             <ul className="list-disc space-y-0.5 pl-4 text-xs text-text-dim">
               {w.onlyB.map((x, i) => (
-                <li key={i}>{x}</li>
+                <li key={i}>{lib(x)}</li>
               ))}
               {w.onlyB.length === 0 ? <li className="list-none text-text-muted">{tx("none")}</li> : null}
             </ul>

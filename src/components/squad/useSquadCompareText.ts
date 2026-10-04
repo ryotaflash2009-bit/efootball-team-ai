@@ -4,7 +4,7 @@ import "@/lib/i18n/dictionaries/ja-ns/compareCategory";
 import "@/lib/i18n/dictionaries/ja-ns/squadCompareBoard";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
-import { localizeSquadCompareText } from "@/lib/squad/compare-text-en";
+import { localizeSquadText } from "@/lib/squad/squad-text-en";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { CompareCardUnit } from "@/lib/squad/compare-squads";
 
@@ -22,7 +22,7 @@ export function useSquadCompareText() {
     if (vars) for (const [key, v] of Object.entries(vars)) out = out.split(`{${key}}`).join(String(v));
     return out;
   };
-  const lib = (text: string) => localizeSquadCompareText(text, locale);
+  const lib = (text: string) => localizeSquadText(text, locale);
   // 選手名は表示言語に合わせる（他の画面と同じ resolvePlayerDisplayName）。
   const name = (u: { nameJa: string | null; nameEn: string | null; worldCardId: string }) =>
     resolvePlayerDisplayName(u, locale, tx("cardFallbackTemplate", { id: u.worldCardId }));

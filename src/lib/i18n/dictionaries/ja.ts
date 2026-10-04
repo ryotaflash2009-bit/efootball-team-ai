@@ -768,6 +768,7 @@ export interface Dictionary {
     guidesToggleTemplate: string;
     gridToggleTemplate: string;
     mirrorPlacementButton: string;
+    toastWarningsParenTemplate: string;
     copyPlacementButton: string;
     pastePlacementButton: string;
     placementCopiedTemplate: string;

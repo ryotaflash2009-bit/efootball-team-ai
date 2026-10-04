@@ -790,6 +790,7 @@ const en: Dictionary = {
     guidesToggleTemplate: "Guides {state}",
     gridToggleTemplate: "Grid {state}",
     mirrorPlacementButton: "Mirror placement",
+    toastWarningsParenTemplate: " ({warnings})",
     copyPlacementButton: "Copy placement",
     pastePlacementButton: "Paste placement",
     placementCopiedTemplate: "Placement copied (paste it into any squad with the same formation, {formationId}).",
