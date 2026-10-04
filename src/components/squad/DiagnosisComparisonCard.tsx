@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/diagnosisCompare";
+import "@/lib/i18n/dictionaries/ja-ns/diagnosisShare";
 import { Badge } from "@/components/ui/Badge";
 import { tierBadgeTone } from "./diagnosis-tier-style";
 import { diagnosisCategoryLabel } from "./SharedDiagnosisView";

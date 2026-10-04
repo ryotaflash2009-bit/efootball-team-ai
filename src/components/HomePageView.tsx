@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
 import Link from "next/link";
 import { WorldCardImage } from "@/components/world/WorldCardImage";
 import { PageContainer } from "@/components/ui/PageContainer";

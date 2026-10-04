@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { translate, dictionaryOf } from "./translate";
-import ja from "./dictionaries/ja";
+import ja from "./dictionaries/ja-full";
 import en from "./dictionaries/en";
 
 afterEach(() => {
@@ -45,7 +45,9 @@ describe("translate: 欠落キーの安全なフォールバック", () => {
 
 describe("dictionaryOf", () => {
   it("ja/enそれぞれの辞書オブジェクトを返す", () => {
-    expect(dictionaryOf("ja")).toBe(ja);
+    // 日本語は核 + 分割した名前空間を合わせた見え方（2026-10-04）。どの名前空間も完全な辞書と同じ内容。
+    const view = dictionaryOf("ja");
+    for (const ns of Object.keys(ja) as (keyof typeof ja)[]) expect(view[ns], String(ns)).toEqual(ja[ns]);
     expect(dictionaryOf("en")).toBe(en);
   });
 });

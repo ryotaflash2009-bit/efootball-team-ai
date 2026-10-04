@@ -1,0 +1,55 @@
+import type { Dictionary } from "../ja";
+import { registerJaNamespace } from "../ja-registry";
+
+/** 日本語の辞書の名前空間 playerDetailPage（2026-10-04: 全画面の初回 JS から外し、使う画面だけが読み込む）。 */
+const playerDetailPage: Dictionary["playerDetailPage"] = {
+  worldDataUnavailableTitle: "World データが利用できません",
+  worldDataUnavailableDescription: "SQLite に World データが取り込まれていません。",
+  backToPlayerList: "プレイヤー一覧へ戻る",
+  analysisScopeWorldEfhub: "World + eFHUB 詳細",
+  analysisScopeWorld: "World データ",
+  nationalityLabel: "国籍",
+  regionLabel: "地域",
+  leagueLabel: "リーグ",
+  teamLabel: "チーム",
+  ageLabel: "年齢",
+  heightLabel: "身長",
+  weightLabel: "体重",
+  preferredFootLabel: "利き足",
+  playingStyleLabel: "攻撃プレースタイル",
+  playingStyleDefLabel: "守備プレースタイル",
+  booster1Label: "ブースター1 (ID)",
+  booster2Label: "ブースター2 (ID)",
+  basicInfoHeading: "基本情報",
+  statsHeading: "能力値（26 項目・World 値）",
+  statsHint: "育成後・監督補正は含みません",
+  playerSkillsHeading: "Player Skills",
+  noSkills: "スキル情報がありません。",
+  aiStylesHeading: "AI Playing Styles",
+  noAiStyles: "AI スキルはありません。",
+  progressionHeading: "育成（検証中）",
+  dataProvenanceHeading: "データの来歴",
+  dataSourceLabel: "データソース",
+  sourceUrlLabel: "取得元 URL",
+  appearanceUpdatedLabel: "更新日時（appearance）",
+  fetchedAtLabel: "取得日時",
+  efhubDiffHeading: "eFHUB 値との差異（参考・自動上書きしません）",
+  tableItemHeader: "項目",
+  tableWorldHeader: "World",
+  tableEfhubHeader: "eFHUB",
+  notYetHeading: "未取得（追加調査中）",
+  notYetHint: "players/search API に含まれない項目",
+  notYetZeroNote: "0 や空文字では表示しません。",
+  notYetBadgeSuffix: ": 追加調査中",
+  notYetSecondaryPosition: "副ポジション適性",
+  tabsAriaLabel: "選手詳細",
+  tabOverview: "概要",
+  tabStats: "能力値",
+  tabSkills: "スキル",
+  tabProgression: "育成",
+  tabData: "データ情報",
+  };
+
+registerJaNamespace("playerDetailPage", playerDetailPage);
+
+export default playerDetailPage;

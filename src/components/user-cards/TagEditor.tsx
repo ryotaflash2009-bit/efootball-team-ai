@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/tagEditor";
 import { useState } from "react";
 import { MAX_TAGS, TAG_MAX_LEN, sanitizeTag } from "@/lib/user-cards/validation";
 import { Icon } from "@/components/ui/Icon";

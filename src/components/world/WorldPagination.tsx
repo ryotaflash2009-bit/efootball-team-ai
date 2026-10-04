@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/worldPagination";
 import Link from "next/link";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { formatNumber } from "@/lib/i18n/format";

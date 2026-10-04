@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/diagnosisPerspectives";
 import type { PerspectiveConfidence, PerspectiveResult } from "@/lib/squad/diagnosis-perspectives";
 import { Badge } from "@/components/ui/Badge";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";

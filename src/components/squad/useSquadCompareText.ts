@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/compareCategory";
+import "@/lib/i18n/dictionaries/ja-ns/squadCompareBoard";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { localizeSquadCompareText } from "@/lib/squad/compare-text-en";

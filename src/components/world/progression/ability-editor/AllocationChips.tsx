@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/abilityEditor";
 import { useEffect, useRef, type CSSProperties } from "react";
 import type { AllocationChip } from "@/lib/progression/ability-direct-editor";
 import { categoryColorVar, categoryName } from "@/lib/progression/ability-editor-labels";

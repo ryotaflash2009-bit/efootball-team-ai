@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/progressionTab";
 import type { ProgressionGroup } from "@/lib/progression/types";
 import { getStatDef } from "@/lib/world/stats";
 import { useT } from "@/lib/i18n/LocaleContext";

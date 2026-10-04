@@ -1,5 +1,8 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/favoritesView";
+import "@/lib/i18n/dictionaries/ja-ns/myTeam";
+import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useFavorites, useMyTeam } from "@/lib/user-cards/hooks";

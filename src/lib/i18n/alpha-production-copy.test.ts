@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import ja from "./dictionaries/ja";
+import ja from "./dictionaries/ja-full";
 import en from "./dictionaries/en";
 
 /**

@@ -1,3 +1,4 @@
+import "@/lib/i18n/dictionaries/ja-ns/progressionTab";
 import type { PointsSummary } from "@/lib/progression/types";
 import { useT } from "@/lib/i18n/LocaleContext";
 

@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/manager";
 import { useState } from "react";
 import type { ManagerContext } from "@/lib/progression/types";
 import type { ManagerDetail } from "@/lib/managers/types";

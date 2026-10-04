@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/titles";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import type { SquadDiagnosisTier } from "@/lib/squad/squad-diagnosis";

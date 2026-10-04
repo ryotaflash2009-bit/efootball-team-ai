@@ -1,5 +1,8 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/buildImportModal";
+import "@/lib/i18n/dictionaries/ja-ns/buildUsage";
+import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { SavedBuild } from "@/lib/progression/types";
 import type { WorldPlayerListItem } from "@/lib/world/types";

@@ -50,6 +50,7 @@ const COLLECT = `(() => {
     fcp: paint["first-contentful-paint"] != null ? Math.round(paint["first-contentful-paint"]) : null,
     lcp: window.__pf ? Math.round(window.__pf.lcp) : null,
     cls: window.__pf ? Number(window.__pf.cls.toFixed(4)) : null,
+    clsSources: window.__pf && window.__pf.src ? window.__pf.src.slice(0, 4) : [],
     longTasks: window.__pf ? window.__pf.lt.length : null,
     longTaskTotal: window.__pf ? Math.round(window.__pf.lt.reduce((a, b) => a + b, 0)) : null,
     requests: res.length + 1, bytes, counts, apiMaxMs: apiMs.length ? Math.max(...apiMs) : 0, duplicates,
@@ -57,7 +58,7 @@ const COLLECT = `(() => {
     heapMB: performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) : null,
   };
 })()`;
-const OBSERVE = `window.__pf={lcp:0,cls:0,lt:[]};try{new PerformanceObserver(l=>{for(const e of l.getEntries())window.__pf.lcp=e.startTime}).observe({type:"largest-contentful-paint",buffered:true});new PerformanceObserver(l=>{for(const e of l.getEntries())if(!e.hadRecentInput)window.__pf.cls+=e.value}).observe({type:"layout-shift",buffered:true});new PerformanceObserver(l=>{for(const e of l.getEntries())window.__pf.lt.push(e.duration)}).observe({type:"longtask",buffered:true})}catch(e){}`;
+const OBSERVE = `window.__pf={lcp:0,cls:0,lt:[]};try{new PerformanceObserver(l=>{for(const e of l.getEntries())window.__pf.lcp=e.startTime}).observe({type:"largest-contentful-paint",buffered:true});new PerformanceObserver(l=>{for(const e of l.getEntries())if(!e.hadRecentInput){window.__pf.cls+=e.value;if(e.value>0.01)(window.__pf.src||(window.__pf.src=[])).push(Math.round(e.startTime)+"ms "+e.value.toFixed(3)+" "+(e.sources||[]).map(x=>x.node?(x.node.nodeType===1?x.node.tagName+"."+String(x.node.className||"").slice(0,40)+" "+String(x.node.textContent||"").slice(0,30):"#text "+String(x.node.textContent).slice(0,30)):"?").join(" | "))}}).observe({type:"layout-shift",buffered:true});new PerformanceObserver(l=>{for(const e of l.getEntries())window.__pf.lt.push(e.duration)}).observe({type:"longtask",buffered:true})}catch(e){}`;
 
 function stats(values) {
   const v = values.filter((x) => typeof x === "number" && Number.isFinite(x)).sort((a, b) => a - b);

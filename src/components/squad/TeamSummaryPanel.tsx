@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/compareCategory";
+import "@/lib/i18n/dictionaries/ja-ns/teamSummary";
 import { useState } from "react";
 import type { TeamSummary } from "@/lib/squad/types";
 import { useT } from "@/lib/i18n/LocaleContext";

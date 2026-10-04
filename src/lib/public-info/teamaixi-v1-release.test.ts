@@ -1,12 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { checkRepo, checkLive, decideRelease, PUBLIC_ROUTES, HIDDEN_ROUTES, REQUIRED_GATES, MANUAL_REVIEW_ITEMS } from "../../../scripts/lib/teamaixi-v1-release.mjs";
 
 const ROOT = path.resolve(__dirname, "..", "..", "..");
 const read = (p: string) => readFileSync(path.join(ROOT, p), "utf8");
 const repoFiles = () => ({
-  layout: read("src/app/layout.tsx"), dict_ja: read("src/lib/i18n/dictionaries/ja.ts"), dict_en: read("src/lib/i18n/dictionaries/en.ts"),
+  layout: read("src/app/layout.tsx"), dict_ja: [read("src/lib/i18n/dictionaries/ja.ts"), ...readdirSync(path.join(ROOT, "src/lib/i18n/dictionaries/ja-ns")).map((f) => read(`src/lib/i18n/dictionaries/ja-ns/${f}`))].join("\n"), dict_en: read("src/lib/i18n/dictionaries/en.ts"),
   accountAvailability: read("src/lib/supabase/account-availability.ts"), sidebar: read("src/components/Sidebar.tsx"),
   internalPages: read("src/lib/public-info/internal-pages.ts"), packageJson: read("package.json"),
   changelog: read("CHANGELOG.md"), releaseNotes: read("RELEASE_NOTES.md"), releaseDoc: read("docs/release/teamaixi-v1.md"),

@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/managerDetail";
 import Link from "next/link";
 import type { ManagerDetail } from "@/lib/managers/types";
 import { ProficiencyBar } from "@/components/managers/ProficiencyBar";

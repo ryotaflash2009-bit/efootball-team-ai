@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/diagnosisCompare";
+import "@/lib/i18n/dictionaries/ja-ns/diagnosisHistory";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/Badge";

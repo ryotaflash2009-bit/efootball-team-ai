@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/progressionTab";
 import type { ProgressionGroup } from "@/lib/progression/types";
 import { abilityName, categoryName } from "@/lib/progression/ability-editor-labels";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";

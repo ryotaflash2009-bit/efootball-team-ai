@@ -1,3 +1,4 @@
+import "@/lib/i18n/dictionaries/ja-ns/progressionTab";
 import type { BoosterActivationType } from "@/lib/progression/types";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { useT } from "@/lib/i18n/LocaleContext";

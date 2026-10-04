@@ -1,3 +1,5 @@
+import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
+import "@/lib/i18n/dictionaries/ja-ns/worldPlayerSearchCard";
 import type { WorldPlayerListItem } from "./types";
 import { resolveCardImageSources } from "./image";
 import { resolveAttachedBooster } from "@/lib/progression/booster-resolution";

@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/managersPage";
+import "@/lib/i18n/dictionaries/ja-ns/searchInput";
 import { Suspense } from "react";
 import Link from "next/link";
 import type { ManagerListItem } from "@/lib/managers/types";

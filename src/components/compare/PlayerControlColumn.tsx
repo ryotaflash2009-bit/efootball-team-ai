@@ -1,5 +1,8 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/bench";
+import "@/lib/i18n/dictionaries/ja-ns/playerControlColumn";
+import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
 import { useEffect, useMemo, useState } from "react";
 import type { ComparisonPlayerInput, CompareBuildMode } from "@/lib/comparison/types";
 import type {

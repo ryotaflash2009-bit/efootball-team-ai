@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/progressionTab";
 import type { BuildMigration } from "@/lib/progression/types";
 import { useT } from "@/lib/i18n/LocaleContext";
 

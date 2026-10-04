@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
+import "@/lib/i18n/dictionaries/ja-ns/worldPlayerHero";
 import Link from "next/link";
 import type { WorldPlayerDetail } from "@/lib/world/types";
 import { WorldCardImage } from "./WorldCardImage";

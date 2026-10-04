@@ -1,5 +1,8 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/compareRadarChart";
+import "@/lib/i18n/dictionaries/ja-ns/radarAxis";
+import "@/lib/i18n/dictionaries/ja-ns/radarMode";
 import type { ComparisonRadarData, RadarMode } from "@/lib/comparison/ability-radar";
 import { radarPointForAxis } from "@/lib/comparison/ability-radar";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";

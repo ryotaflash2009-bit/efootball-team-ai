@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/auth";
 import { useState, type FormEvent } from "react";
 import { useT } from "@/lib/i18n/LocaleContext";
 import { Surface } from "@/components/ui/Surface";

@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/managerPicker";
+import "@/lib/i18n/dictionaries/ja-ns/searchInput";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ManagerContext } from "@/lib/progression/types";
 import type { ManagerDetail, ManagerListItem, ManagerSortKey } from "@/lib/managers/types";

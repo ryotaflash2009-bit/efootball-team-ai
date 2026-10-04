@@ -1,5 +1,8 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/diagnosis";
+import "@/lib/i18n/dictionaries/ja-ns/shareCard";
+import "@/lib/i18n/dictionaries/ja-ns/titles";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { SquadDiagnosisResult } from "@/lib/squad/squad-diagnosis";
 import { buildSquadDiagnosisShareData, buildSquadDiagnosisFileName } from "@/lib/squad/squad-diagnosis-share";

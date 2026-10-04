@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
+import "@/lib/i18n/dictionaries/ja-ns/userCardTile";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import type { WorldPlayerListItem } from "@/lib/world/types";

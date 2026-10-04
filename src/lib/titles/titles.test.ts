@@ -78,11 +78,11 @@ describe("F-072 スカッド診断の称号", () => {
 describe("F-072 文言", () => {
   it("「最強」「公式」「専門家」、抽選を思わせる表現を使わない", () => {
     const root = path.resolve(__dirname, "..", "..", "..");
-    for (const f of ["ja.ts", "en.ts"]) {
+    // 日本語の titles は分割した module（ja-ns/titles.ts、2026-10-04）、英語は en.ts の中。
+    for (const f of ["ja-ns/titles.ts", "en.ts"]) {
       const s = readFileSync(path.join(root, "src", "lib", "i18n", "dictionaries", f), "utf8");
-      // 値（文字列）だけを見る（ja.ts は型定義の後に値の定義がある）。
-      const start = s.lastIndexOf("  titles: {");
-      const block = s.slice(start, s.indexOf("\n  },", start));
+      const start = f === "en.ts" ? s.lastIndexOf("  titles: {") : s.indexOf("= {");
+      const block = s.slice(start, f === "en.ts" ? s.indexOf("\n  },", start) : s.indexOf("\n};", start));
       const values = [...block.matchAll(/:\s*"((?:[^"\\]|\\.)*)"/g)].map((m) => m[1]);
       expect(values.length).toBe(28);
       for (const v of values) {

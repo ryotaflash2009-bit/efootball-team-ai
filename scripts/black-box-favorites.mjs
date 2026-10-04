@@ -11,6 +11,7 @@
  */
 
 import { promises as fs } from "node:fs";
+import { readJaDictionarySource } from "./lib/ja-dictionary-source.mjs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -51,7 +52,7 @@ const CANNAVARO = "88041460996837";
 // (文言自体は変更していないため、辞書ソースに存在することを直接確認する。実際の画面表示は
 // black-box-account-scoped-storage.mjsで検証済み)。
 const jaDictPath = path.join(ROOT, "src", "lib", "i18n", "dictionaries", "ja.ts");
-const jaDict = await fs.readFile(jaDictPath, "utf8");
+const jaDict = await readJaDictionarySource(ROOT); // 核 ja.ts + 分割した ja-ns/*.ts（jaDictPath は核のファイル）
 
 async function main() {
   // 1. お気に入り画面（認証確認中は安全な読み込み中シェル）

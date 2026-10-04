@@ -140,6 +140,8 @@ const en: Dictionary = {
     searchPlaceholder: "Search players…",
     searchAriaLabel: "Search players",
     ariaHomeLink: "TeamAIXI home",
+    accountNavSignIn: "Sign in",
+    accountNavAccount: "Account",
   },
   language: {
     japanese: "日本語",

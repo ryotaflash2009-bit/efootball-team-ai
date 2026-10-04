@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/compareCategoryPreview";
+import "@/lib/i18n/dictionaries/ja-ns/radarMode";
 import type { StatBreakdown } from "@/lib/progression/types";
 import { abilityName, categoryName } from "@/lib/progression/ability-editor-labels";
 import { useLocale } from "@/lib/i18n/LocaleContext";

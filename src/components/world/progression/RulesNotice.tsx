@@ -1,3 +1,4 @@
+import "@/lib/i18n/dictionaries/ja-ns/progressionTab";
 import type { ProgressionResult } from "@/lib/progression/types";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import { rulesByStatus } from "@/lib/progression/rule-registry";

@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/abilityEditor";
 import type { CSSProperties } from "react";
 import type { StatBreakdown } from "@/lib/progression/types";
 import type { WorldStatGroup } from "@/lib/world/types";

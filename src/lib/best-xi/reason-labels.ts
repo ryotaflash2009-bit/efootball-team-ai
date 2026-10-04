@@ -1,3 +1,4 @@
+import "@/lib/i18n/dictionaries/ja-ns/bestXi";
 import type {
   BestXiCandidateBuildStatus,
   BestXiExclusionReasonCode,

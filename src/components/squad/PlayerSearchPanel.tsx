@@ -1,5 +1,8 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/addPlayerSearch";
+import "@/lib/i18n/dictionaries/ja-ns/playerSearchPanel";
+import "@/lib/i18n/dictionaries/ja-ns/searchInput";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { WorldPlayerListItem } from "@/lib/world/types";
 import { sortSearchResults } from "@/lib/squad/search-results";

@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/linkUp";
 import type { LinkUpEvaluation, SquadSlotResult, StoredLinkUp } from "@/lib/squad/types";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";

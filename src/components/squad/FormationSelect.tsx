@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/formationSelect";
 import { FORMATIONS } from "@/lib/squad/formations";
 import { useT } from "@/lib/i18n/LocaleContext";
 

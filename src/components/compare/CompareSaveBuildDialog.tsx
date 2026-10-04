@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/compareSaveBuildDialog";
+import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
 import { useCallback, useMemo, useState } from "react";
 import { Modal } from "@/components/ui/Overlay";
 import { saveBuild } from "@/lib/progression/build-storage";

@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/localStorageNotice";
 import { Icon } from "@/components/ui/Icon";
 import { useT } from "@/lib/i18n/LocaleContext";
 

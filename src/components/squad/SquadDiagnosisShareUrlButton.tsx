@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/diagnosisShare";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import type { SquadDiagnosisResult } from "@/lib/squad/squad-diagnosis";
 import { buildSharePayload, buildShareUrl } from "@/lib/squad/squad-diagnosis-share-url";

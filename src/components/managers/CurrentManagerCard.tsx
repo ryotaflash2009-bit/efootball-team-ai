@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/manager";
 import type { ManagerContext, ManagerBoosterReason } from "@/lib/progression/types";
 import type { ManagerDetail } from "@/lib/managers/types";
 import { Button } from "@/components/ui/Button";

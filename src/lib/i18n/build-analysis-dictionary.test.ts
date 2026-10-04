@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import ja from "./dictionaries/ja";
+import ja from "./dictionaries/ja-full";
 import en from "./dictionaries/en";
 
 /**

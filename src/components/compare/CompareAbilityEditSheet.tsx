@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/abilityEditor";
+import "@/lib/i18n/dictionaries/ja-ns/progressionTab";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ComparisonPlayerInput, ComparisonResult } from "@/lib/comparison/types";
 import type { SavedBuild } from "@/lib/progression/types";

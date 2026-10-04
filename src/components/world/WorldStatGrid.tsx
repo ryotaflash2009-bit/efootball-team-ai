@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/abilityEditor";
 import type { WorldStatValue, WorldStatGroup } from "@/lib/world/types";
 import { abilityName } from "@/lib/progression/ability-editor-labels";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";

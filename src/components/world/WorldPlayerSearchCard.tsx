@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/worldPlayerSearchCard";
 import Link from "next/link";
 import type { WorldPlayerListItem } from "@/lib/world/types";
 import { buildPlayerSearchCardView } from "@/lib/world/search-card";

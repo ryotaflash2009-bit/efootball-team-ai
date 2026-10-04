@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/notFoundPage";
 import Link from "next/link";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { EmptyState } from "@/components/ui/EmptyState";

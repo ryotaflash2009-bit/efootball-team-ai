@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/comparisonCockpit";
+import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
 import { useCallback, useMemo, useState } from "react";
 import type { ComparisonPlayerInput, ComparisonResult } from "@/lib/comparison/types";
 import type { AutoAllocateProfile, PointsSummary, ProgressionGroup, SavedBuild } from "@/lib/progression/types";

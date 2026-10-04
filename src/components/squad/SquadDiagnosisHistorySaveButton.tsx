@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/diagnosisHistory";
 import Link from "next/link";
 import { useState } from "react";
 import type { SquadDiagnosisResult } from "@/lib/squad/squad-diagnosis";

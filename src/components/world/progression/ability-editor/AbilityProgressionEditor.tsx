@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/abilityEditor";
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import type { PointsSummary, ProgressionCard, ProgressionResult } from "@/lib/progression/types";
 import {

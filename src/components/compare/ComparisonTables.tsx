@@ -1,5 +1,10 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/abilityEditor";
+import "@/lib/i18n/dictionaries/ja-ns/basePercentile";
+import "@/lib/i18n/dictionaries/ja-ns/compareCategory";
+import "@/lib/i18n/dictionaries/ja-ns/comparisonTables";
+import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
 import { useState } from "react";
 import type { ComparisonPlayerInput, ComparisonResult } from "@/lib/comparison/types";
 import { StatBadge } from "@/components/world/StatBadge";

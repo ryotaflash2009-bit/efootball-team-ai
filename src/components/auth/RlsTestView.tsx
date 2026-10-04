@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/auth";
+import "@/lib/i18n/dictionaries/ja-ns/rlsTest";
 import { useState, useEffect, useCallback, type FormEvent } from "react";
 import Link from "next/link";
 import { useT } from "@/lib/i18n/LocaleContext";
