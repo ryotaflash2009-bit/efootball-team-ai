@@ -121,6 +121,6 @@ export function localizePerspectiveText(text: string, locale: Locale): string {
     if (m) return f(m);
   }
   // 選手名だけ（元データの固有名詞）は残す。文（句読点・空白を含む）は汎用の英語。
-  if (!/[。、：:（）\s]/.test(text)) return text;
+  if (!/[。、：:（）]/.test(text)) return text;
   return "(Details are available in Japanese only.)";
 }

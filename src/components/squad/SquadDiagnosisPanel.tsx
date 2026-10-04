@@ -1,7 +1,8 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/diagnosis";
-import { localizeSquadDiagnosisText } from "@/lib/squad/squad-diagnosis-text-en";
+import { localizeSquadDiagnosisText, swapPlayerNames } from "@/lib/squad/squad-diagnosis-text-en";
+import { createContext, useContext } from "react";
 import type {
   SquadDiagnosisResult,
   SquadDiagnosisCategory,
@@ -37,6 +38,14 @@ import type { Locale } from "@/lib/i18n/locale";
  *    表示するときだけ英語にする（診断の計算・返す値は不変。選手名など元データの固有名詞はそのまま）。
  */
 
+/** 英語の画面で、診断の文の選手名を英語名にそろえるための [日本語名, 英語名]（SquadEditor から渡す）。 */
+const DiagnosisNamePairs = createContext<readonly (readonly [string, string])[]>([]);
+type Ld = (text: string, locale: Locale) => string;
+function useLd(): Ld {
+  const pairs = useContext(DiagnosisNamePairs);
+  return (text, locale) => swapPlayerNames(localizeSquadDiagnosisText(text, locale), locale, pairs);
+}
+
 const CATEGORY_LABEL_EN: Record<string, string> = {
   attack: "Attack",
   defense: "Defense",
@@ -67,8 +76,9 @@ function findingDisplay(
   result: SquadDiagnosisResult,
   locale: Locale,
   variant: "strength" | "weakness",
+  ld: Ld = localizeSquadDiagnosisText,
 ): { label: string; detail: string } {
-  const plain = { label: localizeSquadDiagnosisText(f.label, locale), detail: localizeSquadDiagnosisText(f.detail, locale) };
+  const plain = { label: ld(f.label, locale), detail: ld(f.detail, locale) };
   if (locale !== "en" || f.kind !== "ability" || !f.categoryId) return plain;
   const category = result.categories.find((c) => c.id === f.categoryId);
   if (!category || category.score == null) return plain;
@@ -124,6 +134,7 @@ function ScoreLine({
 
 function CategoryDetail({ category, locale }: { category: SquadDiagnosisCategory; locale: Locale }) {
   const t = useT();
+  const ld = useLd();
   return (
     <li className="rounded border border-border/60 bg-surface-2/20 p-2">
       <ScoreLine
@@ -132,14 +143,14 @@ function CategoryDetail({ category, locale }: { category: SquadDiagnosisCategory
         tier={category.tier}
         notRatedLabel={t("diagnosis", "notRated")}
       />
-      <p className="mt-1 text-2xs text-text-muted">{localizeSquadDiagnosisText(category.note, locale)}</p>
+      <p className="mt-1 text-2xs text-text-muted">{ld(category.note, locale)}</p>
       <details className="mt-1 text-2xs text-text-muted">
         <summary className="cursor-pointer text-text-dim hover:text-text">{t("diagnosis", "evidenceToggle")}</summary>
         <dl className="mt-1 flex flex-col gap-0.5">
           {category.evidence.map((e, i) => (
             <div key={i} className="flex flex-wrap justify-between gap-1">
-              <dt className="text-text-dim">{localizeSquadDiagnosisText(e.label, locale)}</dt>
-              <dd className="min-w-0 break-words text-right">{localizeSquadDiagnosisText(e.value, locale)}</dd>
+              <dt className="text-text-dim">{ld(e.label, locale)}</dt>
+              <dd className="min-w-0 break-words text-right">{ld(e.value, locale)}</dd>
             </div>
           ))}
         </dl>
@@ -177,13 +188,14 @@ function FindingList({
   locale: Locale;
   variant: "strength" | "weakness";
 }) {
+  const ld = useLd();
   const findingBadge = useFindingBadge();
   if (items.length === 0) return <p className="text-2xs text-text-muted">{emptyLabel}</p>;
   return (
     <ul className="flex flex-col gap-1">
       {items.map((f) => {
         const badge = findingBadge(f);
-        const display = findingDisplay(f, result, locale, variant);
+        const display = findingDisplay(f, result, locale, variant, ld);
         return (
           <li key={f.id} className="rounded border border-border/60 bg-surface-2/20 px-2 py-1 text-2xs">
             <div className="flex flex-wrap items-center gap-1.5">
@@ -254,8 +266,11 @@ export function SquadDiagnosisPanel({
   squadName,
   formationLabel,
   tacticalPlacements,
+  namePairs = [],
 }: {
   result: SquadDiagnosisResult | null;
+  /** 英語の画面で選手名を英語名にそろえる [日本語名, 英語名]。 */
+  namePairs?: readonly (readonly [string, string])[];
   squadName: string;
   formationLabel: string;
   /** 辛口モードの詳細戦術監査用（既存 `buildSquad()` 出力から組み立てた読み取り専用の配置情報）。未指定なら戦術監査は省略される。 */
@@ -282,6 +297,7 @@ export function SquadDiagnosisPanel({
   const filledStartingSlots = result.dataQuality.filledStartingSlots;
 
   return (
+    <DiagnosisNamePairs.Provider value={namePairs}>
     <section className="rounded-md border border-border bg-surface p-3 text-sm" aria-label={t("diagnosis", "unavailableTitle")}>
       <h3 className="font-semibold">{t("diagnosis", "heading")}</h3>
       <p role="status" aria-live="polite" className="mt-1 max-w-3xl text-2xs text-text-muted">
@@ -383,8 +399,8 @@ export function SquadDiagnosisPanel({
           <ul className="mt-1 flex flex-col gap-1">
             {result.suggestions.map((s) => (
               <li key={s.id} className="rounded border border-info/30 bg-info/5 px-2 py-1 text-2xs">
-                <span className="font-semibold">{localizeSquadDiagnosisText(s.label, locale)}</span>
-                <p className="mt-0.5 text-text-muted">{localizeSquadDiagnosisText(s.detail, locale)}</p>
+                <span className="font-semibold">{swapPlayerNames(localizeSquadDiagnosisText(s.label, locale), locale, namePairs)}</span>
+                <p className="mt-0.5 text-text-muted">{swapPlayerNames(localizeSquadDiagnosisText(s.detail, locale), locale, namePairs)}</p>
               </li>
             ))}
           </ul>
@@ -445,5 +461,6 @@ export function SquadDiagnosisPanel({
 
       <p className="mt-2 text-2xs text-text-muted">{t("diagnosis", "footerNote")}</p>
     </section>
+    </DiagnosisNamePairs.Provider>
   );
 }

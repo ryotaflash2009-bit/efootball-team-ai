@@ -114,3 +114,14 @@ export function localizeSquadDiagnosisText(text: string, locale: Locale): string
   if (/^[^。、:：]+（[\d.]+）$/.test(text)) return text;
   return GENERIC;
 }
+
+/**
+ * 英語の画面: 診断の文に入っている選手の日本語名を、同じスカッドの英語名に置き換える（元データの名前の言語をそろえるだけ）。
+ * pairs は [日本語名, 英語名]。長い名前から置き換える（部分一致の取り違えを避ける）。日本語の画面・英語名が無い選手はそのまま。
+ */
+export function swapPlayerNames(text: string, locale: Locale, pairs: readonly (readonly [string, string])[]): string {
+  if (locale === "ja" || pairs.length === 0) return text;
+  let out = text;
+  for (const [ja, en] of [...pairs].sort((a, b) => b[0].length - a[0].length)) if (ja && en && ja !== en) out = out.split(ja).join(en);
+  return out;
+}

@@ -39,6 +39,7 @@ import {
   type PlacementClipboard,
 } from "@/lib/squad/placement-clipboard";
 import { localizeSquadText } from "@/lib/squad/squad-text-en";
+import { swapPlayerNames } from "@/lib/squad/squad-diagnosis-text-en";
 import {
   clampCoord,
   inferFreshRole,
@@ -1042,6 +1043,15 @@ export function SquadEditor({
   );
 
   // ベンチ行（index は squad.substitutes と 1:1・未解決カードでもズレない）
+  // 英語の画面で、診断の文に入る選手の日本語名を英語名にそろえるための組（先発の表示データから）。
+  const namePairs = useMemo(
+    () =>
+      computed.slots
+        .map((x) => x.entry?.display)
+        .filter((d): d is NonNullable<typeof d> => !!d && !!d.nameJa && !!d.nameEn)
+        .map((d) => [d.nameJa as string, d.nameEn as string] as const),
+    [computed],
+  );
   const benchRows = useMemo(() => {
     if (!squad) return [] as BenchRow[];
     return squad.substitutes.map((sub, index): BenchRow => {
@@ -1972,7 +1982,7 @@ export function SquadEditor({
               <p className="font-semibold">{fillSe(tse("warningsHeadingTemplate"), { count: String(computed.warnings.length) })}</p>
               <ul className="mt-1 list-disc space-y-0.5 pl-4 text-text-dim">
                 {computed.warnings.map((w, i) => (
-                  <li key={i}>{sq(w)}</li>
+                  <li key={i}>{swapPlayerNames(sq(w), locale, namePairs)}</li>
                 ))}
               </ul>
             </div>
@@ -1987,8 +1997,9 @@ export function SquadEditor({
           squadName={squad?.squadName ?? ""}
           formationLabel={computed.formation.name}
           tacticalPlacements={tacticalPlacements}
+          namePairs={namePairs}
         />
-        <DiagnosisPerspectivesPanel results={perspectives} />
+        <DiagnosisPerspectivesPanel results={perspectives} namePairs={namePairs} />
       </div>
 
       {buildPanelTarget
