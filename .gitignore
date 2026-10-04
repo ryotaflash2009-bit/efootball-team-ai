@@ -71,3 +71,5 @@ Thumbs.db
 
 # Claude Code local tooling state (session locks etc.; ephemeral, machine/session-specific)
 .claude/
+# reference-data detection state (GitHub Actions cache only; never committed)
+.detection-state/

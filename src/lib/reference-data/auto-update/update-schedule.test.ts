@@ -61,6 +61,10 @@ describe("検出workflowの静的監査", () => {
   it("毎時の検出の状態は Actions cache（restore → 検出 → save）。重い段階は起動しない・進行中を取り消さない", () => {
     expect(body).toMatch(/uses: actions\/cache\/restore@v4[\s\S]*key: reference-data-detection-state-\$\{\{ github\.run_id \}\}[\s\S]*restore-keys: \|\s*\n\s*reference-data-detection-state-/);
     expect(body).toMatch(/uses: actions\/cache\/save@v4/);
+    // 状態は workspace の中（hashFiles() は workspace の外のファイルを見ないため。2026-10-05: runner.temp だと保存されなかった）。
+    expect(body).toContain("path: .detection-state");
+    expect(body).toContain("hashFiles('.detection-state/*.json')");
+    expect(body).not.toMatch(/runner\.temp \}\}\/detection-state/);
     expect(body).toContain("REFERENCE_DATA_DETECTION_STATE_PATH:");
     expect(body).toContain("REFERENCE_DATA_DETECTION_CANDIDATES_PATH:");
     expect(body.indexOf("actions/cache/restore@v4")).toBeLessThan(body.indexOf("name: Detect upstream changes"));
