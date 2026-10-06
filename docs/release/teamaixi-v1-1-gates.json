@@ -1,0 +1,35 @@
+{
+  "schema": "teamaixi-v1-1-gates/v1",
+  "updated": "2026-10-07",
+  "note": "true/false and state names only. Claude Code updates gates after each verified run; owner confirmations are set only by the owner.",
+  "operations": {
+    "autoUpdate": { "state": "VERIFIED_BLOCKED_OWNER_ACTION", "evidence": "docs/production-readiness/auto-apply-db-secret-recovery.md" },
+    "backup": { "lastVerifiedAt": "2026-10-03T10:07:00Z", "evidence": "docs/production-readiness/evidence (Backup v2 restore and storage verified in the 2026-10-03 orchestrated runs)" }
+  },
+  "gates": {
+    "ciPassed": true,
+    "codeqlPassed": true,
+    "verifyPassed": true,
+    "productionBuildPassed": true,
+    "postgresValidationPassed": true,
+    "secretScanClean": true,
+    "blackBoxPassed": true,
+    "multilingualBlackBoxPassed": true,
+    "accessibilityPassed": true,
+    "performancePassed": true,
+    "securityPassed": true,
+    "react418Zero": true
+  },
+  "ownerConfirmations": {
+    "hourlyDetectionDecision": false,
+    "f045Decision": false,
+    "f070Decision": false,
+    "publicIdApplyDecision": false,
+    "photoStage2ApplyDecision": false,
+    "communitySafetyPackage": false,
+    "domainAndSmtp": false,
+    "legalReview": false,
+    "nextjs16MigrationPlan": false,
+    "npmAuditMajorUpgrades": false
+  }
+}
