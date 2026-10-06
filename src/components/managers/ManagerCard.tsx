@@ -7,7 +7,7 @@ import type { ManagerListItem } from "@/lib/managers/types";
 import { Icon } from "@/components/ui/Icon";
 import { Badge } from "@/components/ui/Badge";
 import { ProficiencyBar } from "./ProficiencyBar";
-import { topTactic, tacticTier, TACTIC_TEXT, managerInitials } from "./tactics";
+import { topTactic, tacticTier, TACTIC_TEXT, managerInitials, tacticName } from "./tactics";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 
@@ -52,7 +52,7 @@ export function ManagerCard({ manager }: { manager: ManagerListItem }) {
       {top ? (
         <div className="mt-3 flex items-center gap-2">
           <span className="text-2xs text-text-muted">{t("managerCard", "bestTacticLabel")}</span>
-          <span className="text-sm font-semibold">{top.en}</span>
+          <span className="text-sm font-semibold">{tacticName(top)}</span>
           {locale === "ja" ? <span className="text-2xs text-text-dim">{top.ja}</span> : null}
           <span className={`ms-auto text-lg font-black tabular-nums ${TACTIC_TEXT[tacticTier(top.value)]}`}>
             {top.value}

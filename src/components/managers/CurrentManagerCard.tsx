@@ -6,7 +6,7 @@ import type { ManagerDetail } from "@/lib/managers/types";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Icon } from "@/components/ui/Icon";
-import { topTactic, tacticTier, TACTIC_TEXT, managerInitials } from "./tactics";
+import { topTactic, tacticTier, TACTIC_TEXT, managerInitials, tacticName } from "./tactics";
 import { useT } from "@/lib/i18n/LocaleContext";
 
 /**
@@ -66,7 +66,7 @@ export function CurrentManagerCard({
           <p className="truncate font-semibold">{manager.managerName}</p>
           {prof ? (
             <p className="text-2xs text-text-dim">
-              {t("manager", "bestAt")} {prof.en}{" "}
+              {t("manager", "bestAt")} {tacticName(prof)}{" "}
               <span className={`font-bold tabular-nums ${TACTIC_TEXT[tacticTier(prof.value)]}`}>{prof.value}</span>
             </p>
           ) : null}

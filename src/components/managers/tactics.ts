@@ -1,4 +1,5 @@
 import type { TacticalProficiencies } from "@/lib/managers/types";
+import { localizedTacticName } from "@/lib/i18n/game-terms";
 
 /** 戦術適性6項目のメタ情報（略称・英名・和名）。略称だけを出さず説明を添える。 */
 export const TACTICS: { key: keyof TacticalProficiencies; abbr: string; en: string; ja: string }[] = [
@@ -39,12 +40,12 @@ export const TACTIC_TEXT: Record<TacticTier, string> = {
 };
 
 /** 最も高い戦術適性を返す（同値なら定義順で最初）。 */
-export function topTactic(p: TacticalProficiencies): { abbr: string; en: string; ja: string; value: number } | null {
-  let best: { abbr: string; en: string; ja: string; value: number } | null = null;
+export function topTactic(p: TacticalProficiencies): { key: keyof TacticalProficiencies; abbr: string; en: string; ja: string; value: number } | null {
+  let best: { key: keyof TacticalProficiencies; abbr: string; en: string; ja: string; value: number } | null = null;
   for (const t of TACTICS) {
     const v = p[t.key];
     if (v == null) continue;
-    if (!best || v > best.value) best = { abbr: t.abbr, en: t.en, ja: t.ja, value: v };
+    if (!best || v > best.value) best = { key: t.key, abbr: t.abbr, en: t.en, ja: t.ja, value: v };
   }
   return best;
 }
@@ -54,4 +55,9 @@ export function managerInitials(nameEn: string): string {
   if (parts.length === 0) return "?";
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+/** 戦術の表示名。日本語・English の画面は従来どおり英名（en）。ほかの表示言語は game-terms.ts の表（REVIEW_REQUIRED）。 */
+export function tacticName(t: { key: keyof TacticalProficiencies; en: string }): string {
+  return localizedTacticName(t.key) ?? t.en;
 }
