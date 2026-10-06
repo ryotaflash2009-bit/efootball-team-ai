@@ -114,6 +114,8 @@ stale lock: 独自の lock は持たない（GitHub の concurrency と DB の a
 - 変えない理由: 自分で dispatch し直す方式は手動の run と同じく World の完全な検出（約 445 request）になり上流の負荷が増える。
   外部の cron から GitHub API で起動する方式は token（Secret）が必要で、本人の判断が要る（Secret の変更は禁止事項）。
 - 本人の判断の候補: (a) 現状のまま（推奨・費用 0）、(b) 外部の cron サービス + 細かい権限の token で workflow_dispatch（軽い回の入力を追加する変更が必要）。
+- **本人の決定（2026-10-06）**: (a)。当面は GitHub Actions の schedule だけを使い、外部 Cron・新しい Token・Secret・外部契約・有料サービスは追加しない。
+  2026-10-13 まで観測する。観測の定義・手順・再検討の条件は `hourly-detection-observation.md`。
 
 ## 8. 変えていないもの
 
