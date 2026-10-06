@@ -87,6 +87,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { fillMessage } from "@/lib/i18n/message-format";
+import { usePageTitle } from "@/lib/i18n/use-page-title";
 
 function useSortLabels(): Record<BuildSortKey, string> {
   const t = useT();
@@ -109,6 +110,8 @@ function useRuleLabel() {
 
 export function MyBuildsView() {
   const t = useT();
+  // 日本語以外の表示言語では、タブの題名も表示言語にする（2026-10-07）。
+  usePageTitle(t("myBuildsView", "pageTitle"));
   const { locale, displayLocale } = useLocale();
   const tmb = (k: keyof Dictionary["myBuildsView"]) => t("myBuildsView", k);
   const fillMb = (s: string, vars: Record<string, string>) =>

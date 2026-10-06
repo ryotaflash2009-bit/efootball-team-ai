@@ -23,6 +23,7 @@ import { subscribeCurrentScope } from "@/lib/local-storage-scope/current-scope-s
 import { useSyncedStorageScope } from "@/lib/local-storage-scope/resolve-scope";
 import { formatDateTime } from "@/lib/i18n/format";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
+import { usePageTitle } from "@/lib/i18n/use-page-title";
 
 type Notice = { tone: "success" | "danger"; text: string } | null;
 
@@ -32,6 +33,8 @@ type Notice = { tone: "success" | "danger"; text: string } | null;
  */
 export function DiagnosisHistoryView() {
   const t = useT();
+  // 日本語以外の表示言語では、タブの題名も表示言語にする（2026-10-07）。
+  usePageTitle(t("diagnosisHistory", "pageTitle"));
   const { locale, displayLocale } = useLocale();
   const h = (k: Parameters<typeof t<"diagnosisHistory">>[1]) => t("diagnosisHistory", k);
   const scopeState = useSyncedStorageScope();

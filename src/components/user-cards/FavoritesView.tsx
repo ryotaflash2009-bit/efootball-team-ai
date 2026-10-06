@@ -19,9 +19,12 @@ import { Surface } from "@/components/ui/Surface";
 import { buttonClasses } from "@/components/ui/Button";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { usePageTitle } from "@/lib/i18n/use-page-title";
 
 export function FavoritesView() {
   const t = useT();
+  // 日本語以外の表示言語では、タブの題名も表示言語にする（2026-10-07）。
+  usePageTitle(t("favoritesView", "pageTitle"));
   const { locale } = useLocale();
   const { favorites, available, scopeStatus } = useFavorites();
   const { myTeamIds } = useMyTeam();

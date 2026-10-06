@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Surface } from "@/components/ui/Surface";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { LegalLanguageNotice } from "@/components/public-info/LegalLanguageNotice";
+import { usePageTitle } from "@/lib/i18n/use-page-title";
 
 type TermsKey = keyof Dictionary["terms"];
 
@@ -41,6 +42,8 @@ const PROHIBITED_ITEM_KEYS: TermsKey[] = [
 
 export function TermsView() {
   const t = useT();
+  // 日本語以外の表示言語では、タブの題名も表示言語にする（2026-10-07）。
+  usePageTitle(t("terms", "pageTitle"));
   const tt = (key: TermsKey) => t("terms", key);
 
   return (

@@ -8,11 +8,14 @@ import { Surface } from "@/components/ui/Surface";
 import { Icon } from "@/components/ui/Icon";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { LegalLanguageNotice } from "@/components/public-info/LegalLanguageNotice";
+import { usePageTitle } from "@/lib/i18n/use-page-title";
 
 type DisclaimerKey = keyof Dictionary["disclaimer"];
 
 export function DisclaimerView() {
   const t = useT();
+  // 日本語以外の表示言語では、タブの題名も表示言語にする（2026-10-07）。
+  usePageTitle(t("disclaimer", "pageTitle"));
   const td = (key: DisclaimerKey) => t("disclaimer", key);
 
   return (

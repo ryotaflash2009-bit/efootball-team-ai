@@ -7,11 +7,14 @@ import { Surface } from "@/components/ui/Surface";
 import { Icon } from "@/components/ui/Icon";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { AVAILABLE_FEATURE_KEYS, BETA_FEATURE_KEYS, NOT_PROVIDED_FEATURE_KEYS } from "@/lib/public-info/feature-catalog";
+import { usePageTitle } from "@/lib/i18n/use-page-title";
 
 type AboutKey = keyof Dictionary["about"];
 
 export function AboutView() {
   const t = useT();
+  // 日本語以外の表示言語では、タブの題名も表示言語にする（2026-10-07）。
+  usePageTitle(t("about", "pageTitle"));
   const ta = (key: AboutKey) => t("about", key);
 
   return (

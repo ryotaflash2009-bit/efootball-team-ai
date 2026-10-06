@@ -21,6 +21,7 @@ import { buttonClasses } from "@/components/ui/Button";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { useSquadCompareText, useCompareCardName, type ScKey } from "./useSquadCompareText";
 import { swapPlayerNames } from "@/lib/squad/squad-diagnosis-text-en";
+import { usePageTitle } from "@/lib/i18n/use-page-title";
 
 /** 英語の画面で、ライブラリが返す選手名（キャプテン等）を英語名にそろえる [日本語名, 英語名]。 */
 function unitNamePairs(result: SquadComparisonResult): [string, string][] {
@@ -52,6 +53,8 @@ function cardSources(u: CompareCardUnit): string[] {
 
 export function SquadCompareBoard() {
   const { tx, lib } = useSquadCompareText();
+  // 日本語以外の表示言語では、タブの題名も表示言語にする（2026-10-07）。
+  usePageTitle(tx("pageTitle"));
   const router = useRouter();
   const sp = useSearchParams();
   // React #418 の対策（2026-10-04）: このページは force-static で、サーバーは検索パラメーターを空として描く。

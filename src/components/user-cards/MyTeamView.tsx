@@ -32,9 +32,12 @@ import { YourBestPanel } from "@/components/titles/YourBestPanel";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { fillMessage } from "@/lib/i18n/message-format";
+import { usePageTitle } from "@/lib/i18n/use-page-title";
 
 export function MyTeamView() {
   const t = useT();
+  // 日本語以外の表示言語では、タブの題名も表示言語にする（2026-10-07）。
+  usePageTitle(t("myTeam", "pageTitle"));
   const { locale } = useLocale();
   const tmt = useCallback((k: keyof Dictionary["myTeam"]) => t("myTeam", k), [t]);
   const fillMt = useCallback(

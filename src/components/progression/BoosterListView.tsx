@@ -11,6 +11,7 @@ import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Badge } from "@/components/ui/Badge";
+import { usePageTitle } from "@/lib/i18n/use-page-title";
 
 type BKey = keyof Dictionary["boosterList"];
 const EVIDENCE_TONE: Record<BoosterEvidenceLevel, "success" | "info" | "warning" | "outline"> = {
@@ -24,6 +25,8 @@ const EVIDENCE_TONE: Record<BoosterEvidenceLevel, "success" | "info" | "warning"
 /** ブースター一覧（NEW-24・2026-10-07）。カタログの効果と証拠の段階をそのまま表示する（新しい判定はしない）。 */
 export function BoosterListView() {
   const t = useT();
+  // 日本語以外の表示言語では、タブの題名も表示言語にする（2026-10-07）。
+  usePageTitle(t("boosterList", "pageTitle"));
   const { displayLocale } = useLocale();
   const b = (k: BKey) => t("boosterList", k);
   const [query, setQuery] = useState("");

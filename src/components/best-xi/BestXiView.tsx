@@ -31,6 +31,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Icon } from "@/components/ui/Icon";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { fillMessage } from "@/lib/i18n/message-format";
+import { usePageTitle } from "@/lib/i18n/use-page-title";
 
 const FORMATION_ID = "4-3-3";
 
@@ -47,6 +48,8 @@ function candidateSignature(candidates: BestXiCandidate[]): string {
 
 export function BestXiView() {
   const t = useT();
+  // 日本語以外の表示言語では、タブの題名も表示言語にする（2026-10-07）。
+  usePageTitle(t("bestXi", "pageTitle"));
   const { locale } = useLocale();
   const tb = useCallback((key: string) => t("bestXi", key as keyof Dictionary["bestXi"]), [t]);
   const fillTb = useCallback((key: string, vars: Record<string, string>) => fillTemplate(tb(key), vars), [tb]);

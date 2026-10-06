@@ -7,11 +7,14 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Surface } from "@/components/ui/Surface";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { LegalLanguageNotice } from "@/components/public-info/LegalLanguageNotice";
+import { usePageTitle } from "@/lib/i18n/use-page-title";
 
 type PrivacyKey = keyof Dictionary["privacy"];
 
 export function PrivacyView() {
   const t = useT();
+  // 日本語以外の表示言語では、タブの題名も表示言語にする（2026-10-07）。
+  usePageTitle(t("privacy", "pageTitle"));
   const tp = (key: PrivacyKey) => t("privacy", key);
 
   return (
