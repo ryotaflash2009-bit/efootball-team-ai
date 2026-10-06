@@ -79,29 +79,29 @@
         "count": 0,
         "sample": []
       },
-      "unrecorded": 0,
+      "unrecorded": 11,
       "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
       "quality": "MACHINE_ASSISTED_COMPLETE",
       "productionGate": "NOT_MET",
       "releaseCandidateGate": "PASS"
     },
     "pt-BR": {
-      "state": "MACHINE_DRAFT",
+      "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 131,
+      "translated": 3967,
       "coverage": {
-        "core": 98.7,
-        "publicUi": 3.3,
-        "accessibility": 10.2,
-        "errorEmptyLoading": 3.9,
-        "metadata": 0,
-        "shareCards": 0,
-        "legal": 0,
+        "core": 100,
+        "publicUi": 100,
+        "accessibility": 100,
+        "errorEmptyLoading": 100,
+        "metadata": 100,
+        "shareCards": 100,
+        "legal": 100,
         "legalEnglishFallback": 0,
         "internal": 0,
-        "overall": 2.9
+        "overall": 88
       },
-      "missing": 4376,
+      "missing": 540,
       "extra": {
         "count": 0,
         "sample": []
@@ -110,7 +110,7 @@
         "count": 0,
         "sample": []
       },
-      "sameAsEnglish": 6,
+      "sameAsEnglish": 142,
       "placeholderMismatch": {
         "count": 0,
         "sample": []
@@ -140,11 +140,11 @@
         "count": 0,
         "sample": []
       },
-      "unrecorded": 0,
+      "unrecorded": 11,
       "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
-      "quality": "MACHINE_DRAFT_ONLY",
+      "quality": "MACHINE_ASSISTED_COMPLETE",
       "productionGate": "NOT_MET",
-      "releaseCandidateGate": "NOT_MET"
+      "releaseCandidateGate": "PASS"
     },
     "fr": {
       "state": "MACHINE_DRAFT",
