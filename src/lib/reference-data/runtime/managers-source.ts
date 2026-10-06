@@ -215,7 +215,7 @@ function applyManagerFilters(builder: any, q: ManagerListQuery): any {
   let b = builder;
   if (q.query) {
     // 検索語はPostgRESTの値として引用・LIKEエスケープする(構文破壊・条件注入を防ぎ、SQLite経路と同じく文字どおり一致)。
-    b = b.or(buildSearchOrFilter({ likeColumns: ["name_en", "team_name"], exact: { column: "source_manager_id", pattern: /^[A-Za-z0-9_-]{1,64}$/ } }, q.query));
+    b = b.or(buildSearchOrFilter({ likeColumns: ["name_en", "team_name"], exact: { column: "source_manager_id", pattern: /^[A-Za-z0-9_-]{1,64}$/ }, accentInsensitiveColumns: ["name_en"] }, q.query));
   }
   if (q.hasBooster === true) b = b.eq("has_booster", true);
   else if (q.hasBooster === false) b = b.eq("has_booster", false);
