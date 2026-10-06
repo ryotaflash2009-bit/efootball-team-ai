@@ -1,6 +1,6 @@
 # 多言語の coverage（自動生成: `node scripts/audit-locale-coverage.mjs`）
 
-元の言語: English（4507 キー・version 1e0dc1560c27）。面ごとのキー数: core 78・publicUi 3967・accessibility 127・errorEmptyLoading 256・metadata 24・shareCards 126・legal 116・legalEnglishFallback 133・internal 407。
+元の言語: English（4508 キー・version a823e82b32e7）。面ごとのキー数: core 78・publicUi 3968・accessibility 127・errorEmptyLoading 256・metadata 24・shareCards 126・legal 117・legalEnglishFallback 133・internal 407。
 計算ライブラリ・表示層の文章（診断・比較・スカッド・育成の説明）は、ja・en 以外の言語では English で表示する。
 
 | locale | state | overall % | core | public UI | a11y | error/empty/loading | metadata | share | quality | notes |

@@ -145,6 +145,7 @@ const part: PartialDictionary = {
     draftNotice: "TeamAIXI v1.0 的支持。由一名运营者按顺序处理消息，无法承诺回复时间。",
     notConfiguredNotice: "支持联系渠道正在发布前准备中。",
     sharedChannelIntro: "一般咨询、问题报告、权利人联系和隐私咨询目前统一通过一个共用联系渠道处理。",
+    analyticsNote: "我们使用 Vercel Web Analytics 了解页面浏览量（不使用 Cookie；URL 中“?”和“#”之后的部分绝不发送）。详情请参阅隐私政策。",
     sharedChannelEmailLabel: "联系邮箱地址",
     dedicatedChannelLabel: "TeamAIXI 支持",
     contactSafetyNotice: "请勿发送密码、验证码、API 密钥、机密信息、住址、电话号码或其他个人信息。问题报告只需包含页面、操作步骤、发生时间、设备、操作系统和浏览器。",

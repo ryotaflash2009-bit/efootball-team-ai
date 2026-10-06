@@ -145,6 +145,7 @@ const part: PartialDictionary = {
     draftNotice: "Dukungan untuk TeamAIXI v1.0. Satu operator menangani pesan secara berurutan; waktu balasan tidak dapat dijanjikan.",
     notConfiguredNotice: "Saluran kontak dukungan sedang disiapkan sebelum rilis.",
     sharedChannelIntro: "Pertanyaan umum, laporan bug, kontak dari pemegang hak, dan pertanyaan privasi saat ini ditangani melalui satu saluran kontak bersama.",
+    analyticsNote: "Kami menggunakan Vercel Web Analytics untuk memahami jumlah tampilan halaman (tanpa cookie; bagian URL setelah \"?\" atau \"#\" tidak pernah dikirim). Lihat Kebijakan Privasi untuk detailnya.",
     sharedChannelEmailLabel: "Alamat email kontak",
     dedicatedChannelLabel: "Dukungan TeamAIXI",
     contactSafetyNotice: "Jangan mengirim kata sandi, kode verifikasi, kunci API, rahasia, alamat, nomor telepon, atau informasi pribadi lainnya. Laporan bug cukup berisi layar, langkah, waktu kejadian, perangkat, sistem operasi, dan browser.",

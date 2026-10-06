@@ -3265,7 +3265,7 @@ export interface Dictionary {
     externalTransmissionBrowserOnlyIntro: string;
     externalTransmissionNoThirdParty: string;
     externalTransmissionNoGenerativeAi: string;
-    externalTransmissionNoAnalytics: string;
+    externalTransmissionAnalytics: string;
     externalTransmissionNoAds: string;
     supabaseUsageHeading: string;
     supabaseUsageBody: string;
@@ -3388,6 +3388,7 @@ export interface Dictionary {
     draftNotice: string;
     notConfiguredNotice: string;
     sharedChannelIntro: string;
+    analyticsNote: string;
     sharedChannelEmailLabel: string;
     /** 窓口の名前（2026-10-06: TeamAIXI 専用の窓口であることを明示）。 */
     dedicatedChannelLabel: string;

@@ -145,6 +145,7 @@ const part: PartialDictionary = {
     draftNotice: "TeamAIXI v1.0 desteği. Mesajlar tek bir işletmeci tarafından sırayla yanıtlanır; yanıt süresi taahhüt edilemez.",
     notConfiguredNotice: "Destek iletişim kanalı yayın öncesinde hazırlanıyor.",
     sharedChannelIntro: "Genel sorular, hata bildirimleri, hak sahiplerinden gelen iletişimler ve gizlilik soruları şu anda tek bir ortak iletişim kanalı üzerinden yanıtlanmaktadır.",
+    analyticsNote: "Sayfa görüntülemelerini anlamak için Vercel Web Analytics kullanıyoruz (çerez yok; URL'de \"?\" veya \"#\" sonrasındaki kısım asla gönderilmez). Ayrıntılar için Gizlilik Politikası'na bakın.",
     sharedChannelEmailLabel: "İletişim e-posta adresi",
     dedicatedChannelLabel: "TeamAIXI Destek",
     contactSafetyNotice: "Şifre, doğrulama kodu, API anahtarı, gizli bilgi, adres, telefon numarası veya diğer kişisel bilgileri göndermeyin. Hata bildirimleri yalnızca ekranı, adımları, oluşma zamanını, cihazı, işletim sistemini ve tarayıcıyı içermelidir.",

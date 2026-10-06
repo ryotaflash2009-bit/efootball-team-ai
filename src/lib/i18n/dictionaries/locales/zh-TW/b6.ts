@@ -145,6 +145,7 @@ const part: PartialDictionary = {
     draftNotice: "TeamAIXI v1.0 的支援。由一名營運者依序處理訊息，無法保證回覆時間。",
     notConfiguredNotice: "支援聯絡管道正在為正式推出做準備。",
     sharedChannelIntro: "一般詢問、錯誤回報、權利人聯絡及隱私相關詢問，目前都透過同一個聯絡管道處理。",
+    analyticsNote: "我們使用 Vercel Web Analytics 了解頁面瀏覽量（不使用 Cookie；網址中「?」與「#」之後的部分絕不傳送）。詳情請參閱隱私權政策。",
     sharedChannelEmailLabel: "聯絡用電子郵件地址",
     dedicatedChannelLabel: "TeamAIXI 支援",
     contactSafetyNotice: "請勿傳送密碼、驗證碼、API 金鑰、密鑰、地址、電話號碼或其他個人資料。錯誤回報只需包含畫面、步驟、發生時間、裝置、作業系統與瀏覽器。",
