@@ -5,7 +5,7 @@
 | プラン | Hobby（本人が有効化）。課金プランへは変更しない。上限は月 50,000 イベント |
 | 計測 | Page Views と Visitors だけ。Custom Event は追加していない |
 | 実装 | `@vercel/analytics` 2.0.1（`@vercel/analytics/next`）。root layout に `<SiteAnalytics />` を 1 回だけ。本体は `next/dynamic`（`ssr: false`）で別の chunk |
-| 通信 | 同じオリジンの `/_vercel/insights/script.js`・`/_vercel/insights/view`（Vercel の本番・preview でだけ動く。ローカルの `next start` では送らない） |
+| 通信 | 同じオリジンの、プロジェクト固有のパス（2026-10-07 の本番では `/c0d4260361a5ee2b/script.js`・`/c0d4260361a5ee2b/view`。`@vercel/analytics` v2 は `/_vercel/insights` ではなくこの形）。Vercel の本番・preview でだけ動く。ローカルの `next start` では送らない |
 | Cookie | 使わない（Vercel Web Analytics は Cookie を使わない。追加の Cookie なし） |
 | CSP | 変更なし（`'self'` で足りる） |
 
@@ -37,3 +37,17 @@ Vercel Dashboard → Team → Project `efootball-team-ai` → 上部の **Analyt
 
 招待制の間の想定（1 日数十〜数百の Page View）では月 50,000 を大きく下回る。上限に近づいた場合は計測が止まるだけで、サイトは動く。
 Custom Event を追加する場合はイベント数が増えるため、本人の判断の後に行う。
+
+## 本番の確認（2026-10-07・main b0b360e・deployment 6889049482）
+
+| 確認 | 結果 |
+|---|---|
+| `script.js` | 200（同じオリジン・CSP の変更なし） |
+| 直接開く `/players?q=analytics-probe#frag` | `POST …/view` 200・送った URL は `/players`（query・fragment なし） |
+| client 側の遷移 `/players` → `/managers` | `POST …/view` 200（`/managers`） |
+| 除外 `/auth/sign-in?next=/x` | view を送らない |
+| headless の User-Agent（black-box と同じ） | view を送らない |
+| Cookie | 0 |
+| 性能（本番・headless・3 回） | Home LCP 中央値 0.53 秒（PC）・0.48 秒（携帯）・CLS 0・遷移 0.31〜0.32 秒・Home の最初の JS +78 B（gzip） |
+
+この確認で、通常の Chrome の User-Agent からの **テストの Page View 2 件**（2026-10-07・`/players`・`/managers`・Windows・Chrome）が記録された。

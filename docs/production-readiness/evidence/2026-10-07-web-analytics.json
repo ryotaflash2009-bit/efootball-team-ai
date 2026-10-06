@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-07",
+  "feature": "Vercel Web Analytics (Hobby)",
+  "main": "b0b360e",
+  "pr": [
+    162
+  ],
+  "deployment": 6889049482,
+  "package": "@vercel/analytics 2.0.1",
+  "firstLoadGzDeltaBytes": 78,
+  "production": {
+    "script": "200",
+    "directOpenView": {
+      "status": 200,
+      "sentUrl": "/players",
+      "rawUrl": "/players?q=analytics-probe#frag"
+    },
+    "clientNavigationView": {
+      "status": 200,
+      "sentUrl": "/managers"
+    },
+    "authPageView": "not sent",
+    "headlessUserAgentView": "not sent",
+    "cookies": 0
+  },
+  "testViewsRecorded": {
+    "count": 2,
+    "paths": [
+      "/players",
+      "/managers"
+    ],
+    "note": "normal desktop Chrome UA used once for verification"
+  },
+  "perf": {
+    "homeLcpMedianMs": {
+      "desktop": 528,
+      "mobile": 484
+    },
+    "cls": 0,
+    "transitionMedianMs": [
+      313,
+      324
+    ]
+  },
+  "noindex": "kept",
+  "cookiesAdded": 0,
+  "customEvents": 0
+}
