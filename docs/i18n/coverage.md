@@ -8,7 +8,7 @@
 | ja | PUBLISHED | 100 | 100 | 100 | 100 | 100 | 100 | 100 | — | full dictionary (ja.ts + ja-ns) |
 | en | PUBLISHED | 100 | 100 | 100 | 100 | 100 | 100 | 100 | — | source |
 | es | RELEASE_CANDIDATE | 88 | 100 | 100 | 100 | 100 | 100 | 100 | MACHINE_ASSISTED_COMPLETE | production gate NOT_MET; RC gate PASS; stale 0; same-as-en 126 |
-| pt-BR | MACHINE_DRAFT | 2.9 | 98.7 | 3.3 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | production gate NOT_MET; RC gate NOT_MET; stale 0; same-as-en 6 |
+| pt-BR | RELEASE_CANDIDATE | 88 | 100 | 100 | 100 | 100 | 100 | 100 | MACHINE_ASSISTED_COMPLETE | production gate NOT_MET; RC gate PASS; stale 0; same-as-en 142 |
 | fr | MACHINE_DRAFT | 2.9 | 98.7 | 3.3 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | production gate NOT_MET; RC gate NOT_MET; stale 0; same-as-en 7 |
 | de | MACHINE_DRAFT | 2.9 | 98.7 | 3.3 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | production gate NOT_MET; RC gate NOT_MET; stale 0; same-as-en 10 |
 | it | MACHINE_DRAFT | 2.9 | 98.7 | 3.3 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | production gate NOT_MET; RC gate NOT_MET; stale 0; same-as-en 13 |

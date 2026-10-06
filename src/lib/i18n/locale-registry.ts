@@ -42,7 +42,7 @@ export const LOCALES = [
   { code: "ja", nativeName: "日本語", englishName: "Japanese", dir: "ltr", base: "ja", intl: "ja-JP", state: "PUBLISHED", phase: 0 },
   { code: "en", nativeName: "English", englishName: "English", dir: "ltr", base: "en", intl: "en-US", state: "PUBLISHED", phase: 0 },
   { code: "es", nativeName: "Español", englishName: "Spanish", dir: "ltr", base: "en", intl: "es", state: "RELEASE_CANDIDATE", phase: 2 },
-  { code: "pt-BR", nativeName: "Português (Brasil)", englishName: "Portuguese (Brazil)", dir: "ltr", base: "en", intl: "pt-BR", state: "MACHINE_DRAFT", phase: 2 },
+  { code: "pt-BR", nativeName: "Português (Brasil)", englishName: "Portuguese (Brazil)", dir: "ltr", base: "en", intl: "pt-BR", state: "RELEASE_CANDIDATE", phase: 2 },
   { code: "fr", nativeName: "Français", englishName: "French", dir: "ltr", base: "en", intl: "fr-FR", state: "MACHINE_DRAFT", phase: 2 },
   { code: "de", nativeName: "Deutsch", englishName: "German", dir: "ltr", base: "en", intl: "de-DE", state: "MACHINE_DRAFT", phase: 2 },
   { code: "it", nativeName: "Italiano", englishName: "Italian", dir: "ltr", base: "en", intl: "it-IT", state: "MACHINE_DRAFT", phase: 2 },
