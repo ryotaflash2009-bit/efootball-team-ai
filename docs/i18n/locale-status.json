@@ -121,82 +121,97 @@
       "notes": "Internal preview only"
     },
     "ko": {
-      "state": "INTERNAL_DRAFT",
-      "quality": "INCOMPLETE",
-      "machineAssisted": false,
+      "state": "MACHINE_DRAFT",
+      "quality": "MACHINE_DRAFT_ONLY",
+      "machineAssisted": true,
       "nativeReview": false,
       "reviewedBy": null,
       "reviewType": "none",
       "owner": null,
       "lastUpdated": "2026-10-06",
-      "sourceLocaleVersion": null,
+      "sourceLocaleVersion": "v1.0.0+i18n-foundation",
       "phase": 3,
       "knownIssues": [
-        "no dictionary yet (machine drafts are added in a later PR)"
+        "AI-drafted core UI and Home only (131 of 4,495 strings); not reviewed by a human or native speaker",
+        "everything else, including engine-generated text, ability names and legal documents, shows in English",
+        "ability names and game terms must be checked against the in-game text of this language",
+        "share-card image font coverage not verified (see architecture.md §11)"
       ],
       "notes": "Internal preview only"
     },
     "zh-CN": {
-      "state": "INTERNAL_DRAFT",
-      "quality": "INCOMPLETE",
-      "machineAssisted": false,
+      "state": "MACHINE_DRAFT",
+      "quality": "MACHINE_DRAFT_ONLY",
+      "machineAssisted": true,
       "nativeReview": false,
       "reviewedBy": null,
       "reviewType": "none",
       "owner": null,
       "lastUpdated": "2026-10-06",
-      "sourceLocaleVersion": null,
+      "sourceLocaleVersion": "v1.0.0+i18n-foundation",
       "phase": 3,
       "knownIssues": [
-        "no dictionary yet (machine drafts are added in a later PR)"
+        "AI-drafted core UI and Home only (131 of 4,495 strings); not reviewed by a human or native speaker",
+        "everything else, including engine-generated text, ability names and legal documents, shows in English",
+        "ability names and game terms must be checked against the in-game text of this language",
+        "written separately from the other Chinese variant (no automatic Simplified/Traditional conversion); regional vocabulary needs native review",
+        "share-card image font coverage not verified (see architecture.md §11)"
       ],
       "notes": "Internal preview only"
     },
     "zh-TW": {
-      "state": "INTERNAL_DRAFT",
-      "quality": "INCOMPLETE",
-      "machineAssisted": false,
+      "state": "MACHINE_DRAFT",
+      "quality": "MACHINE_DRAFT_ONLY",
+      "machineAssisted": true,
       "nativeReview": false,
       "reviewedBy": null,
       "reviewType": "none",
       "owner": null,
       "lastUpdated": "2026-10-06",
-      "sourceLocaleVersion": null,
+      "sourceLocaleVersion": "v1.0.0+i18n-foundation",
       "phase": 3,
       "knownIssues": [
-        "no dictionary yet (machine drafts are added in a later PR)"
+        "AI-drafted core UI and Home only (131 of 4,495 strings); not reviewed by a human or native speaker",
+        "everything else, including engine-generated text, ability names and legal documents, shows in English",
+        "ability names and game terms must be checked against the in-game text of this language",
+        "written separately from the other Chinese variant (no automatic Simplified/Traditional conversion); regional vocabulary needs native review",
+        "share-card image font coverage not verified (see architecture.md §11)"
       ],
       "notes": "Internal preview only"
     },
     "id": {
-      "state": "INTERNAL_DRAFT",
-      "quality": "INCOMPLETE",
-      "machineAssisted": false,
+      "state": "MACHINE_DRAFT",
+      "quality": "MACHINE_DRAFT_ONLY",
+      "machineAssisted": true,
       "nativeReview": false,
       "reviewedBy": null,
       "reviewType": "none",
       "owner": null,
       "lastUpdated": "2026-10-06",
-      "sourceLocaleVersion": null,
+      "sourceLocaleVersion": "v1.0.0+i18n-foundation",
       "phase": 3,
       "knownIssues": [
-        "no dictionary yet (machine drafts are added in a later PR)"
+        "AI-drafted core UI and Home only (131 of 4,495 strings); not reviewed by a human or native speaker",
+        "everything else, including engine-generated text, ability names and legal documents, shows in English",
+        "ability names and game terms must be checked against the in-game text of this language"
       ],
       "notes": "Internal preview only"
     },
     "tr": {
-      "state": "INTERNAL_DRAFT",
-      "quality": "INCOMPLETE",
-      "machineAssisted": false,
+      "state": "MACHINE_DRAFT",
+      "quality": "MACHINE_DRAFT_ONLY",
+      "machineAssisted": true,
       "nativeReview": false,
       "reviewedBy": null,
       "reviewType": "none",
       "owner": null,
       "lastUpdated": "2026-10-06",
-      "sourceLocaleVersion": null,
+      "sourceLocaleVersion": "v1.0.0+i18n-foundation",
       "phase": 3,
       "knownIssues": [
-        "no dictionary yet (machine drafts are added in a later PR)"
+        "AI-drafted core UI and Home only (131 of 4,495 strings); not reviewed by a human or native speaker",
+        "everything else, including engine-generated text, ability names and legal documents, shows in English",
+        "ability names and game terms must be checked against the in-game text of this language"
       ],
       "notes": "Internal preview only"
     },

@@ -7,16 +7,16 @@
 |---|---|---|---|---|---|---|---|---|---|---|
 | ja | PUBLISHED | 100 | 100 | 100 | 100 | 100 | 100 | 100 | — | full dictionary (ja.ts + ja-ns) |
 | en | PUBLISHED | 100 | 100 | 100 | 100 | 100 | 100 | 100 | — | source |
-| es | INTERNAL_DRAFT | 0 | 0 | 0 | 0 | 0 | 0 | 0 | INCOMPLETE | gate NOT_MET; stale 0; same-as-en 0 |
-| pt-BR | INTERNAL_DRAFT | 0 | 0 | 0 | 0 | 0 | 0 | 0 | INCOMPLETE | gate NOT_MET; stale 0; same-as-en 0 |
-| fr | INTERNAL_DRAFT | 0 | 0 | 0 | 0 | 0 | 0 | 0 | INCOMPLETE | gate NOT_MET; stale 0; same-as-en 0 |
-| de | INTERNAL_DRAFT | 0 | 0 | 0 | 0 | 0 | 0 | 0 | INCOMPLETE | gate NOT_MET; stale 0; same-as-en 0 |
-| it | INTERNAL_DRAFT | 0 | 0 | 0 | 0 | 0 | 0 | 0 | INCOMPLETE | gate NOT_MET; stale 0; same-as-en 0 |
-| ko | INTERNAL_DRAFT | 0 | 0 | 0 | 0 | 0 | 0 | 0 | INCOMPLETE | gate NOT_MET; stale 0; same-as-en 0 |
-| zh-CN | INTERNAL_DRAFT | 0 | 0 | 0 | 0 | 0 | 0 | 0 | INCOMPLETE | gate NOT_MET; stale 0; same-as-en 0 |
-| zh-TW | INTERNAL_DRAFT | 0 | 0 | 0 | 0 | 0 | 0 | 0 | INCOMPLETE | gate NOT_MET; stale 0; same-as-en 0 |
-| id | INTERNAL_DRAFT | 0 | 0 | 0 | 0 | 0 | 0 | 0 | INCOMPLETE | gate NOT_MET; stale 0; same-as-en 0 |
-| tr | INTERNAL_DRAFT | 0 | 0 | 0 | 0 | 0 | 0 | 0 | INCOMPLETE | gate NOT_MET; stale 0; same-as-en 0 |
+| es | MACHINE_DRAFT | 2.9 | 100 | 3.2 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | gate NOT_MET; stale 0; same-as-en 7 |
+| pt-BR | MACHINE_DRAFT | 2.9 | 100 | 3.2 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | gate NOT_MET; stale 0; same-as-en 6 |
+| fr | MACHINE_DRAFT | 2.9 | 100 | 3.2 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | gate NOT_MET; stale 0; same-as-en 7 |
+| de | MACHINE_DRAFT | 2.9 | 100 | 3.2 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | gate NOT_MET; stale 0; same-as-en 10 |
+| it | MACHINE_DRAFT | 2.9 | 100 | 3.2 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | gate NOT_MET; stale 0; same-as-en 13 |
+| ko | MACHINE_DRAFT | 2.9 | 100 | 3.2 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | gate NOT_MET; stale 0; same-as-en 4 |
+| zh-CN | MACHINE_DRAFT | 2.9 | 100 | 3.2 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | gate NOT_MET; stale 0; same-as-en 4 |
+| zh-TW | MACHINE_DRAFT | 2.9 | 100 | 3.2 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | gate NOT_MET; stale 0; same-as-en 4 |
+| id | MACHINE_DRAFT | 2.9 | 100 | 3.2 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | gate NOT_MET; stale 0; same-as-en 5 |
+| tr | MACHINE_DRAFT | 2.9 | 100 | 3.2 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | gate NOT_MET; stale 0; same-as-en 4 |
 | ar | INTERNAL_DRAFT | 0 | 0 | 0 | 0 | 0 | 0 | 0 | INCOMPLETE | gate NOT_MET; stale 0; same-as-en 0 |
 | th | INTERNAL_DRAFT | 0 | 0 | 0 | 0 | 0 | 0 | 0 | INCOMPLETE | gate NOT_MET; stale 0; same-as-en 0 |
 | vi | INTERNAL_DRAFT | 0 | 0 | 0 | 0 | 0 | 0 | 0 | INCOMPLETE | gate NOT_MET; stale 0; same-as-en 0 |

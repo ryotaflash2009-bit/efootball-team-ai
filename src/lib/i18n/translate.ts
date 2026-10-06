@@ -37,6 +37,11 @@ const LOADERS: Partial<Record<DisplayLocale, () => Promise<PartialDictionary>>> 
   fr: () => import("./dictionaries/locales/fr").then((m) => m.default),
   de: () => import("./dictionaries/locales/de").then((m) => m.default),
   it: () => import("./dictionaries/locales/it").then((m) => m.default),
+  ko: () => import("./dictionaries/locales/ko").then((m) => m.default),
+  "zh-CN": () => import("./dictionaries/locales/zh-CN").then((m) => m.default),
+  "zh-TW": () => import("./dictionaries/locales/zh-TW").then((m) => m.default),
+  id: () => import("./dictionaries/locales/id").then((m) => m.default),
+  tr: () => import("./dictionaries/locales/tr").then((m) => m.default),
   "en-XA": () => Promise.all([import("./dictionaries/en"), import("./pseudo-locale")]).then(([en, p]) => p.pseudoDictionary(en.default, "en-XA")),
   "ar-XB": () => Promise.all([import("./dictionaries/en"), import("./pseudo-locale")]).then(([en, p]) => p.pseudoDictionary(en.default, "ar-XB")),
 };
