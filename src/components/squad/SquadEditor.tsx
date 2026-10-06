@@ -100,6 +100,7 @@ import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { DiagnosisPerspectivesPanel } from "./DiagnosisPerspectivesPanel";
+import { SquadUniquenessPanel } from "./SquadUniquenessPanel";
 import { buildDiagnosisPerspectives, toPerspectiveInput } from "@/lib/squad/diagnosis-perspectives";
 import { fillMessage } from "@/lib/i18n/message-format";
 
@@ -160,7 +161,7 @@ export function SquadEditor({
   const { locale, displayLocale } = useLocale();
   const tse = useCallback((k: keyof Dictionary["squadEditor"]) => t("squadEditor", k), [t]);
   // スカッド計算ライブラリの日本語（警告・操作の結果・エラー）は表示するときだけ英語にする（squad-text-en.ts）。
-  const sq = useCallback((text: string) => localizeSquadText(text, displayLocale), [locale]);
+  const sq = useCallback((text: string) => localizeSquadText(text, displayLocale), [displayLocale]);
   const fillSe = useCallback(
     (s: string, vars: Record<string, string>) => fillMessage(s, vars),
     [],
@@ -1016,19 +1017,18 @@ export function SquadEditor({
   );
 
   // F-045 追加観点（暫定 / 比較検証用）。総合評価・共有には使わない。
-  const perspectives = useMemo(() => {
-    if (!diagnosisInput) return [];
+  const perspectiveInput = useMemo(() => {
+    if (!diagnosisInput) return null;
     const tactics = managerContext?.tacticalProficiencies ?? null;
-    return buildDiagnosisPerspectives(
-      toPerspectiveInput({
-        starters: diagnosisInput.starters,
-        bench: diagnosisInput.bench,
-        placements: tacticalPlacements,
-        managerTactics: tactics,
-        benchPlayingStyles: new Map(computed.substitutes.map((s) => [s.subId, s.display.playingStyle])),
-      }),
-    );
+    return toPerspectiveInput({
+      starters: diagnosisInput.starters,
+      bench: diagnosisInput.bench,
+      placements: tacticalPlacements,
+      managerTactics: tactics,
+      benchPlayingStyles: new Map(computed.substitutes.map((s) => [s.subId, s.display.playingStyle])),
+    });
   }, [diagnosisInput, tacticalPlacements, managerContext, computed]);
+  const perspectives = useMemo(() => (perspectiveInput ? buildDiagnosisPerspectives(perspectiveInput) : []), [perspectiveInput]);
 
   const selectedSlot = computed.slots.find((s) => s.slotId === selectedSlotId) ?? null;
   const selectedStoredSlot = squad?.slots.find((x) => x.slotId === selectedSlotId) ?? null;
@@ -2002,6 +2002,7 @@ export function SquadEditor({
           namePairs={namePairs}
         />
         <DiagnosisPerspectivesPanel results={perspectives} namePairs={namePairs} />
+        {perspectiveInput && diagnosisInput ? <SquadUniquenessPanel formationId={diagnosisInput.formationId} perspective={perspectiveInput} /> : null}
       </div>
 
       {buildPanelTarget
