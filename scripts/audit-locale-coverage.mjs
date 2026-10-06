@@ -99,7 +99,8 @@ for (const info of LOCALES) {
   for (const [id, v] of values) {
     if (!SOURCE.has(id)) { r.extra.push(id); continue; }
     const src = SOURCE.get(id);
-    if (v.trim().length === 0) { r.empty.push(id); continue; }
+    // 元（English）が空の値（単位の接尾辞など、English では何も付けない）は、訳も空が正しい
+    if (v.trim().length === 0 && src.trim().length > 0) { r.empty.push(id); continue; }
     r.translated++;
     for (const s of surfaceOf(id)) done[s]++;
     if (v === src) r.sameAsEnglish++;

@@ -2,6 +2,7 @@ import type { SquadDiagnosisShareData, SquadDiagnosisShareCategory, SquadDiagnos
 import type { SquadDiagnosisTier } from "./squad-diagnosis";
 import type { Locale } from "@/lib/i18n/locale";
 import { formatDateTime } from "@/lib/i18n/format";
+import { missingGlyphsIn, recordCanvasText } from "@/lib/i18n/font-coverage";
 
 /** カテゴリID→英語ラベル（表示専用。squad-diagnosis.tsのcategory.labelは変更しない）。 */
 export const CATEGORY_LABEL_EN: Record<string, string> = {
@@ -376,7 +377,7 @@ export function drawSquadDiagnosisImage(canvas: HTMLCanvasElement, data: SquadDi
 
 export type SaveSquadDiagnosisImageResult =
   | { ok: true }
-  | { ok: false; reason: "ssr" | "unsupported" | "error" };
+  | { ok: false; reason: "ssr" | "unsupported" | "error" | "font_unavailable" };
 
 /**
  * `data` を描画したPNG画像を、`filename` としてユーザー端末へ保存する。
@@ -405,7 +406,14 @@ export async function saveDrawnCanvasAsPng(draw: (canvas: HTMLCanvasElement) => 
     canvas = document.createElement("canvas"); // DOM には追加しない（オフスクリーン）
     const ctx = canvas.getContext("2d");
     if (!ctx) return { ok: false, reason: "unsupported" };
-    draw(canvas);
+    // 描いた文字に、この端末のフォントで描けない文字があれば画像を作らない（文字化けの画像を保存しない。font-coverage.ts）
+    const rec = recordCanvasText(ctx);
+    try {
+      draw(canvas);
+    } finally {
+      rec.stop();
+    }
+    if (missingGlyphsIn(rec.entries).length > 0) return { ok: false, reason: "font_unavailable" };
 
     const blob = await new Promise<Blob | null>((resolve) => {
       if (typeof canvas!.toBlob === "function") {
