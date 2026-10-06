@@ -22,7 +22,7 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["src/lib/reference-data/auto-update/*.postgres.test.ts", "src/lib/posts/*.postgres.test.ts"],
+    include: ["src/lib/reference-data/auto-update/*.postgres.test.ts", "src/lib/posts/*.postgres.test.ts", "src/lib/profile/*.postgres.test.ts"],
     testTimeout: 20_000,
     // 複数の*.postgres.test.tsファイルが同一の固定schema名(reference_data_ops_test等)を
     // 共有しているため、Vitestの既定(ファイル単位の並列実行)のままでは、複数ファイルの
