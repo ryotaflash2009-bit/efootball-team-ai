@@ -2,8 +2,10 @@
  * 招待制アルファ公開に向けた最低限の安全なセキュリティヘッダー群。
  *
  * - 外部通信の実態(Supabase Auth/RESTのみ。選手・監督画像は自ドメインのAPI Route経由の
- *   プロキシで配信し、外部ホストへ直接アクセスしない。analytics・広告・外部フォントCDN・
- *   GitHub連携は未使用。Supabase Realtime(WebSocket)も未使用)に基づいて設計している。
+ *   プロキシで配信し、外部ホストへ直接アクセスしない。広告・外部フォントCDN・GitHub連携は未使用。
+ *   Supabase Realtime(WebSocket)も未使用)に基づいて設計している。
+ * - Vercel Web Analytics(2026-10-07〜)は同じオリジンの /_vercel/insights/script.js と /_vercel/insights/view を使うため、
+ *   script-src・connect-src は 'self' のままでよい(外部ホストを追加しない)。
  * - 開発時(`next dev`)はFast Refresh(eval)とHMR用WebSocketが必要なため、
  *   本番とは異なるCSPを返す。
  * - `next.config.mjs`はNode.jsが直接読み込むため、TypeScriptへ変換せずプレーンな

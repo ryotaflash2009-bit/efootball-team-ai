@@ -3,6 +3,7 @@ import "./globals.css";
 // サーバーの描画では、日本語の辞書のすべての名前空間を登録しておく（server component の import なので client の JS には入らない）。
 import "@/lib/i18n/dictionaries/ja-ns/all";
 import { AppShell } from "@/components/AppShell";
+import { SiteAnalytics } from "@/components/analytics/SiteAnalytics";
 import { LocaleProvider } from "@/lib/i18n/LocaleContext";
 import { LOCALE_STORAGE_KEY } from "@/lib/i18n/locale";
 
@@ -44,6 +45,8 @@ export default function RootLayout({
         <LocaleProvider>
           <AppShell>{children}</AppShell>
         </LocaleProvider>
+        {/* Vercel Web Analytics（Page Views・Visitors だけ・Cookie なし・URL は送る前に整える）。ここに 1 回だけ置く。 */}
+        <SiteAnalytics />
       </body>
     </html>
   );
