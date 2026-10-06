@@ -55,3 +55,9 @@ password を percent-encode して、URL をメモリの中だけで作り `gh s
 - 同じ Candidate は 24 時間に 1 回だけ Pipeline へ渡る（`markRepeatCandidate`）。Secret が直るまでは 1 日 1 回 Plan〜Apply が動き、Apply の接続で止まる（書き込みなし）。
 - 停止の通知は Issue #112 へのコメント（同じ通知は 6 時間に 1 回まで）。Apply run を作った後の停止は「作成されましたが、適用は完了していません」と書く（2026-10-06 修正）。
 - Candidate は失われない（毎回 applied-state と比較）。Secret の修正の後は §4 の手動の検出で最新の状態から評価する。
+
+## 7. 状態の記録
+
+| 日時 | 状態 | 確認 |
+|---|---|---|
+| 2026-10-07 | `VERIFIED_BLOCKED_OWNER_ACTION`（本人の Secret 入力待ち） | self-test 22/22 PASS（ダミーの値・gh 未実行）。workflow の Environment 名・Secret 名・CA の契約が §2 と一致。自動用 Secret の更新日時は 2026-10-03T16:22:04Z のまま（値は見ていない）。Kill switch 5 つ `true`・open の halt Issue なし・applied-state World 13,372 / Managers 69 |

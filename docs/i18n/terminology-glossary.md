@@ -22,7 +22,7 @@
 | term.remainingPoints | 残り | Remaining | Restantes | Restantes | Restants | Verbleibend | Rimanenti | 남은 포인트 | 剩余 | 剩餘 | Tersisa | Kalan | 「残り 62 / 62 pt」。数は Intl・複数形の規則で | ja/en source, others draft |
 | term.allocation | 配分 | Allocation | Asignación | Distribuição | Répartition | Verteilung | Distribuzione | 배분 | 分配 | 分配 | Alokasi | Dağılım | 育成ポイントの配分 | ja/en source, others draft |
 | term.rating | 評価 | Rating | Valoración | Avaliação | Note | Wertung | Valutazione | 평가치 | 评分 | 評分 | Rating | Değerlendirme | カードの評価（card_rating） | ja/en source, others draft |
-| term.overallRating | 総合値（OVR） | Overall rating (OVR) | Valoración general (MED) | Geral (GER) | Note générale (GEN) | Gesamtwertung (GES) | Valutazione complessiva (CMP) | 종합 능력치 (OVR) | 综合能力值 (OVR) | 綜合能力值 (OVR) | Rating keseluruhan (OVR) | Genel derece (OVR) | 略語はゲーム内の各言語の表記を確認するまで OVR を併記 | ja/en source, others draft |
+| term.overallRating | 総合値（OVR） | Overall rating (OVR) | OVR | OVR | OVR | OVR | OVR | OVR | OVR | OVR | OVR | OVR | **契約（本人の判断 2026-10-07）**: データ元で各言語の正式な表記を確認できるまで全言語で「OVR」。Tooltip・初回の説明に限り原語と並べた短い補足は可（例: es「OVR (valoración general)」）。現地語の略号（MED・GER・GEN・GES・CMP）は使わない。監査: `scripts/audit-fixed-terms.mjs`・`src/lib/i18n/fixed-terms.test.ts` | contract |
 | term.maxLevel | 最大レベル | Max level | Nivel máximo | Nível máximo | Niveau max. | Max. Stufe | Livello massimo | 최대 레벨 | 最高等级 | 最高等級 | Level maksimum | Maksimum seviye | | ja/en source, others draft |
 | term.baseValue | 基礎値 | Base value | Valor base | Valor base | Valeur de base | Grundwert | Valore base | 기본값 | 基础值 | 基礎值 | Nilai dasar | Temel değer | 育成前の値 | ja/en source, others draft |
 | term.finalValue | 最終値 | Final value | Valor final | Valor final | Valeur finale | Endwert | Valore finale | 최종값 | 最终值 | 最終值 | Nilai akhir | Son değer | 育成・ブースター後の値 | ja/en source, others draft |
@@ -59,7 +59,7 @@
 | term.substitute | 控え | Substitute | Suplente | Reserva | Remplaçant | Ersatzspieler | Riserva | 교체 선수 | 替补 | 替補 | Pemain pengganti | Yedek | | ja/en source, others draft |
 | term.manager | 監督 | Manager | Entrenador | Técnico | Entraîneur | Trainer | Allenatore | 감독 | 主教练 | 總教練 | Manajer | Teknik direktör | ゲーム内の表記を確認（de「Trainer」・es「Entrenador」が一般的） | ja/en source, others draft |
 | term.playstyle | プレースタイル | Playstyle | Estilo de juego | Estilo de jogo | Style de jeu | Spielstil | Stile di gioco | 플레이 스타일 | 球员风格 | 球員風格 | Gaya bermain | Oyun tarzı | プレースタイルの**名前**（Goal Poacher 等）は翻訳しない | ja/en source, others draft |
-| term.linkUpPlay | Link-Up Play | Link-Up Play | Juego combinado | Jogada combinada | Jeu combiné | Kombinationsspiel | Gioco combinato | 연계 플레이 | 联动配合 | 聯動配合 | Link-Up Play | Kombinasyon oyunu | ゲーム内の機能名。各言語版の表記の確認が必要 | ja/en source, others draft |
+| term.linkUpPlay | Link-Up Play | Link-Up Play | Link-Up Play | Link-Up Play | Link-Up Play | Link-Up Play | Link-Up Play | Link-Up Play | Link-Up Play | Link-Up Play | Link-Up Play | Link-Up Play | **契約（本人の判断 2026-10-07）**: ゲーム内の機能名。データ元で各言語の正式な表記を確認できるまで全言語で原語（短いラベルは「Link-Up」）。Tooltip・初回の説明に限り原語と並べた短い補足は可。AI の訳を正式な名称として扱わない。原語で検索できる状態を保つ | contract |
 
 ## 4. 診断・比較
 
@@ -108,4 +108,4 @@ TeamAIXI・eFootball™・KONAMI・選手名・監督名・カード名・プレ
 - 2026-10-07 fr・de・it・ko・zh-CN・zh-TW・id・tr の全文の AI 翻訳（RELEASE_CANDIDATE）。ゲームの用語は各言語の `locales/<locale>/game-terms.ts`
   （REVIEW_REQUIRED）。機能名は各言語の `nav` にそろえた（ko「내 팀・내 빌드」、it「Analisi delle build・Gestione dei dati・Cronologia diagnosi・Cockpit di confronto」）。
 - 2026-10-07 it `progressionTab.remainingLabel`: 「Rimanenti」→「Restano」（430px の育成画面で選手名が切れるため）。
-- 注意（全言語共通・レビューで決める）: 用語集は Link-Up Play・OVR に各言語の訳を載せているが、翻訳の指示は「訳さない」。今回の訳は指示に従い English のまま。
+- 2026-10-07 **Link-Up Play・OVR の契約を統一**（本人の判断）: 全言語で原語のまま。用語集の各言語の候補（juego combinado・Kombinationsspiel・MED・GES 等）を削除し、de の生成文 2 件（Kombinationsspiel-Zentrum・-Schlüsselspieler）を Link-Up-Zentrum・Link-Up-Schlüsselspieler へ。監査 0 件・回帰テストあり。
