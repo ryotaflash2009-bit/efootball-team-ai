@@ -3,6 +3,7 @@
 import "@/lib/i18n/dictionaries/ja-ns/buildAnalysis";
 import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
+import { localizedAbilityName, localizedGroupName } from "@/lib/i18n/game-terms";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import type { Locale } from "@/lib/i18n/locale";
 import { formatNumber } from "@/lib/i18n/format";
@@ -402,13 +403,13 @@ function presetConfirmedBannerText(presetIntent: PresetIntentUIProps, ba: (k: ke
 function groupDisplayName(groupId: string | null, locale: Locale): string {
   if (!groupId) return "";
   if (locale === "ja") return groupLabelJa(groupId);
-  return getGroupDef(groupId)?.nameEn ?? groupId;
+  return localizedGroupName(groupId) ?? getGroupDef(groupId)?.nameEn ?? groupId;
 }
 
 /** 能力値の表示名（ja: 既存の statLabelJa / en: 確認済み英語名）。 */
 function abilityLabel(abilityId: string, locale: Locale): string {
   if (locale === "ja") return statLabelJa(abilityId);
-  return getStatDef(abilityId)?.nameEn ?? abilityId;
+  return localizedAbilityName(abilityId) ?? getStatDef(abilityId)?.nameEn ?? abilityId;
 }
 
 function SectionHeading({ children }: { children: React.ReactNode }) {

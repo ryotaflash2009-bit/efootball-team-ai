@@ -14,7 +14,7 @@ import { Input, Select } from "@/components/ui/Field";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ProficiencyBar } from "./ProficiencyBar";
-import { TACTICS, topTactic, tacticTier, TACTIC_TEXT, managerInitials } from "./tactics";
+import { TACTICS, topTactic, tacticTier, TACTIC_TEXT, managerInitials, tacticName } from "./tactics";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
@@ -208,7 +208,7 @@ export function ManagerPicker({
               <option value="">{t("managerPicker", "tacticFilterAll")}</option>
               {TACTICS.map((tac) => (
                 <option key={tac.key} value={tac.abbr}>
-                  {tac.abbr} {tac.en}
+                  {tac.abbr} {tacticName(tac)}
                 </option>
               ))}
             </select>
@@ -244,7 +244,7 @@ export function ManagerPicker({
           <p className="flex flex-wrap gap-x-2 gap-y-0.5 text-2xs text-text-muted">
             {TACTICS.map((tac) => (
               <span key={tac.key}>
-                <b className="text-text-dim">{tac.abbr}</b> {tac.en}
+                <b className="text-text-dim">{tac.abbr}</b> {tacticName(tac)}
               </span>
             ))}
           </p>
@@ -329,7 +329,7 @@ function PickerCard({
       {top ? (
         <p className="mt-1.5 text-xs">
           {t("managerPicker", "bestTacticPrefix")}
-          <span className="font-semibold">{top.en}</span>{" "}
+          <span className="font-semibold">{tacticName(top)}</span>{" "}
           <span className={`font-black tabular-nums ${TACTIC_TEXT[tacticTier(top.value)]}`}>{top.value}</span>
         </p>
       ) : null}
@@ -419,7 +419,7 @@ function PickerDetail({
       {top ? (
         <p className="text-sm">
           {t("managerPicker", "bestTacticPrefix")}
-          <span className="font-semibold">{top.en}</span>{" "}
+          <span className="font-semibold">{tacticName(top)}</span>{" "}
           <span className={`text-xl font-black tabular-nums ${TACTIC_TEXT[tacticTier(top.value)]}`}>{top.value}</span>
         </p>
       ) : null}

@@ -1,4 +1,5 @@
 import type { Locale } from "@/lib/i18n/locale";
+import { generatedOverlay } from "@/lib/i18n/generated-catalog";
 
 /**
  * スカッド比較ライブラリ（compare-squads.ts）が返す日本語の文（指標名・注記・配置の表記）の英語表示（2026-10-04）。
@@ -48,6 +49,9 @@ const JP = /[぀-ヿ一-龯]/;
 /** 表示用: 日本語画面ではそのまま、英語画面では英語（未知の日本語は出さずに汎用の英語）。 */
 export function localizeSquadCompareText(text: string, locale: Locale): string {
   if (locale === "ja" || !JP.test(text)) return text;
+  // ja・en 以外の表示言語: メッセージ ID と言語ごとの書式（generated-catalog.ts）。訳が無ければ下の English。
+  const overlay = generatedOverlay("squadCompare", text, PATTERNS);
+  if (overlay !== null) return overlay;
   const fixed = FIXED_EN[text];
   if (fixed) return fixed;
   for (const [re, f] of PATTERNS) {
@@ -56,3 +60,6 @@ export function localizeSquadCompareText(text: string, locale: Locale): string {
   }
   return "(Details are available in Japanese only.)";
 }
+
+/** 翻訳の元（scripts の generated の雛形・テストが使う。表示には使わない）。 */
+export const GENERATED_SOURCE = { module: "squadCompare", fixed: FIXED_EN as Record<string, string>, terms: {} as Record<string, Record<string, string>>, patterns: PATTERNS };

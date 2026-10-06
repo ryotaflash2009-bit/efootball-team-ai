@@ -36,6 +36,9 @@ function matchOne(row: Row, f: Filter): boolean {
       return Number(v) <= Number(f.value);
     case "ilike":
       return typeof v === "string" && likePatternToRegExp(String(f.value)).test(v);
+    case "imatch":
+      // PostgreSQL の ~*（大文字・小文字を区別しない正規表現）。search-normalize.ts の文字クラスだけを使う
+      return typeof v === "string" && new RegExp(String(f.value), "i").test(v);
     case "in":
       return Array.isArray(f.value) && f.value.map(String).includes(String(v));
     case "not.is":

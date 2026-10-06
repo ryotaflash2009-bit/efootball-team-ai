@@ -1,4 +1,5 @@
 import type { BuildDiagnosisImageContent, ImageOrientation } from "./build-diagnosis-card-share";
+import { missingGlyphsIn, recordCanvasText } from "@/lib/i18n/font-coverage";
 
 /**
  * 診断結果カードのPNG画像化(Canvas 2D APIのみ・新規依存なし)。
@@ -330,7 +331,7 @@ export function drawBuildDiagnosisCardImage(canvas: HTMLCanvasElement, content: 
   else drawLandscape(ctx, content);
 }
 
-export type SaveBuildDiagnosisImageResult = { ok: true } | { ok: false; reason: "ssr" | "unsupported" | "error" };
+export type SaveBuildDiagnosisImageResult = { ok: true } | { ok: false; reason: "ssr" | "unsupported" | "error" | "font_unavailable" };
 
 /** `content`を描画したPNGを`filename`としてユーザー端末へ保存する(squad-diagnosis-image.tsと同じ方式)。 */
 export async function saveBuildDiagnosisCardImageAsPng(
@@ -346,7 +347,14 @@ export async function saveBuildDiagnosisCardImageAsPng(
     canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     if (!ctx) return { ok: false, reason: "unsupported" };
-    drawBuildDiagnosisCardImage(canvas, content, orientation);
+    // 描けない文字があれば画像を作らない（文字化けの画像を保存しない。font-coverage.ts）
+    const rec = recordCanvasText(ctx);
+    try {
+      drawBuildDiagnosisCardImage(canvas, content, orientation);
+    } finally {
+      rec.stop();
+    }
+    if (missingGlyphsIn(rec.entries).length > 0) return { ok: false, reason: "font_unavailable" };
 
     const blob = await new Promise<Blob | null>((resolve) => {
       if (typeof canvas!.toBlob === "function") {

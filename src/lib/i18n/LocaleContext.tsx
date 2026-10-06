@@ -6,6 +6,7 @@ import { isSelectableLocale, localeInfo, negotiateDisplayLocale, readStoredDispl
 import { dictionaryOf, hasDictionary, loadDictionary, translate } from "./translate";
 import { setFormatDisplayLocale } from "./format";
 import { setPluralLocale } from "./message-format";
+import { setGameTermsLocale } from "./game-terms";
 import { areInternalPagesVisible } from "@/lib/public-info/internal-pages";
 import type { Dictionary } from "./dictionaries/ja";
 
@@ -109,6 +110,8 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     setFormatDisplayLocale(info.base === "en" ? info.intl : null);
     // 複数形の選択（fillMessage の {count, plural, …}）も表示言語の規則にする
     setPluralLocale(info.intl);
+    // 能力名・育成カテゴリ・戦術の表示名（ja・en は従来の表示）
+    setGameTermsLocale(effectiveLocale);
     return {
       locale: info.base,
       displayLocale: effectiveLocale,

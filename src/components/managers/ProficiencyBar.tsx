@@ -2,7 +2,7 @@
 
 import type { TacticalProficiencies } from "@/lib/managers/types";
 import { useLocale } from "@/lib/i18n/LocaleContext";
-import { TACTICS, tacticTier, TACTIC_BAR, TACTIC_TEXT } from "./tactics";
+import { TACTICS, tacticTier, TACTIC_BAR, TACTIC_TEXT, tacticName } from "./tactics";
 
 /**
  * 戦術適性6項目。数値・バー・色・（詳細では順位）を組み合わせ、色だけに依存しない。
@@ -54,7 +54,7 @@ export function ProficiencyBar({
           <div key={t.key} className="grid grid-cols-[minmax(120px,1fr)_2.5rem] items-center gap-3">
             <div>
               <dt className="flex items-baseline gap-1.5 text-sm">
-                <span className="font-medium">{t.en}</span>
+                <span className="font-medium">{tacticName(t)}</span>
                 {locale === "ja" ? <span className="text-2xs text-text-muted">{t.ja}</span> : null}
                 {showRank && rankMap.has(t.key) ? (
                   <span className="text-2xs text-text-muted">#{rankMap.get(t.key)}</span>
@@ -79,7 +79,7 @@ export function TacticsLegend() {
     <p className="flex flex-wrap gap-x-3 gap-y-1 text-2xs text-text-muted">
       {TACTICS.map((t) => (
         <span key={t.key}>
-          <span className="font-semibold text-text-dim">{t.abbr}</span> {t.en}
+          <span className="font-semibold text-text-dim">{t.abbr}</span> {tacticName(t)}
           {locale === "ja" ? `（${t.ja}）` : ""}
         </span>
       ))}

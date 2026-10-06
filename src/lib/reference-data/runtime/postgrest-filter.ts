@@ -8,6 +8,8 @@
  *   - 完全一致の条件(ID列)は、検索語がその列の形式に合う場合だけ追加する
  */
 
+import { accentInsensitivePattern } from "./search-normalize";
+
 export function escapeLikePattern(value: string): string {
   return value.replace(/[\\%_]/g, (c) => `\\${c}`);
 }
@@ -21,16 +23,20 @@ export interface SearchOrFilterSpec {
   readonly likeColumns: readonly string[];
   /** 検索語が形式に合う場合だけ追加する完全一致の列。 */
   readonly exact?: { readonly column: string; readonly pattern: RegExp };
+  /** アクセント・ß・ı を区別しない一致を追加する列（`imatch`。search-normalize.ts。2026-10-06）。 */
+  readonly accentInsensitiveColumns?: readonly string[];
 }
 
 const COLUMN_RE = /^[a-z_][a-z0-9_]*$/;
 
 export function buildSearchOrFilter(spec: SearchOrFilterSpec, search: string): string {
-  const cols = [...spec.likeColumns, ...(spec.exact ? [spec.exact.column] : [])];
+  const cols = [...spec.likeColumns, ...(spec.exact ? [spec.exact.column] : []), ...(spec.accentInsensitiveColumns ?? [])];
   for (const c of cols) if (!COLUMN_RE.test(c)) throw new Error(`列名が不正: ${c}`);
   const like = quotePostgrestValue(`%${escapeLikePattern(search)}%`);
   const parts = spec.likeColumns.map((c) => `${c}.ilike.${like}`);
   if (spec.exact && spec.exact.pattern.test(search)) parts.push(`${spec.exact.column}.eq.${quotePostgrestValue(search)}`);
+  const fuzzy = spec.accentInsensitiveColumns?.length ? accentInsensitivePattern(search) : null;
+  if (fuzzy) for (const c of spec.accentInsensitiveColumns ?? []) parts.push(`${c}.imatch.${quotePostgrestValue(fuzzy)}`);
   return parts.join(",");
 }
 
