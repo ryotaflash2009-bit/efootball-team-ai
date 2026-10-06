@@ -97,6 +97,12 @@ F-124: 自動更新が完成するまで、本人だけで検証する（他人�
 4. 公開後の軽量化: 選手詳細の初回 JS 227 → 167 kB（#144）・ログイン 189 → 120 kB（#145）。
 5. ローカルの確認用サーバーの PID の契約を修正（`scripts/local-server.mjs`・待受の PID を記録）。
 
+### 3h. 2026-10-06 多言語の基盤
+
+基盤（locale の契約・English への代わり・疑似ローカライズ・監査・用語集・RTL の論理プロパティ）を完成。10 言語は AI の下書きで
+内部の確認だけ（公開は ja・en のまま）。公開の判断と推奨は `docs/i18n/owner-decisions.md`（最初の候補は es・pt-BR。条件はネイティブの
+レビュー・全文の翻訳・表示層の文章・能力名の公式の表記）。
+
 ### v1.1 backlog（2026-10-06）
 
 1. 独自ドメイン（Custom domain）
@@ -114,6 +120,7 @@ F-124: 自動更新が完成するまで、本人だけで検証する（他人�
 13. Next.js の更新後の navigation fallback（`src/instrumentation-client.ts` の 5 秒の見張り）の再評価。あわせて、RSC の応答の後に確定しない停止をより早く検出して 5 秒より短くする案（新しいブラウザーの最初の画面の移動で停止が多い: `evidence/2026-10-06-post-release.json`）
 14. noindex の解除の判断
 15. 専門家による法務のレビュー（Professional legal review・`docs/release/legal-review-checklist.md`）
+16. 多言語の公開（言語ごと。条件と推奨は `docs/i18n/owner-decisions.md`）。表示層の文章（診断・比較・育成）の多言語化・能力名の各言語の公式の表記・CJK の共有カードのフォントの確認・RTL の位置の指定の確認
 
 ### 3f. 2026-10-04 TeamAIXI v1.0
 
