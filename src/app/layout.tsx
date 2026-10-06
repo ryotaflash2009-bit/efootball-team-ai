@@ -6,7 +6,7 @@ import { AppShell } from "@/components/AppShell";
 import { LocaleProvider } from "@/lib/i18n/LocaleContext";
 import { LOCALE_STORAGE_KEY } from "@/lib/i18n/locale";
 
-const LOCALE_PENDING_SCRIPT = `(function(){try{var s=localStorage.getItem(${JSON.stringify(LOCALE_STORAGE_KEY)});var l=(navigator.language||"").toLowerCase().split("-")[0];if(s==="en"||(!s&&l&&l!=="ja")){var d=document.documentElement;d.setAttribute("data-locale-pending","");setTimeout(function(){d.removeAttribute("data-locale-pending")},2000)}}catch(e){}})();`;
+const LOCALE_PENDING_SCRIPT = `(function(){try{var s=localStorage.getItem(${JSON.stringify(LOCALE_STORAGE_KEY)});var l=(navigator.language||"").toLowerCase().split("-")[0];if((s&&s!=="ja")||(!s&&l&&l!=="ja")){var d=document.documentElement;d.setAttribute("data-locale-pending","");setTimeout(function(){d.removeAttribute("data-locale-pending")},2000)}}catch(e){}})();`;
 import { SITE_ROBOTS_METADATA } from "@/lib/public-info/search-indexing";
 
 export const metadata: Metadata = {
