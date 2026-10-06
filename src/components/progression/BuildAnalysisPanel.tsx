@@ -68,6 +68,7 @@ import {
   type PresetCategoryId,
   type PresetConflict,
 } from "@/lib/progression/build-intent-presets";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 /** 標準UIでは目的プリセット方式をメインとするため、自由文解析UI(旧メイン導線)は既定で非表示にする。
  *  RuleBasedBuildIntentExtractor・候補確認・関連state/APIは削除せず、この定数をtrueにすれば復元できる
@@ -1629,7 +1630,7 @@ export const BuildAnalysisPanel = forwardRef<
   const [isDiagnosisCardOpen, setIsDiagnosisCardOpen] = useState(true);
   const ba = (k: keyof Dict) => t("buildAnalysis", k);
   const fillBa = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const fmt = (n: number) => formatNumber(n, locale);
 
   /**

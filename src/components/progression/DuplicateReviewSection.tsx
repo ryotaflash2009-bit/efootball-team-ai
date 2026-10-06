@@ -29,6 +29,7 @@ import { categoryName } from "@/lib/progression/ability-editor-labels";
 import { localizeBuildsText } from "@/lib/progression/builds-text-en";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 function useSortLabels(): Record<DuplicateReviewSortKey, string> {
   const t = useT();
@@ -68,7 +69,7 @@ export function DuplicateReviewSection({
   const { locale } = useLocale();
   const drs = (k: keyof Dictionary["duplicateReviewSection"]) => t("duplicateReviewSection", k);
   const fillDrs = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const SORT_LABEL = useSortLabels();
   const [filter, setFilter] = useState<DuplicateReviewFilter>(DEFAULT_DUPLICATE_REVIEW_FILTER);
   const [sort, setSort] = useState<DuplicateReviewSortKey>("updated_desc");
@@ -301,7 +302,7 @@ function DuplicateGroupCard({ group: g }: { group: DuplicateGroup }) {
   const { locale } = useLocale();
   const drs = (k: keyof Dictionary["duplicateReviewSection"]) => t("duplicateReviewSection", k);
   const fillDrs = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const fallbackName = t("squadBuildPanel", "cardFallbackNameTemplate").replace("{id}", g.worldCardId);
   const name = resolvePlayerDisplayName(g.card ?? {}, locale, fallbackName);
   const sources = g.card

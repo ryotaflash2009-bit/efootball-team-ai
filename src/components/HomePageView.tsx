@@ -13,6 +13,7 @@ import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { formatDateTime, formatNumber } from "@/lib/i18n/format";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 export interface HomePageWorldSummary {
   totalCount: number;
@@ -94,7 +95,7 @@ export function HomePageView({
   const { locale } = useLocale();
   const th = (k: keyof Dictionary["homePage"]) => t("homePage", k);
   const fillH = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
 
   const worldCountText = world ? formatNumber(world.totalCount, locale) : "—";
 

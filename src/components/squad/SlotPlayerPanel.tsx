@@ -19,6 +19,7 @@ import { ConditionalBoosterControl } from "@/components/world/progression/Condit
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { localizeSquadText } from "@/lib/squad/squad-text-en";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 const CONFIRMED_BOOSTERS = BOOSTER_CATALOG.filter((b) => b.confirmationStatus === "confirmed");
 
@@ -97,7 +98,7 @@ export function SlotPlayerPanel({
   const { locale } = useLocale();
   const tsp = (k: keyof Dictionary["slotPlayerPanel"]) => t("slotPlayerPanel", k);
   const fillSp = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const buildModeLabels = useBuildModeLabels();
   const e = slot.entry;
   const condSelByKey = new Map((e?.selectedConditionalBoosters ?? []).map((c) => [c.boosterKey, c.selection]));

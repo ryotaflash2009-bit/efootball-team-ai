@@ -42,6 +42,7 @@ import { Modal } from "@/components/ui/Overlay";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Icon } from "@/components/ui/Icon";
+import { fillMessage } from "@/lib/i18n/message-format";
 // 解除確認はネストした Modal を避けるためパネル内インライン（role="alertdialog"）で行う。
 
 /**
@@ -77,7 +78,7 @@ export function MyTeamBuildPanel({
   const { locale } = useLocale();
   const tmb = (k: keyof Dictionary["myTeamBuildPanel"]) => t("myTeamBuildPanel", k);
   const fillMb = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const OWNERSHIP_LABELS = useOwnershipLabels();
   const USAGE_LABELS = useUsageLabels();
 
@@ -490,7 +491,7 @@ function BuildRow({
   const t = useT();
   const tmb = (k: keyof Dictionary["myTeamBuildPanel"]) => t("myTeamBuildPanel", k);
   const fillMb = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const rule = resolveBuildRuleStatus(build.rulesVersion);
   const ruleLabel = rule.isV2 ? t("buildUsage", "ruleCurrentLabel") : rule.isLegacy ? t("buildUsage", "ruleLegacyLabel") : t("buildUsage", "ruleUnknownLabel");
   const points = buildPointSummary(build, card?.maximumLevel ?? null);

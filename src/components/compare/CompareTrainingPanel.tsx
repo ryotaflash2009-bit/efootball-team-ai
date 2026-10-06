@@ -8,6 +8,7 @@ import type { AutoAllocateProfile, PointsSummary, ProgressionGroup } from "@/lib
 import { ProgressionSlider } from "@/components/world/progression/ProgressionSlider";
 import { useT } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 function useProfileLabels(): Record<AutoAllocateProfile, string> {
   const t = useT();
@@ -70,7 +71,7 @@ export function CompareTrainingPanel({
   const t = useT();
   const ttp = (k: keyof Dictionary["compareTrainingPanel"]) => t("compareTrainingPanel", k);
   const fillTp = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const profileLabels = useProfileLabels();
 
   const fieldGroups = groups.filter((g) => !g.groupId.startsWith("goalkeeping"));

@@ -28,6 +28,7 @@ import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { categoryName } from "@/lib/progression/ability-editor-labels";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 type Step = "select" | "error" | "preview" | "confirm" | "saving" | "done" | "savefail";
 
@@ -157,7 +158,7 @@ function BuildImportModal({
   const t = useT();
   const tim = useCallback((k: keyof Dictionary["buildImportModal"]) => t("buildImportModal", k), [t]);
   const fillIm = useCallback(
-    (s: string, vars: Record<string, string>) => Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s),
+    (s: string, vars: Record<string, string>) => fillMessage(s, vars),
     [],
   );
   const [step, setStep] = useState<Step>("select");
@@ -479,7 +480,7 @@ function SelectStep({
   const t = useT();
   const tim = (k: keyof Dictionary["buildImportModal"]) => t("buildImportModal", k);
   const fillIm = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   return (
     <div className="flex flex-col gap-3">
       <div className="rounded border border-border bg-surface-2/40 p-2 text-2xs text-text-dim">
@@ -563,7 +564,7 @@ function PreviewStep({
   const { locale } = useLocale();
   const tim = (k: keyof Dictionary["buildImportModal"]) => t("buildImportModal", k);
   const fillIm = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   return (
     <div className="flex flex-col gap-3">
       <Surface tone="inset" padding="sm" className="text-2xs">
@@ -678,7 +679,7 @@ function ConfirmPanel({
   const t = useT();
   const tim = (k: keyof Dictionary["buildImportModal"]) => t("buildImportModal", k);
   const fillIm = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   return (
     <div
       role="alertdialog"

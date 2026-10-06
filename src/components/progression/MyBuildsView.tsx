@@ -86,6 +86,7 @@ import { localizeBuildsText } from "@/lib/progression/builds-text-en";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 function useSortLabels(): Record<BuildSortKey, string> {
   const t = useT();
@@ -111,7 +112,7 @@ export function MyBuildsView() {
   const { locale } = useLocale();
   const tmb = (k: keyof Dictionary["myBuildsView"]) => t("myBuildsView", k);
   const fillMb = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   /** ライブラリが返す日本語のエラー → 表示言語（英語画面では英語）。 */
   const lbt = <T extends string | null | undefined>(s: T): T => (s ? (localizeBuildsText(s, locale) as T) : s);
   const SORT_LABEL = useSortLabels();
@@ -929,7 +930,7 @@ function RegisterToMyTeamDialog({
   const { locale } = useLocale();
   const tmb = (k: keyof Dictionary["myBuildsView"]) => t("myBuildsView", k);
   const fillMb = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const OWNERSHIP_LABELS = useOwnershipLabels();
   const USAGE_LABELS = useUsageLabels();
   const ruleLabel = useRuleLabel();
@@ -1152,7 +1153,7 @@ function SetFavoriteBuildDialog({
   const { locale } = useLocale();
   const tmb = (k: keyof Dictionary["myBuildsView"]) => t("myBuildsView", k);
   const fillMb = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const name = resolvePlayerDisplayName(card ?? {}, locale, fillMb(t("squadBuildPanel", "cardFallbackNameTemplate"), { id: build.worldCardId }));
   const sources = card
     ? resolveCardImageSources({
@@ -1264,7 +1265,7 @@ function AssignToMyTeamDialog({
   const { locale } = useLocale();
   const tmb = (k: keyof Dictionary["myBuildsView"]) => t("myBuildsView", k);
   const fillMb = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const name = resolvePlayerDisplayName(card ?? {}, locale, fillMb(t("squadBuildPanel", "cardFallbackNameTemplate"), { id: build.worldCardId }));
   const sources = card
     ? resolveCardImageSources({
@@ -1422,7 +1423,7 @@ function DeleteBody({
   const t = useT();
   const tmb = (k: keyof Dictionary["myBuildsView"]) => t("myBuildsView", k);
   const fillMb = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   return (
     <div className="space-y-2 text-xs">
       <p>

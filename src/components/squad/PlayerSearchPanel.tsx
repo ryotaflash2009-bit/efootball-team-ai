@@ -9,6 +9,7 @@ import { sortSearchResults } from "@/lib/squad/search-results";
 import { SquadPlayerSearchCard } from "./SquadPlayerSearchCard";
 import { useT } from "@/lib/i18n/LocaleContext";
 import { isSearchInputRejectedResponse } from "@/lib/search/search-input";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 /**
  * 選手検索（World 13,009件・既存 SQLite API）。
@@ -55,7 +56,7 @@ export function PlayerSearchPanel({
   const lastQueryRef = useRef("");
   const t = useT();
   const fillPs = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
 
   useEffect(
     () => () => {

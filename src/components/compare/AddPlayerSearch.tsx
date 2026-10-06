@@ -11,6 +11,7 @@ import { WorldPlayerSearchCard } from "@/components/world/WorldPlayerSearchCard"
 import { useT } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { isSearchInputRejectedResponse } from "@/lib/search/search-input";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 /**
  * 比較へ追加する選手を検索して選ぶ（World 13,009件・既存 SQLite API）。
@@ -57,7 +58,7 @@ export function AddPlayerSearch({
   const t = useT();
   const tas = useCallback((k: keyof Dictionary["addPlayerSearch"]) => t("addPlayerSearch", k), [t]);
   const fillAs = useCallback(
-    (s: string, vars: Record<string, string>) => Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s),
+    (s: string, vars: Record<string, string>) => fillMessage(s, vars),
     [],
   );
 

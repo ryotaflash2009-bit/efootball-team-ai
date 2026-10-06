@@ -9,6 +9,7 @@ import { statValueForMode, type RadarMode } from "@/lib/comparison/ability-radar
 import { getGroupDef } from "@/lib/progression/stat-groups";
 import { useT } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 function useRadarModeLabels(): Record<RadarMode, string> {
   const t = useT();
@@ -61,7 +62,7 @@ export function CompareCategoryPreview({
   const { locale } = useLocale();
   const tcp = (k: keyof Dictionary["compareCategoryPreview"]) => t("compareCategoryPreview", k);
   const fillCp = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const RADAR_MODE_LABEL = useRadarModeLabels();
   const g = getGroupDef(groupId);
   if (!g) return null;

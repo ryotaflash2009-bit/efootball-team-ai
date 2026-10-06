@@ -6,6 +6,7 @@ import { MAX_TAGS, TAG_MAX_LEN, sanitizeTag } from "@/lib/user-cards/validation"
 import { Icon } from "@/components/ui/Icon";
 import { useT } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 /**
  * 自由入力タグの編集（バッジ形式）。プレーンテキストのみ。
@@ -25,7 +26,7 @@ export function TagEditor({
   const t = useT();
   const tte = (k: keyof Dictionary["tagEditor"]) => t("tagEditor", k);
   const fillTe = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
 
   function commit() {
     const tag = sanitizeTag(draft);

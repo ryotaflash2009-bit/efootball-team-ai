@@ -32,6 +32,7 @@ import { Icon } from "@/components/ui/Icon";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 /**
  * スカッド編集画面の「保存ビルドを選ぶ」パネル。対象スカッドの特定の枠（先発 slot / ベンチ sub）の
@@ -95,7 +96,7 @@ export function SquadBuildPanel({
   const { locale } = useLocale();
   const tp = (k: keyof Dictionary["squadBuildPanel"]) => t("squadBuildPanel", k);
   const fill = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const errorMessageFor = (code: string) =>
     code === "storage"
       ? tp("errorStorage")
@@ -488,7 +489,7 @@ function SquadBuildRow({
   const t = useT();
   const tp = (k: keyof Dictionary["squadBuildPanel"]) => t("squadBuildPanel", k);
   const fill = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const rule = resolveBuildRuleStatus(build.rulesVersion);
   const ruleLabel = rule.isV2 ? t("buildUsage", "ruleCurrentLabel") : rule.isLegacy ? t("buildUsage", "ruleLegacyLabel") : t("buildUsage", "ruleUnknownLabel");
   const points = buildPointSummary(build, maximumLevel);

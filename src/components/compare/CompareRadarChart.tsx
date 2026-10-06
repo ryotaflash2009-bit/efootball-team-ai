@@ -8,6 +8,7 @@ import { radarPointForAxis } from "@/lib/comparison/ability-radar";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { localizeLibText } from "@/lib/progression/lib-text-en";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 function useRadarModeLabels(): Record<RadarMode, string> {
   const t = useT();
@@ -100,7 +101,7 @@ export function CompareRadarChart({
   const tcr = (k: keyof Dictionary["compareRadarChart"]) => t("compareRadarChart", k);
   const { locale } = useLocale();
   const fillCr = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const RADAR_MODE_LABEL = useRadarModeLabels();
   const radarAxisLabel = useRadarAxisLabel();
   const SERIES_STYLE = useSeriesStyle();

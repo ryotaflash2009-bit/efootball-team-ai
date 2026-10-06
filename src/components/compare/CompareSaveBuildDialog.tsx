@@ -11,6 +11,7 @@ import { groupLabelJa } from "@/lib/world/stat-labels";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 /**
  * 比較コックピットで調整した現在の育成を、既存の保存ビルド（build-storage）として保存する。
@@ -71,7 +72,7 @@ export function CompareSaveBuildDialog({
   const { locale } = useLocale();
   const tsb = useCallback((k: keyof Dictionary["compareSaveBuildDialog"]) => t("compareSaveBuildDialog", k), [t]);
   const fillSb = useCallback(
-    (s: string, vars: Record<string, string>) => Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s),
+    (s: string, vars: Record<string, string>) => fillMessage(s, vars),
     [],
   );
   const name0 = useMemo(() => uniqueDefaultName(existingBuilds, tsb("defaultName")), [existingBuilds, tsb]);

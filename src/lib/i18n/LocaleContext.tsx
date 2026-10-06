@@ -5,6 +5,7 @@ import { DEFAULT_LOCALE, LOCALE_STORAGE_KEY, type Locale } from "./locale";
 import { isSelectableLocale, localeInfo, negotiateDisplayLocale, readStoredDisplayLocale, type DisplayLocale } from "./locale-registry";
 import { dictionaryOf, hasDictionary, loadDictionary, translate } from "./translate";
 import { setFormatDisplayLocale } from "./format";
+import { setPluralLocale } from "./message-format";
 import { areInternalPagesVisible } from "@/lib/public-info/internal-pages";
 import type { Dictionary } from "./dictionaries/ja";
 
@@ -106,6 +107,8 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     const dictionary = dictionaryOf(effectiveLocale);
     // 数値・日付の Intl のロケール（ja・en 以外の言語は、その言語の書式。計算・保存には使わない）。
     setFormatDisplayLocale(info.base === "en" ? info.intl : null);
+    // 複数形の選択（fillMessage の {count, plural, …}）も表示言語の規則にする
+    setPluralLocale(info.intl);
     return {
       locale: info.base,
       displayLocale: effectiveLocale,

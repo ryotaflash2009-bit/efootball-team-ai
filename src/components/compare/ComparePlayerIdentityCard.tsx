@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/Badge";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 /**
  * 比較列の上部に出すコンパクトなカード識別表示。
@@ -32,7 +33,7 @@ export function ComparePlayerIdentityCard({
   const { locale } = useLocale();
   const tci = (k: keyof Dictionary["comparePlayerIdentityCard"]) => t("comparePlayerIdentityCard", k);
   const fillCi = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const d = player.display;
   const name = resolvePlayerDisplayName(d, locale, fillCi(t("squadBuildPanel", "cardFallbackNameTemplate"), { id: d.worldCardId }));
   const sources = resolveCardImageSources({

@@ -27,6 +27,7 @@ import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { useSyncedStorageScope } from "@/lib/local-storage-scope/resolve-scope";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 // 表示ラベルは i18n の bench.mode* に集約。ここは順序と値のみ定義。
 const SHARED_MODES: CompareBuildMode[] = ["none", "attack", "defense", "balance", "gk"];
@@ -49,7 +50,7 @@ export function ComparisonBoard({ initialInputs }: { initialInputs: ComparisonPl
   const { locale } = useLocale();
   const tcb = useCallback((k: keyof Dictionary["comparisonBoard"]) => t("comparisonBoard", k), [t]);
   const fillCb = useCallback(
-    (s: string, vars: Record<string, string>) => Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s),
+    (s: string, vars: Record<string, string>) => fillMessage(s, vars),
     [],
   );
   const buildModeLabels = useBuildModeLabels();

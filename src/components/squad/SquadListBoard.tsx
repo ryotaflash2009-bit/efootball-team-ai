@@ -37,6 +37,7 @@ import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Locale } from "@/lib/i18n/locale";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 function safeFormatDateTime(iso: string, locale: Locale): string {
   const d = new Date(iso);
@@ -56,7 +57,7 @@ export function SquadListBoard({
   const { locale } = useLocale();
   const tsl = (k: keyof Dictionary["squadList"]) => t("squadList", k);
   const fillSl = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const cardQuery = pendingSquadAdditionQuery(resolvePendingSquadAddition(pendingWorldCardId, pendingBuildId));
   const [entries, setEntries] = useState<SquadListEntry[] | null>(null);
   const [storageOk, setStorageOk] = useState(true);
