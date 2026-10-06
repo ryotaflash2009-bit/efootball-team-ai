@@ -17,6 +17,11 @@ describe("自動進行・Apply の通知", () => {
     expect(n.body).not.toContain("evil.example");
     expect(n.body).toContain("detection 10 / plan 11");
     expect(n.body).toContain("Apply run は作成していません");
+    // Apply run を作った後に止まった場合（2026-10-05 の DB の認証の失敗）は「作成していません」と書かない
+    const afterApply = buildPipelineNotification({ ...RUN, source: "orchestrator", conclusion: "failure", approval: { kind: "stopped", stage: "apply", reasons: ["auto_apply_not_applied:failed"], runs: { detection: "10", plan: "11", backup: "12", dryRun: "13", apply: "14" } } });
+    expect(afterApply.body).toContain("Apply run は作成されましたが、適用は完了していません");
+    expect(afterApply.body).not.toContain("Apply run は作成していません");
+    expect(afterApply.body).toContain("apply 14");
     expect(buildPipelineNotification({ ...RUN, source: "orchestrator", conclusion: "success", approval: { kind: "no_action", reasons: ["no_change"] } })).toMatchObject({ notify: false });
     expect(buildPipelineNotification({ ...RUN, source: "orchestrator", conclusion: "skipped" })).toMatchObject({ notify: false });
   });

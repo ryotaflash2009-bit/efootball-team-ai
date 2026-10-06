@@ -163,7 +163,10 @@ export function buildPipelineNotification(p) {
         `理由: ${stopped ? reasons(a.reasons).join(", ") || "?" : "要約を読めなかった（job の失敗）"}`,
         `起動した run: ${stopped ? runIds(a.runs).join(" / ") || "なし" : "?"}`,
         "",
-        "Apply run は作成していません。Production への書き込みはありません。次: run の要約を確認し、原因を直してから検出をやり直す。",
+        // 2026-10-06: Apply run を作った後に止まった場合（例: DB の認証の失敗）に「作成していません」と誤って書かない。
+        stopped && a.runs && typeof a.runs === "object" && /^\d{1,20}$/.test(String(a.runs.apply ?? ""))
+          ? "Apply run は作成されましたが、適用は完了していません（Apply run の要約・Evidence を確認する。DB への接続の失敗では書き込みはありません）。Rollback・Restore は実行していません。次: 原因を直してから検出をやり直す。"
+          : "Apply run は作成していません。Production への書き込みはありません。次: run の要約を確認し、原因を直してから検出をやり直す。",
         "",
         footer,
       ].join("\n"),
