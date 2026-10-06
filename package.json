@@ -12,9 +12,10 @@
     "test": "vitest run",
     "audit:ja-labels": "node scripts/audit-ja-stat-labels.mjs",
     "audit:i18n-keys": "node scripts/audit-i18n-keys.mjs",
+    "audit:locales": "node scripts/audit-locale-coverage.mjs --check",
     "import:world-distribution": "node scripts/import-world-distribution.mjs",
     "validate:auth-email-release": "node scripts/validate-auth-email-release.mjs docs/production-readiness/auth-email-release-checklist.json",
-    "verify": "npm run audit:ja-labels && npm run audit:i18n-keys && npm run typecheck && npm run lint && npm run test",
+    "verify": "npm run audit:ja-labels && npm run audit:i18n-keys && npm run audit:locales && npm run typecheck && npm run lint && npm run test",
     "fetch:players": "node scripts/fetch-player-index.mjs"
   },
   "dependencies": {

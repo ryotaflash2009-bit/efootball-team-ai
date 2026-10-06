@@ -1,0 +1,290 @@
+{
+  "schema": "efta-locale-status/v1",
+  "updated": "2026-10-06",
+  "terminologyVersion": "glossary-2026-10-06",
+  "note": "Runtime state lives in src/lib/i18n/locale-registry.ts; this file records review facts and must match it (scripts/audit-locale-coverage.mjs). Production requires quality VERIFIED_REVIEWED or better, coverage 100% on core/public/a11y/error/metadata/share, and no stale keys.",
+  "locales": {
+    "ja": {
+      "state": "PUBLISHED",
+      "quality": "VERIFIED_NATIVE_QUALITY",
+      "machineAssisted": false,
+      "nativeReview": true,
+      "reviewedBy": "owner",
+      "reviewType": "source",
+      "owner": "operator",
+      "lastUpdated": "2026-10-05",
+      "sourceLocaleVersion": "v1.0.0",
+      "knownIssues": [],
+      "notes": "Japanese source (operator)"
+    },
+    "en": {
+      "state": "PUBLISHED",
+      "quality": "VERIFIED_REVIEWED",
+      "machineAssisted": true,
+      "nativeReview": false,
+      "reviewedBy": "owner",
+      "reviewType": "operator",
+      "owner": "operator",
+      "lastUpdated": "2026-10-05",
+      "sourceLocaleVersion": "v1.0.0",
+      "knownIssues": [],
+      "notes": "English UI shipped in v1.0 (operator review; leak tests)"
+    },
+    "es": {
+      "state": "INTERNAL_DRAFT",
+      "quality": "INCOMPLETE",
+      "machineAssisted": false,
+      "nativeReview": false,
+      "reviewedBy": null,
+      "reviewType": "none",
+      "owner": null,
+      "lastUpdated": "2026-10-06",
+      "sourceLocaleVersion": null,
+      "phase": 2,
+      "knownIssues": [
+        "no dictionary yet (machine drafts are added in a later PR)"
+      ],
+      "notes": "Internal preview only"
+    },
+    "pt-BR": {
+      "state": "INTERNAL_DRAFT",
+      "quality": "INCOMPLETE",
+      "machineAssisted": false,
+      "nativeReview": false,
+      "reviewedBy": null,
+      "reviewType": "none",
+      "owner": null,
+      "lastUpdated": "2026-10-06",
+      "sourceLocaleVersion": null,
+      "phase": 2,
+      "knownIssues": [
+        "no dictionary yet (machine drafts are added in a later PR)"
+      ],
+      "notes": "Internal preview only"
+    },
+    "fr": {
+      "state": "INTERNAL_DRAFT",
+      "quality": "INCOMPLETE",
+      "machineAssisted": false,
+      "nativeReview": false,
+      "reviewedBy": null,
+      "reviewType": "none",
+      "owner": null,
+      "lastUpdated": "2026-10-06",
+      "sourceLocaleVersion": null,
+      "phase": 2,
+      "knownIssues": [
+        "no dictionary yet (machine drafts are added in a later PR)"
+      ],
+      "notes": "Internal preview only"
+    },
+    "de": {
+      "state": "INTERNAL_DRAFT",
+      "quality": "INCOMPLETE",
+      "machineAssisted": false,
+      "nativeReview": false,
+      "reviewedBy": null,
+      "reviewType": "none",
+      "owner": null,
+      "lastUpdated": "2026-10-06",
+      "sourceLocaleVersion": null,
+      "phase": 2,
+      "knownIssues": [
+        "no dictionary yet (machine drafts are added in a later PR)"
+      ],
+      "notes": "Internal preview only"
+    },
+    "it": {
+      "state": "INTERNAL_DRAFT",
+      "quality": "INCOMPLETE",
+      "machineAssisted": false,
+      "nativeReview": false,
+      "reviewedBy": null,
+      "reviewType": "none",
+      "owner": null,
+      "lastUpdated": "2026-10-06",
+      "sourceLocaleVersion": null,
+      "phase": 2,
+      "knownIssues": [
+        "no dictionary yet (machine drafts are added in a later PR)"
+      ],
+      "notes": "Internal preview only"
+    },
+    "ko": {
+      "state": "INTERNAL_DRAFT",
+      "quality": "INCOMPLETE",
+      "machineAssisted": false,
+      "nativeReview": false,
+      "reviewedBy": null,
+      "reviewType": "none",
+      "owner": null,
+      "lastUpdated": "2026-10-06",
+      "sourceLocaleVersion": null,
+      "phase": 3,
+      "knownIssues": [
+        "no dictionary yet (machine drafts are added in a later PR)"
+      ],
+      "notes": "Internal preview only"
+    },
+    "zh-CN": {
+      "state": "INTERNAL_DRAFT",
+      "quality": "INCOMPLETE",
+      "machineAssisted": false,
+      "nativeReview": false,
+      "reviewedBy": null,
+      "reviewType": "none",
+      "owner": null,
+      "lastUpdated": "2026-10-06",
+      "sourceLocaleVersion": null,
+      "phase": 3,
+      "knownIssues": [
+        "no dictionary yet (machine drafts are added in a later PR)"
+      ],
+      "notes": "Internal preview only"
+    },
+    "zh-TW": {
+      "state": "INTERNAL_DRAFT",
+      "quality": "INCOMPLETE",
+      "machineAssisted": false,
+      "nativeReview": false,
+      "reviewedBy": null,
+      "reviewType": "none",
+      "owner": null,
+      "lastUpdated": "2026-10-06",
+      "sourceLocaleVersion": null,
+      "phase": 3,
+      "knownIssues": [
+        "no dictionary yet (machine drafts are added in a later PR)"
+      ],
+      "notes": "Internal preview only"
+    },
+    "id": {
+      "state": "INTERNAL_DRAFT",
+      "quality": "INCOMPLETE",
+      "machineAssisted": false,
+      "nativeReview": false,
+      "reviewedBy": null,
+      "reviewType": "none",
+      "owner": null,
+      "lastUpdated": "2026-10-06",
+      "sourceLocaleVersion": null,
+      "phase": 3,
+      "knownIssues": [
+        "no dictionary yet (machine drafts are added in a later PR)"
+      ],
+      "notes": "Internal preview only"
+    },
+    "tr": {
+      "state": "INTERNAL_DRAFT",
+      "quality": "INCOMPLETE",
+      "machineAssisted": false,
+      "nativeReview": false,
+      "reviewedBy": null,
+      "reviewType": "none",
+      "owner": null,
+      "lastUpdated": "2026-10-06",
+      "sourceLocaleVersion": null,
+      "phase": 3,
+      "knownIssues": [
+        "no dictionary yet (machine drafts are added in a later PR)"
+      ],
+      "notes": "Internal preview only"
+    },
+    "ar": {
+      "state": "INTERNAL_DRAFT",
+      "quality": "INCOMPLETE",
+      "machineAssisted": false,
+      "nativeReview": false,
+      "reviewedBy": null,
+      "reviewType": "none",
+      "owner": null,
+      "lastUpdated": "2026-10-06",
+      "sourceLocaleVersion": null,
+      "phase": 4,
+      "knownIssues": [
+        "RTL layout not complete (physical left/right CSS remains); see docs/i18n/architecture.md"
+      ],
+      "notes": "Registry entry only"
+    },
+    "th": {
+      "state": "INTERNAL_DRAFT",
+      "quality": "INCOMPLETE",
+      "machineAssisted": false,
+      "nativeReview": false,
+      "reviewedBy": null,
+      "reviewType": "none",
+      "owner": null,
+      "lastUpdated": "2026-10-06",
+      "sourceLocaleVersion": null,
+      "phase": 4,
+      "knownIssues": [
+        "no dictionary yet"
+      ],
+      "notes": "Registry entry only"
+    },
+    "vi": {
+      "state": "INTERNAL_DRAFT",
+      "quality": "INCOMPLETE",
+      "machineAssisted": false,
+      "nativeReview": false,
+      "reviewedBy": null,
+      "reviewType": "none",
+      "owner": null,
+      "lastUpdated": "2026-10-06",
+      "sourceLocaleVersion": null,
+      "phase": 4,
+      "knownIssues": [
+        "no dictionary yet"
+      ],
+      "notes": "Registry entry only"
+    },
+    "nl": {
+      "state": "INTERNAL_DRAFT",
+      "quality": "INCOMPLETE",
+      "machineAssisted": false,
+      "nativeReview": false,
+      "reviewedBy": null,
+      "reviewType": "none",
+      "owner": null,
+      "lastUpdated": "2026-10-06",
+      "sourceLocaleVersion": null,
+      "phase": 4,
+      "knownIssues": [
+        "no dictionary yet"
+      ],
+      "notes": "Registry entry only"
+    },
+    "pl": {
+      "state": "INTERNAL_DRAFT",
+      "quality": "INCOMPLETE",
+      "machineAssisted": false,
+      "nativeReview": false,
+      "reviewedBy": null,
+      "reviewType": "none",
+      "owner": null,
+      "lastUpdated": "2026-10-06",
+      "sourceLocaleVersion": null,
+      "phase": 4,
+      "knownIssues": [
+        "no dictionary yet"
+      ],
+      "notes": "Registry entry only"
+    },
+    "ru": {
+      "state": "INTERNAL_DRAFT",
+      "quality": "INCOMPLETE",
+      "machineAssisted": false,
+      "nativeReview": false,
+      "reviewedBy": null,
+      "reviewType": "none",
+      "owner": null,
+      "lastUpdated": "2026-10-06",
+      "sourceLocaleVersion": null,
+      "phase": 4,
+      "knownIssues": [
+        "no dictionary yet"
+      ],
+      "notes": "Registry entry only"
+    }
+  }
+}
