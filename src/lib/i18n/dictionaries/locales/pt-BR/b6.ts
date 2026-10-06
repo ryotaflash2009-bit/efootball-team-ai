@@ -145,6 +145,7 @@ const part: PartialDictionary = {
     draftNotice: "Suporte do TeamAIXI v1.0. Um único operador responde às mensagens por ordem de chegada; não é possível garantir prazos de resposta.",
     notConfiguredNotice: "O canal de contato do suporte está sendo preparado antes do lançamento.",
     sharedChannelIntro: "Dúvidas gerais, relatos de bugs, contatos de titulares de direitos e dúvidas sobre privacidade são atendidos, no momento, por um canal de contato compartilhado.",
+    analyticsNote: "Usamos o Vercel Web Analytics para entender as visualizações de página (sem cookies; a parte da URL após \"?\" ou \"#\" nunca é enviada). Veja a política de privacidade para mais detalhes.",
     sharedChannelEmailLabel: "Endereço de e-mail de contato",
     dedicatedChannelLabel: "Suporte do TeamAIXI",
     contactSafetyNotice: "Não envie senhas, códigos de verificação, chaves de API, segredos, endereços, números de telefone ou outras informações pessoais. Os relatos de bugs devem incluir apenas a tela, os passos, o horário da ocorrência, o dispositivo, o sistema operacional e o navegador.",

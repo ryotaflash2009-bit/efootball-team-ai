@@ -38,6 +38,7 @@ export function SupportView() {
             {ts("dedicatedChannelLabel")}
           </p>
           <p className="mt-1 text-sm text-text-dim">{ts("sharedChannelIntro")}</p>
+        <p className="mt-1.5 text-sm text-text-dim">{ts("analyticsNote")}</p>
           <p className="mt-2 text-xs font-semibold text-text-dim">{ts("sharedChannelEmailLabel")}</p>
           {/* アドレスは作成済みの専用メールボックス（v1.0 で維持・独自ドメインの後に TeamAIXI 名義へ移行）。名前を強調しないため通常の太さ。 */}
           <p className="mt-0.5 break-all text-sm text-text">{channels.supportEmail}</p>

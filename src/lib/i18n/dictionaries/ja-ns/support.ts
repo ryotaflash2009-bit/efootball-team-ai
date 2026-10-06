@@ -10,6 +10,7 @@ const support: Dictionary["support"] = {
   draftNotice: "TeamAIXI v1.0 の問い合わせ案内です。対応は運営者 1 名が順次行い、返信の期限はお約束できません。",
   notConfiguredNotice: "問い合わせ窓口は公開前準備中です。",
   sharedChannelIntro: "現在、一般問い合わせ、不具合報告、権利者からの連絡、プライバシーに関する問い合わせは、共通の窓口で受け付けています。",
+  analyticsNote: "閲覧数の把握に Vercel Web Analytics を使っています（Cookie なし・URL の「?」と「#」以降は送りません）。詳しくはプライバシーポリシーをご覧ください。",
   sharedChannelEmailLabel: "問い合わせ先メールアドレス",
   dedicatedChannelLabel: "TeamAIXI専用サポート窓口",
   contactSafetyNotice: "パスワード、確認コード、APIキー、Secret、住所、電話番号などの個人情報は送信しないでください。不具合を報告する場合は、画面名、操作手順、発生日時、端末、OS、ブラウザーのみを記載してください。",

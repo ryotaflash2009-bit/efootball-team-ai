@@ -145,6 +145,7 @@ const part: PartialDictionary = {
     draftNotice: "TeamAIXI v1.0 지원입니다. 운영자 1명이 순서대로 메시지를 처리하므로 답변 시기는 약속할 수 없습니다.",
     notConfiguredNotice: "지원 연락 창구는 출시 전 준비 중입니다.",
     sharedChannelIntro: "일반 문의, 버그 신고, 권리자 연락, 개인정보 문의는 현재 모두 공통 연락 창구에서 처리합니다.",
+    analyticsNote: "페이지 조회 수를 파악하기 위해 Vercel Web Analytics를 사용합니다(쿠키 없음, URL의 \"?\" 및 \"#\" 이후는 전송하지 않음). 자세한 내용은 개인정보 처리방침을 확인하세요.",
     sharedChannelEmailLabel: "연락용 이메일 주소",
     dedicatedChannelLabel: "TeamAIXI 지원",
     contactSafetyNotice: "비밀번호, 인증 코드, API 키, 비밀 정보, 주소, 전화번호 등 개인정보를 보내지 마세요. 버그 신고에는 화면, 절차, 발생 시각, 기기, 운영체제, 브라우저만 적어 주세요.",

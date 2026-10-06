@@ -93,7 +93,7 @@ export function PrivacyView() {
         <ul className="mt-1 list-disc space-y-1 ps-5 text-sm text-text-dim">
           <li>{tp("externalTransmissionNoThirdParty")}</li>
           <li>{tp("externalTransmissionNoGenerativeAi")}</li>
-          <li>{tp("externalTransmissionNoAnalytics")}</li>
+          <li>{tp("externalTransmissionAnalytics")}</li>
           <li>{tp("externalTransmissionNoAds")}</li>
         </ul>
       </Surface>
