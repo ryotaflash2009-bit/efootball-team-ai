@@ -72,10 +72,12 @@ export function PreviewLanguageMenu({ options, compact }: { options: { code: Dis
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={open ? listId : undefined}
+        aria-label={current ? `${t("language", "previewListLabel")}: ${current.nativeName}` : t("language", "moreLanguages")}
         onClick={() => (open ? setOpen(false) : openList())}
         className={`min-h-[32px] rounded-md border border-dashed border-border px-2 font-semibold text-text-dim hover:text-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${compact ? "text-2xs" : "text-xs"} ${current ? "bg-accent text-accent-ink" : "bg-surface-2"}`}
       >
-        {current ? current.nativeName : t("language", "moreLanguages")}
+        {/* 狭いヘッダー（compact）では短い表示にし、読み上げは完全な名前（aria-label） */}
+        {compact ? (current ? current.code : `+${options.length}`) : current ? current.nativeName : t("language", "moreLanguages")}
       </button>
       {open ? (
         <ul
