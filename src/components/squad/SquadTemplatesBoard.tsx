@@ -25,13 +25,14 @@ import { MiniPitch } from "./MiniPitch";
 import { useT } from "@/lib/i18n/LocaleContext";
 import { PageHeader } from "@/components/ui/PageHeader";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 export function SquadTemplatesBoard() {
   const router = useRouter();
   const t = useT();
   const tst = (k: keyof Dictionary["squadTemplatesBoard"]) => t("squadTemplatesBoard", k);
   const fillSt = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const [items, setItems] = useState<SquadTemplateSummary[] | null>(null);
   const [storageOk, setStorageOk] = useState(true);
   const [newName, setNewName] = useState("");

@@ -15,8 +15,9 @@ import { DISPLAY_TIME_ZONE, formatDateTime } from "@/lib/i18n/format";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import type { Locale } from "@/lib/i18n/locale";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { fillMessage } from "@/lib/i18n/message-format";
 
-const fill = (s: string, vars: Record<string, string>) => Object.entries(vars).reduce((acc, [k, v]) => acc.replace(`{${k}}`, v), s);
+const fill = (s: string, vars: Record<string, string>) => fillMessage(s, vars);
 
 function fmt(iso: string | null, locale: Locale): string {
   if (!iso) return "—";

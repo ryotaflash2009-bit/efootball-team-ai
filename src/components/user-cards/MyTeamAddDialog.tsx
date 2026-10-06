@@ -18,6 +18,7 @@ import { NOTE_MAX_LEN, sanitizeNote } from "@/lib/user-cards/validation";
 import { useOwnershipLabels, useUsageLabels } from "./UserCardTile";
 import { useT } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 /**
  * My Team への追加 / 編集ダイアログ。所有状態・使用状態・メモ・タグ。
@@ -50,7 +51,7 @@ export function MyTeamAddDialog({
   const t = useT();
   const tad = (k: keyof Dictionary["myTeamAddDialog"]) => t("myTeamAddDialog", k);
   const fillAd = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const OWNERSHIP_LABELS = useOwnershipLabels();
   const USAGE_LABELS = useUsageLabels();
 

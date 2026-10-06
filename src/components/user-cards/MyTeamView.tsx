@@ -31,13 +31,14 @@ import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { YourBestPanel } from "@/components/titles/YourBestPanel";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 export function MyTeamView() {
   const t = useT();
   const { locale } = useLocale();
   const tmt = useCallback((k: keyof Dictionary["myTeam"]) => t("myTeam", k), [t]);
   const fillMt = useCallback(
-    (s: string, vars: Record<string, string>) => Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s),
+    (s: string, vars: Record<string, string>) => fillMessage(s, vars),
     [],
   );
   const cardFallbackName = useCallback(

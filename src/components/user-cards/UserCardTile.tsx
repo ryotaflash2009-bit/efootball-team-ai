@@ -17,6 +17,7 @@ import { useState } from "react";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 export function useOwnershipLabels(): Record<OwnershipStatus, string> {
   const t = useT();
@@ -81,7 +82,7 @@ export function UserCardTile({
   const { locale } = useLocale();
   const tuc = (k: keyof Dictionary["userCardTile"]) => t("userCardTile", k);
   const fillUc = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const OWNERSHIP_LABELS = useOwnershipLabels();
   const USAGE_LABELS = useUsageLabels();
   const resolvedRemoveLabel = removeLabel ?? tuc("defaultRemoveLabel");

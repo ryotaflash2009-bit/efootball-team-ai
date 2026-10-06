@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/Badge";
 import { useWorldBasePercentiles } from "@/lib/percentiles/use-world-base-percentiles";
 import { cardBasePercentiles, type CardPercentile } from "@/lib/percentiles/card-percentiles";
 import { BUCKET_LABEL_KEY } from "@/components/world/WorldBasePercentilePanel";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 function useShortName() {
   const t = useT();
@@ -61,7 +62,7 @@ export function ComparisonTables({
   const t = useT();
   const tct = (k: keyof Dictionary["comparisonTables"]) => t("comparisonTables", k);
   const fillCt = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const { locale } = useLocale();
   const shortName = useShortName();
   const categoryLabel = (id: string) => t("compareCategory", id as keyof Dictionary["compareCategory"]);
@@ -372,7 +373,7 @@ function SkillBlock({
   const t = useT();
   const tct = (k: keyof Dictionary["comparisonTables"]) => t("comparisonTables", k);
   const fillCt = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const shortName = useShortName();
   return (
     <div className="rounded-md border border-border p-3 text-sm">

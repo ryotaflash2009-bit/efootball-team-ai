@@ -17,6 +17,7 @@ import { Icon } from "@/components/ui/Icon";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { formatDateTime, formatNumber } from "@/lib/i18n/format";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 export function ManagersUnavailableView() {
   const t = useT();
@@ -99,7 +100,7 @@ export function ManagersPageView({
   const { locale } = useLocale();
   const mp = (k: keyof Dictionary["managersPage"]) => t("managersPage", k);
   const fillMp = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const showingCount = fillMp(mp("showingCountTemplate"), {
     total: formatNumber(result.totalCount, locale),
     from: formatNumber(from, locale),

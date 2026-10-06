@@ -27,6 +27,7 @@ import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { categoryName } from "@/lib/progression/ability-editor-labels";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 /**
  * My Builds 一覧の 1 カード。既存の画像解決・辞書・ポイント集計を再利用（計算エンジンは変更しない）。
@@ -68,7 +69,7 @@ export function MyBuildCard({
   const { locale } = useLocale();
   const tmc = (k: keyof Dictionary["myBuildCard"]) => t("myBuildCard", k);
   const fillMc = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const name = resolvePlayerDisplayName(
     card ?? {},
     locale,

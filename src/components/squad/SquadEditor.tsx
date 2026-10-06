@@ -101,6 +101,7 @@ import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { DiagnosisPerspectivesPanel } from "./DiagnosisPerspectivesPanel";
 import { buildDiagnosisPerspectives, toPerspectiveInput } from "@/lib/squad/diagnosis-perspectives";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 type LoadedCard = { card: ReturnType<typeof toProgressionCard>; display: ReturnType<typeof worldDetailToSquadDisplay> };
 type CardState = LoadedCard | "loading" | "error";
@@ -161,7 +162,7 @@ export function SquadEditor({
   // スカッド計算ライブラリの日本語（警告・操作の結果・エラー）は表示するときだけ英語にする（squad-text-en.ts）。
   const sq = useCallback((text: string) => localizeSquadText(text, locale), [locale]);
   const fillSe = useCallback(
-    (s: string, vars: Record<string, string>) => Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s),
+    (s: string, vars: Record<string, string>) => fillMessage(s, vars),
     [],
   );
   const ASSIGN_ERROR_MESSAGE = useAssignErrorMessage();

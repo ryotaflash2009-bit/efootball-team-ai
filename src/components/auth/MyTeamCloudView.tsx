@@ -30,6 +30,7 @@ import {
 import { ConfirmDialog } from "@/components/user-cards/ConfirmDialog";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { isSignupOpen } from "@/lib/supabase/account-availability";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 type MtcKey = keyof Dictionary["myTeamCloud"];
 type AuthKey = keyof Dictionary["auth"];
@@ -51,7 +52,7 @@ export function MyTeamCloudView() {
   const ta = useCallback((key: MtcKey) => t("myTeamCloud", key), [t]);
   const taAuth = useCallback((key: AuthKey) => t("auth", key), [t]);
   const fill = useCallback(
-    (s: string, vars: Record<string, string>) => Object.entries(vars).reduce((acc, [k, v]) => acc.replace(`{${k}}`, v), s),
+    (s: string, vars: Record<string, string>) => fillMessage(s, vars),
     [],
   );
 

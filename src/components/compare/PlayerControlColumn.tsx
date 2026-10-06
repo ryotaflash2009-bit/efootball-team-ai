@@ -24,6 +24,7 @@ import { CompareTrainingPanel } from "./CompareTrainingPanel";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 const CONFIRMED_BOOSTERS = BOOSTER_CATALOG.filter((b) => b.confirmationStatus === "confirmed");
 
@@ -93,7 +94,7 @@ export function PlayerControlColumn({
   const { locale } = useLocale();
   const tpc = (k: keyof Dictionary["playerControlColumn"]) => t("playerControlColumn", k);
   const fillPc = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const buildModeLabels = useBuildModeLabels();
   const d = player.display;
 

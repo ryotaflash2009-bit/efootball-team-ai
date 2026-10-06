@@ -32,6 +32,8 @@ const RECORD = args.includes("--record") ? args[args.indexOf("--record") + 1] : 
 /** 画面の面ごとの分類（coverage の計算）。 */
 const CORE = new Set(["common", "pageError", "notFoundPage", "nav", "header", "language", "footer", "category"]);
 const LEGAL = new Set(["about", "disclaimer", "privacy", "terms", "support"]);
+/** 法務文書（本人の決定 2026-10-06: 追加の言語では専門家のレビューの無い翻訳を出さず English で表示する）。coverage の不足に数えない。 */
+const LEGAL_ENGLISH_FALLBACK = new Set(["terms", "privacy", "disclaimer"]);
 const SHARE = new Set(["shareCard", "diagnosisShare", "titles", "yourBest", "growthProfile", "basePercentile"]);
 /** 内部・将来の機能（Production では表示しない画面）。coverage の不足を許容する。 */
 const INTERNAL = new Set(["publicIdPreview", "tierPackPreview", "releaseReadiness", "rlsTest", "myTeamCloud", "localDataMigration", "localPosts", "safetyMock"]);
@@ -63,6 +65,7 @@ function surfaceOf(id) {
   const [ns, key] = id.split(".");
   const s = [];
   if (INTERNAL.has(ns)) return ["internal"];
+  if (LEGAL_ENGLISH_FALLBACK.has(ns)) return ["legalEnglishFallback"];
   s.push("publicUi");
   if (CORE.has(ns)) s.push("core");
   if (LEGAL.has(ns)) s.push("legal");
@@ -72,7 +75,7 @@ function surfaceOf(id) {
   if (isState(key)) s.push("errorEmptyLoading");
   return s;
 }
-const SURFACES = ["core", "publicUi", "accessibility", "errorEmptyLoading", "metadata", "shareCards", "legal", "internal"];
+const SURFACES = ["core", "publicUi", "accessibility", "errorEmptyLoading", "metadata", "shareCards", "legal", "legalEnglishFallback", "internal"];
 const totals = Object.fromEntries(SURFACES.map((s) => [s, 0]));
 for (const id of SOURCE.keys()) for (const s of surfaceOf(id)) totals[s]++;
 
@@ -120,6 +123,9 @@ for (const info of LOCALES) {
   const st = status.locales?.[code];
   r.quality = st?.quality ?? "INCOMPLETE";
   r.productionGate = gate && ["VERIFIED_REVIEWED", "VERIFIED_NATIVE_QUALITY"].includes(r.quality) && r.stale.length === 0 ? "PASS" : "NOT_MET";
+  // Release Candidate: 公開の面の coverage 100%・stale 0（品質は機械支援で可。公開にはレビューが必要）
+  r.releaseCandidateGate = gate && r.stale.length === 0 && ["MACHINE_ASSISTED_COMPLETE", "VERIFIED_REVIEWED", "VERIFIED_NATIVE_QUALITY"].includes(r.quality) ? "PASS" : "NOT_MET";
+  if (info.state === "RELEASE_CANDIDATE" && r.releaseCandidateGate !== "PASS") report.failures.push(`${code}: RELEASE_CANDIDATE but the release-candidate gate is not met`);
   for (const k of ["extra", "placeholderMismatch", "control", "leakage", "unsafe", "secretLike", "tagMismatch"]) {
     if (r[k].length) report.failures.push(`${code}: ${k} ${r[k].length} (${r[k].slice(0, 3).join(", ")})`);
   }

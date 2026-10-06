@@ -6,6 +6,7 @@ import { useT } from "@/lib/i18n/LocaleContext";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Surface } from "@/components/ui/Surface";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { LegalLanguageNotice } from "@/components/public-info/LegalLanguageNotice";
 
 type PrivacyKey = keyof Dictionary["privacy"];
 
@@ -16,6 +17,7 @@ export function PrivacyView() {
   return (
     <div className="flex flex-col gap-5">
       <PageHeader title={tp("heading")} icon="shield" description={tp("intro")} />
+      <LegalLanguageNotice />
 
       <Surface tone="inset" padding="sm" className="text-xs text-warning">
         {tp("draftNotice")}

@@ -32,6 +32,7 @@ import { Icon } from "@/components/ui/Icon";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 type Step = "choose" | "confirm" | "done";
 type Mode = "all" | "selection";
@@ -129,7 +130,7 @@ function BuildExportModal({
   const t = useT();
   const tem = (k: keyof Dictionary["buildExportModal"]) => t("buildExportModal", k);
   const fillEm = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const [step, setStep] = useState<Step>("choose");
   const [mode, setMode] = useState<Mode>("all");
   const [query, setQuery] = useState("");
@@ -457,7 +458,7 @@ function ChooseStep({
   const { locale } = useLocale();
   const tem = (k: keyof Dictionary["buildExportModal"]) => t("buildExportModal", k);
   const fillEm = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   return (
     <>
       <fieldset className="flex flex-col gap-1.5 rounded border border-border p-2">
@@ -601,7 +602,7 @@ function ConfirmStep({
   const t = useT();
   const tem = (k: keyof Dictionary["buildExportModal"]) => t("buildExportModal", k);
   const fillEm = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const targetLabel = mode === "all" ? tem("allBuildsLabel") : tem("selectedBuildsLabel");
   return (
     <div className="flex flex-col gap-2">
@@ -693,7 +694,7 @@ function ExportInfo({ selectedCount, mode }: { selectedCount: number; mode: Mode
   const t = useT();
   const tem = (k: keyof Dictionary["buildExportModal"]) => t("buildExportModal", k);
   const fillEm = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const safetyLines = useSafetyLines();
   return (
     <div className="rounded border border-border bg-surface-2/40 p-2 text-2xs text-text-dim">

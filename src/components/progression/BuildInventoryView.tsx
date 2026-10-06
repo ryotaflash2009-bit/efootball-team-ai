@@ -98,6 +98,7 @@ import { localizeBuildsText } from "@/lib/progression/builds-text-en";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 /** groupPriorities/primaryGoal を除いた BuildIntentInput(プリセットが既定値を持たない、常に手動値のみのフィールド)。 */
 function omitGoalAndPriorities(intent: BuildIntentInput): Omit<BuildIntentInput, "primaryGoal" | "groupPriorities"> {
@@ -155,7 +156,7 @@ export function BuildInventoryView() {
   const { locale } = useLocale();
   const biv = (k: keyof Dictionary["buildInventoryView"]) => t("buildInventoryView", k);
   const fillBiv = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const SORT_LABEL = useSortLabels();
   const ISSUE_KIND_LABEL = useIssueKindLabels();
   const [builds, setBuilds] = useState<SavedBuild[]>([]);
@@ -1327,7 +1328,7 @@ function LegacyBuildGuide({
   const t = useT();
   const biv = (k: keyof Dictionary["buildInventoryView"]) => t("buildInventoryView", k);
   const fillBiv = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const has = legacy.total > 0;
   return (
     <details open={has} className="rounded-md border border-border bg-surface-2/30 [&_summary]:list-none">
@@ -1463,7 +1464,7 @@ function StorageWarning({
   const t = useT();
   const biv = (k: keyof Dictionary["buildInventoryView"]) => t("buildInventoryView", k);
   const fillBiv = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const missing = [
     !buildAvail ? biv("missingBuildsLabel") : null,
     !myTeamAvail ? biv("missingMyTeamLabel") : null,
@@ -1555,7 +1556,7 @@ function IssueRow({
   const { locale } = useLocale();
   const biv = (k: keyof Dictionary["buildInventoryView"]) => t("buildInventoryView", k);
   const fillBiv = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const ISSUE_KIND_LABEL = useIssueKindLabels();
   const card = cards.get(issue.refWorldCardId) ?? null;
   const name = resolvePlayerDisplayName(card ?? {}, locale, t("squadBuildPanel", "cardFallbackNameTemplate").replace("{id}", issue.refWorldCardId));
@@ -1627,7 +1628,7 @@ function InventoryCard({
   const { locale } = useLocale();
   const biv = (k: keyof Dictionary["buildInventoryView"]) => t("buildInventoryView", k);
   const fillBiv = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const { build, card } = item;
   const fallbackName = t("squadBuildPanel", "cardFallbackNameTemplate").replace("{id}", build.worldCardId);
   const name = resolvePlayerDisplayName(card ?? {}, locale, fallbackName);

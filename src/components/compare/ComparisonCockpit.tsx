@@ -15,6 +15,7 @@ import { CompareAbilityEditSheet } from "./CompareAbilityEditSheet";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 /**
  * 比較コックピット: 育成スライダー・能力値レーダー・選択カテゴリの近接プレビューを 1 つの表示領域へ集約する。
@@ -76,7 +77,7 @@ export function ComparisonCockpit({
   const { locale } = useLocale();
   const tcc = useCallback((k: keyof Dictionary["comparisonCockpit"]) => t("comparisonCockpit", k), [t]);
   const fillCc = useCallback(
-    (s: string, vars: Record<string, string>) => Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s),
+    (s: string, vars: Record<string, string>) => fillMessage(s, vars),
     [],
   );
   const nameOf = useCallback(

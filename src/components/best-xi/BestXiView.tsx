@@ -30,11 +30,12 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Icon } from "@/components/ui/Icon";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 const FORMATION_ID = "4-3-3";
 
 function fillTemplate(s: string, vars: Record<string, string>): string {
-  return Object.entries(vars).reduce((acc, [k, v]) => acc.replace(`{${k}}`, v), s);
+  return fillMessage(s, vars);
 }
 
 function candidateSignature(candidates: BestXiCandidate[]): string {

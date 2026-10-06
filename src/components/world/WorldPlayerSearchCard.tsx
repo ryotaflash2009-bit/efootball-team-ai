@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Icon } from "@/components/ui/Icon";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 /**
  * 選手検索結果の 1 カード（スカッド検索 / 選手比較検索で共通の表示部分）。
@@ -46,7 +47,7 @@ export function WorldPlayerSearchCard({
   const { locale } = useLocale();
   const twc = (k: keyof Dictionary["worldPlayerSearchCard"]) => t("worldPlayerSearchCard", k);
   const fillWc = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const v = buildPlayerSearchCardView(player, locale);
 
   return (

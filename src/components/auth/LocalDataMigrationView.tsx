@@ -27,6 +27,7 @@ import { saveTextFile } from "@/lib/browser-save-file";
 import { DATA_KINDS, type DataKind, type StorageScope } from "@/lib/local-storage-scope/types";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { isSignupOpen } from "@/lib/supabase/account-availability";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 type LdmKey = keyof Dictionary["localDataMigration"];
 type AuthKey = keyof Dictionary["auth"];
@@ -61,7 +62,7 @@ export function LocalDataMigrationView() {
   const ta = useCallback((key: LdmKey) => t("localDataMigration", key), [t]);
   const taAuth = useCallback((key: AuthKey) => t("auth", key), [t]);
   const fill = useCallback(
-    (s: string, vars: Record<string, string>) => Object.entries(vars).reduce((acc, [k, v]) => acc.replace(`{${k}}`, v), s),
+    (s: string, vars: Record<string, string>) => fillMessage(s, vars),
     [],
   );
   const kindLabel = useCallback((kind: DataKind) => ta(`kindLabel_${kind}` as LdmKey), [ta]);

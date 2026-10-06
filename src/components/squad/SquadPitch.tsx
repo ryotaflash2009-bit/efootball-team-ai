@@ -16,6 +16,7 @@ import {
 import type { SquadSlotResult, CompatibilityStatus } from "@/lib/squad/types";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 const COMPAT_DOT: Record<CompatibilityStatus, string> = {
   exact: "bg-accent",
@@ -79,7 +80,7 @@ export function SquadPitch({
   const { locale } = useLocale();
   const compatTitles = useCompatTitles();
   const fillSp = (s: string, vars: Record<string, string>) =>
-    Object.entries(vars).reduce((acc, [key, val]) => acc.replace(`{${key}}`, val), s);
+    fillMessage(s, vars);
   const guideLabel = useCallback(
     (kind: string): string =>
       kind === "horizontal"
