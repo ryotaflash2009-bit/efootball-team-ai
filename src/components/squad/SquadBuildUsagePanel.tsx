@@ -161,7 +161,7 @@ export function SquadBuildUsagePanel({
                         <span className="text-accent">
                           {t("buildUsage", "buildSetPrefix")}
                           {e.build?.buildName}
-                          <span className="ml-1 text-text-muted">
+                          <span className="ms-1 text-text-muted">
                             （{ruleLabelFor(e.ruleKind)}
                             {e.pom ? t("buildUsage", "pomSuffix") : ""}
                             {e.experimental ? t("buildUsage", "experimentalSuffix") : ""}）
@@ -175,7 +175,7 @@ export function SquadBuildUsagePanel({
                         onOpenBuildPanel({ area: e.area, key: e.key });
                         setOpen(false);
                       }}
-                      className="ml-auto rounded border border-border px-2 py-0.5 font-semibold hover:border-accent"
+                      className="ms-auto rounded border border-border px-2 py-0.5 font-semibold hover:border-accent"
                     >
                       {t("buildUsage", "chooseBuildButton")}
                     </button>
@@ -192,7 +192,7 @@ export function SquadBuildUsagePanel({
                 <Icon name="sliders" size={12} />
                 {t("buildUsage", "manageInMyBuilds")}
               </Link>
-              <Button variant="ghost" size="sm" onClick={() => setOpen(false)} className="ml-auto">
+              <Button variant="ghost" size="sm" onClick={() => setOpen(false)} className="ms-auto">
                 {t("buildUsage", "closeButton")}
               </Button>
             </div>

@@ -48,7 +48,7 @@ export function DisclaimerView() {
 
       <Surface tone="outline" padding="md">
         <p className="text-sm font-semibold text-text">{td("analysisHeading")}</p>
-        <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm text-text-dim">
+        <ul className="mt-2 list-disc space-y-1.5 ps-5 text-sm text-text-dim">
           <li>{td("analysisRuleBased")}</li>
           <li>{td("analysisNotOfficial")}</li>
           <li>{td("analysisNoWinGuarantee")}</li>

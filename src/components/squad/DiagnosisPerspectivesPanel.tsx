@@ -47,7 +47,7 @@ export function DiagnosisPerspectivesPanel({
                   {t("diagnosisPerspectives", "confidence")}: {confidenceLabel[r.confidence]}
                 </span>
               </div>
-              <ul className="mt-1 list-disc pl-4 text-2xs text-text-dim">
+              <ul className="mt-1 list-disc ps-4 text-2xs text-text-dim">
                 {r.facts.map((f, i) => (
                   <li key={i}>{lp(f)}</li>
                 ))}
@@ -65,7 +65,7 @@ export function DiagnosisPerspectivesPanel({
                     </dt>
                     <dd className="text-text">
                       <span className="tabular-nums">{f.value === null ? t("diagnosisPerspectives", "notComputed") : `${f.value}${lp(f.unit)}`}</span>
-                      <span className="ml-2 text-text-muted">{lp(f.description)}</span>
+                      <span className="ms-2 text-text-muted">{lp(f.description)}</span>
                     </dd>
                   </div>
                 ))}
@@ -73,7 +73,7 @@ export function DiagnosisPerspectivesPanel({
               {r.causes.length > 0 ? (
                 <>
                   <p className="mt-1.5 text-2xs font-semibold text-text-dim">{t("diagnosisPerspectives", "causes")}</p>
-                  <ul className="list-disc pl-4 text-2xs text-text-dim">
+                  <ul className="list-disc ps-4 text-2xs text-text-dim">
                     {r.causes.map((c) => (
                       <li key={c.key}>
                         {lp(c.name)}
@@ -86,7 +86,7 @@ export function DiagnosisPerspectivesPanel({
               {r.improvements.length > 0 ? (
                 <>
                   <p className="mt-1.5 text-2xs font-semibold text-text-dim">{t("diagnosisPerspectives", "improvements")}</p>
-                  <ul className="list-disc pl-4 text-2xs text-text-dim">
+                  <ul className="list-disc ps-4 text-2xs text-text-dim">
                     {r.improvements.map((m, i) => (
                       <li key={i}>{lp(m)}</li>
                     ))}

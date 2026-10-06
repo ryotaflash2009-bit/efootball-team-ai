@@ -171,18 +171,18 @@ export function WorldPlayerDetailView({
           <SectionHeader title={tp("efhubDiffHeading")} as="h2" />
           <div className="overflow-x-auto">
             <table className="w-full min-w-[420px] text-sm">
-              <thead className="text-left text-text-dim">
+              <thead className="text-start [:where(&)_th]:text-start text-text-dim">
                 <tr>
-                  <th className="py-1 pr-3 font-medium">{tp("tableItemHeader")}</th>
-                  <th className="py-1 pr-3 font-medium">{tp("tableWorldHeader")}</th>
+                  <th className="py-1 pe-3 font-medium">{tp("tableItemHeader")}</th>
+                  <th className="py-1 pe-3 font-medium">{tp("tableWorldHeader")}</th>
                   <th className="py-1 font-medium">{tp("tableEfhubHeader")}</th>
                 </tr>
               </thead>
               <tbody>
                 {player.efhubConflicts.map((c) => (
                   <tr key={c.fieldName} className="border-t border-border">
-                    <td className="py-1 pr-3">{c.fieldName}</td>
-                    <td className="py-1 pr-3 font-medium">{c.worldValue ?? "—"}</td>
+                    <td className="py-1 pe-3">{c.fieldName}</td>
+                    <td className="py-1 pe-3 font-medium">{c.worldValue ?? "—"}</td>
                     <td className="py-1 text-text-dim">{c.efhubValue ?? "—"}</td>
                   </tr>
                 ))}

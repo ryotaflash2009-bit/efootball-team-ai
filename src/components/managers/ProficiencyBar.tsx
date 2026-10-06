@@ -64,7 +64,7 @@ export function ProficiencyBar({
                 <div className={`h-full rounded-pill ${TACTIC_BAR[tier]}`} style={{ width: `${pct}%` }} />
               </div>
             </div>
-            <dd className={`text-right text-sm font-bold tabular-nums ${TACTIC_TEXT[tier]}`}>{v ?? "—"}</dd>
+            <dd className={`text-end text-sm font-bold tabular-nums ${TACTIC_TEXT[tier]}`}>{v ?? "—"}</dd>
           </div>
         );
       })}

@@ -65,7 +65,7 @@ function AbilityRow({
         aria-describedby={describedId}
         onClick={() => onSelect(s.key)}
         style={style}
-        className="ability-row flex min-h-[44px] w-full items-center gap-2 px-3 py-1.5 text-left text-sm hover:bg-surface-2/40"
+        className="ability-row flex min-h-[44px] w-full items-center gap-2 px-3 py-1.5 text-start text-sm hover:bg-surface-2/40"
       >
         <span className="flex min-w-0 flex-1 items-center gap-1.5">
           {role === "primary" ? (
@@ -88,7 +88,7 @@ function AbilityRow({
             {diff.before}→
           </span>
         ) : null}
-        <span className="w-8 shrink-0 text-right" aria-hidden="true">
+        <span className="w-8 shrink-0 text-end" aria-hidden="true">
           <Delta value={sessionDelta} animateKey={`${s.key}-${shown}`} />
         </span>
         <StatBadge value={shown} className="ability-badge" />
@@ -110,7 +110,7 @@ function AbilityRow({
         <button
           type="button"
           onClick={onSkipToPanel}
-          className="sr-only focus:not-sr-only focus:block focus:w-full focus:px-3 focus:py-2 focus:text-left focus:text-xs focus:text-accent"
+          className="sr-only focus:not-sr-only focus:block focus:w-full focus:px-3 focus:py-2 focus:text-start focus:text-xs focus:text-accent"
         >
           {t("abilityEditor", "skipToPanel")}
         </button>

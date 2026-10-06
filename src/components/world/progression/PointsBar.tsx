@@ -19,7 +19,7 @@ export function PointsBar({ points }: { points: PointsSummary }) {
         <span className="tabular-nums">
           <span className={over ? "text-danger" : "text-accent"}>{points.usedPoints}</span>
           <span className="text-text-dim">{tp("pointsUsedSuffix").replace("{total}", String(points.totalPoints))}</span>
-          <span className="ml-2 text-text-dim">{tp("pointsRemainingPrefix")}</span>
+          <span className="ms-2 text-text-dim">{tp("pointsRemainingPrefix")}</span>
           <span className={points.remainingPoints < 0 ? "text-danger" : "text-text"}>
             {points.remainingPoints}
           </span>

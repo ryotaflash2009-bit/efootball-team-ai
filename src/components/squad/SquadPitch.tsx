@@ -316,20 +316,20 @@ export function SquadPitch({
                   }`}
                 >
                   <WorldCardImage sources={img} alt={name ?? ""} size="card" />
-                  <span className="absolute left-0 top-0 rounded-br bg-black/75 px-1 text-[10px] font-black leading-tight text-accent">
+                  <span className="absolute left-0 top-0 rounded-ee bg-black/75 px-1 text-[10px] font-black leading-tight text-accent">
                     {e.displayedOvr ?? e.baseOvr ?? "–"}
                   </span>
                   <span
-                    className={`absolute right-0 top-0 h-2 w-2 rounded-bl ${COMPAT_DOT[s.compatibility.status]}`}
+                    className={`absolute right-0 top-0 h-2 w-2 rounded-es ${COMPAT_DOT[s.compatibility.status]}`}
                     title={compatTitles[s.compatibility.status]}
                   />
                   {multiSelected ? (
-                    <span className="absolute bottom-0 right-0 rounded-tl bg-accent px-1 text-[9px] font-black text-accent-ink" aria-hidden="true">
+                    <span className="absolute bottom-0 right-0 rounded-ss bg-accent px-1 text-[9px] font-black text-accent-ink" aria-hidden="true">
                       ✓
                     </span>
                   ) : null}
                   {s.isCaptain ? (
-                    <span className="absolute bottom-0 left-0 rounded-tr bg-accent px-1 text-[9px] font-black text-accent-ink">
+                    <span className="absolute bottom-0 left-0 rounded-se bg-accent px-1 text-[9px] font-black text-accent-ink">
                       C
                     </span>
                   ) : null}

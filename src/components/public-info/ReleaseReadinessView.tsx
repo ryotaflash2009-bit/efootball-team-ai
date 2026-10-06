@@ -50,19 +50,19 @@ export function ReleaseReadinessView() {
 
       <Surface padding="md">
         <p className="text-sm font-semibold text-text">{tr("availableHeading")}</p>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-dim">
+        <ul className="mt-2 list-disc space-y-1 ps-5 text-sm text-text-dim">
           {AVAILABLE_FEATURE_KEYS.map((key) => (
             <li key={key}>{t("about", key)}</li>
           ))}
         </ul>
         <p className="mt-3 text-sm font-semibold text-text">{tr("betaHeading")}</p>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-dim">
+        <ul className="mt-2 list-disc space-y-1 ps-5 text-sm text-text-dim">
           {BETA_FEATURE_KEYS.map((key) => (
             <li key={key}>{t("about", key)}</li>
           ))}
         </ul>
         <p className="mt-3 text-sm font-semibold text-text">{tr("notProvidedHeading")}</p>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-dim">
+        <ul className="mt-2 list-disc space-y-1 ps-5 text-sm text-text-dim">
           {NOT_PROVIDED_FEATURE_KEYS.map((key) => (
             <li key={key}>{t("about", key)}</li>
           ))}
@@ -73,7 +73,7 @@ export function ReleaseReadinessView() {
         <p className="text-sm font-semibold text-warning">{tr("dataCautionHeading")}</p>
         <p className="mt-1.5 text-sm text-text-dim">{tr("dataCautionBody")}</p>
         <p className="mt-2 text-sm font-semibold text-text">{tr("knownLimitationsHeading")}</p>
-        <ul className="mt-1 list-disc space-y-1 pl-5 text-sm text-text-dim">
+        <ul className="mt-1 list-disc space-y-1 ps-5 text-sm text-text-dim">
           <li>{tr("limitationBestXiDedup")}</li>
           <li>{tr("limitationSubPosition")}</li>
           <li>{tr("limitationRuleBasedNotOfficial")}</li>

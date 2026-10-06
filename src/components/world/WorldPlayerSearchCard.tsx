@@ -149,7 +149,7 @@ export function WorldPlayerSearchCard({
             <Link
               href={`/players/world/${encodeURIComponent(v.worldCardId)}`}
               {...(detailInNewTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-              className="ml-auto text-2xs text-text-dim underline hover:text-accent"
+              className="ms-auto text-2xs text-text-dim underline hover:text-accent"
             >
               {twc("detailLink")}
               {detailInNewTab ? twc("detailNewTabSuffix") : ""}

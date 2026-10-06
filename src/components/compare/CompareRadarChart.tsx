@@ -135,7 +135,7 @@ export function CompareRadarChart({
             {RADAR_MODE_LABEL[m]}
           </button>
         ))}
-        <label className="ml-1 flex min-h-[24px] cursor-pointer items-center gap-1.5">
+        <label className="ms-1 flex min-h-[24px] cursor-pointer items-center gap-1.5">
           <input type="checkbox" checked={showPreBuild} onChange={onTogglePreBuild} />
           {fillCr(tcr("showPreBuildTemplate"), {
             target:
@@ -250,10 +250,10 @@ export function CompareRadarChart({
         <div className="mt-1 overflow-x-auto">
           <table className="w-full min-w-[360px]">
             <thead>
-              <tr className="text-left text-text-muted">
-                <th className="py-0.5 pr-2 font-medium">{tcr("playerHeader")}</th>
+              <tr className="text-start [:where(&)_th]:text-start text-text-muted">
+                <th className="py-0.5 pe-2 font-medium">{tcr("playerHeader")}</th>
                 {data.axes.map((a) => (
-                  <th key={a.id} className="py-0.5 pr-2 text-right font-medium" title={a.label}>
+                  <th key={a.id} className="py-0.5 pe-2 text-end font-medium" title={a.label}>
                     {radarAxisLabel(a.id)}
                   </th>
                 ))}
@@ -262,13 +262,13 @@ export function CompareRadarChart({
             <tbody>
               {data.series.map((s) => (
                 <tr key={s.worldCardId + s.index} className="border-t border-border/40">
-                  <td className="py-0.5 pr-2 text-text-dim">
+                  <td className="py-0.5 pe-2 text-text-dim">
                     {s.index + 1}. {s.name}
                   </td>
                   {data.axes.map((a) => {
                     const v = s.points.find((p) => p.axisId === a.id)?.value;
                     return (
-                      <td key={a.id} className="py-0.5 pr-2 text-right tabular-nums">
+                      <td key={a.id} className="py-0.5 pe-2 text-end tabular-nums">
                         {v == null ? "—" : v.toFixed(1)}
                       </td>
                     );

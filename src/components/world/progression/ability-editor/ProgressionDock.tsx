@@ -218,7 +218,7 @@ export function ProgressionDock({
           <span className="font-semibold">{baselineLevel}</span>
           <span className="text-text-dim"> → </span>
           <span className="text-sm font-bold text-[rgb(var(--cat))]" data-testid="dock-level">{level}</span>
-          {change !== 0 ? <span className={`ml-1 font-bold ${change > 0 ? "text-lime-300" : "text-danger"}`}>{signed(change)}</span> : null}
+          {change !== 0 ? <span className={`ms-1 font-bold ${change > 0 ? "text-lime-300" : "text-danger"}`}>{signed(change)}</span> : null}
         </span>
         {pointsChange !== 0 ? (
           <span className="text-text-dim" data-testid="dock-points-change">
@@ -234,7 +234,7 @@ export function ProgressionDock({
         </span>
         <span className="text-text-dim">
           {tx("maximumReachable")}: <span className="text-text">{tx("levelPrefix")} {model.reachableMax}</span>
-          {model.atCategoryMax ? <span className="ml-1 font-bold text-[rgb(var(--cat))]">{tx("maxBadge")}</span> : null}
+          {model.atCategoryMax ? <span className="ms-1 font-bold text-[rgb(var(--cat))]">{tx("maxBadge")}</span> : null}
         </span>
       </div>
 
@@ -295,7 +295,7 @@ export function ProgressionDock({
           {relatedDiffs.map((d) => (
             <li key={d.key} className={d.key === primary?.key ? "font-bold text-text" : "text-text-dim"}>
               {abilityName(d.key, locale)} {d.before}→<span className="text-text">{d.after}</span>
-              {d.delta !== 0 ? <span className={`ml-0.5 ${d.delta > 0 ? "text-lime-300" : "text-danger"}`}>{signed(d.delta)}</span> : null}
+              {d.delta !== 0 ? <span className={`ms-0.5 ${d.delta > 0 ? "text-lime-300" : "text-danger"}`}>{signed(d.delta)}</span> : null}
             </li>
           ))}
         </ul>

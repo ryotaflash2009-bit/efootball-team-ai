@@ -891,7 +891,7 @@ export function MyBuildsView() {
               <p className="text-text-muted">
                 {fillMb(tmb("idLineTemplate"), { worldCardId: clearFavoriteTarget.worldCardId, buildId: clearFavoriteTarget.buildId })}
               </p>
-              <ul className="list-disc pl-4 text-text-dim">
+              <ul className="list-disc ps-4 text-text-dim">
                 <li>{tmb("clearFavoriteChangedItem")}</li>
                 <li>{tmb("clearFavoriteUnchangedItemTemplate")}</li>
               </ul>
@@ -991,7 +991,7 @@ function RegisterToMyTeamDialog({
           <p>
             {tmb("buildToUseLabel")}
             <b>{build.buildName}</b>
-            <span className="ml-1 text-text-muted">{fillMb(tmb("buildIdSuffixTemplate"), { id: build.buildId })}</span>
+            <span className="ms-1 text-text-muted">{fillMb(tmb("buildIdSuffixTemplate"), { id: build.buildId })}</span>
           </p>
           <p className="mt-0.5 text-text-dim">
             rulesVersion {build.rulesVersion}（{ruleLabel(rule.isV2, rule.isLegacy)}）
@@ -1105,7 +1105,7 @@ function RegisterToMyTeamDialog({
         </div>
 
         {/* 8. 変更されない項目 */}
-        <ul className="list-disc pl-4 text-2xs text-text-dim">
+        <ul className="list-disc ps-4 text-2xs text-text-dim">
           <li>{tmb("unchangedListItem1")}</li>
           <li>{tmb("unchangedListItem2")}</li>
         </ul>
@@ -1192,7 +1192,7 @@ function SetFavoriteBuildDialog({
               <p>
                 {tmb("settingBuildLabel")}
                 <b>{build.buildName}</b>
-                <span className="ml-1 text-text-muted">{fillMb(tmb("buildIdSuffixTemplate"), { id: build.buildId })}</span>
+                <span className="ms-1 text-text-muted">{fillMb(tmb("buildIdSuffixTemplate"), { id: build.buildId })}</span>
               </p>
               <p className="mt-0.5">
                 {tmb("currentFavoriteLabel")}
@@ -1203,7 +1203,7 @@ function SetFavoriteBuildDialog({
                 ) : (
                   <span>
                     <b>{desc?.fromBuildName}</b>
-                    <span className="ml-1 text-text-muted">{fillMb(tmb("buildIdSuffixTemplate"), { id: String(desc?.fromBuildId) })}</span>
+                    <span className="ms-1 text-text-muted">{fillMb(tmb("buildIdSuffixTemplate"), { id: String(desc?.fromBuildId) })}</span>
                   </span>
                 )}
               </p>
@@ -1214,7 +1214,7 @@ function SetFavoriteBuildDialog({
                 ) : (
                   <span>
                     {currentSelectedBuild?.buildName ?? tmb("missingBuildFallback")}
-                    <span className="ml-1 text-text-muted">{fillMb(tmb("buildIdSuffixTemplate"), { id: desc.selectedBuildId })}</span>
+                    <span className="ms-1 text-text-muted">{fillMb(tmb("buildIdSuffixTemplate"), { id: desc.selectedBuildId })}</span>
                   </span>
                 )}
               </p>
@@ -1224,7 +1224,7 @@ function SetFavoriteBuildDialog({
             </div>
 
             <p className="text-2xs">{fillMb(tmb("confirmFavoriteChangeTemplate"), { name: build.buildName })}</p>
-            <ul className="list-disc pl-4 text-2xs text-text-dim">
+            <ul className="list-disc ps-4 text-2xs text-text-dim">
               <li>{tmb("favoriteChangedItem")}</li>
               <li>{tmb("favoriteUnchangedItemTemplate")}</li>
               <li>{tmb("favoriteNoAutoApplyNote")}</li>
@@ -1304,7 +1304,7 @@ function AssignToMyTeamDialog({
               <p>
                 {tmb("settingBuildLabel")}
                 <b>{build.buildName}</b>
-                <span className="ml-1 text-text-muted">{fillMb(tmb("buildIdSuffixTemplate"), { id: build.buildId })}</span>
+                <span className="ms-1 text-text-muted">{fillMb(tmb("buildIdSuffixTemplate"), { id: build.buildId })}</span>
               </p>
               <p className="mt-0.5">
                 {tmb("currentSelectedLabel")}
@@ -1315,7 +1315,7 @@ function AssignToMyTeamDialog({
                 ) : (
                   <span>
                     <b>{desc?.fromBuildName}</b>
-                    <span className="ml-1 text-text-muted">{fillMb(tmb("buildIdSuffixTemplate"), { id: String(desc?.fromBuildId) })}</span>
+                    <span className="ms-1 text-text-muted">{fillMb(tmb("buildIdSuffixTemplate"), { id: String(desc?.fromBuildId) })}</span>
                   </span>
                 )}
               </p>
@@ -1325,7 +1325,7 @@ function AssignToMyTeamDialog({
             </div>
 
             <p className="text-2xs">{fillMb(tmb("confirmSelectedChangeTemplate"), { name: build.buildName })}</p>
-            <ul className="list-disc pl-4 text-2xs text-text-dim">
+            <ul className="list-disc ps-4 text-2xs text-text-dim">
               <li>{tmb("selectedChangedItem")}</li>
               <li>{tmb("selectedUnchangedItemTemplate")}</li>
               <li>{tmb("selectedNoAutoApplyNote")}</li>
@@ -1434,7 +1434,7 @@ function DeleteBody({
       {usageSummary.anyUsage ? (
         <div className="rounded border border-warning/40 bg-warning/10 px-2 py-1.5 text-warning">
           <p className="font-semibold">{tmb("referencedFromLabel")}</p>
-          <ul className="mt-0.5 list-disc pl-4">
+          <ul className="mt-0.5 list-disc ps-4">
             {usageSummary.myTeamSelected ? <li>{tmb("myTeamSelectedItem")}</li> : null}
             {usageSummary.myTeamFavorite ? <li>{tmb("myTeamFavoriteItem")}</li> : null}
             {usageSummary.squads.map((s) => (

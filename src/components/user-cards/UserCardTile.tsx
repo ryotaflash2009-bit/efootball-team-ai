@@ -246,7 +246,7 @@ export function UserCardTile({
           <button
             type="button"
             onClick={onRemove}
-            className="ml-auto inline-flex min-h-[36px] items-center gap-1 rounded-md border border-border px-2 text-2xs text-danger hover:border-danger"
+            className="ms-auto inline-flex min-h-[36px] items-center gap-1 rounded-md border border-border px-2 text-2xs text-danger hover:border-danger"
           >
             <Icon name="trash" size={12} />
             {resolvedRemoveLabel}

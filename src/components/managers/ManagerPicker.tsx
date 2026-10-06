@@ -317,7 +317,7 @@ function PickerCard({
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold">
             {displayName}
-            {isCurrent ? <span className="ml-1 text-2xs text-accent">{t("managerPicker", "selectedBadge")}</span> : null}
+            {isCurrent ? <span className="ms-1 text-2xs text-accent">{t("managerPicker", "selectedBadge")}</span> : null}
           </p>
           <p className="text-2xs text-text-muted">
             {t("managerPicker", "releasedPrefix")}

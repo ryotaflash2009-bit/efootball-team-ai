@@ -71,7 +71,7 @@ export function CompareCategoryPreview({
     <div className="rounded border border-border bg-surface-2/30 p-2 text-2xs">
       <p className="mb-1 font-semibold">
         {fillCp(tcp("headingTemplate"), { label, mode: RADAR_MODE_LABEL[mode] })}
-        <span className="ml-1 font-normal text-text-muted">{tcp("headingHint")}</span>
+        <span className="ms-1 font-normal text-text-muted">{tcp("headingHint")}</span>
       </p>
 
       <div className="flex flex-col gap-1.5">

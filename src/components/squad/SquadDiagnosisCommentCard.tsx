@@ -80,7 +80,7 @@ export function SquadDiagnosisCommentCard({
             type="button"
             aria-pressed={mode === "harsh"}
             onClick={() => setMode("harsh")}
-            className={`min-h-[36px] border-l border-border px-3 text-2xs font-semibold transition-colors ${
+            className={`min-h-[36px] border-s border-border px-3 text-2xs font-semibold transition-colors ${
               mode === "harsh" ? "bg-danger text-text" : "bg-surface-2 text-text-dim hover:text-text"
             }`}
           >
@@ -192,7 +192,7 @@ function TacticalReviewSection({ review }: { review: ReturnType<typeof buildTact
             <p className="mt-1 text-text-muted">{f.summary}</p>
             {f.explanation ? <p className="mt-0.5 text-text-muted">{f.explanation}</p> : null}
             {f.evidence.length > 0 ? (
-              <ul className="mt-1 list-disc pl-4 text-text-muted">
+              <ul className="mt-1 list-disc ps-4 text-text-muted">
                 {f.evidence.map((e, i) => (
                   <li key={i}>{e}</li>
                 ))}
@@ -204,7 +204,7 @@ function TacticalReviewSection({ review }: { review: ReturnType<typeof buildTact
               </p>
             ) : null}
             {f.recommendations.length > 0 ? (
-              <ol className="mt-1 list-decimal pl-4 text-text-muted">
+              <ol className="mt-1 list-decimal ps-4 text-text-muted">
                 {f.recommendations.map((r, i) => (
                   <li key={i}>{r}</li>
                 ))}

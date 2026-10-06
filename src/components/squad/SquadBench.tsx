@@ -121,15 +121,15 @@ export function SquadBench({
                       `${t("bench", "benchSlotLabel")} ${r.index + 1}: ${r.name}` +
                       (isTarget ? t("bench", "moveSwapSuffix") : t("bench", "moveStartSuffix"))
                     }
-                    className="min-w-0 flex-1 truncate text-left hover:text-accent"
+                    className="min-w-0 flex-1 truncate text-start hover:text-accent"
                   >
                     <span className="font-semibold">{r.name}</span>
-                    <span className="ml-1 text-text-dim">
+                    <span className="ms-1 text-text-dim">
                       {r.registeredPosition ?? t("bench", "positionUnknown")} · {t("bench", "displayedOvrPrefix")}
                       {r.displayedOvr ?? t("bench", "ovrUnknown")}
                     </span>
-                    {r.state === "loading" ? <span className="ml-1 text-text-muted">{t("bench", "loadingLabel")}</span> : null}
-                    {r.state === "error" ? <span className="ml-1 text-danger">{t("bench", "errorLabel")}</span> : null}
+                    {r.state === "loading" ? <span className="ms-1 text-text-muted">{t("bench", "loadingLabel")}</span> : null}
+                    {r.state === "error" ? <span className="ms-1 text-danger">{t("bench", "errorLabel")}</span> : null}
                   </button>
                   <div className="flex shrink-0 items-center gap-1">
                     <button

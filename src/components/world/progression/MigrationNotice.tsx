@@ -29,7 +29,7 @@ export function MigrationNotice({
         {tp("migrationBody2")}
       </p>
       {migration.notes.length > 0 ? (
-        <ul className="mt-1 list-disc space-y-0.5 pl-4 text-text-dim">
+        <ul className="mt-1 list-disc space-y-0.5 ps-4 text-text-dim">
           {migration.notes.map((n, i) => (
             <li key={i}>{n}</li>
           ))}

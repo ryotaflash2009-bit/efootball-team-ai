@@ -506,7 +506,7 @@ function ChooseStep({
             <button type="button" onClick={onClearAll} className="rounded border border-border px-2 py-1 hover:border-accent">
               {tem("clearVisibleSelectionButton")}
             </button>
-            <span aria-live="polite" role="status" className="ml-auto font-semibold text-text-dim">
+            <span aria-live="polite" role="status" className="ms-auto font-semibold text-text-dim">
               {fillEm(tem("selectedCountTemplate"), { count: String(selectedIds.size) })}
             </span>
           </div>
@@ -642,7 +642,7 @@ function ConfirmStep({
               {tem("pickerInstructionPrefix")}
               <b>{tem("pickerInstructionBold")}</b>
             </p>
-            <ul className="mt-1 list-disc pl-4">
+            <ul className="mt-1 list-disc ps-4">
               <li>
                 {tem("pickerNote1Prefix")}
                 <b>{tem("pickerNote1Bold")}</b>
@@ -703,7 +703,7 @@ function ExportInfo({ selectedCount, mode }: { selectedCount: number; mode: Mode
           count: String(selectedCount),
         })}
       </p>
-      <ul className="mt-1 list-disc pl-4">
+      <ul className="mt-1 list-disc ps-4">
         {safetyLines.map((line) => (
           <li key={line}>{line}</li>
         ))}

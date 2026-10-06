@@ -201,7 +201,7 @@ export function CompareSaveBuildDialog({
                 setConfirming(false);
               }}
               aria-label={tsb("overwriteSelectAriaLabel")}
-              className="ml-6 rounded border border-border bg-surface-2 px-2 py-1 text-xs"
+              className="ms-6 rounded border border-border bg-surface-2 px-2 py-1 text-xs"
             >
               {existingBuilds.map((b) => (
                 <option key={b.buildId} value={b.buildId}>

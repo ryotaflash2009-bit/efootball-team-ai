@@ -60,7 +60,7 @@ export function TermsView() {
       <Surface padding="md">
         <p className="text-sm font-semibold text-text">{tt("section4Heading")}</p>
         <p className="mt-1.5 text-sm text-text-dim">{tt("section4Intro")}</p>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-dim">
+        <ul className="mt-2 list-disc space-y-1 ps-5 text-sm text-text-dim">
           {PROHIBITED_ITEM_KEYS.map((key) => (
             <li key={key}>{tt(key)}</li>
           ))}

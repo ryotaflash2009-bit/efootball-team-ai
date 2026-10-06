@@ -1435,7 +1435,7 @@ export function SquadEditor({
               className="rounded border border-accent bg-accent/10 px-2 py-1.5 text-xs text-accent"
             >
               {fillSe(tse("moveBannerTemplate"), { name: moveSourceName ?? tse("moveBannerFallbackName") })}
-              <button type="button" onClick={() => setMoveSource(null)} className="ml-2 underline">
+              <button type="button" onClick={() => setMoveSource(null)} className="ms-2 underline">
                 {tse("moveBannerCancel")}
               </button>
             </p>
@@ -1697,7 +1697,7 @@ export function SquadEditor({
           {posAdjust ? (
             <p aria-live="polite" className="rounded border border-accent bg-accent/10 px-2 py-1.5 text-xs text-accent">
               {tse("posAdjustBanner")}
-              <button type="button" onClick={() => setPosAdjust(null)} className="ml-2 underline">
+              <button type="button" onClick={() => setPosAdjust(null)} className="ms-2 underline">
                 {tse("posAdjustEndButton")}
               </button>
             </p>
@@ -1980,7 +1980,7 @@ export function SquadEditor({
           {computed.warnings.length > 0 ? (
             <div className="rounded-md border border-border bg-surface p-3 text-xs">
               <p className="font-semibold">{fillSe(tse("warningsHeadingTemplate"), { count: String(computed.warnings.length) })}</p>
-              <ul className="mt-1 list-disc space-y-0.5 pl-4 text-text-dim">
+              <ul className="mt-1 list-disc space-y-0.5 ps-4 text-text-dim">
                 {computed.warnings.map((w, i) => (
                   <li key={i}>{swapPlayerNames(sq(w), locale, namePairs)}</li>
                 ))}

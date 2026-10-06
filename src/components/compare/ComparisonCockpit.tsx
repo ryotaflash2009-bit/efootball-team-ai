@@ -189,7 +189,7 @@ export function ComparisonCockpit({
     >
       <p className="mb-2 text-sm font-semibold">
         {tcc("heading")}
-        <span className="ml-2 text-2xs font-normal text-text-dim">{tcc("headingHint")}</span>
+        <span className="ms-2 text-2xs font-normal text-text-dim">{tcc("headingHint")}</span>
       </p>
 
       {!twoUp ? (

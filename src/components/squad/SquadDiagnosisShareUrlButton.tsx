@@ -86,7 +86,7 @@ export function SquadDiagnosisShareUrlButton({
         <div id={panelId} role="region" aria-label={s("previewTitle")} className="mt-2 flex flex-col gap-2 rounded-md border border-border bg-surface-2/40 p-3 text-xs" data-share-preview>
           <h3 className="text-sm font-semibold">{s("previewTitle")}</h3>
           <p className="font-medium">{s("previewIncludes")}</p>
-          <ul className="list-disc pl-5 text-text-dim">
+          <ul className="list-disc ps-5 text-text-dim">
             <li>{s("includeDate")}</li>
             <li>{s("includeOverall")}</li>
             <li>{s("includeCategories")}</li>

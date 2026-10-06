@@ -288,7 +288,7 @@ export function SquadCompareBoard() {
                 {tx(lbl)}
               </button>
             ))}
-            <label className="ml-auto flex items-center gap-1.5 text-xs text-text-dim">
+            <label className="ms-auto flex items-center gap-1.5 text-xs text-text-dim">
               <input type="checkbox" checked={diffOnly} onChange={(e) => setDiffOnly(e.target.checked)} />
               {tx("diffOnly")}
             </label>
@@ -430,23 +430,23 @@ function MetricTable({ rows, diffOnly }: { rows: SquadComparisonResult["metricCo
     <div className="overflow-x-auto">
       <table className="w-full min-w-[420px] text-xs">
         <thead>
-          <tr className="border-b border-border text-left text-text-dim">
-            <th className="py-1 pr-2 font-medium">{tx("metric")}</th>
-            <th className="py-1 pr-2 text-right font-medium">A</th>
-            <th className="py-1 pr-2 text-right font-medium">B</th>
-            <th className="py-1 text-right font-medium">{tx("diffHeader")}</th>
+          <tr className="border-b border-border text-start [:where(&)_th]:text-start text-text-dim">
+            <th className="py-1 pe-2 font-medium">{tx("metric")}</th>
+            <th className="py-1 pe-2 text-end font-medium">A</th>
+            <th className="py-1 pe-2 text-end font-medium">B</th>
+            <th className="py-1 text-end font-medium">{tx("diffHeader")}</th>
           </tr>
         </thead>
         <tbody>
           {shown.map((r) => (
             <tr key={r.key} className="border-b border-border/50">
-              <td className="py-1 pr-2 text-text-dim">
+              <td className="py-1 pe-2 text-text-dim">
                 {lib(r.label)}
-                {r.lowerIsCalmer ? <span className="ml-1 text-2xs text-text-muted">{tx("lowerIsCalmer")}</span> : null}
+                {r.lowerIsCalmer ? <span className="ms-1 text-2xs text-text-muted">{tx("lowerIsCalmer")}</span> : null}
               </td>
-              <td className="py-1 pr-2 text-right tabular-nums">{fmt(r.a)}</td>
-              <td className="py-1 pr-2 text-right tabular-nums">{fmt(r.b)}</td>
-              <td className={`py-1 text-right tabular-nums ${r.higher === "a" ? "text-accent" : r.higher === "b" ? "text-[#e0a43b]" : "text-text-muted"}`}>
+              <td className="py-1 pe-2 text-end tabular-nums">{fmt(r.a)}</td>
+              <td className="py-1 pe-2 text-end tabular-nums">{fmt(r.b)}</td>
+              <td className={`py-1 text-end tabular-nums ${r.higher === "a" ? "text-accent" : r.higher === "b" ? "text-[#e0a43b]" : "text-text-muted"}`}>
                 {fmtDiff(r.a, r.b)}
               </td>
             </tr>
@@ -462,7 +462,7 @@ function NotesBlock({ notes }: { notes: string[] }) {
   return (
     <details className="rounded-md border border-border bg-surface-2/30 p-2 text-2xs text-text-muted">
       <summary className="cursor-pointer font-semibold text-text-dim">{tx("notesSummary")}</summary>
-      <ul className="mt-1.5 list-disc space-y-0.5 pl-4">
+      <ul className="mt-1.5 list-disc space-y-0.5 ps-4">
         {notes.map((n, i) => (
           <li key={i}>{lib(n)}</li>
         ))}
@@ -794,7 +794,7 @@ function Bar({ label, value, tone }: { label: string; value: number | null; tone
           style={tone === "gold" ? { width: `${pct}%`, background: "#e0a43b" } : { width: `${pct}%` }}
         />
       </div>
-      <span className="w-9 shrink-0 text-right text-2xs tabular-nums text-text-dim">{fmt(value)}</span>
+      <span className="w-9 shrink-0 text-end text-2xs tabular-nums text-text-dim">{fmt(value)}</span>
     </div>
   );
 }
@@ -865,10 +865,10 @@ function RolesTab({ result, diffOnly }: { result: SquadComparisonResult; diffOnl
         <div className="overflow-x-auto">
           <table className="w-full min-w-[360px] text-xs">
             <thead>
-              <tr className="border-b border-border text-left text-text-dim">
-                <th className="py-1 pr-2 font-medium">{tx("kind")}</th>
-                <th className="py-1 pr-2 font-medium">A</th>
-                <th className="py-1 pr-2 font-medium">B</th>
+              <tr className="border-b border-border text-start [:where(&)_th]:text-start text-text-dim">
+                <th className="py-1 pe-2 font-medium">{tx("kind")}</th>
+                <th className="py-1 pe-2 font-medium">A</th>
+                <th className="py-1 pe-2 font-medium">B</th>
                 <th className="py-1 font-medium">{tx("verdict")}</th>
               </tr>
             </thead>
@@ -877,9 +877,9 @@ function RolesTab({ result, diffOnly }: { result: SquadComparisonResult; diffOnl
                 .filter((r) => !diffOnly || (r.state !== "same" && r.state !== "neither"))
                 .map((r) => (
                   <tr key={r.key} className="border-b border-border/50">
-                    <td className="py-1 pr-2 text-text-dim">{r.label}</td>
-                    <td className="py-1 pr-2">{nm(r.aName) ?? tx("notSet")}</td>
-                    <td className="py-1 pr-2">{nm(r.bName) ?? tx("notSet")}</td>
+                    <td className="py-1 pe-2 text-text-dim">{r.label}</td>
+                    <td className="py-1 pe-2">{nm(r.aName) ?? tx("notSet")}</td>
+                    <td className="py-1 pe-2">{nm(r.bName) ?? tx("notSet")}</td>
                     <td className="py-1">{stateLabel(r.state)}</td>
                   </tr>
                 ))}
@@ -1043,10 +1043,10 @@ function SkillsTab({ result, diffOnly }: { result: SquadComparisonResult; diffOn
         <div className="max-h-80 overflow-y-auto rounded border border-border">
           <table className="w-full text-xs">
             <thead className="sticky top-0 bg-surface">
-              <tr className="border-b border-border text-left text-text-dim">
+              <tr className="border-b border-border text-start [:where(&)_th]:text-start text-text-dim">
                 <th className="px-2 py-1 font-medium">{tx("skill")}</th>
-                <th className="px-2 py-1 text-right font-medium">A</th>
-                <th className="px-2 py-1 text-right font-medium">B</th>
+                <th className="px-2 py-1 text-end font-medium">A</th>
+                <th className="px-2 py-1 text-end font-medium">B</th>
               </tr>
             </thead>
             <tbody>
@@ -1055,11 +1055,11 @@ function SkillsTab({ result, diffOnly }: { result: SquadComparisonResult; diffOn
                   <td className="px-2 py-1">
                     {r.name}
                     {r.aAllStarters || r.bAllStarters ? (
-                      <span className="ml-1 text-2xs text-accent">{tx("allStarters")}</span>
+                      <span className="ms-1 text-2xs text-accent">{tx("allStarters")}</span>
                     ) : null}
                   </td>
-                  <td className="px-2 py-1 text-right tabular-nums">{r.aHolders}</td>
-                  <td className="px-2 py-1 text-right tabular-nums">{r.bHolders}</td>
+                  <td className="px-2 py-1 text-end tabular-nums">{r.aHolders}</td>
+                  <td className="px-2 py-1 text-end tabular-nums">{r.bHolders}</td>
                 </tr>
               ))}
             </tbody>
@@ -1079,7 +1079,7 @@ function SkillsTab({ result, diffOnly }: { result: SquadComparisonResult; diffOn
               .map((c) => (
                 <li key={c.worldCardId} className="rounded border border-border bg-surface-2/40 px-2 py-1 text-xs">
                   <span className="font-semibold">{cardName(c.worldCardId, c.name)}</span>
-                  <span className="ml-2 text-text-dim">
+                  <span className="ms-2 text-text-dim">
                     A: {c.aRole ?? "—"}{tx("parenTemplate", { v: c.aLabel ? lib(c.aLabel) : "—" })} / B: {c.bRole ?? "—"}{tx("parenTemplate", { v: c.bLabel ? lib(c.bLabel) : "—" })}
                   </span>
                 </li>
@@ -1105,7 +1105,7 @@ function WarningsTab({ result }: { result: SquadComparisonResult }) {
         <div className="grid gap-2 sm:grid-cols-3">
           <div>
             <p className="text-2xs font-semibold text-text-muted">{tx("both")}</p>
-            <ul className="list-disc space-y-0.5 pl-4 text-xs text-text-dim">
+            <ul className="list-disc space-y-0.5 ps-4 text-xs text-text-dim">
               {w.both.map((x, i) => (
                 <li key={i}>{lib(x)}</li>
               ))}
@@ -1114,7 +1114,7 @@ function WarningsTab({ result }: { result: SquadComparisonResult }) {
           </div>
           <div>
             <p className="text-2xs font-semibold text-text-muted">{tx("onlyAShort")}</p>
-            <ul className="list-disc space-y-0.5 pl-4 text-xs text-text-dim">
+            <ul className="list-disc space-y-0.5 ps-4 text-xs text-text-dim">
               {w.onlyA.map((x, i) => (
                 <li key={i}>{lib(x)}</li>
               ))}
@@ -1123,7 +1123,7 @@ function WarningsTab({ result }: { result: SquadComparisonResult }) {
           </div>
           <div>
             <p className="text-2xs font-semibold text-text-muted">{tx("onlyBShort")}</p>
-            <ul className="list-disc space-y-0.5 pl-4 text-xs text-text-dim">
+            <ul className="list-disc space-y-0.5 ps-4 text-xs text-text-dim">
               {w.onlyB.map((x, i) => (
                 <li key={i}>{lib(x)}</li>
               ))}
@@ -1142,7 +1142,7 @@ function WarningsTab({ result }: { result: SquadComparisonResult }) {
             return (
               <div key={side} className="text-xs text-text-dim">
                 <p className="font-semibold">{side.toUpperCase()}</p>
-                <ul className="list-disc pl-4">
+                <ul className="list-disc ps-4">
                   {list.map((r) => (
                     <li key={r.worldCardId}>
                       World ID {r.worldCardId} —{" "}

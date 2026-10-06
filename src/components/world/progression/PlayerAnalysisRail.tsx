@@ -127,16 +127,16 @@ function PositionGrid({ a }: { a: PlayerAnalysis["positions"] }) {
           <table className="mt-1.5 w-full">
             <thead className="text-text-muted">
               <tr>
-                <th className="py-0.5 pr-2 text-left font-medium">{tp("anColPosition")}</th>
-                <th className="py-0.5 pr-2 text-left font-medium">{tp("anColCategory")}</th>
-                <th className="py-0.5 text-left font-medium">{tp("anColFamiliarity")}</th>
+                <th className="py-0.5 pe-2 text-start font-medium">{tp("anColPosition")}</th>
+                <th className="py-0.5 pe-2 text-start font-medium">{tp("anColCategory")}</th>
+                <th className="py-0.5 text-start font-medium">{tp("anColFamiliarity")}</th>
               </tr>
             </thead>
             <tbody className="text-text-dim">
               {a.familiarityRows.map((r) => (
                 <tr key={r.code} className="border-t border-border/40">
-                  <td className="py-0.5 pr-2 font-semibold">{r.code}</td>
-                  <td className="py-0.5 pr-2">{r.isRegistered ? tp("anRegistered") : tp("anSubPosition")}</td>
+                  <td className="py-0.5 pe-2 font-semibold">{r.code}</td>
+                  <td className="py-0.5 pe-2">{r.isRegistered ? tp("anRegistered") : tp("anSubPosition")}</td>
                   <td className="py-0.5 tabular-nums">{r.isRegistered ? "—" : (r.familiarity ?? "—")}</td>
                 </tr>
               ))}

@@ -67,7 +67,7 @@ export function ExperimentalModeToggle({
             <Icon name="warning" size={16} className="mt-0.5 shrink-0" />
             <span>{WARNING}</span>
           </p>
-          <ul className="list-disc space-y-1 pl-5 text-xs text-text-dim">
+          <ul className="list-disc space-y-1 ps-5 text-xs text-text-dim">
             <li>{tp("ruExBullet1")}</li>
             <li>{tp("ruExBullet2")}</li>
             <li>{tp("ruExBullet3")}</li>

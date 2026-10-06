@@ -262,7 +262,7 @@ export function SquadListBoard({
           <p className="text-sm">
             <b>{fillSl(tsl("pendingCardBannerBoldTemplate"), { name: pendingCardName ?? tsl("pendingCardBannerNameLoading") })}</b>
             {tsl("pendingCardBannerSuffix")}
-            <Link href={`/players/world/${encodeURIComponent(pendingWorldCardId)}`} className="ml-2 text-accent hover:underline">
+            <Link href={`/players/world/${encodeURIComponent(pendingWorldCardId)}`} className="ms-2 text-accent hover:underline">
               {tsl("pendingCardDetailLink")}
             </Link>
           </p>

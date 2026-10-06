@@ -49,7 +49,7 @@ export function PublicIdPreview() {
           {publicId ? (
             <p id={`${idField}-status`} role="status" className={`text-xs ${id.ok ? "text-success" : "text-warning"}`} data-testid="public-id-status">
               {message(id.ok, id.ok ? undefined : id.problem)}
-              {id.ok ? <span className="ml-2 font-mono text-text-muted">{p("previewUrl")}: /u/{id.normalized}</span> : null}
+              {id.ok ? <span className="ms-2 font-mono text-text-muted">{p("previewUrl")}: /u/{id.normalized}</span> : null}
             </p>
           ) : null}
         </div>

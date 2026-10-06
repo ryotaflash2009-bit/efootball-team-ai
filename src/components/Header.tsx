@@ -39,7 +39,7 @@ export function Header({ onMenuClick }: { onMenuClick: () => void }) {
           const v = q.trim();
           router.push(v ? `/players?q=${encodeURIComponent(v)}` : "/players");
         }}
-        className="ml-auto flex min-w-0 max-w-sm flex-1 items-center gap-2 rounded-md border border-border bg-surface-2 px-2.5 focus-within:border-accent"
+        className="ms-auto flex min-w-0 max-w-sm flex-1 items-center gap-2 rounded-md border border-border bg-surface-2 px-2.5 focus-within:border-accent"
       >
         <Icon name="search" size={16} className="shrink-0 text-text-dim" />
         <input

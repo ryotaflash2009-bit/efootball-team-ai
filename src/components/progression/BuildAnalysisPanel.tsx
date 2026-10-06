@@ -2241,7 +2241,7 @@ export const BuildAnalysisPanel = forwardRef<
           {hasStrengths ? (
             <div>
               <SectionHeading>{ba("strengthsHeading")}</SectionHeading>
-              <ul className="mt-1 list-disc pl-4">
+              <ul className="mt-1 list-disc ps-4">
                 {analysis.strengths.map((f, i) => (
                   <li key={`${f.code}-${i}`}>{findingText(f, "normal")}</li>
                 ))}
@@ -2251,7 +2251,7 @@ export const BuildAnalysisPanel = forwardRef<
           {hasConcerns ? (
             <div>
               <SectionHeading>{ba("concernsHeading")}</SectionHeading>
-              <ul className="mt-1 list-disc pl-4">
+              <ul className="mt-1 list-disc ps-4">
                 {analysis.concerns.map((f, i) => (
                   <li key={`${f.code}-${i}`}>{findingText(f, "normal")}</li>
                 ))}
@@ -2445,7 +2445,7 @@ export const BuildAnalysisPanel = forwardRef<
       <details className="border-t border-border/60 pt-2">
         <summary className="cursor-pointer text-2xs text-text-muted hover:text-text">{ba("limitationsHeading")}</summary>
         {analysis.limitations.length > 0 ? (
-          <ul className="mt-1 list-disc pl-4 text-2xs text-text-muted">
+          <ul className="mt-1 list-disc ps-4 text-2xs text-text-muted">
             {analysis.limitations.map((code, i) => {
               const key = NORMAL_KEY[code];
               return <li key={`${code}-${i}`}>{key ? ba(key) : code}</li>;
@@ -2588,7 +2588,7 @@ function IntentTextList({
     <div>
       <p className="font-semibold text-text-dim">{heading}</p>
       {nonEmpty.length > 0 ? (
-        <ul className="mt-1 list-disc pl-4">
+        <ul className="mt-1 list-disc ps-4">
           {nonEmpty.map((s, i) => (
             <li key={i}>{s}</li>
           ))}
@@ -2767,7 +2767,7 @@ function PresetPreviewRow({ label, value, sourceLabel, ba }: { label: string; va
       <dt className="text-text-muted">{label}</dt>
       <dd className="mt-0.5 text-text">
         {value || ba("buildIntentInterpNoneValue")}
-        {sourceLabel ? <span className="ml-1 text-2xs text-text-muted">({sourceLabel})</span> : null}
+        {sourceLabel ? <span className="ms-1 text-2xs text-text-muted">({sourceLabel})</span> : null}
       </dd>
     </div>
   );
@@ -3357,7 +3357,7 @@ function BuildIntentExtractionResultView({
           <p className="text-sm font-bold text-text">{ba("buildIntentUnanalyzedZeroHeading")}</p>
           <p className="mt-1 text-2xs text-text-dim">{ba("buildIntentUnanalyzedZeroBody")}</p>
           {hasUnanalyzed ? (
-            <ul className="mt-1.5 list-disc pl-4 text-2xs text-text-dim">
+            <ul className="mt-1.5 list-disc ps-4 text-2xs text-text-dim">
               {pendingExtraction.unanalyzedSegments.map((s, i) => (
                 <li key={i} className="break-words">
                   {s}
@@ -3415,7 +3415,7 @@ function BuildIntentExtractionResultView({
         <div className="mt-3">
           <SectionHeading>{ba("buildIntentUnanalyzedHeading")}</SectionHeading>
           <p className="mt-1 text-2xs text-text-dim">{ba("buildIntentUnanalyzedIntro")}</p>
-          <ul className="mt-1 list-disc pl-4 text-2xs text-text-dim">
+          <ul className="mt-1 list-disc ps-4 text-2xs text-text-dim">
             {pendingExtraction.unanalyzedSegments.map((s, i) => (
               <li key={i} className="break-words">
                 {s}
@@ -3428,7 +3428,7 @@ function BuildIntentExtractionResultView({
       <div className="mt-2">
         <p className="text-2xs font-semibold text-text-dim">{ba("buildIntentAmbiguitiesHeading")}</p>
         {pendingExtraction.ambiguities.length > 0 ? (
-          <ul className="mt-0.5 list-disc pl-4 text-2xs text-text-dim">
+          <ul className="mt-0.5 list-disc ps-4 text-2xs text-text-dim">
             {pendingExtraction.ambiguities.map((a, i) => (
               <li key={i} className="break-words">
                 {a}

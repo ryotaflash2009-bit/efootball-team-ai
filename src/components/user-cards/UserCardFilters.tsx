@@ -83,7 +83,7 @@ export function UserCardFilters({
             value={state.q}
             onChange={(e) => set({ q: e.target.value })}
             placeholder={tuf("searchPlaceholder")}
-            className="h-9 w-full rounded-md border border-border bg-surface px-2 pl-7 text-sm"
+            className="h-9 w-full rounded-md border border-border bg-surface px-2 ps-7 text-sm"
           />
         </label>
 
@@ -177,7 +177,7 @@ export function UserCardFilters({
           </button>
         ) : null}
 
-        <span className="ml-auto text-2xs text-text-muted">
+        <span className="ms-auto text-2xs text-text-muted">
           {tuf("countTemplate").replace("{shown}", String(shown)).replace("{total}", String(total))}
         </span>
       </div>

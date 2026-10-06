@@ -118,7 +118,7 @@ export function FixedBoosterChip({
         type="button"
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
-        className="flex items-center gap-2 rounded-md border border-info/40 bg-info/5 px-2 py-1.5 text-left text-xs transition-colors hover:border-info"
+        className="flex items-center gap-2 rounded-md border border-info/40 bg-info/5 px-2 py-1.5 text-start text-xs transition-colors hover:border-info"
       >
         {children}
       </button>

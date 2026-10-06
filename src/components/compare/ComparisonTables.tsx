@@ -48,7 +48,7 @@ function DeltaBits({
   if (cB) parts.push(`${tct("deltaConditionalPrefix")}${cB > 0 ? "+" : ""}${cB}`);
   if (mB) parts.push(`${tct("deltaManagerBoosterPrefix")}${mB > 0 ? "+" : ""}${mB}`);
   if (parts.length === 0) return null;
-  return <span className="ml-1 text-[9px] text-lime-300/80">{parts.join(" ")}</span>;
+  return <span className="ms-1 text-[9px] text-lime-300/80">{parts.join(" ")}</span>;
 }
 
 export function ComparisonTables({
@@ -101,7 +101,7 @@ export function ComparisonTables({
           <b>{tct("boosterModeStandard")}</b>
           {tct("boosterModeNoteSuffix")}
         </p>
-        <ul className="mt-1 list-disc pl-4">
+        <ul className="mt-1 list-disc ps-4">
           {comparison.warnings.map((w, i) => (
             <li key={i}>{localizeLibText(w, locale)}</li>
           ))}
@@ -114,7 +114,7 @@ export function ComparisonTables({
         <div className="overflow-x-auto rounded-md border border-border">
           <table className="w-full min-w-[420px] text-sm">
             <thead>
-              <tr className="bg-surface-2/50 text-left text-xs">
+              <tr className="bg-surface-2/50 text-start [:where(&)_th]:text-start text-xs">
                 <th className="sticky left-0 z-10 bg-surface-2/50 px-3 py-2 font-medium">{tct("itemHeader")}</th>
                 {players.map((p, i) => (
                   <th key={i} className="px-2 py-2 text-center font-medium">
@@ -151,7 +151,7 @@ export function ComparisonTables({
         <div className="overflow-x-auto rounded-md border border-border">
           <table className="w-full min-w-[420px] text-sm">
             <thead>
-              <tr className="bg-surface-2/50 text-left text-xs">
+              <tr className="bg-surface-2/50 text-start [:where(&)_th]:text-start text-xs">
                 <th className="sticky left-0 z-10 bg-surface-2/50 px-3 py-2 font-medium">{tct("categoryHeader")}</th>
                 {players.map((p, i) => (
                   <th key={i} className="px-2 py-2 text-center font-medium">
@@ -170,7 +170,7 @@ export function ComparisonTables({
                     {c.totalByPlayer.map((tv, i) => (
                       <td key={i} className={`px-2 py-1.5 text-center tabular-nums ${tv === max && c.spread > 0 ? "font-bold text-accent" : ""}`}>
                         {tv}
-                        <span className="ml-1 text-[10px] text-text-dim">{fillCt(tct("avgTemplate"), { value: String(c.avgByPlayer[i]) })}</span>
+                        <span className="ms-1 text-[10px] text-text-dim">{fillCt(tct("avgTemplate"), { value: String(c.avgByPlayer[i]) })}</span>
                       </td>
                     ))}
                     <td className="px-2 py-1.5 text-center tabular-nums text-text-dim">{c.spread}</td>
@@ -237,7 +237,7 @@ export function ComparisonTables({
         <div className="overflow-x-auto rounded-md border border-border">
           <table className="w-full min-w-[520px] text-sm">
             <thead>
-              <tr className="bg-surface-2/50 text-left text-xs">
+              <tr className="bg-surface-2/50 text-start [:where(&)_th]:text-start text-xs">
                 <th className="sticky left-0 z-10 bg-surface-2/50 px-3 py-2 font-medium">{tct("abilityHeader")}</th>
                 {players.map((p, i) => (
                   <th key={i} className="px-2 py-2 text-center font-medium">
@@ -404,7 +404,7 @@ function SkillBlock({
             {cmp.partial.map((p) => (
               <span key={p.skill} className="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[11px]">
                 {p.skill}
-                <span className="ml-1 text-text-dim">
+                <span className="ms-1 text-text-dim">
                   {p.playerIdx.map((i) => shortName(players[i]).slice(0, 4)).join(",")}
                 </span>
               </span>

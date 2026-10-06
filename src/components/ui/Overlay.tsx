@@ -105,7 +105,7 @@ export function Drawer({
   if (!open) return null;
   const panel =
     side === "right"
-      ? "right-0 top-0 h-full w-full max-w-md border-l"
+      ? "right-0 top-0 h-full w-full max-w-md border-s"
       : "inset-x-0 bottom-0 max-h-[85vh] rounded-t-card border-t";
   return (
     <div className="fixed inset-0 z-50">

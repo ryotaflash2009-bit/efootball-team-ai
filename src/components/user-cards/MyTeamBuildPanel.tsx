@@ -247,7 +247,7 @@ export function MyTeamBuildPanel({
               ) : (
                 <span>
                   <b>{refs.selected.build?.buildName}</b>
-                  <span className="ml-1 text-text-muted">{fillMb(tmb("buildIdSuffixTemplate"), { id: String(refs.selected.buildId) })}</span>
+                  <span className="ms-1 text-text-muted">{fillMb(tmb("buildIdSuffixTemplate"), { id: String(refs.selected.buildId) })}</span>
                 </span>
               )}
               {refs.selected.buildId != null ? (
@@ -260,7 +260,7 @@ export function MyTeamBuildPanel({
                       name: refs.selected.build?.buildName ?? tmb("deletedBuildFallback"),
                     })
                   }
-                  className="ml-2 rounded border border-border px-1.5 py-0.5 hover:border-accent"
+                  className="ms-2 rounded border border-border px-1.5 py-0.5 hover:border-accent"
                 >
                   {tmb("clearSelectedButton")}
                 </button>
@@ -277,7 +277,7 @@ export function MyTeamBuildPanel({
               ) : (
                 <span>
                   <b>{refs.favorite.build?.buildName}</b>
-                  <span className="ml-1 text-text-muted">{fillMb(tmb("buildIdSuffixTemplate"), { id: String(refs.favorite.buildId) })}</span>
+                  <span className="ms-1 text-text-muted">{fillMb(tmb("buildIdSuffixTemplate"), { id: String(refs.favorite.buildId) })}</span>
                 </span>
               )}
               {refs.favorite.buildId != null ? (
@@ -290,7 +290,7 @@ export function MyTeamBuildPanel({
                       name: refs.favorite.build?.buildName ?? tmb("deletedBuildFallback"),
                     })
                   }
-                  className="ml-2 rounded border border-border px-1.5 py-0.5 hover:border-accent"
+                  className="ms-2 rounded border border-border px-1.5 py-0.5 hover:border-accent"
                 >
                   {tmb("clearFavoriteButton")}
                 </button>
@@ -456,7 +456,7 @@ export function MyTeamBuildPanel({
             <Icon name="sliders" size={12} />
             {tmb("createBuildInProgression")}
           </Link>
-          <Button variant="ghost" size="sm" onClick={onClose} className="ml-auto">
+          <Button variant="ghost" size="sm" onClick={onClose} className="ms-auto">
             {tmb("closeButton")}
           </Button>
         </div>
@@ -545,8 +545,8 @@ function BuildRow({
       </details>
       <p className="mt-0.5 text-text-dim">
         <span className="tabular-nums">{pointsText}</span>
-        <span className="ml-2 tabular-nums">{remainingText}</span>
-        {points.overAllocated ? <span className="ml-2 text-danger">{tmb("overAllocated")}</span> : null}
+        <span className="ms-2 tabular-nums">{remainingText}</span>
+        {points.overAllocated ? <span className="ms-2 text-danger">{tmb("overAllocated")}</span> : null}
       </p>
       <p className="mt-0.5 text-text-dim">
         {tmb("pomRowLabel")}

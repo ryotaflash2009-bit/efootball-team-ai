@@ -301,7 +301,7 @@ export function HomePageView({
                     <p className="text-sm font-semibold">{q.label}</p>
                     <p className="mt-0.5 text-xs text-text-dim">{q.desc}</p>
                   </div>
-                  <Icon name="chevron-right" size={16} className="ml-auto mt-1 shrink-0 text-text-muted" />
+                  <Icon name="chevron-right" size={16} className="ms-auto mt-1 shrink-0 text-text-muted" />
                 </Surface>
               </Link>
             ))}

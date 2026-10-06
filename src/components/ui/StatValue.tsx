@@ -61,7 +61,7 @@ export function DeltaValue({
       {prefix}
       {pos ? "+" : ""}
       {value}
-      {provisional ? <span className="ml-0.5 text-2xs text-warning/70">?</span> : null}
+      {provisional ? <span className="ms-0.5 text-2xs text-warning/70">?</span> : null}
     </span>
   );
 }

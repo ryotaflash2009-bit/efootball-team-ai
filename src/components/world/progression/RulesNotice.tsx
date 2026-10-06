@@ -58,7 +58,7 @@ export function RulesNotice({ result }: { result: ProgressionResult }) {
       </div>
 
       {result.warnings.length > 0 ? (
-        <ul className="mt-2 list-disc space-y-0.5 pl-4 text-yellow-300/90">
+        <ul className="mt-2 list-disc space-y-0.5 ps-4 text-yellow-300/90">
           {result.warnings.map((w, i) => (
             <li key={i}>{localizeLibText(w, locale)}</li>
           ))}
@@ -111,7 +111,7 @@ function RuleList({
   return (
     <div>
       <p className={`font-semibold ${color}`}>{title}</p>
-      <ul className="mt-0.5 list-disc space-y-0.5 pl-4 text-text-dim">
+      <ul className="mt-0.5 list-disc space-y-0.5 ps-4 text-text-dim">
         {items.map((it, i) => (
           <li key={i}>{it}</li>
         ))}

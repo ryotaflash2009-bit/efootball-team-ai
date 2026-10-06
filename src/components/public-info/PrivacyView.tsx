@@ -23,7 +23,7 @@ export function PrivacyView() {
 
       <Surface padding="md">
         <p className="text-sm font-semibold text-text">{tp("dataStoredHeading")}</p>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-dim">
+        <ul className="mt-2 list-disc space-y-1 ps-5 text-sm text-text-dim">
           <li>{tp("dataStoredFavorites")}</li>
           <li>{tp("dataStoredMyTeam")}</li>
           <li>{tp("dataStoredOwnershipStatus")}</li>
@@ -38,7 +38,7 @@ export function PrivacyView() {
 
       <Surface tone="inset" padding="md">
         <p className="text-sm font-semibold text-text">{tp("dataNotStoredHeading")}</p>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-dim">
+        <ul className="mt-2 list-disc space-y-1 ps-5 text-sm text-text-dim">
           <li>{tp("dataNotStoredName")}</li>
           <li>{tp("dataNotStoredAddress")}</li>
           <li>{tp("dataNotStoredPhone")}</li>
@@ -53,7 +53,7 @@ export function PrivacyView() {
 
       <Surface padding="md">
         <p className="text-sm font-semibold text-text">{tp("authSectionHeading")}</p>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-dim">
+        <ul className="mt-2 list-disc space-y-1 ps-5 text-sm text-text-dim">
           <li>{tp("authEmailUsage")}</li>
           <li>{tp("authSessionCookie")}</li>
           <li>{tp("authPasswordHandling")}</li>
@@ -62,7 +62,7 @@ export function PrivacyView() {
 
       <Surface padding="md">
         <p className="text-sm font-semibold text-text">{tp("storageLocationHeading")}</p>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-dim">
+        <ul className="mt-2 list-disc space-y-1 ps-5 text-sm text-text-dim">
           <li>{tp("storageLocationBrowserOnly")}</li>
           <li>{tp("storageLocationNoServerAccount")}</li>
           <li>{tp("storageLocationNoSync")}</li>
@@ -74,7 +74,7 @@ export function PrivacyView() {
 
       <Surface padding="md">
         <p className="text-sm font-semibold text-text">{tp("cloudSaveHeading")}</p>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-dim">
+        <ul className="mt-2 list-disc space-y-1 ps-5 text-sm text-text-dim">
           <li>{tp("cloudSaveExplicitAction")}</li>
           <li>{tp("cloudSaveUserIsolation")}</li>
         </ul>
@@ -83,12 +83,12 @@ export function PrivacyView() {
       <Surface padding="md">
         <p className="text-sm font-semibold text-text">{tp("externalTransmissionHeading")}</p>
         <p className="mt-2 text-xs font-semibold text-text-dim">{tp("externalTransmissionInAppApiIntro")}</p>
-        <ul className="mt-1 list-disc space-y-1 pl-5 text-sm text-text-dim">
+        <ul className="mt-1 list-disc space-y-1 ps-5 text-sm text-text-dim">
           <li>{tp("externalTransmissionInAppApiWorldData")}</li>
           <li>{tp("externalTransmissionInAppApiImageProxy")}</li>
         </ul>
         <p className="mt-3 text-xs font-semibold text-text-dim">{tp("externalTransmissionBrowserOnlyIntro")}</p>
-        <ul className="mt-1 list-disc space-y-1 pl-5 text-sm text-text-dim">
+        <ul className="mt-1 list-disc space-y-1 ps-5 text-sm text-text-dim">
           <li>{tp("externalTransmissionNoThirdParty")}</li>
           <li>{tp("externalTransmissionNoGenerativeAi")}</li>
           <li>{tp("externalTransmissionNoAnalytics")}</li>
