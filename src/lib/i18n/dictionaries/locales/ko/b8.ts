@@ -431,6 +431,10 @@ const part: PartialDictionary = {
     mostImprovedTemplate: "가장 많이 개선: {category} {from} → {to}",
     overcameTemplate: "약점에서 A 이상으로: {categories}",
     excludedRulesTemplate: "다른 진단 규칙의 기록 {count}개는 비교하지 않습니다.",
+    peakTemplate: "최고: {overall}({date})",
+    mostDeclinedTemplate: "가장 많이 떨어진 항목: {category} {from} → {to}",
+    newWeaknessesTemplate: "새로운 약점(A 이상에서 C 이하): {categories}",
+    streakTemplate: "{count}회 연속 상승",
   },
   myTeamButton: {
     registeredAria: "내 팀에 등록됨",

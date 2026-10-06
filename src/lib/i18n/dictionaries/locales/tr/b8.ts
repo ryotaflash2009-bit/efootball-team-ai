@@ -431,6 +431,10 @@ const part: PartialDictionary = {
     mostImprovedTemplate: "En çok gelişen: {category} {from} → {to}",
     overcameTemplate: "Zayıf yönden A veya üzerine çıkanlar: {categories}",
     excludedRulesTemplate: "Farklı analiz kurallarıyla yapılmış kayıtlar karşılaştırılmaz ({count}).",
+    peakTemplate: "En iyi: {overall} ({date})",
+    mostDeclinedTemplate: "En büyük düşüş: {category} {from} → {to}",
+    newWeaknessesTemplate: "Yeni zayıf yönler (A ve üstünden C ve altına): {categories}",
+    streakTemplate: "Art arda {count} kez yükseldi",
   },
   myTeamButton: {
     registeredAria: "Takımım'a kayıtlı",

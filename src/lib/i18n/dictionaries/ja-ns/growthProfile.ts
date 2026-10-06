@@ -10,6 +10,10 @@ const growthProfile: Dictionary["growthProfile"] = {
   mostImprovedTemplate: "最も伸びたカテゴリ: {category} {from} → {to}",
   overcameTemplate: "弱点から A 以上になったカテゴリ: {categories}",
   excludedRulesTemplate: "診断規則が違う {count} 件は比べていません。",
+  peakTemplate: "最高: {overall}（{date}）",
+  mostDeclinedTemplate: "最も下がった: {category} {from} → {to}",
+  newWeaknessesTemplate: "新しい弱点（A 以上から C 以下）: {categories}",
+  streakTemplate: "{count} 回続けて上がっています",
   };
 
 registerJaNamespace("growthProfile", growthProfile);

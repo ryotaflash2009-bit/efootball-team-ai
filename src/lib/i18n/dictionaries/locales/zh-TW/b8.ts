@@ -431,6 +431,10 @@ const part: PartialDictionary = {
     mostImprovedTemplate: "進步最多：{category} {from} → {to}",
     overcameTemplate: "從弱點提升至 A 以上：{categories}",
     excludedRulesTemplate: "有 {count} 筆不同診斷規則下的紀錄未列入比較。",
+    peakTemplate: "最高：{overall}（{date}）",
+    mostDeclinedTemplate: "下降最多：{category} {from} → {to}",
+    newWeaknessesTemplate: "新的弱點（從 A 以上降到 C 以下）：{categories}",
+    streakTemplate: "連續 {count} 次上升",
   },
   myTeamButton: {
     registeredAria: "已登錄於我的球隊",
