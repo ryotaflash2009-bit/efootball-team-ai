@@ -1,10 +1,27 @@
 # プロジェクト基準状態（Project Baseline）
 
-最終更新: 2026-09-06（保存スカッド編集画面のレイアウト再構成 後）
+最終更新: 2026-10-06（TeamAIXI v1.0 の公開後）
 
 **現在の完全成功ベースライン**。新セッションが最初に読む必須文書の 1 つ。
 値は「直前の完全成功マイルストーンの完了報告」＋「現在のファイル状態」を根拠に更新する。
 ベースライン確認のために全テスト・全ブラックボックスを無条件で再実行しない。
+
+## 最新の検証値（2026-10-06・TeamAIXI v1.0 の公開後）
+
+v1.0 のリリースの証跡は `docs/production-readiness/evidence/2026-10-05-teamaixi-v1-release.json`（tag `v1.0.0`・main b72d252）。
+
+| 項目 | 値 |
+|---|---|
+| `npm run test`（Vitest 5.0.3） | 307 テストファイル・4853 テスト（v1.0 の 4826 + 公開後の観測・サーバーの PID・問い合わせページのテスト） |
+| 公開 black-box（総合・8 viewport・本番） | v1.0 の最終ゲート: 3 回連続 576/576・hydration 0・性能 14/14・security 18/18・メモリ OK |
+| 公開 black-box（新規登録の限定テスト・内部ページの 404） | 117/117 |
+| アクセシビリティ（本番） | 32/32 |
+| 性能（本番・perf-flows） | Home の cold LCP 644 ms（p95 744 ms）・画面の移動 約 0.31〜0.34 秒・CLS 0・重複 request 0 |
+| First Load JS | Home 119 kB・/players 142・選手詳細 167（#144）・/managers 119・ログイン 120（#145）・問い合わせ 118・共通 103 |
+| npm audit | critical 0・high 9・moderate 3（すべて build / dev 時だけ。`docs/release/teamaixi-v1.md` §4） |
+| Next.js | 15.5.27（画面の移動の見張り: `src/instrumentation-client.ts`） |
+| 毎時の検出 | cron `17 * * * *`。観測中（2026-10-06〜13・`hourly-detection-observation.md`） |
+| World / Managers（公開） | 13,372 / 69（applied-state と一致） |
 
 ## 最新の検証値（2026-10-02・PR #104 の後）
 
@@ -137,12 +154,12 @@
 
 依存: `next ^15.5.0` / `react 19.0.0` / `react-dom 19.0.0` / `zod 3.24.1`。**新規依存追加禁止。**
 
-## 直近に確認された開発サーバー（2026-09-06・PID は再利用され得るので毎回再確認）
+## 直近に確認されたローカルのサーバー（2026-10-06・PID は再利用され得るので毎回再確認）
 
-- URL: `http://localhost:3000`
-- next dev 親 PID: 16892 / ポート 3000 リスナー PID: 4296（start-server.js・16892 の子）
-- `./data/server.pid`: 16892
-- `./data/dev-err.log`: 0 行
+- URL: `http://localhost:3000`（`next start`・Production Build の確認用）
+- 起動・停止・状態は `node scripts/local-server.mjs start|stop|restart|status`（`safe-build-and-cache-policy.md` §7.1）。
+- `./data/server.pid` = ポート 3000 で待ち受ける `next start` の PID（2026-10-06 の再起動の後: 81568）。記録は `./data/server-lifecycle.log`。
+- 以前の値（2026-09-06・next dev）: 親 PID 16892 / リスナー 4296。
 - 注: 同一 PC で別プロジェクト（`遅延証明書シミュレーター`）の Node プロセスが並走することがある。
   停止対象はコマンドラインに `C:\Development\eFootball-Team-AI` を含む PID のみ。
 

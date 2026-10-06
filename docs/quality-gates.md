@@ -113,6 +113,15 @@ build 失敗が環境由来の一時エラーと**明確に判断できる場合
 - black-box は localhost への HTTP のみ・外部アクセス 0 回。実ユーザーの localStorage を変更しない
   （localStorage ベース画面は SSR 空状態シェルまでを検証し、状態変更ロジックは unit test で担保）。
 
+### 5a. 生成されるレポート（`docs/black-box-tests/*.md`）の扱い（2026-10-06）
+
+レールは実行のたびに `docs/black-box-tests/<rail>.md` を書き換える。これらはテストの契約ではなく、最後に確認した結果の記録。
+
+- 実行日時だけが変わったレポートはコミットしない（作業の最後に、自分の実行で変わったファイルだけを元に戻す）。
+- 件数・判定・ステップが変わったレポート（例: 新しいステップの追加）は、その変更の PR で一緒にコミットする。
+- 失敗した実験の実行で書き換わったレポートはコミットしない。正式な結果は Evidence（`docs/production-readiness/evidence/`）に要約する。
+- `.gitignore` には入れない（各レールの最後の正式な結果を Git で残すため）。
+
 ## 6. SQLite `integrity_check`
 
 読み取り専用接続で `PRAGMA integrity_check` = `ok` を確認。主要件数（`project-baseline.md` と一致すること）:

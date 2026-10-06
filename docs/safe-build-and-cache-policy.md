@@ -112,13 +112,29 @@ OneDrive の「大量削除」検知を発動させ、ユーザーに不要な�
 2. ポート 3000 のリスナー（またはその親）
 3. eFootball Team AI のサーバーである
 
+### 7.1 `next start`（確認用サーバー）は `scripts/local-server.mjs` で扱う（2026-10-06〜）
+
+- 起動・停止・状態: `node scripts/local-server.mjs start|stop|restart|status [--port 3000]`。
+- 起動はシェル（cmd.exe・bash）を通さず `node node_modules/next/dist/bin/next start -p <port>` を直接起動する。
+  `./data/server.pid` には**実際にポートで待ち受けている `next start` の PID**を記録する（親のシェル・helper の PID は記録しない）。
+  起動した子そのもの、またはその子孫が待ち受けていることを確かめてから記録する。起動に失敗したら `0`。
+- このワークスペースのサーバーと判断するのは、コマンドラインが `next start`・リポジトリのパス
+  （`C:\Development\eFootball-Team-AI`）を含む・対象のポートで待ち受けている、をすべて満たすプロセスだけ。
+- 停止は、停止の直前にコマンドライン・ポートを確かめ直した単一の PID だけ（`taskkill /PID <pid> /F`・`/T` なし）。
+  `./data/server.pid` が stale（終了済み・別のプロセス）のときは停止しない。終了済みのときに限り、確認済みの待受を
+  `--adopt-listener` の明示で対象にできる。別のプロセスを指しているときは指定があっても停止しない。
+- 実際の PID・コマンドライン・結果は `./data/server-lifecycle.log`（JSON Lines・Git 管理外）に追記する。完了報告にはそこから実際の PID を書く。
+- 契約のテスト: `src/lib/local-server-lifecycle.test.ts`。
+- 以前の `data/work/restart-port.sh`（Git 管理外）は `$!`（MSYS の bash の PID。Windows の PID ではない）を記録していたため、
+  `./data/server.pid` が常に stale だった（2026-10-06 に確認: 26257 は存在せず、待受は 31268・親は cmd.exe 91956）。使わない。
+
 ## 8. `./data/server.pid`
 
 - **数字だけ**が保存されていること。空でないこと。
-- 起動した**親 PID** を示すこと。別プロセスに再利用されていないこと。
+- `next dev` は起動した**親 PID**、`next start`（`scripts/local-server.mjs`）は**待受の PID**を示すこと（§7.1）。別プロセスに再利用されていないこと。
 - 起動成功後に更新すること。起動失敗時に古い PID を残さないこと。
 - 停止失敗時に勝手に削除しないこと。
-- 変更は `./data/server.pid` だけを必要最小限で行い、他の `data/` ファイルを変更しない。
+- 変更は `./data/server.pid` だけを必要最小限で行い、他の `data/` ファイルを変更しない（`scripts/local-server.mjs` の記録 `./data/server-lifecycle.log`・`./data/start-latest.log` を除く）。
 
 ## 9. 安全停止条件（このポリシー関連）
 

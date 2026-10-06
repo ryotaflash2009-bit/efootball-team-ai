@@ -3382,6 +3382,10 @@ export interface Dictionary {
     notConfiguredNotice: string;
     sharedChannelIntro: string;
     sharedChannelEmailLabel: string;
+    /** 窓口の名前（2026-10-06: TeamAIXI 専用の窓口であることを明示）。 */
+    dedicatedChannelLabel: string;
+    /** 問い合わせ時の注意（2026-10-06 の本人指定の文言）。 */
+    contactSafetyNotice: string;
     sendMailButtonLabel: string;
     betaLimitsHeading: string;
     betaLimitsIntro: string;

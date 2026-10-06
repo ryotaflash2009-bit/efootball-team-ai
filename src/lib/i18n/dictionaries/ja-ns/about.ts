@@ -33,7 +33,7 @@ const about: Dictionary["about"] = {
   betaBestXiSubPositionLimit: "副ポジション適性のデータは一部のカードでしか確認できません。",
   betaBestXiPoolScopeLimit: "選出は、あなたが保存した候補の中だけで行われます(全カードから自動で探すものではありません)。",
   betaMyTeamCloudSave: "データはお使いのブラウザー内に保存されます。別の端末へは「データ管理」の書き出し・読み込みで移せます",
-  betaReferenceDataAutoUpdateDryRun: "参照データの更新は週 1 回の自動検出に基づくため、ゲーム内の最新の内容より遅れる場合があります",
+  betaReferenceDataAutoUpdateDryRun: "参照データの更新は 1 時間おきの自動検出に基づくため、ゲーム内の最新の内容より遅れる場合があります",
   notProvidedHeading: "未提供の機能",
   notProvidedSync: "端末間の自動同期",
   notProvidedCloudBackup: "全データの自動クラウドバックアップ(My Team以外のデータの自動保存)",

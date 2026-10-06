@@ -165,7 +165,8 @@ fixed booster として扱わない。別カードの指定を流用しない。
 - PID 確認なしの停止・stale PID だけを根拠にした停止・無関係な Node プロセス停止
 - プレースホルダー PID を完了報告に書く・停止失敗の隠蔽（`-ErrorAction SilentlyContinue` で隠す等）
 
-`./data/server.pid`: 数字だけ・空でない・起動した**親 PID**・別プロセスに再利用されていない・
+`./data/server.pid`: 数字だけ・空でない・`next dev` は起動した**親 PID**、`next start` は待受の PID（`scripts/local-server.mjs`・
+`safe-build-and-cache-policy.md` §7.1）・別プロセスに再利用されていない・
 起動成功後に更新・起動失敗時に古い PID を残さない（サーバー不在は `0`）・停止失敗時に勝手に削除しない。
 変更は `./data/server.pid` だけを必要最小限で。
 
