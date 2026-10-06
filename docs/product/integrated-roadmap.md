@@ -85,6 +85,36 @@
 
 F-124: 自動更新が完成するまで、本人だけで検証する（他人に試してもらわない・新規登録とコミュニティを公開しない）。
 
+### 3g. 2026-10-06 v1.0 の公開後（本人の決定）
+
+1. 毎時の検出は当面 GitHub Actions の schedule だけを使う。外部 Cron・新しい Token・Secret・外部契約・有料サービスは追加しない。
+   2026-10-13 まで観測する（`docs/production-readiness/hourly-detection-observation.md`）。観測の開始時点で予定の run の 82.5% が欠落・
+   最大の間隔 538 分のため、再検討の条件にすでに当てはまる。10-13 に結果を本人に報告する。
+2. 10-05 の自動の Apply が Production の DB への接続（パスワード認証）で止まった（書き込みなし）。本人が自動用の Environment の
+   `REFERENCE_DATA_APPLY_DB_URL` を登録し直すまで、World の 16 件の評価値の更新は反映されない。
+3. サポート: v1.0 は現在の専用メールボックスを維持し、問い合わせページで「TeamAIXI専用サポート窓口 / TeamAIXI Support」と明示する。
+   独自ドメインの取得後に TeamAIXI 名義のサポートアドレスへ移行する（下の v1.1 backlog の 3）。
+4. 公開後の軽量化: 選手詳細の初回 JS 227 → 167 kB（#144）・ログイン 189 → 120 kB（#145）。
+5. ローカルの確認用サーバーの PID の契約を修正（`scripts/local-server.mjs`・待受の PID を記録）。
+
+### v1.1 backlog（2026-10-06）
+
+1. 独自ドメイン（Custom domain）
+2. Custom SMTP（認証メールの自前の送信）
+3. TeamAIXI 名義のサポートアドレス（独自ドメインの取得後に、現在の専用メールボックス `efootballteamAIsuportteam@outlook.jp` から移行。v1.0 は現在の専用メールボックスを維持: 本人の決定 2026-10-06）
+4. アカウントの新規登録（Account signup）
+5. コミュニティ（Community）
+6. 写真投稿（Photo posts）
+7. 公開 ID（Public ID）
+8. 友達（Friends）
+9. ランキング（Rankings）
+10. F-070 監督補正つきの Best XI（Manager boost Best XI）
+11. 事前生成のカードのサムネイル（Pre-generated card thumbnails。sharp・Vercel Image Optimization は v1.1 以降: 本人の決定 2026-10-06）
+12. WebP / AVIF の検討
+13. Next.js の更新後の navigation fallback（`src/instrumentation-client.ts` の 5 秒の見張り）の再評価
+14. noindex の解除の判断
+15. 専門家による法務のレビュー（Professional legal review・`docs/release/legal-review-checklist.md`）
+
 ### 3f. 2026-10-04 TeamAIXI v1.0
 
 1. 本人の決定で、招待ベータではなく、ログイン不要・無料・非公式の正式製品版 TeamAIXI v1.0 として既存の Production URL で公開（noindex 維持）。範囲・素材・既知の問題は `docs/release/teamaixi-v1.md`。

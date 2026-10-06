@@ -1,7 +1,7 @@
 # Supabase Auth 技術検証(PoC) ブラックボックステスト結果
 
-実行日時: 2026-10-01T15:28:25.314Z
-対象: http://localhost:3200（Production Build上の隔離ヘッドレスChrome確認。ブラウザー側Supabaseクライアントはテストダブルへ差し替え、実Supabaseへは接続しない）
+実行日時: 2026-10-04T19:04:54.048Z
+対象: http://localhost:3000（Production Build上の隔離ヘッドレスChrome確認。ブラウザー側Supabaseクライアントはテストダブルへ差し替え、実Supabaseへは接続しない）
 
 実ユーザーのMy Team・保存ビルド・保存スカッド・SQLiteは一切変更しない。実際のメール送信・実サインアップ・実ログインは行わない。
 
@@ -143,7 +143,7 @@
 | PASS | [パスワード更新] クラッシュせず表示される |  |
 | PASS | [パスワード更新] パスワード要件の案内が表示される |  |
 | PASS | [コールバック] codeが無い場合は3xxで内部のsign-inへ遷移する | HTTP 307 |
-| PASS | [コールバック] 遷移先が同一オリジンの内部パスである(外部URLではない) | http://localhost:3200/auth/sign-in?authError=missing_code |
+| PASS | [コールバック] 遷移先が同一オリジンの内部パスである(外部URLではない) | http://localhost:3000/auth/sign-in?authError=missing_code |
 | PASS | [コールバック] 遷移先URLにトークン・セッション情報を含まない |  |
 | PASS | [アカウント/ログイン中] ログイン中である旨が表示される |  |
 | PASS | [アカウント/ログイン中] 端末間の自動同期は未実装である旨の案内がある |  |
@@ -162,9 +162,9 @@
 | PASS | [セキュリティ] ページソースにSecret key/service_role等の実値が混入していない |  |
 | PASS | [セキュリティ] javascript:/data:スキームのリンクが存在しない |  |
 | PASS | [セキュリティ] 新規の外部通信が発生していない(実Supabaseを含む) |  |
-| PASS | [レスポンシブ1280px] /auth/sign-upで横スクロールが発生しない | overflow=0 |
-| PASS | [レスポンシブ1280px] /auth/sign-inで横スクロールが発生しない | overflow=0 |
-| PASS | [レスポンシブ1280px] /accountで横スクロールが発生しない | overflow=0 |
+| PASS | [レスポンシブ1280px] /auth/sign-upで横スクロールが発生しない | overflow=-10 |
+| PASS | [レスポンシブ1280px] /auth/sign-inで横スクロールが発生しない | overflow=-10 |
+| PASS | [レスポンシブ1280px] /accountで横スクロールが発生しない | overflow=-10 |
 | PASS | [レスポンシブ390px] /auth/sign-upで横スクロールが発生しない | overflow=0 |
 | PASS | [レスポンシブ390px] /auth/sign-inで横スクロールが発生しない | overflow=0 |
 | PASS | [レスポンシブ390px] /accountで横スクロールが発生しない | overflow=0 |

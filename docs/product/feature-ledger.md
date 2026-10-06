@@ -145,6 +145,7 @@
 
 ## 9. 変更履歴
 
+- 2026-10-06: v1.0 の公開後の運用。毎時の検出の観測の仕組み（`scripts/observe-hourly-detection.mjs`・観測契約 10-06〜10-13）と、欠落しても更新を取りこぼさない契約のテスト。問い合わせページに「TeamAIXI専用サポート窓口 / TeamAIXI Support」と本人指定の注意書き、更新頻度の表記を週 1 回から 1 時間おきへ修正。選手詳細 167 kB（#144）・ログイン 120 kB（#145）。ローカルの確認用サーバーの PID の契約を修正。10-05 の自動の Apply は DB の認証で停止（書き込みなし・本人が Secret を登録し直す）。v1.1 backlog は `integrated-roadmap.md`。
 - 2026-10-05: **TeamAIXI v1.0 正式リリース**。Release Validator `TEAMAIXI_V1_RELEASE_READY`（本人の最終確認 5 項目を記録）。Git tag `v1.0.0`・GitHub Release「TeamAIXI v1.0」。最終の品質: React #418 の最終ゲート 本番 3 回連続 576/576（8 viewport・hydration 0）、a11y 32/32、新規登録の制限 117/117。画面の移動: hydration 前の絞り込みの選択を保持（PR #141）、終わらない画面の移動を 5 秒で通常の移動に切り替え（PR #142）。1 時間おきの更新検出は schedule で動作を確認（run 37220971573・no_change）。F-070（監督補正）は v1.1。証跡 `evidence/2026-10-05-teamaixi-v1-release.json`。
 - 2026-10-04: **TeamAIXI v1.0**（本人の決定）。表示名を TeamAIXI に変更（保存キー・Backup・書き出しの識別子・共有 URL は互換のため維持）。ログイン不要・無料・非公式の正式製品版として、既存の Vercel Production URL で公開（PR #126・noindex 維持）。ナビから Tier・Pack・Community を外し、内部ページは本番 404 のまま。利用規約・プライバシー・免責事項を v1.0 版に（専門家レビュー推奨）。Release Validator（`scripts/validate-teamaixi-v1-release.mjs`）の判定は `TEAMAIXI_V1_MANUAL_REVIEW_REQUIRED`（本人の最終確認 5 項目だけが残る・`docs/release/teamaixi-v1.md` §6）。Git tag `v1.0.0`・GitHub Release は本人の確認の後。
 

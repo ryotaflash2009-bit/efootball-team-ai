@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased — after v1.0 (2026-10-05/06)
+
+### Changed
+- Support page names the channel "TeamAIXI専用サポート窓口" / "TeamAIXI Support" and shows the safety notice (no passwords, verification codes, API keys, secrets, addresses or phone numbers; bug reports contain only screen, steps, time, device, OS and browser). The dedicated mailbox is kept for v1.0.
+- Update-frequency text on Support and About corrected from weekly to hourly.
+
+### Performance
+- Player detail First Load JS 227 → 167 kB (#144); sign-in 189 → 120 kB (#145, Supabase client loaded on submit).
+
+### Operations
+- Hourly detection observation tooling and contract for 2026-10-06..13 (`scripts/observe-hourly-detection.mjs`); tests for the contract that missed schedule slots never lose an update.
+- Local verification server: `scripts/local-server.mjs` records the real `next start` listener PID and stops only re-verified PIDs.
+
+### Known issues
+- GitHub's scheduler ran only 7 of 40 hourly slots between 2026-10-04 17:17Z and 2026-10-06 08:33Z (max gap 538 min). Kept as is per the owner's decision; observed until 2026-10-13.
+- The automatic Apply on 2026-10-05 stopped at the database connection (password authentication, no writes); the owner needs to re-enter one secret value.
+
 ## 1.0.0 — TeamAIXI v1.0 (2026-10-05)
 
 First official release: free, no sign-in, unofficial. Served from the existing Vercel Production URL; search engines stay excluded (noindex).
