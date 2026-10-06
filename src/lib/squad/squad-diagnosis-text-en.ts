@@ -1,6 +1,7 @@
 import type { Locale } from "@/lib/i18n/locale";
 import { STAT_LABEL_JA } from "@/lib/world/stat-labels";
 import { STAT_DEFINITIONS } from "@/lib/efhub/masters";
+import { generatedOverlay } from "@/lib/i18n/generated-catalog";
 
 /**
  * スカッド診断ライブラリ（squad-diagnosis.ts）が返す日本語の文（カテゴリの注記・根拠・長所/弱点・改善候補）の英語表示（2026-10-04）。
@@ -102,6 +103,9 @@ function statList(text: string): string | null {
  */
 export function localizeSquadDiagnosisText(text: string, locale: Locale): string {
   if (locale === "ja" || !JP.test(text)) return text;
+  // ja・en 以外の表示言語: メッセージ ID と言語ごとの書式（generated-catalog.ts）。訳が無ければ下の English。
+  const overlay = generatedOverlay("squadDiagnosis", text, PATTERNS);
+  if (overlay !== null) return overlay;
   const fixed = FIXED_EN[text];
   if (fixed) return fixed;
   const stats = statList(text);
@@ -125,3 +129,6 @@ export function swapPlayerNames(text: string, locale: Locale, pairs: readonly (r
   for (const [ja, en] of [...pairs].sort((a, b) => b[0].length - a[0].length)) if (ja && en && ja !== en) out = out.split(ja).join(en);
   return out;
 }
+
+/** 翻訳の元（scripts の generated の雛形・テストが使う。表示には使わない）。 */
+export const GENERATED_SOURCE = { module: "squadDiagnosis", fixed: FIXED_EN as Record<string, string>, terms: { cat: CATEGORY_EN, pos: { 不明: "Unknown" } } as Record<string, Record<string, string>>, patterns: PATTERNS };

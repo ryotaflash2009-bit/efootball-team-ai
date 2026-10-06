@@ -1,6 +1,7 @@
 import type { Locale } from "@/lib/i18n/locale";
 import { localizeLibText } from "@/lib/progression/lib-text-en";
 import { localizeSquadCompareText } from "./compare-text-en";
+import { generatedOverlay } from "@/lib/i18n/generated-catalog";
 
 /**
  * スカッド計算ライブラリ（build-squad.ts・position.ts・link-up.ts・moves.ts）が返す日本語の文（警告・適性・操作の結果）の
@@ -92,6 +93,9 @@ const GENERIC = "(Details are available in Japanese only.)";
  */
 export function localizeSquadText(text: string, locale: Locale): string {
   if (locale === "ja" || !JP.test(text)) return text;
+  // ja・en 以外の表示言語: メッセージ ID と言語ごとの書式（generated-catalog.ts）。訳が無ければ下の English。
+  const overlay = generatedOverlay("squadText", text, PATTERNS);
+  if (overlay !== null) return overlay;
   const fixed = FIXED_EN[text];
   if (fixed) return fixed;
   for (const [re, f] of PATTERNS) {
@@ -102,3 +106,6 @@ export function localizeSquadText(text: string, locale: Locale): string {
   if (cmp !== GENERIC) return cmp;
   return localizeLibText(text, locale);
 }
+
+/** 翻訳の元（scripts の generated の雛形・テストが使う。表示には使わない）。 */
+export const GENERATED_SOURCE = { module: "squadText", fixed: FIXED_EN as Record<string, string>, terms: {} as Record<string, Record<string, string>>, patterns: PATTERNS };

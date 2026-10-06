@@ -2,6 +2,7 @@ import type { Locale } from "@/lib/i18n/locale";
 import { BUILD_STORAGE_ERROR_EN } from "./build-storage-errors";
 import { categoryName } from "./ability-editor-labels";
 import { GROUP_LABEL_JA } from "@/lib/world/stat-labels";
+import { generatedOverlay } from "@/lib/i18n/generated-catalog";
 
 /**
  * My Builds・ビルド分析（/build-inventory）の各ライブラリが返す日本語（エラー・規則ラベル・重複の説明・参照の説明・
@@ -109,6 +110,9 @@ const JP = /[぀-ヿ一-龯]/;
 /** 表示用: 日本語画面ではそのまま。英語画面では英語（未知の日本語は出さずに汎用の英語）。 */
 export function localizeBuildsText(text: string, locale: Locale): string {
   if (locale === "ja" || !JP.test(text)) return text;
+  // ja・en 以外の表示言語: メッセージ ID と言語ごとの書式（generated-catalog.ts）。訳が無ければ下の English。
+  const overlay = generatedOverlay("buildsText", text, PATTERNS);
+  if (overlay !== null) return overlay;
   const fixed = FIXED_EN[text] ?? BUILD_STORAGE_ERROR_EN[text];
   if (fixed) return fixed;
   if (GROUP_BY_JA.has(text)) return categoryName(GROUP_BY_JA.get(text)!, locale);
@@ -118,3 +122,6 @@ export function localizeBuildsText(text: string, locale: Locale): string {
   }
   return "(Details are available in Japanese only.)";
 }
+
+/** 翻訳の元（scripts の generated の雛形・テストが使う。表示には使わない）。 */
+export const GENERATED_SOURCE = { module: "buildsText", fixed: { ...FIXED_EN, ...BUILD_STORAGE_ERROR_EN } as Record<string, string>, terms: {} as Record<string, Record<string, string>>, patterns: PATTERNS };
