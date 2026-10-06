@@ -109,12 +109,12 @@ function useRuleLabel() {
 
 export function MyBuildsView() {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const tmb = (k: keyof Dictionary["myBuildsView"]) => t("myBuildsView", k);
   const fillMb = (s: string, vars: Record<string, string>) =>
     fillMessage(s, vars);
   /** ライブラリが返す日本語のエラー → 表示言語（英語画面では英語）。 */
-  const lbt = <T extends string | null | undefined>(s: T): T => (s ? (localizeBuildsText(s, locale) as T) : s);
+  const lbt = <T extends string | null | undefined>(s: T): T => (s ? (localizeBuildsText(s, displayLocale) as T) : s);
   const SORT_LABEL = useSortLabels();
   const cardFallbackName = (id: string) => fillMb(t("squadBuildPanel", "cardFallbackNameTemplate"), { id });
   const [builds, setBuilds] = useState<SavedBuild[]>([]);

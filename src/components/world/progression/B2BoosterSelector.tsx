@@ -33,7 +33,7 @@ export function B2BoosterSelector({
 }) {
   const t = useT();
   const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const bySlot = new Map(selected.map((s) => [s.slot, s]));
 
   function setSlot(slot: 1 | 2, boosterKey: string | null, level?: number) {
@@ -133,7 +133,7 @@ export function B2BoosterSelector({
                 </span>
                 <span className="text-text-muted">
                   {tp("ruB2AppliedEffect")
-                    .replace("{stats}", a.affectedStats.map((k) => abilityName(k, locale)).join(" / "))
+                    .replace("{stats}", a.affectedStats.map((k) => abilityName(k, displayLocale)).join(" / "))
                     .replace("{level}", String(a.level))}
                 </span>
               </li>

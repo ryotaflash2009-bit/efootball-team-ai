@@ -18,7 +18,7 @@ export function ProficiencyBar({
   showRank?: boolean;
 }) {
   // 戦術名は英名を主に表示し、和名は日本語表示のときだけ添える（英語表示で日本語を出さない）。
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const ranked = [...TACTICS]
     .map((t) => ({ ...t, value: proficiencies[t.key] }))
     .filter((t) => t.value != null)
@@ -54,7 +54,7 @@ export function ProficiencyBar({
           <div key={t.key} className="grid grid-cols-[minmax(120px,1fr)_2.5rem] items-center gap-3">
             <div>
               <dt className="flex items-baseline gap-1.5 text-sm">
-                <span className="font-medium">{tacticName(t)}</span>
+                <span className="font-medium">{tacticName(t, displayLocale)}</span>
                 {locale === "ja" ? <span className="text-2xs text-text-muted">{t.ja}</span> : null}
                 {showRank && rankMap.has(t.key) ? (
                   <span className="text-2xs text-text-muted">#{rankMap.get(t.key)}</span>
@@ -74,12 +74,12 @@ export function ProficiencyBar({
 
 /** 略称の凡例。 */
 export function TacticsLegend() {
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   return (
     <p className="flex flex-wrap gap-x-3 gap-y-1 text-2xs text-text-muted">
       {TACTICS.map((t) => (
         <span key={t.key}>
-          <span className="font-semibold text-text-dim">{t.abbr}</span> {tacticName(t)}
+          <span className="font-semibold text-text-dim">{t.abbr}</span> {tacticName(t, displayLocale)}
           {locale === "ja" ? `（${t.ja}）` : ""}
         </span>
       ))}

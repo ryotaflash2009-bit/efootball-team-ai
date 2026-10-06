@@ -37,7 +37,7 @@ function localizedRules(
 export function RulesNotice({ result }: { result: ProgressionResult }) {
   const t = useT();
   const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const modeKey = MODE_LABEL_KEY[result.calculationMode as keyof typeof MODE_LABEL_KEY];
   return (
     <div className="rounded-md border border-border bg-surface-2/40 p-3 text-xs">
@@ -60,7 +60,7 @@ export function RulesNotice({ result }: { result: ProgressionResult }) {
       {result.warnings.length > 0 ? (
         <ul className="mt-2 list-disc space-y-0.5 ps-4 text-yellow-300/90">
           {result.warnings.map((w, i) => (
-            <li key={i}>{localizeLibText(w, locale)}</li>
+            <li key={i}>{localizeLibText(w, displayLocale)}</li>
           ))}
         </ul>
       ) : null}

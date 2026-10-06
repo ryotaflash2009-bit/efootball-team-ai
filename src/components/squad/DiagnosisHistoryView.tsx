@@ -32,7 +32,7 @@ type Notice = { tone: "success" | "danger"; text: string } | null;
  */
 export function DiagnosisHistoryView() {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const h = (k: Parameters<typeof t<"diagnosisHistory">>[1]) => t("diagnosisHistory", k);
   const scopeState = useSyncedStorageScope();
   const [data, setData] = useState<HistoryRead | null>(null);
@@ -135,13 +135,13 @@ export function DiagnosisHistoryView() {
                       className="h-5 w-5"
                       checked={selected.includes(e.id)}
                       onChange={(ev) => setSelected((cur) => (ev.target.checked ? [...cur.filter((x) => x !== e.id), e.id].slice(-2) : cur.filter((x) => x !== e.id)))}
-                      aria-label={`${t("diagnosisCompare", "selectLabel")}: ${e.squadLabel || "—"} ${formatDateTime(new Date(e.savedAt), locale)}`}
+                      aria-label={`${t("diagnosisCompare", "selectLabel")}: ${e.squadLabel || "—"} ${formatDateTime(new Date(e.savedAt), displayLocale)}`}
                       data-history-select
                     />
                     <span className="min-w-0 truncate text-sm font-semibold">{e.squadLabel || "—"}</span>
                   </label>
                   <span className="text-2xs text-text-muted">
-                    {h("savedAt")}: {formatDateTime(new Date(e.savedAt), locale)}
+                    {h("savedAt")}: {formatDateTime(new Date(e.savedAt), displayLocale)}
                   </span>
                 </div>
                 <div className="mt-2 flex items-center gap-2 text-xs">
@@ -160,7 +160,7 @@ export function DiagnosisHistoryView() {
                 <ul className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-2xs sm:grid-cols-4">
                   {SHARE_CATEGORY_IDS.map((id) => (
                     <li key={id} className="flex justify-between gap-1">
-                      <span className="truncate text-text-dim">{diagnosisCategoryLabel(id, locale)}</span>
+                      <span className="truncate text-text-dim">{diagnosisCategoryLabel(id, displayLocale)}</span>
                       <span className="tabular-nums">{e.payload.c[id][0] ?? "—"}</span>
                     </li>
                   ))}

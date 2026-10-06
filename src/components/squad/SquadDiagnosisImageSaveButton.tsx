@@ -13,6 +13,11 @@ import { DIAGNOSIS_TITLE_LABEL_KEY } from "@/components/titles/DiagnosisTitles";
 import { Button } from "@/components/ui/Button";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import type { SquadImageLocalization } from "@/lib/squad/squad-diagnosis-image";
+import type { SquadDiagnosisCategoryId } from "@/lib/squad/squad-diagnosis";
+import { diagnosisCategoryLabel } from "@/components/squad/SharedDiagnosisView";
+import { formatDateTime } from "@/lib/i18n/format";
+import { localizeSquadDiagnosisText } from "@/lib/squad/squad-diagnosis-text-en";
 
 type Status = "idle" | "generating" | "saved" | "shared" | "error";
 type SkKey = keyof Dictionary["shareCard"];
@@ -33,7 +38,7 @@ export function SquadDiagnosisImageSaveButton({
   squadName: string;
   formationLabel: string;
 }) {
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const t = useT();
   const sk = (k: SkKey) => t("shareCard", k);
   const [ratio, setRatio] = useState<SquadCardRatio>("3:4");
@@ -62,13 +67,40 @@ export function SquadDiagnosisImageSaveButton({
     };
   }, [result, t]);
 
+  // ja・en 以外の表示言語では、画像の文言も表示言語にする（辞書 shareCard・カテゴリ名・日付の書式）。ja・en は従来どおり。
+  const localization = useMemo<SquadImageLocalization | undefined>(() => {
+    if (displayLocale === "ja" || displayLocale === "en") return undefined;
+    return {
+      text: {
+        heading: sk("imgHeading"),
+        formationPrefix: sk("imgFormationPrefix"),
+        overallScore: sk("imgOverallScore"),
+        perHundred: "/100",
+        tierPrefix: sk("imgTierPrefix"),
+        notRated: sk("imgNotRated"),
+        ratedCategoriesPrefix: sk("imgRatedCategoriesPrefix"),
+        topStrengthHeading: sk("imgTopStrength"),
+        topWeaknessHeading: sk("imgTopWeakness"),
+        none: sk("imgNone"),
+        disclaimer: sk("imgDisclaimer"),
+      },
+      categoryLabel: (id) => diagnosisCategoryLabel(id as SquadDiagnosisCategoryId, displayLocale),
+      findingText: (label) => localizeSquadDiagnosisText(label, displayLocale),
+      generatedAt: (iso) => {
+        const d = new Date(iso);
+        return Number.isNaN(d.getTime()) ? iso : sk("imgCreatedTemplate").replace("{date}", formatDateTime(d, displayLocale));
+      },
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [displayLocale, t]);
+
   const render = useCallback(
     async (r: SquadCardRatio, now: Date) => {
       const data = buildSquadDiagnosisShareData(result, { squadName, formationLabel, generatedAtIso: now.toISOString() });
-      const blob = await renderCanvasToPngBlob((canvas) => drawSquadDiagnosisCard(canvas, data, locale, r, { titles }));
+      const blob = await renderCanvasToPngBlob((canvas) => drawSquadDiagnosisCard(canvas, data, locale, r, { titles, localization }));
       return { blob, filename: withRatioSuffix(buildSquadDiagnosisFileName(data.squadName, now), r) };
     },
-    [result, squadName, formationLabel, locale, titles],
+    [result, squadName, formationLabel, locale, titles, localization],
   );
 
   // プレビューは「カードの内容」が変わったときだけ作り直す（親の再描画で result の参照だけが変わっても作り直さない。
@@ -78,7 +110,7 @@ export function SquadDiagnosisImageSaveButton({
   const contentKey = useMemo(
     () =>
       JSON.stringify([
-        locale,
+        displayLocale,
         squadName,
         formationLabel,
         result.overall.score,
@@ -88,7 +120,7 @@ export function SquadDiagnosisImageSaveButton({
         result.weaknesses[0]?.label ?? null,
         titles,
       ]),
-    [locale, squadName, formationLabel, result, titles],
+    [displayLocale, squadName, formationLabel, result, titles],
   );
 
   // プレビュー（開いている間だけ・比率や内容が変わるたびに作り直し、古い URL は解放する）。

@@ -78,12 +78,12 @@ export function PlayersPageView({
   searchParams: SP;
 }) {
   const t = useT();
-  const { locale } = useLocale();
-  const fmt = (n: number) => formatNumber(n, locale);
+  const { locale, displayLocale } = useLocale();
+  const fmt = (n: number) => formatNumber(n, displayLocale);
   const from = result.totalCount === 0 ? 0 : (result.page - 1) * result.pageSize + 1;
   const to = Math.min(result.page * result.pageSize, result.totalCount);
   const importedAt = sourceMeta
-    ? `${t("playersPage", "importedAtPrefix")}${sourceMeta.syncFinishedAt ? formatDateTime(new Date(sourceMeta.syncFinishedAt), locale) : "—"}`
+    ? `${t("playersPage", "importedAtPrefix")}${sourceMeta.syncFinishedAt ? formatDateTime(new Date(sourceMeta.syncFinishedAt), displayLocale) : "—"}`
     : "";
 
   return (

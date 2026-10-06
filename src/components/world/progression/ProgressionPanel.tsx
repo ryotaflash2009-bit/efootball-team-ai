@@ -87,7 +87,7 @@ export function ProgressionPanel({
   // ドラッグ中のプレビュー（上部バーの残りポイントも同じ値にするため）。
   const [previewPoints, setPreviewPoints] = useState<PointsSummary | null>(null);
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const tp = (k: keyof Dictionary["progressionTab"]) => t("progressionTab", k);
 
   // 同じ条件（監督・ブースター・モード）での計算。能力値直接操作UIのプレビューも同じ関数を使う。
@@ -333,7 +333,7 @@ export function ProgressionPanel({
             <SectionHeader
               title={tp("groupsTitle")}
               as="h3"
-              hint={tp("groupsHint").replace("{shooting}", categoryName("shooting", locale))}
+              hint={tp("groupsHint").replace("{shooting}", categoryName("shooting", displayLocale))}
             />
             <div className="flex flex-col gap-2.5">
               {fieldGroups.map((g) => (
@@ -359,7 +359,7 @@ export function ProgressionPanel({
                   <p className="mb-2 text-2xs text-text-muted">
                     {tp("gkGroupsNote").replace(
                       "{stats}",
-                      ["gkAwareness", "gkCatching", "gkParrying", "gkReflexes", "gkReach"].map((k) => abilityName(k, locale)).join(" / "),
+                      ["gkAwareness", "gkCatching", "gkParrying", "gkReflexes", "gkReach"].map((k) => abilityName(k, displayLocale)).join(" / "),
                     )}
                   </p>
                   <div className="flex flex-col gap-2.5">

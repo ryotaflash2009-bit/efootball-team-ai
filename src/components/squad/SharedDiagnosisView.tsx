@@ -20,14 +20,18 @@ import {
 } from "@/lib/squad/squad-diagnosis-share-url";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import type { Locale } from "@/lib/i18n/locale";
+import type { DisplayLocale } from "@/lib/i18n/locale-registry";
+import { localizeSquadDiagnosisText } from "@/lib/squad/squad-diagnosis-text-en";
 
 type ViewState = { status: "loading" } | { status: "ok"; payload: SquadDiagnosisSharePayloadV1 } | { status: "error"; reason: ShareDecodeFailure };
 
 const JA_LABEL = new Map<string, string>(ABILITY_CATEGORIES.map((c) => [c.id, c.label]));
 
-export function diagnosisCategoryLabel(id: SquadDiagnosisCategoryId, locale: Locale): string {
+export function diagnosisCategoryLabel(id: SquadDiagnosisCategoryId, locale: Locale | DisplayLocale): string {
   if (locale === "en") return CATEGORY_LABEL_EN[id] ?? id;
-  return id === "squadCompleteness" ? "選手配置の充足状況" : (JA_LABEL.get(id) ?? id);
+  const ja = id === "squadCompleteness" ? "選手配置の充足状況" : (JA_LABEL.get(id) ?? id);
+  // ja・en 以外の表示言語: 生成文の表（generated-catalog）の語。無ければ English。
+  return locale === "ja" ? ja : localizeSquadDiagnosisText(ja, locale);
 }
 
 /**
@@ -38,7 +42,7 @@ export function diagnosisCategoryLabel(id: SquadDiagnosisCategoryId, locale: Loc
  */
 export function SharedDiagnosisView() {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const [state, setState] = useState<ViewState>({ status: "loading" });
 
   useEffect(() => {
@@ -78,7 +82,7 @@ export function SharedDiagnosisView() {
   const findingText = (f: ShareFinding | null, strong: boolean): string => {
     if (!f) return s("none");
     const [kind, cat] = f;
-    if (kind === "ability" && cat) return (strong ? s("findingAbilityHigh") : s("findingAbilityLow")).replace("{category}", diagnosisCategoryLabel(cat, locale));
+    if (kind === "ability" && cat) return (strong ? s("findingAbilityHigh") : s("findingAbilityLow")).replace("{category}", diagnosisCategoryLabel(cat, displayLocale));
     if (kind === "compatibility") return s("findingCompatibility");
     if (kind === "referenceError") return s("findingReferenceError");
     return s("findingConfig");
@@ -133,7 +137,7 @@ export function SharedDiagnosisView() {
             return (
               <li key={id} className="text-xs">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-text-dim">{diagnosisCategoryLabel(id, locale)}</span>
+                  <span className="text-text-dim">{diagnosisCategoryLabel(id, displayLocale)}</span>
                   {score == null ? (
                     <span className="text-text-muted">{s("notRated")}</span>
                   ) : (

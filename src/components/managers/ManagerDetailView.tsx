@@ -17,10 +17,12 @@ import type { Locale } from "@/lib/i18n/locale";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { fillMessage } from "@/lib/i18n/message-format";
 import { tacticName } from "./tactics";
+import { abilityName } from "@/lib/progression/ability-editor-labels";
+import type { DisplayLocale } from "@/lib/i18n/locale-registry";
 
 const fill = (s: string, vars: Record<string, string>) => fillMessage(s, vars);
 
-function fmt(iso: string | null, locale: Locale): string {
+function fmt(iso: string | null, locale: Locale | DisplayLocale): string {
   if (!iso) return "—";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
@@ -59,7 +61,7 @@ export function ManagerUnavailableView() {
  */
 export function ManagerDetailView({ manager }: { manager: ManagerDetail }) {
   const tm = useTm();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const top = topTactic(manager.proficiencies);
 
   const NOT_IN_SOURCE = [
@@ -97,7 +99,7 @@ export function ManagerDetailView({ manager }: { manager: ManagerDetail }) {
             {top ? (
               <div className="shrink-0 rounded-md border border-border bg-surface px-4 py-2 text-center">
                 <p className="text-2xs text-text-muted">{tm("bestTactic")}</p>
-                <p className="text-sm font-semibold">{tacticName(top)}</p>
+                <p className="text-sm font-semibold">{tacticName(top, displayLocale)}</p>
                 <p className={`text-2xl font-black tabular-nums ${TACTIC_TEXT[tacticTier(top.value)]}`}>{top.value}</p>
               </div>
             ) : null}
@@ -131,7 +133,7 @@ export function ManagerDetailView({ manager }: { manager: ManagerDetail }) {
                     key={i}
                     className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border border-border/60 bg-surface-2/40 px-3 py-2 text-sm"
                   >
-                    <span className="font-medium">{b.statNameEn}</span>
+                    <span className="font-medium">{b.statKey && displayLocale !== "ja" && displayLocale !== "en" ? abilityName(b.statKey, displayLocale) : b.statNameEn}</span>
                     <span className="rounded bg-success/15 px-1.5 py-0.5 text-xs font-bold text-success tabular-nums">
                       {b.rawValue}
                     </span>
@@ -139,7 +141,9 @@ export function ManagerDetailView({ manager }: { manager: ManagerDetail }) {
                       {b.applicationCondition ?? tm("boosterUnconditional")}
                     </span>
                     <Badge tone={b.confirmationStatus === "confirmed" && b.statKey ? "success" : "warning"} size="xs">
-                      {b.confirmationStatus === "confirmed" && b.statKey ? "confirmed" : `${b.confirmationStatus}${b.statKey ? "" : tm("boosterKeyUnmapped")}`}
+                      {b.confirmationStatus === "confirmed" && b.statKey
+                        ? (displayLocale === "ja" || displayLocale === "en" ? "confirmed" : tm("boosterConfirmed"))
+                        : `${displayLocale === "ja" || displayLocale === "en" ? b.confirmationStatus : tm("boosterUnconfirmed")}${b.statKey ? "" : tm("boosterKeyUnmapped")}`}
                     </Badge>
                   </li>
                 ))}
@@ -199,11 +203,11 @@ export function ManagerDetailView({ manager }: { manager: ManagerDetail }) {
             ))}
           </dl>
           <p className="mt-3 text-2xs text-text-muted">
-            {fill(tm("dataSourceTemplate"), { source: String(manager.source), fetchedAt: fmt(manager.fetchedAt, locale) })}
+            {fill(tm("dataSourceTemplate"), { source: String(manager.source), fetchedAt: fmt(manager.fetchedAt, displayLocale) })}
             {manager.sourceUrl ? (
               <>
                 {" "}
-                ・
+                {displayLocale === "ja" || displayLocale === "en" ? "・" : "·"}
                 <a
                   href={manager.sourceUrl}
                   target="_blank"

@@ -19,7 +19,7 @@ type Status = "idle" | "image-saved" | "image-failed" | "copied" | "copy-failed"
  * 画像保存（PNG）と比較の共有URL（2つの要約だけ・サーバー保存なし）を提供する。
  */
 export function DiagnosisHistoryComparePanel({ entries, selectedIds, onClear }: { entries: DiagnosisHistoryEntry[]; selectedIds: string[]; onClear: () => void }) {
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const { c, trend } = useCompareTexts();
   const [status, setStatus] = useState<Status>("idle");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -59,7 +59,7 @@ export function DiagnosisHistoryComparePanel({ entries, selectedIds, onClear }: 
         .replace("{unchanged}", String(result.comparison.counts.unchanged))
         .replace("{notComparable}", String(result.comparison.counts.notComparable)),
       disclaimer: c("disclaimer"),
-      categoryLabel: (id: string) => diagnosisCategoryLabel(id as SquadDiagnosisCategoryId, locale),
+      categoryLabel: (id: string) => diagnosisCategoryLabel(id as SquadDiagnosisCategoryId, displayLocale),
     };
     const r = await saveDrawnCanvasAsPng((canvas) => drawDiagnosisComparisonImage(canvas, result.comparison, texts), `efootball-team-ai-before-after-${result.comparison.afterDate}.png`);
     setStatus(r.ok ? "image-saved" : "image-failed");

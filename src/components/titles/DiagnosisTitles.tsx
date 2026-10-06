@@ -27,13 +27,13 @@ export function DiagnosisTitles({
   categories: Partial<Record<string, readonly [number | null, SquadDiagnosisTier | null] | { score: number | null; tier: SquadDiagnosisTier | null }>>;
 }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const result = evaluateDiagnosisTitles(categories);
   const toItem = (x: DiagnosisTitle): TitleItem => ({
     id: x.categoryId,
     label: t("titles", DIAGNOSIS_TITLE_LABEL_KEY[x.categoryId]),
     reason: t("titles", "diagnosisReasonTemplate")
-      .replace("{category}", diagnosisCategoryLabel(x.categoryId, locale))
+      .replace("{category}", diagnosisCategoryLabel(x.categoryId, displayLocale))
       .replace("{score}", String(x.score))
       .replace("{tier}", x.tier),
   });

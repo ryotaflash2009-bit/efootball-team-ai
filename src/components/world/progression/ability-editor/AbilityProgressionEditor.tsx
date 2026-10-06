@@ -60,7 +60,7 @@ export function AbilityProgressionEditor({
   onFocusChange?: (focus: AbilityFocus | null) => void;
 }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const [state, dispatch] = useReducer(editorReducer, INITIAL_EDITOR_STATE);
   const { focus, baseline, dragLevel, dragBlocked } = state;
   const groupId = focus?.groupId ?? null;
@@ -105,7 +105,7 @@ export function AbilityProgressionEditor({
     const id = window.setTimeout(() => {
       setAnnouncement(
         t("abilityEditor", "announceLevel")
-          .replace("{category}", categoryName(groupId, locale))
+          .replace("{category}", categoryName(groupId, displayLocale))
           .replace("{level}", String(committedLevel))
           .replace("{remaining}", String(remainingCommitted)),
       );
@@ -119,8 +119,8 @@ export function AbilityProgressionEditor({
     if (!primaryStat || !groupId) return;
     setAnnouncement(
       t("abilityEditor", "announceSelected")
-        .replace("{ability}", abilityName(primaryStat, locale))
-        .replace("{category}", categoryName(groupId, locale)),
+        .replace("{ability}", abilityName(primaryStat, displayLocale))
+        .replace("{category}", categoryName(groupId, displayLocale)),
     );
     const id = window.requestAnimationFrame(() => {
       const row = document.querySelector<HTMLElement>(`[data-stat="${primaryStat}"]`);

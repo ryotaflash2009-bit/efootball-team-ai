@@ -3,10 +3,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { DEFAULT_LOCALE, LOCALE_STORAGE_KEY, type Locale } from "./locale";
 import { isSelectableLocale, localeInfo, negotiateDisplayLocale, readStoredDisplayLocale, type DisplayLocale } from "./locale-registry";
-import { dictionaryOf, hasDictionary, loadDictionary, translate } from "./translate";
-import { setFormatDisplayLocale } from "./format";
+import { dictionaryOf, hasDictionary, loadDictionary, missingKeysSeen, translate } from "./translate";
 import { setPluralLocale } from "./message-format";
-import { setGameTermsLocale } from "./game-terms";
 import { areInternalPagesVisible } from "@/lib/public-info/internal-pages";
 import type { Dictionary } from "./dictionaries/ja";
 
@@ -36,6 +34,11 @@ const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 /** 内部の確認用の言語を選べるか（開発・内部ページを有効にした build だけ。Production・Preview では偽）。 */
 const INTERNAL_PREVIEW = areInternalPagesVisible();
+
+// 内部の確認の build だけ: 確認中の言語で English へ戻ったキーの一覧を、多言語の black-box が読めるようにする（Production には出ない）
+if (INTERNAL_PREVIEW && typeof window !== "undefined") {
+  (window as unknown as { __eftaI18nMissing?: () => readonly string[] }).__eftaI18nMissing = missingKeysSeen;
+}
 
 function readStoredLocale(): DisplayLocale | null {
   try {
@@ -106,12 +109,8 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<LocaleContextValue>(() => {
     const dictionary = dictionaryOf(effectiveLocale);
-    // 数値・日付の Intl のロケール（ja・en 以外の言語は、その言語の書式。計算・保存には使わない）。
-    setFormatDisplayLocale(info.base === "en" ? info.intl : null);
     // 複数形の選択（fillMessage の {count, plural, …}）も表示言語の規則にする
     setPluralLocale(info.intl);
-    // 能力名・育成カテゴリ・戦術の表示名（ja・en は従来の表示）
-    setGameTermsLocale(effectiveLocale);
     return {
       locale: info.base,
       displayLocale: effectiveLocale,

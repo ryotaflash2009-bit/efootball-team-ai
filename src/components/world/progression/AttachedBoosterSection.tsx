@@ -98,7 +98,7 @@ export function AttachedBoosterSection({
 }) {
   const t = useT();
   const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const condBySel = new Map(conditionalSelections.map((c) => [c.boosterKey, c.selection]));
   function setConditional(boosterKey: string, sel: ConditionalBoosterSelection) {
     const rest = conditionalSelections.filter((c) => c.boosterKey !== boosterKey);
@@ -144,7 +144,7 @@ export function AttachedBoosterSection({
                     </Badge>
                     <span className="w-full text-2xs text-text-muted">
                       {tp("boostTargetsPrefix")}
-                      {b.affectedStats.map((k) => abilityName(k, locale)).join(" / ")}
+                      {b.affectedStats.map((k) => abilityName(k, displayLocale)).join(" / ")}
                       {b.level != null
                         ? tp(b.autoApplied ? "boostEachLevel" : "boostEachCandidateLevel").replace("{level}", String(b.level))
                         : ""}
@@ -177,7 +177,7 @@ export function AttachedBoosterSection({
                     </details>
                     {b.evidenceLevel === "conditional_unverified" && b.conditionText ? (
                       <span className="block w-full rounded border border-warning/30 bg-warning/10 px-2 py-1 text-2xs text-warning">
-                        {tp("boostConditionLine").replace("{text}", localizeLibText(b.conditionText, locale))}
+                        {tp("boostConditionLine").replace("{text}", localizeLibText(b.conditionText, displayLocale))}
                       </span>
                     ) : null}
                     {b.activationType === "power_of_many" ? (
@@ -216,7 +216,7 @@ export function AttachedBoosterSection({
                     <span className="w-full text-2xs text-text-muted">{tp("boostStageLine").replace("{stage}", stage)}</span>
                     <span className="w-full text-2xs text-text-muted">
                       {tp("boostUnresolvedNotAppliedNote")}
-                      {localizeLibText(b.unresolvedReason ?? "", locale)}
+                      {localizeLibText(b.unresolvedReason ?? "", displayLocale)}
                     </span>
                   </>
                 )}
@@ -227,7 +227,7 @@ export function AttachedBoosterSection({
       ) : (
         <p className="mt-1.5 text-xs text-text-dim">{tp("boostNoAttachedPlayer")}</p>
       )}
-      {attachedNote ? <p className="mt-1.5 text-2xs text-text-muted">{localizeLibText(attachedNote, locale)}</p> : null}
+      {attachedNote ? <p className="mt-1.5 text-2xs text-text-muted">{localizeLibText(attachedNote, displayLocale)}</p> : null}
     </div>
   );
 }

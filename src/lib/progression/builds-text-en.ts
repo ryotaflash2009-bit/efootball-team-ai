@@ -3,6 +3,7 @@ import { BUILD_STORAGE_ERROR_EN } from "./build-storage-errors";
 import { categoryName } from "./ability-editor-labels";
 import { GROUP_LABEL_JA } from "@/lib/world/stat-labels";
 import { generatedOverlay } from "@/lib/i18n/generated-catalog";
+import type { DisplayLocale } from "@/lib/i18n/locale-registry";
 
 /**
  * My Builds・ビルド分析（/build-inventory）の各ライブラリが返す日本語（エラー・規則ラベル・重複の説明・参照の説明・
@@ -108,11 +109,13 @@ const PATTERNS: Rule[] = [
 const JP = /[぀-ヿ一-龯]/;
 
 /** 表示用: 日本語画面ではそのまま。英語画面では英語（未知の日本語は出さずに汎用の英語）。 */
-export function localizeBuildsText(text: string, locale: Locale): string {
+export function localizeBuildsText(text: string, locale: Locale | DisplayLocale): string {
   if (locale === "ja" || !JP.test(text)) return text;
-  // ja・en 以外の表示言語: メッセージ ID と言語ごとの書式（generated-catalog.ts）。訳が無ければ下の English。
-  const overlay = generatedOverlay("buildsText", text, PATTERNS);
-  if (overlay !== null) return overlay;
+  // ja・en 以外の表示言語: メッセージ ID と言語ごとの書式（generated-catalog.ts）。訳が無ければ文ごと English（入れ子の文も English）。
+  if (locale !== "en") {
+    if (GROUP_BY_JA.has(text)) return categoryName(GROUP_BY_JA.get(text)!, locale);
+    return generatedOverlay("buildsText", text, PATTERNS, locale) ?? localizeBuildsText(text, "en");
+  }
   const fixed = FIXED_EN[text] ?? BUILD_STORAGE_ERROR_EN[text];
   if (fixed) return fixed;
   if (GROUP_BY_JA.has(text)) return categoryName(GROUP_BY_JA.get(text)!, locale);

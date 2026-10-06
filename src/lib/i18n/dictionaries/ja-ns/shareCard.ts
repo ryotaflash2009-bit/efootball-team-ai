@@ -15,6 +15,17 @@ const shareCard: Dictionary["shareCard"] = {
   shareTitle: "スカッド診断",
   shared: "共有しました。",
   privacyNote: "画像にはスカッド名・フォーメーション・評価だけを載せます（URL・ID・アカウントの情報は載せません）。スカッド名に個人情報を入れないでください。",
+  imgHeading: "スカッド診断（スカッド構成評価）",
+  imgFormationPrefix: "フォーメーション: ",
+  imgOverallScore: "総合評価",
+  imgTierPrefix: "評価 ",
+  imgNotRated: "判定対象外",
+  imgRatedCategoriesPrefix: "判定可能カテゴリ: ",
+  imgTopStrength: "代表的な長所",
+  imgTopWeakness: "代表的な弱点",
+  imgNone: "該当なし",
+  imgDisclaimer: "登録データに基づく構成評価です。試合結果・全国順位・勝率を保証するものではありません。",
+  imgCreatedTemplate: "{date} 作成",
   };
 
 registerJaNamespace("shareCard", shareCard);

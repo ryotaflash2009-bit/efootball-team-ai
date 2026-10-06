@@ -1,15 +1,16 @@
 {
   "schema": "efta-i18n-coverage/v1",
   "source": "en",
-  "sourceKeys": 4495,
+  "sourceKeys": 4507,
   "totals": {
-    "core": 77,
-    "publicUi": 4088,
+    "core": 78,
+    "publicUi": 3967,
     "accessibility": 127,
     "errorEmptyLoading": 256,
-    "metadata": 30,
-    "shareCards": 115,
-    "legal": 249,
+    "metadata": 24,
+    "shareCards": 126,
+    "legal": 116,
+    "legalEnglishFallback": 133,
     "internal": 407
   },
   "locales": {
@@ -24,21 +25,22 @@
       "note": "source"
     },
     "es": {
-      "state": "MACHINE_DRAFT",
+      "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 131,
+      "translated": 3967,
       "coverage": {
         "core": 100,
-        "publicUi": 3.2,
-        "accessibility": 10.2,
-        "errorEmptyLoading": 3.9,
-        "metadata": 0,
-        "shareCards": 0,
-        "legal": 0,
+        "publicUi": 100,
+        "accessibility": 100,
+        "errorEmptyLoading": 100,
+        "metadata": 100,
+        "shareCards": 100,
+        "legal": 100,
+        "legalEnglishFallback": 0,
         "internal": 0,
-        "overall": 2.9
+        "overall": 88
       },
-      "missing": 4364,
+      "missing": 540,
       "extra": {
         "count": 0,
         "sample": []
@@ -47,7 +49,7 @@
         "count": 0,
         "sample": []
       },
-      "sameAsEnglish": 7,
+      "sameAsEnglish": 126,
       "placeholderMismatch": {
         "count": 0,
         "sample": []
@@ -79,25 +81,27 @@
       },
       "unrecorded": 0,
       "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
-      "quality": "MACHINE_DRAFT_ONLY",
-      "productionGate": "NOT_MET"
+      "quality": "MACHINE_ASSISTED_COMPLETE",
+      "productionGate": "NOT_MET",
+      "releaseCandidateGate": "PASS"
     },
     "pt-BR": {
       "state": "MACHINE_DRAFT",
       "file": true,
       "translated": 131,
       "coverage": {
-        "core": 100,
-        "publicUi": 3.2,
+        "core": 98.7,
+        "publicUi": 3.3,
         "accessibility": 10.2,
         "errorEmptyLoading": 3.9,
         "metadata": 0,
         "shareCards": 0,
         "legal": 0,
+        "legalEnglishFallback": 0,
         "internal": 0,
         "overall": 2.9
       },
-      "missing": 4364,
+      "missing": 4376,
       "extra": {
         "count": 0,
         "sample": []
@@ -139,24 +143,26 @@
       "unrecorded": 0,
       "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
       "quality": "MACHINE_DRAFT_ONLY",
-      "productionGate": "NOT_MET"
+      "productionGate": "NOT_MET",
+      "releaseCandidateGate": "NOT_MET"
     },
     "fr": {
       "state": "MACHINE_DRAFT",
       "file": true,
       "translated": 131,
       "coverage": {
-        "core": 100,
-        "publicUi": 3.2,
+        "core": 98.7,
+        "publicUi": 3.3,
         "accessibility": 10.2,
         "errorEmptyLoading": 3.9,
         "metadata": 0,
         "shareCards": 0,
         "legal": 0,
+        "legalEnglishFallback": 0,
         "internal": 0,
         "overall": 2.9
       },
-      "missing": 4364,
+      "missing": 4376,
       "extra": {
         "count": 0,
         "sample": []
@@ -198,24 +204,26 @@
       "unrecorded": 0,
       "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
       "quality": "MACHINE_DRAFT_ONLY",
-      "productionGate": "NOT_MET"
+      "productionGate": "NOT_MET",
+      "releaseCandidateGate": "NOT_MET"
     },
     "de": {
       "state": "MACHINE_DRAFT",
       "file": true,
       "translated": 131,
       "coverage": {
-        "core": 100,
-        "publicUi": 3.2,
+        "core": 98.7,
+        "publicUi": 3.3,
         "accessibility": 10.2,
         "errorEmptyLoading": 3.9,
         "metadata": 0,
         "shareCards": 0,
         "legal": 0,
+        "legalEnglishFallback": 0,
         "internal": 0,
         "overall": 2.9
       },
-      "missing": 4364,
+      "missing": 4376,
       "extra": {
         "count": 0,
         "sample": []
@@ -257,24 +265,26 @@
       "unrecorded": 0,
       "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
       "quality": "MACHINE_DRAFT_ONLY",
-      "productionGate": "NOT_MET"
+      "productionGate": "NOT_MET",
+      "releaseCandidateGate": "NOT_MET"
     },
     "it": {
       "state": "MACHINE_DRAFT",
       "file": true,
       "translated": 131,
       "coverage": {
-        "core": 100,
-        "publicUi": 3.2,
+        "core": 98.7,
+        "publicUi": 3.3,
         "accessibility": 10.2,
         "errorEmptyLoading": 3.9,
         "metadata": 0,
         "shareCards": 0,
         "legal": 0,
+        "legalEnglishFallback": 0,
         "internal": 0,
         "overall": 2.9
       },
-      "missing": 4364,
+      "missing": 4376,
       "extra": {
         "count": 0,
         "sample": []
@@ -316,24 +326,26 @@
       "unrecorded": 0,
       "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
       "quality": "MACHINE_DRAFT_ONLY",
-      "productionGate": "NOT_MET"
+      "productionGate": "NOT_MET",
+      "releaseCandidateGate": "NOT_MET"
     },
     "ko": {
       "state": "MACHINE_DRAFT",
       "file": true,
       "translated": 131,
       "coverage": {
-        "core": 100,
-        "publicUi": 3.2,
+        "core": 98.7,
+        "publicUi": 3.3,
         "accessibility": 10.2,
         "errorEmptyLoading": 3.9,
         "metadata": 0,
         "shareCards": 0,
         "legal": 0,
+        "legalEnglishFallback": 0,
         "internal": 0,
         "overall": 2.9
       },
-      "missing": 4364,
+      "missing": 4376,
       "extra": {
         "count": 0,
         "sample": []
@@ -375,24 +387,26 @@
       "unrecorded": 0,
       "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
       "quality": "MACHINE_DRAFT_ONLY",
-      "productionGate": "NOT_MET"
+      "productionGate": "NOT_MET",
+      "releaseCandidateGate": "NOT_MET"
     },
     "zh-CN": {
       "state": "MACHINE_DRAFT",
       "file": true,
       "translated": 131,
       "coverage": {
-        "core": 100,
-        "publicUi": 3.2,
+        "core": 98.7,
+        "publicUi": 3.3,
         "accessibility": 10.2,
         "errorEmptyLoading": 3.9,
         "metadata": 0,
         "shareCards": 0,
         "legal": 0,
+        "legalEnglishFallback": 0,
         "internal": 0,
         "overall": 2.9
       },
-      "missing": 4364,
+      "missing": 4376,
       "extra": {
         "count": 0,
         "sample": []
@@ -434,24 +448,26 @@
       "unrecorded": 0,
       "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
       "quality": "MACHINE_DRAFT_ONLY",
-      "productionGate": "NOT_MET"
+      "productionGate": "NOT_MET",
+      "releaseCandidateGate": "NOT_MET"
     },
     "zh-TW": {
       "state": "MACHINE_DRAFT",
       "file": true,
       "translated": 131,
       "coverage": {
-        "core": 100,
-        "publicUi": 3.2,
+        "core": 98.7,
+        "publicUi": 3.3,
         "accessibility": 10.2,
         "errorEmptyLoading": 3.9,
         "metadata": 0,
         "shareCards": 0,
         "legal": 0,
+        "legalEnglishFallback": 0,
         "internal": 0,
         "overall": 2.9
       },
-      "missing": 4364,
+      "missing": 4376,
       "extra": {
         "count": 0,
         "sample": []
@@ -493,24 +509,26 @@
       "unrecorded": 0,
       "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
       "quality": "MACHINE_DRAFT_ONLY",
-      "productionGate": "NOT_MET"
+      "productionGate": "NOT_MET",
+      "releaseCandidateGate": "NOT_MET"
     },
     "id": {
       "state": "MACHINE_DRAFT",
       "file": true,
       "translated": 131,
       "coverage": {
-        "core": 100,
-        "publicUi": 3.2,
+        "core": 98.7,
+        "publicUi": 3.3,
         "accessibility": 10.2,
         "errorEmptyLoading": 3.9,
         "metadata": 0,
         "shareCards": 0,
         "legal": 0,
+        "legalEnglishFallback": 0,
         "internal": 0,
         "overall": 2.9
       },
-      "missing": 4364,
+      "missing": 4376,
       "extra": {
         "count": 0,
         "sample": []
@@ -552,24 +570,26 @@
       "unrecorded": 0,
       "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
       "quality": "MACHINE_DRAFT_ONLY",
-      "productionGate": "NOT_MET"
+      "productionGate": "NOT_MET",
+      "releaseCandidateGate": "NOT_MET"
     },
     "tr": {
       "state": "MACHINE_DRAFT",
       "file": true,
       "translated": 131,
       "coverage": {
-        "core": 100,
-        "publicUi": 3.2,
+        "core": 98.7,
+        "publicUi": 3.3,
         "accessibility": 10.2,
         "errorEmptyLoading": 3.9,
         "metadata": 0,
         "shareCards": 0,
         "legal": 0,
+        "legalEnglishFallback": 0,
         "internal": 0,
         "overall": 2.9
       },
-      "missing": 4364,
+      "missing": 4376,
       "extra": {
         "count": 0,
         "sample": []
@@ -611,7 +631,8 @@
       "unrecorded": 0,
       "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
       "quality": "MACHINE_DRAFT_ONLY",
-      "productionGate": "NOT_MET"
+      "productionGate": "NOT_MET",
+      "releaseCandidateGate": "NOT_MET"
     },
     "ar": {
       "state": "INTERNAL_DRAFT",
@@ -625,10 +646,11 @@
         "metadata": 0,
         "shareCards": 0,
         "legal": 0,
+        "legalEnglishFallback": 0,
         "internal": 0,
         "overall": 0
       },
-      "missing": 4495,
+      "missing": 4507,
       "extra": {
         "count": 0,
         "sample": []
@@ -670,7 +692,8 @@
       "unrecorded": 0,
       "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
       "quality": "INCOMPLETE",
-      "productionGate": "NOT_MET"
+      "productionGate": "NOT_MET",
+      "releaseCandidateGate": "NOT_MET"
     },
     "th": {
       "state": "INTERNAL_DRAFT",
@@ -684,10 +707,11 @@
         "metadata": 0,
         "shareCards": 0,
         "legal": 0,
+        "legalEnglishFallback": 0,
         "internal": 0,
         "overall": 0
       },
-      "missing": 4495,
+      "missing": 4507,
       "extra": {
         "count": 0,
         "sample": []
@@ -729,7 +753,8 @@
       "unrecorded": 0,
       "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
       "quality": "INCOMPLETE",
-      "productionGate": "NOT_MET"
+      "productionGate": "NOT_MET",
+      "releaseCandidateGate": "NOT_MET"
     },
     "vi": {
       "state": "INTERNAL_DRAFT",
@@ -743,10 +768,11 @@
         "metadata": 0,
         "shareCards": 0,
         "legal": 0,
+        "legalEnglishFallback": 0,
         "internal": 0,
         "overall": 0
       },
-      "missing": 4495,
+      "missing": 4507,
       "extra": {
         "count": 0,
         "sample": []
@@ -788,7 +814,8 @@
       "unrecorded": 0,
       "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
       "quality": "INCOMPLETE",
-      "productionGate": "NOT_MET"
+      "productionGate": "NOT_MET",
+      "releaseCandidateGate": "NOT_MET"
     },
     "nl": {
       "state": "INTERNAL_DRAFT",
@@ -802,10 +829,11 @@
         "metadata": 0,
         "shareCards": 0,
         "legal": 0,
+        "legalEnglishFallback": 0,
         "internal": 0,
         "overall": 0
       },
-      "missing": 4495,
+      "missing": 4507,
       "extra": {
         "count": 0,
         "sample": []
@@ -847,7 +875,8 @@
       "unrecorded": 0,
       "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
       "quality": "INCOMPLETE",
-      "productionGate": "NOT_MET"
+      "productionGate": "NOT_MET",
+      "releaseCandidateGate": "NOT_MET"
     },
     "pl": {
       "state": "INTERNAL_DRAFT",
@@ -861,10 +890,11 @@
         "metadata": 0,
         "shareCards": 0,
         "legal": 0,
+        "legalEnglishFallback": 0,
         "internal": 0,
         "overall": 0
       },
-      "missing": 4495,
+      "missing": 4507,
       "extra": {
         "count": 0,
         "sample": []
@@ -906,7 +936,8 @@
       "unrecorded": 0,
       "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
       "quality": "INCOMPLETE",
-      "productionGate": "NOT_MET"
+      "productionGate": "NOT_MET",
+      "releaseCandidateGate": "NOT_MET"
     },
     "ru": {
       "state": "INTERNAL_DRAFT",
@@ -920,10 +951,11 @@
         "metadata": 0,
         "shareCards": 0,
         "legal": 0,
+        "legalEnglishFallback": 0,
         "internal": 0,
         "overall": 0
       },
-      "missing": 4495,
+      "missing": 4507,
       "extra": {
         "count": 0,
         "sample": []
@@ -965,7 +997,8 @@
       "unrecorded": 0,
       "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
       "quality": "INCOMPLETE",
-      "productionGate": "NOT_MET"
+      "productionGate": "NOT_MET",
+      "releaseCandidateGate": "NOT_MET"
     },
     "en-XA": {
       "state": "INTERNAL_DRAFT",
@@ -979,5 +1012,5 @@
     }
   },
   "failures": [],
-  "sourceVersion": "6f390dfa144e"
+  "sourceVersion": "1e0dc1560c27"
 }

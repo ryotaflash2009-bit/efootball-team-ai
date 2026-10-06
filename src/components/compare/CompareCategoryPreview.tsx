@@ -59,14 +59,14 @@ export function CompareCategoryPreview({
   series: CategoryPreviewSeries[];
 }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const tcp = (k: keyof Dictionary["compareCategoryPreview"]) => t("compareCategoryPreview", k);
   const fillCp = (s: string, vars: Record<string, string>) =>
     fillMessage(s, vars);
   const RADAR_MODE_LABEL = useRadarModeLabels();
   const g = getGroupDef(groupId);
   if (!g) return null;
-  const label = categoryName(groupId, locale);
+  const label = categoryName(groupId, displayLocale);
 
   return (
     <div className="rounded border border-border bg-surface-2/30 p-2 text-2xs">
@@ -77,7 +77,7 @@ export function CompareCategoryPreview({
 
       <div className="flex flex-col gap-1.5">
         {g.affectedStats.map((k) => {
-          const nameJa = abilityName(k, locale);
+          const nameJa = abilityName(k, displayLocale);
           return (
             <div key={k}>
               <p className="text-text-dim">{nameJa}</p>

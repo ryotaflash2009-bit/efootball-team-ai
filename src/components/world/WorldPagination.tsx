@@ -23,8 +23,8 @@ export function WorldPagination({
   searchParams: Record<string, string | string[] | undefined>;
 }) {
   const t = useT();
-  const { locale } = useLocale();
-  const fmt = (n: number) => formatNumber(n, locale);
+  const { locale, displayLocale } = useLocale();
+  const fmt = (n: number) => formatNumber(n, displayLocale);
   const hrefFor = (p: number): string => {
     const sp = new URLSearchParams();
     for (const [k, v] of Object.entries(searchParams)) {

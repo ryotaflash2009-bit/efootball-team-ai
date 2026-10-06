@@ -3928,6 +3928,17 @@ export interface Dictionary {
     shareTitle: string;
     shared: string;
     privacyNote: string;
+    imgHeading: string;
+    imgFormationPrefix: string;
+    imgOverallScore: string;
+    imgTierPrefix: string;
+    imgNotRated: string;
+    imgRatedCategoriesPrefix: string;
+    imgTopStrength: string;
+    imgTopWeakness: string;
+    imgNone: string;
+    imgDisclaimer: string;
+    imgCreatedTemplate: string;
   };
   localPosts: {
     pageTitle: string;

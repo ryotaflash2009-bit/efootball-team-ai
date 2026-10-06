@@ -42,7 +42,7 @@ export function FixedBoosterDetails({
 }) {
   const t = useT();
   const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const fallbackName = tp("boostFallbackName");
   const name =
     locale === "ja" && booster.boosterNameJa
@@ -88,7 +88,7 @@ export function FixedBoosterDetails({
           <ul className="mt-1 flex flex-col gap-1">
             {booster.affectedStats.map((k) => (
               <li key={k} className="flex items-center justify-between rounded border border-border/60 bg-surface-2/40 px-2 py-1 text-xs">
-                <span title={getStatDef(k)?.nameEn ?? k}>{abilityName(k, locale)}</span>
+                <span title={displayLocale === "ja" ? (getStatDef(k)?.nameEn ?? k) : abilityName(k, displayLocale)}>{abilityName(k, displayLocale)}</span>
                 <span className="font-bold tabular-nums text-lime-300">+{level}</span>
               </li>
             ))}

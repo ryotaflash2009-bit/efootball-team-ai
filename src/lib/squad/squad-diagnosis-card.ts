@@ -1,8 +1,10 @@
 import type { SquadDiagnosisShareData, SquadDiagnosisShareFinding } from "./squad-diagnosis-share";
 import type { Locale } from "@/lib/i18n/locale";
+import { missingGlyphsIn, recordCanvasText } from "@/lib/i18n/font-coverage";
 import {
   COLORS,
-  IMAGE_TEXT,
+  imageTextOf,
+  type SquadImageLocalization,
   SQUAD_DIAGNOSIS_IMAGE_HEIGHT,
   SQUAD_DIAGNOSIS_IMAGE_SCALE,
   SQUAD_DIAGNOSIS_IMAGE_WIDTH,
@@ -32,6 +34,8 @@ export const SQUAD_CARD_SIZES: Record<SquadCardRatio, { width: number; height: n
 export interface SquadCardExtras {
   /** F-072 の称号（最大1）とバッジ（最大4）の表示名。 */
   titles?: { primary: string | null; badges: string[] } | null;
+  /** ja・en 以外の表示言語の文言（squad-diagnosis-image.ts の SquadImageLocalization）。 */
+  localization?: SquadImageLocalization;
 }
 
 /** ファイル名へ比率を付ける（3:4 は既存のファイル名のまま）。 */
@@ -78,7 +82,7 @@ function drawTitlePills(ctx: CanvasRenderingContext2D, titles: SquadCardExtras["
   return (row + 1) * (h + gap);
 }
 
-function drawHeader(ctx: CanvasRenderingContext2D, data: SquadDiagnosisShareData, locale: Locale, x: number, y: number, width: number): number {
+function drawHeader(ctx: CanvasRenderingContext2D, data: SquadDiagnosisShareData, locale: Locale, x: number, y: number, width: number, loc?: SquadImageLocalization): number {
   ctx.textBaseline = "alphabetic";
   ctx.textAlign = "left";
   ctx.fillStyle = COLORS.accent;
@@ -87,13 +91,13 @@ function drawHeader(ctx: CanvasRenderingContext2D, data: SquadDiagnosisShareData
   ctx.textAlign = "right";
   ctx.fillStyle = COLORS.textMuted;
   ctx.font = "400 13px sans-serif";
-  ctx.fillText(formatGeneratedAt(data.generatedAtIso, locale), x + width, y);
+  ctx.fillText(loc ? loc.generatedAt(data.generatedAtIso) : formatGeneratedAt(data.generatedAtIso, locale), x + width, y);
   ctx.textAlign = "left";
   return y + 30;
 }
 
-function drawIdentity(ctx: CanvasRenderingContext2D, data: SquadDiagnosisShareData, locale: Locale, x: number, y: number, width: number, maxNameLines: number): number {
-  const text = IMAGE_TEXT[locale];
+function drawIdentity(ctx: CanvasRenderingContext2D, data: SquadDiagnosisShareData, locale: Locale, x: number, y: number, width: number, maxNameLines: number, loc?: SquadImageLocalization): number {
+  const text = imageTextOf(locale, loc);
   ctx.fillStyle = COLORS.textDim;
   ctx.font = "600 14px sans-serif";
   ctx.fillText(truncateToWidth(ctx, text.heading, width), x, y);
@@ -107,8 +111,8 @@ function drawIdentity(ctx: CanvasRenderingContext2D, data: SquadDiagnosisShareDa
   return y + 26;
 }
 
-function drawScore(ctx: CanvasRenderingContext2D, data: SquadDiagnosisShareData, locale: Locale, x: number, y: number, width: number): number {
-  const text = IMAGE_TEXT[locale];
+function drawScore(ctx: CanvasRenderingContext2D, data: SquadDiagnosisShareData, locale: Locale, x: number, y: number, width: number, loc?: SquadImageLocalization): number {
+  const text = imageTextOf(locale, loc);
   ctx.fillStyle = COLORS.surface2;
   roundRect(ctx, x, y, width, 96, 12);
   ctx.fill();
@@ -151,7 +155,7 @@ function drawScore(ctx: CanvasRenderingContext2D, data: SquadDiagnosisShareData,
   return y + 96 + 16;
 }
 
-function drawFinding(ctx: CanvasRenderingContext2D, heading: string, color: string, finding: SquadDiagnosisShareFinding | null, locale: Locale, x: number, y: number, width: number, height: number) {
+function drawFinding(ctx: CanvasRenderingContext2D, heading: string, color: string, finding: SquadDiagnosisShareFinding | null, locale: Locale, x: number, y: number, width: number, height: number, loc?: SquadImageLocalization) {
   ctx.fillStyle = COLORS.surface2;
   roundRect(ctx, x, y, width, height, 10);
   ctx.fill();
@@ -162,11 +166,11 @@ function drawFinding(ctx: CanvasRenderingContext2D, heading: string, color: stri
   if (finding) {
     ctx.fillStyle = COLORS.text;
     ctx.font = "600 16px sans-serif";
-    wrapText(ctx, findingLabelForImage(finding, locale), x + 16, y + 52, width - 32, 22, Math.max(1, Math.floor((height - 52) / 22)));
+    wrapText(ctx, findingLabelForImage(finding, locale, loc), x + 16, y + 52, width - 32, 22, Math.max(1, Math.floor((height - 52) / 22)));
   } else {
     ctx.fillStyle = COLORS.textMuted;
     ctx.font = "400 14px sans-serif";
-    ctx.fillText(IMAGE_TEXT[locale].none, x + 16, y + 52);
+    ctx.fillText(imageTextOf(locale, loc).none, x + 16, y + 52);
   }
 }
 
@@ -175,8 +179,9 @@ function drawFinding(ctx: CanvasRenderingContext2D, heading: string, color: stri
  * 1:1・16:9 は左右2列（左: 名前・総合・称号・長所/弱点、右: カテゴリ）、9:16 は縦1列。
  */
 export function drawSquadDiagnosisCard(canvas: HTMLCanvasElement, data: SquadDiagnosisShareData, locale: Locale, ratio: SquadCardRatio, extras: SquadCardExtras = {}): void {
+  const loc = extras.localization;
   if (ratio === "3:4") {
-    drawSquadDiagnosisImage(canvas, data, locale);
+    drawSquadDiagnosisImage(canvas, data, locale, loc);
     return;
   }
   const { width: W, height: H } = SQUAD_CARD_SIZES[ratio];
@@ -186,7 +191,7 @@ export function drawSquadDiagnosisCard(canvas: HTMLCanvasElement, data: SquadDia
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
   ctx.scale(scale, scale);
-  const text = IMAGE_TEXT[locale];
+  const text = imageTextOf(locale, loc);
 
   ctx.fillStyle = COLORS.bgOuter;
   ctx.fillRect(0, 0, W, H);
@@ -196,46 +201,46 @@ export function drawSquadDiagnosisCard(canvas: HTMLCanvasElement, data: SquadDia
   ctx.fill();
   const x0 = pad + 16;
   const inner = W - x0 * 2;
-  const y = drawHeader(ctx, data, locale, x0, pad + 16, inner);
+  const y = drawHeader(ctx, data, locale, x0, pad + 16, inner, loc);
   const disclaimerLines = ratio === "16:9" ? 2 : 3;
   const disclaimerTop = H - pad - 8 - disclaimerLines * 18;
 
   if (ratio === "9:16") {
-    let cy = drawIdentity(ctx, data, locale, x0, y + 8, inner, 2);
-    cy = drawScore(ctx, data, locale, x0, cy, inner);
+    let cy = drawIdentity(ctx, data, locale, x0, y + 8, inner, 2, loc);
+    cy = drawScore(ctx, data, locale, x0, cy, inner, loc);
     const th = drawTitlePills(ctx, extras.titles, x0, cy, inner);
     cy += th > 0 ? th + 8 : 0;
-    for (const c of data.categories) cy += drawCategoryRow(ctx, c, x0, cy, inner, locale) + 4;
+    for (const c of data.categories) cy += drawCategoryRow(ctx, c, x0, cy, inner, locale, loc) + 4;
     cy += 12;
     const colW = (inner - 16) / 2;
     const fh = Math.min(150, Math.max(110, disclaimerTop - cy - 20));
-    drawFinding(ctx, text.topStrengthHeading, COLORS.success, data.topStrength, locale, x0, cy, colW, fh);
-    drawFinding(ctx, text.topWeaknessHeading, COLORS.danger, data.topWeakness, locale, x0 + colW + 16, cy, colW, fh);
+    drawFinding(ctx, text.topStrengthHeading, COLORS.success, data.topStrength, locale, x0, cy, colW, fh, loc);
+    drawFinding(ctx, text.topWeaknessHeading, COLORS.danger, data.topWeakness, locale, x0 + colW + 16, cy, colW, fh, loc);
   } else {
     const gap = 28;
     const leftW = Math.round(inner * (ratio === "16:9" ? 0.46 : 0.48));
     const rightX = x0 + leftW + gap;
     const rightW = inner - leftW - gap;
-    let ly = drawIdentity(ctx, data, locale, x0, y + 4, leftW, ratio === "16:9" ? 1 : 2);
-    ly = drawScore(ctx, data, locale, x0, ly, leftW);
+    let ly = drawIdentity(ctx, data, locale, x0, y + 4, leftW, ratio === "16:9" ? 1 : 2, loc);
+    ly = drawScore(ctx, data, locale, x0, ly, leftW, loc);
     const th = drawTitlePills(ctx, extras.titles, x0, ly, leftW);
     ly += th > 0 ? th + 4 : 0;
     const remaining = disclaimerTop - ly - 16;
     if (ratio === "16:9") {
       const colW = (leftW - 12) / 2;
       const fh = Math.max(84, Math.min(200, remaining));
-      drawFinding(ctx, text.topStrengthHeading, COLORS.success, data.topStrength, locale, x0, ly, colW, fh);
-      drawFinding(ctx, text.topWeaknessHeading, COLORS.danger, data.topWeakness, locale, x0 + colW + 12, ly, colW, fh);
+      drawFinding(ctx, text.topStrengthHeading, COLORS.success, data.topStrength, locale, x0, ly, colW, fh, loc);
+      drawFinding(ctx, text.topWeaknessHeading, COLORS.danger, data.topWeakness, locale, x0 + colW + 12, ly, colW, fh, loc);
     } else {
       const fh = Math.max(84, Math.min(200, (remaining - 12) / 2));
-      drawFinding(ctx, text.topStrengthHeading, COLORS.success, data.topStrength, locale, x0, ly, leftW, fh);
-      drawFinding(ctx, text.topWeaknessHeading, COLORS.danger, data.topWeakness, locale, x0, ly + fh + 12, leftW, fh);
+      drawFinding(ctx, text.topStrengthHeading, COLORS.success, data.topStrength, locale, x0, ly, leftW, fh, loc);
+      drawFinding(ctx, text.topWeaknessHeading, COLORS.danger, data.topWeakness, locale, x0, ly + fh + 12, leftW, fh, loc);
     }
     let ry = y + 8;
     // カテゴリの行間は、使える高さに合わせて広げる（下に大きな空白を残さない）。
     const n = Math.max(1, data.categories.length);
     const rowGap = Math.max(6, Math.min(36, (disclaimerTop - 24 - ry - n * 44) / n));
-    for (const c of data.categories) ry += drawCategoryRow(ctx, c, rightX, ry, rightW, locale) + rowGap;
+    for (const c of data.categories) ry += drawCategoryRow(ctx, c, rightX, ry, rightW, locale, loc) + rowGap;
   }
 
   ctx.textAlign = "left";
@@ -250,8 +255,16 @@ export async function renderCanvasToPngBlob(draw: (canvas: HTMLCanvasElement) =>
   if (typeof document === "undefined") return null;
   const canvas = document.createElement("canvas");
   try {
-    if (!canvas.getContext("2d")) return null;
-    draw(canvas);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+    // この端末のフォントで描けない文字があれば画像を作らない（文字化けの画像を保存・共有しない。font-coverage.ts）
+    const rec = recordCanvasText(ctx);
+    try {
+      draw(canvas);
+    } finally {
+      rec.stop();
+    }
+    if (missingGlyphsIn(rec.entries).length > 0) return null;
     return await new Promise<Blob | null>((resolve) => {
       if (typeof canvas.toBlob === "function") canvas.toBlob((b) => resolve(b), "image/png");
       else resolve(null);

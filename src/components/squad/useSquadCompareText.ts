@@ -16,13 +16,13 @@ export type ScKey = keyof Dictionary["squadCompareBoard"];
  */
 export function useSquadCompareText() {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const tx = (k: ScKey, vars?: Record<string, string | number>) => {
     let out = t("squadCompareBoard", k);
     if (vars) for (const [key, v] of Object.entries(vars)) out = out.split(`{${key}}`).join(String(v));
     return out;
   };
-  const lib = (text: string) => localizeSquadText(text, locale);
+  const lib = (text: string) => localizeSquadText(text, displayLocale);
   // 選手名は表示言語に合わせる（他の画面と同じ resolvePlayerDisplayName）。
   const name = (u: { nameJa: string | null; nameEn: string | null; worldCardId: string }) =>
     resolvePlayerDisplayName(u, locale, tx("cardFallbackTemplate", { id: u.worldCardId }));

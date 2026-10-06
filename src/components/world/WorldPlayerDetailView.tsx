@@ -46,7 +46,7 @@ export function WorldPlayerDetailView({
   initialTab?: string;
 }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const tp = (k: keyof Dictionary["playerDetailPage"]) => t("playerDetailPage", k);
   const analysisScope = hasEfhubAnalysis ? tp("analysisScopeWorldEfhub") : tp("analysisScopeWorld");
   const notYetKeys = [tp("notYetSecondaryPosition"), ...NOT_YET_FIXED_KEYS];
@@ -54,7 +54,7 @@ export function WorldPlayerDetailView({
   const fmtDate = (iso: string | null) => {
     if (!iso) return "—";
     const d = new Date(iso);
-    return Number.isNaN(d.getTime()) ? iso : formatDateTime(d, locale);
+    return Number.isNaN(d.getTime()) ? iso : formatDateTime(d, displayLocale);
   };
 
   const basicInfo: { label: string; value: string }[] = [

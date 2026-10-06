@@ -48,7 +48,7 @@ const QUICK_STEPS: { href: string; icon: IconName; title: keyof Dictionary["home
 ];
 
 function MiniCard({ p, priority = false }: { p: HomeMiniCardData; priority?: boolean }) {
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const t = useT();
   const fallback = t("squadBuildPanel", "cardFallbackNameTemplate").replace("{id}", p.worldCardId);
   const name = resolvePlayerDisplayName(p, locale, fallback);
@@ -92,20 +92,20 @@ export function HomePageView({
   temporaryError?: boolean;
 }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const th = (k: keyof Dictionary["homePage"]) => t("homePage", k);
   const fillH = (s: string, vars: Record<string, string>) =>
     fillMessage(s, vars);
 
-  const worldCountText = world ? formatNumber(world.totalCount, locale) : "—";
+  const worldCountText = world ? formatNumber(world.totalCount, displayLocale) : "—";
 
   const stats = [
-    { label: th("worldCardsLabel"), value: world ? formatNumber(world.totalCount, locale) : "—", icon: "database" as IconName, href: "/players" },
-    { label: th("efhubIndexLabel"), value: efhubTotal != null ? formatNumber(efhubTotal, locale) : "—", icon: "list" as IconName, href: null },
-    { label: th("managersLabel"), value: managerCount != null ? formatNumber(managerCount, locale) : "—", icon: "managers" as IconName, href: "/managers" },
+    { label: th("worldCardsLabel"), value: world ? formatNumber(world.totalCount, displayLocale) : "—", icon: "database" as IconName, href: "/players" },
+    { label: th("efhubIndexLabel"), value: efhubTotal != null ? formatNumber(efhubTotal, displayLocale) : "—", icon: "list" as IconName, href: null },
+    { label: th("managersLabel"), value: managerCount != null ? formatNumber(managerCount, displayLocale) : "—", icon: "managers" as IconName, href: "/managers" },
     {
       label: th("syncedAtLabel"),
-      value: world?.syncFinishedAt ? formatDateTime(new Date(world.syncFinishedAt), locale) : "—",
+      value: world?.syncFinishedAt ? formatDateTime(new Date(world.syncFinishedAt), displayLocale) : "—",
       icon: "refresh" as IconName,
       href: null,
     },
@@ -119,7 +119,7 @@ export function HomePageView({
       href: "/managers",
       label: th("exploreManagersLabel"),
       icon: "managers",
-      desc: fillH(th("exploreManagersDescTemplate"), { count: managerCount != null ? formatNumber(managerCount, locale) : "—" }),
+      desc: fillH(th("exploreManagersDescTemplate"), { count: managerCount != null ? formatNumber(managerCount, displayLocale) : "—" }),
     },
   ];
 

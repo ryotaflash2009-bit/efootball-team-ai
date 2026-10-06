@@ -46,7 +46,7 @@ export function ConditionalBoosterControl({
 }) {
   const t = useT();
   const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const [open, setOpen] = useState(false);
   const autoId = useId();
   const groupName = `pom-tier-${idPrefix ?? autoId}`;
@@ -54,7 +54,7 @@ export function ConditionalBoosterControl({
   const currentTier = tierForSelection(selection);
   const maxLevel = level ?? 3;
   const affected = affectedStats.length || 4;
-  const statNames = affectedStats.map((k) => abilityName(k, locale));
+  const statNames = affectedStats.map((k) => abilityName(k, displayLocale));
 
   const currentLabel =
     selection === "none"
@@ -86,7 +86,7 @@ export function ConditionalBoosterControl({
             "{more}",
             affectedStats.length > 4 ? tp("boostMoreStats").replace("{n}", String(affectedStats.length - 4)) : "",
           )}
-        {localizeLibText(selection === "none" ? CONDITIONAL_UNSELECTED_NOTE : describeConditionalSelection(selection), locale)}
+        {localizeLibText(selection === "none" ? CONDITIONAL_UNSELECTED_NOTE : describeConditionalSelection(selection), displayLocale)}
       </p>
 
       <div className="mt-1 flex flex-wrap items-center gap-1.5">
@@ -140,7 +140,7 @@ export function ConditionalBoosterControl({
                         : tp("boostTierTargets").replace("{count}", String(affected)).replace("{level}", String(tier.level))}
                     </span>
                     <span className="block text-2xs text-text-muted">
-                      {localizeLibText(tier.playerRangeLabel, locale)}
+                      {localizeLibText(tier.playerRangeLabel, displayLocale)}
                       {tier.selection === "none" ? "" : tp("boostTierUserNote")}
                     </span>
                   </span>
@@ -150,7 +150,7 @@ export function ConditionalBoosterControl({
           </ul>
         </fieldset>
         <p className="mt-3 rounded border border-info/30 bg-info/10 px-2 py-1 text-2xs text-info">
-          {localizeLibText(CONDITIONAL_SELECTION_DISCLAIMER, locale)}
+          {localizeLibText(CONDITIONAL_SELECTION_DISCLAIMER, displayLocale)}
         </p>
         <p className="mt-1 text-2xs text-text-muted">
           {tp("boostPomFootnote").replace("{names}", statNames.join(" / "))}

@@ -85,7 +85,7 @@ export function ProgressionDock({
   onQuickSave: () => void;
 }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const tx = (k: Parameters<typeof t<"abilityEditor">>[1]) => t("abilityEditor", k);
   const groupId = focus?.groupId ?? null;
   const style = { "--cat": `var(${categoryColorVar(groupId ?? "")})` } as CSSProperties;
@@ -161,7 +161,7 @@ export function ProgressionDock({
     );
   }
 
-  const catName = categoryName(groupId, locale);
+  const catName = categoryName(groupId, displayLocale);
   const change = level - baselineLevel;
   const disabledPlus = !canProgress || !model.canIncrease;
   const plusReason = model.atCategoryMax ? tx("categoryAtMax") : model.limitedByPoints && !model.canIncrease ? tx("notEnoughPoints") : null;
@@ -172,7 +172,7 @@ export function ProgressionDock({
     .replace("{reachable}", String(model.reachableMax))
     .replace("{remaining}", String(remainingPoints));
   const statusId = `dock-status-${groupId}`;
-  const title = primary ? abilityName(primary.key, locale) : catName;
+  const title = primary ? abilityName(primary.key, displayLocale) : catName;
   const hasMessage = blocked || plusReason != null || saveNotice != null;
 
   return (
@@ -294,7 +294,7 @@ export function ProgressionDock({
         <ul className="flex flex-wrap gap-x-3 gap-y-0.5 px-1 text-2xs tabular-nums [@media(max-height:520px)]:hidden" aria-label={tx("relatedAbilities")}>
           {relatedDiffs.map((d) => (
             <li key={d.key} className={d.key === primary?.key ? "font-bold text-text" : "text-text-dim"}>
-              {abilityName(d.key, locale)} {d.before}→<span className="text-text">{d.after}</span>
+              {abilityName(d.key, displayLocale)} {d.before}→<span className="text-text">{d.after}</span>
               {d.delta !== 0 ? <span className={`ms-0.5 ${d.delta > 0 ? "text-lime-300" : "text-danger"}`}>{signed(d.delta)}</span> : null}
             </li>
           ))}

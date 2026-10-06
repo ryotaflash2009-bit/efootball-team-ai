@@ -157,10 +157,10 @@ export function SquadEditor({
   const router = useRouter();
   const pathname = usePathname();
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const tse = useCallback((k: keyof Dictionary["squadEditor"]) => t("squadEditor", k), [t]);
   // スカッド計算ライブラリの日本語（警告・操作の結果・エラー）は表示するときだけ英語にする（squad-text-en.ts）。
-  const sq = useCallback((text: string) => localizeSquadText(text, locale), [locale]);
+  const sq = useCallback((text: string) => localizeSquadText(text, displayLocale), [locale]);
   const fillSe = useCallback(
     (s: string, vars: Record<string, string>) => fillMessage(s, vars),
     [],

@@ -2,6 +2,7 @@ import type { Locale } from "@/lib/i18n/locale";
 import { localizeLibText } from "@/lib/progression/lib-text-en";
 import { localizeSquadCompareText } from "./compare-text-en";
 import { generatedOverlay } from "@/lib/i18n/generated-catalog";
+import type { DisplayLocale } from "@/lib/i18n/locale-registry";
 
 /**
  * スカッド計算ライブラリ（build-squad.ts・position.ts・link-up.ts・moves.ts）が返す日本語の文（警告・適性・操作の結果）の
@@ -91,11 +92,18 @@ const GENERIC = "(Details are available in Japanese only.)";
  * 表示用: 日本語画面ではそのまま、英語画面では英語。スカッド計算 → スカッド比較 → 育成計算の対応表の順に探し、
  * どれにも無い日本語は出さずに汎用の英語にする。
  */
-export function localizeSquadText(text: string, locale: Locale): string {
+export function localizeSquadText(text: string, locale: Locale | DisplayLocale): string {
   if (locale === "ja" || !JP.test(text)) return text;
-  // ja・en 以外の表示言語: メッセージ ID と言語ごとの書式（generated-catalog.ts）。訳が無ければ下の English。
-  const overlay = generatedOverlay("squadText", text, PATTERNS);
-  if (overlay !== null) return overlay;
+  // ja・en 以外の表示言語: メッセージ ID と言語ごとの書式（generated-catalog.ts）。訳が無ければ文ごと English（入れ子の文も English）。
+  // English と同じく、この表に無い文は比較（compare-text-en）・計算ライブラリ（lib-text-en）の表へ回す。
+  if (locale !== "en") {
+    const own = generatedOverlay("squadText", text, PATTERNS, locale);
+    if (own !== null) return own;
+    if (FIXED_EN[text] || PATTERNS.some(([re]) => re.test(text))) return localizeSquadText(text, "en");
+    const cmpLocal = localizeSquadCompareText(text, locale);
+    if (cmpLocal !== GENERIC) return cmpLocal;
+    return localizeLibText(text, locale);
+  }
   const fixed = FIXED_EN[text];
   if (fixed) return fixed;
   for (const [re, f] of PATTERNS) {

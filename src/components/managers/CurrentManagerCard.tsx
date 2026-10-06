@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Icon } from "@/components/ui/Icon";
 import { topTactic, tacticTier, TACTIC_TEXT, managerInitials, tacticName } from "./tactics";
-import { useT } from "@/lib/i18n/LocaleContext";
+import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 
 /**
  * 選択中の監督の要約カード（育成 / 比較 / スカッドの共通表示）。
@@ -32,6 +32,7 @@ export function CurrentManagerCard({
   compact?: boolean;
 }) {
   const t = useT();
+  const { displayLocale } = useLocale();
   if (!manager || !manager.internalManagerId) {
     return (
       <div className="rounded-md border border-dashed border-border bg-surface/60 p-3 text-sm">
@@ -66,7 +67,7 @@ export function CurrentManagerCard({
           <p className="truncate font-semibold">{manager.managerName}</p>
           {prof ? (
             <p className="text-2xs text-text-dim">
-              {t("manager", "bestAt")} {tacticName(prof)}{" "}
+              {t("manager", "bestAt")} {tacticName(prof, displayLocale)}{" "}
               <span className={`font-bold tabular-nums ${TACTIC_TEXT[tacticTier(prof.value)]}`}>{prof.value}</span>
             </p>
           ) : null}

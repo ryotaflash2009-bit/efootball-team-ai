@@ -62,7 +62,7 @@ export function DataManagementView() {
         <p className="mt-1.5 text-sm text-text-dim">
           {tdm("jsonBackupWhereBody")}{" "}
           <Link href="/my-builds" className="text-accent hover:underline">
-            My Builds
+            {t("nav", "myBuilds")}
           </Link>
           {" / "}
           <Link href="/build-inventory" className="text-accent hover:underline">

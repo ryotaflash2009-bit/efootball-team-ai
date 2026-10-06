@@ -25,7 +25,7 @@ interface LegacyPlayerMeta {
 
 export function LegacyPlayerDetailView({ player, meta }: { player: LegacyPlayer; meta: LegacyPlayerMeta | null }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const tl = (k: keyof Dictionary["legacyPlayerDetail"]) => t("legacyPlayerDetail", k);
 
   return (
@@ -87,7 +87,7 @@ export function LegacyPlayerDetailView({ player, meta }: { player: LegacyPlayer;
               <dt className="text-text-dim">{tl("fetchedAtLabel")}</dt>
               <dd className="font-medium">{(() => {
                 const d = new Date(meta.fetchedAt);
-                return Number.isNaN(d.getTime()) ? meta.fetchedAt : formatDateTime(d, locale);
+                return Number.isNaN(d.getTime()) ? meta.fetchedAt : formatDateTime(d, displayLocale);
               })()}</dd>
             </div>
           </dl>

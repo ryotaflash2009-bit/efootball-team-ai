@@ -66,7 +66,7 @@ export function DuplicateReviewSection({
   onReload: () => void;
 }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const drs = (k: keyof Dictionary["duplicateReviewSection"]) => t("duplicateReviewSection", k);
   const fillDrs = (s: string, vars: Record<string, string>) =>
     fillMessage(s, vars);
@@ -161,7 +161,7 @@ export function DuplicateReviewSection({
             <ul className="mt-1 flex flex-col gap-1">
               {review.unresolved.map((u, i) => (
                 <li key={i} className="rounded border border-border/60 p-1.5">
-                  <span className="text-text-dim">{localizeBuildsText(u.reasonLabel, locale)}</span>
+                  <span className="text-text-dim">{localizeBuildsText(u.reasonLabel, displayLocale)}</span>
                   <span className="ms-2 text-text-muted">
                     {u.worldCardId ? fillDrs(drs("worldIdTemplate"), { id: u.worldCardId }) : drs("worldIdUnknown")} /{" "}
                     {u.buildId ? fillDrs(drs("buildIdTemplate"), { id: u.buildId }) : drs("buildIdUnknown")}
@@ -299,7 +299,7 @@ function FilterBar({
 
 function DuplicateGroupCard({ group: g }: { group: DuplicateGroup }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const drs = (k: keyof Dictionary["duplicateReviewSection"]) => t("duplicateReviewSection", k);
   const fillDrs = (s: string, vars: Record<string, string>) =>
     fillMessage(s, vars);
@@ -325,7 +325,7 @@ function DuplicateGroupCard({ group: g }: { group: DuplicateGroup }) {
           {g.kind === "exact" ? drs("exactBadge") : drs("similarBadge")}
         </Badge>
         <Badge tone={g.ruleKind === "current" ? "neutral" : "warning"} size="xs">
-          {localizeBuildsText(g.ruleLabel, locale)}
+          {localizeBuildsText(g.ruleLabel, displayLocale)}
         </Badge>
         <span className="font-semibold">
           {g.buildCount}
@@ -353,15 +353,15 @@ function DuplicateGroupCard({ group: g }: { group: DuplicateGroup }) {
 
       <div className="mt-2 rounded border border-border/60 bg-surface-2/40 p-2">
         <p className="font-semibold text-text-dim">{drs("matchingFieldsHeading")}</p>
-        <p className="mt-0.5 text-text-dim">{g.sameFields.map((d) => localizeBuildsText(d, locale)).join(" / ")}</p>
+        <p className="mt-0.5 text-text-dim">{g.sameFields.map((d) => localizeBuildsText(d, displayLocale)).join(" / ")}</p>
         {g.diffFields.length > 0 ? (
           <>
             <p className="mt-1 font-semibold text-text-dim">{drs("differingFieldsHeading")}</p>
-            <p className="mt-0.5 text-text-dim">{g.diffFields.map((d) => localizeBuildsText(d, locale)).join(" / ")}</p>
+            <p className="mt-0.5 text-text-dim">{g.diffFields.map((d) => localizeBuildsText(d, displayLocale)).join(" / ")}</p>
           </>
         ) : null}
         {g.kind === "similar" && g.reasonLabel ? (
-          <p className="mt-1 text-warning">{fillDrs(drs("similarReasonTemplate"), { reason: localizeBuildsText(g.reasonLabel, locale) })}</p>
+          <p className="mt-1 text-warning">{fillDrs(drs("similarReasonTemplate"), { reason: localizeBuildsText(g.reasonLabel, displayLocale) })}</p>
         ) : null}
       </div>
 
@@ -451,13 +451,13 @@ function DuplicateGroupCard({ group: g }: { group: DuplicateGroup }) {
 
 function AllocationLine({ build }: { build: DuplicateGroup["builds"][number]["build"] }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const active = buildAllocationRows(build.progressionAllocation).filter((r) => r.level > 0);
   return (
     <p className="mt-0.5 text-text-dim">
       {t("buildImportModal", "allocationLabelTemplate").replace(
         "{allocation}",
-        active.length > 0 ? active.map((r) => `${categoryName(r.groupId, locale)} Lv${r.level}`).join(" / ") : t("squadBuildPanel", "noAllocationBase"),
+        active.length > 0 ? active.map((r) => `${categoryName(r.groupId, displayLocale)} Lv${r.level}`).join(" / ") : t("squadBuildPanel", "noAllocationBase"),
       )}
     </p>
   );

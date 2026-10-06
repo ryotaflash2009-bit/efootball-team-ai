@@ -1,4 +1,4 @@
-import { localizedAbilityName, localizedGroupName, currentGameTermsLocale } from "./game-terms";
+import { localizedAbilityName, localizedGroupName } from "./game-terms";
 import { STAT_LABEL_JA, GROUP_LABEL_JA } from "@/lib/world/stat-labels";
 import { fillMessage } from "./message-format";
 
@@ -45,21 +45,21 @@ const GROUP_KEY_BY_JA: Readonly<Record<string, string>> = Object.fromEntries(Obj
 
 type AnyRule = readonly [RegExp, ...unknown[]];
 
-function statList(value: string): string | null {
+function statList(value: string, locale: string): string | null {
   const parts = value.split(/\s*[/／・、]\s*/).filter(Boolean);
   const out = parts.map((p) => {
     const key = STAT_KEY_BY_JA[p.trim()];
-    return key ? localizedAbilityName(key) : null;
+    return key ? localizedAbilityName(key, locale) : null;
   });
   if (out.some((x) => x === null)) return null;
   const sep = value.includes(" / ") ? " / " : ", ";
   return (out as string[]).join(sep);
 }
 
-function token(kind: string, value: string, module: string, cat: GeneratedModuleCatalog, patterns: readonly AnyRule[]): string | null {
+function token(kind: string, value: string, module: string, cat: GeneratedModuleCatalog, patterns: readonly AnyRule[], locale: string): string | null {
   switch (kind) {
     case "loc":
-      return generatedOverlay(module, value, patterns);
+      return generatedOverlay(module, value, patterns, locale);
     case "fixed":
       // English の FIXED_EN[v] ?? v と同じ（固定の文でなければ元の値: 数値・記号など）
       return cat.fixed?.[value] ?? value;
@@ -73,10 +73,10 @@ function token(kind: string, value: string, module: string, cat: GeneratedModule
       // ポジションの略号はそのまま。「不明」などだけ terms.pos で訳す
       return cat.terms?.pos?.[value] ?? value;
     case "stat":
-      return statList(value);
+      return statList(value, locale);
     case "group": {
       const key = GROUP_KEY_BY_JA[value] ?? value;
-      return localizedGroupName(key);
+      return localizedGroupName(key, locale);
     }
     default:
       return cat.terms?.[kind]?.[value] ?? null;
@@ -87,14 +87,13 @@ function token(kind: string, value: string, module: string, cat: GeneratedModule
  * 表示言語（ja・en 以外）の訳を返す。訳が無ければ null（呼び出し側は English）。
  * patterns: そのモジュールの規則（[正規表現, …] の配列。ID は正規表現から作る）。
  */
-export function generatedOverlay(module: string, text: string, patterns: readonly AnyRule[]): string | null {
-  const locale = currentGameTermsLocale();
-  if (!locale) return null;
+export function generatedOverlay(module: string, text: string, patterns: readonly AnyRule[], locale: string): string | null {
+  if (locale === "ja" || locale === "en") return null;
   const cat = CATALOGS[locale]?.[module];
   if (!cat) return null;
   const fixed = cat.fixed?.[text];
   if (fixed !== undefined) return fixed;
-  const statsOnly = statList(text);
+  const statsOnly = statList(text, locale);
   if (statsOnly !== null && /[^\x00-\x7f]/.test(text)) return statsOnly;
   for (const rule of patterns) {
     const re = rule[0];
@@ -106,7 +105,7 @@ export function generatedOverlay(module: string, text: string, patterns: readonl
     const vars: Record<string, string> = {};
     const filled = template.replace(/\{([a-z]+):(\d+)\}/g, (_all, kind: string, n: string) => {
       const v = m[Number(n)] ?? "";
-      const r = token(kind, v, module, cat, patterns);
+      const r = token(kind, v, module, cat, patterns, locale);
       if (r === null) failed = true;
       return r ?? "";
     });

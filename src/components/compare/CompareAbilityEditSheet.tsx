@@ -52,7 +52,7 @@ export function CompareAbilityEditSheet({
   onSaveAs: (idx: number) => void;
 }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
   const ref = useRef<HTMLDivElement>(null);
   const [focus, setFocus] = useState<AbilityFocus | null>(null);
@@ -134,7 +134,7 @@ export function CompareAbilityEditSheet({
         <div className="mx-auto mt-1.5 max-w-3xl text-2xs" data-testid="compare-others" aria-live="polite">
           {focusStat ? (
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-              <span className="text-text-dim">{tp("cmpOthersHeading").replace("{ability}", abilityName(focusStat, locale))}:</span>
+              <span className="text-text-dim">{tp("cmpOthersHeading").replace("{ability}", abilityName(focusStat, displayLocale))}:</span>
               {others.map(({ cp, i }) => (
                 <span key={cp.input.display.worldCardId} className="inline-flex items-center gap-1">
                   <span className="max-w-[9rem] truncate text-text-dim">

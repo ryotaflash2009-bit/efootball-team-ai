@@ -66,7 +66,7 @@ export function MyBuildCard({
 }) {
   const [compareMsg, setCompareMsg] = useState<string | null>(null);
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const tmc = (k: keyof Dictionary["myBuildCard"]) => t("myBuildCard", k);
   const fillMc = (s: string, vars: Record<string, string>) =>
     fillMessage(s, vars);
@@ -170,7 +170,7 @@ export function MyBuildCard({
           <ul className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
             {activeRows.map((r) => (
               <li key={r.groupId}>
-                {categoryName(r.groupId, locale)} <span className="font-semibold tabular-nums">Lv {r.level}</span>
+                {categoryName(r.groupId, displayLocale)} <span className="font-semibold tabular-nums">Lv {r.level}</span>
               </li>
             ))}
           </ul>
@@ -182,7 +182,7 @@ export function MyBuildCard({
           <ul className="mt-1 grid grid-cols-2 gap-x-3 gap-y-0.5 sm:grid-cols-3">
             {allocRows.map((r) => (
               <li key={r.groupId} className={r.level > 0 ? "text-text" : "text-text-muted"}>
-                {categoryName(r.groupId, locale)}: Lv {r.level}
+                {categoryName(r.groupId, displayLocale)}: Lv {r.level}
               </li>
             ))}
           </ul>
