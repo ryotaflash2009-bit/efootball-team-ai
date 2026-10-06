@@ -400,6 +400,7 @@ const part: PartialDictionary = {
     descriptionTemplate: "Busca y filtra todas las cartas World de eFootball. {importedAt}",
     importedAtPrefix: "Importado: ",
     compareLink: "Ir a la comparación de jugadores",
+    boosterListLink: "Lista de potenciadores",
     noDataTitle: "Los datos World aún no se han configurado",
     noDataDescription: "Ejecuta `node scripts/sync-world-players-initial.mjs` en la terminal para importarlos a SQLite.",
     loadErrorTitle: "No se pudieron cargar los datos de jugadores",

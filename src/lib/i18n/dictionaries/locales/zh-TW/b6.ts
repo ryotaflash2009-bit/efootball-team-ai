@@ -400,6 +400,7 @@ const part: PartialDictionary = {
     descriptionTemplate: "搜尋並篩選所有 eFootball World 卡片。{importedAt}",
     importedAtPrefix: "匯入：",
     compareLink: "前往球員比較",
+    boosterListLink: "加成列表",
     noDataTitle: "World 資料尚未設定",
     noDataDescription: "請在終端機執行 `node scripts/sync-world-players-initial.mjs` 以匯入至 SQLite。",
     loadErrorTitle: "無法載入球員資料",

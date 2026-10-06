@@ -400,6 +400,7 @@ const part: PartialDictionary = {
     descriptionTemplate: "eFootball World의 모든 카드를 검색하고 필터링합니다. {importedAt}",
     importedAtPrefix: "가져온 날짜: ",
     compareLink: "선수 비교로 이동",
+    boosterListLink: "부스터 목록",
     noDataTitle: "World 데이터가 아직 설정되지 않았습니다",
     noDataDescription: "터미널에서 `node scripts/sync-world-players-initial.mjs`를 실행하여 SQLite로 가져오세요.",
     loadErrorTitle: "선수 데이터를 불러오지 못했습니다",
