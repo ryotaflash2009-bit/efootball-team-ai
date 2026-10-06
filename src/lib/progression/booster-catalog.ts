@@ -223,6 +223,12 @@ export function isConfirmedB2Candidate(def: Pick<BoosterDef, "confirmationStatus
   return def.confirmationStatus === "confirmed" && isB2SelectableCandidate(def);
 }
 
+/**
+ * B2（手動で選ぶ追加ブースター）の正式な候補の一覧（F-029b・2026-10-07）。育成の画面と比較の画面の両方がこれを使う
+ * （同じ候補・同じ順序。Power of Many などの条件つきは含めない）。
+ */
+export const CONFIRMED_B2_CANDIDATES: readonly BoosterDef[] = BOOSTER_CATALOG.filter(isConfirmedB2Candidate);
+
 /** カタログのバージョン（保存データの互換判定用）。 */
 export const BOOSTER_CATALOG_VERSION = "booster-catalog/2026-08-28.total-package-1";
 export const BOOSTER_CATALOG_PREVIOUS_VERSIONS = [
