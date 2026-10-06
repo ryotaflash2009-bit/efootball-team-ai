@@ -430,6 +430,7 @@ const part: PartialDictionary = {
     nextPageLink: "Berikutnya",
     pageOfTemplate: "{page} / {totalPages}",
     paginationAriaLabel: "Navigasi halaman",
+    compareLink: "Bandingkan manajer",
   },
   shareCard: {
     optionsSummary: "Pilih ukuran · Pratinjau",

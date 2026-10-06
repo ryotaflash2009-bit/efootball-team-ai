@@ -430,6 +430,7 @@ const part: PartialDictionary = {
     nextPageLink: "Sonraki",
     pageOfTemplate: "{page} / {totalPages}",
     paginationAriaLabel: "Sayfalandırma",
+    compareLink: "Teknik direktörleri karşılaştır",
   },
   shareCard: {
     optionsSummary: "Boyut seç · Önizleme",

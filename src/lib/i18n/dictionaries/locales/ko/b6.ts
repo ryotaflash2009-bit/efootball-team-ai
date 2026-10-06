@@ -430,6 +430,7 @@ const part: PartialDictionary = {
     nextPageLink: "다음",
     pageOfTemplate: "{page} / {totalPages}",
     paginationAriaLabel: "페이지 이동",
+    compareLink: "감독 비교",
   },
   shareCard: {
     optionsSummary: "크기 선택 · 미리보기",

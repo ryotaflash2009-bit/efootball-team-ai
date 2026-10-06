@@ -92,6 +92,7 @@ import progressionTab from "./progressionTab";
 import managerDetail from "./managerDetail";
 import squadCompareBoard from "./squadCompareBoard";
 import boosterList from "./boosterList";
+import managerCompare from "./managerCompare";
 
 export const JA_SPLIT_NAMESPACES = {
   notFoundPage,
@@ -187,4 +188,5 @@ export const JA_SPLIT_NAMESPACES = {
   managerDetail,
   squadCompareBoard,
   boosterList,
+  managerCompare,
 };
