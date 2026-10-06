@@ -113,7 +113,7 @@ export function MyTeamAddDialog({
             placeholder={tad("notePlaceholder")}
             className="rounded-md border border-border bg-surface-2 px-2 py-1.5 text-sm"
           />
-          <p className="text-right text-2xs text-text-muted">
+          <p className="text-end text-2xs text-text-muted">
             {fillAd(tad("noteCountTemplate"), { count: String(noteLen), max: String(NOTE_MAX_LEN) })}
           </p>
         </div>

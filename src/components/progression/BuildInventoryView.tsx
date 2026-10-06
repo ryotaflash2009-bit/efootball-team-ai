@@ -1355,7 +1355,7 @@ function LegacyBuildGuide({
 
             <div className="rounded border border-info/40 bg-info/10 p-2 text-info">
               <p className="font-semibold">{biv("legacyGuideCaution")}</p>
-              <ul className="mt-0.5 list-disc pl-4">
+              <ul className="mt-0.5 list-disc ps-4">
                 {biv("legacyGuideCautionNotes")
                   .split("｜")
                   .map((note, i) => (
@@ -1366,7 +1366,7 @@ function LegacyBuildGuide({
 
             <div>
               <p className="font-semibold text-text-dim">{biv("legacyStepsHeading")}</p>
-              <ol className="mt-0.5 list-decimal pl-4 text-text-dim">
+              <ol className="mt-0.5 list-decimal ps-4 text-text-dim">
                 <li>{biv("legacyStep1")}</li>
                 <li>{biv("legacyStep2")}</li>
                 <li>{biv("legacyStep3")}</li>
@@ -1374,7 +1374,7 @@ function LegacyBuildGuide({
                 <li>{biv("legacyStep5")}</li>
                 <li>{biv("legacyStep6")}</li>
               </ol>
-              <ul className="mt-1 list-disc pl-4 text-text-muted">
+              <ul className="mt-1 list-disc ps-4 text-text-muted">
                 <li>{biv("legacyNote1")}</li>
                 <li>{biv("legacyNote2")}</li>
                 <li>{biv("legacyNote3")}</li>
@@ -1730,8 +1730,8 @@ function InventoryCard({
         </details>
         <p className="mt-1">
           <span className="tabular-nums">{pointsText}</span>
-          <span className="ml-2 text-text-dim tabular-nums">{remainingText}</span>
-          {points.overAllocated ? <span className="ml-2 text-danger">{t("squadBuildPanel", "overAllocated")}</span> : null}
+          <span className="ms-2 text-text-dim tabular-nums">{remainingText}</span>
+          {points.overAllocated ? <span className="ms-2 text-danger">{t("squadBuildPanel", "overAllocated")}</span> : null}
         </p>
         <p className="mt-0.5 text-text-dim">
           {t("squadBuildPanel", "pomRowLabel")}
@@ -1835,7 +1835,7 @@ function InventoryCard({
           <Icon name="sparkles" size={12} />
           {t("buildAnalysis", "analyzeButtonLabel")}
           {isAnalyzing ? (
-            <Badge tone="accent" size="xs" className="ml-1">
+            <Badge tone="accent" size="xs" className="ms-1">
               {t("buildAnalysis", "analyzingStatusLabel")}
             </Badge>
           ) : null}

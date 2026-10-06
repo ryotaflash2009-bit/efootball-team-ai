@@ -107,7 +107,7 @@ export function SidebarNav({
                     }`}
                   >
                     {active ? (
-                      <span className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r bg-accent" />
+                      <span className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-e bg-accent" />
                     ) : null}
                     <Icon name={item.icon} size={18} className="shrink-0" />
                     {!collapsed ? <span>{label}</span> : null}

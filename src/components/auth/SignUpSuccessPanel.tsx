@@ -94,7 +94,7 @@ export function SignUpSuccessPanel({ email, successMessage }: { email: string; s
 
       <div>
         <p className="text-sm font-semibold text-text">{ta("signUpNextStepsHeading")}</p>
-        <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-text-dim">
+        <ol className="mt-2 list-decimal space-y-1 ps-5 text-sm text-text-dim">
           <li>{ta("signUpStep1")}</li>
           <li>{ta("signUpStep2")}</li>
           <li>{ta("signUpStep3")}</li>

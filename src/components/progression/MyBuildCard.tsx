@@ -192,8 +192,8 @@ export function MyBuildCard({
       <div className="border-t border-border/60 px-2.5 py-2 text-2xs">
         <p>
           <span className="tabular-nums">{pointsText}</span>
-          <span className="ml-2 text-text-dim tabular-nums">{remainingText}</span>
-          {points.overAllocated ? <span className="ml-2 text-danger">{t("squadBuildPanel", "overAllocated")}</span> : null}
+          <span className="ms-2 text-text-dim tabular-nums">{remainingText}</span>
+          {points.overAllocated ? <span className="ms-2 text-danger">{t("squadBuildPanel", "overAllocated")}</span> : null}
         </p>
         {rule.isLegacy ? (
           <p className="mt-0.5 text-warning">
@@ -395,7 +395,7 @@ export function MyBuildCard({
         <button
           type="button"
           onClick={onDelete}
-          className="ml-auto inline-flex min-h-[36px] items-center gap-1 rounded-md border border-border px-2 text-2xs text-danger hover:border-danger"
+          className="ms-auto inline-flex min-h-[36px] items-center gap-1 rounded-md border border-border px-2 text-2xs text-danger hover:border-danger"
         >
           <Icon name="trash" size={12} />
           {tmc("deleteButton")}

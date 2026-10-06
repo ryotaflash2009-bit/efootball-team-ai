@@ -150,7 +150,7 @@ function CategoryDetail({ category, locale }: { category: SquadDiagnosisCategory
           {category.evidence.map((e, i) => (
             <div key={i} className="flex flex-wrap justify-between gap-1">
               <dt className="text-text-dim">{ld(e.label, locale)}</dt>
-              <dd className="min-w-0 break-words text-right">{ld(e.value, locale)}</dd>
+              <dd className="min-w-0 break-words text-end">{ld(e.value, locale)}</dd>
             </div>
           ))}
         </dl>
@@ -252,7 +252,7 @@ function CriticalWarnings({ result, locale }: { result: SquadDiagnosisResult; lo
   return (
     <div role="alert" className="mt-2 rounded border border-warning/40 bg-warning/10 px-2 py-1.5 text-2xs text-warning">
       <p className="font-semibold">{t("diagnosis", "criticalWarningsHeading")}</p>
-      <ul className="mt-0.5 list-disc pl-4">
+      <ul className="mt-0.5 list-disc ps-4">
         {items.map((item, i) => (
           <li key={i}>{item}</li>
         ))}
@@ -322,18 +322,18 @@ export function SquadDiagnosisPanel({
             {t("diagnosis", "tierBadgePrefix")} {result.overall.tier}
           </Badge>
         ) : null}
-        <div className="ml-auto text-right">
+        <div className="ms-auto text-end">
           <p className="text-2xs text-text-dim">{t("diagnosis", "ratedItems")}</p>
           <p className="text-sm font-semibold tabular-nums">
             {ratedAbilityCount} / {abilityCategories.length}
           </p>
         </div>
-        <div className="text-right">
+        <div className="text-end">
           <p className="text-2xs text-text-dim">{t("diagnosis", "placementCoverage")}</p>
           <p className="text-sm font-semibold tabular-nums">{result.dataQuality.coveragePercent}%</p>
         </div>
         {missingSavedBuildCount > 0 ? (
-          <div className="text-right">
+          <div className="text-end">
             <p className="text-2xs text-text-dim">{t("diagnosis", "savedBuildMissingStat")}</p>
             <p className="text-sm font-semibold tabular-nums text-warning">
               {missingSavedBuildCount} / {filledStartingSlots}

@@ -163,7 +163,7 @@ export function CompareTrainingPanel({
         <details open={isGk} className="rounded border border-border bg-surface-2/20">
           <summary className="flex min-h-[32px] cursor-pointer items-center justify-between gap-2 px-2 py-1 text-[11px] font-semibold">
             <span>{ttp("gkHeading")}</span>
-            <span className="min-w-0 text-right text-[9px] font-normal text-text-dim">
+            <span className="min-w-0 text-end text-[9px] font-normal text-text-dim">
               {fillTp(ttp("gkLevelLabelTemplate"), { level: String(gkLevel) })}
               {isGk ? ttp("gkExpandedSuffix") : ttp("gkCollapsedSuffix")}
             </span>
@@ -197,7 +197,7 @@ export function CompareTrainingPanel({
           type="button"
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
-          className="flex w-full items-center justify-between gap-2 text-left text-[11px] font-semibold"
+          className="flex w-full items-center justify-between gap-2 text-start text-[11px] font-semibold"
         >
           <span>
             {ttp("collapsedHeading")}

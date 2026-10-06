@@ -32,7 +32,7 @@ export function CompareMiniPitch({
     <figure className={`flex flex-col gap-1 ${className}`}>
       <figcaption className="text-xs font-semibold text-text-dim">
         {tx("miniTitleTemplate", { side, name: f.name })}
-        <span className="ml-1 font-normal text-text-muted">{tx("miniStartersTemplate", { n: starters.length })}</span>
+        <span className="ms-1 font-normal text-text-muted">{tx("miniStartersTemplate", { n: starters.length })}</span>
       </figcaption>
       <div
         className="pitch-turf relative aspect-[68/105] w-full overflow-hidden rounded-md border border-border"

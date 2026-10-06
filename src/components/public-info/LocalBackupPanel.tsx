@@ -166,7 +166,7 @@ export function LocalBackupPanel() {
         <>
           <p className="mt-2 text-xs font-semibold text-text">{lb("currentDataHeading")}</p>
           {hasData ? <CountList counts={counts} label={lb} /> : <p className="mt-1 text-xs text-text-muted">{lb("noData")}</p>}
-          <ul className="mt-2 list-disc space-y-1 pl-5 text-2xs text-text-dim">
+          <ul className="mt-2 list-disc space-y-1 ps-5 text-2xs text-text-dim">
             <li>{lb("noteNoIdentity")}</li>
             <li>{lb("noteSharing")}</li>
             <li>{lb("noteExcluded")}</li>

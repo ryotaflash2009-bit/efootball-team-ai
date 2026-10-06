@@ -1,0 +1,38 @@
+{
+  "schema": "efta-evidence/v1",
+  "date": "2026-10-06",
+  "kind": "multilingual-foundation",
+  "verdict": "MULTILINGUAL_FOUNDATION_COMPLETE",
+  "publishedLocales": ["ja", "en"],
+  "internalPreviewLocales": {
+    "MACHINE_DRAFT": ["es", "pt-BR", "fr", "de", "it", "ko", "zh-CN", "zh-TW", "id", "tr"],
+    "INTERNAL_DRAFT": ["ar", "th", "vi", "nl", "pl", "ru"],
+    "pseudo": ["en-XA", "ar-XB"]
+  },
+  "prs": { "foundation": 149, "phase2Drafts": 152, "phase3Drafts": 153, "rtlFoundation": "this PR" },
+  "localeContract": "src/lib/i18n/locale-registry.ts: exact -> same-language form -> zh by script/region (bare zh unresolved) -> next browser language -> English; only PUBLISHED selectable outside internal builds; per-locale SUSPENDED",
+  "fallback": "display locale -> English -> Japanese; missing keys recorded, never shown",
+  "coverage": {
+    "sourceKeys": 4495,
+    "draftsTranslatedKeysEach": 131,
+    "draftsOverallPercent": 2.9,
+    "draftsSurfaces": "core UI and Home only; engine-generated text, ability names and legal documents show in English",
+    "report": "docs/i18n/coverage.md"
+  },
+  "quality": { "draftsQuality": "MACHINE_DRAFT_ONLY", "machineAssisted": true, "nativeReview": false, "reviewedBy": null },
+  "glossary": "docs/i18n/terminology-glossary.md (glossary-2026-10-06; ja/en from the v1.0 UI, other languages AI drafts)",
+  "audit": "scripts/audit-locale-coverage.mjs: PASS (no extra keys, placeholder mismatch, leakage, unsafe or secret-like values; registry and locale-status consistent); runs in verify and CI",
+  "bundle": {
+    "method": "local next build, main vs foundation branch, First Load JS",
+    "home": "120 -> 122 kB", "players": "142 -> 145 kB", "playerDetail": "167 -> 169 kB", "squadEditor": "299 -> 301 kB", "signIn": "120 -> 121 kB", "shared": "103 -> 103 kB",
+    "dictionariesInInitialJs": "none (tested); each language is a separate lazy chunk"
+  },
+  "checks": {
+    "productionAfterFoundation": "ja/en lang correct, 0 overflow, 0 errors; stored es ignored in Production (not selectable)",
+    "internalDrafts": "10 languages x 2 viewports x 6 pages: lang correct, 0 overflow, 0 console errors; visual: de mobile, ko mobile, zh-TW desktop",
+    "pseudoLocales": "en-XA and ar-XB x 2 viewports x 15 pages: 0 overflow, 0 errors, lang/dir correct; en-XA exposed non-dictionary text (ability names, progression groups, manager tactics, booster descriptions, foot/region labels) and pre-existing truncation (progression 'Tap to train', compare 'Targets:' lists)",
+    "rtlConversion": "255 utilities in 72 files; ja/en screenshots 47/52 byte-identical, rest identical by eye; one regression (th alignment under inherited start) found and fixed",
+    "localBlackBoxFoundation": "575/576 (known rare duplicate /api/percentiles/world-base from the browser network layer; also on main)"
+  },
+  "notPerformed": ["publishing any new language", "native or professional review", "translation of legal documents", "engine-text localization beyond English", "share-card font coverage check for CJK", "positioning (left/right/translate-x) RTL review"]
+}

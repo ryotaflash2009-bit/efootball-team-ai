@@ -40,7 +40,7 @@ export function DataManagementView() {
       <Surface tone="inset" padding="md">
         <p className="text-sm font-semibold text-warning">{tdm("browserRiskHeading")}</p>
         <p className="mt-1.5 text-sm text-text-dim">{tdm("browserRiskBody")}</p>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-dim">
+        <ul className="mt-2 list-disc space-y-1 ps-5 text-sm text-text-dim">
           <li>{tdm("browserRiskSameDeviceDifferentBrowser")}</li>
           <li>{tdm("browserRiskPrivateMode")}</li>
           <li>{tdm("browserRiskBrowserSettings")}</li>
@@ -70,7 +70,7 @@ export function DataManagementView() {
           </Link>
         </p>
         <p className="mt-1.5 text-sm font-semibold text-accent">{tdm("jsonBackupTimingRecommendation")}</p>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-text-dim">
+        <ul className="mt-2 list-disc space-y-1 ps-5 text-xs text-text-dim">
           <li>{tdm("jsonBackupContentWarning")}</li>
           <li>{tdm("jsonBackupSharingWarning")}</li>
           <li>{tdm("jsonBackupImportWarning")}</li>
@@ -79,7 +79,7 @@ export function DataManagementView() {
 
       <Surface padding="md">
         <p className="text-sm font-semibold text-text">{tdm("howToDeleteHeading")}</p>
-        <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm text-text-dim">
+        <ul className="mt-2 list-disc space-y-1.5 ps-5 text-sm text-text-dim">
           <li>{tdm("howToDeleteBuild")}</li>
           <li>{tdm("howToDeleteMyTeam")}</li>
           <li>{tdm("howToDeleteSquad")}</li>
@@ -157,7 +157,7 @@ function DeleteAllDataPanel({ tdm }: { tdm: (key: DataManagementKey) => string }
           {targetKeys.length === 0 ? (
             <p className="mt-1 text-sm text-text-muted">{tdm("deleteAllNothingToDelete")}</p>
           ) : (
-            <ul className="mt-1 list-disc space-y-0.5 pl-5 text-sm text-text-dim">
+            <ul className="mt-1 list-disc space-y-0.5 ps-5 text-sm text-text-dim">
               {targetKeys.map((entry) => (
                 <li key={entry.key}>{tdm(entry.labelKey)}</li>
               ))}

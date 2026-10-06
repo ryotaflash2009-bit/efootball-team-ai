@@ -44,7 +44,7 @@ export function PageHeader({
               </span>
             ) : null}
             <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{title}</h1>
-            {meta ? <span className="ml-1 shrink-0 text-sm text-text-dim">{meta}</span> : null}
+            {meta ? <span className="ms-1 shrink-0 text-sm text-text-dim">{meta}</span> : null}
           </div>
           {description ? (
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-text-dim">{description}</p>

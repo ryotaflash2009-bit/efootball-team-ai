@@ -26,7 +26,7 @@ export function AboutView() {
 
       <Surface padding="md">
         <p className="text-sm font-semibold text-text">{ta("availableHeading")}</p>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-dim">
+        <ul className="mt-2 list-disc space-y-1 ps-5 text-sm text-text-dim">
           {AVAILABLE_FEATURE_KEYS.map((key) => (
             <li key={key}>{ta(key)}</li>
           ))}
@@ -36,7 +36,7 @@ export function AboutView() {
       <Surface tone="outline" padding="md">
         <p className="text-sm font-semibold text-text">{ta("betaHeading")}</p>
         <p className="mt-1 text-xs text-text-dim">{ta("betaBestXiIntro")}</p>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-dim">
+        <ul className="mt-2 list-disc space-y-1 ps-5 text-sm text-text-dim">
           {BETA_FEATURE_KEYS.map((key) => (
             <li key={key}>{ta(key)}</li>
           ))}
@@ -45,7 +45,7 @@ export function AboutView() {
 
       <Surface tone="inset" padding="md">
         <p className="text-sm font-semibold text-text">{ta("notProvidedHeading")}</p>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-dim">
+        <ul className="mt-2 list-disc space-y-1 ps-5 text-sm text-text-dim">
           {NOT_PROVIDED_FEATURE_KEYS.map((key) => (
             <li key={key}>{ta(key)}</li>
           ))}

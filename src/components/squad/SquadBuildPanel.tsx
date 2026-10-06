@@ -219,7 +219,7 @@ export function SquadBuildPanel({
           <p className="mt-0.5">
             {tp("targetSquadLabel")}
             <b>{squadName}</b>
-            <span className="ml-1 text-text-muted">（{squadId}）</span>
+            <span className="ms-1 text-text-muted">（{squadId}）</span>
           </p>
           <p className="mt-0.5">
             {tp("targetSlotLabel")}
@@ -257,14 +257,14 @@ export function SquadBuildPanel({
             ) : (
               <span>
                 <b>{ref.build?.buildName}</b>
-                <span className="ml-1 text-text-muted">{fill(tp("buildIdSuffixTemplate"), { id: String(ref.buildId) })}</span>
+                <span className="ms-1 text-text-muted">{fill(tp("buildIdSuffixTemplate"), { id: String(ref.buildId) })}</span>
               </span>
             )}
             {ref.buildId != null ? (
               <button
                 type="button"
                 onClick={() => setConfirm({ kind: "clear" })}
-                className="ml-2 rounded border border-border px-1.5 py-0.5 hover:border-accent"
+                className="ms-2 rounded border border-border px-1.5 py-0.5 hover:border-accent"
               >
                 {tp("clearSelectionButton")}
               </button>
@@ -316,7 +316,7 @@ export function SquadBuildPanel({
                 <p>
                   {fill(tp("confirmClearTextTemplate"), { area: areaLabel, slot: slotLabel, name, worldCardId })}
                 </p>
-                <ul className="mt-0.5 list-disc pl-4 text-text-dim">
+                <ul className="mt-0.5 list-disc ps-4 text-text-dim">
                   <li>{tp("clearChangedItemsLabel")}</li>
                   <li>{tp("clearUnchangedItemsLabel")}</li>
                 </ul>
@@ -334,14 +334,14 @@ export function SquadBuildPanel({
                     ) : (
                       <span>
                         {ref.build?.buildName}
-                        <span className="ml-1 text-text-muted">{fill(tp("buildIdSuffixTemplate"), { id: String(ref.buildId) })}</span>
+                        <span className="ms-1 text-text-muted">{fill(tp("buildIdSuffixTemplate"), { id: String(ref.buildId) })}</span>
                       </span>
                     )}
                   </p>
                   <p className="mt-0.5">
                     {tp("afterChangeLabel")}
                     <b>{confirm.build.buildName}</b>
-                    <span className="ml-1 text-text-muted">{fill(tp("buildIdSuffixTemplate"), { id: confirm.build.buildId })}</span>
+                    <span className="ms-1 text-text-muted">{fill(tp("buildIdSuffixTemplate"), { id: confirm.build.buildId })}</span>
                   </p>
                   <p className="mt-0.5 text-text-dim">
                     {fill(tp("ruleVersionTemplate"), {
@@ -361,7 +361,7 @@ export function SquadBuildPanel({
                     {describeBuildPoM(confirm.build).has ? describeBuildPoM(confirm.build).tierLabel : tp("pomUnspecified")}
                   </p>
                 </div>
-                <ul className="mt-1 list-disc pl-4 text-text-dim">
+                <ul className="mt-1 list-disc ps-4 text-text-dim">
                   <li>{tp("setChangedItemsLabel")}</li>
                   <li>{tp("setUnchangedItemsLabel")}</li>
                 </ul>
@@ -460,7 +460,7 @@ export function SquadBuildPanel({
             <Icon name="sliders" size={12} />
             {tp("createBuildInProgression")}
           </Link>
-          <Button variant="ghost" size="sm" onClick={onClose} className="ml-auto">
+          <Button variant="ghost" size="sm" onClick={onClose} className="ms-auto">
             {tp("closeButton")}
           </Button>
         </div>
@@ -537,8 +537,8 @@ function SquadBuildRow({
       </details>
       <p className="mt-0.5 text-text-dim">
         <span className="tabular-nums">{pointsText}</span>
-        <span className="ml-2 tabular-nums">{remainingText}</span>
-        {points.overAllocated ? <span className="ml-2 text-danger">{tp("overAllocated")}</span> : null}
+        <span className="ms-2 tabular-nums">{remainingText}</span>
+        {points.overAllocated ? <span className="ms-2 text-danger">{tp("overAllocated")}</span> : null}
       </p>
       <p className="mt-0.5 text-text-dim">
         {tp("pomRowLabel")}

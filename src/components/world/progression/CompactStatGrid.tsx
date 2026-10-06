@@ -56,10 +56,10 @@ function StatRow({
         type="button"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="flex min-h-[44px] w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-surface-2/40"
+        className="flex min-h-[44px] w-full items-center gap-2 px-3 py-2 text-start text-sm transition-colors hover:bg-surface-2/40"
       >
         <span className="min-w-0 flex-1 truncate" title={s.nameEn}>{statLabelJa(s.key)}</span>
-        <span className="w-10 shrink-0 text-right text-xs">
+        <span className="w-10 shrink-0 text-end text-xs">
           <Delta value={totalDelta} />
         </span>
         <span className="shrink-0">
@@ -106,7 +106,7 @@ function StatRow({
             <span className="font-semibold text-text-dim">標準最終</span>
             <span className="font-bold tabular-nums">
               {s.standardFinalValue}
-              {s.capApplied ? <span className="ml-1 text-[9px] text-yellow-300/80">上限</span> : null}
+              {s.capApplied ? <span className="ms-1 text-[9px] text-yellow-300/80">上限</span> : null}
             </span>
           </div>
           {showConditional ? (
@@ -114,7 +114,7 @@ function StatRow({
               <span className="font-semibold text-accent">条件反映後</span>
               <span className={`font-bold tabular-nums ${conditionalDiffers ? "text-accent" : "text-text-dim"}`}>
                 {s.conditionalFinalValue}
-                {s.conditionalCapApplied ? <span className="ml-1 text-[9px] text-yellow-300/80">上限</span> : null}
+                {s.conditionalCapApplied ? <span className="ms-1 text-[9px] text-yellow-300/80">上限</span> : null}
               </span>
             </div>
           ) : null}

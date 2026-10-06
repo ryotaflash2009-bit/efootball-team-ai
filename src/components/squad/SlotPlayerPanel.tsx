@@ -147,7 +147,7 @@ export function SlotPlayerPanel({
               {tsp("placementRoleLabel")}
               <span className="font-bold text-accent">{slot.position}</span>
               {placement && placement.roleOverride ? (
-                <span className="ml-1 text-[10px] text-text-dim">
+                <span className="ms-1 text-[10px] text-text-dim">
                   {fillSp(tsp("autoInferredTemplate"), { role: placement.inferredRole })}
                 </span>
               ) : null}
@@ -195,7 +195,7 @@ export function SlotPlayerPanel({
             <p>
               {fillSp(tsp("baseToDisplayedOvrPrefixTemplate"), { base: String(e.baseOvr ?? "–") })}
               <span className="font-bold text-accent">{e.displayedOvr ?? "–"}</span>
-              <span className="ml-1 text-[10px] text-text-dim">{tsp("estimateNote")}</span>
+              <span className="ms-1 text-[10px] text-text-dim">{tsp("estimateNote")}</span>
             </p>
             <p className="mt-1 flex flex-wrap gap-x-2 text-[11px]">
               <span>{fillSp(tsp("progressionDeltaTemplate"), { delta: fmt(e.progressionDelta) })}</span>

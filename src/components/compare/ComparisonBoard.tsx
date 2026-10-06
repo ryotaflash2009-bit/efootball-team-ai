@@ -243,7 +243,7 @@ export function ComparisonBoard({ initialInputs }: { initialInputs: ComparisonPl
               {buildModeLabels[m]}
             </button>
           ))}
-          <span className="ml-2 text-xs text-text-dim">{tcb("sameManagerLabel")}</span>
+          <span className="ms-2 text-xs text-text-dim">{tcb("sameManagerLabel")}</span>
           <button
             type="button"
             onClick={() => setSharedPickerOpen(true)}

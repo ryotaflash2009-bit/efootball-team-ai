@@ -50,7 +50,7 @@ export function SupportView() {
           <p className="mt-1.5 text-sm text-text" data-testid="support-safety-notice">
             {ts("contactSafetyNotice")}
           </p>
-          <ul className="mt-1.5 list-disc space-y-1 pl-5 text-xs text-text-dim">
+          <ul className="mt-1.5 list-disc space-y-1 ps-5 text-xs text-text-dim">
             <li>{ts("safetyNoPassword")}</li>
             <li>{ts("safetyNoAuthCode")}</li>
             <li>{ts("safetyNoRecoveryCode")}</li>
@@ -64,7 +64,7 @@ export function SupportView() {
       <Surface tone="inset" padding="md">
         <p className="text-sm font-semibold text-text">{ts("betaLimitsHeading")}</p>
         <p className="mt-1.5 text-sm text-text-dim">{ts("betaLimitsIntro")}</p>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-dim">
+        <ul className="mt-2 list-disc space-y-1 ps-5 text-sm text-text-dim">
           <li>{ts("betaLimitData")}</li>
           <li>{ts("betaLimitStorage")}</li>
           <li>{ts("betaLimitRecommendation")}</li>
@@ -101,7 +101,7 @@ export function SupportView() {
             {ts("issueTrackerLabel")}:{" "}
             <a href={channels.issueTrackerUrl} target="_blank" rel="noopener noreferrer nofollow" className="text-accent hover:underline">
               {channels.issueTrackerUrl}
-              <Icon name="external" size={12} className="ml-1 inline-block align-text-top" />
+              <Icon name="external" size={12} className="ms-1 inline-block align-text-top" />
             </a>
           </p>
         ) : null}
@@ -111,7 +111,7 @@ export function SupportView() {
         <p className="text-sm font-semibold text-text">{ts("bugReportHeading")}</p>
         <p className="mt-1.5 text-sm text-text-dim">{ts("bugReportAlphaParticipantNotice")}</p>
         <p className="mt-1.5 text-sm text-text-dim">{ts("bugReportIntro")}</p>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-dim">
+        <ul className="mt-2 list-disc space-y-1 ps-5 text-sm text-text-dim">
           <li>{ts("bugReportFieldPage")}</li>
           <li>{ts("bugReportFieldSteps")}</li>
           <li>{ts("bugReportFieldExpected")}</li>
@@ -120,7 +120,7 @@ export function SupportView() {
           <li>{ts("bugReportFieldWidth")}</li>
           <li>{ts("bugReportFieldErrorMessage")}</li>
         </ul>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-text-muted">
+        <ul className="mt-2 list-disc space-y-1 ps-5 text-xs text-text-muted">
           <li>{ts("bugReportOnlyFacts")}</li>
           <li>{ts("bugReportNoPersonalData")}</li>
           <li>{ts("bugReportNoUnsolicitedJsonAttachment")}</li>
@@ -142,7 +142,7 @@ export function SupportView() {
         <p className="text-sm font-semibold text-text">{ts("rightsHolderHeading")}</p>
         <p className="mt-1.5 text-sm text-text-dim">{ts("rightsHolderContactIntro")}</p>
         <p className="mt-1.5 text-sm text-text-dim">{ts("rightsHolderIntro")}</p>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-text-dim">
+        <ul className="mt-2 list-disc space-y-1 ps-5 text-sm text-text-dim">
           <li>{ts("rightsHolderFieldContent")}</li>
           <li>{ts("rightsHolderFieldUrl")}</li>
           <li>{ts("rightsHolderFieldRightType")}</li>

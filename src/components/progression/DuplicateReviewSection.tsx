@@ -149,7 +149,7 @@ export function DuplicateReviewSection({
           <span className={hasAny ? "text-warning font-semibold" : "text-accent font-semibold"}>
             {hasAny ? drs("statusWarning") : drs("statusNormal")}
           </span>
-          {hasUnresolved ? <span className="ml-1 font-semibold text-warning">{drs("unresolvedSuffix")}</span> : null}
+          {hasUnresolved ? <span className="ms-1 font-semibold text-warning">{drs("unresolvedSuffix")}</span> : null}
         </p>
 
         {hasUnresolved ? (
@@ -161,7 +161,7 @@ export function DuplicateReviewSection({
               {review.unresolved.map((u, i) => (
                 <li key={i} className="rounded border border-border/60 p-1.5">
                   <span className="text-text-dim">{localizeBuildsText(u.reasonLabel, locale)}</span>
-                  <span className="ml-2 text-text-muted">
+                  <span className="ms-2 text-text-muted">
                     {u.worldCardId ? fillDrs(drs("worldIdTemplate"), { id: u.worldCardId }) : drs("worldIdUnknown")} /{" "}
                     {u.buildId ? fillDrs(drs("buildIdTemplate"), { id: u.buildId }) : drs("buildIdUnknown")}
                   </span>

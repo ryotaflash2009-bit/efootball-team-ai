@@ -43,9 +43,9 @@ export function ProgressionSlider({
         <p className="min-w-0 truncate text-sm font-semibold">
           {groupName}
           {group.statsConfidence === "confirmed" ? (
-            <span className="ml-1 align-top text-[9px] text-lime-300/80">{tp("confirmedTag")}</span>
+            <span className="ms-1 align-top text-[9px] text-lime-300/80">{tp("confirmedTag")}</span>
           ) : (
-            <span className="ml-1 align-top text-[9px] text-yellow-300/80">{tp("targetsUnverifiedTag")}</span>
+            <span className="ms-1 align-top text-[9px] text-yellow-300/80">{tp("targetsUnverifiedTag")}</span>
           )}
         </p>
         <span className="shrink-0 text-sm font-bold tabular-nums text-accent">Lv {group.allocatedPoints}</span>

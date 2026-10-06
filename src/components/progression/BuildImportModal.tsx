@@ -107,7 +107,7 @@ export function BuildImportLauncher({
             <b>{t("buildImportModal", "addBoldLabel")}</b>
             {t("buildImportModal", "launcherDescriptionSuffix")}
           </p>
-          <ul className="mt-1 list-disc pl-4 text-2xs text-text-muted">
+          <ul className="mt-1 list-disc ps-4 text-2xs text-text-muted">
             {safetyLines.map((l) => (
               <li key={l}>{l}</li>
             ))}
@@ -484,7 +484,7 @@ function SelectStep({
     <div className="flex flex-col gap-3">
       <div className="rounded border border-border bg-surface-2/40 p-2 text-2xs text-text-dim">
         <p className="font-semibold">{tim("supportedFilesHeading")}</p>
-        <ul className="mt-1 list-disc pl-4">
+        <ul className="mt-1 list-disc ps-4">
           <li>
             {tim("supportedFile1Prefix")}
             <code>{IMPORT_FORMAT_LABEL}</code>
@@ -511,7 +511,7 @@ function SelectStep({
           accept="application/json,.json"
           onChange={onFileChange}
           disabled={busy}
-          className="rounded border border-border bg-surface px-2 py-1.5 text-sm file:mr-2 file:rounded file:border-0 file:bg-surface-3 file:px-2 file:py-1 file:text-xs"
+          className="rounded border border-border bg-surface px-2 py-1.5 text-sm file:me-2 file:rounded file:border-0 file:bg-surface-3 file:px-2 file:py-1 file:text-xs"
         />
       </label>
       <p className="text-2xs text-text-muted">{tim("selectFileHint")}</p>
@@ -651,7 +651,7 @@ function PreviewStep({
 
       <div className="rounded border border-border bg-surface-2/40 p-2 text-2xs text-text-dim">
         <p className="font-semibold">{tim("unaffectedHeading")}</p>
-        <ul className="mt-1 list-disc pl-4">
+        <ul className="mt-1 list-disc ps-4">
           <li>{tim("unaffected1")}</li>
           <li>{tim("unaffected2")}</li>
           <li>{tim("unaffected3")}</li>
@@ -689,7 +689,7 @@ function ConfirmPanel({
       <p id="import-confirm-title" className="text-sm font-semibold">
         {fillIm(tim("confirmTitleTemplate"), { count: String(plan.saveCount) })}
       </p>
-      <ul id="import-confirm-desc" className="mt-1 list-disc pl-4 text-2xs text-text-dim">
+      <ul id="import-confirm-desc" className="mt-1 list-disc ps-4 text-2xs text-text-dim">
         <li>{tim("confirmNote1")}</li>
         <li>
           {plan.collisionCount > 0

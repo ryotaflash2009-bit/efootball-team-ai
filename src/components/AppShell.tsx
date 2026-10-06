@@ -51,7 +51,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-screen">
       {/* PC サイドバー */}
       <aside
-        className={`sticky top-0 hidden h-screen shrink-0 flex-col border-r border-border bg-surface lg:flex ${
+        className={`sticky top-0 hidden h-screen shrink-0 flex-col border-e border-border bg-surface lg:flex ${
           collapsed ? "w-[64px]" : "w-sidebar"
         }`}
       >
@@ -84,7 +84,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/60" onClick={() => setMobileOpen(false)} aria-hidden="true" />
           <div
-            className="absolute left-0 top-0 flex h-full w-72 flex-col border-r border-border bg-surface shadow-pop"
+            className="absolute left-0 top-0 flex h-full w-72 flex-col border-e border-border bg-surface shadow-pop"
             role="dialog"
             aria-modal="true"
             aria-label={t("nav", "ariaMobileMenu")}

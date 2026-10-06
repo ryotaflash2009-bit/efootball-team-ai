@@ -152,7 +152,7 @@ export function BestXiView() {
         <p className="mt-1">{tb("resultsNotSavedText")}</p>
         <details className="mt-2">
           <summary className="cursor-pointer font-semibold text-text-dim">{tb("criteriaHeading")}</summary>
-          <ol className="mt-1 list-decimal pl-4">
+          <ol className="mt-1 list-decimal ps-4">
             <li>{tb("criteriaFilledSlots").replace(/^\d+\.\s*/, "")}</li>
             <li>{tb("criteriaExactPosition").replace(/^\d+\.\s*/, "")}</li>
             <li>{tb("criteriaRelatedMinimized").replace(/^\d+\.\s*/, "")}</li>
@@ -266,7 +266,7 @@ export function BestXiView() {
 
               <div className="rounded-card border border-border bg-surface p-3 text-2xs text-text-muted sm:p-4">
                 <p className="font-semibold text-text-dim">{tb("limitationsHeading")}</p>
-                <ul className="mt-1 list-disc pl-4">
+                <ul className="mt-1 list-disc ps-4">
                   {result.limitationCodes.map((code) => (
                     <li key={code}>{t("bestXi", LIMITATION_LABEL_KEY[code] as keyof Dictionary["bestXi"])}</li>
                   ))}
@@ -390,7 +390,7 @@ function BestXiSlotList({
                     </p>
                     <div>
                       <p className="font-semibold text-text-dim">{tb("reasonsHeading")}</p>
-                      <ul className="list-disc pl-4">
+                      <ul className="list-disc ps-4">
                         {sel.reasonCodes.map((code) => (
                           <li key={code}>{t("bestXi", SELECTION_REASON_LABEL_KEY[code] as keyof Dictionary["bestXi"])}</li>
                         ))}

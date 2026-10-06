@@ -130,9 +130,9 @@ export function BuildBar({
                   <span className="min-w-0 truncate">
                     <span className="font-semibold" data-user-content="build-name">{b.buildName}</span>
                     {!isV2RulesVersion(b.rulesVersion) ? (
-                      <span className="ml-1 rounded bg-yellow-400/15 px-1 text-[10px] text-yellow-300">{tp("buildLegacyRules")}</span>
+                      <span className="ms-1 rounded bg-yellow-400/15 px-1 text-[10px] text-yellow-300">{tp("buildLegacyRules")}</span>
                     ) : null}
-                    <span className="ml-2 text-text-dim">
+                    <span className="ms-2 text-text-dim">
                       {tp("buildListMeta").replace("{ovr}", String(b.calculatedOvr ?? "—")).replace("{date}", new Date(b.updatedAt).toLocaleString(locale === "ja" ? "ja-JP" : "en-US", { hour12: false }))}
                     </span>
                   </span>

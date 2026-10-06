@@ -80,7 +80,7 @@ export function Select({
     <Wrap label={label} hint={hint} error={error} htmlFor={fieldId}>
       <select
         id={fieldId}
-        className={`${CONTROL} ${H} cursor-pointer appearance-none bg-[right_0.6rem_center] bg-no-repeat pr-9 ${
+        className={`${CONTROL} ${H} cursor-pointer appearance-none bg-[right_0.6rem_center] bg-no-repeat pe-9 ${
           error ? "border-danger" : "border-border"
         } ${className}`}
         style={{

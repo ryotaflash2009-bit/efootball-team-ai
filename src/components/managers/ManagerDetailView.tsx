@@ -133,7 +133,7 @@ export function ManagerDetailView({ manager }: { manager: ManagerDetail }) {
                     <span className="rounded bg-success/15 px-1.5 py-0.5 text-xs font-bold text-success tabular-nums">
                       {b.rawValue}
                     </span>
-                    <span className="ml-auto text-2xs text-text-dim">
+                    <span className="ms-auto text-2xs text-text-dim">
                       {b.applicationCondition ?? tm("boosterUnconditional")}
                     </span>
                     <Badge tone={b.confirmationStatus === "confirmed" && b.statKey ? "success" : "warning"} size="xs">
@@ -206,7 +206,7 @@ export function ManagerDetailView({ manager }: { manager: ManagerDetail }) {
                   href={manager.sourceUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ml-1 text-accent underline underline-offset-2"
+                  className="ms-1 text-accent underline underline-offset-2"
                 >
                   {tm("openSource")}
                 </a>

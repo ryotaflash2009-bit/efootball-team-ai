@@ -33,9 +33,9 @@ export function GroupRow({
           <p className="truncate text-sm font-semibold">
             {group.nameEn}
             {group.statsConfidence === "confirmed" ? (
-              <span className="ml-1 align-top text-[9px] text-lime-300/80">{tp("ruGrConfirmed")}</span>
+              <span className="ms-1 align-top text-[9px] text-lime-300/80">{tp("ruGrConfirmed")}</span>
             ) : (
-              <span className="ml-1 align-top text-[9px] text-yellow-300/80">{tp("ruGrStatsProvisional")}</span>
+              <span className="ms-1 align-top text-[9px] text-yellow-300/80">{tp("ruGrStatsProvisional")}</span>
             )}
           </p>
           <p className="truncate text-[10px] text-text-dim" title={statNames}>

@@ -95,7 +95,7 @@ export function DiagnosisComparisonCard({ comparison }: { comparison: DiagnosisC
               {score(change.before, change.beforeTier)}
               <span aria-hidden>→</span>
               {score(change.after, change.afterTier)}
-              <span className={`min-w-[7rem] text-right font-semibold ${TREND_CLASS[change.trend]}`}>
+              <span className={`min-w-[7rem] text-end font-semibold ${TREND_CLASS[change.trend]}`}>
                 {TREND_MARK[change.trend]} {delta(change)} {trend[change.trend]}
               </span>
             </span>

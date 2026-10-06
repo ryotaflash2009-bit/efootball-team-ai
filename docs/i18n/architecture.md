@@ -93,7 +93,15 @@ noindex は維持する。解除する場合の案: 言語ごとの path（`/es/
 - 物理的な左右の指定（Tailwind の `ml-`/`mr-` 88・`pl-`/`pr-` 97・`left-`/`right-` 43・`text-left`/`text-right` 61・
   `border-l`/`r` 4・`rounded-l`/`r` 5・`translate-x` 9。79 ファイル）に対し、論理プロパティ（`ms-`・`me-`・`ps-`・`pe-`・`start-`・`end-`）は 5。
   RTL で崩れる。アラビア語は `INTERNAL_DRAFT` のまま公開しない。
-- 次の段階: 論理プロパティへの置き換え（LTR の表示は同じ）・矢印のアイコンの反転・育成のスライダー・比較・ピッチの方向・共有カードの確認。
+- **2026-10-06 に置き換えた**: 余白・文字の揃え・枠線・角丸の 255 か所（72 ファイル）を論理プロパティへ（`ms-`・`me-`・`ps-`・`pe-`・
+  `text-start`・`text-end`・`border-s/e`・`rounded-s/e/ss/se/es/ee`）。LTR の表示の確認: 日本語・English × 390・1280 × 13 画面の
+  スクリーンショットで 47/52 がバイト単位で一致、残りは目視で同じ（画像の描画の揺れ・内部 build だけのボタンの端）。
+  見つかった 1 件: 表の見出しの行（`<tr>`・`<thead>`）の `text-start` は、`<th>` の既定の `-internal-center` が継承の start を
+  center に戻すため、`[:where(&)_th]:text-start`（詳細度 0・th 自身の揃えのクラスより弱い）で th に直接付けた。
+  物理的な指定が戻らないことをテストで確認（`src/lib/i18n/rtl-logical-properties.test.ts`）。疑似 RTL（`ar-XB`）で、ヘッダー・
+  見出し・カードの並び・セレクトの矢印が左右反転することを確認。
+- 残り: 位置の指定（`left-`/`right-` 43・`translate-x` 9。中央寄せ・スライダー・ピッチ・図表は場面ごとに確認）・矢印のアイコンの反転・
+  育成のスライダーの方向・比較・共有カード（canvas）の RTL。アラビア語は `INTERNAL_DRAFT` のまま公開しない。
 
 ## 10. 検索
 
