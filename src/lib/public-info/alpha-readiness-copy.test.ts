@@ -62,11 +62,11 @@ describe("/release-readiness・/about: 参照データSupabase経路・SQLite切
     expect(en.about.availableReferenceDataSupabase).toMatch(/safety checks/);
   });
 
-  it("自動更新が週 1 回の検出に基づき、遅れがありうると説明される(ja/en)", () => {
-    // 自動更新は週 1 回の検出（定期実行）に基づくため、ゲームより遅れる場合があることを既知の制約として示す。
-    expect(ja.about.betaReferenceDataAutoUpdateDryRun).toMatch(/週 1 回/);
+  it("自動更新が 1 時間おきの検出に基づき、遅れがありうると説明される(ja/en)", () => {
+    // 自動更新は 1 時間おきの検出（定期実行・2026-10-04 から）に基づくため、ゲームより遅れる場合があることを既知の制約として示す。
+    expect(ja.about.betaReferenceDataAutoUpdateDryRun).toMatch(/1 時間おき/);
     expect(ja.about.betaReferenceDataAutoUpdateDryRun).toMatch(/遅れる/);
-    expect(en.about.betaReferenceDataAutoUpdateDryRun).toMatch(/weekly/);
+    expect(en.about.betaReferenceDataAutoUpdateDryRun).toMatch(/hourly/);
     expect(en.about.betaReferenceDataAutoUpdateDryRun).toMatch(/lag/);
   });
 

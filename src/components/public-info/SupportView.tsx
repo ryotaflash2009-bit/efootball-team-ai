@@ -34,15 +34,22 @@ export function SupportView() {
         </Surface>
       ) : (
         <Surface tone="inset" padding="md">
-          <p className="text-sm text-text-dim">{ts("sharedChannelIntro")}</p>
+          <p className="text-base font-semibold text-text" data-testid="support-channel-label">
+            {ts("dedicatedChannelLabel")}
+          </p>
+          <p className="mt-1 text-sm text-text-dim">{ts("sharedChannelIntro")}</p>
           <p className="mt-2 text-xs font-semibold text-text-dim">{ts("sharedChannelEmailLabel")}</p>
-          <p className="mt-0.5 break-all text-sm font-semibold text-text">{channels.supportEmail}</p>
+          {/* アドレスは作成済みの専用メールボックス（v1.0 で維持・独自ドメインの後に TeamAIXI 名義へ移行）。名前を強調しないため通常の太さ。 */}
+          <p className="mt-0.5 break-all text-sm text-text">{channels.supportEmail}</p>
         </Surface>
       )}
 
       {channels.hasAnyChannel ? (
         <Surface tone="outline" padding="sm">
           <p className="text-xs font-semibold text-text-dim">{ts("safetyNoticeHeading")}</p>
+          <p className="mt-1.5 text-sm text-text" data-testid="support-safety-notice">
+            {ts("contactSafetyNotice")}
+          </p>
           <ul className="mt-1.5 list-disc space-y-1 pl-5 text-xs text-text-dim">
             <li>{ts("safetyNoPassword")}</li>
             <li>{ts("safetyNoAuthCode")}</li>
