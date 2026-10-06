@@ -116,7 +116,7 @@ create policy user_blocks_own on public.user_blocks for all to authenticated usi
 
 -- 権限: anon は何もできない（列挙の防止）。authenticated は他人の user_id を読めない（列の権限）。
 revoke all on public.public_profiles, public.public_id_history, public.user_blocks from anon, authenticated;
-grant select (public_id, display_name, visibility, created_at) on public.public_profiles to authenticated;
+grant select (public_id, display_name, visibility, created_at, deleted_at) on public.public_profiles to authenticated;
 grant insert (public_id, display_name, visibility) on public.public_profiles to authenticated;
 grant update (public_id, display_name, visibility, deleted_at) on public.public_profiles to authenticated;
 grant select, insert, delete on public.user_blocks to authenticated;
