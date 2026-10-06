@@ -1,0 +1,346 @@
+{
+  "schema": "hourly-detection-observation/v1",
+  "generatedAt": "2026-10-06T16:21:39.466Z",
+  "cron": "17 * * * *",
+  "window": {
+    "since": "2026-10-04T12:27:00.000Z",
+    "until": "2026-10-06T16:21:22.390Z"
+  },
+  "expected": 52,
+  "actual": 8,
+  "extraRuns": 0,
+  "manualRuns": 1,
+  "missing": 44,
+  "missingRatio": 0.846,
+  "maxConsecutiveMissing": 8,
+  "maxGapMinutes": 1448,
+  "maxGapEndsAt": "2026-10-04T13:44:40.000Z",
+  "lastSuccessfulDetection": "2026-10-06T10:13:02.000Z",
+  "delayMinutes": {
+    "median": 39,
+    "max": 56
+  },
+  "light": 2,
+  "fullScan": 6,
+  "noChange": 2,
+  "lightNoSignalChange": 2,
+  "changeDetected": 4,
+  "failure": 0,
+  "skip": 0,
+  "cancelled": 0,
+  "concurrencyOverlaps": 0,
+  "requests": 2692,
+  "downloadedBytes": 176324373,
+  "durationSeconds": {
+    "median": 1555,
+    "total": 9420
+  },
+  "gapNotices": 6,
+  "delayedDetections": 4,
+  "workflowState": "active",
+  "reconsider": {
+    "gapAtLeast6h": true,
+    "missingAboutHalfOrMore": true,
+    "delayedDetectionsTwiceOrMore": true,
+    "scheduleDisabled": false
+  },
+  "reconsiderExternalTrigger": true,
+  "slots": [
+    {
+      "slot": "2026-10-04T13:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-04T14:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-04T15:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-04T16:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-04T17:17:00.000Z",
+      "status": "ran",
+      "runId": 37220971573,
+      "createdAt": "2026-10-04T17:33:37Z",
+      "startedAt": "2026-10-04T17:33:37Z",
+      "delayMinutes": 17,
+      "durationSeconds": 1572,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "no_change",
+      "worldScan": "no_previous_state",
+      "requests": 448,
+      "bytes": 29352488
+    },
+    {
+      "slot": "2026-10-04T18:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-04T19:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-04T20:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-04T21:17:00.000Z",
+      "status": "ran",
+      "runId": 37235717213,
+      "createdAt": "2026-10-04T21:20:47Z",
+      "startedAt": "2026-10-04T21:20:47Z",
+      "delayMinutes": 4,
+      "durationSeconds": 28,
+      "conclusion": "success",
+      "mode": "light",
+      "outcome": "light_no_signal_change",
+      "worldScan": null,
+      "requests": 2,
+      "bytes": 104609
+    },
+    {
+      "slot": "2026-10-04T22:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-04T23:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-05T00:17:00.000Z",
+      "status": "ran",
+      "runId": 37249268099,
+      "createdAt": "2026-10-05T00:53:51Z",
+      "startedAt": "2026-10-05T00:53:51Z",
+      "delayMinutes": 37,
+      "durationSeconds": 1557,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "no_change",
+      "worldScan": "full_scan_due",
+      "requests": 448,
+      "bytes": 29352492
+    },
+    {
+      "slot": "2026-10-05T01:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-05T02:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-05T03:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-05T04:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-05T05:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-05T06:17:00.000Z",
+      "status": "ran",
+      "runId": 37275322242,
+      "createdAt": "2026-10-05T07:00:18Z",
+      "startedAt": "2026-10-05T07:00:18Z",
+      "delayMinutes": 43,
+      "durationSeconds": 1564,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "change_detected",
+      "worldScan": "full_scan_due",
+      "requests": 448,
+      "bytes": 29352525
+    },
+    {
+      "slot": "2026-10-05T07:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-05T08:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-05T09:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-05T10:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-05T11:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-05T12:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-05T13:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-05T14:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-05T15:17:00.000Z",
+      "status": "ran",
+      "runId": 37337145283,
+      "createdAt": "2026-10-05T15:58:29Z",
+      "startedAt": "2026-10-05T15:58:29Z",
+      "delayMinutes": 41,
+      "durationSeconds": 1552,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "change_detected",
+      "worldScan": "full_scan_due",
+      "requests": 448,
+      "bytes": 29352541
+    },
+    {
+      "slot": "2026-10-05T16:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-05T17:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-05T18:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-05T19:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-05T20:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-05T21:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-05T22:17:00.000Z",
+      "status": "ran",
+      "runId": 37383526188,
+      "createdAt": "2026-10-05T22:36:16Z",
+      "startedAt": "2026-10-05T22:36:16Z",
+      "delayMinutes": 19,
+      "durationSeconds": 1553,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "change_detected",
+      "worldScan": "full_scan_due",
+      "requests": 448,
+      "bytes": 29352543
+    },
+    {
+      "slot": "2026-10-05T23:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T00:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T01:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T02:17:00.000Z",
+      "status": "ran",
+      "runId": 37406597404,
+      "createdAt": "2026-10-06T02:56:37Z",
+      "startedAt": "2026-10-06T02:56:37Z",
+      "delayMinutes": 40,
+      "durationSeconds": 35,
+      "conclusion": "success",
+      "mode": "light",
+      "outcome": "light_no_signal_change",
+      "worldScan": null,
+      "requests": 2,
+      "bytes": 104628
+    },
+    {
+      "slot": "2026-10-06T03:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T04:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T05:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T06:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T07:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T08:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T09:17:00.000Z",
+      "status": "ran",
+      "runId": 37448295735,
+      "createdAt": "2026-10-06T10:13:02Z",
+      "startedAt": "2026-10-06T10:13:02Z",
+      "delayMinutes": 56,
+      "durationSeconds": 1559,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "change_detected",
+      "worldScan": "full_scan_due",
+      "requests": 448,
+      "bytes": 29352547
+    },
+    {
+      "slot": "2026-10-06T10:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T11:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T12:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T13:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T14:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T15:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T16:17:00.000Z",
+      "status": "missing"
+    }
+  ]
+}

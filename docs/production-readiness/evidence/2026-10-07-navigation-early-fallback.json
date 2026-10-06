@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-07",
+  "feature": "navigation early fallback (v1.1)",
+  "pr": 166,
+  "main": "105c03c",
+  "thresholds": {
+    "graceAfterRscMs": 1500,
+    "networkQuietMs": 500,
+    "hardLimitMs": 5000
+  },
+  "normalGapRscToCommitMs": {
+    "productionDesktop": {
+      "n": 60,
+      "p50": 23,
+      "p90": 38,
+      "max": 278
+    },
+    "productionMobile": {
+      "n": 60,
+      "p50": 23,
+      "p90": 47,
+      "max": 62
+    },
+    "localThrottledMobile": {
+      "n": 30,
+      "max": 715
+    }
+  },
+  "productionFirstNavigation": {
+    "runs": 100,
+    "hangs": 3,
+    "recoveredAtMs": [
+      2137,
+      2373,
+      3392
+    ],
+    "previousRecoveryMs": 5300,
+    "falseFallbacks": 0,
+    "normalNavigations": 97
+  }
+}

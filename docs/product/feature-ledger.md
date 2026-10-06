@@ -29,7 +29,7 @@
 | F-003 | 監督検索・詳細（戦術適性・ブースター・Link-Up） | verified | 90% | reference data | R | — | 不要 | 不要 | Free | 同上 | 監督画像は実装しない（イニシャルアバターが正式。`docs/phase-manager-picker.md`・`phase-manager-photos-efdb.md`） |
 | F-004 | 選手比較（2〜4人・レーダー・育成比較） | verified | 90% | F-002 | R | L | 不要 | 不要 | Free | 同上 | 友達比較は F-062 |
 | F-005 | お気に入り | completed | 90% | F-001 | — | L/C | 任意 | 不要 | Free | 未認証表示は black-box 済み | クラウド同期は F-052 |
-| F-006 | データ更新・差分管理（週次の自動検出＋承認式の適用） | verified | 90% | GitHub Actions | R/W(承認時) | — | — | 不要 | — | `evidence/world-update-2026-09-26.json` | appearance（順位）の再取得方針（本人判断） |
+| F-006 | データ更新・差分管理（毎時の自動検出＋完全自動の適用。2026-10-07 の時点は自動適用の DB の Secret の本人の入力待ち） | verified | 90% | GitHub Actions | R/W(承認時) | — | — | 不要 | — | `evidence/world-update-2026-09-26.json` | appearance（順位）の再取得方針（本人判断） |
 | F-007 | 日本語/英語切り替え | verified | 90% | — | — | L | 不要 | 不要 | Free | 総合black-box（切替・保存） | 英語の用語監査を定期実施 |
 | F-007b | 多言語の基盤（locale の契約・English への代わり・疑似ローカライズ・coverage の監査・RTL の準備） | implemented | 85% | F-007 | — | L | 不要 | 不要 | Free | PR #149・#152・#153・#157・#158・#159・次の PR、`docs/i18n/`、`docs/production-readiness/evidence/2026-10-07-multilingual-release-candidates.json`。公開は ja・en だけ。es・pt-BR・fr・de・it・ko・zh-CN・zh-TW・id・tr は RELEASE_CANDIDATE（AI 翻訳・公開画面 100%・生成文 407/407・共有カード 4 比率・ネイティブのレビュー前・言語の選択には出さない） | ネイティブのレビュー（`docs/i18n/review/<locale>/`）・ゲーム内の公式の用語の照合・法務文書の専門家の翻訳・公開の判断（本人） |
 | F-008 | 公開範囲・noindex・内部ページ404・セキュリティヘッダー | verified | 100% | — | — | — | — | — | — | 総合black-box security 18/18 | 一般公開時に noindex 解除（本人判断） |
@@ -70,7 +70,7 @@
 | F-041 | 画像保存（PNG） | completed | 80% | F-040 | — | L | 不要 | 不要 | Free | `squad-diagnosis-image.ts`（3:4・1440×1920）、`build-diagnosis-card-image.ts`（9:16・16:9） | 共有カードのサイズ追加は F-041b |
 | F-042 | 共有URL（診断カード） | verified | 100% | F-040 | — | —（サーバー保存なし・名前/ID なし） | 不要 | 不要 | Free | PR #75、`evidence/f042-share-url-2026-09-27.json`（公開 black-box 522/522） | 比較の共有URLは F-043 で追加 |
 | F-041b | 診断カードの比率（3:4・1:1・9:16・16:9）とプレビュー・OS 共有 | verified | 100% | F-041 | — | L | 不要 | 不要 | Free | PR #101（3:4 は従来と同一・称号つき・Web Share（取り消しはエラーにしない・非対応は保存）・CSP の img-src に blob: を追加）、black-box 24/24、`evidence/2026-10-02-backup-cards-posts.json` | 本人の主観確認（カードの見た目） |
-| F-045 | 診断の追加観点（左右バランス・監督適合・フォーメーション適合・控えを含む役割重複・GK 専用カテゴリ・空中戦の身長/利き足補正） | designed | 5% | F-026 | R | L | 不要 | 不要 | Free | 候補は `milestones/2026-09-06-squad-diagnosis-foundation.md`・比較画面は左右の人数を事実として表示（評価しない） | **計算式は本人判断**（${RA} §5 に候補・必要データ・長所/短所） |
+| F-045 | 診断の追加観点（左右バランス・監督適合・フォーメーション適合・控えを含む役割重複・GK 専用カテゴリ・空中戦の身長/利き足補正） | implementation_ready（本人の判断待ち） | 60% | F-026 | R | L | 不要 | 不要 | Free | 暫定の 8 観点をスカッドの編集の折りたたみで表示（比較のみ・点数へ不混入）。判断パッケージ `docs/product/f045-decision-package.md`・端のケース・決定性のテスト（PR #168） | **本人の判断**: 推奨は「事実の式（A）だけを表示として採用・暫定の点数化は比較のまま」 |
 | F-043 | 改善前後の比較カード | verified | 100% | F-026, F-060 | — | L | 不要 | 不要 | Free | PR #77、`docs/production-readiness/evidence/f060-f043-2026-09-27.json`（公開 black-box 568/568） | 公開環境の稀な hydration 警告は既知の問題として記録（機能影響なし） |
 | F-044 | Pro向け詳細診断 | designed | 20% | F-026, F-120 | — | — | 要 | 任意 | Pro | 出力は基本/詳細に分離済み | 課金の判断まで deferred |
 
@@ -101,6 +101,11 @@
 | F-073 | 「あなたの一番」の自動発見（My Team） | verified | 100% | F-020, F-071, F-072 | R | L | 不要 | 不要 | Free | PR #92・#95、`evidence/f071-artifact-2026-10-01.json`（公開 115/115） | — |
 | F-074 | スカッド独自性評価 | designed | 5% | F-024, 利用統計 | R | C | 要 | 不要 | Free | `docs/product/community-and-growth-design.md` §5（公開を選んだスカッドだけを匿名集計・k-匿名性） | 本人判断: 集計の同意・保持期間・プライバシーポリシー。判断まで実装しない |
 | F-075 | ランキング | idea | 0% | F-053, F-056 | — | C | 要 | 不要 | Free | — | コミュニティ・安全機能・小規模母数の保護の後 |
+| F-130 | アクセス解析（Vercel Web Analytics・Page Views / Visitors だけ） | verified | 100% | — | — | — | 不要 | 不要 | Free | PR #162・`docs/production-readiness/web-analytics.md`・`evidence/2026-10-07-web-analytics.json`（本番の view 200・URL の query / fragment を送らない・Cookie 0・自動のブラウザーを除外） | Custom Event は本人の判断の後 |
+| F-131 | 止まった画面の移動の早めの戻し（v1.1） | verified | 100% | — | — | — | 不要 | 不要 | Free | PR #166・`navigation-fallback-v1.1.md`・`evidence/2026-10-07-navigation-early-fallback.json`（止まった移動 5.3 秒 → 2.1〜3.4 秒・通常の移動 97 回で誤作動 0） | 経過の観察 |
+| F-132 | 固有の用語の契約（Link-Up Play・OVR を全言語で原語） | completed | 100% | F-007b | — | — | 不要 | 不要 | Free | PR #161・`scripts/audit-fixed-terms.mjs`（43,740 文・違反 0）・`src/lib/i18n/fixed-terms.test.ts` | 正式な現地語の表記をデータ元で確認できた言語だけ更新 |
+| F-133 | かなを区別しない検索・短い検索語の安全化 | completed | 100% | F-001 | R | — | 不要 | 不要 | Free | PR #167（`name_ja` の imatch・schema の変更なし・テスト 223） | 本番での確認（次の公開の確認で） |
+| F-134 | 改善シミュレーション（控えとの入れ替え・配置の変更） | completed | 80% | F-026 | — | L | 不要 | 不要 | Free | PR #169・`docs/product/improvement-simulation.md`（決定的・保存しない・上位 3 件・約 16 ms） | 監督・フォーメーション・育成の変更（能力値の再計算が必要） |
 
 ## 6. コミュニティ（Phase 7）
 
@@ -147,6 +152,7 @@
 ## 9. 変更履歴
 
 - 2026-10-06: **多言語の基盤（F-007b）**。locale の契約（18 言語 + 疑似 2）・その言語 → English → 日本語の解決・言語ごとの別 chunk・coverage と品質の監査（CI）・用語集・RTL の論理プロパティ（255 か所）。10 言語の AI の下書き（核の UI・ホーム・内部の確認だけ）。公開の言語は変えていない（ja・en）。
+- 2026-10-07: **夜間の作業**。Link-Up Play・OVR の契約（F-132）・Vercel Web Analytics（F-130）・ネイティブのレビュー資料 v2・npm audit の非破壊の修正（high 10 → 8）・止まった移動の早めの戻し（F-131）・かなの検索（F-133）・F-045 の判断パッケージ・改善シミュレーション（F-134）・機能の全面の再監査（`docs/product/feature-reaudit-2026-10-07.md`・127 件・新しい要件 43）。自動適用の DB の Secret は本人の入力待ち（`VERIFIED_BLOCKED_OWNER_ACTION`）。
 - 2026-10-07: **10 言語を RELEASE_CANDIDATE へ（F-007b）**。es・pt-BR（#158・#159）に続き fr・de・it・ko・zh-CN・zh-TW・id・tr。公開画面 100%・生成文 407/407・能力名・育成グループ・戦術・共有カード 4 比率。各言語 5 画面幅のブラックボックス 209/209・React #418 0。ネイティブのレビューの資料（言語ごとの CSV）。公開の言語は ja・en のまま（言語の選択には出さない）。
 - 2026-10-06: v1.0 の公開後の運用。毎時の検出の観測の仕組み（`scripts/observe-hourly-detection.mjs`・観測契約 10-06〜10-13）と、欠落しても更新を取りこぼさない契約のテスト。問い合わせページに「TeamAIXI専用サポート窓口 / TeamAIXI Support」と本人指定の注意書き、更新頻度の表記を週 1 回から 1 時間おきへ修正。選手詳細 167 kB（#144）・ログイン 120 kB（#145）。ローカルの確認用サーバーの PID の契約を修正。10-05 の自動の Apply は DB の認証で停止（書き込みなし・本人が Secret を登録し直す）。v1.1 backlog は `integrated-roadmap.md`。
 - 2026-10-05: **TeamAIXI v1.0 正式リリース**。Release Validator `TEAMAIXI_V1_RELEASE_READY`（本人の最終確認 5 項目を記録）。Git tag `v1.0.0`・GitHub Release「TeamAIXI v1.0」。最終の品質: React #418 の最終ゲート 本番 3 回連続 576/576（8 viewport・hydration 0）、a11y 32/32、新規登録の制限 117/117。画面の移動: hydration 前の絞り込みの選択を保持（PR #141）、終わらない画面の移動を 5 秒で通常の移動に切り替え（PR #142）。1 時間おきの更新検出は schedule で動作を確認（run 37220971573・no_change）。F-070（監督補正）は v1.1。証跡 `evidence/2026-10-05-teamaixi-v1-release.json`。
