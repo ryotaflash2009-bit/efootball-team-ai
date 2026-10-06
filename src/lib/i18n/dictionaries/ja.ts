@@ -18,6 +18,8 @@ export interface Dictionary {
     close: string;
     confirm: string;
     unknownPlayer: string;
+    /** 利用規約・プライバシー・免責事項を、日本語・English 以外の表示言語で開いたときの案内（文書は English で表示）。 */
+    legalEnglishOnlyNotice: string;
   };
   pageError: {
     title: string;
@@ -4725,6 +4727,7 @@ const ja: JaCoreDictionary = {
     close: "閉じる",
     confirm: "実行",
     unknownPlayer: "名前不明",
+    legalEnglishOnlyNotice: "この文書は日本語と English で提供しています。",
   },
   pageError: {
     title: "ページの表示中にエラーが発生しました",

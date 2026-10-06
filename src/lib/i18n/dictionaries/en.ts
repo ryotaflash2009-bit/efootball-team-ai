@@ -19,6 +19,7 @@ const en: Dictionary = {
     close: "Close",
     confirm: "Confirm",
     unknownPlayer: "Unknown Player",
+    legalEnglishOnlyNotice: "This document is provided in Japanese and English.",
   },
   pageError: {
     title: "An error occurred while displaying this page",

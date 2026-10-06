@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Surface } from "@/components/ui/Surface";
 import { Icon } from "@/components/ui/Icon";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { LegalLanguageNotice } from "@/components/public-info/LegalLanguageNotice";
 
 type DisclaimerKey = keyof Dictionary["disclaimer"];
 
@@ -17,6 +18,7 @@ export function DisclaimerView() {
   return (
     <div className="flex flex-col gap-5">
       <PageHeader title={td("heading")} icon="shield" description={td("intro")} />
+      <LegalLanguageNotice />
 
       <Surface tone="inset" padding="md">
         <div className="flex items-start gap-2">
