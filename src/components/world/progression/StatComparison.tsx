@@ -76,7 +76,7 @@ export function StatComparison({
 }) {
   const t = useT();
   const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const byGroup = new Map<WorldStatGroup, StatBreakdown[]>();
   for (const s of stats) {
     const arr = byGroup.get(s.group) ?? [];
@@ -84,7 +84,7 @@ export function StatComparison({
     byGroup.set(s.group, arr);
   }
   const normalCol = tp(NORMAL_LABEL[mode]);
-  const condDesc = conditionalSelections.map((c) => `${c.nameEn} ${localizeLibText(c.description, locale)}`).join(" / ");
+  const condDesc = conditionalSelections.map((c) => `${c.nameEn} ${localizeLibText(c.description, displayLocale)}`).join(" / ");
 
   return (
     <div className="space-y-4">
@@ -129,7 +129,7 @@ export function StatComparison({
                   const showBoosterBreakdown = boosterBreakdownParts.length >= 2;
                   return (
                     <tr key={s.key} className="border-t border-border/60">
-                      <td className="px-3 py-1.5" title={s.nameEn}>{abilityName(s.key, locale)}</td>
+                      <td className="px-3 py-1.5" title={displayLocale === "ja" ? s.nameEn : abilityName(s.key, displayLocale)}>{abilityName(s.key, displayLocale)}</td>
                       <td className="px-2 py-1.5 text-end tabular-nums text-text-dim">{s.baseValue}</td>
                       <td className="px-2 py-1.5 text-end tabular-nums">
                         <Delta value={s.progressionDelta} />

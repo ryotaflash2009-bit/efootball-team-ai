@@ -6,6 +6,7 @@ import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { localizedAbilityName, localizedGroupName } from "@/lib/i18n/game-terms";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import type { Locale } from "@/lib/i18n/locale";
+import type { DisplayLocale } from "@/lib/i18n/locale-registry";
 import { formatNumber } from "@/lib/i18n/format";
 import { groupLabelJa, statLabelJa } from "@/lib/world/stat-labels";
 import { getStatDef } from "@/lib/world/stats";
@@ -384,7 +385,7 @@ function resolvePresetReflectionSource(presetIntent: PresetIntentUIProps, confir
 }
 
 /** 確定済み育成目的(メイン・サブ)を、辛口レビュー冒頭の「使用中バナー」の1文として組み立てる。固定テンプレートではなく、実際の確定状態から決定的に構成する。 */
-function presetConfirmedBannerText(presetIntent: PresetIntentUIProps, ba: (k: keyof Dict) => string, locale: Locale): string {
+function presetConfirmedBannerText(presetIntent: PresetIntentUIProps, ba: (k: keyof Dict) => string, locale: Locale | DisplayLocale): string {
   const mainPreset = getPresetById(presetIntent.confirmedMainPresetId);
   if (!mainPreset && presetIntent.confirmedSubPresetIds.length === 0) {
     return ba("buildIntentManualNotice");
@@ -400,16 +401,16 @@ function presetConfirmedBannerText(presetIntent: PresetIntentUIProps, ba: (k: ke
 }
 
 /** 育成カテゴリの表示名（ja: 既存の groupLabelJa 由来の仮称日本語 / en: 確認済み英語名）。 */
-function groupDisplayName(groupId: string | null, locale: Locale): string {
+function groupDisplayName(groupId: string | null, locale: Locale | DisplayLocale): string {
   if (!groupId) return "";
   if (locale === "ja") return groupLabelJa(groupId);
-  return localizedGroupName(groupId) ?? getGroupDef(groupId)?.nameEn ?? groupId;
+  return localizedGroupName(groupId, locale) ?? getGroupDef(groupId)?.nameEn ?? groupId;
 }
 
 /** 能力値の表示名（ja: 既存の statLabelJa / en: 確認済み英語名）。 */
-function abilityLabel(abilityId: string, locale: Locale): string {
+function abilityLabel(abilityId: string, locale: Locale | DisplayLocale): string {
   if (locale === "ja") return statLabelJa(abilityId);
-  return localizedAbilityName(abilityId) ?? getStatDef(abilityId)?.nameEn ?? abilityId;
+  return localizedAbilityName(abilityId, locale) ?? getStatDef(abilityId)?.nameEn ?? abilityId;
 }
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
@@ -422,7 +423,7 @@ function formatAbilityList(
   ba: (k: keyof Dict) => string,
   fillBa: (s: string, vars: Record<string, string>) => string,
   fmt: (n: number) => string,
-  locale: Locale,
+  locale: Locale | DisplayLocale,
 ): string {
   const sep = ba("intentAbilityListSeparator");
   return abilities
@@ -430,7 +431,7 @@ function formatAbilityList(
     .join(sep);
 }
 
-function joinCategories(groupIds: string[], locale: Locale): string {
+function joinCategories(groupIds: string[], locale: Locale | DisplayLocale): string {
   return groupIds.map((id) => groupDisplayName(id, locale)).join(locale === "ja" ? "・" : ", ");
 }
 
@@ -443,7 +444,7 @@ function priorityAlignmentEntryText(
   ba: (k: keyof Dict) => string,
   fillBa: (s: string, vars: Record<string, string>) => string,
   fmt: (n: number) => string,
-  locale: Locale,
+  locale: Locale | DisplayLocale,
 ): string {
   const category = groupDisplayName(entry.groupId, locale);
   if (entry.state === "strongly-aligned" || entry.state === "mostly-aligned") {
@@ -467,7 +468,7 @@ function secondaryAlignmentEntryText(
   ba: (k: keyof Dict) => string,
   fillBa: (s: string, vars: Record<string, string>) => string,
   fmt: (n: number) => string,
-  locale: Locale,
+  locale: Locale | DisplayLocale,
 ): string {
   const category = groupDisplayName(entry.groupId, locale);
   if (entry.state === "strongly-aligned" && entry.representativeAbilities.length > 0) {
@@ -486,7 +487,7 @@ function composeAcceptableLowText(
   summary: { lowPriorityGroupIds: string[]; excludedGroupIds: string[] },
   ba: (k: keyof Dict) => string,
   fillBa: (s: string, vars: Record<string, string>) => string,
-  locale: Locale,
+  locale: Locale | DisplayLocale,
 ): string {
   const hasLow = summary.lowPriorityGroupIds.length > 0;
   const hasExcluded = summary.excludedGroupIds.length > 0;
@@ -506,7 +507,7 @@ function composeIntentConclusion(
   intent: BuildIntentInput,
   ba: (k: keyof Dict) => string,
   fillBa: (s: string, vars: Record<string, string>) => string,
-  locale: Locale,
+  locale: Locale | DisplayLocale,
 ): string {
   const goalLabel = ba(INTENT_GOAL_KEY[intent.primaryGoal]);
   const position = intent.intendedPositions[0];
@@ -551,7 +552,7 @@ function composeIntentHarshSections(
   ba: (k: keyof Dict) => string,
   fillBa: (s: string, vars: Record<string, string>) => string,
   fmt: (n: number) => string,
-  locale: Locale,
+  locale: Locale | DisplayLocale,
   intentFindingText: (f: IntentFinding, m: "normal" | "harsh") => string,
 ): IntentSection[] {
   const sections: IntentSection[] = [];
@@ -585,7 +586,7 @@ function composeIntentNormalText(
   ba: (k: keyof Dict) => string,
   fillBa: (s: string, vars: Record<string, string>) => string,
   fmt: (n: number) => string,
-  locale: Locale,
+  locale: Locale | DisplayLocale,
   intentFindingText: (f: IntentFinding, m: "normal" | "harsh") => string,
 ): string {
   const sentences: string[] = [composeIntentConclusion(ia, intent, ba, fillBa, locale)];
@@ -681,7 +682,7 @@ function comparisonMajorDiffText(
   ba: (k: keyof Dict) => string,
   fillBa: (s: string, vars: Record<string, string>) => string,
   fmt: (n: number) => string,
-  locale: Locale,
+  locale: Locale | DisplayLocale,
 ): string {
   if (items.length === 0) return ba("comparisonNoMajorDiffText");
   const sep = ba("intentAbilityListSeparator");
@@ -699,7 +700,7 @@ function comparisonRecommendationText(
   s: Pick<BuildComparisonSummary, "recommendationCode" | "recommendationGroupId">,
   ba: (k: keyof Dict) => string,
   fillBa: (s: string, vars: Record<string, string>) => string,
-  locale: Locale,
+  locale: Locale | DisplayLocale,
 ): string {
   switch (s.recommendationCode) {
     case "maintain-role-split":
@@ -734,7 +735,7 @@ function composeComparisonLines(
   ba: (k: keyof Dict) => string,
   fillBa: (s: string, vars: Record<string, string>) => string,
   fmt: (n: number) => string,
-  locale: Locale,
+  locale: Locale | DisplayLocale,
 ): ComparisonHarshLine[] {
   const showsGeneralOnly = s.purposeSimilarity === "purpose-not-set" || s.purposeSimilarity === "unknown";
   const lines: ComparisonHarshLine[] = [];
@@ -767,7 +768,7 @@ function ComparisonSummaryCard({
   ba: (k: keyof Dict) => string;
   fillBa: (s: string, vars: Record<string, string>) => string;
   fmt: (n: number) => string;
-  locale: Locale;
+  locale: Locale | DisplayLocale;
 }) {
   const isNotComparable = s.comparisonStatus === "not-comparable" || s.comparisonStatus === "insufficient-data";
   const currentHigherAbilities = s.allAbilityDifferences.filter((d) => d.currentHigher);
@@ -931,7 +932,7 @@ function diagnosisHeadlineText(
   model: BuildDiagnosisCardModel,
   ba: (k: keyof Dict) => string,
   fillBa: (s: string, vars: Record<string, string>) => string,
-  locale: Locale,
+  locale: Locale | DisplayLocale,
 ): string {
   const goal = model.primaryGoalId ? ba(INTENT_GOAL_KEY[model.primaryGoalId]) : "";
   const mode = model.analysisMode;
@@ -951,7 +952,7 @@ function diagnosisConcernText(
   mode: "normal" | "harsh",
   ba: (k: keyof Dict) => string,
   fillBa: (s: string, vars: Record<string, string>) => string,
-  locale: Locale,
+  locale: Locale | DisplayLocale,
   intentFindingText: (f: IntentFinding, m: "normal" | "harsh") => string,
 ): string {
   switch (concern.sourceKind) {
@@ -980,7 +981,7 @@ function buildDiagnosisImageContent(
   ba: (k: keyof Dict) => string,
   fillBa: (s: string, vars: Record<string, string>) => string,
   fmt: (n: number) => string,
-  locale: Locale,
+  locale: Locale | DisplayLocale,
   intentFindingText: (f: IntentFinding, m: "normal" | "harsh") => string,
 ): BuildDiagnosisImageContent {
   const primaryPreset = model.selectedPrimaryPresetId ? getPresetById(model.selectedPrimaryPresetId) : undefined;
@@ -1191,7 +1192,7 @@ function DiagnosisCard({
   ba: (k: keyof Dict) => string;
   fillBa: (s: string, vars: Record<string, string>) => string;
   fmt: (n: number) => string;
-  locale: Locale;
+  locale: Locale | DisplayLocale;
   intentFindingText: (f: IntentFinding, m: "normal" | "harsh") => string;
   closeLabel: string;
 }) {
@@ -1625,14 +1626,16 @@ export const BuildAnalysisPanel = forwardRef<
   ref,
 ) {
   const t = useT();
-  const { locale } = useLocale();
+  const { displayLocale } = useLocale();
+  // 能力名・カテゴリ名・日付などは表示言語で出す（ja・en 以外の言語も）。
+  const locale = displayLocale;
   const [mode, setMode] = useState<"normal" | "harsh">("normal");
   /** 診断結果カードの開閉(保存しない・React stateのみ)。 */
   const [isDiagnosisCardOpen, setIsDiagnosisCardOpen] = useState(true);
   const ba = (k: keyof Dict) => t("buildAnalysis", k);
   const fillBa = (s: string, vars: Record<string, string>) =>
     fillMessage(s, vars);
-  const fmt = (n: number) => formatNumber(n, locale);
+  const fmt = (n: number) => formatNumber(n, displayLocale);
 
   /**
    * 自由記述(freeText)だけの変更は onFreeTextChange へ、それ以外(手動詳細設定)の変更は
@@ -2170,7 +2173,7 @@ export const BuildAnalysisPanel = forwardRef<
         ba={ba}
         fillBa={fillBa}
         fmt={fmt}
-        locale={locale}
+        locale={displayLocale}
         intentFindingText={intentFindingText}
         closeLabel={t("common", "close")}
       />
@@ -2491,7 +2494,7 @@ function IntentImprovementCard({
   preserveHighlight: PriorityAlignmentEntry | null;
   ba: (k: keyof Dict) => string;
   fillBa: (s: string, vars: Record<string, string>) => string;
-  locale: Locale;
+  locale: Locale | DisplayLocale;
   intentFindingText: (f: IntentFinding, m: "normal" | "harsh") => string;
 }) {
   const targetCategoryName = finding.groupId ? groupDisplayName(finding.groupId, locale) : "";
@@ -2525,7 +2528,7 @@ function SuggestionRow({
   ba: (k: keyof Dict) => string;
   fillBa: (s: string, vars: Record<string, string>) => string;
   fmt: (n: number) => string;
-  locale: Locale;
+  locale: Locale | DisplayLocale;
 }) {
   const titleKey = SUGGESTION_TITLE_KEY[s.code];
   const reasonKey = SUGGESTION_REASON_KEY[s.code];
@@ -2705,7 +2708,7 @@ function PresetCard({
   onToggleSub,
 }: {
   preset: BuildIntentPreset;
-  locale: Locale;
+  locale: Locale | DisplayLocale;
   ba: (k: keyof Dict) => string;
   isMain: boolean;
   isSub: boolean;
@@ -2794,7 +2797,7 @@ function PresetIntentSection({
   presetIntent: PresetIntentUIProps;
   availablePositions: string[];
   availableComparisonBuilds: { buildId: string; buildName: string }[];
-  locale: Locale;
+  locale: Locale | DisplayLocale;
   ba: (k: keyof Dict) => string;
   fillBa: (s: string, vars: Record<string, string>) => string;
   panelId: string;
@@ -3292,7 +3295,7 @@ function BuildIntentExtractionResultView({
   onInsertExampleText,
 }: {
   pendingExtraction: BuildIntentExtraction;
-  locale: Locale;
+  locale: Locale | DisplayLocale;
   ba: (k: keyof Dict) => string;
   availableComparisonBuilds: { buildId: string; buildName: string }[];
   clarificationSelections: Record<string, string>;
@@ -3554,7 +3557,7 @@ function ReflectionStatusRow({
   entry: { field: IntentFieldKey; status: IntentFieldStatus; count: number };
   intent: BuildIntentInput;
   ba: (k: keyof Dict) => string;
-  locale: Locale;
+  locale: Locale | DisplayLocale;
   availableComparisonBuilds: { buildId: string; buildName: string }[];
 }) {
   const valueText = (() => {

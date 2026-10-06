@@ -17,6 +17,34 @@ export const CATEGORY_LABEL_EN: Record<string, string> = {
   squadCompleteness: "Squad Placement Completeness",
 };
 
+export interface SquadImageText {
+  heading: string;
+  formationPrefix: string;
+  overallScore: string;
+  perHundred: string;
+  tierPrefix: string;
+  notRated: string;
+  ratedCategoriesPrefix: string;
+  topStrengthHeading: string;
+  topWeaknessHeading: string;
+  none: string;
+  /** null（既定のja）のときは`data.disclaimer`（squad-diagnosis-share.tsの既存文言）をそのまま使う。 */
+  disclaimer: string | null;
+}
+
+/**
+ * ja・en 以外の表示言語の文言（2026-10-06）。画面が辞書（shareCard）から作って渡す。ja・en は従来の IMAGE_TEXT のまま。
+ * - categoryLabel: カテゴリ ID → 表示言語の名前（無ければ fallback）
+ * - generatedAt: 作成日時の表示（表示言語の日付書式と「作成」の文言）
+ */
+export interface SquadImageLocalization {
+  text: SquadImageText;
+  categoryLabel: (id: string, fallback: string) => string;
+  generatedAt: (iso: string) => string;
+  /** カテゴリ以外の finding の文（生成文の表で表示言語にする。訳が無ければ English）。 */
+  findingText: (label: string) => string;
+}
+
 export const IMAGE_TEXT = {
   ja: {
     heading: "スカッド診断（スカッド構成評価）",
@@ -45,34 +73,26 @@ export const IMAGE_TEXT = {
     disclaimer:
       "A build evaluation based on registered data. It does not guarantee match results, national rankings, or win rates.",
   },
-} as const satisfies Record<
-  Locale,
-  {
-    heading: string;
-    formationPrefix: string;
-    overallScore: string;
-    perHundred: string;
-    tierPrefix: string;
-    notRated: string;
-    ratedCategoriesPrefix: string;
-    topStrengthHeading: string;
-    topWeaknessHeading: string;
-    none: string;
-    /** null（既定のja）のときは`data.disclaimer`（squad-diagnosis-share.tsの既存文言）をそのまま使う。 */
-    disclaimer: string | null;
-  }
->;
+} as const satisfies Record<Locale, SquadImageText>;
+
+/** 描く文言（ja・en 以外の表示言語の文言が渡されていればそれ）。 */
+export function imageTextOf(locale: Locale, loc?: SquadImageLocalization): SquadImageText {
+  return loc?.text ?? IMAGE_TEXT[locale];
+}
 
 /** カテゴリ起因（categoryIdあり）のfindingは英語ラベルを再構成し、選手名を含む可能性のあるfindingは
  * 安全のため日本語のまま表示する（表示言語が英語でも、選手名を含む自由文を推測で英訳しない）。 */
-export function findingLabelForImage(finding: SquadDiagnosisShareFinding, locale: Locale): string {
+export function findingLabelForImage(finding: SquadDiagnosisShareFinding, locale: Locale, loc?: SquadImageLocalization): string {
+  if (loc && finding.categoryId) return loc.categoryLabel(finding.categoryId, finding.label);
+  if (loc) return loc.findingText(finding.label);
   if (locale === "en" && finding.categoryId) {
     return CATEGORY_LABEL_EN[finding.categoryId] ?? finding.label;
   }
   return finding.label;
 }
 
-function categoryLabelForImage(category: SquadDiagnosisShareCategory, locale: Locale): string {
+function categoryLabelForImage(category: SquadDiagnosisShareCategory, locale: Locale, loc?: SquadImageLocalization): string {
+  if (loc) return loc.categoryLabel(category.id, category.label);
   return locale === "en" ? CATEGORY_LABEL_EN[category.id] ?? category.label : category.label;
 }
 
@@ -175,14 +195,15 @@ export function drawCategoryRow(
   y: number,
   width: number,
   locale: Locale,
+  loc?: SquadImageLocalization,
 ) {
   const rowHeight = 44;
-  const text = IMAGE_TEXT[locale];
+  const text = imageTextOf(locale, loc);
   ctx.textBaseline = "middle";
   ctx.textAlign = "left";
   ctx.fillStyle = COLORS.text;
   ctx.font = "600 20px sans-serif";
-  ctx.fillText(categoryLabelForImage(c, locale), x, y + rowHeight / 2 - 8);
+  ctx.fillText(categoryLabelForImage(c, locale, loc), x, y + rowHeight / 2 - 8);
 
   const barX = x;
   const barY = y + rowHeight / 2 + 8;
@@ -236,8 +257,8 @@ export function formatGeneratedAt(iso: string, locale: Locale): string {
 
 /** `data` から診断結果カードを描画する（ゼロから描画・DOMスクリーンショットではない）。
  * `locale` 省略時は`"ja"`（既存呼び出し・既存テストと完全互換）。 */
-export function drawSquadDiagnosisImage(canvas: HTMLCanvasElement, data: SquadDiagnosisShareData, locale: Locale = "ja"): void {
-  const text = IMAGE_TEXT[locale];
+export function drawSquadDiagnosisImage(canvas: HTMLCanvasElement, data: SquadDiagnosisShareData, locale: Locale = "ja", loc?: SquadImageLocalization): void {
+  const text = imageTextOf(locale, loc);
   const W = SQUAD_DIAGNOSIS_IMAGE_WIDTH;
   const H = SQUAD_DIAGNOSIS_IMAGE_HEIGHT;
   const scale = SQUAD_DIAGNOSIS_IMAGE_SCALE;
@@ -268,7 +289,7 @@ export function drawSquadDiagnosisImage(canvas: HTMLCanvasElement, data: SquadDi
   ctx.textAlign = "right";
   ctx.fillStyle = COLORS.textMuted;
   ctx.font = "400 13px sans-serif";
-  ctx.fillText(formatGeneratedAt(data.generatedAtIso, locale), x + contentWidth, y);
+  ctx.fillText(loc ? loc.generatedAt(data.generatedAtIso) : formatGeneratedAt(data.generatedAtIso, locale), x + contentWidth, y);
   ctx.textAlign = "left";
   y += 30;
 
@@ -329,7 +350,7 @@ export function drawSquadDiagnosisImage(canvas: HTMLCanvasElement, data: SquadDi
 
   // カテゴリ一覧
   for (const c of data.categories) {
-    y += drawCategoryRow(ctx, c, x, y, contentWidth, locale);
+    y += drawCategoryRow(ctx, c, x, y, contentWidth, locale, loc);
   }
   y += 8;
 
@@ -352,7 +373,7 @@ export function drawSquadDiagnosisImage(canvas: HTMLCanvasElement, data: SquadDi
   ctx.fillStyle = COLORS.text;
   ctx.font = "600 16px sans-serif";
   if (data.topStrength) {
-    wrapText(ctx, findingLabelForImage(data.topStrength, locale), x + 16, findingTop + 52, colWidth - 32, 22, 3);
+    wrapText(ctx, findingLabelForImage(data.topStrength, locale, loc), x + 16, findingTop + 52, colWidth - 32, 22, 3);
   } else {
     ctx.fillStyle = COLORS.textMuted;
     ctx.font = "400 14px sans-serif";
@@ -361,7 +382,7 @@ export function drawSquadDiagnosisImage(canvas: HTMLCanvasElement, data: SquadDi
   ctx.fillStyle = COLORS.text;
   ctx.font = "600 16px sans-serif";
   if (data.topWeakness) {
-    wrapText(ctx, findingLabelForImage(data.topWeakness, locale), x + colWidth + 32, findingTop + 52, colWidth - 32, 22, 3);
+    wrapText(ctx, findingLabelForImage(data.topWeakness, locale, loc), x + colWidth + 32, findingTop + 52, colWidth - 32, 22, 3);
   } else {
     ctx.fillStyle = COLORS.textMuted;
     ctx.font = "400 14px sans-serif";

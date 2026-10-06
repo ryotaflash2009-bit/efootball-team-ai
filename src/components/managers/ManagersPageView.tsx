@@ -97,14 +97,14 @@ export function ManagersPageView({
   importedAt?: string | null;
 }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const mp = (k: keyof Dictionary["managersPage"]) => t("managersPage", k);
   const fillMp = (s: string, vars: Record<string, string>) =>
     fillMessage(s, vars);
   const showingCount = fillMp(mp("showingCountTemplate"), {
-    total: formatNumber(result.totalCount, locale),
-    from: formatNumber(from, locale),
-    to: formatNumber(to, locale),
+    total: formatNumber(result.totalCount, displayLocale),
+    from: formatNumber(from, displayLocale),
+    to: formatNumber(to, displayLocale),
   });
 
   return (
@@ -113,8 +113,8 @@ export function ManagersPageView({
         <PageHeader
           title={t("nav", "managers")}
           icon="managers"
-          meta={fillMp(mp("metaTemplate"), { count: formatNumber(result.totalCount, locale) })}
-          description={`${fillMp(mp("descriptionTemplate"), { source: result.source })} ${mp("importedAtPrefix")}${importedAt ? formatDateTime(new Date(importedAt), locale) : "—"}`}
+          meta={fillMp(mp("metaTemplate"), { count: formatNumber(result.totalCount, displayLocale) })}
+          description={`${fillMp(mp("descriptionTemplate"), { source: result.source })} ${mp("importedAtPrefix")}${importedAt ? formatDateTime(new Date(importedAt), displayLocale) : "—"}`}
         />
 
         <Suspense fallback={<Skeleton className="h-11 w-full" />}>

@@ -24,7 +24,7 @@ import { fillMessage } from "@/lib/i18n/message-format";
 
 function useShortName() {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   return (p: ComparisonPlayerInput) =>
     resolvePlayerDisplayName(p.display, locale, t("squadBuildPanel", "cardFallbackNameTemplate").replace("{id}", p.display.worldCardId));
 }
@@ -63,7 +63,7 @@ export function ComparisonTables({
   const tct = (k: keyof Dictionary["comparisonTables"]) => t("comparisonTables", k);
   const fillCt = (s: string, vars: Record<string, string>) =>
     fillMessage(s, vars);
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const shortName = useShortName();
   const categoryLabel = (id: string) => t("compareCategory", id as keyof Dictionary["compareCategory"]);
   const n = players.length;
@@ -104,7 +104,7 @@ export function ComparisonTables({
         </p>
         <ul className="mt-1 list-disc ps-4">
           {comparison.warnings.map((w, i) => (
-            <li key={i}>{localizeLibText(w, locale)}</li>
+            <li key={i}>{localizeLibText(w, displayLocale)}</li>
           ))}
         </ul>
       </div>
@@ -127,7 +127,7 @@ export function ComparisonTables({
             <tbody>
               {comparison.basicInfo.map((row) => (
                 <tr key={row.label} className="border-t border-border/60">
-                  <td className="sticky left-0 z-10 bg-surface px-3 py-1.5 text-text-dim">{localizeLibText(row.label, locale)}</td>
+                  <td className="sticky left-0 z-10 bg-surface px-3 py-1.5 text-text-dim">{localizeLibText(row.label, displayLocale)}</td>
                   {row.perPlayer.map((v, i) => (
                     <td key={i} className="px-2 py-1.5 text-center">
                       {v ?? "—"}
@@ -309,7 +309,7 @@ function GroupBlock({
   percentiles: (Map<string, CardPercentile> | null)[];
 }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   // 比較結果の group は日本語ラベル（集計キー）。表示だけ言語に合わせる。
   const groupId = (Object.entries(WORLD_STAT_GROUP_LABELS).find(([, v]) => v === group)?.[0] ?? null) as WorldStatGroup | null;
   const groupLabel = groupId ? t("abilityEditor", GROUP_LABEL_KEY[groupId]) : group;
@@ -330,8 +330,8 @@ function GroupBlock({
             const min = Math.min(...vals);
             return (
               <tr key={s.key} className="border-t border-border/50">
-                <td className="sticky left-0 z-10 bg-surface px-3 py-1.5 text-text" title={s.nameEn}>
-                  {abilityName(s.key, locale)}
+                <td className="sticky left-0 z-10 bg-surface px-3 py-1.5 text-text" title={displayLocale === "ja" ? s.nameEn : abilityName(s.key, displayLocale)}>
+                  {abilityName(s.key, displayLocale)}
                 </td>
                 {s.perPlayer.map((b, i) => (
                   <td key={i} className="px-2 py-1.5 text-center">

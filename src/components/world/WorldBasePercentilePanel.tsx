@@ -39,7 +39,7 @@ const GROUP_ORDER: WorldStatGroup[] = ["offense", "defense", "physical", "gk"];
  */
 export function WorldBasePercentilePanel({ stats, registeredPosition }: { stats: WorldStatValue[]; registeredPosition: string | null }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const bp = (k: BpKey) => t("basePercentile", k);
   const data = useWorldBasePercentiles();
   const [choice, setChoice] = useState<PercentileScopeChoice>("all");
@@ -105,7 +105,7 @@ export function WorldBasePercentilePanel({ stats, registeredPosition }: { stats:
                         const r = rows.get(s.key)!;
                         return (
                           <div key={s.key} className="flex items-center justify-between gap-2 rounded px-1.5 py-0.5 odd:bg-black/10">
-                            <dt className="min-w-0 truncate text-xs">{abilityName(s.key, locale)}</dt>
+                            <dt className="min-w-0 truncate text-xs">{abilityName(s.key, displayLocale)}</dt>
                             <dd className="shrink-0" data-bucket={r.bucket}>
                               <Badge tone={BUCKET_TONE[r.bucket]} size="xs">
                                 {bp(BUCKET_LABEL_KEY[r.bucket])}

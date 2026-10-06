@@ -21,7 +21,7 @@ const GROUP_LABEL_KEY: Record<WorldStatGroup, keyof Dictionary["abilityEditor"]>
 
 export function WorldStatGrid({ stats }: { stats: WorldStatValue[] }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const byGroup = new Map<WorldStatGroup, WorldStatValue[]>();
   for (const s of stats) {
     const list = byGroup.get(s.group) ?? [];
@@ -45,8 +45,8 @@ export function WorldStatGrid({ stats }: { stats: WorldStatValue[] }) {
                   key={s.key}
                   className="flex items-center justify-between gap-2 rounded px-1.5 py-1 odd:bg-black/10"
                 >
-                  <dt className="min-w-0 truncate text-sm text-text" title={s.nameEn}>
-                    {abilityName(s.key, locale)}
+                  <dt className="min-w-0 truncate text-sm text-text" title={displayLocale === "ja" ? s.nameEn : abilityName(s.key, displayLocale)}>
+                    {abilityName(s.key, displayLocale)}
                   </dt>
                   <dd className="shrink-0">
                     <StatBadge value={s.value} />

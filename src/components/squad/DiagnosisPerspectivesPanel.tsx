@@ -20,9 +20,9 @@ export function DiagnosisPerspectivesPanel({
   namePairs?: readonly (readonly [string, string])[];
 }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   // 計算ライブラリの日本語は表示するときだけ英語にする（2026-10-04。それまでは英語の画面でも日本語のままだった）。
-  const lp = (text: string) => swapPlayerNames(localizePerspectiveText(text, locale), locale, namePairs);
+  const lp = (text: string) => swapPlayerNames(localizePerspectiveText(text, displayLocale), locale, namePairs);
   const confidenceLabel: Record<PerspectiveConfidence, string> = {
     high: t("diagnosisPerspectives", "confidenceHigh"),
     medium: t("diagnosisPerspectives", "confidenceMedium"),

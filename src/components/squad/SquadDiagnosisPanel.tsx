@@ -19,6 +19,7 @@ import { SquadDiagnosisCommentCard } from "./SquadDiagnosisCommentCard";
 import type { TacticalPlacementInput } from "@/lib/squad/squad-tactical-review";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import type { Locale } from "@/lib/i18n/locale";
+import type { DisplayLocale } from "@/lib/i18n/locale-registry";
 
 /**
  * スカッド診断（スカッド構成評価）の表示。読み取り専用（このパネルの表示だけでスカッド・保存ビルド・
@@ -43,7 +44,8 @@ const DiagnosisNamePairs = createContext<readonly (readonly [string, string])[]>
 type Ld = (text: string, locale: Locale) => string;
 function useLd(): Ld {
   const pairs = useContext(DiagnosisNamePairs);
-  return (text, locale) => swapPlayerNames(localizeSquadDiagnosisText(text, locale), locale, pairs);
+  const { displayLocale } = useLocale();
+  return (text, locale) => swapPlayerNames(localizeSquadDiagnosisText(text, locale === "ja" ? "ja" : displayLocale), locale, pairs);
 }
 
 const CATEGORY_LABEL_EN: Record<string, string> = {
@@ -58,13 +60,15 @@ const CATEGORY_LABEL_EN: Record<string, string> = {
   squadCompleteness: "Squad Placement Completeness",
 };
 
-function categoryDisplayLabel(category: SquadDiagnosisCategory, locale: Locale): string {
+function categoryDisplayLabel(category: SquadDiagnosisCategory, locale: Locale | DisplayLocale): string {
   if (locale === "en") return CATEGORY_LABEL_EN[category.id] ?? category.label;
-  return category.label;
+  // ja・en 以外の表示言語: 生成文の表の語（無ければ English）。
+  return locale === "ja" ? category.label : localizeSquadDiagnosisText(category.label, locale);
 }
 
-function overallNoteLocalized(result: SquadDiagnosisResult, ratedCount: number, total: number, locale: Locale): string {
-  if (locale !== "en") return result.overall.note;
+function overallNoteLocalized(result: SquadDiagnosisResult, ratedCount: number, total: number, locale: Locale | DisplayLocale): string {
+  if (locale === "ja") return result.overall.note;
+  if (locale !== "en") return localizeSquadDiagnosisText(result.overall.note, locale);
   return result.overall.score != null
     ? `Simple average of ${ratedCount}/${total} ratable items`
     : "Not ratable (no valid evaluation items — place field players in the starting line-up)";
@@ -77,9 +81,10 @@ function findingDisplay(
   locale: Locale,
   variant: "strength" | "weakness",
   ld: Ld = localizeSquadDiagnosisText,
+  displayLocale: Locale | DisplayLocale = locale,
 ): { label: string; detail: string } {
   const plain = { label: ld(f.label, locale), detail: ld(f.detail, locale) };
-  if (locale !== "en" || f.kind !== "ability" || !f.categoryId) return plain;
+  if (locale !== "en" || displayLocale !== "en" || f.kind !== "ability" || !f.categoryId) return plain;
   const category = result.categories.find((c) => c.id === f.categoryId);
   if (!category || category.score == null) return plain;
   const label = CATEGORY_LABEL_EN[category.id] ?? f.label;
@@ -135,10 +140,11 @@ function ScoreLine({
 function CategoryDetail({ category, locale }: { category: SquadDiagnosisCategory; locale: Locale }) {
   const t = useT();
   const ld = useLd();
+  const { displayLocale } = useLocale();
   return (
     <li className="rounded border border-border/60 bg-surface-2/20 p-2">
       <ScoreLine
-        label={categoryDisplayLabel(category, locale)}
+        label={categoryDisplayLabel(category, displayLocale)}
         score={category.score}
         tier={category.tier}
         notRatedLabel={t("diagnosis", "notRated")}
@@ -189,13 +195,14 @@ function FindingList({
   variant: "strength" | "weakness";
 }) {
   const ld = useLd();
+  const { displayLocale } = useLocale();
   const findingBadge = useFindingBadge();
   if (items.length === 0) return <p className="text-2xs text-text-muted">{emptyLabel}</p>;
   return (
     <ul className="flex flex-col gap-1">
       {items.map((f) => {
         const badge = findingBadge(f);
-        const display = findingDisplay(f, result, locale, variant, ld);
+        const display = findingDisplay(f, result, locale, variant, ld, displayLocale);
         return (
           <li key={f.id} className="rounded border border-border/60 bg-surface-2/20 px-2 py-1 text-2xs">
             <div className="flex flex-wrap items-center gap-1.5">
@@ -277,7 +284,7 @@ export function SquadDiagnosisPanel({
   tacticalPlacements?: TacticalPlacementInput[];
 }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
 
   if (!result) {
     return (
@@ -346,7 +353,7 @@ export function SquadDiagnosisPanel({
         <DiagnosisTitles categories={Object.fromEntries(result.categories.map((c) => [c.id, { score: c.score, tier: c.tier }]))} />
       </div>
       <p className="mt-1 max-w-3xl text-2xs text-text-muted">
-        {overallNoteLocalized(result, ratedAbilityCount, abilityCategories.length, locale)}
+        {overallNoteLocalized(result, ratedAbilityCount, abilityCategories.length, displayLocale)}
       </p>
       {missingSavedBuildCount > 0 ? (
         <p className="mt-0.5 max-w-3xl text-2xs text-text-muted">{t("diagnosis", "coverageMetricsNote")}</p>
@@ -358,7 +365,7 @@ export function SquadDiagnosisPanel({
         {abilityCategories.map((c) => (
           <ScoreLine
             key={c.id}
-            label={categoryDisplayLabel(c, locale)}
+            label={categoryDisplayLabel(c, displayLocale)}
             score={c.score}
             tier={c.tier}
             notRatedLabel={t("diagnosis", "notRated")}
@@ -399,8 +406,8 @@ export function SquadDiagnosisPanel({
           <ul className="mt-1 flex flex-col gap-1">
             {result.suggestions.map((s) => (
               <li key={s.id} className="rounded border border-info/30 bg-info/5 px-2 py-1 text-2xs">
-                <span className="font-semibold">{swapPlayerNames(localizeSquadDiagnosisText(s.label, locale), locale, namePairs)}</span>
-                <p className="mt-0.5 text-text-muted">{swapPlayerNames(localizeSquadDiagnosisText(s.detail, locale), locale, namePairs)}</p>
+                <span className="font-semibold">{swapPlayerNames(localizeSquadDiagnosisText(s.label, displayLocale), locale, namePairs)}</span>
+                <p className="mt-0.5 text-text-muted">{swapPlayerNames(localizeSquadDiagnosisText(s.detail, displayLocale), locale, namePairs)}</p>
               </li>
             ))}
           </ul>
@@ -425,7 +432,7 @@ export function SquadDiagnosisPanel({
           </ul>
           {result.dataQuality.unratedCategoryLabels.length > 0 ? (
             <p className="mt-2 text-2xs text-warning">
-              {t("diagnosis", "unratedCategoriesPrefix")}: {result.dataQuality.unratedCategoryLabels.join(" / ")}
+              {t("diagnosis", "unratedCategoriesPrefix")}: {result.dataQuality.unratedCategoryLabels.map((l) => (displayLocale === "ja" ? l : localizeSquadDiagnosisText(l, displayLocale))).join(" / ")}
             </p>
           ) : null}
           <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-2xs text-text-muted">

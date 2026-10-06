@@ -14,7 +14,7 @@ import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 /** 監督一覧の1カード。名前 → 得意戦術 → ブースター → 残り適性 の優先順位。 */
 export function ManagerCard({ manager }: { manager: ManagerListItem }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const top = topTactic(manager.proficiencies);
   const initials = managerInitials(manager.nameEn);
   const displayName = resolvePlayerDisplayName(manager, locale, manager.nameEn);
@@ -52,7 +52,7 @@ export function ManagerCard({ manager }: { manager: ManagerListItem }) {
       {top ? (
         <div className="mt-3 flex items-center gap-2">
           <span className="text-2xs text-text-muted">{t("managerCard", "bestTacticLabel")}</span>
-          <span className="text-sm font-semibold">{tacticName(top)}</span>
+          <span className="text-sm font-semibold">{tacticName(top, displayLocale)}</span>
           {locale === "ja" ? <span className="text-2xs text-text-dim">{top.ja}</span> : null}
           <span className={`ms-auto text-lg font-black tabular-nums ${TACTIC_TEXT[tacticTier(top.value)]}`}>
             {top.value}

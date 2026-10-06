@@ -26,10 +26,10 @@ export function ProgressionSlider({
   onAdjust: (groupId: string, delta: number) => void;
 }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
-  const groupName = categoryName(group.groupId, locale);
-  const statNames = group.affectedStats.map((k) => abilityName(k, locale)).join(" / ");
+  const groupName = categoryName(group.groupId, displayLocale);
+  const statNames = group.affectedStats.map((k) => abilityName(k, displayLocale)).join(" / ");
   const sliderMax = Math.max(group.allocatedPoints, group.maximumAllocation, 1);
   const nextCostLabel = group.nextLevelCost == null ? tp("sliderCap") : tp("sliderNextCost").replace("{cost}", String(group.nextLevelCost));
   const valueText = group.atMax

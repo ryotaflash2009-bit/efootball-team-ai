@@ -2,6 +2,7 @@ import type { Locale } from "@/lib/i18n/locale";
 import { STAT_LABEL_JA } from "@/lib/world/stat-labels";
 import { STAT_DEFINITIONS } from "@/lib/efhub/masters";
 import { generatedOverlay } from "@/lib/i18n/generated-catalog";
+import type { DisplayLocale } from "@/lib/i18n/locale-registry";
 
 /**
  * スカッド診断ライブラリ（squad-diagnosis.ts）が返す日本語の文（カテゴリの注記・根拠・長所/弱点・改善候補）の英語表示（2026-10-04）。
@@ -101,11 +102,10 @@ function statList(text: string): string | null {
  * 対応表にない日本語の文は汎用の英語にする（混在した表示にしない）。ただし「選手名（数値）」のような
  * 元データだけの値（文の構造を持たない）は、そのまま返す。
  */
-export function localizeSquadDiagnosisText(text: string, locale: Locale): string {
+export function localizeSquadDiagnosisText(text: string, locale: Locale | DisplayLocale): string {
   if (locale === "ja" || !JP.test(text)) return text;
-  // ja・en 以外の表示言語: メッセージ ID と言語ごとの書式（generated-catalog.ts）。訳が無ければ下の English。
-  const overlay = generatedOverlay("squadDiagnosis", text, PATTERNS);
-  if (overlay !== null) return overlay;
+  // ja・en 以外の表示言語: メッセージ ID と言語ごとの書式（generated-catalog.ts）。訳が無ければ文ごと English（入れ子の文も English）。
+  if (locale !== "en") return generatedOverlay("squadDiagnosis", text, PATTERNS, locale) ?? localizeSquadDiagnosisText(text, "en");
   const fixed = FIXED_EN[text];
   if (fixed) return fixed;
   const stats = statList(text);

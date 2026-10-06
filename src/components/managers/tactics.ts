@@ -58,6 +58,6 @@ export function managerInitials(nameEn: string): string {
 }
 
 /** 戦術の表示名。日本語・English の画面は従来どおり英名（en）。ほかの表示言語は game-terms.ts の表（REVIEW_REQUIRED）。 */
-export function tacticName(t: { key: keyof TacticalProficiencies; en: string }): string {
-  return localizedTacticName(t.key) ?? t.en;
+export function tacticName(t: { key: keyof TacticalProficiencies; en: string }, locale: string): string {
+  return localizedTacticName(t.key, locale) ?? t.en;
 }

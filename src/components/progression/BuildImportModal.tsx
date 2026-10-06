@@ -561,7 +561,7 @@ function PreviewStep({
   fileSize: number | null;
 }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const tim = (k: keyof Dictionary["buildImportModal"]) => t("buildImportModal", k);
   const fillIm = (s: string, vars: Record<string, string>) =>
     fillMessage(s, vars);
@@ -612,7 +612,7 @@ function PreviewStep({
                 : t("buildUsage", "ruleUnknownLabel");
             const active = buildAllocationRows(it.build.progressionAllocation)
               .filter((r) => r.level > 0)
-              .map((r) => `${categoryName(r.groupId, locale)} Lv${r.level}`)
+              .map((r) => `${categoryName(r.groupId, displayLocale)} Lv${r.level}`)
               .join(" / ");
             return (
               <li key={it.originalBuildId} className="border-b border-border/60 px-3 py-2 text-2xs last:border-b-0">

@@ -132,3 +132,38 @@ describe("F-041b OS 共有と保存", () => {
     expect(canShareImageFiles({ navigator: {}, createFile })).toBe(false);
   });
 });
+
+describe("ja・en 以外の表示言語の診断カード（2026-10-06）", () => {
+  const ES = {
+    text: {
+      heading: "Diagnóstico de plantilla",
+      formationPrefix: "Formación: ",
+      overallScore: "Valoración global",
+      perHundred: "/100",
+      tierPrefix: "Rango ",
+      notRated: "Sin valorar",
+      ratedCategoriesPrefix: "Categorías valoradas: ",
+      topStrengthHeading: "Punto fuerte principal",
+      topWeaknessHeading: "Punto débil principal",
+      none: "Ninguno",
+      disclaimer: "Evaluación basada en los datos registrados.",
+    },
+    categoryLabel: (id: string) => `ES-${id}`,
+    generatedAt: () => "Creado el 1/10/2026",
+    findingText: (label: string) => `ES-text(${label.length})`,
+  };
+  const DATA_ES: SquadDiagnosisShareData = { ...DATA, squadName: "Mi plantilla", topWeakness: { label: "選手配置の充足状況", detail: "", categoryId: null } };
+  const EN_ONLY = ["Squad Diagnosis", "Formation: ", "Overall Rating", "Grade ", "Not rated", "Rated categories", "Top Strength", "Top Weakness", "Created "];
+  for (const ratio of SQUAD_CARD_RATIOS) {
+    it(`${ratio}: 渡された文言・カテゴリ名・日付で描き、日本語・English の固定文言を描かない`, () => {
+      const { canvas, texts } = recordingCanvas();
+      drawSquadDiagnosisCard(canvas, DATA_ES, "en", ratio, { titles: null, localization: ES });
+      const all = texts.map((t) => t.text);
+      for (const s of all) expect(s, s).not.toMatch(/[぀-ヿ一-龯]/);
+      for (const s of all) for (const en of EN_ONLY) expect(s.includes(en), `${s} contains ${en}`).toBe(false);
+      expect(all.some((s) => s.startsWith("ES-attack"))).toBe(true);
+      expect(all).toContain("Creado el 1/10/2026");
+      expect(all.some((s) => s.startsWith("Valoración global"))).toBe(true);
+    });
+  }
+});

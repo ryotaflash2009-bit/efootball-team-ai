@@ -2,6 +2,7 @@ import type { Locale } from "@/lib/i18n/locale";
 import { STAT_LABEL_JA } from "@/lib/world/stat-labels";
 import { STAT_DEFINITIONS } from "@/lib/efhub/masters";
 import { generatedOverlay } from "@/lib/i18n/generated-catalog";
+import type { DisplayLocale } from "@/lib/i18n/locale-registry";
 
 /**
  * F-045 診断の追加観点（diagnosis-perspectives.ts・暫定）が返す日本語の文の英語表示（2026-10-04）。
@@ -113,11 +114,10 @@ const PATTERNS: Rule[] = [
 const JP = /[぀-ヿ一-龯]/;
 
 /** 表示用: 日本語画面ではそのまま、英語画面では英語。対応表にない文は汎用の英語（元データの値だけなら、そのまま）。 */
-export function localizePerspectiveText(text: string, locale: Locale): string {
+export function localizePerspectiveText(text: string, locale: Locale | DisplayLocale): string {
   if (locale === "ja" || !JP.test(text)) return text;
-  // ja・en 以外の表示言語: メッセージ ID と言語ごとの書式（generated-catalog.ts）。訳が無ければ下の English。
-  const overlay = generatedOverlay("perspectives", text, PATTERNS);
-  if (overlay !== null) return overlay;
+  // ja・en 以外の表示言語: メッセージ ID と言語ごとの書式（generated-catalog.ts）。訳が無ければ文ごと English（入れ子の文も English）。
+  if (locale !== "en") return generatedOverlay("perspectives", text, PATTERNS, locale) ?? localizePerspectiveText(text, "en");
   if (text in FIXED_EN) return FIXED_EN[text];
   if (STAT_EN_BY_JA[text]) return STAT_EN_BY_JA[text];
   for (const [re, f] of PATTERNS) {

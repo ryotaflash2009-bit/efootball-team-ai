@@ -42,7 +42,7 @@ function delta(ch: ScoreChange): string {
  * 変化は色だけでなく記号と文字（改善/悪化/変化なし/比較不可）でも示す。内部ID・名前は表示しない。
  */
 export function DiagnosisComparisonCard({ comparison }: { comparison: DiagnosisComparison }) {
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const t = useT();
   const { c, trend } = useCompareTexts();
   const score = (s: number | null, tier: ScoreChange["beforeTier"]) =>
@@ -59,7 +59,7 @@ export function DiagnosisComparisonCard({ comparison }: { comparison: DiagnosisC
   const findingText = (f: ShareFinding | null, strong: boolean): string => {
     if (!f) return t("diagnosisShare", "none");
     const [kind, cat] = f;
-    if (kind === "ability" && cat) return t("diagnosisShare", strong ? "findingAbilityHigh" : "findingAbilityLow").replace("{category}", diagnosisCategoryLabel(cat, locale));
+    if (kind === "ability" && cat) return t("diagnosisShare", strong ? "findingAbilityHigh" : "findingAbilityLow").replace("{category}", diagnosisCategoryLabel(cat, displayLocale));
     if (kind === "compatibility") return t("diagnosisShare", "findingCompatibility");
     if (kind === "referenceError") return t("diagnosisShare", "findingReferenceError");
     return t("diagnosisShare", "findingConfig");
@@ -90,7 +90,7 @@ export function DiagnosisComparisonCard({ comparison }: { comparison: DiagnosisC
       <ul className="flex flex-col divide-y divide-border/50 text-xs">
         {comparison.categories.map(({ id, change }) => (
           <li key={id} className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 py-2" data-compare-row={change.trend}>
-            <span className="min-w-[8rem] text-text-dim">{diagnosisCategoryLabel(id, locale)}</span>
+            <span className="min-w-[8rem] text-text-dim">{diagnosisCategoryLabel(id, displayLocale)}</span>
             <span className="flex items-center gap-2">
               {score(change.before, change.beforeTier)}
               <span aria-hidden>→</span>

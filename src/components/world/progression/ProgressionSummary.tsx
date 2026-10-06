@@ -166,7 +166,9 @@ export function ProgressionStickyBar({
   onUndoReset?: (() => void) | null;
 }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
+  // ja・en 以外は長い言語があるため、リセットのボタンだけ 2 行まで折り返して選手名の幅を残す（ja・en の見た目は変えない）。
+  const wrapLabel = displayLocale !== "ja" && displayLocale !== "en" ? " max-w-[6rem] whitespace-normal leading-tight" : "";
   const name = resolvePlayerDisplayName(card, locale, t("progressionTab", "cardFallbackName").replace("{id}", card.worldCardId));
   const low = points.remainingPoints <= 0 || (points.totalPoints > 0 && points.remainingPoints <= 2);
 
@@ -188,7 +190,7 @@ export function ProgressionStickyBar({
         <button
           type="button"
           onClick={onUndoReset}
-          className="min-h-[44px] shrink-0 rounded border border-accent/60 bg-accent/10 px-2 text-2xs font-semibold text-accent"
+          className={`min-h-[44px] shrink-0 rounded border border-accent/60 bg-accent/10 px-2 text-2xs font-semibold text-accent${wrapLabel}`}
         >
           {t("abilityEditor", "undoReset")}
         </button>
@@ -197,7 +199,7 @@ export function ProgressionStickyBar({
           type="button"
           onClick={onReset}
           disabled={!canReset}
-          className="min-h-[44px] shrink-0 rounded border border-border px-2 text-2xs text-danger transition-colors hover:enabled:border-danger disabled:opacity-40"
+          className={`min-h-[44px] shrink-0 rounded border border-border px-2 text-2xs text-danger transition-colors hover:enabled:border-danger disabled:opacity-40${wrapLabel}`}
         >
           {t("abilityEditor", "resetAll")}
         </button>

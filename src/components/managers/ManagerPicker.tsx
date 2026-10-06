@@ -58,6 +58,7 @@ export function ManagerPicker({
   title?: string;
 }) {
   const t = useT();
+  const { displayLocale } = useLocale();
   const SORTS = useSorts();
   const resolvedTitle = title ?? t("managerPicker", "defaultTitle");
   const [q, setQ] = useState("");
@@ -208,7 +209,7 @@ export function ManagerPicker({
               <option value="">{t("managerPicker", "tacticFilterAll")}</option>
               {TACTICS.map((tac) => (
                 <option key={tac.key} value={tac.abbr}>
-                  {tac.abbr} {tacticName(tac)}
+                  {tac.abbr} {tacticName(tac, displayLocale)}
                 </option>
               ))}
             </select>
@@ -244,7 +245,7 @@ export function ManagerPicker({
           <p className="flex flex-wrap gap-x-2 gap-y-0.5 text-2xs text-text-muted">
             {TACTICS.map((tac) => (
               <span key={tac.key}>
-                <b className="text-text-dim">{tac.abbr}</b> {tacticName(tac)}
+                <b className="text-text-dim">{tac.abbr}</b> {tacticName(tac, displayLocale)}
               </span>
             ))}
           </p>
@@ -302,7 +303,7 @@ function PickerCard({
 }) {
   const top = topTactic(manager.proficiencies);
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const displayName = resolvePlayerDisplayName(manager, locale, manager.nameEn);
   return (
     <div
@@ -329,7 +330,7 @@ function PickerCard({
       {top ? (
         <p className="mt-1.5 text-xs">
           {t("managerPicker", "bestTacticPrefix")}
-          <span className="font-semibold">{tacticName(top)}</span>{" "}
+          <span className="font-semibold">{tacticName(top, displayLocale)}</span>{" "}
           <span className={`font-black tabular-nums ${TACTIC_TEXT[tacticTier(top.value)]}`}>{top.value}</span>
         </p>
       ) : null}
@@ -385,7 +386,7 @@ function PickerDetail({
   busy: boolean;
 }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   if (!detail) return <LoadingState variant="detail" />;
   const top = topTactic(detail.proficiencies);
   const displayName = resolvePlayerDisplayName(detail, locale, detail.nameEn);
@@ -419,7 +420,7 @@ function PickerDetail({
       {top ? (
         <p className="text-sm">
           {t("managerPicker", "bestTacticPrefix")}
-          <span className="font-semibold">{tacticName(top)}</span>{" "}
+          <span className="font-semibold">{tacticName(top, displayLocale)}</span>{" "}
           <span className={`text-xl font-black tabular-nums ${TACTIC_TEXT[tacticTier(top.value)]}`}>{top.value}</span>
         </p>
       ) : null}

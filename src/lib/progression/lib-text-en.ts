@@ -1,6 +1,7 @@
 import type { Locale } from "@/lib/i18n/locale";
 import { UNSUPPORTED_RULES_EN } from "./rule-registry-en";
 import { generatedOverlay } from "@/lib/i18n/generated-catalog";
+import type { DisplayLocale } from "@/lib/i18n/locale-registry";
 
 /**
  * 育成計算ライブラリが返す日本語の説明文（注記・理由・警告）の英語表示。
@@ -130,11 +131,10 @@ const PATTERNS: Rule[] = [
 const JP = /[぀-ヿ一-龯]/;
 
 /** 表示用: 日本語画面ではそのまま、英語画面では英語（未知の日本語は出さずに汎用の英語）。 */
-export function localizeLibText(text: string, locale: Locale): string {
+export function localizeLibText(text: string, locale: Locale | DisplayLocale): string {
   if (locale === "ja" || !JP.test(text)) return text;
-  // ja・en 以外の表示言語: メッセージ ID と言語ごとの書式（generated-catalog.ts）。訳が無ければ下の English。
-  const overlay = generatedOverlay("libText", text, PATTERNS);
-  if (overlay !== null) return overlay;
+  // ja・en 以外の表示言語: メッセージ ID と言語ごとの書式（generated-catalog.ts）。訳が無ければ文ごと English（入れ子の文も English）。
+  if (locale !== "en") return generatedOverlay("libText", text, PATTERNS, locale) ?? localizeLibText(text, "en");
   const fixed = FIXED_EN[text] ?? UNSUPPORTED_RULES_EN[text];
   if (fixed) return fixed;
   for (const [re, f] of PATTERNS) {

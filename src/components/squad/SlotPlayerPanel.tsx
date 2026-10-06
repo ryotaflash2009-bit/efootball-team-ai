@@ -95,7 +95,7 @@ export function SlotPlayerPanel({
   onConditionalBoosters: (next: SelectedConditionalBooster[]) => void;
 }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const tsp = (k: keyof Dictionary["slotPlayerPanel"]) => t("slotPlayerPanel", k);
   const fillSp = (s: string, vars: Record<string, string>) =>
     fillMessage(s, vars);
@@ -155,12 +155,12 @@ export function SlotPlayerPanel({
             </p>
             <p className={`mt-0.5 ${COMPAT_CLASS[slot.compatibility.status] ?? "text-text-dim"}`}>
               {fillSp(tsp("suitabilityLabelTemplate"), {
-                label: localizeSquadText(slot.compatibility.label, locale),
+                label: localizeSquadText(slot.compatibility.label, displayLocale),
                 position: slot.compatibility.registeredPosition ?? "?",
               })}
             </p>
             {slot.compatibility.note ? (
-              <p className="text-[10px] text-text-dim/80">{localizeSquadText(slot.compatibility.note, locale)}</p>
+              <p className="text-[10px] text-text-dim/80">{localizeSquadText(slot.compatibility.note, displayLocale)}</p>
             ) : null}
             <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
               <button

@@ -99,3 +99,9 @@
 
 TeamAIXI・eFootball™・KONAMI・選手名・監督名・カード名・プレースタイルの名前・スキルの名前（ゲーム内の各言語の公式の表記が
 データ元に無い限り）・利用者が入力したスカッド名・ビルド名・メモ・URL・メールアドレス・エラーコード・checksum・ファイル形式（JSON）。
+
+## 8. 変更の記録
+
+- 2026-10-06 pt-BR `defensiveEngagement`: 「Comprometimento defensivo」→「Empenho defensivo」（390・430px の育成画面で切れるため短くした）。
+  ゲーム内の pt-BR の公式の表記と照合が必要（REVIEW_REQUIRED）。
+- 2026-10-06 es・pt-BR `boosterModeStandard`: English のまま（"Standard"）だったため「Estándar」「Padrão」（`b3` の `standard` と同じ語）。

@@ -38,8 +38,9 @@ import type { Locale } from "@/lib/i18n/locale";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { fillMessage } from "@/lib/i18n/message-format";
+import type { DisplayLocale } from "@/lib/i18n/locale-registry";
 
-function safeFormatDateTime(iso: string, locale: Locale): string {
+function safeFormatDateTime(iso: string, locale: Locale | DisplayLocale): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
   return formatDateTime(d, locale);
@@ -54,7 +55,7 @@ export function SquadListBoard({
 }) {
   const router = useRouter();
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const tsl = (k: keyof Dictionary["squadList"]) => t("squadList", k);
   const fillSl = (s: string, vars: Record<string, string>) =>
     fillMessage(s, vars);
@@ -411,7 +412,7 @@ export function SquadListBoard({
                       <span>{e.managerId != null ? tsl("hasManagerLabel") : tsl("noManagerLabel")}</span>
                     </p>
                     <p className="mt-0.5 text-2xs text-text-muted">
-                      {fillSl(tsl("updatedAtTemplate"), { date: safeFormatDateTime(e.updatedAt, locale) })}
+                      {fillSl(tsl("updatedAtTemplate"), { date: safeFormatDateTime(e.updatedAt, displayLocale) })}
                     </p>
                     {e.rulesOutdated ? (
                       <span className="mt-0.5">

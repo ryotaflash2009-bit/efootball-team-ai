@@ -46,7 +46,7 @@ function AbilityRow({
   onSkipToPanel?: () => void;
 }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const role = abilityRole(focus, s.key);
   const groupId = groupIdForStat(s.key) ?? "";
   const style = { "--cat": `var(${categoryColorVar(groupId)})` } as CSSProperties;
@@ -77,7 +77,7 @@ function AbilityRow({
               ◆
             </span>
           ) : null}
-          <span className={`truncate ${role === "primary" ? "font-bold" : ""}`}>{abilityName(s.key, locale)}</span>
+          <span className={`truncate ${role === "primary" ? "font-bold" : ""}`}>{abilityName(s.key, displayLocale)}</span>
         </span>
         <span id={describedId} className="sr-only">
           {role === "related" ? t("abilityEditor", "related") : role === "none" ? t("abilityEditor", "rowAffordance") : ""}

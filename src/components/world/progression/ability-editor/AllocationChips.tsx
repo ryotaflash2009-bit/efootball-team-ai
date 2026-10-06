@@ -22,7 +22,7 @@ export function AllocationChips({
   onSelect: (groupId: string) => void;
 }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const scrollerRef = useRef<HTMLDivElement>(null);
   const visible = chips.filter((c) => !c.isGoalkeeping || showGoalkeeping || c.level > 0);
 
@@ -46,7 +46,7 @@ export function AllocationChips({
       className="chip-scroller -mx-1 flex gap-1.5 overflow-x-auto px-1 py-1"
     >
       {visible.map((c) => {
-        const name = categoryName(c.groupId, locale);
+        const name = categoryName(c.groupId, displayLocale);
         const active = c.groupId === selectedGroupId;
         const style = { "--cat": `var(${categoryColorVar(c.groupId)})` } as CSSProperties;
         return (

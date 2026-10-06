@@ -99,7 +99,7 @@ export function CompareRadarChart({
 }) {
   const t = useT();
   const tcr = (k: keyof Dictionary["compareRadarChart"]) => t("compareRadarChart", k);
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const fillCr = (s: string, vars: Record<string, string>) =>
     fillMessage(s, vars);
   const RADAR_MODE_LABEL = useRadarModeLabels();
@@ -254,7 +254,7 @@ export function CompareRadarChart({
               <tr className="text-start [:where(&)_th]:text-start text-text-muted">
                 <th className="py-0.5 pe-2 font-medium">{tcr("playerHeader")}</th>
                 {data.axes.map((a) => (
-                  <th key={a.id} className="py-0.5 pe-2 text-end font-medium" title={a.label}>
+                  <th key={a.id} className="py-0.5 pe-2 text-end font-medium" title={locale === "ja" ? a.label : radarAxisLabel(a.id)}>
                     {radarAxisLabel(a.id)}
                   </th>
                 ))}
@@ -284,13 +284,13 @@ export function CompareRadarChart({
       <figcaption className="text-[9px] leading-tight text-text-muted">
         {data.notes.map((n, i) => (
           <span key={i} className="block">
-            {localizeLibText(n, locale)}
+            {localizeLibText(n, displayLocale)}
           </span>
         ))}
         {hasManagerAny ? <span className="block">{tcr("managerNote")}</span> : null}
         {data.warnings.map((w, i) => (
           <span key={`w${i}`} className="block text-warning">
-            {localizeLibText(w, locale)}
+            {localizeLibText(w, displayLocale)}
           </span>
         ))}
       </figcaption>

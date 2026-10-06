@@ -29,7 +29,7 @@ function Sparkline({ points, label }: { points: number[]; label: string }) {
  */
 export function GrowthProfilePanel({ entries }: { entries: readonly DiagnosisHistoryEntry[] }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const g = (k: GKey) => t("growthProfile", k);
   const squads = useMemo(() => buildGrowthProfile(entries), [entries]);
 
@@ -66,14 +66,14 @@ export function GrowthProfilePanel({ entries }: { entries: readonly DiagnosisHis
               {s.mostImproved ? (
                 <p className="mt-0.5 text-text-dim">
                   {g("mostImprovedTemplate")
-                    .replace("{category}", diagnosisCategoryLabel(s.mostImproved.categoryId, locale))
+                    .replace("{category}", diagnosisCategoryLabel(s.mostImproved.categoryId, displayLocale))
                     .replace("{from}", String(s.mostImproved.from))
                     .replace("{to}", String(s.mostImproved.to))}
                 </p>
               ) : null}
               {s.overcameWeaknesses.length > 0 ? (
                 <p className="mt-0.5 text-success">
-                  {g("overcameTemplate").replace("{categories}", s.overcameWeaknesses.map((id) => diagnosisCategoryLabel(id, locale)).join(locale === "ja" ? "・" : ", "))}
+                  {g("overcameTemplate").replace("{categories}", s.overcameWeaknesses.map((id) => diagnosisCategoryLabel(id, displayLocale)).join(locale === "ja" ? "・" : ", "))}
                 </p>
               ) : null}
               {s.excludedOtherRules > 0 ? <p className="mt-0.5 text-2xs text-text-muted">{g("excludedRulesTemplate").replace("{count}", String(s.excludedOtherRules))}</p> : null}

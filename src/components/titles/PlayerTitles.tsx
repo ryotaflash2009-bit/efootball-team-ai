@@ -34,7 +34,7 @@ export const RULE_LABEL_KEY: Record<PlayerTitleRuleId, TKey> = {
  */
 export function PlayerTitles({ stats, registeredPosition }: { stats: WorldStatValue[]; registeredPosition: string | null }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const data = useWorldBasePercentiles();
   const scopeKey = scopeKeyFor("role", registeredPosition);
   const result = useMemo(() => {
@@ -47,7 +47,7 @@ export function PlayerTitles({ stats, registeredPosition }: { stats: WorldStatVa
   const toItem = (x: PlayerTitle): TitleItem => ({
     id: x.ruleId,
     label: t("titles", RULE_LABEL_KEY[x.ruleId]),
-    reason: x.evidence.map((e) => `${abilityName(e.statKey, locale)} ${t("basePercentile", BUCKET_LABEL_KEY[e.bucket])}`).join(" / "),
+    reason: x.evidence.map((e) => `${abilityName(e.statKey, displayLocale)} ${t("basePercentile", BUCKET_LABEL_KEY[e.bucket])}`).join(" / "),
   });
   return (
     <div className="mb-3" data-testid="player-titles-wrap">

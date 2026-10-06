@@ -154,7 +154,7 @@ if (!CHECK_ONLY && !RECORD) {
   const rows = Object.entries(report.locales).map(([code, r]) =>
     r.complete
       ? `| ${code} | ${r.state} | 100 | 100 | 100 | 100 | 100 | 100 | 100 | — | ${r.note} |`
-      : `| ${code} | ${r.state} | ${r.coverage.overall} | ${r.coverage.core} | ${r.coverage.publicUi} | ${r.coverage.accessibility} | ${r.coverage.errorEmptyLoading} | ${r.coverage.metadata} | ${r.coverage.shareCards} | ${r.quality} | gate ${r.productionGate}; stale ${r.stale.count}; same-as-en ${r.sameAsEnglish} |`,
+      : `| ${code} | ${r.state} | ${r.coverage.overall} | ${r.coverage.core} | ${r.coverage.publicUi} | ${r.coverage.accessibility} | ${r.coverage.errorEmptyLoading} | ${r.coverage.metadata} | ${r.coverage.shareCards} | ${r.quality} | production gate ${r.productionGate}; RC gate ${r.releaseCandidateGate}; stale ${r.stale.count}; same-as-en ${r.sameAsEnglish} |`,
   );
   writeFileSync(
     path.join(ROOT, "docs/i18n/coverage.md"),

@@ -1,5 +1,6 @@
 import type { Locale } from "@/lib/i18n/locale";
 import { generatedOverlay } from "@/lib/i18n/generated-catalog";
+import type { DisplayLocale } from "@/lib/i18n/locale-registry";
 
 /**
  * スカッド比較ライブラリ（compare-squads.ts）が返す日本語の文（指標名・注記・配置の表記）の英語表示（2026-10-04）。
@@ -47,11 +48,10 @@ const PATTERNS: Rule[] = [
 const JP = /[぀-ヿ一-龯]/;
 
 /** 表示用: 日本語画面ではそのまま、英語画面では英語（未知の日本語は出さずに汎用の英語）。 */
-export function localizeSquadCompareText(text: string, locale: Locale): string {
+export function localizeSquadCompareText(text: string, locale: Locale | DisplayLocale): string {
   if (locale === "ja" || !JP.test(text)) return text;
-  // ja・en 以外の表示言語: メッセージ ID と言語ごとの書式（generated-catalog.ts）。訳が無ければ下の English。
-  const overlay = generatedOverlay("squadCompare", text, PATTERNS);
-  if (overlay !== null) return overlay;
+  // ja・en 以外の表示言語: メッセージ ID と言語ごとの書式（generated-catalog.ts）。訳が無ければ文ごと English（入れ子の文も English）。
+  if (locale !== "en") return generatedOverlay("squadCompare", text, PATTERNS, locale) ?? localizeSquadCompareText(text, "en");
   const fixed = FIXED_EN[text];
   if (fixed) return fixed;
   for (const [re, f] of PATTERNS) {
