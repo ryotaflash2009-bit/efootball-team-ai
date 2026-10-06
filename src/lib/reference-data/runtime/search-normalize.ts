@@ -8,6 +8,9 @@
  * - 大文字・小文字は `~*`（imatch）で区別しない。
  * - 根拠のない別名・翻訳名は作らない（元の名前の綴りの揺れだけ）。
  * - 既存の部分一致（ilike）・完全一致（ID）はそのまま残す（この正規表現は追加の条件）。
+ * - 短すぎる検索語（ラテン文字 2 文字未満）・記号だけの検索語では正規表現を作らない（誤一致の増加を防ぐ・ilike だけ）。
+ * - ひらがな・カタカナを区別しない一致（2026-10-07）: 日本語の名前の列に、かなの文字クラスの正規表現を追加する
+ *   （例: "めっし" → "[めメ][っッ][しシ]"）。韓国語・中国語（漢字）は従来どおり部分一致（簡体字と繁体字は自動で同一視しない）。
  */
 
 /** NFKC と空白の正規化（表示はしない。検索だけ）。 */
@@ -55,7 +58,7 @@ const REGEX_META = /[\\^$.*+?()[\]{}|]/g;
  */
 export function accentInsensitivePattern(query: string): string | null {
   const folded = foldAccents(normalizeSearchQuery(query));
-  if (!/[a-z]/.test(folded) || folded.length > 80) return null;
+  if ((folded.match(/[a-z]/g) ?? []).length < 2 || folded.length > 80) return null;
   let out = "";
   for (let i = 0; i < folded.length; i++) {
     const ch = folded[i];
@@ -67,6 +70,30 @@ export function accentInsensitivePattern(query: string): string | null {
     const v = VARIANTS[ch];
     if (v) out += `[${v}${v.toUpperCase()}]`;
     else out += ch.replace(REGEX_META, (m) => `\\${m}`);
+  }
+  return out;
+}
+
+/** ひらがな（U+3041〜U+3096）とカタカナ（U+30A1〜U+30F6）の対応（コードの差 0x60）。 */
+function kanaPair(ch: string): string | null {
+  const c = ch.codePointAt(0) ?? 0;
+  if (c >= 0x3041 && c <= 0x3096) return ch + String.fromCodePoint(c + 0x60);
+  if (c >= 0x30a1 && c <= 0x30f6) return String.fromCodePoint(c - 0x60) + ch;
+  return null;
+}
+
+/**
+ * ひらがな・カタカナを区別しない正規表現の文字列（2026-10-07）。かなを含まない・短すぎる（2 文字未満）・長すぎる検索語では null。
+ * 漢字・長音（ー）・英数はそのまま（記号はエスケープ）。
+ */
+export function kanaInsensitivePattern(query: string): string | null {
+  const q = normalizeSearchQuery(query);
+  const chars = [...q];
+  if (chars.length < 2 || chars.length > 80 || !chars.some((ch) => kanaPair(ch) !== null)) return null;
+  let out = "";
+  for (const ch of chars) {
+    const pair = kanaPair(ch);
+    out += pair ? `[${pair}]` : ch.replace(REGEX_META, (m) => `\\${m}`);
   }
   return out;
 }
