@@ -77,7 +77,7 @@ function applyWorldFilters(builder: any, q: WorldListQuery): any {
   let b = builder;
   if (q.query) {
     // 検索語はPostgRESTの値として引用・LIKEエスケープする(構文破壊・条件注入を防ぎ、SQLite経路と同じく文字どおり一致)。
-    b = b.or(buildSearchOrFilter({ likeColumns: ["name_en", "name_ja"], exact: { column: "world_card_id", pattern: /^[0-9]{1,20}$/ }, accentInsensitiveColumns: ["name_en"] }, q.query));
+    b = b.or(buildSearchOrFilter({ likeColumns: ["name_en", "name_ja"], exact: { column: "world_card_id", pattern: /^[0-9]{1,20}$/ }, accentInsensitiveColumns: ["name_en"], kanaInsensitiveColumns: ["name_ja"] }, q.query));
   }
   if (q.position) b = b.eq("registered_position", q.position);
   if (q.cardType) b = b.eq("card_type", q.cardType);
