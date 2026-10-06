@@ -1,26 +1,32 @@
 # fr — ネイティブのレビュー用パッケージ（Native review package）
 
-生成: `node scripts/i18n-review-package.mjs fr`（辞書から自動生成。手で編集しない）。行数: 4366（うち計算ライブラリの文 407）。
+生成: `node scripts/i18n-review-package.mjs fr`（辞書から自動生成。手で編集しない）。
+文言 4367 行（P0 934・P1 2431・P2 1002。うち計算ライブラリの文 407）・用語 61 行。
+元の版: `v1.0.0+i18n-foundation`・用語集の版: `glossary-2026-10-07`。状態: RELEASE_CANDIDATE（AI 翻訳・ネイティブのレビュー前・本番の言語の選択には出していない）。
 
-## レビューの手順（for the reviewer）
+## 手順（for the reviewer）
 
-1. `review.csv` を表計算ソフトで開く（UTF-8）。
-2. `severity = high`（核の UI・エラー・アクセシビリティ・共有カード・サポート・ログイン・計算ライブラリの文）から確認する。
-3. 各行の `decision` に **Accept**（そのまま）/ **Edit**（`suggested_alternative` に案）/ **Reject**（理由を `reviewer_comment`）を記入。
+1. **terminology.csv を先に**確認する（能力名・育成グループ・戦術・機能名）。ここが決まると本文の多くが決まる。
+   ゲーム内の公式の表記が分かる場合は `official_in_game_term` と、その確認元（画面・日付）を `source_of_official_term` に書く。
+2. **review.csv を priority の順に**（P0 → P1 → P2）。
+   - **P0**: 誤訳で操作を誤るもの（保存・削除・復元・Import・Export・エラー・警告・プライバシー・サポート・ログイン）。必ず全件。
+   - **P1**: 診断・改善・弱点・育成・能力・戦術・共有カード・計算ライブラリの文。
+   - **P2**: 説明・装飾・任意の Tooltip。時間があれば。
+3. 各行の `decision` に **Accept**（そのまま）/ **Edit**（`suggested_alternative` に案）/ **Reject**（理由を `reviewer_comment`）。
 4. `max_length` がある行は、ボタン・タブ・見出しなどの短い表示。それを超えないこと。
-5. `{name}`・`{count}`・`{1}`・`{cat:1}` などの差し込みは変えない（順序は自然な語順に変えてよい）。
-6. 選手名・監督名・カード種別・プレースタイル名・スキル名・TeamAIXI・eFootball™・KONAMI・World・OVR・Link-Up Play は訳さない。
-7. 終わったら `reviewed_date`（YYYY-MM-DD）を記入して返す。レビュー担当の氏名は書かない。
-
-## 特に確認してほしい用語（game terms）
-
-ゲーム内の fr の公式の表記と照合していない。照合できた語は用語集（`docs/i18n/terminology-glossary.md`）を `approved` にする。
-
-- 26 の能力名・10 の育成カテゴリ・6 の戦術名（`src/lib/i18n/game-terms.ts`）
-- 能力 = atributo(s)、スキル = habilidad(es) / habilidade(s)、辛口の評価 = directo / direto、スカッド = plantilla / elenco、枠 = puesto / vaga
-- Power of Many・Game Plan・Team Power・Coaching Affinity・Center Piece・Key Man（English のまま残した。ゲーム内の訳があれば合わせる）
-- ブースター名（Ball-carrying・Attacking Hub 等）・「rank」の訳・セットプレーの役割
+5. `screen`・`screenshot_reference` は、その文言が出る画面（内部の確認用の build で開く）。
+6. `{name}`・`{count}`・`{1}`・`{cat:1}` などの差し込みは変えない（順序は自然な語順に変えてよい）。
+7. 選手名・監督名・カード種別・プレースタイル名・スキル名・TeamAIXI・eFootball™・KONAMI・World は訳さない。
+   **Link-Up Play・OVR は契約で原語のまま**（データ元で正式な現地語の表記を確認できた場合だけ変える。短い補足は原語と並べて Tooltip・初回の説明だけ）。
+8. 終わったら `reviewed_date`（YYYY-MM-DD）を記入して返す。レビュー担当の氏名は書かない。
 
 ## 含めないもの
 
-内部ページ（公開しない機能）・法務文書（利用規約・プライバシー・免責事項。English で表示し、専門家のレビューの無い訳は出さない）。
+内部ページ（公開しない機能）・法務文書（利用規約・プライバシー・免責事項。English で表示し、専門家のレビューの無い訳は出さない）・
+Secret・内部 URL・利用者のデータ。
+
+## レビューの後（運営者）
+
+1. Edit の行を辞書（`src/lib/i18n/dictionaries/locales/fr/`）へ反映し、`node scripts/audit-locale-coverage.mjs --record fr`。
+2. `docs/i18n/locale-status.json` の `quality` を `VERIFIED_REVIEWED`・`reviewedBy` を記録（氏名ではなく役割・依頼の記録）。
+3. 公開（`PUBLISHED`）は本人の判断。

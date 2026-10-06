@@ -1,7 +1,7 @@
 {
   "schema": "efta-locale-status/v1",
-  "updated": "2026-10-06",
-  "terminologyVersion": "glossary-2026-10-06",
+  "updated": "2026-10-07",
+  "terminologyVersion": "glossary-2026-10-07",
   "note": "Runtime state lives in src/lib/i18n/locale-registry.ts; this file records review facts and must match it (scripts/audit-locale-coverage.mjs). Production requires quality VERIFIED_REVIEWED or better, coverage 100% on core/public/a11y/error/metadata/share, and no stale keys.",
   "locales": {
     "ja": {
