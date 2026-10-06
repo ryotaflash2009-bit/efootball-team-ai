@@ -1,163 +1,22 @@
 import type { PartialDictionary } from "../../translate";
+import core from "./it/core";
+import b1 from "./it/b1";
+import b2 from "./it/b2";
+import b3 from "./it/b3";
+import b4 from "./it/b4";
+import b5 from "./it/b5";
+import b6 from "./it/b6";
+import b7 from "./it/b7";
+import b8 from "./it/b8";
+// 計算ライブラリが作る文の訳・ゲームの用語（読み込みと同時に登録される）
+import "./it/generated";
+import "./it/game-terms";
 
 /**
- * Italiano (it) — MACHINE_DRAFT: bozza IA (2026-10-06), senza revisione umana o madrelingua. Solo anteprima interna.
- * Ambito: interfaccia principale e home page. Il resto viene mostrato in inglese. Terminologia: docs/i18n/terminology-glossary.md.
+ * Italiano (it) — machine-assisted translation of every public screen (2026-10-06). Not reviewed by a native speaker.
+ * 法務文書（terms・privacy・disclaimer）は本人の方針で訳さず English で表示する（専門家のレビューの無い法務の訳を出さない）。
+ * 名前空間はファイルごとに重ならない（core: 核・ホーム / b1〜b8: 画面ごと）。言語ごとに 1 つの別 chunk（その言語を選んだときだけ読み込む）。
  */
-const it: PartialDictionary = {
-  common: {
-    loading: "Caricamento",
-    errorTitle: "Si è verificato un problema",
-    errorDescription: "Riprova tra poco. Se il problema persiste, ricarica la pagina.",
-    retry: "Riprova",
-    back: "Indietro",
-    home: "Vai alla home",
-    save: "Salva",
-    cancel: "Annulla",
-    close: "Chiudi",
-    confirm: "Conferma",
-    unknownPlayer: "Giocatore sconosciuto",
-  },
-  pageError: {
-    title: "Si è verificato un errore durante la visualizzazione della pagina",
-    description: "Impossibile caricare i dati. Se riprovare non basta, ricarica la pagina.",
-    codeLabelPrefix: "Codice: ",
-    iconAriaLabel: "Errore",
-  },
-  notFoundPage: {
-    title: "Pagina non trovata",
-    description: "La pagina o il giocatore che cerchi non esiste o potrebbe essere stato spostato.",
-    playersLink: "Vai all’elenco dei giocatori",
-  },
-  nav: {
-    groupMain: "Principale",
-    groupMyData: "I miei dati",
-    groupAnalysis: "Analisi",
-    groupCommunity: "Community",
-    home: "Home",
-    players: "Giocatori",
-    managers: "Allenatori",
-    compare: "Confronta",
-    squads: "Rose",
-    favorites: "Preferiti",
-    myTeam: "La mia squadra",
-    myBuilds: "Le mie build",
-    buildInventory: "Analisi delle build",
-    diagnosisHistory: "Cronologia delle diagnosi",
-    bestXi: "AI Best XI",
-    tierLists: "Tier list",
-    packs: "Pacchetti",
-    community: "Community",
-    comingSoon: "Prossimamente",
-    ariaSidebar: "Menu laterale",
-    ariaCollapse: "Comprimi la barra laterale",
-    ariaExpand: "Espandi la barra laterale",
-    collapseLabel: "Comprimi",
-    ariaMobileMenuOpen: "Apri il menu",
-    ariaMobileMenuClose: "Chiudi il menu",
-    ariaMobileMenu: "Menu",
-    ariaHome: "Home",
-    brand: "TeamAIXI",
-  },
-  header: {
-    searchPlaceholder: "Cerca giocatori…",
-    searchAriaLabel: "Cerca giocatori",
-    ariaHomeLink: "Home di TeamAIXI",
-    accountNavSignIn: "Accedi",
-    accountNavAccount: "Account",
-  },
-  language: {
-    japanese: "日本語",
-    english: "English",
-    ariaLabel: "Seleziona la lingua",
-    moreLanguages: "Altre lingue (anteprima)",
-    previewListLabel: "Lingue in anteprima",
-    previewBadge: "Anteprima",
-    loadingLanguage: "Caricamento della lingua…",
-  },
-  footer: {
-    ariaLandmark: "Piè di pagina del sito",
-    aboutLink: "Informazioni",
-    termsLink: "Termini di utilizzo",
-    privacyLink: "Privacy",
-    disclaimerLink: "Esclusione di responsabilità",
-    dataManagementLink: "Gestione dei dati",
-    supportLink: "Assistenza",
-    releaseReadinessLink: "Preparazione al rilascio",
-    unofficialNotice:
-      "TeamAIXI è uno strumento non ufficiale di analisi della rosa per eFootball™. Non è un servizio ufficiale di KONAMI o di eFootball™ e non è approvato, affiliato o gestito da KONAMI. Marchi e nomi dei prodotti appartengono ai rispettivi proprietari. Dati, analisi e diagnosi possono contenere errori o ritardi e non garantiscono le decisioni nel gioco.",
-    draftBadge: "v1.0 · Gratis · Senza registrazione",
-  },
-  category: {
-    attack: "Attacco",
-    defense: "Difesa",
-    aerial: "Gioco aereo",
-    speed: "Velocità",
-    passBuildUp: "Passaggi e costruzione",
-    dribblePossession: "Dribbling e possesso",
-    pressResistance: "Resistenza al pressing",
-    counterAttack: "Contropiede",
-    squadCompleteness: "Completezza della rosa",
-  },
-  homePage: {
-    alphaNoticeBanner:
-      "TeamAIXI v1.0 è uno strumento gratuito e non ufficiale di analisi della rosa per eFootball™ che funziona senza accesso. Non è un servizio ufficiale di KONAMI o di eFootball™. Le funzioni dell’account arriveranno con un prossimo aggiornamento.",
-    alphaNoticeDetailsLinkLabel: "Informazioni su TeamAIXI",
-    heroBadge: "Strumento non ufficiale di analisi della rosa per eFootball™",
-    quickStartHeading: "Cosa puoi fare con TeamAIXI",
-    quickStep1Title: "Trova giocatori",
-    quickStep1Body: "Cerca per nome, ID World o ruolo.",
-    quickStep2Title: "Fai progredire un giocatore",
-    quickStep2Body: "Nella pagina di un giocatore, tocca le statistiche o usa i cursori per vedere i valori finali.",
-    quickStep3Title: "Confronta giocatori",
-    quickStep3Body: "Metti fino a quattro giocatori fianco a fianco.",
-    quickStep4Title: "Crea La mia squadra",
-    quickStep4Body: "Salva in questo browser le carte che possiedi (senza registrazione).",
-    quickStep5Title: "Analizza una rosa",
-    quickStep5Body: "Scegli un modulo e i giocatori per vedere punti di forza e debolezze.",
-    quickStep6Title: "Condividi i risultati",
-    quickStep6Body: "Salva o condividi una diagnosi come link o immagine.",
-    heroTitlePrefix: "Studia i giocatori, confrontali e costruisci una ",
-    heroTitleAccent: "rosa",
-    heroTitleSuffix: ".",
-    heroDescriptionTemplate:
-      "Tutte le {count} carte World di eFootball. 26 statistiche, abilità, calcoli di progressione, booster dell’allenatore e condizioni di Link-Up Play in un’unica schermata. Gli elementi con regole di calcolo non confermate sono indicati chiaramente come \"in verifica\".",
-    searchPlaceholder: "Cerca per nome del giocatore o ID World…",
-    searchAriaLabel: "Cerca giocatori",
-    searchButton: "Cerca",
-    compareButton: "Confronta giocatori",
-    createSquadButton: "Crea una rosa",
-    dataStatusHeading: "Stato dei dati",
-    worldCardsLabel: "Carte World",
-    efhubIndexLabel: "Indice eFHUB",
-    managersLabel: "Allenatori",
-    syncedAtLabel: "Dati World importati",
-    worldUnavailableTitle: "I dati World non sono ancora configurati",
-    temporaryErrorNotice: "Alcuni dati non sono stati caricati. Attendi un momento e ricarica.",
-    temporaryErrorReload: "Ricarica",
-    worldUnavailableCommandPrefix: "Esegui ",
-    worldUnavailableCommandSuffix: " nel terminale.",
-    topOvrHeading: "Carte con l’OVR massimo più alto",
-    recentHeading: "Carte aggiornate di recente",
-    viewAllLink: "Vedi tutto",
-    quickLinksHeading: "Cosa puoi fare",
-    findPlayersLabel: "Trova giocatori",
-    findPlayersDescTemplate: "Cerca e filtra {count} carte World",
-    comparePlayersLabel: "Confronta giocatori",
-    comparePlayersDesc: "Confronta statistiche, abilità, progressione e booster dell’allenatore di 2–4 giocatori",
-    buildSquadLabel: "Crea una rosa",
-    buildSquadDesc: "Controlla modulo, progressione, allenatore e condizioni di Link-Up",
-    exploreManagersLabel: "Esplora gli allenatori",
-    exploreManagersDescTemplate: "Competenza tattica, booster e Link-Up Play di {count} allenatori",
-    inDevelopmentHeading: "In sviluppo",
-    inDevelopmentHint: "Prossimamente",
-    featureTierList: "Tier list",
-    featurePackDiagnosis: "Diagnosi dei pacchetti",
-    featureAiCoach: "Analisi del coach con IA",
-    featureCommunity: "Community",
-    designDocNote:
-      "Consulta docs/efootball-team-ai-design.md per i dettagli del design. Vengono mostrati solo dati reali importati: nessun numero di utenti o valutazione inventati.",
-  },
-};
+const it: PartialDictionary = { ...core, ...b1, ...b2, ...b3, ...b4, ...b5, ...b6, ...b7, ...b8 };
 
 export default it;

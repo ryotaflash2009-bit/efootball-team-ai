@@ -1,0 +1,98 @@
+{
+  "date": "2026-10-07",
+  "feature": "F-007b",
+  "summary": "10 added languages at RELEASE_CANDIDATE (machine-assisted, awaiting native review); published languages unchanged (ja, en)",
+  "locales": {
+    "es": {
+      "state": "RELEASE_CANDIDATE",
+      "quality": "MACHINE_ASSISTED_COMPLETE",
+      "publicSurfaces": 100,
+      "generatedMessages": "407/407",
+      "reviewPackage": "docs/i18n/review/es/review.csv"
+    },
+    "pt-BR": {
+      "state": "RELEASE_CANDIDATE",
+      "quality": "MACHINE_ASSISTED_COMPLETE",
+      "publicSurfaces": 100,
+      "generatedMessages": "407/407",
+      "reviewPackage": "docs/i18n/review/pt-BR/review.csv"
+    },
+    "fr": {
+      "state": "RELEASE_CANDIDATE",
+      "quality": "MACHINE_ASSISTED_COMPLETE",
+      "publicSurfaces": 100,
+      "generatedMessages": "407/407",
+      "reviewPackage": "docs/i18n/review/fr/review.csv"
+    },
+    "de": {
+      "state": "RELEASE_CANDIDATE",
+      "quality": "MACHINE_ASSISTED_COMPLETE",
+      "publicSurfaces": 100,
+      "generatedMessages": "407/407",
+      "reviewPackage": "docs/i18n/review/de/review.csv"
+    },
+    "it": {
+      "state": "RELEASE_CANDIDATE",
+      "quality": "MACHINE_ASSISTED_COMPLETE",
+      "publicSurfaces": 100,
+      "generatedMessages": "407/407",
+      "reviewPackage": "docs/i18n/review/it/review.csv"
+    },
+    "ko": {
+      "state": "RELEASE_CANDIDATE",
+      "quality": "MACHINE_ASSISTED_COMPLETE",
+      "publicSurfaces": 100,
+      "generatedMessages": "407/407",
+      "reviewPackage": "docs/i18n/review/ko/review.csv"
+    },
+    "zh-CN": {
+      "state": "RELEASE_CANDIDATE",
+      "quality": "MACHINE_ASSISTED_COMPLETE",
+      "publicSurfaces": 100,
+      "generatedMessages": "407/407",
+      "reviewPackage": "docs/i18n/review/zh-CN/review.csv"
+    },
+    "zh-TW": {
+      "state": "RELEASE_CANDIDATE",
+      "quality": "MACHINE_ASSISTED_COMPLETE",
+      "publicSurfaces": 100,
+      "generatedMessages": "407/407",
+      "reviewPackage": "docs/i18n/review/zh-TW/review.csv"
+    },
+    "id": {
+      "state": "RELEASE_CANDIDATE",
+      "quality": "MACHINE_ASSISTED_COMPLETE",
+      "publicSurfaces": 100,
+      "generatedMessages": "407/407",
+      "reviewPackage": "docs/i18n/review/id/review.csv"
+    },
+    "tr": {
+      "state": "RELEASE_CANDIDATE",
+      "quality": "MACHINE_ASSISTED_COMPLETE",
+      "publicSurfaces": 100,
+      "generatedMessages": "407/407",
+      "reviewPackage": "docs/i18n/review/tr/review.csv"
+    }
+  },
+  "legal": "Terms, Privacy and Disclaimer show in English for added languages (owner policy: no unreviewed legal translation)",
+  "blackBox": {
+    "viewports": [
+      "390x844",
+      "430x932",
+      "768x1024",
+      "1280x720",
+      "1920x1080"
+    ],
+    "perLocale": "209/209 PASS (pages, persistence, squad editor, squad comparison, share image, 4 share-card ratios)",
+    "react418": 0,
+    "notes": "Chinese runs count only kana as Japanese leakage (ideographs are Chinese text)"
+  },
+  "verify": "npm run verify: 315 files, 4,899 tests passed",
+  "bundle": {
+    "homeFirstLoadKB": 123,
+    "worldPlayerDetailKB": 170,
+    "homeFirstLoadGzBytes": 129561,
+    "addedLanguageStringsInInitialJs": 0
+  },
+  "production": "language selector shows PUBLISHED locales only; stored es/pt-BR/fr preference falls back to ja (checked 2026-10-06 after #159)"
+}

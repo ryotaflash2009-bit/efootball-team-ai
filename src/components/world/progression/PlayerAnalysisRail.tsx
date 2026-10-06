@@ -9,7 +9,8 @@ import {
   type AnalysisMetric,
 } from "@/lib/world/player-analysis";
 import { Badge } from "@/components/ui/Badge";
-import { useT } from "@/lib/i18n/LocaleContext";
+import { useLocale, useT } from "@/lib/i18n/LocaleContext";
+import { formatNumber } from "@/lib/i18n/format";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 
 type PTKey = keyof Dictionary["progressionTab"];
@@ -72,7 +73,7 @@ function Section({
     <details open={defaultOpen} className="rounded-md border border-border bg-surface">
       <summary className="flex min-h-[44px] cursor-pointer items-center justify-between gap-2 px-3 py-2 text-sm font-semibold">
         <span>{title}</span>
-        {status ? <span className="shrink-0 text-2xs font-normal">{status}</span> : null}
+        {status ? <span className="min-w-0 text-end text-2xs font-normal">{status}</span> : null}
       </summary>
       <div className="border-t border-border p-3">{children}</div>
     </details>
@@ -150,6 +151,7 @@ function PositionGrid({ a }: { a: PlayerAnalysis["positions"] }) {
 
 function MetricRow({ m }: { m: AnalysisMetric }) {
   const t = useT();
+  const { displayLocale } = useLocale();
   const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
   const labelKey = METRIC_LABEL_KEY[m.key];
   const label = labelKey ? tp(labelKey) : m.label;
@@ -174,13 +176,13 @@ function MetricRow({ m }: { m: AnalysisMetric }) {
           <div className="mt-1 grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 text-[10px] text-text-muted">
             <span>{tp("anSizeRank")}</span>
             <span className="tabular-nums text-text-dim">
-              {ov.rank.toLocaleString()} / {ov.total.toLocaleString()}
+              {formatNumber(ov.rank, displayLocale)} / {formatNumber(ov.total, displayLocale)}
             </span>
             {m.positionRank ? (
               <>
                 <span>{tp("anSamePosition")}</span>
                 <span className="tabular-nums text-text-dim">
-                  {m.positionRank.rank.toLocaleString()} / {m.positionRank.total.toLocaleString()}
+                  {formatNumber(m.positionRank.rank, displayLocale)} / {formatNumber(m.positionRank.total, displayLocale)}
                 </span>
               </>
             ) : null}
@@ -293,6 +295,7 @@ export function PlayerAnalysisRail({
   scopeLabel: string;
 }) {
   const t = useT();
+  const { displayLocale } = useLocale();
   const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
   const p = analysis.positions;
   return (
@@ -322,7 +325,9 @@ export function PlayerAnalysisRail({
             <span className="text-text-muted">
               {tp("anRankTotal").replace(
                 "{n}",
-                analysis.physical.metrics[0]?.overallRank?.total.toLocaleString() ?? "?",
+                analysis.physical.metrics[0]?.overallRank?.total != null
+                  ? formatNumber(analysis.physical.metrics[0].overallRank.total, displayLocale)
+                  : "?",
               )}
             </span>
           ) : undefined

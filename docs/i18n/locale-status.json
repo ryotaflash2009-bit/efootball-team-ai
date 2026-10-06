@@ -69,8 +69,8 @@
       "notes": "Release candidate for native review. Not shown in the production language selector (only PUBLISHED locales are). Review package: docs/i18n/review/pt-BR/"
     },
     "fr": {
-      "state": "MACHINE_DRAFT",
-      "quality": "MACHINE_DRAFT_ONLY",
+      "state": "RELEASE_CANDIDATE",
+      "quality": "MACHINE_ASSISTED_COMPLETE",
       "machineAssisted": true,
       "nativeReview": false,
       "reviewedBy": null,
@@ -80,15 +80,16 @@
       "sourceLocaleVersion": "v1.0.0+i18n-foundation",
       "phase": 2,
       "knownIssues": [
-        "AI-drafted core UI and Home only (131 of 4,495 strings); not reviewed by a human or native speaker",
-        "everything else, including engine-generated text, ability names and legal documents, shows in English",
-        "ability names and game terms must be checked against the in-game text of this language"
+        "machine-assisted translation of every public surface (UI, accessibility names, errors, metadata, share cards, engine-generated messages, ability names, progression groups, tactics); not yet reviewed by a native speaker",
+        "ability names, progression groups and tactics must be checked against the in-game text of this language (game-terms REVIEW_REQUIRED)",
+        "legal documents (Terms, Privacy, Disclaimer) show in English by policy until a professional legal translation is reviewed",
+        "player and manager names use the data source's English names (no translation or transliteration by policy)"
       ],
-      "notes": "Internal preview only"
+      "notes": "Release candidate for native review. Not shown in the production language selector (only PUBLISHED locales are). Review package: docs/i18n/review/fr/"
     },
     "de": {
-      "state": "MACHINE_DRAFT",
-      "quality": "MACHINE_DRAFT_ONLY",
+      "state": "RELEASE_CANDIDATE",
+      "quality": "MACHINE_ASSISTED_COMPLETE",
       "machineAssisted": true,
       "nativeReview": false,
       "reviewedBy": null,
@@ -98,15 +99,16 @@
       "sourceLocaleVersion": "v1.0.0+i18n-foundation",
       "phase": 2,
       "knownIssues": [
-        "AI-drafted core UI and Home only (131 of 4,495 strings); not reviewed by a human or native speaker",
-        "everything else, including engine-generated text, ability names and legal documents, shows in English",
-        "ability names and game terms must be checked against the in-game text of this language"
+        "machine-assisted translation of every public surface (UI, accessibility names, errors, metadata, share cards, engine-generated messages, ability names, progression groups, tactics); not yet reviewed by a native speaker",
+        "ability names, progression groups and tactics must be checked against the in-game text of this language (game-terms REVIEW_REQUIRED)",
+        "legal documents (Terms, Privacy, Disclaimer) show in English by policy until a professional legal translation is reviewed",
+        "player and manager names use the data source's English names (no translation or transliteration by policy)"
       ],
-      "notes": "Internal preview only"
+      "notes": "Release candidate for native review. Not shown in the production language selector (only PUBLISHED locales are). Review package: docs/i18n/review/de/"
     },
     "it": {
-      "state": "MACHINE_DRAFT",
-      "quality": "MACHINE_DRAFT_ONLY",
+      "state": "RELEASE_CANDIDATE",
+      "quality": "MACHINE_ASSISTED_COMPLETE",
       "machineAssisted": true,
       "nativeReview": false,
       "reviewedBy": null,
@@ -116,15 +118,16 @@
       "sourceLocaleVersion": "v1.0.0+i18n-foundation",
       "phase": 2,
       "knownIssues": [
-        "AI-drafted core UI and Home only (131 of 4,495 strings); not reviewed by a human or native speaker",
-        "everything else, including engine-generated text, ability names and legal documents, shows in English",
-        "ability names and game terms must be checked against the in-game text of this language"
+        "machine-assisted translation of every public surface (UI, accessibility names, errors, metadata, share cards, engine-generated messages, ability names, progression groups, tactics); not yet reviewed by a native speaker",
+        "ability names, progression groups and tactics must be checked against the in-game text of this language (game-terms REVIEW_REQUIRED)",
+        "legal documents (Terms, Privacy, Disclaimer) show in English by policy until a professional legal translation is reviewed",
+        "player and manager names use the data source's English names (no translation or transliteration by policy)"
       ],
-      "notes": "Internal preview only"
+      "notes": "Release candidate for native review. Not shown in the production language selector (only PUBLISHED locales are). Review package: docs/i18n/review/it/"
     },
     "ko": {
-      "state": "MACHINE_DRAFT",
-      "quality": "MACHINE_DRAFT_ONLY",
+      "state": "RELEASE_CANDIDATE",
+      "quality": "MACHINE_ASSISTED_COMPLETE",
       "machineAssisted": true,
       "nativeReview": false,
       "reviewedBy": null,
@@ -134,16 +137,17 @@
       "sourceLocaleVersion": "v1.0.0+i18n-foundation",
       "phase": 3,
       "knownIssues": [
-        "AI-drafted core UI and Home only (131 of 4,495 strings); not reviewed by a human or native speaker",
-        "everything else, including engine-generated text, ability names and legal documents, shows in English",
-        "ability names and game terms must be checked against the in-game text of this language",
-        "share-card image font coverage not verified (see architecture.md §11)"
+        "machine-assisted translation of every public surface (UI, accessibility names, errors, metadata, share cards, engine-generated messages, ability names, progression groups, tactics); not yet reviewed by a native speaker",
+        "ability names, progression groups and tactics must be checked against the in-game text of this language (game-terms REVIEW_REQUIRED)",
+        "legal documents (Terms, Privacy, Disclaimer) show in English by policy until a professional legal translation is reviewed",
+        "player and manager names use the data source's English names (no translation or transliteration by policy)",
+        "CJK: share-card images depend on the device fonts; the glyph guard refuses to save an image with missing glyphs"
       ],
-      "notes": "Internal preview only"
+      "notes": "Release candidate for native review. Not shown in the production language selector (only PUBLISHED locales are). Review package: docs/i18n/review/ko/"
     },
     "zh-CN": {
-      "state": "MACHINE_DRAFT",
-      "quality": "MACHINE_DRAFT_ONLY",
+      "state": "RELEASE_CANDIDATE",
+      "quality": "MACHINE_ASSISTED_COMPLETE",
       "machineAssisted": true,
       "nativeReview": false,
       "reviewedBy": null,
@@ -153,17 +157,17 @@
       "sourceLocaleVersion": "v1.0.0+i18n-foundation",
       "phase": 3,
       "knownIssues": [
-        "AI-drafted core UI and Home only (131 of 4,495 strings); not reviewed by a human or native speaker",
-        "everything else, including engine-generated text, ability names and legal documents, shows in English",
-        "ability names and game terms must be checked against the in-game text of this language",
-        "written separately from the other Chinese variant (no automatic Simplified/Traditional conversion); regional vocabulary needs native review",
-        "share-card image font coverage not verified (see architecture.md §11)"
+        "machine-assisted translation of every public surface (UI, accessibility names, errors, metadata, share cards, engine-generated messages, ability names, progression groups, tactics); not yet reviewed by a native speaker",
+        "ability names, progression groups and tactics must be checked against the in-game text of this language (game-terms REVIEW_REQUIRED)",
+        "legal documents (Terms, Privacy, Disclaimer) show in English by policy until a professional legal translation is reviewed",
+        "player and manager names use the data source's English names (no translation or transliteration by policy)",
+        "CJK: share-card images depend on the device fonts; the glyph guard refuses to save an image with missing glyphs"
       ],
-      "notes": "Internal preview only"
+      "notes": "Release candidate for native review. Not shown in the production language selector (only PUBLISHED locales are). Review package: docs/i18n/review/zh-CN/"
     },
     "zh-TW": {
-      "state": "MACHINE_DRAFT",
-      "quality": "MACHINE_DRAFT_ONLY",
+      "state": "RELEASE_CANDIDATE",
+      "quality": "MACHINE_ASSISTED_COMPLETE",
       "machineAssisted": true,
       "nativeReview": false,
       "reviewedBy": null,
@@ -173,17 +177,17 @@
       "sourceLocaleVersion": "v1.0.0+i18n-foundation",
       "phase": 3,
       "knownIssues": [
-        "AI-drafted core UI and Home only (131 of 4,495 strings); not reviewed by a human or native speaker",
-        "everything else, including engine-generated text, ability names and legal documents, shows in English",
-        "ability names and game terms must be checked against the in-game text of this language",
-        "written separately from the other Chinese variant (no automatic Simplified/Traditional conversion); regional vocabulary needs native review",
-        "share-card image font coverage not verified (see architecture.md §11)"
+        "machine-assisted translation of every public surface (UI, accessibility names, errors, metadata, share cards, engine-generated messages, ability names, progression groups, tactics); not yet reviewed by a native speaker",
+        "ability names, progression groups and tactics must be checked against the in-game text of this language (game-terms REVIEW_REQUIRED)",
+        "legal documents (Terms, Privacy, Disclaimer) show in English by policy until a professional legal translation is reviewed",
+        "player and manager names use the data source's English names (no translation or transliteration by policy)",
+        "CJK: share-card images depend on the device fonts; the glyph guard refuses to save an image with missing glyphs"
       ],
-      "notes": "Internal preview only"
+      "notes": "Release candidate for native review. Not shown in the production language selector (only PUBLISHED locales are). Review package: docs/i18n/review/zh-TW/"
     },
     "id": {
-      "state": "MACHINE_DRAFT",
-      "quality": "MACHINE_DRAFT_ONLY",
+      "state": "RELEASE_CANDIDATE",
+      "quality": "MACHINE_ASSISTED_COMPLETE",
       "machineAssisted": true,
       "nativeReview": false,
       "reviewedBy": null,
@@ -193,15 +197,16 @@
       "sourceLocaleVersion": "v1.0.0+i18n-foundation",
       "phase": 3,
       "knownIssues": [
-        "AI-drafted core UI and Home only (131 of 4,495 strings); not reviewed by a human or native speaker",
-        "everything else, including engine-generated text, ability names and legal documents, shows in English",
-        "ability names and game terms must be checked against the in-game text of this language"
+        "machine-assisted translation of every public surface (UI, accessibility names, errors, metadata, share cards, engine-generated messages, ability names, progression groups, tactics); not yet reviewed by a native speaker",
+        "ability names, progression groups and tactics must be checked against the in-game text of this language (game-terms REVIEW_REQUIRED)",
+        "legal documents (Terms, Privacy, Disclaimer) show in English by policy until a professional legal translation is reviewed",
+        "player and manager names use the data source's English names (no translation or transliteration by policy)"
       ],
-      "notes": "Internal preview only"
+      "notes": "Release candidate for native review. Not shown in the production language selector (only PUBLISHED locales are). Review package: docs/i18n/review/id/"
     },
     "tr": {
-      "state": "MACHINE_DRAFT",
-      "quality": "MACHINE_DRAFT_ONLY",
+      "state": "RELEASE_CANDIDATE",
+      "quality": "MACHINE_ASSISTED_COMPLETE",
       "machineAssisted": true,
       "nativeReview": false,
       "reviewedBy": null,
@@ -211,11 +216,12 @@
       "sourceLocaleVersion": "v1.0.0+i18n-foundation",
       "phase": 3,
       "knownIssues": [
-        "AI-drafted core UI and Home only (131 of 4,495 strings); not reviewed by a human or native speaker",
-        "everything else, including engine-generated text, ability names and legal documents, shows in English",
-        "ability names and game terms must be checked against the in-game text of this language"
+        "machine-assisted translation of every public surface (UI, accessibility names, errors, metadata, share cards, engine-generated messages, ability names, progression groups, tactics); not yet reviewed by a native speaker",
+        "ability names, progression groups and tactics must be checked against the in-game text of this language (game-terms REVIEW_REQUIRED)",
+        "legal documents (Terms, Privacy, Disclaimer) show in English by policy until a professional legal translation is reviewed",
+        "player and manager names use the data source's English names (no translation or transliteration by policy)"
       ],
-      "notes": "Internal preview only"
+      "notes": "Release candidate for native review. Not shown in the production language selector (only PUBLISHED locales are). Review package: docs/i18n/review/tr/"
     },
     "ar": {
       "state": "INTERNAL_DRAFT",

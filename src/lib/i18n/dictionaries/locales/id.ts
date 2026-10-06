@@ -1,163 +1,22 @@
 import type { PartialDictionary } from "../../translate";
+import core from "./id/core";
+import b1 from "./id/b1";
+import b2 from "./id/b2";
+import b3 from "./id/b3";
+import b4 from "./id/b4";
+import b5 from "./id/b5";
+import b6 from "./id/b6";
+import b7 from "./id/b7";
+import b8 from "./id/b8";
+// 計算ライブラリが作る文の訳・ゲームの用語（読み込みと同時に登録される）
+import "./id/generated";
+import "./id/game-terms";
 
 /**
- * Bahasa Indonesia (id) — MACHINE_DRAFT: draf AI (2026-10-06), tanpa tinjauan manusia atau penutur asli. Hanya pratinjau internal.
- * Cakupan: UI inti dan beranda. Sisanya ditampilkan dalam bahasa Inggris. Terminologi: docs/i18n/terminology-glossary.md.
+ * Bahasa Indonesia (id) — machine-assisted translation of every public screen (2026-10-06). Not reviewed by a native speaker.
+ * 法務文書（terms・privacy・disclaimer）は本人の方針で訳さず English で表示する（専門家のレビューの無い法務の訳を出さない）。
+ * 名前空間はファイルごとに重ならない（core: 核・ホーム / b1〜b8: 画面ごと）。言語ごとに 1 つの別 chunk（その言語を選んだときだけ読み込む）。
  */
-const id: PartialDictionary = {
-  common: {
-    loading: "Memuat",
-    errorTitle: "Terjadi masalah",
-    errorDescription: "Coba lagi sebentar lagi. Jika masalah berlanjut, muat ulang halaman.",
-    retry: "Coba lagi",
-    back: "Kembali",
-    home: "Ke beranda",
-    save: "Simpan",
-    cancel: "Batal",
-    close: "Tutup",
-    confirm: "Konfirmasi",
-    unknownPlayer: "Pemain tidak dikenal",
-  },
-  pageError: {
-    title: "Terjadi kesalahan saat menampilkan halaman ini",
-    description: "Data gagal dimuat. Jika mencoba lagi tidak berhasil, muat ulang halaman.",
-    codeLabelPrefix: "Kode: ",
-    iconAriaLabel: "Kesalahan",
-  },
-  notFoundPage: {
-    title: "Halaman tidak ditemukan",
-    description: "Halaman atau pemain yang Anda cari tidak ada atau mungkin telah dipindahkan.",
-    playersLink: "Ke daftar pemain",
-  },
-  nav: {
-    groupMain: "Utama",
-    groupMyData: "Data saya",
-    groupAnalysis: "Analisis",
-    groupCommunity: "Komunitas",
-    home: "Beranda",
-    players: "Pemain",
-    managers: "Manajer",
-    compare: "Bandingkan",
-    squads: "Skuad",
-    favorites: "Favorit",
-    myTeam: "Tim saya",
-    myBuilds: "Build saya",
-    buildInventory: "Analisis build",
-    diagnosisHistory: "Riwayat diagnosis",
-    bestXi: "AI Best XI",
-    tierLists: "Tier list",
-    packs: "Paket",
-    community: "Komunitas",
-    comingSoon: "Segera hadir",
-    ariaSidebar: "Menu samping",
-    ariaCollapse: "Ciutkan bilah samping",
-    ariaExpand: "Bentangkan bilah samping",
-    collapseLabel: "Ciutkan",
-    ariaMobileMenuOpen: "Buka menu",
-    ariaMobileMenuClose: "Tutup menu",
-    ariaMobileMenu: "Menu",
-    ariaHome: "Beranda",
-    brand: "TeamAIXI",
-  },
-  header: {
-    searchPlaceholder: "Cari pemain…",
-    searchAriaLabel: "Cari pemain",
-    ariaHomeLink: "Beranda TeamAIXI",
-    accountNavSignIn: "Masuk",
-    accountNavAccount: "Akun",
-  },
-  language: {
-    japanese: "日本語",
-    english: "English",
-    ariaLabel: "Pilih bahasa tampilan",
-    moreLanguages: "Bahasa lain (pratinjau)",
-    previewListLabel: "Bahasa dalam pratinjau",
-    previewBadge: "Pratinjau",
-    loadingLanguage: "Memuat bahasa…",
-  },
-  footer: {
-    ariaLandmark: "Footer situs",
-    aboutLink: "Tentang",
-    termsLink: "Ketentuan penggunaan",
-    privacyLink: "Privasi",
-    disclaimerLink: "Penafian",
-    dataManagementLink: "Pengelolaan data",
-    supportLink: "Dukungan",
-    releaseReadinessLink: "Kesiapan rilis",
-    unofficialNotice:
-      "TeamAIXI adalah alat analisis skuad tidak resmi untuk eFootball™. Ini bukan layanan resmi KONAMI atau eFootball™, serta tidak didukung, tidak berafiliasi dengan, dan tidak dioperasikan oleh KONAMI. Merek dagang dan nama produk adalah milik pemiliknya masing-masing. Data, analisis, dan diagnosis dapat mengandung kesalahan atau keterlambatan dan tidak menjamin keputusan di dalam game.",
-    draftBadge: "v1.0 · Gratis · Tanpa login",
-  },
-  category: {
-    attack: "Serangan",
-    defense: "Pertahanan",
-    aerial: "Duel udara",
-    speed: "Kecepatan",
-    passBuildUp: "Umpan & build-up",
-    dribblePossession: "Dribel & penguasaan bola",
-    pressResistance: "Ketahanan terhadap pressing",
-    counterAttack: "Serangan balik",
-    squadCompleteness: "Kelengkapan susunan skuad",
-  },
-  homePage: {
-    alphaNoticeBanner:
-      "TeamAIXI v1.0 adalah alat analisis skuad tidak resmi dan gratis untuk eFootball™ yang bisa digunakan tanpa login. Ini bukan layanan resmi KONAMI atau eFootball™. Fitur akun direncanakan untuk pembaruan mendatang.",
-    alphaNoticeDetailsLinkLabel: "Tentang TeamAIXI",
-    heroBadge: "Alat analisis skuad tidak resmi untuk eFootball™",
-    quickStartHeading: "Yang bisa Anda lakukan dengan TeamAIXI",
-    quickStep1Title: "Temukan pemain",
-    quickStep1Body: "Cari berdasarkan nama, World ID, atau posisi.",
-    quickStep2Title: "Kembangkan pemain",
-    quickStep2Body: "Di halaman pemain, ketuk atribut atau gunakan penggeser untuk melihat nilai akhir.",
-    quickStep3Title: "Bandingkan pemain",
-    quickStep3Body: "Sandingkan hingga empat pemain.",
-    quickStep4Title: "Buat Tim saya",
-    quickStep4Body: "Simpan kartu yang Anda miliki di browser ini (tanpa login).",
-    quickStep5Title: "Diagnosis skuad",
-    quickStep5Body: "Pilih formasi dan pemain untuk melihat kekuatan dan kelemahan.",
-    quickStep6Title: "Bagikan hasil",
-    quickStep6Body: "Simpan atau bagikan diagnosis sebagai tautan atau gambar.",
-    heroTitlePrefix: "Pelajari pemain, bandingkan, dan susun ",
-    heroTitleAccent: "skuad",
-    heroTitleSuffix: " Anda.",
-    heroDescriptionTemplate:
-      "Seluruh {count} kartu World eFootball. 26 atribut, skill, perhitungan progresi, booster manajer, dan syarat Link-Up Play dalam satu layar. Item yang aturan perhitungannya belum dikonfirmasi ditandai dengan jelas sebagai \"sedang diverifikasi\".",
-    searchPlaceholder: "Cari nama pemain atau World ID…",
-    searchAriaLabel: "Cari pemain",
-    searchButton: "Cari",
-    compareButton: "Bandingkan pemain",
-    createSquadButton: "Susun skuad",
-    dataStatusHeading: "Status data",
-    worldCardsLabel: "Kartu World",
-    efhubIndexLabel: "Indeks eFHUB",
-    managersLabel: "Manajer",
-    syncedAtLabel: "Data World diimpor",
-    worldUnavailableTitle: "Data World belum diatur",
-    temporaryErrorNotice: "Sebagian data tidak dapat dimuat saat ini. Tunggu sebentar lalu muat ulang.",
-    temporaryErrorReload: "Muat ulang",
-    worldUnavailableCommandPrefix: "Jalankan ",
-    worldUnavailableCommandSuffix: " di terminal.",
-    topOvrHeading: "Kartu dengan OVR maksimum tertinggi",
-    recentHeading: "Kartu yang baru diperbarui",
-    viewAllLink: "Lihat semua",
-    quickLinksHeading: "Yang bisa Anda lakukan",
-    findPlayersLabel: "Temukan pemain",
-    findPlayersDescTemplate: "Cari dan filter {count} kartu World",
-    comparePlayersLabel: "Bandingkan pemain",
-    comparePlayersDesc: "Bandingkan atribut, skill, progresi, dan booster manajer untuk 2–4 pemain",
-    buildSquadLabel: "Susun skuad",
-    buildSquadDesc: "Periksa formasi, progresi, manajer, dan syarat Link-Up",
-    exploreManagersLabel: "Jelajahi manajer",
-    exploreManagersDescTemplate: "Kemahiran taktik, booster, dan Link-Up Play dari {count} manajer",
-    inDevelopmentHeading: "Dalam pengembangan",
-    inDevelopmentHint: "Segera hadir",
-    featureTierList: "Tier list",
-    featurePackDiagnosis: "Diagnosis paket",
-    featureAiCoach: "Analisis pelatih AI",
-    featureCommunity: "Komunitas",
-    designDocNote:
-      "Lihat docs/efootball-team-ai-design.md untuk detail desain. Hanya data nyata yang diimpor yang ditampilkan — tanpa jumlah pengguna atau rating fiktif.",
-  },
-};
+const id: PartialDictionary = { ...core, ...b1, ...b2, ...b3, ...b4, ...b5, ...b6, ...b7, ...b8 };
 
 export default id;
