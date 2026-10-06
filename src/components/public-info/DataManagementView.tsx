@@ -17,11 +17,14 @@ import {
   getManagedKeysWithData,
   deleteAllManagedLocalData,
 } from "@/lib/data-management/local-data";
+import { usePageTitle } from "@/lib/i18n/use-page-title";
 
 type DataManagementKey = keyof Dictionary["dataManagement"];
 
 export function DataManagementView() {
   const t = useT();
+  // 日本語以外の表示言語では、タブの題名も表示言語にする（2026-10-07）。
+  usePageTitle(t("dataManagement", "pageTitle"));
   const tdm = (key: DataManagementKey) => t("dataManagement", key);
 
   return (

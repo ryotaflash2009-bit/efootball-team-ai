@@ -22,6 +22,7 @@ import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import type { Locale } from "@/lib/i18n/locale";
 import type { DisplayLocale } from "@/lib/i18n/locale-registry";
 import { localizeSquadDiagnosisText } from "@/lib/squad/squad-diagnosis-text-en";
+import { usePageTitle } from "@/lib/i18n/use-page-title";
 
 type ViewState = { status: "loading" } | { status: "ok"; payload: SquadDiagnosisSharePayloadV1 } | { status: "error"; reason: ShareDecodeFailure };
 
@@ -42,6 +43,8 @@ export function diagnosisCategoryLabel(id: SquadDiagnosisCategoryId, locale: Loc
  */
 export function SharedDiagnosisView() {
   const t = useT();
+  // 日本語以外の表示言語では、タブの題名も表示言語にする（2026-10-07）。
+  usePageTitle(t("diagnosisShare", "pageTitle"));
   const { locale, displayLocale } = useLocale();
   const [state, setState] = useState<ViewState>({ status: "loading" });
 

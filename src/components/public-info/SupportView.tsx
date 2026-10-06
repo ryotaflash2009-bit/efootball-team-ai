@@ -8,6 +8,7 @@ import { Icon } from "@/components/ui/Icon";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { resolveSupportChannels } from "@/lib/public-info/support-config";
 import Link from "next/link";
+import { usePageTitle } from "@/lib/i18n/use-page-title";
 
 type SupportKey = keyof Dictionary["support"];
 
@@ -20,6 +21,8 @@ function buildMailtoUrl(email: string, subject: string): string {
 
 export function SupportView() {
   const t = useT();
+  // 日本語以外の表示言語では、タブの題名も表示言語にする（2026-10-07）。
+  usePageTitle(t("support", "pageTitle"));
   const ts = (key: SupportKey) => t("support", key);
   const channels = resolveSupportChannels();
 

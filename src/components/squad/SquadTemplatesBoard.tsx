@@ -26,10 +26,13 @@ import { useT } from "@/lib/i18n/LocaleContext";
 import { PageHeader } from "@/components/ui/PageHeader";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { fillMessage } from "@/lib/i18n/message-format";
+import { usePageTitle } from "@/lib/i18n/use-page-title";
 
 export function SquadTemplatesBoard() {
   const router = useRouter();
   const t = useT();
+  // 日本語以外の表示言語では、タブの題名も表示言語にする（2026-10-07）。
+  usePageTitle(t("squadTemplatesBoard", "pageTitle"));
   const tst = (k: keyof Dictionary["squadTemplatesBoard"]) => t("squadTemplatesBoard", k);
   const fillSt = (s: string, vars: Record<string, string>) =>
     fillMessage(s, vars);

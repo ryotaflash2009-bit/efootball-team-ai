@@ -39,6 +39,7 @@ import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { fillMessage } from "@/lib/i18n/message-format";
 import type { DisplayLocale } from "@/lib/i18n/locale-registry";
+import { usePageTitle } from "@/lib/i18n/use-page-title";
 
 function safeFormatDateTime(iso: string, locale: Locale | DisplayLocale): string {
   const d = new Date(iso);
@@ -55,6 +56,8 @@ export function SquadListBoard({
 }) {
   const router = useRouter();
   const t = useT();
+  // 日本語以外の表示言語では、タブの題名も表示言語にする（2026-10-07）。
+  usePageTitle(t("squadList", "pageTitle"));
   const { locale, displayLocale } = useLocale();
   const tsl = (k: keyof Dictionary["squadList"]) => t("squadList", k);
   const fillSl = (s: string, vars: Record<string, string>) =>

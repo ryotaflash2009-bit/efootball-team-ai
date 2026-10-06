@@ -4,6 +4,7 @@ import "./globals.css";
 import "@/lib/i18n/dictionaries/ja-ns/all";
 import { AppShell } from "@/components/AppShell";
 import { SiteAnalytics } from "@/components/analytics/SiteAnalytics";
+import { PageTitleSync } from "@/components/PageTitleSync";
 import { LocaleProvider } from "@/lib/i18n/LocaleContext";
 import { LOCALE_STORAGE_KEY } from "@/lib/i18n/locale";
 
@@ -44,6 +45,8 @@ export default function RootLayout({
       <body>
         <LocaleProvider>
           <AppShell>{children}</AppShell>
+          {/* 日本語以外の表示言語で、核の画面のタブの題名を表示言語にする（各画面の題名は view の usePageTitle）。 */}
+          <PageTitleSync />
         </LocaleProvider>
         {/* Vercel Web Analytics（Page Views・Visitors だけ・Cookie なし・URL は送る前に整える）。ここに 1 回だけ置く。 */}
         <SiteAnalytics />

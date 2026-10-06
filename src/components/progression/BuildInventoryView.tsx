@@ -99,6 +99,7 @@ import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { fillMessage } from "@/lib/i18n/message-format";
+import { usePageTitle } from "@/lib/i18n/use-page-title";
 
 /** groupPriorities/primaryGoal を除いた BuildIntentInput(プリセットが既定値を持たない、常に手動値のみのフィールド)。 */
 function omitGoalAndPriorities(intent: BuildIntentInput): Omit<BuildIntentInput, "primaryGoal" | "groupPriorities"> {
@@ -153,6 +154,8 @@ function useIssueKindLabels(): Record<Exclude<IssueFilterKind, "all">, string> {
 
 export function BuildInventoryView() {
   const t = useT();
+  // 日本語以外の表示言語では、タブの題名も表示言語にする（2026-10-07）。
+  usePageTitle(t("buildInventoryView", "pageTitle"));
   const { locale, displayLocale } = useLocale();
   const biv = (k: keyof Dictionary["buildInventoryView"]) => t("buildInventoryView", k);
   const fillBiv = (s: string, vars: Record<string, string>) =>
