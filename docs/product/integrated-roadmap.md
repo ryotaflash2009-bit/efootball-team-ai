@@ -111,7 +111,7 @@ F-124: 自動更新が完成するまで、本人だけで検証する（他人�
 10. F-070 監督補正つきの Best XI（Manager boost Best XI）
 11. 事前生成のカードのサムネイル（Pre-generated card thumbnails。sharp・Vercel Image Optimization は v1.1 以降: 本人の決定 2026-10-06）
 12. WebP / AVIF の検討
-13. Next.js の更新後の navigation fallback（`src/instrumentation-client.ts` の 5 秒の見張り）の再評価
+13. Next.js の更新後の navigation fallback（`src/instrumentation-client.ts` の 5 秒の見張り）の再評価。あわせて、RSC の応答の後に確定しない停止をより早く検出して 5 秒より短くする案（新しいブラウザーの最初の画面の移動で停止が多い: `evidence/2026-10-06-post-release.json`）
 14. noindex の解除の判断
 15. 専門家による法務のレビュー（Professional legal review・`docs/release/legal-review-checklist.md`）
 
