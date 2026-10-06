@@ -94,9 +94,14 @@ export function PlayersPageView({
         meta={t("playersPage", "metaTemplate").replace("{count}", fmt(result.totalCount))}
         description={t("playersPage", "descriptionTemplate").replace("{importedAt}", importedAt)}
         actions={
-          <Link href="/compare" className={buttonClasses("secondary", "sm")}>
-            {t("playersPage", "compareLink")}
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/compare" className={buttonClasses("secondary", "sm")}>
+              {t("playersPage", "compareLink")}
+            </Link>
+            <Link href="/boosters" className={buttonClasses("ghost", "sm")}>
+              {t("playersPage", "boosterListLink")}
+            </Link>
+          </div>
         }
       />
 

@@ -8,6 +8,7 @@ const playersPage: Dictionary["playersPage"] = {
   descriptionTemplate: "eFootball World の全カードを検索・絞り込み。{importedAt}",
   importedAtPrefix: "取り込み: ",
   compareLink: "選手比較へ",
+  boosterListLink: "ブースター一覧",
   noDataTitle: "World データがまだ用意されていません",
   noDataDescription: "ターミナルで `node scripts/sync-world-players-initial.mjs` を実行して SQLite に取り込んでください。",
   loadErrorTitle: "選手データを読み込めませんでした",

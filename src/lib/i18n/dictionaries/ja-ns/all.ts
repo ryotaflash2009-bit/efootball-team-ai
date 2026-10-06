@@ -91,6 +91,7 @@ import safetyMock from "./safetyMock";
 import progressionTab from "./progressionTab";
 import managerDetail from "./managerDetail";
 import squadCompareBoard from "./squadCompareBoard";
+import boosterList from "./boosterList";
 
 export const JA_SPLIT_NAMESPACES = {
   notFoundPage,
@@ -185,4 +186,5 @@ export const JA_SPLIT_NAMESPACES = {
   progressionTab,
   managerDetail,
   squadCompareBoard,
+  boosterList,
 };

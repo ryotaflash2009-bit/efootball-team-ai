@@ -16,7 +16,7 @@ import type {
 } from "@/lib/progression/types";
 import { listBuilds } from "@/lib/progression/build-storage";
 import { subscribeCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
-import { BOOSTER_CATALOG, getBoosterDef } from "@/lib/progression/booster-catalog";
+import { CONFIRMED_B2_CANDIDATES, getBoosterDef } from "@/lib/progression/booster-catalog";
 import { resolveAttachedBooster } from "@/lib/progression/booster-resolution";
 import { ConditionalBoosterControl } from "@/components/world/progression/ConditionalBoosterControl";
 import { ComparePlayerIdentityCard } from "./ComparePlayerIdentityCard";
@@ -26,7 +26,8 @@ import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { fillMessage } from "@/lib/i18n/message-format";
 
-const CONFIRMED_BOOSTERS = BOOSTER_CATALOG.filter((b) => b.confirmationStatus === "confirmed");
+// B2 の候補は育成の画面と同じ一覧（F-029b: 確認済み・条件つきを除く・同じ順序）。
+const CONFIRMED_BOOSTERS = CONFIRMED_B2_CANDIDATES;
 
 // 表示ラベルは i18n の bench.mode* に集約。ここは順序と値のみ定義。
 const BUILD_MODES: CompareBuildMode[] = ["none", "attack", "defense", "balance", "gk"];

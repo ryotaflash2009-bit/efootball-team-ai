@@ -7,13 +7,14 @@ import {
   getBoosterDef,
   isB2SelectableCandidate,
   isConfirmedB2Candidate,
+  CONFIRMED_B2_CANDIDATES,
 } from "@/lib/progression/booster-catalog";
 import { abilityName } from "@/lib/progression/ability-editor-labels";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import { Badge } from "@/components/ui/Badge";
 
-/** 通常の B2 候補（確認済み・Power of Many を除く）。カタログは静的データのため一度だけ計算する。 */
-const CONFIRMED_B2_CATALOG = BOOSTER_CATALOG.filter(isB2SelectableCandidate).filter(isConfirmedB2Candidate);
+/** 通常の B2 候補（確認済み・Power of Many を除く）。比較の画面と同じ一覧（booster-catalog.ts の CONFIRMED_B2_CANDIDATES）。 */
+const CONFIRMED_B2_CATALOG = CONFIRMED_B2_CANDIDATES;
 
 /**
  * B2（追加ブースター・手動選択）の選択UI。

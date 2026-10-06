@@ -2869,6 +2869,7 @@ export interface Dictionary {
     descriptionTemplate: string;
     importedAtPrefix: string;
     compareLink: string;
+    boosterListLink: string;
     noDataTitle: string;
     noDataDescription: string;
     loadErrorTitle: string;
@@ -4753,6 +4754,37 @@ export interface Dictionary {
     miniLegendCommon: string;
     miniLegendOnlyThis: string;
     miniLegendNote: string;
+  };
+  boosterList: {
+    pageTitle: string;
+    pageDescriptionMeta: string;
+    heading: string;
+    intro: string;
+    nameNote: string;
+    searchLabel: string;
+    searchPlaceholder: string;
+    abilityFilterLabel: string;
+    abilityFilterAll: string;
+    countTemplate: string;
+    empty: string;
+    maxLevelTemplate: string;
+    conditionalBadge: string;
+    conditionNotEvaluable: string;
+    categoryStandard: string;
+    categorySpecial: string;
+    categorySingle: string;
+    evidence_game_client_verified: string;
+    evidence_screenshot_verified: string;
+    evidence_external_cross_verified: string;
+    evidence_effect_provisional: string;
+    evidence_conditional_unverified: string;
+    evidenceNote_game_client_verified: string;
+    evidenceNote_screenshot_verified: string;
+    evidenceNote_external_cross_verified: string;
+    evidenceNote_effect_provisional: string;
+    evidenceNote_conditional_unverified: string;
+    entryLink: string;
+    versionTemplate: string;
   };
 }
 
