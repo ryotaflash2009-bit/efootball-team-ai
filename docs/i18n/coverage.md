@@ -9,14 +9,14 @@
 | en | PUBLISHED | 100 | 100 | 100 | 100 | 100 | 100 | 100 | — | source |
 | es | RELEASE_CANDIDATE | 88 | 100 | 100 | 100 | 100 | 100 | 100 | MACHINE_ASSISTED_COMPLETE | production gate NOT_MET; RC gate PASS; stale 0; same-as-en 126 |
 | pt-BR | RELEASE_CANDIDATE | 88 | 100 | 100 | 100 | 100 | 100 | 100 | MACHINE_ASSISTED_COMPLETE | production gate NOT_MET; RC gate PASS; stale 0; same-as-en 142 |
-| fr | MACHINE_DRAFT | 2.9 | 98.7 | 3.3 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | production gate NOT_MET; RC gate NOT_MET; stale 0; same-as-en 7 |
-| de | MACHINE_DRAFT | 2.9 | 98.7 | 3.3 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | production gate NOT_MET; RC gate NOT_MET; stale 0; same-as-en 10 |
-| it | MACHINE_DRAFT | 2.9 | 98.7 | 3.3 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | production gate NOT_MET; RC gate NOT_MET; stale 0; same-as-en 13 |
-| ko | MACHINE_DRAFT | 2.9 | 98.7 | 3.3 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | production gate NOT_MET; RC gate NOT_MET; stale 0; same-as-en 4 |
-| zh-CN | MACHINE_DRAFT | 2.9 | 98.7 | 3.3 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | production gate NOT_MET; RC gate NOT_MET; stale 0; same-as-en 4 |
-| zh-TW | MACHINE_DRAFT | 2.9 | 98.7 | 3.3 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | production gate NOT_MET; RC gate NOT_MET; stale 0; same-as-en 4 |
-| id | MACHINE_DRAFT | 2.9 | 98.7 | 3.3 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | production gate NOT_MET; RC gate NOT_MET; stale 0; same-as-en 5 |
-| tr | MACHINE_DRAFT | 2.9 | 98.7 | 3.3 | 10.2 | 3.9 | 0 | 0 | MACHINE_DRAFT_ONLY | production gate NOT_MET; RC gate NOT_MET; stale 0; same-as-en 4 |
+| fr | RELEASE_CANDIDATE | 88 | 100 | 100 | 100 | 100 | 100 | 100 | MACHINE_ASSISTED_COMPLETE | production gate NOT_MET; RC gate PASS; stale 0; same-as-en 150 |
+| de | RELEASE_CANDIDATE | 88 | 100 | 100 | 100 | 100 | 100 | 100 | MACHINE_ASSISTED_COMPLETE | production gate NOT_MET; RC gate PASS; stale 0; same-as-en 152 |
+| it | RELEASE_CANDIDATE | 88 | 100 | 100 | 100 | 100 | 100 | 100 | MACHINE_ASSISTED_COMPLETE | production gate NOT_MET; RC gate PASS; stale 0; same-as-en 155 |
+| ko | RELEASE_CANDIDATE | 88 | 100 | 100 | 100 | 100 | 100 | 100 | MACHINE_ASSISTED_COMPLETE | production gate NOT_MET; RC gate PASS; stale 0; same-as-en 81 |
+| zh-CN | RELEASE_CANDIDATE | 88 | 100 | 100 | 100 | 100 | 100 | 100 | MACHINE_ASSISTED_COMPLETE | production gate NOT_MET; RC gate PASS; stale 0; same-as-en 53 |
+| zh-TW | RELEASE_CANDIDATE | 88 | 100 | 100 | 100 | 100 | 100 | 100 | MACHINE_ASSISTED_COMPLETE | production gate NOT_MET; RC gate PASS; stale 0; same-as-en 53 |
+| id | RELEASE_CANDIDATE | 88 | 100 | 100 | 100 | 100 | 100 | 100 | MACHINE_ASSISTED_COMPLETE | production gate NOT_MET; RC gate PASS; stale 0; same-as-en 149 |
+| tr | RELEASE_CANDIDATE | 88 | 100 | 100 | 100 | 100 | 100 | 100 | MACHINE_ASSISTED_COMPLETE | production gate NOT_MET; RC gate PASS; stale 0; same-as-en 95 |
 | ar | INTERNAL_DRAFT | 0 | 0 | 0 | 0 | 0 | 0 | 0 | INCOMPLETE | production gate NOT_MET; RC gate NOT_MET; stale 0; same-as-en 0 |
 | th | INTERNAL_DRAFT | 0 | 0 | 0 | 0 | 0 | 0 | 0 | INCOMPLETE | production gate NOT_MET; RC gate NOT_MET; stale 0; same-as-en 0 |
 | vi | INTERNAL_DRAFT | 0 | 0 | 0 | 0 | 0 | 0 | 0 | INCOMPLETE | production gate NOT_MET; RC gate NOT_MET; stale 0; same-as-en 0 |

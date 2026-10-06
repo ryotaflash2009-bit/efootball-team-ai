@@ -1,163 +1,22 @@
 import type { PartialDictionary } from "../../translate";
+import core from "./tr/core";
+import b1 from "./tr/b1";
+import b2 from "./tr/b2";
+import b3 from "./tr/b3";
+import b4 from "./tr/b4";
+import b5 from "./tr/b5";
+import b6 from "./tr/b6";
+import b7 from "./tr/b7";
+import b8 from "./tr/b8";
+// 計算ライブラリが作る文の訳・ゲームの用語（読み込みと同時に登録される）
+import "./tr/generated";
+import "./tr/game-terms";
 
 /**
- * Türkçe (tr) — MACHINE_DRAFT: yapay zekâ taslağı (2026-10-06), insan veya anadili konuşan biri tarafından incelenmedi. Yalnızca dahili önizleme.
- * Kapsam: temel arayüz ve ana sayfa. Geri kalanı İngilizce görünür. Terimler: docs/i18n/terminology-glossary.md.
+ * Türkçe (tr) — machine-assisted translation of every public screen (2026-10-06). Not reviewed by a native speaker.
+ * 法務文書（terms・privacy・disclaimer）は本人の方針で訳さず English で表示する（専門家のレビューの無い法務の訳を出さない）。
+ * 名前空間はファイルごとに重ならない（core: 核・ホーム / b1〜b8: 画面ごと）。言語ごとに 1 つの別 chunk（その言語を選んだときだけ読み込む）。
  */
-const tr: PartialDictionary = {
-  common: {
-    loading: "Yükleniyor",
-    errorTitle: "Bir sorun oluştu",
-    errorDescription: "Birazdan tekrar dene. Sorun devam ederse sayfayı yenile.",
-    retry: "Tekrar dene",
-    back: "Geri",
-    home: "Ana sayfaya git",
-    save: "Kaydet",
-    cancel: "İptal",
-    close: "Kapat",
-    confirm: "Onayla",
-    unknownPlayer: "Bilinmeyen oyuncu",
-  },
-  pageError: {
-    title: "Bu sayfa görüntülenirken bir hata oluştu",
-    description: "Veriler yüklenemedi. Tekrar denemek işe yaramazsa sayfayı yenile.",
-    codeLabelPrefix: "Kod: ",
-    iconAriaLabel: "Hata",
-  },
-  notFoundPage: {
-    title: "Sayfa bulunamadı",
-    description: "Aradığın sayfa veya oyuncu mevcut değil ya da taşınmış olabilir.",
-    playersLink: "Oyuncu listesine git",
-  },
-  nav: {
-    groupMain: "Ana",
-    groupMyData: "Verilerim",
-    groupAnalysis: "Analiz",
-    groupCommunity: "Topluluk",
-    home: "Ana sayfa",
-    players: "Oyuncular",
-    managers: "Teknik direktörler",
-    compare: "Karşılaştır",
-    squads: "Kadrolar",
-    favorites: "Favoriler",
-    myTeam: "Takımım",
-    myBuilds: "Buildlerim",
-    buildInventory: "Build analizi",
-    diagnosisHistory: "Analiz geçmişi",
-    bestXi: "AI Best XI",
-    tierLists: "Tier listesi",
-    packs: "Paketler",
-    community: "Topluluk",
-    comingSoon: "Yakında",
-    ariaSidebar: "Yan menü",
-    ariaCollapse: "Kenar çubuğunu daralt",
-    ariaExpand: "Kenar çubuğunu genişlet",
-    collapseLabel: "Daralt",
-    ariaMobileMenuOpen: "Menüyü aç",
-    ariaMobileMenuClose: "Menüyü kapat",
-    ariaMobileMenu: "Menü",
-    ariaHome: "Ana sayfa",
-    brand: "TeamAIXI",
-  },
-  header: {
-    searchPlaceholder: "Oyuncu ara…",
-    searchAriaLabel: "Oyuncu ara",
-    ariaHomeLink: "TeamAIXI ana sayfası",
-    accountNavSignIn: "Giriş yap",
-    accountNavAccount: "Hesap",
-  },
-  language: {
-    japanese: "日本語",
-    english: "English",
-    ariaLabel: "Görüntüleme dilini seç",
-    moreLanguages: "Diğer diller (önizleme)",
-    previewListLabel: "Önizlemedeki diller",
-    previewBadge: "Önizleme",
-    loadingLanguage: "Dil yükleniyor…",
-  },
-  footer: {
-    ariaLandmark: "Site alt bilgisi",
-    aboutLink: "Hakkında",
-    termsLink: "Kullanım koşulları",
-    privacyLink: "Gizlilik",
-    disclaimerLink: "Sorumluluk reddi",
-    dataManagementLink: "Veri yönetimi",
-    supportLink: "Destek",
-    releaseReadinessLink: "Yayın hazırlığı",
-    unofficialNotice:
-      "TeamAIXI, eFootball™ için resmi olmayan bir kadro analiz aracıdır. KONAMI'nin veya eFootball™'un resmi bir hizmeti değildir; KONAMI tarafından onaylanmamış, KONAMI ile bağlantılı değildir ve KONAMI tarafından işletilmez. Ticari markalar ve ürün adları ilgili sahiplerine aittir. Veriler, analizler ve değerlendirmeler hata veya gecikme içerebilir ve oyun içi kararları garanti etmez.",
-    draftBadge: "v1.0 · Ücretsiz · Giriş gerekmez",
-  },
-  category: {
-    attack: "Hücum",
-    defense: "Savunma",
-    aerial: "Hava hakimiyeti",
-    speed: "Hız",
-    passBuildUp: "Pas ve oyun kurma",
-    dribblePossession: "Top sürme ve top hakimiyeti",
-    pressResistance: "Pres direnci",
-    counterAttack: "Kontra atak",
-    squadCompleteness: "Kadro yerleşim bütünlüğü",
-  },
-  homePage: {
-    alphaNoticeBanner:
-      "TeamAIXI v1.0, giriş yapmadan kullanılabilen ücretsiz ve resmi olmayan bir eFootball™ kadro analiz aracıdır. KONAMI'nin veya eFootball™'un resmi bir hizmeti değildir. Hesap özellikleri gelecekteki bir güncellemede sunulacak.",
-    alphaNoticeDetailsLinkLabel: "TeamAIXI hakkında",
-    heroBadge: "eFootball™ için resmi olmayan kadro analiz aracı",
-    quickStartHeading: "TeamAIXI ile neler yapabilirsin",
-    quickStep1Title: "Oyuncu bul",
-    quickStep1Body: "İsim, World ID veya mevkiye göre ara.",
-    quickStep2Title: "Oyuncu geliştir",
-    quickStep2Body: "Oyuncu sayfasında özelliklere dokun veya kaydırıcıları kullanarak son değerleri gör.",
-    quickStep3Title: "Oyuncuları karşılaştır",
-    quickStep3Body: "Dört oyuncuya kadar yan yana koy.",
-    quickStep4Title: "Takımımı oluştur",
-    quickStep4Body: "Sahip olduğun kartları bu tarayıcıya kaydet (giriş gerekmez).",
-    quickStep5Title: "Kadroyu analiz et",
-    quickStep5Body: "Güçlü ve zayıf yönleri görmek için bir diziliş ve oyuncular seç.",
-    quickStep6Title: "Sonuçları paylaş",
-    quickStep6Body: "Bir analizi bağlantı veya görsel olarak kaydet ya da paylaş.",
-    heroTitlePrefix: "Oyuncuları incele, karşılaştır ve ",
-    heroTitleAccent: "kadronu",
-    heroTitleSuffix: " kur.",
-    heroDescriptionTemplate:
-      "eFootball'un {count} World kartının tamamı. 26 özellik, beceriler, gelişim hesaplamaları, teknik direktör güçlendiricileri ve Link-Up Play koşulları tek ekranda. Hesaplama kuralları doğrulanmamış öğeler açıkça \"doğrulanıyor\" olarak işaretlenir.",
-    searchPlaceholder: "Oyuncu adı veya World ID ile ara…",
-    searchAriaLabel: "Oyuncu ara",
-    searchButton: "Ara",
-    compareButton: "Oyuncuları karşılaştır",
-    createSquadButton: "Kadro kur",
-    dataStatusHeading: "Veri durumu",
-    worldCardsLabel: "World kartları",
-    efhubIndexLabel: "eFHUB dizini",
-    managersLabel: "Teknik direktörler",
-    syncedAtLabel: "World verileri içe aktarıldı",
-    worldUnavailableTitle: "World verileri henüz ayarlanmadı",
-    temporaryErrorNotice: "Bazı veriler şu anda yüklenemedi. Biraz bekleyip sayfayı yenile.",
-    temporaryErrorReload: "Yenile",
-    worldUnavailableCommandPrefix: "Terminalde ",
-    worldUnavailableCommandSuffix: " komutunu çalıştır.",
-    topOvrHeading: "En yüksek maksimum OVR'ye sahip kartlar",
-    recentHeading: "Son güncellenen kartlar",
-    viewAllLink: "Tümünü gör",
-    quickLinksHeading: "Neler yapabilirsin",
-    findPlayersLabel: "Oyuncu bul",
-    findPlayersDescTemplate: "{count} World kartını ara ve filtrele",
-    comparePlayersLabel: "Oyuncuları karşılaştır",
-    comparePlayersDesc: "2–4 oyuncunun özelliklerini, becerilerini, gelişimini ve teknik direktör güçlendiricilerini karşılaştır",
-    buildSquadLabel: "Kadro kur",
-    buildSquadDesc: "Dizilişi, gelişimi, teknik direktörü ve Link-Up koşullarını kontrol et",
-    exploreManagersLabel: "Teknik direktörleri keşfet",
-    exploreManagersDescTemplate: "{count} teknik direktörün taktik yeterliliği, güçlendiricileri ve Link-Up Play'i",
-    inDevelopmentHeading: "Geliştiriliyor",
-    inDevelopmentHint: "Yakında",
-    featureTierList: "Tier listesi",
-    featurePackDiagnosis: "Paket analizi",
-    featureAiCoach: "Yapay zekâ koç analizi",
-    featureCommunity: "Topluluk",
-    designDocNote:
-      "Tasarım ayrıntıları için docs/efootball-team-ai-design.md dosyasına bak. Yalnızca içe aktarılmış gerçek veriler gösterilir; uydurma kullanıcı sayıları veya puanlar yoktur.",
-  },
-};
+const tr: PartialDictionary = { ...core, ...b1, ...b2, ...b3, ...b4, ...b5, ...b6, ...b7, ...b8 };
 
 export default tr;

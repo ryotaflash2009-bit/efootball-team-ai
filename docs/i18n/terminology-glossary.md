@@ -105,3 +105,7 @@ TeamAIXI・eFootball™・KONAMI・選手名・監督名・カード名・プレ
 - 2026-10-06 pt-BR `defensiveEngagement`: 「Comprometimento defensivo」→「Empenho defensivo」（390・430px の育成画面で切れるため短くした）。
   ゲーム内の pt-BR の公式の表記と照合が必要（REVIEW_REQUIRED）。
 - 2026-10-06 es・pt-BR `boosterModeStandard`: English のまま（"Standard"）だったため「Estándar」「Padrão」（`b3` の `standard` と同じ語）。
+- 2026-10-07 fr・de・it・ko・zh-CN・zh-TW・id・tr の全文の AI 翻訳（RELEASE_CANDIDATE）。ゲームの用語は各言語の `locales/<locale>/game-terms.ts`
+  （REVIEW_REQUIRED）。機能名は各言語の `nav` にそろえた（ko「내 팀・내 빌드」、it「Analisi delle build・Gestione dei dati・Cronologia diagnosi・Cockpit di confronto」）。
+- 2026-10-07 it `progressionTab.remainingLabel`: 「Rimanenti」→「Restano」（430px の育成画面で選手名が切れるため）。
+- 注意（全言語共通・レビューで決める）: 用語集は Link-Up Play・OVR に各言語の訳を載せているが、翻訳の指示は「訳さない」。今回の訳は指示に従い English のまま。

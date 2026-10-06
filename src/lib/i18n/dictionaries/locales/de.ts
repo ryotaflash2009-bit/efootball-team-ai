@@ -1,164 +1,22 @@
 import type { PartialDictionary } from "../../translate";
+import core from "./de/core";
+import b1 from "./de/b1";
+import b2 from "./de/b2";
+import b3 from "./de/b3";
+import b4 from "./de/b4";
+import b5 from "./de/b5";
+import b6 from "./de/b6";
+import b7 from "./de/b7";
+import b8 from "./de/b8";
+// 計算ライブラリが作る文の訳・ゲームの用語（読み込みと同時に登録される）
+import "./de/generated";
+import "./de/game-terms";
 
 /**
- * Deutsch (de) — MACHINE_DRAFT: KI-Entwurf (2026-10-06), ohne menschliche oder muttersprachliche Prüfung. Nur interne Vorschau.
- * Umfang: Kernoberfläche und Startseite. Der Rest wird auf Englisch angezeigt. Terminologie: docs/i18n/terminology-glossary.md.
- * Anrede: „du“ (wie in Spiele-Apps üblich) – bei der Prüfung bestätigen.
+ * Deutsch (de) — machine-assisted translation of every public screen (2026-10-06). Not reviewed by a native speaker.
+ * 法務文書（terms・privacy・disclaimer）は本人の方針で訳さず English で表示する（専門家のレビューの無い法務の訳を出さない）。
+ * 名前空間はファイルごとに重ならない（core: 核・ホーム / b1〜b8: 画面ごと）。言語ごとに 1 つの別 chunk（その言語を選んだときだけ読み込む）。
  */
-const de: PartialDictionary = {
-  common: {
-    loading: "Wird geladen",
-    errorTitle: "Etwas ist schiefgelaufen",
-    errorDescription: "Bitte versuche es gleich noch einmal. Wenn das Problem bleibt, lade die Seite neu.",
-    retry: "Erneut versuchen",
-    back: "Zurück",
-    home: "Zur Startseite",
-    save: "Speichern",
-    cancel: "Abbrechen",
-    close: "Schließen",
-    confirm: "Bestätigen",
-    unknownPlayer: "Unbekannter Spieler",
-  },
-  pageError: {
-    title: "Beim Anzeigen dieser Seite ist ein Fehler aufgetreten",
-    description: "Die Daten konnten nicht geladen werden. Wenn ein erneuter Versuch nicht hilft, lade die Seite neu.",
-    codeLabelPrefix: "Code: ",
-    iconAriaLabel: "Fehler",
-  },
-  notFoundPage: {
-    title: "Seite nicht gefunden",
-    description: "Die gesuchte Seite oder der gesuchte Spieler existiert nicht oder wurde verschoben.",
-    playersLink: "Zur Spielerliste",
-  },
-  nav: {
-    groupMain: "Allgemein",
-    groupMyData: "Meine Daten",
-    groupAnalysis: "Analyse",
-    groupCommunity: "Community",
-    home: "Start",
-    players: "Spieler",
-    managers: "Trainer",
-    compare: "Vergleichen",
-    squads: "Kader",
-    favorites: "Favoriten",
-    myTeam: "Mein Team",
-    myBuilds: "Meine Builds",
-    buildInventory: "Build-Analyse",
-    diagnosisHistory: "Analyseverlauf",
-    bestXi: "AI Best XI",
-    tierLists: "Tier-Liste",
-    packs: "Packs",
-    community: "Community",
-    comingSoon: "Demnächst",
-    ariaSidebar: "Seitenmenü",
-    ariaCollapse: "Seitenleiste einklappen",
-    ariaExpand: "Seitenleiste ausklappen",
-    collapseLabel: "Einklappen",
-    ariaMobileMenuOpen: "Menü öffnen",
-    ariaMobileMenuClose: "Menü schließen",
-    ariaMobileMenu: "Menü",
-    ariaHome: "Start",
-    brand: "TeamAIXI",
-  },
-  header: {
-    searchPlaceholder: "Spieler suchen…",
-    searchAriaLabel: "Spieler suchen",
-    ariaHomeLink: "TeamAIXI-Startseite",
-    accountNavSignIn: "Anmelden",
-    accountNavAccount: "Konto",
-  },
-  language: {
-    japanese: "日本語",
-    english: "English",
-    ariaLabel: "Anzeigesprache wählen",
-    moreLanguages: "Weitere Sprachen (Vorschau)",
-    previewListLabel: "Sprachen in der Vorschau",
-    previewBadge: "Vorschau",
-    loadingLanguage: "Sprache wird geladen…",
-  },
-  footer: {
-    ariaLandmark: "Fußzeile der Website",
-    aboutLink: "Über",
-    termsLink: "Nutzungsbedingungen",
-    privacyLink: "Datenschutz",
-    disclaimerLink: "Haftungsausschluss",
-    dataManagementLink: "Datenverwaltung",
-    supportLink: "Support",
-    releaseReadinessLink: "Veröffentlichungsbereitschaft",
-    unofficialNotice:
-      "TeamAIXI ist ein inoffizielles Kader-Analysetool für eFootball™. Es ist kein offizieller Dienst von KONAMI oder eFootball™ und wird von KONAMI weder unterstützt noch betrieben, noch besteht eine Verbindung zu KONAMI. Marken und Produktnamen gehören ihren jeweiligen Inhabern. Daten, Analysen und Bewertungen können Fehler oder Verzögerungen enthalten und garantieren keine Entscheidungen im Spiel.",
-    draftBadge: "v1.0 · Kostenlos · Ohne Anmeldung",
-  },
-  category: {
-    attack: "Angriff",
-    defense: "Abwehr",
-    aerial: "Kopfballspiel",
-    speed: "Tempo",
-    passBuildUp: "Passspiel & Spielaufbau",
-    dribblePossession: "Dribbling & Ballbesitz",
-    pressResistance: "Pressingresistenz",
-    counterAttack: "Konter",
-    squadCompleteness: "Vollständigkeit des Kaders",
-  },
-  homePage: {
-    alphaNoticeBanner:
-      "TeamAIXI v1.0 ist ein kostenloses, inoffizielles Kader-Analysetool für eFootball™, das ohne Anmeldung funktioniert. Es ist kein offizieller Dienst von KONAMI oder eFootball™. Kontofunktionen sind für ein späteres Update geplant.",
-    alphaNoticeDetailsLinkLabel: "Über TeamAIXI",
-    heroBadge: "Inoffizielles Kader-Analysetool für eFootball™",
-    quickStartHeading: "Das kannst du mit TeamAIXI tun",
-    quickStep1Title: "Spieler finden",
-    quickStep1Body: "Suche nach Name, World-ID oder Position.",
-    quickStep2Title: "Spieler entwickeln",
-    quickStep2Body: "Tippe auf der Spielerseite auf Attribute oder nutze die Schieberegler, um die Endwerte zu sehen.",
-    quickStep3Title: "Spieler vergleichen",
-    quickStep3Body: "Stelle bis zu vier Spieler nebeneinander.",
-    quickStep4Title: "Mein Team erstellen",
-    quickStep4Body: "Speichere deine Karten in diesem Browser (ohne Anmeldung).",
-    quickStep5Title: "Kader analysieren",
-    quickStep5Body: "Wähle eine Formation und Spieler, um Stärken und Schwächen zu sehen.",
-    quickStep6Title: "Ergebnisse teilen",
-    quickStep6Body: "Speichere oder teile eine Analyse als Link oder Bild.",
-    heroTitlePrefix: "Spieler recherchieren, vergleichen und einen ",
-    heroTitleAccent: "Kader",
-    heroTitleSuffix: " zusammenstellen.",
-    heroDescriptionTemplate:
-      "Alle {count} eFootball-World-Karten. 26 Attribute, Fähigkeiten, Entwicklungsberechnungen, Trainer-Booster und Link-Up-Play-Bedingungen auf einem Bildschirm. Elemente, deren Berechnungsregeln nicht bestätigt sind, werden deutlich als „in Prüfung“ gekennzeichnet.",
-    searchPlaceholder: "Nach Spielername oder World-ID suchen…",
-    searchAriaLabel: "Spieler suchen",
-    searchButton: "Suchen",
-    compareButton: "Spieler vergleichen",
-    createSquadButton: "Kader erstellen",
-    dataStatusHeading: "Datenstatus",
-    worldCardsLabel: "World-Karten",
-    efhubIndexLabel: "eFHUB-Index",
-    managersLabel: "Trainer",
-    syncedAtLabel: "World-Daten importiert",
-    worldUnavailableTitle: "World-Daten sind noch nicht eingerichtet",
-    temporaryErrorNotice: "Einige Daten konnten gerade nicht geladen werden. Bitte warte kurz und lade neu.",
-    temporaryErrorReload: "Neu laden",
-    worldUnavailableCommandPrefix: "Führe ",
-    worldUnavailableCommandSuffix: " im Terminal aus.",
-    topOvrHeading: "Karten mit dem höchsten max. OVR",
-    recentHeading: "Kürzlich aktualisierte Karten",
-    viewAllLink: "Alle anzeigen",
-    quickLinksHeading: "Das kannst du tun",
-    findPlayersLabel: "Spieler finden",
-    findPlayersDescTemplate: "{count} World-Karten suchen und filtern",
-    comparePlayersLabel: "Spieler vergleichen",
-    comparePlayersDesc: "Attribute, Fähigkeiten, Entwicklung und Trainer-Booster von 2–4 Spielern vergleichen",
-    buildSquadLabel: "Kader erstellen",
-    buildSquadDesc: "Formation, Entwicklung, Trainer und Link-Up-Bedingungen prüfen",
-    exploreManagersLabel: "Trainer entdecken",
-    exploreManagersDescTemplate: "Taktikkompetenz, Booster und Link-Up Play von {count} Trainern",
-    inDevelopmentHeading: "In Entwicklung",
-    inDevelopmentHint: "Demnächst",
-    featureTierList: "Tier-Liste",
-    featurePackDiagnosis: "Pack-Analyse",
-    featureAiCoach: "KI-Trainer-Analyse",
-    featureCommunity: "Community",
-    designDocNote:
-      "Details zum Design findest du in docs/efootball-team-ai-design.md. Es werden nur tatsächlich importierte Daten angezeigt – keine erfundenen Nutzerzahlen oder Bewertungen.",
-  },
-};
+const de: PartialDictionary = { ...core, ...b1, ...b2, ...b3, ...b4, ...b5, ...b6, ...b7, ...b8 };
 
 export default de;

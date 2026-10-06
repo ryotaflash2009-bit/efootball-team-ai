@@ -84,17 +84,22 @@ describe("疑似ローカライズ", () => {
   });
 });
 
-describe("下書きの言語（MACHINE_DRAFT）の読み込み", () => {
-  it("registry の下書きの言語はすべて辞書を読み込め、核の文言が English と違う訳になっている", async () => {
+describe("訳のある未公開の言語（MACHINE_DRAFT・RELEASE_CANDIDATE）の読み込み", () => {
+  it("registry の訳のある言語はすべて辞書を読み込め、核の文言が English と違う訳・ゲームの用語も登録される", async () => {
     const { LOCALES } = await import("./locale-registry");
-    const drafts = LOCALES.filter((l) => l.state === "MACHINE_DRAFT");
-    for (const l of drafts) {
+    const translated = LOCALES.filter((l) => (["MACHINE_DRAFT", "RELEASE_CANDIDATE"] as string[]).includes(l.state));
+    expect(translated.length).toBeGreaterThanOrEqual(10);
+    for (const l of translated) {
       vi.resetModules();
       const t = await import("./translate");
       await t.loadDictionary(l.code);
       expect(t.hasDictionary(l.code), l.code).toBe(true);
       expect(t.translate(l.code, "nav", "players"), l.code).not.toBe(en.nav.players);
       expect(t.translate(l.code, "nav", "brand"), l.code).toBe("TeamAIXI");
+      if (l.state === "RELEASE_CANDIDATE") {
+        const g = await import("./game-terms");
+        expect(g.localizedAbilityName("speed", l.code), l.code).toBeTruthy();
+      }
     }
-  }, 60_000);
+  }, 120_000);
 });
