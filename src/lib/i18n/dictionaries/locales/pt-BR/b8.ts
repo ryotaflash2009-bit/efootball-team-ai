@@ -431,6 +431,10 @@ const part: PartialDictionary = {
     mostImprovedTemplate: "Maior melhoria: {category} {from} → {to}",
     overcameTemplate: "De ponto fraco para A ou melhor: {categories}",
     excludedRulesTemplate: "{count} entradas com regras de diagnóstico diferentes não são comparadas.",
+    peakTemplate: "Melhor: {overall} ({date})",
+    mostDeclinedTemplate: "Maior queda: {category} {from} → {to}",
+    newWeaknessesTemplate: "Novos pontos fracos (de A ou mais para C ou menos): {categories}",
+    streakTemplate: "Subiu {count} vezes seguidas",
   },
   myTeamButton: {
     registeredAria: "Registrado no Meu time",

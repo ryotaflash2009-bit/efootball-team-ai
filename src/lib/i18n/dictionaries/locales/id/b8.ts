@@ -431,6 +431,10 @@ const part: PartialDictionary = {
     mostImprovedTemplate: "Paling meningkat: {category} {from} → {to}",
     overcameTemplate: "Dari kelemahan menjadi A atau lebih baik: {categories}",
     excludedRulesTemplate: "{count} entri dengan aturan diagnosis berbeda tidak dibandingkan.",
+    peakTemplate: "Terbaik: {overall} ({date})",
+    mostDeclinedTemplate: "Penurunan terbesar: {category} {from} → {to}",
+    newWeaknessesTemplate: "Kelemahan baru (dari A atau lebih ke C atau kurang): {categories}",
+    streakTemplate: "Naik {count} kali berturut-turut",
   },
   myTeamButton: {
     registeredAria: "Terdaftar di Tim Saya",

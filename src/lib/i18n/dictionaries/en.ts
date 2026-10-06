@@ -4040,6 +4040,10 @@ const en: Dictionary = {
     mostImprovedTemplate: "Most improved: {category} {from} → {to}",
     overcameTemplate: "Went from a weakness to A or better: {categories}",
     excludedRulesTemplate: "{count} entries under different diagnosis rules are not compared.",
+    peakTemplate: "Best: {overall} ({date})",
+    mostDeclinedTemplate: "Biggest drop: {category} {from} → {to}",
+    newWeaknessesTemplate: "New weaknesses (from A or better to C or below): {categories}",
+    streakTemplate: "Up {count} times in a row",
   },
   localBackup: {
     heading: "Back up, restore or delete this area's data",

@@ -3905,6 +3905,10 @@ export interface Dictionary {
     mostImprovedTemplate: string;
     overcameTemplate: string;
     excludedRulesTemplate: string;
+    peakTemplate: string;
+    mostDeclinedTemplate: string;
+    newWeaknessesTemplate: string;
+    streakTemplate: string;
   };
   localBackup: {
     heading: string;
