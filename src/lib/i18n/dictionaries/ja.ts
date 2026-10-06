@@ -3886,6 +3886,15 @@ export interface Dictionary {
     heading: string;
     explanation: string;
     none: string;
+    extrasHeading: string;
+    extraHighestRated: string;
+    extraLargestGrowth: string;
+    extraRarestPosition: string;
+    extraRarestCardType: string;
+    extraOvrTemplate: string;
+    extraGrowthTemplate: string;
+    extraCountTemplate: string;
+    extrasNote: string;
   };
   growthProfile: {
     heading: string;

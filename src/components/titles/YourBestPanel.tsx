@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/Badge";
 import { useBestXiProgressionCards } from "@/lib/best-xi/use-candidate-cards";
 import { useWorldBasePercentiles } from "@/lib/percentiles/use-world-base-percentiles";
 import { cardBasePercentiles, scopeKeyFor } from "@/lib/percentiles/card-percentiles";
-import { discoverYourBest, YOUR_BEST_RULES_VERSION } from "@/lib/titles/your-best";
+import { discoverYourBest, discoverYourBestExtras, YOUR_BEST_EXTRAS_VERSION, YOUR_BEST_RULES_VERSION, type YourBestExtraId } from "@/lib/titles/your-best";
 import { BUCKET_LABEL_KEY } from "@/components/world/WorldBasePercentilePanel";
 import { RULE_LABEL_KEY } from "./PlayerTitles";
 
@@ -39,6 +39,18 @@ export function YourBestPanel({ ids, nameOf }: { ids: string[]; nameOf: (id: str
     });
     return discoverYourBest(inputs);
   }, [data, cards]);
+  // 公式のデータ（OVR・ポジション・カード種別）だけの追加の項目（2026-10-07）。能力の区分の読み込みを待たない。
+  const extras = useMemo(
+    () => discoverYourBestExtras([...cards.values()].map((c) => ({ worldCardId: c.worldCardId, ovrBase: c.ovrBase, ovrMax: c.ovrMax, registeredPosition: c.registeredPosition, cardType: c.cardType }))),
+    [cards],
+  );
+  const extraLabel: Record<YourBestExtraId, keyof Dictionary["yourBest"]> = { highestRated: "extraHighestRated", largestGrowth: "extraLargestGrowth", rarestPosition: "extraRarestPosition", rarestCardType: "extraRarestCardType" };
+  const extraValue = (e: (typeof extras)[number]) =>
+    e.id === "highestRated"
+      ? yb("extraOvrTemplate").replace("{value}", String(e.value))
+      : e.id === "largestGrowth"
+        ? yb("extraGrowthTemplate").replace("{value}", String(e.value))
+        : yb("extraCountTemplate").replace("{label}", e.label ?? "").replace("{count}", String(e.value));
 
   return (
     <details className="rounded-card border border-border bg-surface p-3" data-testid="your-best" onToggle={(e) => setOpen((e.target as HTMLDetailsElement).open)}>
@@ -73,7 +85,26 @@ export function YourBestPanel({ ids, nameOf }: { ids: string[]; nameOf: (id: str
           ))}
         </ul>
       )}
-      {open ? <p className="mt-1.5 text-2xs text-text-muted">{t("titles", "rulesVersionTemplate").replace("{version}", YOUR_BEST_RULES_VERSION)}</p> : null}
+      {open && !loading && extras.length > 0 ? (
+        <div className="mt-3" data-testid="your-best-extras">
+          <p className="text-xs font-semibold">{yb("extrasHeading")}</p>
+          <ul className="mt-1.5 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+            {extras.map((e) => (
+              <li key={e.id} className="flex min-w-0 flex-col gap-0.5 rounded border border-border/60 px-2 py-1.5 text-xs" data-extra={e.id}>
+                <span className="font-semibold">{yb(extraLabel[e.id])}</span>
+                <span className="flex min-w-0 items-center justify-between gap-2">
+                  <Link href={`/players/world/${encodeURIComponent(e.worldCardId)}`} className="min-w-0 truncate text-accent hover:underline">
+                    {nameOf(e.worldCardId)}
+                  </Link>
+                  <span className="shrink-0 tabular-nums text-text-dim">{extraValue(e)}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-1.5 text-2xs text-text-muted">{yb("extrasNote")}</p>
+        </div>
+      ) : null}
+      {open ? <p className="mt-1.5 text-2xs text-text-muted">{t("titles", "rulesVersionTemplate").replace("{version}", `${YOUR_BEST_RULES_VERSION} · ${YOUR_BEST_EXTRAS_VERSION}`)}</p> : null}
     </details>
   );
 }
