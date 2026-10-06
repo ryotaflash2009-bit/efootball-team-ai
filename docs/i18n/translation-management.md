@@ -35,3 +35,13 @@
 HTML のタグの数の不一致・状態の記録と registry の不一致・公開の言語の条件の不足。
 報告: 面ごとの coverage・English と同じ値の数・stale・長すぎる訳（元の 3 倍超かつ 40 文字超）。
 CI では `src/lib/i18n/locale-coverage-audit.test.ts` が `--check` を実行する。
+
+## 5. 固有の用語の契約（Link-Up Play・OVR）— 2026-10-07 本人の判断
+
+- **Link-Up Play**（短いラベルは「Link-Up」）と **OVR** は、データ元で各言語の正式な表記を確認できるまで、全言語で原語のまま使う。
+- 現地語の短い補足は Tooltip・初回の説明に限り、原語と並べて付けてよい（例: `OVR (valoración general)`）。原語の代わりにはしない。
+- AI の訳を正式なゲーム内の名称として扱わない。原語で検索できる状態を保つ（検索は原語の名前のまま）。
+- 監査: `node scripts/audit-fixed-terms.mjs`（辞書・生成文の表の全言語）。回帰テスト: `src/lib/i18n/fixed-terms.test.ts`（CI）。
+  English の原文に用語がある文は訳にも同じ原語が必要。原語なしの現地語の候補（juego combinado・Kombinationsspiel・연계 플레이・联动配合・
+  MED・GER・GEN・GES・CMP など）は違反。
+- 正式な現地語の表記が確認できた場合: データ元（URL・取得日）を用語集に記録し、`scripts/lib/fixed-terms.mjs` の契約を言語ごとに更新する。
