@@ -5,11 +5,13 @@ import { localizeSquadDiagnosisText, swapPlayerNames } from "@/lib/squad/squad-d
 import { createContext, useContext } from "react";
 import type {
   SquadDiagnosisResult,
+  SquadDiagnosisInput,
   SquadDiagnosisCategory,
   SquadDiagnosisFinding,
   SquadDiagnosisTier,
 } from "@/lib/squad/squad-diagnosis";
 import { Badge } from "@/components/ui/Badge";
+import { ImprovementSimulationPanel } from "./ImprovementSimulationPanel";
 import { SquadDiagnosisImageSaveButton } from "./SquadDiagnosisImageSaveButton";
 import { SquadDiagnosisShareUrlButton } from "./SquadDiagnosisShareUrlButton";
 import { SquadDiagnosisHistorySaveButton } from "./SquadDiagnosisHistorySaveButton";
@@ -274,8 +276,11 @@ export function SquadDiagnosisPanel({
   formationLabel,
   tacticalPlacements,
   namePairs = [],
+  simulationInput = null,
 }: {
   result: SquadDiagnosisResult | null;
+  /** 改善シミュレーションの元（診断と同じ入力）。無ければ表示しない。 */
+  simulationInput?: SquadDiagnosisInput | null;
   /** 英語の画面で選手名を英語名にそろえる [日本語名, 英語名]。 */
   namePairs?: readonly (readonly [string, string])[];
   squadName: string;
@@ -413,6 +418,8 @@ export function SquadDiagnosisPanel({
           </ul>
         </div>
       ) : null}
+
+      {simulationInput ? <ImprovementSimulationPanel input={simulationInput} /> : null}
 
       <SquadDiagnosisImageSaveButton result={result} squadName={squadName} formationLabel={formationLabel} />
       <SquadDiagnosisShareUrlButton result={result} formationLabel={formationLabel} />

@@ -363,6 +363,14 @@ export interface Dictionary {
     weaknessesHeading: string;
     weaknessesEmpty: string;
     suggestionsHeading: string;
+    simulationHeading: string;
+    simulationIntro: string;
+    simulationEmpty: string;
+    simulationSwapTemplate: string;
+    simulationOverallTemplate: string;
+    simulationImprovedLabel: string;
+    simulationWorsenedLabel: string;
+    simulationNote: string;
     criticalWarningsHeading: string;
     findingBadgeReferenceError: string;
     findingBadgeCompatibility: string;

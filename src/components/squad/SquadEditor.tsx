@@ -1994,6 +1994,7 @@ export function SquadEditor({
       {/* 下段: スカッド診断（編成エリア全体の下・PC/モバイル共通で常時表示・SquadDiagnosisPanelは1回だけレンダリング） */}
       <div className="mt-2">
         <SquadDiagnosisPanel
+          simulationInput={diagnosisInput}
           result={diagnosis}
           squadName={squad?.squadName ?? ""}
           formationLabel={computed.formation.name}
