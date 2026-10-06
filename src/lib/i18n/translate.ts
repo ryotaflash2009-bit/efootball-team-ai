@@ -32,6 +32,11 @@ const LOADING: Partial<Record<DisplayLocale, Promise<void>>> = {};
 
 /** ja・en 以外の言語の辞書（言語ごとに別 chunk。初回 JS に含めない）。 */
 const LOADERS: Partial<Record<DisplayLocale, () => Promise<PartialDictionary>>> = {
+  es: () => import("./dictionaries/locales/es").then((m) => m.default),
+  "pt-BR": () => import("./dictionaries/locales/pt-BR").then((m) => m.default),
+  fr: () => import("./dictionaries/locales/fr").then((m) => m.default),
+  de: () => import("./dictionaries/locales/de").then((m) => m.default),
+  it: () => import("./dictionaries/locales/it").then((m) => m.default),
   "en-XA": () => Promise.all([import("./dictionaries/en"), import("./pseudo-locale")]).then(([en, p]) => p.pseudoDictionary(en.default, "en-XA")),
   "ar-XB": () => Promise.all([import("./dictionaries/en"), import("./pseudo-locale")]).then(([en, p]) => p.pseudoDictionary(en.default, "ar-XB")),
 };

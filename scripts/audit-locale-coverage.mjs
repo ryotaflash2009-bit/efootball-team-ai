@@ -103,7 +103,8 @@ for (const info of LOCALES) {
     if (ph(v) !== ph(src)) r.placeholderMismatch.push(id);
     if (CONTROL.test(v)) r.control.push(id);
     const cjk = code === "zh-CN" || code === "zh-TW";
-    if (JA_KANA.test(v) || (!cjk && CJK_IDEO.test(v))) r.leakage.push(id);
+    // language.japanese は言語の名前（「日本語」）そのもの（どの言語でも日本語の表記で出す）
+    if (id !== "language.japanese" && (JA_KANA.test(v) || (!cjk && CJK_IDEO.test(v)))) r.leakage.push(id);
     if (UNSAFE_LINK.test(v) && !UNSAFE_LINK.test(src)) r.unsafe.push(id);
     if (SECRET.test(v)) r.secretLike.push(id);
     if (tags(v) !== tags(src)) r.tagMismatch.push(id);

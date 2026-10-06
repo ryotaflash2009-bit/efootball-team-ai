@@ -83,3 +83,18 @@ describe("疑似ローカライズ", () => {
     expect(checked).toBeGreaterThan(3000);
   });
 });
+
+describe("下書きの言語（MACHINE_DRAFT）の読み込み", () => {
+  it("registry の下書きの言語はすべて辞書を読み込め、核の文言が English と違う訳になっている", async () => {
+    const { LOCALES } = await import("./locale-registry");
+    const drafts = LOCALES.filter((l) => l.state === "MACHINE_DRAFT");
+    for (const l of drafts) {
+      vi.resetModules();
+      const t = await import("./translate");
+      await t.loadDictionary(l.code);
+      expect(t.hasDictionary(l.code), l.code).toBe(true);
+      expect(t.translate(l.code, "nav", "players"), l.code).not.toBe(en.nav.players);
+      expect(t.translate(l.code, "nav", "brand"), l.code).toBe("TeamAIXI");
+    }
+  }, 60_000);
+});
