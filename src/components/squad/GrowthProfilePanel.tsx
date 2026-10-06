@@ -76,6 +76,23 @@ export function GrowthProfilePanel({ entries }: { entries: readonly DiagnosisHis
                   {g("overcameTemplate").replace("{categories}", s.overcameWeaknesses.map((id) => diagnosisCategoryLabel(id, displayLocale)).join(locale === "ja" ? "・" : ", "))}
                 </p>
               ) : null}
+              {s.mostDeclined ? (
+                <p className="mt-0.5 text-warning">
+                  {g("mostDeclinedTemplate")
+                    .replace("{category}", diagnosisCategoryLabel(s.mostDeclined.categoryId, displayLocale))
+                    .replace("{from}", String(s.mostDeclined.from))
+                    .replace("{to}", String(s.mostDeclined.to))}
+                </p>
+              ) : null}
+              {s.newWeaknesses.length > 0 ? (
+                <p className="mt-0.5 text-warning">
+                  {g("newWeaknessesTemplate").replace("{categories}", s.newWeaknesses.map((id) => diagnosisCategoryLabel(id, displayLocale)).join(locale === "ja" ? "・" : ", "))}
+                </p>
+              ) : null}
+              <p className="mt-0.5 text-2xs text-text-dim">
+                {g("peakTemplate").replace("{overall}", String(s.peak.overall)).replace("{date}", s.peak.date)}
+                {s.improvingStreak >= 2 ? ` · ${g("streakTemplate").replace("{count}", String(s.improvingStreak))}` : ""}
+              </p>
               {s.excludedOtherRules > 0 ? <p className="mt-0.5 text-2xs text-text-muted">{g("excludedRulesTemplate").replace("{count}", String(s.excludedOtherRules))}</p> : null}
             </li>
           ))}

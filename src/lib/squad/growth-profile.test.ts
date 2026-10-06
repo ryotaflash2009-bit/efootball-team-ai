@@ -53,3 +53,29 @@ describe("F-061 成長プロフィール", () => {
     expect(buildGrowthProfile(list)).toEqual(r);
   });
 });
+
+describe("F-061 成長プロフィール v2", () => {
+  it("最高点とその日・最も下がったカテゴリ・新しい弱点・連続で上がった回数", () => {
+    const worse = { ...C0, counterAttack: [55, "C"] as const, pressResistance: [70, "B"] as const };
+    const r = buildGrowthProfile([
+      entry("1", "sq1", "2026-10-01T00:00:00Z", 60),
+      entry("2", "sq1", "2026-10-02T00:00:00Z", 75),
+      entry("3", "sq1", "2026-10-03T00:00:00Z", 70),
+      entry("4", "sq1", "2026-10-04T00:00:00Z", 72),
+      entry("5", "sq1", "2026-10-05T00:00:00Z", 74, { c: worse }),
+    ]);
+    const g = r[0];
+    expect(g.peak).toEqual({ overall: 75, date: "2026-10-02" });
+    expect(g.mostDeclined).toEqual({ categoryId: "counterAttack", from: 89, to: 55, delta: -34 });
+    expect(g.newWeaknesses).toEqual(["counterAttack"]);
+    expect(g.improvingStreak).toBe(2);
+  });
+
+  it("下がったカテゴリが無ければ null・最新が前回より低ければ連続 0・同点の最高は早い日", () => {
+    const r = buildGrowthProfile([entry("1", "sq1", "2026-10-01T00:00:00Z", 70), entry("2", "sq1", "2026-10-02T00:00:00Z", 70), entry("3", "sq1", "2026-10-03T00:00:00Z", 65)]);
+    expect(r[0].mostDeclined).toBeNull();
+    expect(r[0].newWeaknesses).toEqual([]);
+    expect(r[0].improvingStreak).toBe(0);
+    expect(r[0].peak).toEqual({ overall: 70, date: "2026-10-01" });
+  });
+});
