@@ -1,0 +1,68 @@
+{
+  "schema": "efta-evidence/v1",
+  "date": "2026-10-06",
+  "kind": "teamaixi-v1-post-release",
+  "result": "stable_with_owner_actions",
+  "release": { "tag": "v1.0.0", "releaseCommit": "b72d252", "githubRelease": "TeamAIXI v1.0", "validatorLive": "TEAMAIXI_V1_RELEASE_READY", "liveCounts": { "world": 13372, "managers": 69 } },
+  "mainAfterPostReleasePr": "701df8f",
+  "productionSmoke": {
+    "readOnly": "GET only against Production; saves, export and import only in the isolated browser's localStorage",
+    "fullBlackBox": { "script": "scripts/public-black-box-full.mjs", "steps": "576/576", "viewports": 8, "perf": "14/14", "memory": "OK", "security": "18/18", "hydrationErrors": 0 },
+    "targetedProbe": {
+      "contexts": ["ja 390x844", "en 1440x900", "ja 1440x900", "en 390x844"],
+      "checks": 88,
+      "runs": [
+        { "pass": 87, "fail": 1, "failure": "en 1440x900 list -> detail: navigation watchdog fired once (necessary: genuine router hang)" },
+        { "pass": 87, "fail": 1, "failure": "ja 390x844 filter: navigation watchdog fired once (necessary: genuine router hang)" }
+      ],
+      "covered": ["home counts = applied-state", "players list and filter selection kept", "player detail", "progression tab and ability selection", "managers list, detail and count = applied-state", "compare", "squads, templates, Best XI, My Team, My Builds, build inventory, favorites", "squad create, save and reload", "squad comparison", "diagnosis history and growth panel", "full local backup export and import", "Support label and notice (ja/en)", "Terms, Privacy, Disclaimer, About", "internal pages 404 and signup restriction", "noindex on every page", "console/page/network errors, 5xx, unexpected 4xx, overflow, #418/hydration/parentNode, non-GET"]
+    }
+  },
+  "navigationFallback": {
+    "watchdog": "src/instrumentation-client.ts (5 s)",
+    "normalNavigations": "200 English list->detail navigations on Production: 0 fallbacks, p50 910 ms, max 1327 ms",
+    "firstNavigationInFreshBrowser": [
+      { "kind": "filter", "delayMs": 300, "fallbacks": "4/25" },
+      { "kind": "card", "delayMs": 300, "fallbacks": "1/25" },
+      { "kind": "filter", "delayMs": 0, "fallbacks": "0/25" },
+      { "kind": "filter", "delayMs": 300, "fallbacks": "0/25" },
+      { "kind": "filter", "delayMs": 1500, "fallbacks": "1/25" },
+      { "kind": "filter", "delayMs": 4000, "fallbacks": "0/25" }
+    ],
+    "everyFallbackWasAGenuineHang": "in each case the RSC response completed at about 0.3 s and React never committed; the watchdog's browser navigation started at 5.0 s",
+    "conclusion": "the fallback does not fire unnecessarily; affected navigations take about 5.3 s; shortening this is in the v1.1 backlog"
+  },
+  "hourlyDetection": {
+    "cron": "17 * * * * (unchanged)",
+    "window": "2026-10-04T17:00Z..2026-10-06T09:28Z",
+    "expected": 41,
+    "actual": 7,
+    "missing": 34,
+    "maxConsecutiveMissing": 8,
+    "maxGapMinutes": 538,
+    "lastSuccessfulDetection": "2026-10-06T02:56:37Z",
+    "light": 2,
+    "full": 5,
+    "requests": 2244,
+    "downloadedBytes": 146971826,
+    "durationSecondsTotal": 7861,
+    "gapNotices": 5,
+    "workflowState": "active",
+    "reconsiderConditionsMet": ["gap >= 6 h", "delayed detections >= 2", "about half or more missing"],
+    "ownerDecision": "GitHub Actions schedule only; observe until 2026-10-13; no external cron, token, secret, contract or paid service",
+    "evidenceBaseline": "docs/production-readiness/evidence/2026-10-06-hourly-detection-observation-baseline.json",
+    "cost": "GitHub Actions on a public repository: 0"
+  },
+  "automaticApply": {
+    "detectionRun": "37275322242",
+    "pipeline": { "orchestrator": "37277743003", "plan": "37277795058", "backup": "37280354383", "dryRun": "37280532236", "apply": "37280705852" },
+    "policyDecision": "AUTO_APPLY_ELIGIBLE (world: insert 0, update 16)",
+    "result": "stopped at the database connection: connect_failed:sqlstate_28P01 (password authentication)",
+    "productionWrites": 0,
+    "ownerAction": "re-enter REFERENCE_DATA_APPLY_DB_URL in Environment reference-data-production-apply-automatic (value not inspected)"
+  },
+  "support": { "mailbox": "kept for v1.0", "label": "TeamAIXI専用サポート窓口 / TeamAIXI Support", "notice": "owner-specified JA/EN text", "migration": "TeamAIXI-named address after a custom domain (v1.1 backlog)" },
+  "localServer": { "contract": "data/server.pid = next start listener PID (scripts/local-server.mjs)", "staleBefore": 26257, "stopped": [31268, 73888], "running": 81568 },
+  "npmAudit": { "critical": 0, "high": 9, "moderate": 3, "runtimeExposure": "none (build/dev only; not in .next/server output)" },
+  "unchanged": ["cron", "Auto Apply policy", "thresholds", "changed-field allowlist", "kill switches", "Secrets", "Environments", "Backup", "Rollback/Restore (manual only)", "noindex", "signup disabled", "Community hidden"]
+}

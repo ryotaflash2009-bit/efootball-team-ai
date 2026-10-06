@@ -16,6 +16,7 @@
 ### Known issues
 - GitHub's scheduler ran only 7 of 40 hourly slots between 2026-10-04 17:17Z and 2026-10-06 08:33Z (max gap 538 min). Kept as is per the owner's decision; observed until 2026-10-13.
 - The automatic Apply on 2026-10-05 stopped at the database connection (password authentication, no writes); the owner needs to re-enter one secret value.
+- Post-release production smoke (2026-10-06): full black-box 576/576; targeted checks 87/88 twice, each failure being the navigation watchdog completing a genuine router hang (it never fired on 200 normal navigations).
 
 ## 1.0.0 — TeamAIXI v1.0 (2026-10-05)
 
