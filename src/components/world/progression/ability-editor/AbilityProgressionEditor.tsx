@@ -111,7 +111,7 @@ export function AbilityProgressionEditor({
       );
     }, 400);
     return () => window.clearTimeout(id);
-  }, [groupId, committedLevel, dragLevel, remainingCommitted, locale, t]);
+  }, [groupId, committedLevel, dragLevel, remainingCommitted, displayLocale, t]);
 
   // 能力を選んだとき: 読み上げ、選んだ行がパネルの下に隠れるならパネルの上まで送る。
   const primaryStat = focus?.primaryStat ?? null;
@@ -139,7 +139,7 @@ export function AbilityProgressionEditor({
       }
     });
     return () => window.cancelAnimationFrame(id);
-  }, [primaryStat, groupId, locale, t]);
+  }, [primaryStat, groupId, displayLocale, t]);
 
   // Escape で選択を解除（入力中の要素は除く）。
   useEffect(() => {
