@@ -104,6 +104,7 @@ export interface Dictionary {
     nextPageLink: string;
     pageOfTemplate: string;
     paginationAriaLabel: string;
+    compareLink: string;
   };
   nav: {
     groupMain: string;
@@ -4785,6 +4786,32 @@ export interface Dictionary {
     evidenceNote_conditional_unverified: string;
     entryLink: string;
     versionTemplate: string;
+  };
+  managerCompare: {
+    pageTitle: string;
+    heading: string;
+    intro: string;
+    addManager: string;
+    removeTemplate: string;
+    pickerTitle: string;
+    emptyTitle: string;
+    emptyDescription: string;
+    needMoreHint: string;
+    maxReached: string;
+    loading: string;
+    loadFailed: string;
+    tacticsTitle: string;
+    bestNote: string;
+    bestMarker: string;
+    boostersTitle: string;
+    noBoosters: string;
+    unconfirmedBadge: string;
+    factsTitle: string;
+    formationLabel: string;
+    releasedLabel: string;
+    linkUpLabel: string;
+    backToList: string;
+    managerColumn: string;
   };
 }
 

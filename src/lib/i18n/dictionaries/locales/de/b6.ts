@@ -430,6 +430,7 @@ const part: PartialDictionary = {
     nextPageLink: "Weiter",
     pageOfTemplate: "{page} / {totalPages}",
     paginationAriaLabel: "Seitennavigation",
+    compareLink: "Trainer vergleichen",
   },
   shareCard: {
     optionsSummary: "Größe wählen · Vorschau",

@@ -430,6 +430,7 @@ const part: PartialDictionary = {
     nextPageLink: "下一頁",
     pageOfTemplate: "{page} / {totalPages}",
     paginationAriaLabel: "分頁",
+    compareLink: "比較總教練",
   },
   shareCard: {
     optionsSummary: "選擇尺寸 · 預覽",

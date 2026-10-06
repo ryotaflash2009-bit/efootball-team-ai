@@ -18,7 +18,8 @@ const managersPage: Dictionary["managersPage"] = {
   nextPageLink: "次へ",
   pageOfTemplate: "{page} / {totalPages}",
   paginationAriaLabel: "ページ送り",
-  };
+  compareLink: "監督を比較",
+};
 
 registerJaNamespace("managersPage", managersPage);
 

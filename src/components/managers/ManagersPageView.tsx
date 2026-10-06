@@ -115,6 +115,11 @@ export function ManagersPageView({
           icon="managers"
           meta={fillMp(mp("metaTemplate"), { count: formatNumber(result.totalCount, displayLocale) })}
           description={`${fillMp(mp("descriptionTemplate"), { source: result.source })} ${mp("importedAtPrefix")}${importedAt ? formatDateTime(new Date(importedAt), displayLocale) : "—"}`}
+          actions={
+            <Link href="/managers/compare" className={buttonClasses("secondary", "sm")}>
+              {mp("compareLink")}
+            </Link>
+          }
         />
 
         <Suspense fallback={<Skeleton className="h-11 w-full" />}>
