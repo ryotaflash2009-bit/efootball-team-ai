@@ -44,17 +44,17 @@ export function WorldPlayerCard({ player, imagePriority = false }: { player: Wor
       <Link href={`/players/world/${encodeURIComponent(player.worldCardId)}`} className="block">
         <div className="relative">
           <WorldCardImage sources={imageSources} alt={name} size="card" priority={imagePriority} />
-          <span className="absolute left-1 top-1 flex items-baseline gap-1 rounded bg-black/75 px-1.5 py-0.5 leading-none">
+          <span className="absolute start-1 top-1 flex items-baseline gap-1 rounded bg-black/75 px-1.5 py-0.5 leading-none">
             <span className="text-lg font-black text-accent tabular-nums">{ovr ?? "–"}</span>
             <span className="text-[9px] font-semibold text-text-dim">MAX</span>
           </span>
           {player.registeredPosition ? (
-            <span className="absolute right-1 top-10 rounded bg-black/75 px-1.5 py-0.5 text-2xs font-bold text-text">
+            <span className="absolute end-1 top-10 rounded bg-black/75 px-1.5 py-0.5 text-2xs font-bold text-text">
               {player.registeredPosition}
             </span>
           ) : null}
           {player.cardType ? (
-            <span className="absolute bottom-1 left-1 rounded bg-black/75 px-1.5 py-0.5 text-[9px] font-bold uppercase text-text-dim">
+            <span className="absolute bottom-1 start-1 rounded bg-black/75 px-1.5 py-0.5 text-[9px] font-bold uppercase text-text-dim">
               {player.cardType}
             </span>
           ) : null}

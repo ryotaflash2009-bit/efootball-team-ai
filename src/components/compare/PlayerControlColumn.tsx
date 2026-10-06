@@ -154,7 +154,7 @@ export function PlayerControlColumn({
           type="button"
           onClick={onRemove}
           aria-label={fillPc(tpc("removeAriaTemplate"), { name })}
-          className="absolute right-0 top-0 rounded bg-black/70 px-1.5 py-0.5 text-xs text-danger hover:opacity-80"
+          className="absolute end-0 top-0 rounded bg-black/70 px-1.5 py-0.5 text-xs text-danger hover:opacity-80"
         >
           ✕
         </button>

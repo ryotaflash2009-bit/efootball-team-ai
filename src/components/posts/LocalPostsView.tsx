@@ -529,7 +529,7 @@ function PostCard({ store, post, lp, onDelete }: { store: PostStore; post: Local
         <div role="dialog" aria-modal="true" aria-label={lp("zoomImage")} className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3" onClick={() => setZoom(false)} data-testid="my-post-zoom">
           {/* eslint-disable-next-line @next/next/no-img-element -- 拡大表示 */}
           <img src={url} alt={post.image?.alt || lp("noAlt")} className="max-h-full max-w-full" />
-          <button type="button" className="absolute right-3 top-3 min-h-[44px] min-w-[44px] rounded bg-surface/90 px-3 text-sm" onClick={() => setZoom(false)}>{lp("close")}</button>
+          <button type="button" className="absolute end-3 top-3 min-h-[44px] min-w-[44px] rounded bg-surface/90 px-3 text-sm" onClick={() => setZoom(false)}>{lp("close")}</button>
         </div>
       ) : null}
     </li>

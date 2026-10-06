@@ -54,7 +54,7 @@ export function FavoriteButton({
         aria-pressed={on}
         aria-label={label}
         title={label}
-        className={`absolute right-1 top-1 z-10 inline-grid h-8 w-8 place-items-center rounded-md bg-black/70 text-text-dim transition-colors hover:text-accent disabled:opacity-50 ${
+        className={`absolute end-1 top-1 z-10 inline-grid h-8 w-8 place-items-center rounded-md bg-black/70 text-text-dim transition-colors hover:text-accent disabled:opacity-50 ${
           on ? "text-accent" : ""
         } ${className}`}
       >

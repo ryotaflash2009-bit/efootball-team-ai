@@ -59,11 +59,11 @@ function MiniCard({ p, priority = false }: { p: HomeMiniCardData; priority?: boo
     >
       <div className="relative">
         <WorldCardImage sources={p.imageSources} alt={name} size="card" priority={priority} />
-        <span className="absolute left-1 top-1 rounded bg-black/75 px-1.5 py-0.5 text-sm font-black leading-none text-accent">
+        <span className="absolute start-1 top-1 rounded bg-black/75 px-1.5 py-0.5 text-sm font-black leading-none text-accent">
           {p.ovrMax ?? p.ovrBase ?? "–"}
         </span>
         {p.registeredPosition ? (
-          <span className="absolute right-1 top-1 rounded bg-black/75 px-1.5 py-0.5 text-2xs font-bold text-text">
+          <span className="absolute end-1 top-1 rounded bg-black/75 px-1.5 py-0.5 text-2xs font-bold text-text">
             {p.registeredPosition}
           </span>
         ) : null}
