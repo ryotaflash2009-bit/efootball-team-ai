@@ -2,7 +2,7 @@
  * 物理的な左右の位置（Tailwind の left-/right-/translate-x とインライン style の left/right）の分類（RTL の準備）。
  *
  *   node scripts/i18n-rtl-position-audit.mjs          … docs/i18n/rtl-position-utilities.md を書き出す
- *   node scripts/i18n-rtl-position-audit.mjs --check  … 未分類の指定があれば終了コード 1（書き出さない）
+ *   node scripts/i18n-rtl-position-audit.mjs --check  … 未分類・論理プロパティへ直すべき指定（TO_LOGICAL）があれば終了コード 1（書き出さない）
  *
  * 分類（ファイル単位・行の内容で判定）:
  * - KEEP_GEOMETRY: 鏡像にしてはいけない（ピッチ上の座標・中央寄せ・左右対称の帯）。RTL でもそのまま。
@@ -69,7 +69,13 @@ if (CHECK) {
     console.error(unknown.map((r) => `${rel(r.file)}:${r.line} ${r.token}`).join("\n"));
     process.exit(1);
   }
-  console.log(`[rtl-position-audit] ${count("class")} class tokens, ${count("style")} inline styles; all classified`);
+  const toLogical = rows.filter((r) => r.cls === "TO_LOGICAL");
+  if (toLogical.length) {
+    console.error(`[rtl-position-audit] ${toLogical.length} UI positions use left-/right-; use start-/end- (LTR is identical):`);
+    for (const r of toLogical) console.error(`${rel(r.file)}:${r.line} ${r.token}`);
+    process.exit(1);
+  }
+  console.log(`[rtl-position-audit] ${count("class")} class tokens, ${count("style")} inline styles; all classified, no TO_LOGICAL left`);
   process.exit(0);
 }
 

@@ -77,7 +77,7 @@ export function UserCardFilters({
       <div className="flex flex-wrap items-center gap-2">
         <label className="relative min-w-[180px] flex-1">
           <span className="sr-only">{tuf("searchSrLabel")}</span>
-          <Icon name="search" size={14} className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-text-muted" />
+          <Icon name="search" size={14} className="pointer-events-none absolute start-2 top-1/2 -translate-y-1/2 text-text-muted" />
           <input
             type="search"
             value={state.q}

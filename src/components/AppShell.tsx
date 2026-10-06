@@ -84,7 +84,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/60" onClick={() => setMobileOpen(false)} aria-hidden="true" />
           <div
-            className="absolute left-0 top-0 flex h-full w-72 flex-col border-e border-border bg-surface shadow-pop"
+            className="absolute start-0 top-0 flex h-full w-72 flex-col border-e border-border bg-surface shadow-pop"
             role="dialog"
             aria-modal="true"
             aria-label={t("nav", "ariaMobileMenu")}

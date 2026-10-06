@@ -19,7 +19,7 @@ export function PlayerCard({ player }: { player: PlayerSummary }) {
           alt={player.nameJa || player.nameEn || `選手 ${player.id}`}
           size="card"
         />
-        <span className="absolute left-1 top-1 rounded bg-black/65 px-1.5 py-0.5 text-lg font-black leading-none text-accent">
+        <span className="absolute start-1 top-1 rounded bg-black/65 px-1.5 py-0.5 text-lg font-black leading-none text-accent">
           {player.ovr}
           <span className="ms-1 align-top text-[9px] font-semibold text-text-dim">OVR</span>
         </span>

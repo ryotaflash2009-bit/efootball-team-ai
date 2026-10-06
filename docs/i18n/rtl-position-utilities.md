@@ -6,10 +6,10 @@
 | 分類 | class（Tailwind） | inline style |
 |---|---:|---:|
 | そのまま（ピッチの座標・中央寄せ・左右対称の帯。鏡像にしない） | 26 | 7 |
-| 論理プロパティへ（start-/end-。RTL を公開する前に置き換える。LTR の見た目は変わらない） | 24 | 0 |
+| 論理プロパティへ（start-/end-。RTL を公開する前に置き換える。LTR の見た目は変わらない） | 0 | 0 |
 | 要決定（スライダーの値の向き。RTL で反転するかを決めてから） | 1 | 4 |
 | 装飾（どちらでもよい） | 1 | 0 |
-| **合計** | **52** | **11** |
+| **合計** | **28** | **11** |
 
 ## そのまま（ピッチの座標・中央寄せ・左右対称の帯。鏡像にしない）
 
@@ -48,35 +48,6 @@
 | `./src/components/squad/SquadPitch.tsx:309` | `-translate-x-1/2` |
 | `./src/components/ui/Tooltip.tsx:33` | `left-1/2` |
 | `./src/components/ui/Tooltip.tsx:33` | `-translate-x-1/2` |
-
-## 論理プロパティへ（start-/end-。RTL を公開する前に置き換える。LTR の見た目は変わらない）
-
-| 場所 | 指定 |
-|---|---|
-| `./src/components/AppShell.tsx:87` | `left-0` |
-| `./src/components/compare/ComparisonTables.tsx:119` | `left-0` |
-| `./src/components/compare/ComparisonTables.tsx:130` | `left-0` |
-| `./src/components/compare/ComparisonTables.tsx:156` | `left-0` |
-| `./src/components/compare/ComparisonTables.tsx:170` | `left-0` |
-| `./src/components/compare/ComparisonTables.tsx:182` | `left-0` |
-| `./src/components/compare/ComparisonTables.tsx:242` | `left-0` |
-| `./src/components/compare/ComparisonTables.tsx:333` | `left-0` |
-| `./src/components/compare/PlayerControlColumn.tsx:157` | `right-0` |
-| `./src/components/HomePageView.tsx:62` | `left-1` |
-| `./src/components/HomePageView.tsx:66` | `right-1` |
-| `./src/components/PlayerCard.tsx:22` | `left-1` |
-| `./src/components/posts/LocalPostsView.tsx:532` | `right-3` |
-| `./src/components/Sidebar.tsx:110` | `left-0` |
-| `./src/components/squad/SquadPitch.tsx:320` | `left-0` |
-| `./src/components/squad/SquadPitch.tsx:324` | `right-0` |
-| `./src/components/squad/SquadPitch.tsx:328` | `right-0` |
-| `./src/components/squad/SquadPitch.tsx:333` | `left-0` |
-| `./src/components/ui/Overlay.tsx:108` | `right-0` |
-| `./src/components/user-cards/FavoriteButton.tsx:57` | `right-1` |
-| `./src/components/user-cards/UserCardFilters.tsx:80` | `left-2` |
-| `./src/components/world/WorldPlayerCard.tsx:47` | `left-1` |
-| `./src/components/world/WorldPlayerCard.tsx:52` | `right-1` |
-| `./src/components/world/WorldPlayerCard.tsx:57` | `left-1` |
 
 ## 要決定（スライダーの値の向き。RTL で反転するかを決めてから）
 

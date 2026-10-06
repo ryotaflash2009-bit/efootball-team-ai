@@ -116,7 +116,7 @@ export function ComparisonTables({
           <table className="w-full min-w-[420px] text-sm">
             <thead>
               <tr className="bg-surface-2/50 text-start [:where(&)_th]:text-start text-xs">
-                <th className="sticky left-0 z-10 bg-surface-2/50 px-3 py-2 font-medium">{tct("itemHeader")}</th>
+                <th className="sticky start-0 z-10 bg-surface-2/50 px-3 py-2 font-medium">{tct("itemHeader")}</th>
                 {players.map((p, i) => (
                   <th key={i} className="px-2 py-2 text-center font-medium">
                     {shortName(p)}
@@ -127,7 +127,7 @@ export function ComparisonTables({
             <tbody>
               {comparison.basicInfo.map((row) => (
                 <tr key={row.label} className="border-t border-border/60">
-                  <td className="sticky left-0 z-10 bg-surface px-3 py-1.5 text-text-dim">{localizeLibText(row.label, displayLocale)}</td>
+                  <td className="sticky start-0 z-10 bg-surface px-3 py-1.5 text-text-dim">{localizeLibText(row.label, displayLocale)}</td>
                   {row.perPlayer.map((v, i) => (
                     <td key={i} className="px-2 py-1.5 text-center">
                       {v ?? "—"}
@@ -153,7 +153,7 @@ export function ComparisonTables({
           <table className="w-full min-w-[420px] text-sm">
             <thead>
               <tr className="bg-surface-2/50 text-start [:where(&)_th]:text-start text-xs">
-                <th className="sticky left-0 z-10 bg-surface-2/50 px-3 py-2 font-medium">{tct("categoryHeader")}</th>
+                <th className="sticky start-0 z-10 bg-surface-2/50 px-3 py-2 font-medium">{tct("categoryHeader")}</th>
                 {players.map((p, i) => (
                   <th key={i} className="px-2 py-2 text-center font-medium">
                     {shortName(p)}
@@ -167,7 +167,7 @@ export function ComparisonTables({
                 const max = Math.max(...c.totalByPlayer);
                 return (
                   <tr key={c.category} className="border-t border-border/60">
-                    <td className="sticky left-0 z-10 bg-surface px-3 py-1.5 text-text-dim">{categoryLabel(c.categoryId)}</td>
+                    <td className="sticky start-0 z-10 bg-surface px-3 py-1.5 text-text-dim">{categoryLabel(c.categoryId)}</td>
                     {c.totalByPlayer.map((tv, i) => (
                       <td key={i} className={`px-2 py-1.5 text-center tabular-nums ${tv === max && c.spread > 0 ? "font-bold text-accent" : ""}`}>
                         {tv}
@@ -179,7 +179,7 @@ export function ComparisonTables({
                 );
               })}
               <tr className="border-t border-border bg-surface-2/30">
-                <td className="sticky left-0 z-10 bg-surface-2/30 px-3 py-1.5 font-semibold">{tct("totalRowLabel")}</td>
+                <td className="sticky start-0 z-10 bg-surface-2/30 px-3 py-1.5 font-semibold">{tct("totalRowLabel")}</td>
                 {comparison.totalStatByPlayer.map((tv, i) => {
                   const max = Math.max(...comparison.totalStatByPlayer);
                   return (
@@ -239,7 +239,7 @@ export function ComparisonTables({
           <table className="w-full min-w-[520px] text-sm">
             <thead>
               <tr className="bg-surface-2/50 text-start [:where(&)_th]:text-start text-xs">
-                <th className="sticky left-0 z-10 bg-surface-2/50 px-3 py-2 font-medium">{tct("abilityHeader")}</th>
+                <th className="sticky start-0 z-10 bg-surface-2/50 px-3 py-2 font-medium">{tct("abilityHeader")}</th>
                 {players.map((p, i) => (
                   <th key={i} className="px-2 py-2 text-center font-medium">
                     {shortName(p)}
@@ -330,7 +330,7 @@ function GroupBlock({
             const min = Math.min(...vals);
             return (
               <tr key={s.key} className="border-t border-border/50">
-                <td className="sticky left-0 z-10 bg-surface px-3 py-1.5 text-text" title={displayLocale === "ja" ? s.nameEn : abilityName(s.key, displayLocale)}>
+                <td className="sticky start-0 z-10 bg-surface px-3 py-1.5 text-text" title={displayLocale === "ja" ? s.nameEn : abilityName(s.key, displayLocale)}>
                   {abilityName(s.key, displayLocale)}
                 </td>
                 {s.perPlayer.map((b, i) => (
