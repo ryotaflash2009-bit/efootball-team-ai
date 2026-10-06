@@ -147,6 +147,10 @@ const en: Dictionary = {
     japanese: "日本語",
     english: "English",
     ariaLabel: "Select display language",
+    moreLanguages: "More languages (preview)",
+    previewListLabel: "Languages in preview",
+    previewBadge: "Preview",
+    loadingLanguage: "Loading language…",
   },
   diagnosisHistory: {
     pageTitle: "Diagnosis history",

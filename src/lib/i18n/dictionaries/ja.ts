@@ -144,6 +144,11 @@ export interface Dictionary {
     japanese: string;
     english: string;
     ariaLabel: string;
+    /** 内部の確認用の言語の一覧を開くボタン（Production には出ない）。 */
+    moreLanguages: string;
+    previewListLabel: string;
+    previewBadge: string;
+    loadingLanguage: string;
   };
   diagnosisHistory: {
     pageTitle: string;
@@ -4826,6 +4831,10 @@ const ja: JaCoreDictionary = {
     japanese: "日本語",
     english: "English",
     ariaLabel: "表示言語を選択",
+    moreLanguages: "ほかの言語（確認中）",
+    previewListLabel: "確認中の言語",
+    previewBadge: "確認中",
+    loadingLanguage: "言語を読み込んでいます…",
   },
   category: {
     attack: "攻撃",

@@ -1,14 +1,11 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import {
-  DEFAULT_LOCALE,
-  LOCALE_STORAGE_KEY,
-  detectLocaleFromBrowserLanguage,
-  normalizeLocale,
-  type Locale,
-} from "./locale";
+import { DEFAULT_LOCALE, LOCALE_STORAGE_KEY, type Locale } from "./locale";
+import { isSelectableLocale, localeInfo, negotiateDisplayLocale, readStoredDisplayLocale, type DisplayLocale } from "./locale-registry";
 import { dictionaryOf, hasDictionary, loadDictionary, translate } from "./translate";
+import { setFormatDisplayLocale } from "./format";
+import { areInternalPagesVisible } from "@/lib/public-info/internal-pages";
 import type { Dictionary } from "./dictionaries/ja";
 
 /**
@@ -24,27 +21,37 @@ import type { Dictionary } from "./dictionaries/ja";
  */
 
 interface LocaleContextValue {
+  /** 基本の言語（ja / en）。計算ライブラリ・表示層の文章の分岐に使う（ja 以外の言語はすべて en）。 */
   locale: Locale;
-  setLocale: (next: Locale) => void;
+  /** 実際の表示言語（BCP 47。locale-registry.ts）。 */
+  displayLocale: DisplayLocale;
+  setLocale: (next: DisplayLocale) => void;
   dictionary: Dictionary;
   t: <N extends keyof Dictionary>(namespace: N, key: keyof Dictionary[N]) => string;
 }
 
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
-function readStoredLocale(): Locale | null {
+/** 内部の確認用の言語を選べるか（開発・内部ページを有効にした build だけ。Production・Preview では偽）。 */
+const INTERNAL_PREVIEW = areInternalPagesVisible();
+
+function readStoredLocale(): DisplayLocale | null {
   try {
-    const raw = localStorage.getItem(LOCALE_STORAGE_KEY);
-    if (raw == null) return null;
-    return normalizeLocale(raw);
+    return readStoredDisplayLocale(localStorage.getItem(LOCALE_STORAGE_KEY), { internalPreview: INTERNAL_PREVIEW });
   } catch {
     return null;
   }
 }
 
+function browserLanguages(): readonly string[] {
+  if (typeof navigator === "undefined") return [];
+  const list = Array.isArray(navigator.languages) && navigator.languages.length > 0 ? navigator.languages : [navigator.language];
+  return list.filter((x): x is string => typeof x === "string");
+}
+
 export function LocaleProvider({ children }: { children: ReactNode }) {
   // サーバーHTMLと同じ既定値でマウントし、hydration後に実際の言語へ切り替える。
-  const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
+  const [locale, setLocaleState] = useState<DisplayLocale>(DEFAULT_LOCALE);
   // 保存値・ブラウザーの言語から実際の言語を決めたか（決める前は既定の ja のまま）。
   const [resolved, setResolved] = useState(false);
 
@@ -55,12 +62,13 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
       setLocaleState(stored);
       return;
     }
-    const detected = detectLocaleFromBrowserLanguage(typeof navigator !== "undefined" ? navigator.language : null);
-    setLocaleState(detected);
+    // 選べる言語（Production では ja・en）の中で、ブラウザーの言語の優先の順に決める。どれも無ければ English。
+    setLocaleState(negotiateDisplayLocale(browserLanguages(), { internalPreview: INTERNAL_PREVIEW }));
   }, []);
 
-  const setLocale = useCallback((next: Locale) => {
-    const safe = normalizeLocale(next);
+  const setLocale = useCallback((next: DisplayLocale) => {
+    if (!isSelectableLocale(next, { internalPreview: INTERNAL_PREVIEW })) return;
+    const safe = next;
     setLocaleState(safe);
     try {
       localStorage.setItem(LOCALE_STORAGE_KEY, safe);
@@ -82,34 +90,46 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
       alive = false;
     };
   }, [locale]);
-  const effectiveLocale: Locale = hasDictionary(locale) ? locale : DEFAULT_LOCALE;
+  const effectiveLocale: DisplayLocale = hasDictionary(locale) ? locale : DEFAULT_LOCALE;
+  const info = localeInfo(effectiveLocale);
 
   useEffect(() => {
     document.documentElement.lang = effectiveLocale;
+    // 右から左の言語（ar・疑似の ar-XB）だけ dir="rtl"。それ以外は属性を外して既定（ltr）に戻す。
+    if (info.dir === "rtl") document.documentElement.dir = "rtl";
+    else document.documentElement.removeAttribute("dir");
     // 実際の言語の辞書を適用したら、本文を表示する（layout の head の script が英語の利用者だけ一時的に隠している）。
     if (resolved && effectiveLocale === locale) document.documentElement.removeAttribute("data-locale-pending");
-  }, [effectiveLocale, locale, resolved]);
+  }, [effectiveLocale, locale, resolved, info.dir]);
 
   const value = useMemo<LocaleContextValue>(() => {
     const dictionary = dictionaryOf(effectiveLocale);
+    // 数値・日付の Intl のロケール（ja・en 以外の言語は、その言語の書式。計算・保存には使わない）。
+    setFormatDisplayLocale(info.base === "en" ? info.intl : null);
     return {
-      locale: effectiveLocale,
+      locale: info.base,
+      displayLocale: effectiveLocale,
       setLocale,
       dictionary,
       t: (namespace, key) => translate(effectiveLocale, namespace, key),
     };
     // loadedTick: 辞書の読み込み完了で再計算する
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [effectiveLocale, setLocale, loadedTick]);
+  }, [effectiveLocale, setLocale, loadedTick, info]);
 
   return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>;
 }
 
-/** 現在の表示言語と切り替え関数。 */
-export function useLocale(): { locale: Locale; setLocale: (next: Locale) => void } {
+/** 現在の基本の言語（ja / en）と切り替え関数。 */
+export function useLocale(): { locale: Locale; displayLocale: DisplayLocale; setLocale: (next: DisplayLocale) => void } {
   const ctx = useContext(LocaleContext);
   if (!ctx) throw new Error("useLocale must be used within LocaleProvider");
-  return { locale: ctx.locale, setLocale: ctx.setLocale };
+  return { locale: ctx.locale, displayLocale: ctx.displayLocale, setLocale: ctx.setLocale };
+}
+
+/** 内部の確認用の言語を選べる build か（言語の選択の表示用）。 */
+export function isLocalePreviewEnabled(): boolean {
+  return INTERNAL_PREVIEW;
 }
 
 /** 翻訳関数 `t(namespace, key)`。欠落キーは安全に既定言語へフォールバックし、生のキーは返さない。 */
