@@ -1,0 +1,3534 @@
+[
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "home",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "players",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "playerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "progression",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "managers",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "managerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "compare",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "squads",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "bestXi",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "history",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "dataManagement",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "support",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "about",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "terms",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "notFound",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "signup",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "signin",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "persistence",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "home",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "players",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "playerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "progression",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "managers",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "managerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "compare",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "squads",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "bestXi",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "history",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "dataManagement",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "support",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "about",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "terms",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "notFound",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "signup",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "signin",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "persistence",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "squadEditor",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "squadComparison",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "shareImage",
+  "ok": true,
+  "problems": [],
+  "note": "saved efootball-team-ai-squad-diagnosis-Nueva plantilla-20261008.png"
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "shareCard 3:4",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "shareCard 1:1",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "shareCard 9:16",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "1280x720",
+  "page": "shareCard 16:9",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "squadEditor",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "squadComparison",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "shareImage",
+  "ok": true,
+  "problems": [],
+  "note": "saved efootball-team-ai-squad-diagnosis-Nueva plantilla-20261008.png"
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "shareCard 3:4",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "shareCard 1:1",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "shareCard 9:16",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "es",
+  "viewport": "390x844",
+  "page": "shareCard 16:9",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "home",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "players",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "playerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "progression",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "managers",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "managerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "compare",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "squads",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "bestXi",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "history",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "dataManagement",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "support",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "about",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "terms",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "notFound",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "signup",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "signin",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "persistence",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "home",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "players",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "playerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "progression",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "managers",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "managerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "compare",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "squads",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "bestXi",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "history",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "dataManagement",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "support",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "about",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "terms",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "notFound",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "signup",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "signin",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "persistence",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "squadEditor",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "squadComparison",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "shareImage",
+  "ok": true,
+  "problems": [],
+  "note": "saved efootball-team-ai-squad-diagnosis-Novo elenco-20261008.png"
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "shareCard 3:4",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "shareCard 1:1",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "shareCard 9:16",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "1280x720",
+  "page": "shareCard 16:9",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "squadEditor",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "squadComparison",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "shareImage",
+  "ok": true,
+  "problems": [],
+  "note": "saved efootball-team-ai-squad-diagnosis-Novo elenco-20261008.png"
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "shareCard 3:4",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "shareCard 1:1",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "shareCard 9:16",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "pt-BR",
+  "viewport": "390x844",
+  "page": "shareCard 16:9",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "home",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "players",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "playerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "progression",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "managers",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "managerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "compare",
+  "ok": false,
+  "problems": [
+   "english Standard"
+  ]
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "squads",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "bestXi",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "history",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "dataManagement",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "support",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "about",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "terms",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "notFound",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "signup",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "signin",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "persistence",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "home",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "players",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "playerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "progression",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "managers",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "managerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "compare",
+  "ok": false,
+  "problems": [
+   "english Standard"
+  ]
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "squads",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "bestXi",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "history",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "dataManagement",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "support",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "about",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "terms",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "notFound",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "signup",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "signin",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "persistence",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "squadEditor",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "squadComparison",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "shareImage",
+  "ok": true,
+  "problems": [],
+  "note": "saved efootball-team-ai-squad-diagnosis-Nouvel effectif-20261008.png"
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "shareCard 3:4",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "shareCard 1:1",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "shareCard 9:16",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "1280x720",
+  "page": "shareCard 16:9",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "squadEditor",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "squadComparison",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "shareImage",
+  "ok": true,
+  "problems": [],
+  "note": "saved efootball-team-ai-squad-diagnosis-Nouvel effectif-20261008.png"
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "shareCard 3:4",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "shareCard 1:1",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "shareCard 9:16",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "fr",
+  "viewport": "390x844",
+  "page": "shareCard 16:9",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "home",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "players",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "playerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "progression",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "managers",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "managerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "compare",
+  "ok": false,
+  "problems": [
+   "english Standard"
+  ]
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "squads",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "bestXi",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "history",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "dataManagement",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "support",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "about",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "terms",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "notFound",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "signup",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "signin",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "persistence",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "home",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "players",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "playerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "progression",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "managers",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "managerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "compare",
+  "ok": false,
+  "problems": [
+   "english Standard"
+  ]
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "squads",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "bestXi",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "history",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "dataManagement",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "support",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "about",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "terms",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "notFound",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "signup",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "signin",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "persistence",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "squadEditor",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "squadComparison",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "shareImage",
+  "ok": true,
+  "problems": [],
+  "note": "saved efootball-team-ai-squad-diagnosis-Neuer Kader-20261008.png"
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "shareCard 3:4",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "shareCard 1:1",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "shareCard 9:16",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "1280x720",
+  "page": "shareCard 16:9",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "squadEditor",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "squadComparison",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "shareImage",
+  "ok": true,
+  "problems": [],
+  "note": "saved efootball-team-ai-squad-diagnosis-Neuer Kader-20261008.png"
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "shareCard 3:4",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "shareCard 1:1",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "shareCard 9:16",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "de",
+  "viewport": "390x844",
+  "page": "shareCard 16:9",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "home",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "players",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "playerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "progression",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "managers",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "managerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "compare",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "squads",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "bestXi",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "history",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "dataManagement",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "support",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "about",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "terms",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "notFound",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "signup",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "signin",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "persistence",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "home",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "players",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "playerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "progression",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "managers",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "managerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "compare",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "squads",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "bestXi",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "history",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "dataManagement",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "support",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "about",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "terms",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "notFound",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "signup",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "signin",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "persistence",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "squadEditor",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "squadComparison",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "shareImage",
+  "ok": true,
+  "problems": [],
+  "note": "saved efootball-team-ai-squad-diagnosis-Nuova rosa-20261008.png"
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "shareCard 3:4",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "shareCard 1:1",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "shareCard 9:16",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "1280x720",
+  "page": "shareCard 16:9",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "squadEditor",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "squadComparison",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "shareImage",
+  "ok": true,
+  "problems": [],
+  "note": "saved efootball-team-ai-squad-diagnosis-Nuova rosa-20261008.png"
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "shareCard 3:4",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "shareCard 1:1",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "shareCard 9:16",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "it",
+  "viewport": "390x844",
+  "page": "shareCard 16:9",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "home",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "players",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "playerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "progression",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "managers",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "managerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "compare",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "squads",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "bestXi",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "history",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "dataManagement",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "support",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "about",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "terms",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "notFound",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "signup",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "signin",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "persistence",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "home",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "players",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "playerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "progression",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "managers",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "managerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "compare",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "squads",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "bestXi",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "history",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "dataManagement",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "support",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "about",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "terms",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "notFound",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "signup",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "signin",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "persistence",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "squadEditor",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "squadComparison",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "shareImage",
+  "ok": true,
+  "problems": [],
+  "note": "saved efootball-team-ai-squad-diagnosis-새 스쿼드-20261008.png"
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "shareCard 3:4",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "shareCard 1:1",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "shareCard 9:16",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "1280x720",
+  "page": "shareCard 16:9",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "squadEditor",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "squadComparison",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "shareImage",
+  "ok": true,
+  "problems": [],
+  "note": "saved efootball-team-ai-squad-diagnosis-새 스쿼드-20261008.png"
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "shareCard 3:4",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "shareCard 1:1",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "shareCard 9:16",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "ko",
+  "viewport": "390x844",
+  "page": "shareCard 16:9",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "home",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "players",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "playerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "progression",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "managers",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "managerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "compare",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "squads",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "bestXi",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "history",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "dataManagement",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "support",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "about",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "terms",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "notFound",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "signup",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "signin",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "persistence",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "home",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "players",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "playerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "progression",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "managers",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "managerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "compare",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "squads",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "bestXi",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "history",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "dataManagement",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "support",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "about",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "terms",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "notFound",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "signup",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "signin",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "persistence",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "squadEditor",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "squadComparison",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "shareImage",
+  "ok": true,
+  "problems": [],
+  "note": "saved efootball-team-ai-squad-diagnosis-新阵容-20261008.png"
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "shareCard 3:4",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "shareCard 1:1",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "shareCard 9:16",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "1280x720",
+  "page": "shareCard 16:9",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "squadEditor",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "squadComparison",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "shareImage",
+  "ok": true,
+  "problems": [],
+  "note": "saved efootball-team-ai-squad-diagnosis-新阵容-20261008.png"
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "shareCard 3:4",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "shareCard 1:1",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "shareCard 9:16",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-CN",
+  "viewport": "390x844",
+  "page": "shareCard 16:9",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "home",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "players",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "playerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "progression",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "managers",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "managerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "compare",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "squads",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "bestXi",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "history",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "dataManagement",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "support",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "about",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "terms",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "notFound",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "signup",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "signin",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "persistence",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "home",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "players",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "playerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "progression",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "managers",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "managerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "compare",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "squads",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "bestXi",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "history",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "dataManagement",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "support",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "about",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "terms",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "notFound",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "signup",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "signin",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "persistence",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "squadEditor",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "squadComparison",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "shareImage",
+  "ok": true,
+  "problems": [],
+  "note": "saved efootball-team-ai-squad-diagnosis-新陣容-20261008.png"
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "shareCard 3:4",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "shareCard 1:1",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "shareCard 9:16",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "1280x720",
+  "page": "shareCard 16:9",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "squadEditor",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "squadComparison",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "shareImage",
+  "ok": true,
+  "problems": [],
+  "note": "saved efootball-team-ai-squad-diagnosis-新陣容-20261008.png"
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "shareCard 3:4",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "shareCard 1:1",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "shareCard 9:16",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "zh-TW",
+  "viewport": "390x844",
+  "page": "shareCard 16:9",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "home",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "players",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "playerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "progression",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "managers",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "managerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "compare",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "squads",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "bestXi",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "history",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "dataManagement",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "support",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "about",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "terms",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "notFound",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "signup",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "signin",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "persistence",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "home",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "players",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "playerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "progression",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "managers",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "managerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "compare",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "squads",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "bestXi",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "history",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "dataManagement",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "support",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "about",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "terms",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "notFound",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "signup",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "signin",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "persistence",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "squadEditor",
+  "ok": false,
+  "problems": [
+   "english Pressing"
+  ]
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "squadComparison",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "shareImage",
+  "ok": true,
+  "problems": [],
+  "note": "saved efootball-team-ai-squad-diagnosis-Skuad Baru-20261008.png"
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "shareCard 3:4",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "shareCard 1:1",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "shareCard 9:16",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "1280x720",
+  "page": "shareCard 16:9",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "squadEditor",
+  "ok": false,
+  "problems": [
+   "english Pressing"
+  ]
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "squadComparison",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "shareImage",
+  "ok": true,
+  "problems": [],
+  "note": "saved efootball-team-ai-squad-diagnosis-Skuad Baru-20261008.png"
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "shareCard 3:4",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "shareCard 1:1",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "shareCard 9:16",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "id",
+  "viewport": "390x844",
+  "page": "shareCard 16:9",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "home",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "players",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "playerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "progression",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "managers",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "managerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "compare",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "squads",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "bestXi",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "history",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "dataManagement",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "support",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "about",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "terms",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "notFound",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "signup",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "signin",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "persistence",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "home",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "players",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "playerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "progression",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "managers",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "managerDetail",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "compare",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "squads",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "bestXi",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "history",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "dataManagement",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "support",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "about",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "terms",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "notFound",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "signup",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "signin",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "persistence",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "squadEditor",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "squadComparison",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "shareImage",
+  "ok": true,
+  "problems": [],
+  "note": "saved efootball-team-ai-squad-diagnosis-Yeni kadro-20261008.png"
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "shareCard 3:4",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "shareCard 1:1",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "shareCard 9:16",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "1280x720",
+  "page": "shareCard 16:9",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "squadEditor",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "squadComparison",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "shareImage",
+  "ok": true,
+  "problems": [],
+  "note": "saved efootball-team-ai-squad-diagnosis-Yeni kadro-20261008.png"
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "shareCard 3:4",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "shareCard 1:1",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "shareCard 9:16",
+  "ok": true,
+  "problems": []
+ },
+ {
+  "locale": "tr",
+  "viewport": "390x844",
+  "page": "shareCard 16:9",
+  "ok": true,
+  "problems": []
+ }
+]
