@@ -5,8 +5,8 @@ import type { StoredSquad } from "./types";
 /**
  * 配置のコピー／貼り付け（F-036 の残り、2026-10-04）。純関数＋sessionStorage の薄い読み書き。
  *
- * - **同じフォーメーションのスカッドの間だけ**（枠の ID が一致するので、対応づけの規則が要らない）。
- *   違うフォーメーションへは貼り付けない（推測で枠を対応させない）。
+ * - `pastePlacement` は**同じフォーメーションのスカッドの間だけ**（枠の ID が一致するので、対応づけの規則が要らない）。
+ *   違うフォーメーションへは `pastePlacementAcrossFormations`（下・NEW-41）が決定的な規則で枠を対応させる。
  * - 写すのは先発の枠の座標（x / y）と配置ロールの手動上書き（roleOverride）だけ。選手・ビルド・ブースター・
  *   キャプテン・セットプレー・ベンチ・監督は写さない。空き枠の座標も写す（配置の形をそのまま再現する）。
  *   選手がいない枠の roleOverride は保存時の正規化と同じく null にする。
@@ -113,4 +113,108 @@ export function writePlacementClipboard(clip: PlacementClipboard): boolean {
   } catch {
     return false;
   }
+}
+
+/**
+ * 違うフォーメーションの間の配置の写し（NEW-41・2026-10-07）。決定的な規則だけで枠を対応させる（推測しない）。
+ * - 対応は同じ役割の区分（GK / DF / MF / FW）の中だけ。区分の中では、両方のフォーメーションの**既定の座標**の
+ *   距離の二乗の合計が最小になる組み合わせを選ぶ（同じ値なら枠の ID の順で最初の組み合わせ）。
+ * - 写すのは「既定の位置からのずれ」（元の座標 − 元の既定）を、対応する枠の既定に足したもの。
+ *   相手のフォーメーションの形を保ったまま、前に出す・幅を取るなどの調整だけを写す。
+ * - 配置ロールの上書き（roleOverride）は写さない（ポジションが違うと意味が変わるため）。
+ * - 対応の無い枠（区分の人数が違う場合）は今のまま。選手・ビルド・ベンチ・キャプテン等は変えない。
+ */
+export type SlotMapping = { from: string; to: string }[];
+
+function permutations(n: number, k: number): number[][] {
+  // 0..n-1 から k 個を選ぶ順列（辞書順）。区分の枠は最大 5 なので数は小さい。
+  const out: number[][] = [];
+  const cur: number[] = [];
+  const used = new Array(n).fill(false);
+  const rec = () => {
+    if (cur.length === k) {
+      out.push([...cur]);
+      return;
+    }
+    for (let i = 0; i < n; i++) {
+      if (used[i]) continue;
+      used[i] = true;
+      cur.push(i);
+      rec();
+      cur.pop();
+      used[i] = false;
+    }
+  };
+  rec();
+  return out;
+}
+
+export function mapFormationSlots(fromFormationId: string, toFormationId: string): SlotMapping {
+  const from = getFormation(fromFormationId).slots;
+  const to = getFormation(toFormationId).slots;
+  const mapping: SlotMapping = [];
+  for (const role of ["GK", "DF", "MF", "FW"] as const) {
+    const a = from.filter((s) => s.role === role).sort((p, q) => p.slotId.localeCompare(q.slotId));
+    const b = to.filter((s) => s.role === role).sort((p, q) => p.slotId.localeCompare(q.slotId));
+    if (!a.length || !b.length) continue;
+    // 少ない側の各枠に、多い側の枠を 1 つずつ割り当てる。
+    const small = a.length <= b.length ? a : b;
+    const large = a.length <= b.length ? b : a;
+    let best: number[] | null = null;
+    let bestCost = Infinity;
+    for (const perm of permutations(large.length, small.length)) {
+      let cost = 0;
+      perm.forEach((li, si) => {
+        cost += (small[si].x - large[li].x) ** 2 + (small[si].y - large[li].y) ** 2;
+      });
+      if (cost < bestCost - 1e-9) {
+        bestCost = cost;
+        best = perm;
+      }
+    }
+    best!.forEach((li, si) => {
+      const [f, t] = small === a ? [small[si], large[li]] : [large[li], small[si]];
+      mapping.push({ from: f.slotId, to: t.slotId });
+    });
+  }
+  return mapping;
+}
+
+export type CrossPasteResult =
+  | { ok: true; squad: StoredSquad; changed: number; mapped: number; unmatched: number }
+  | { ok: false; reason: "invalid_squad" | "invalid_clipboard" | "same_formation" | "no_change" };
+
+export function pastePlacementAcrossFormations(squad: StoredSquad, clip: PlacementClipboard | null): CrossPasteResult {
+  if (!squad || !Array.isArray(squad.slots) || !isFormationId(squad.formationId)) return { ok: false, reason: "invalid_squad" };
+  const parsed = parsePlacementClipboard(clip);
+  if (!parsed) return { ok: false, reason: "invalid_clipboard" };
+  if (parsed.formationId === squad.formationId) return { ok: false, reason: "same_formation" };
+  const fromDef = new Map(getFormation(parsed.formationId).slots.map((s) => [s.slotId, s]));
+  const toDef = new Map(getFormation(squad.formationId).slots.map((s) => [s.slotId, s]));
+  const src = new Map(parsed.slots.map((s) => [s.slotId, s]));
+  const target = new Map<string, { x: number; y: number }>();
+  for (const { from, to } of mapFormationSlots(parsed.formationId, squad.formationId)) {
+    const c = src.get(from);
+    const fd = fromDef.get(from);
+    const td = toDef.get(to);
+    if (!c || !fd || !td) continue;
+    target.set(to, { x: round1(td.x + (c.x - fd.x)), y: round1(td.y + (c.y - fd.y)) });
+  }
+  let changed = 0;
+  const slots = squad.slots.map((s) => {
+    const t = target.get(s.slotId);
+    if (!t) return s;
+    const def = toDef.get(s.slotId)!;
+    if ((s.x ?? def.x) === t.x && (s.y ?? def.y) === t.y) return s;
+    changed++;
+    return { ...s, x: t.x, y: t.y };
+  });
+  if (changed === 0) return { ok: false, reason: "no_change" };
+  return {
+    ok: true,
+    squad: { ...squad, slots, updatedAt: new Date().toISOString() },
+    changed,
+    mapped: target.size,
+    unmatched: toDef.size - target.size,
+  };
 }

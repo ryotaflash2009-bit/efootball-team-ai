@@ -96,6 +96,7 @@ const part: PartialDictionary = {
     placementCopiedTemplate: "Aufstellung kopiert (in jeden Kader mit derselben Formation {formationId} einfügbar).",
     placementPasted: "Aufstellung eingefügt (Spieler, Builds, Kapitän und andere Einstellungen bleiben unverändert).",
     placementPasteMismatchTemplate: "Die kopierte Aufstellung gilt für {formationId}. Sie kann nur in einen Kader mit derselben Formation eingefügt werden.",
+    placementPasteCrossTemplate: "Die Anpassungen der {formationId}-Aufstellung wurden auf die nächstgelegenen passenden Positionen übertragen ({mapped} Positionen; {unmatched} ohne Entsprechung unverändert; Rollenüberschreibungen nicht kopiert).",
     placementCopyFailed: "Die Aufstellung kann in dieser Umgebung nicht kopiert werden (Browserspeicher nicht verfügbar).",
     multiSelectToggleTemplate: "Mehrfachauswahl {state}",
     multiSelectHint: "Tippe auf Spieler auf dem Spielfeld, um sie auszuwählen (erneut tippen zum Abwählen). Nur die ausgewählten Spieler kannst du ausrichten, gleichmäßig verteilen oder spiegeln.",

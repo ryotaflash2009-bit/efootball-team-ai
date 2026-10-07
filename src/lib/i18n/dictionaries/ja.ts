@@ -805,6 +805,7 @@ export interface Dictionary {
     placementCopiedTemplate: string;
     placementPasted: string;
     placementPasteMismatchTemplate: string;
+    placementPasteCrossTemplate: string;
     placementCopyFailed: string;
     multiSelectToggleTemplate: string;
     multiSelectHint: string;

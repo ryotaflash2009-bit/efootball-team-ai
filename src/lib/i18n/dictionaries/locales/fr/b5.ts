@@ -96,6 +96,7 @@ const part: PartialDictionary = {
     placementCopiedTemplate: "Placement copié (collez-le dans tout effectif ayant la même formation, {formationId}).",
     placementPasted: "Placement collé (joueurs, builds, capitaine et autres réglages inchangés).",
     placementPasteMismatchTemplate: "Le placement copié est prévu pour {formationId}. Il ne peut être collé que dans un effectif ayant la même formation.",
+    placementPasteCrossTemplate: "Les ajustements du placement {formationId} ont été appliqués aux postes correspondants les plus proches ({mapped} postes ; {unmatched} sans correspondance inchangés ; rôles forcés non copiés).",
     placementCopyFailed: "Impossible de copier le placement dans cet environnement (stockage du navigateur indisponible).",
     multiSelectToggleTemplate: "Sélection multiple {state}",
     multiSelectHint: "Touchez des joueurs sur le terrain pour les sélectionner (touchez à nouveau pour désélectionner). Vous pouvez aligner, espacer régulièrement ou inverser uniquement les joueurs sélectionnés.",

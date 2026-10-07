@@ -98,6 +98,7 @@ const squadEditor: Dictionary["squadEditor"] = {
   placementCopiedTemplate: "配置をコピーしました（同じフォーメーション {formationId} のスカッドへ貼り付けできます）。",
   placementPasted: "配置を貼り付けました（選手・ビルド・キャプテン等はそのまま）。",
   placementPasteMismatchTemplate: "コピーした配置は {formationId} 用です。同じフォーメーションのスカッドにだけ貼り付けできます。",
+  placementPasteCrossTemplate: "{formationId} の配置の調整を、近い枠に対応させて写しました（{mapped} 枠・対応なし {unmatched} 枠は今のまま・ロールの上書きは写していません）。",
   placementCopyFailed: "この環境では配置をコピーできません（ブラウザーの保存領域が使えません）。",
   multiSelectToggleTemplate: "複数選択 {state}",
   multiSelectHint: "ピッチの選手をタップして選びます（もう一度タップで解除）。選んだ選手だけを揃えたり、均等に並べたり、左右反転できます。",

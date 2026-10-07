@@ -96,6 +96,7 @@ const part: PartialDictionary = {
     placementCopiedTemplate: "Colocación copiada (pégala en cualquier plantilla con la misma formación, {formationId}).",
     placementPasted: "Colocación pegada (jugadores, builds, capitán y demás ajustes no cambian).",
     placementPasteMismatchTemplate: "La colocación copiada es para {formationId}. Solo se puede pegar en una plantilla con la misma formación.",
+    placementPasteCrossTemplate: "Se aplicaron los ajustes de la colocación de {formationId} a las posiciones equivalentes más cercanas ({mapped} posiciones; {unmatched} sin equivalente sin cambios; no se copiaron los roles fijados).",
     placementCopyFailed: "No se puede copiar la colocación en este entorno (almacenamiento del navegador no disponible).",
     multiSelectToggleTemplate: "Selección múltiple {state}",
     multiSelectHint: "Toca jugadores en el campo para seleccionarlos (vuelve a tocar para deseleccionar). Puedes alinear, espaciar o reflejar solo a los jugadores seleccionados.",

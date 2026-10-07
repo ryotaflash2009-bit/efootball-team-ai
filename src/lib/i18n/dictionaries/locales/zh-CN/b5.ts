@@ -96,6 +96,7 @@ const part: PartialDictionary = {
     placementCopiedTemplate: "已复制站位（可粘贴到任何阵型相同（{formationId}）的阵容中）。",
     placementPasted: "已粘贴站位（球员、方案、队长及其他设置不变）。",
     placementPasteMismatchTemplate: "复制的站位适用于 {formationId}，只能粘贴到阵型相同的阵容中。",
+    placementPasteCrossTemplate: "已将 {formationId} 站位的调整应用到最接近的对应位置（{mapped} 个位置；{unmatched} 个无对应位置保持不变；未复制角色指定）。",
     placementCopyFailed: "当前环境无法复制站位（浏览器存储不可用）。",
     multiSelectToggleTemplate: "多选 {state}",
     multiSelectHint: "点击球场上的球员即可选中（再次点击取消）。可仅对选中的球员进行对齐、等距分布或镜像。",

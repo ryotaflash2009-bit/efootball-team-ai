@@ -96,6 +96,7 @@ const part: PartialDictionary = {
     placementCopiedTemplate: "已複製配置（可貼到任何相同陣型 {formationId} 的陣容）。",
     placementPasted: "已貼上配置（球員、方案、隊長及其他設定不變）。",
     placementPasteMismatchTemplate: "複製的配置適用於 {formationId}，只能貼到相同陣型的陣容。",
+    placementPasteCrossTemplate: "已將 {formationId} 配置的調整套用到最接近的對應位置（{mapped} 個位置；{unmatched} 個無對應位置維持不變；未複製角色指定）。",
     placementCopyFailed: "此環境無法複製配置（無法使用瀏覽器儲存空間）。",
     multiSelectToggleTemplate: "多選 {state}",
     multiSelectHint: "點選球場上的球員即可選取（再點一次取消選取）。只能對選取的球員進行對齊、平均分布或左右翻轉。",

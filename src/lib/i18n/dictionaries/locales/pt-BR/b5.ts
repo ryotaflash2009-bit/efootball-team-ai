@@ -96,6 +96,7 @@ const part: PartialDictionary = {
     placementCopiedTemplate: "Posicionamento copiado (cole-o em qualquer elenco com a mesma formação, {formationId}).",
     placementPasted: "Posicionamento colado (jogadores, builds, capitão e outras configurações não foram alterados).",
     placementPasteMismatchTemplate: "O posicionamento copiado é da formação {formationId}. Ele só pode ser colado em um elenco com a mesma formação.",
+    placementPasteCrossTemplate: "Os ajustes do posicionamento de {formationId} foram aplicados às posições correspondentes mais próximas ({mapped} posições; {unmatched} sem correspondência inalteradas; funções fixadas não copiadas).",
     placementCopyFailed: "Não é possível copiar o posicionamento neste ambiente (armazenamento do navegador indisponível).",
     multiSelectToggleTemplate: "Seleção múltipla {state}",
     multiSelectHint: "Toque nos jogadores no campo para selecioná-los (toque de novo para desmarcar). Você pode alinhar, distribuir igualmente ou espelhar apenas os jogadores selecionados.",

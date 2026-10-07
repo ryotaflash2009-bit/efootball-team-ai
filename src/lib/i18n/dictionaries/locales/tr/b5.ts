@@ -96,6 +96,7 @@ const part: PartialDictionary = {
     placementCopiedTemplate: "Yerleşim kopyalandı (aynı dizilişteki herhangi bir kadroya yapıştırabilirsiniz: {formationId}).",
     placementPasted: "Yerleşim yapıştırıldı (oyuncular, buildler, kaptan ve diğer ayarlar değişmedi).",
     placementPasteMismatchTemplate: "Kopyalanan yerleşimin dizilişi: {formationId}. Yalnızca aynı dizilişteki bir kadroya yapıştırılabilir.",
+    placementPasteCrossTemplate: "{formationId} yerleşimindeki ayarlar en yakın karşılık gelen mevkilere uygulandı ({mapped} mevki; karşılığı olmayan {unmatched} mevki değişmedi; rol atamaları kopyalanmadı).",
     placementCopyFailed: "Bu ortamda yerleşim kopyalanamıyor (tarayıcı depolaması kullanılamıyor).",
     multiSelectToggleTemplate: "Çoklu seçim {state}",
     multiSelectHint: "Seçmek için sahadaki oyunculara dokunun (seçimi kaldırmak için yeniden dokunun). Yalnızca seçilen oyuncuları hizalayabilir, eşit aralıklandırabilir veya aynalayabilirsiniz.",

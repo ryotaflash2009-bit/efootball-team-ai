@@ -96,6 +96,7 @@ const part: PartialDictionary = {
     placementCopiedTemplate: "Penempatan disalin (tempelkan ke skuad mana pun dengan formasi yang sama, {formationId}).",
     placementPasted: "Penempatan ditempel (pemain, build, kapten, dan pengaturan lain tidak berubah).",
     placementPasteMismatchTemplate: "Penempatan yang disalin untuk {formationId}. Hanya dapat ditempel ke skuad dengan formasi yang sama.",
+    placementPasteCrossTemplate: "Penyesuaian dari penempatan {formationId} diterapkan ke slot padanan terdekat ({mapped} slot; {unmatched} tanpa padanan tidak berubah; peran yang ditetapkan tidak disalin).",
     placementCopyFailed: "Penempatan tidak dapat disalin di lingkungan ini (penyimpanan browser tidak tersedia).",
     multiSelectToggleTemplate: "Pilih banyak {state}",
     multiSelectHint: "Ketuk pemain di lapangan untuk memilihnya (ketuk lagi untuk membatalkan). Anda dapat meratakan, memberi jarak sama, atau mencerminkan hanya pemain yang dipilih.",
