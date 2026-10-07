@@ -76,3 +76,24 @@ password を percent-encode して、URL をメモリの中だけで作り `gh s
 - 実行: `powershell -NoProfile -ExecutionPolicy Bypass -File .\data\work\set-auto-apply-db-secret.ps1`（`-DryRun` で確認だけ）。
 - 「設定完了」の後は §4 と同じく最新の状態から検出をやり直す（今回の Candidate は次の検出でも同じ checksum なら 24 時間以内は repeat になるため、
   2026-10-08T13:34Z 以降の検出、または checksum が変わった検出で Pipeline へ渡る）。
+
+## 9. v2 の確認の誤り（42P01）と v3（2026-10-07）
+
+本人の v2 の実行: 1 回目 `28P01`（パスワードの誤り・未登録）、2 回目 `42P01`（v2 は LOGIN_FAILED と表示・未登録・書き込み 0）。
+
+- **原因**: v2 の確認の SQL が `has_table_privilege(current_user, 'public.world_player_cards', 'UPDATE')` だった。
+  表は `reference_data.world_player_cards`（`public` ではない）。`has_table_privilege` は名前の関係が無いと 42P01 を出す。
+  42P01 はログインの**後**に出るため、2 回目は認証に成功していた（パスワードは正しかった可能性が高い。v3 の `select 1` で確定する）。
+- **もう一つの誤り**: `reference_data_updater` の UPDATE・INSERT は列単位の grant（`grant update (...)`）。
+  `has_table_privilege(..., 'UPDATE')` は列単位の grant では false になるため、schema を直しても v2 は「権限なし」で止まっていた。
+- **v3**（`scripts/check-apply-db-login.mjs`・`scripts/lib/db-login-probe.mjs`・`scripts/lib/updater-probe-spec.mjs`）:
+  1. 接続して `select 1` だけ（表に依存しない）。
+  2. 成功した後だけ、schema 付きの名前を `to_regclass` で引き、`pg_attribute` と `has_table_privilege`（SELECT）・
+     `has_column_privilege`（列ごとの UPDATE / INSERT）で確かめる（無い表・列は NULL になりエラーにならない）。対象の列は
+     `UPDATER_COLUMN_GRANTS` と同じ（テストで一致を確認）。INSERT・UPDATE・DELETE は実行しない。
+  3. 分類: `INVALID_PASSWORD`（28P01）・`AUTHENTICATED_BUT_PROBE_RELATION_MISSING`（42P01・関係の名前だけ表示）・
+     `AUTHENTICATED_BUT_INSUFFICIENT_PRIVILEGE`（42501・不足の列）・`AUTHENTICATED_AS_UNEXPECTED_ROLE`・`CONNECTION_FAILURE`（08 系・ネットワーク）・
+     `TLS_FAILURE`・`PROBE_FAILED_WITH_SQLSTATE`。出力にエラー文・接続情報・パスワードを含めない。
+- 試験: 単体 13 件・使い捨て PostgreSQL（CI）で、間違ったパスワード・正しいパスワード + select 1・関係が無い・権限が無い（列単位）・
+  TLS の失敗・ネットワークの失敗・確認の前後で行が変わらないこと。Windows PowerShell 5.1 の self-test 34/34。
+- 一度限りのスクリプトは v3（`data/work/set-auto-apply-db-secret.ps1`・Git 管理外）。`LOGIN_OK_AND_PRIVILEGES_OK` の場合だけ Secret を登録する。
