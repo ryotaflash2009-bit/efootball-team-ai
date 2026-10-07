@@ -128,6 +128,14 @@ describe("sanitizeForFileName", () => {
   it("日本語チーム名はそのまま使用できる", () => {
     expect(sanitizeForFileName("俺の最強イレブン")).toBe("俺の最強イレブン");
   });
+  it("制御文字と DEL も置換する", () => {
+    expect(sanitizeForFileName("a\u0000b\u001fc\u007fd")).toBe("a_b_c_d");
+  });
+  it("絵文字（サロゲートペア）を途中で切らない（文字単位で 40 文字）", () => {
+    const name = sanitizeForFileName("⚽".repeat(5) + "😀".repeat(50));
+    expect(Array.from(name)).toHaveLength(40);
+    expect(name).not.toMatch(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/);
+  });
 });
 
 describe("formatDateForFileName / buildSquadDiagnosisFileName", () => {
