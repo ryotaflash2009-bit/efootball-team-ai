@@ -96,6 +96,7 @@ const part: PartialDictionary = {
     placementCopiedTemplate: "배치를 복사했습니다(같은 포메이션 {formationId}의 스쿼드에 붙여넣을 수 있습니다).",
     placementPasted: "배치를 붙여넣었습니다(선수, 빌드, 주장 등 다른 설정은 변경되지 않습니다).",
     placementPasteMismatchTemplate: "복사한 배치는 {formationId}용입니다. 같은 포메이션의 스쿼드에만 붙여넣을 수 있습니다.",
+    placementPasteCrossTemplate: "{formationId} 배치의 조정을 가장 가까운 대응 위치에 적용했습니다({mapped}개 위치, 대응 없는 {unmatched}개는 그대로, 역할 지정은 복사하지 않음).",
     placementCopyFailed: "이 환경에서는 배치를 복사할 수 없습니다(브라우저 저장소 사용 불가).",
     multiSelectToggleTemplate: "다중 선택 {state}",
     multiSelectHint: "피치의 선수를 탭하여 선택합니다(다시 탭하면 해제). 선택한 선수만 정렬, 균등 배치, 좌우 반전할 수 있습니다.",

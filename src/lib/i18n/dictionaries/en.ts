@@ -825,6 +825,7 @@ const en: Dictionary = {
     placementCopiedTemplate: "Placement copied (paste it into any squad with the same formation, {formationId}).",
     placementPasted: "Pasted the placement (players, builds, captain and other settings are unchanged).",
     placementPasteMismatchTemplate: "The copied placement is for {formationId}. It can only be pasted into a squad with the same formation.",
+    placementPasteCrossTemplate: "Applied the adjustments from the {formationId} placement to the nearest matching slots ({mapped} slots; {unmatched} without a match unchanged; role overrides not copied).",
     placementCopyFailed: "Placement cannot be copied in this environment (browser storage is unavailable).",
     multiSelectToggleTemplate: "Multi-select {state}",
     multiSelectHint: "Tap players on the pitch to select them (tap again to deselect). You can align, space evenly or mirror only the selected players.",

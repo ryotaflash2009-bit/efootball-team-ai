@@ -34,6 +34,7 @@ import {
 import {
   copyPlacement,
   pastePlacement,
+  pastePlacementAcrossFormations,
   readPlacementClipboard,
   writePlacementClipboard,
   type PlacementClipboard,
@@ -747,12 +748,27 @@ export function SquadEditor({
     const clip = readPlacementClipboard() ?? placementClip;
     if (!cur || !clip) return;
     const r = pastePlacement(cur, clip);
-    if (!r.ok) {
+    if (!r.ok && r.reason === "formation_mismatch") {
+      // 違うフォーメーション: 決定的な枠の対応で、既定の位置からのずれだけを写す（NEW-41）。
+      const x = pastePlacementAcrossFormations(cur, clip);
+      if (!x.ok) {
+        flashToast(tse("placementAssistNoChange"));
+        return;
+      }
+      snapshotForUndo(tse("pastePlacementButton"));
+      setSquad(x.squad);
+      setPosAdjust(null);
       flashToast(
-        r.reason === "formation_mismatch"
-          ? fillSe(tse("placementPasteMismatchTemplate"), { formationId: clip.formationId })
-          : tse("placementAssistNoChange"),
+        fillSe(tse("placementPasteCrossTemplate"), {
+          formationId: clip.formationId,
+          mapped: String(x.mapped),
+          unmatched: String(x.unmatched),
+        }),
       );
+      return;
+    }
+    if (!r.ok) {
+      flashToast(tse("placementAssistNoChange"));
       return;
     }
     snapshotForUndo(tse("pastePlacementButton"));

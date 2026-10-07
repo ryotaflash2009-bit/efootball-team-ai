@@ -197,9 +197,26 @@ async function main() {
     const third = await storedById(client, thirdId);
     const thirdBefore = JSON.stringify(coords(third));
     await clickByText(client, "配置を貼り付け");
-    await sleep(500);
+    let thirdAfter = null;
+    await waitForCondition(async () => {
+      thirdAfter = await storedById(client, thirdId);
+      return JSON.stringify(coords(thirdAfter)) !== thirdBefore;
+    }, { timeoutMs: 6000, intervalMs: 150 }).catch(() => {});
     const toast = await evalJson(client, "document.body.innerText");
-    record("違うフォーメーション（4-4-2）へは貼り付けない（案内だけ・座標は不変）", third?.formationId === "4-4-2" && toast.includes("4-3-3 用です") && JSON.stringify(coords(await storedById(client, thirdId))) === thirdBefore, `formation=${third?.formationId}`);
+    const tc = coords(thirdAfter);
+    // 違うフォーメーション（NEW-41）: 決定的な枠の対応で、既定の位置からのずれだけを写す。フォーメーションは変えない。
+    record(
+      "違うフォーメーション（4-4-2）: 近い枠に対応させてずれを写す（フォーメーションは 4-4-2 のまま・案内あり）",
+      thirdAfter?.formationId === "4-4-2" && toast.includes("近い枠に対応させて写しました") && JSON.stringify(tc) !== thirdBefore,
+      `formation=${thirdAfter?.formationId}`,
+    );
+    record(
+      "違うフォーメーション: ロールの上書きは写さず、座標は 0〜100 の中",
+      Object.values(tc).every((c) => c[2] === null && c[0] >= 0 && c[0] <= 100 && c[1] >= 0 && c[1] <= 100),
+    );
+    await clickByText(client, "元に戻す");
+    await waitForCondition(async () => JSON.stringify(coords(await storedById(client, thirdId))) === thirdBefore, { timeoutMs: 6000, intervalMs: 150 }).catch(() => {});
+    record("違うフォーメーション: 元に戻すで貼り付け前に戻る", JSON.stringify(coords(await storedById(client, thirdId))) === thirdBefore);
 
     // 8) モバイル幅で横スクロールが出ない（操作の欄を出した状態）。
     await client.send("Emulation.setDeviceMetricsOverride", { width: 375, height: 812, deviceScaleFactor: 2, mobile: true });
