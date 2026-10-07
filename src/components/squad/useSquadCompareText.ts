@@ -2,6 +2,7 @@
 
 import "@/lib/i18n/dictionaries/ja-ns/compareCategory";
 import "@/lib/i18n/dictionaries/ja-ns/squadCompareBoard";
+import { fillMessage } from "@/lib/i18n/message-format";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { localizeSquadText } from "@/lib/squad/squad-text-en";
@@ -18,9 +19,9 @@ export function useSquadCompareText() {
   const t = useT();
   const { locale, displayLocale } = useLocale();
   const tx = (k: ScKey, vars?: Record<string, string | number>) => {
-    let out = t("squadCompareBoard", k);
-    if (vars) for (const [key, v] of Object.entries(vars)) out = out.split(`{${key}}`).join(String(v));
-    return out;
+    // 複数形（ICU の plural）を扱うため fillMessage で差し込む（2026-10-08）。
+    const out = t("squadCompareBoard", k);
+    return vars ? fillMessage(out, Object.fromEntries(Object.entries(vars).map(([key, v]) => [key, String(v)]))) : out;
   };
   const lib = (text: string) => localizeSquadText(text, displayLocale);
   // 選手名は表示言語に合わせる（他の画面と同じ resolvePlayerDisplayName）。

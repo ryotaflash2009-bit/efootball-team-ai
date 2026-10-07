@@ -107,7 +107,7 @@ const part: PartialDictionary = {
     distributeYButton: "Espacer haut-bas",
     mirrorSelectedButton: "Inverser la sélection",
     clearSelectionButton: "Effacer la sélection",
-    placementAssistAppliedTemplate: "{action} ({count} joueurs)",
+    placementAssistAppliedTemplate: "{action} ({count, plural, one {# joueur} other {# joueurs}})",
     placementAssistNoChange: "Déjà disposés ainsi.",
     placementAssistMinTemplate: "Sélectionnez au moins {min} joueurs pour « {action} ».",
     resetToFormationButton: "Revenir aux positions de la formation",
