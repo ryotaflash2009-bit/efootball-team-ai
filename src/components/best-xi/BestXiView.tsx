@@ -12,6 +12,7 @@ import { getFormation } from "@/lib/squad/formations";
 import { useBestXiProgressionCards } from "@/lib/best-xi/use-candidate-cards";
 import { buildBestXiCandidates } from "@/lib/best-xi/candidates";
 import { selectBestXi } from "@/lib/best-xi/select";
+import { selectBestXiBench, type BestXiBenchResult } from "@/lib/best-xi/bench";
 import {
   EXCLUSION_REASON_LABEL_KEY,
   LIMITATION_LABEL_KEY,
@@ -89,6 +90,7 @@ export function BestXiView() {
   );
 
   const [result, setResult] = useState<BestXiSelectionResult | null>(null);
+  const [bench, setBench] = useState<BestXiBenchResult | null>(null);
   const [resultSignature, setResultSignature] = useState<string | null>(null);
   // 初回の1回だけは自動生成し(section 23で許可)、以降はユーザーの明示操作(再選出ボタン)でのみ
   // 選考を実行する。ボタン押下時はまず保存ビルドを読み直し(reloadBuilds)、その結果candidatesが
@@ -99,6 +101,8 @@ export function BestXiView() {
   const runSelection = useCallback(() => {
     const r = selectBestXi({ formationId: FORMATION_ID, candidates, unavailableCards, generatedAt: new Date().toISOString() });
     setResult(r);
+    // 控えは先発の選考と同じ候補から、先発の後に決定的な規則で選ぶ（先発の結果は変えない）。
+    setBench(selectBestXiBench({ formationId: FORMATION_ID, candidates, selection: r }));
     setResultSignature(candidateSignature(candidates));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [candidates, unavailableCards]);
@@ -266,12 +270,14 @@ export function BestXiView() {
                 </div>
               ) : null}
 
+              {bench ? <BestXiBench bench={bench} displayName={displayName} tb={tb} fillTb={fillTb} /> : null}
+
               <BestXiExclusions result={result} displayName={displayName} tb={tb} fillTb={fillTb} t={t} />
 
               <div className="rounded-card border border-border bg-surface p-3 text-2xs text-text-muted sm:p-4">
                 <p className="font-semibold text-text-dim">{tb("limitationsHeading")}</p>
                 <ul className="mt-1 list-disc ps-4">
-                  {result.limitationCodes.map((code) => (
+                  {result.limitationCodes.filter((code) => !(bench && code === "noBenchSelection")).map((code) => (
                     <li key={code}>{t("bestXi", LIMITATION_LABEL_KEY[code] as keyof Dictionary["bestXi"])}</li>
                   ))}
                 </ul>
@@ -421,6 +427,57 @@ function BestXiSlotList({
         })}
       </ul>
     </div>
+  );
+}
+
+const BENCH_REASON_KEY: Record<BestXiBenchResult["entries"][number]["reason"], string> = {
+  backupGoalkeeper: "benchReasonBackupGoalkeeper",
+  positionCover: "benchReasonPositionCover",
+  bestRemaining: "benchReasonBestRemaining",
+};
+
+function BestXiBench({
+  bench,
+  displayName,
+  tb,
+  fillTb,
+}: {
+  bench: BestXiBenchResult;
+  displayName: (c: BestXiCandidate) => string;
+  tb: (key: string) => string;
+  fillTb: (key: string, vars: Record<string, string>) => string;
+}) {
+  return (
+    <section className="rounded-card border border-border bg-surface p-3 text-xs sm:p-4" data-testid="best-xi-bench">
+      <h2 className="font-semibold text-text-dim">
+        {fillTb("benchHeadingTemplate", { count: String(bench.entries.length), max: String(bench.maxSize) })}
+      </h2>
+      <p className="mt-1 text-2xs text-text-muted">{tb("benchIntro")}</p>
+      {bench.entries.length === 0 ? (
+        <p className="mt-2 text-text-dim">{tb("benchEmpty")}</p>
+      ) : (
+        <ol className="mt-2 grid gap-1.5 sm:grid-cols-2">
+          {bench.entries.map((e) => (
+            <li key={e.candidate.candidateKey} className="flex min-w-0 items-center gap-2 rounded border border-border/60 p-2">
+              <span className="w-10 shrink-0 font-semibold text-accent">{e.position}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block break-words font-semibold text-text">{displayName(e.candidate)}</span>
+                <span className="block text-2xs text-text-muted">
+                  {tb(BENCH_REASON_KEY[e.reason])}
+                  {e.candidate.buildName ? ` · ${e.candidate.buildName}` : ""}
+                </span>
+              </span>
+              {e.positionRating != null ? (
+                <span className="shrink-0 tabular-nums text-text-dim">{fillTb("benchRatingTemplate", { rating: String(Math.round(e.positionRating)) })}</span>
+              ) : null}
+            </li>
+          ))}
+        </ol>
+      )}
+      {bench.uncoveredPositions.length > 0 ? (
+        <p className="mt-2 text-2xs text-text-muted">{fillTb("benchUncoveredTemplate", { positions: bench.uncoveredPositions.join(" / ") })}</p>
+      ) : null}
+    </section>
   );
 }
 

@@ -1,12 +1,12 @@
 {
   "schema": "efta-i18n-coverage/v1",
   "source": "en",
-  "sourceKeys": 4600,
+  "sourceKeys": 4608,
   "totals": {
     "core": 78,
-    "publicUi": 4060,
+    "publicUi": 4068,
     "accessibility": 127,
-    "errorEmptyLoading": 262,
+    "errorEmptyLoading": 263,
     "metadata": 27,
     "shareCards": 139,
     "legal": 117,
@@ -27,7 +27,7 @@
     "es": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4060,
+      "translated": 4068,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -88,7 +88,7 @@
     "pt-BR": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4060,
+      "translated": 4068,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -149,7 +149,7 @@
     "fr": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4060,
+      "translated": 4068,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -210,7 +210,7 @@
     "de": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4060,
+      "translated": 4068,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -271,7 +271,7 @@
     "it": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4060,
+      "translated": 4068,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -332,7 +332,7 @@
     "ko": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4060,
+      "translated": 4068,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -393,7 +393,7 @@
     "zh-CN": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4060,
+      "translated": 4068,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -454,7 +454,7 @@
     "zh-TW": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4060,
+      "translated": 4068,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -515,7 +515,7 @@
     "id": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4060,
+      "translated": 4068,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -537,7 +537,7 @@
         "count": 0,
         "sample": []
       },
-      "sameAsEnglish": 151,
+      "sameAsEnglish": 152,
       "placeholderMismatch": {
         "count": 0,
         "sample": []
@@ -576,7 +576,7 @@
     "tr": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4060,
+      "translated": 4068,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -650,7 +650,7 @@
         "internal": 0,
         "overall": 0
       },
-      "missing": 4600,
+      "missing": 4608,
       "extra": {
         "count": 0,
         "sample": []
@@ -711,7 +711,7 @@
         "internal": 0,
         "overall": 0
       },
-      "missing": 4600,
+      "missing": 4608,
       "extra": {
         "count": 0,
         "sample": []
@@ -772,7 +772,7 @@
         "internal": 0,
         "overall": 0
       },
-      "missing": 4600,
+      "missing": 4608,
       "extra": {
         "count": 0,
         "sample": []
@@ -833,7 +833,7 @@
         "internal": 0,
         "overall": 0
       },
-      "missing": 4600,
+      "missing": 4608,
       "extra": {
         "count": 0,
         "sample": []
@@ -894,7 +894,7 @@
         "internal": 0,
         "overall": 0
       },
-      "missing": 4600,
+      "missing": 4608,
       "extra": {
         "count": 0,
         "sample": []
@@ -955,7 +955,7 @@
         "internal": 0,
         "overall": 0
       },
-      "missing": 4600,
+      "missing": 4608,
       "extra": {
         "count": 0,
         "sample": []
@@ -1012,5 +1012,5 @@
     }
   },
   "failures": [],
-  "sourceVersion": "e98c4f182fff"
+  "sourceVersion": "5ba5b403947f"
 }
