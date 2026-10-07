@@ -1,23 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { checkOperations, checkRepoV1_1, decideV1_1, V1_1_MANUAL_REVIEW_ITEMS, V1_1_REQUIRED_GATES } from "../../../scripts/lib/teamaixi-v1-1-release.mjs";
+import { checkOperations, checkRepoV1_1, decideV1_1, V1_1_MANUAL_REVIEW_ITEMS, V1_1_REPO_FILES, V1_1_REQUIRED_GATES } from "../../../scripts/lib/teamaixi-v1-1-release.mjs";
 
 const ROOT = path.resolve(__dirname, "..", "..", "..");
 const read = (p: string) => readFileSync(path.join(ROOT, p), "utf8");
-const repoFiles = () => ({
-  layout: read("src/app/layout.tsx"),
-  localeStatus: read("docs/i18n/locale-status.json"),
-  registry: read("src/lib/i18n/locale-registry.ts"),
-  fixedTerms: read("scripts/lib/fixed-terms.mjs"),
-  navigationWatchdog: read("src/lib/navigation/navigation-watchdog.ts"),
-  analyticsSanitizer: read("src/lib/analytics/sanitize-analytics-event.ts"),
-  npmAuditDoc: read("docs/production-readiness/npm-audit-2026-10-07.md"),
-  improvementSimulation: read("src/lib/squad/improvement-simulation.ts"),
-  publicIdSql: read("docs/production-readiness/sql/create-public-profiles-schema.sql"),
-  publicIdPgTest: read("src/lib/profile/public-profiles.postgres.test.ts"),
-  photoStage2Sql: read("docs/production-readiness/sql/create-photo-posts-stage2-schema.sql"),
-});
+const repoFiles = (): Record<string, string> => Object.fromEntries(Object.entries(V1_1_REPO_FILES as Record<string, string>).map(([k, p]) => [k, read(p)]));
 const allGates = Object.fromEntries(V1_1_REQUIRED_GATES.map((g: string) => [g, true]));
 const allOwner = Object.fromEntries(V1_1_MANUAL_REVIEW_ITEMS.map((k: string) => [k, true]));
 
@@ -54,5 +42,19 @@ describe("TeamAIXI v1.1 Release Validator", () => {
   it("gates の JSON は本人の確認を勝手に true にしていない", () => {
     const g = JSON.parse(read("docs/release/teamaixi-v1-1-gates.json"));
     expect(Object.values(g.ownerConfirmations).every((v) => v === false)).toBe(true);
+  });
+
+  it("2026-10-08 の追加の確認: 欠けた機能・新規登録の公開を検出する", () => {
+    const f = repoFiles();
+    expect(checkRepoV1_1({ ...f, gamePlan: "" })).toContain("game_plan_missing");
+    expect(checkRepoV1_1({ ...f, bestXiBench: "" })).toContain("best_xi_bench_missing");
+    expect(checkRepoV1_1({ ...f, shareImage: f.shareImage.replace(/revokeObjectURL/g, "x") })).toContain("share_safeguards_missing");
+    expect(checkRepoV1_1({ ...f, hourlyDetectionPackage: "" })).toContain("hourly_detection_decision_package_missing");
+    expect(checkRepoV1_1({ ...f, incidentResponse: "" })).toContain("incident_response_missing");
+    const open = f.accountAvailability.replace(/ACCOUNT_SIGNUP_MODE: AccountSignupMode = "limited"/, 'ACCOUNT_SIGNUP_MODE: AccountSignupMode = "open"');
+    expect(open).not.toBe(f.accountAvailability);
+    expect(checkRepoV1_1({ ...f, accountAvailability: open })).toContain("public_signup_open_without_owner_approval");
+    const approved = JSON.stringify({ ...JSON.parse(f.authEmailChecklist), ownerApprovedAt: "2026-10-08T00:00:00Z" });
+    expect(checkRepoV1_1({ ...f, accountAvailability: open, authEmailChecklist: approved })).not.toContain("public_signup_open_without_owner_approval");
   });
 });
