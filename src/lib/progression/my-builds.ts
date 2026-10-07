@@ -217,7 +217,7 @@ export function buildSearchHaystack(build: SavedBuild, card: WorldPlayerListItem
     card?.nameJa ?? "",
     card?.nameEn ?? "",
   ]
-    .join("  ")
+    .join(" \u0001 ")
     .toLowerCase();
 }
 

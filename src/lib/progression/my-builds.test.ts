@@ -205,7 +205,7 @@ describe("validateBuildRename", () => {
     expect(validateBuildRename("a\r\nb").ok).toBe(false);
   });
   it("制御文字は除去", () => {
-    const r = validateBuildRename("ab c");
+    const r = validateBuildRename("a\u0007b\u0000c");
     expect(r).toEqual({ ok: true, name: "abc" });
   });
   it("非文字列は拒否", () => {
@@ -225,7 +225,7 @@ describe("nextDuplicateBuildName", () => {
 
 describe("検索", () => {
   it("正規化（trim・小文字・空白圧縮・制御文字除去）", () => {
-    expect(normalizeBuildSearchQuery("  Messi  RWF  ")).toBe("messi rwf");
+    expect(normalizeBuildSearchQuery("  Messi\u0007  RWF  ")).toBe("messi rwf");
     expect(normalizeBuildSearchQuery(123 as never)).toBe("");
   });
   it("日本語選手名 / 英語選手名 / World ID / ビルド名 / buildId で部分一致", () => {
