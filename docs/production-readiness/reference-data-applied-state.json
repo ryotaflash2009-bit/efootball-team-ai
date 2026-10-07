@@ -1,14 +1,14 @@
 {
   "schema": "reference-data-applied-state/v1",
-  "updatedAt": "2026-10-03",
+  "updatedAt": "2026-10-07",
   "note": "Last reference-data state applied to Production by the approval-gated auto-update workflow. Scheduled detection compares upstream with this record (no Production access). Update it only in the Evidence PR that follows a verified apply.",
   "datasets": {
     "world_player_cards": {
-      "sourceChecksum12": "f7206c1ee9e6",
+      "sourceChecksum12": "079f9eaf92a0",
       "recordCount": 13372,
-      "appliedAt": "2026-10-03T13:27:33.726Z",
+      "appliedAt": "2026-10-07T15:26:29.608Z",
       "maxAppearanceUpdatedAt": "2026-10-01T16:42:06.399Z",
-      "evidence": "docs/production-readiness/evidence/world-update-2026-10-03.json"
+      "evidence": "docs/production-readiness/evidence/world-auto-apply-2026-10-07.json"
     },
     "managers": {
       "sourceChecksum12": "62a21bd2086a",
