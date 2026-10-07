@@ -29,7 +29,7 @@
 | F-003 | 監督検索・詳細（戦術適性・ブースター・Link-Up） | verified | 90% | reference data | R | — | 不要 | 不要 | Free | 同上 | 監督画像は実装しない（イニシャルアバターが正式。`docs/phase-manager-picker.md`・`phase-manager-photos-efdb.md`） |
 | F-004 | 選手比較（2〜4人・レーダー・育成比較） | verified | 90% | F-002 | R | L | 不要 | 不要 | Free | 同上 | 友達比較は F-062 |
 | F-005 | お気に入り | completed | 90% | F-001 | — | L/C | 任意 | 不要 | Free | 未認証表示は black-box 済み | クラウド同期は F-052 |
-| F-006 | データ更新・差分管理（毎時の自動検出＋完全自動の適用。2026-10-07 の時点は自動適用の DB の Secret の本人の入力待ち） | verified | 90% | GitHub Actions | R/W(承認時) | — | — | 不要 | — | `evidence/world-update-2026-09-26.json` | appearance（順位）の再取得方針（本人判断） |
+| F-006 | データ更新・差分管理（毎時の自動検出＋完全無人の適用。**2026-10-07 に無人の Apply を実証**: `FULLY_AUTOMATED_UPDATE_VERIFIED`） | verified | 95% | GitHub Actions | R/W(policy) | — | — | 不要 | — | `evidence/world-auto-apply-2026-10-07.json`（Apply 37643713008・applied_verified） | 毎時の検出の欠落（外部の起動は 10/13 の判断）・appearance（順位）の再取得方針（本人判断） |
 | F-007 | 日本語/英語切り替え | verified | 90% | — | — | L | 不要 | 不要 | Free | 総合black-box（切替・保存） | 英語の用語監査を定期実施 |
 | F-007b | 多言語の基盤（locale の契約・English への代わり・疑似ローカライズ・coverage の監査・RTL の準備） | implemented | 85% | F-007 | — | L | 不要 | 不要 | Free | PR #149・#152・#153・#157・#158・#159・次の PR、`docs/i18n/`、`docs/production-readiness/evidence/2026-10-07-multilingual-release-candidates.json`。公開は ja・en だけ。es・pt-BR・fr・de・it・ko・zh-CN・zh-TW・id・tr は RELEASE_CANDIDATE（AI 翻訳・公開画面 100%・生成文 407/407・共有カード 4 比率・ネイティブのレビュー前・言語の選択には出さない） | ネイティブのレビュー（`docs/i18n/review/<locale>/`）・ゲーム内の公式の用語の照合・法務文書の専門家の翻訳・公開の判断（本人） |
 | F-008 | 公開範囲・noindex・内部ページ404・セキュリティヘッダー | verified | 100% | — | — | — | — | — | — | 総合black-box security 18/18 | 一般公開時に noindex 解除（本人判断） |
@@ -164,6 +164,7 @@
 ## 9. 変更履歴
 
 - 2026-10-06: **多言語の基盤（F-007b）**。locale の契約（18 言語 + 疑似 2）・その言語 → English → 日本語の解決・言語ごとの別 chunk・coverage と品質の監査（CI）・用語集・RTL の論理プロパティ（255 か所）。10 言語の AI の下書き（核の UI・ホーム・内部の確認だけ）。公開の言語は変えていない（ja・en）。
+- 2026-10-08: **完全無人の自動更新を実証**（F-006・Apply 37643713008・Evidence PR #194）。複数形の修正（#196）・v1.1 Validator の対象の拡大（#197）・wt-head の読み取り監査と毎時の検出の判断パッケージ（#195）。
 - 2026-10-07（夜）: 監督の比較（F-146）・違うフォーメーション間の配置の写し（F-145）・AI ベスト11 の控え（F-142）・完全なゲームプラン（F-143）・公開プロフィールの契約（F-144）・共有のファイル名とソースの制御文字（PR #186）・Next.js 16 の計画と Domain/SMTP/Auth の再開パッケージ（PR #188）。自動 Apply の再検証は Apply の接続で 28P01（書き込みなし・`auto-apply-db-secret-recovery.md` §8）。
 - 2026-10-07（続き）: F-045・F-070 の判断パッケージ・改善シミュレーション（F-134）・スカッドの独自性（F-135）・Your Best の追加（F-073 v2）・成長プロフィール v2（F-061）・公開 ID の migration の提案と PostgreSQL の検証（F-053）・v1.1 Release Validator（F-139）・コミュニティの安全の契約（F-140）・将来の機能の契約（F-141）・RTL の UI の位置 24 か所の論理化・ブースター一覧（F-136）・B2 の候補の統一（F-029b）・タブの題名（F-137）・release gate（F-138）。本番の総合 black-box 576/576・アクセシビリティ 32/32。
 - 2026-10-07: **夜間の作業**。Link-Up Play・OVR の契約（F-132）・Vercel Web Analytics（F-130）・ネイティブのレビュー資料 v2・npm audit の非破壊の修正（high 10 → 8）・止まった移動の早めの戻し（F-131）・かなの検索（F-133）・F-045 の判断パッケージ・改善シミュレーション（F-134）・機能の全面の再監査（`docs/product/feature-reaudit-2026-10-07.md`・127 件・新しい要件 43）。自動適用の DB の Secret は本人の入力待ち（`VERIFIED_BLOCKED_OWNER_ACTION`）。
