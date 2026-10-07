@@ -17,7 +17,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { launchIsolatedBrowser, openTab, closeTab, connectCDP, waitForCondition, installSupabaseAuthTestDouble } from "./lib/headless-chrome.mjs";
+import { launchIsolatedBrowser, openTab, closeTab, connectCDP, waitForCondition, installSupabaseAuthTestDouble, stubVercelInsightsOnLocalhost } from "./lib/headless-chrome.mjs";
 import { escapeMarkdownCell } from "../src/lib/testing/markdown-table.ts";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -319,6 +319,7 @@ async function main() {
   await client.send("Page.enable");
   await client.send("Runtime.enable");
   await installSupabaseAuthTestDouble(client);
+  await stubVercelInsightsOnLocalhost(client, BASE);
   await client.send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 1000, deviceScaleFactor: 1, mobile: false });
 
   const errors = [];
@@ -1229,7 +1230,9 @@ async function main() {
     // ============================================================
     for (const p of ["/", "/players", "/my-team", "/my-builds", "/build-inventory", "/best-xi", "/squads", "/squads/templates", "/squads/compare", "/favorites", "/account", "/account/rls-test", "/account/my-team-cloud", "/data-management", "/auth/sign-in"]) {
       const r = await fetch(`${BASE}${p}`);
-      record(`[スモーク回帰] ${p} が引き続き200`, r.status === 200, `HTTP ${r.status}`);
+      // 内部ページ（src/lib/public-info/internal-pages.ts）は内部の確認の build だけ 200、通常の build では 404 が正しい（2026-10-08）。
+      if (p === "/account/rls-test") record(`[スモーク回帰] ${p} は内部の build で 200・通常の build で 404（5xx なし）`, r.status === 200 || r.status === 404, `HTTP ${r.status}`);
+      else record(`[スモーク回帰] ${p} が引き続き200`, r.status === 200, `HTTP ${r.status}`);
     }
 
     record("ページ内でJS例外が発生していない(全シナリオ通算)", errors.length === 0, errors.slice(0, 3).join(" / "));

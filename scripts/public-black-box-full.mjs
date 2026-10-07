@@ -14,7 +14,7 @@
 import { writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { launchIsolatedBrowser, openTab, closeTab, connectCDP, installSupabaseAuthTestDouble } from "./lib/headless-chrome.mjs";
+import { launchIsolatedBrowser, openTab, closeTab, connectCDP, installSupabaseAuthTestDouble, stubVercelInsightsOnLocalhost } from "./lib/headless-chrome.mjs";
 
 const BASE = (process.env.BASE_URL ?? "http://localhost:3000").replace(/\/+$/, "");
 if (!/^(http:\/\/localhost:\d+|https:\/\/[a-z0-9.-]+)$/.test(BASE)) throw new Error("BASE_URL must be http://localhost:<port> or an https origin");
@@ -372,7 +372,9 @@ async function step(vp, route, op, fn, { allow4xx = [], audit = true } = {}) {
   // 書き込みの可能性がある通信(GET/HEAD以外)は、どの画面・操作でも0件であること(Production write 0)。
   const writes = cap.reqs.filter((r) => r.method && r.method !== "GET" && r.method !== "HEAD");
   if (writes.length) problems.push(`non-GET request: ${writes[0].method} ${writes[0].path}`);
-  const dupApi = dupCount(cap.reqs.filter((r) => r.path.startsWith("/api/") && r.type !== "Image").map((r) => r.path));
+  // ローカル（next start）では API の `stale-while-revalidate` がそのままブラウザーへ届き、長い実行の途中でブラウザーが裏で再検証する
+  // （initiator が "other"）。Vercel では CDN が受け持ち、ブラウザーへは max-age だけが届く。ローカルだけ、この再検証を重複に数えない（2026-10-08）。
+  const dupApi = dupCount(cap.reqs.filter((r) => r.path.startsWith("/api/") && r.type !== "Image" && !(IS_LOCAL && r.from === "other")).map((r) => r.path));
   if (dupApi.length) {
     const dupPath = dupApi[0].replace(/ x\d+$/, "");
     const how = cap.reqs.filter((r) => r.path === dupPath).map((r) => `${r.id}${r.redirect ? " redirect" : ""} ${r.from}`).join("; ");
@@ -435,6 +437,7 @@ async function main() {
   for (const d of ["Page", "Runtime", "Network", "Log", "Performance"]) await client.send(`${d}.enable`);
   await client.send("Emulation.setTimezoneOverride", { timezoneId: process.env.GATE_BROWSER_TZ ?? "Asia/Tokyo" });
   await installSupabaseAuthTestDouble(client);
+  await stubVercelInsightsOnLocalhost(client, BASE);
 
   const fmtArgs = (p) => (p.args ?? []).map((a) => a.value ?? a.description ?? "").join(" ").replace(/\s+/g, " ").slice(0, 200);
   client.on("Runtime.consoleAPICalled", (p) => {
