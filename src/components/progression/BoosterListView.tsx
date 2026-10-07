@@ -1,6 +1,7 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/boosterList";
+import { fillMessage } from "@/lib/i18n/message-format";
 import "@/lib/i18n/dictionaries/ja-ns/abilityEditor";
 
 import { useMemo, useState } from "react";
@@ -38,7 +39,7 @@ export function BoosterListView() {
 
   return (
     <div className="flex flex-col gap-4" data-testid="booster-list">
-      <PageHeader title={b("heading")} description={b("intro")} meta={b("countTemplate").replace("{count}", String(total))} />
+      <PageHeader title={b("heading")} description={b("intro")} meta={fillMessage(b("countTemplate"), { count: String(total) })} />
       <p className="text-2xs text-text-muted">{b("nameNote")}</p>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <label className="flex flex-col gap-1 text-xs">
@@ -68,7 +69,7 @@ export function BoosterListView() {
               <Badge tone={EVIDENCE_TONE[g.level]} size="xs">
                 {b(`evidence_${g.level}` as BKey)}
               </Badge>
-              <span className="text-text-dim">{b("countTemplate").replace("{count}", String(g.boosters.length))}</span>
+              <span className="text-text-dim">{fillMessage(b("countTemplate"), { count: String(g.boosters.length) })}</span>
             </h2>
             <p className="text-2xs text-text-muted">{b(`evidenceNote_${g.level}` as BKey)}</p>
             <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">

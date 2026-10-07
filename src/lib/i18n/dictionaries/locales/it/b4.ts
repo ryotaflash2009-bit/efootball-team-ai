@@ -19,7 +19,7 @@ const part: PartialDictionary = {
     cardFallbackTemplate: "Carta {id}",
     selectorAriaTemplate: "Rosa per {label}",
     selectPlaceholder: "Scegli una rosa…",
-    optionTemplate: "{name} ({formation} / {starters} titolari / {bench} in panchina / {manager}{custom})",
+    optionTemplate: "{name} ({formation} / {starters, plural, one {# titolare} other {# titolari}} / {bench} in panchina / {manager}{custom})",
     managerYes: "con allenatore",
     managerNo: "senza allenatore",
     customSuffix: " / posizionamento personalizzato",

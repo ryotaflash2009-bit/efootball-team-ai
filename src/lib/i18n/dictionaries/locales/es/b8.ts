@@ -430,7 +430,7 @@ const part: PartialDictionary = {
     trendTemplate: "Diagnósticos: {count} · general {first} → {latest} ({delta})",
     mostImprovedTemplate: "Mayor mejora: {category} {from} → {to}",
     overcameTemplate: "De punto débil a A o mejor: {categories}",
-    excludedRulesTemplate: "No se comparan {count} entradas con reglas de diagnóstico distintas.",
+    excludedRulesTemplate: "{count, plural, one {No se compara # entrada con reglas de diagnóstico distintas.} other {No se comparan # entradas con reglas de diagnóstico distintas.}}",
     peakTemplate: "Mejor: {overall} ({date})",
     mostDeclinedTemplate: "Mayor caída: {category} {from} → {to}",
     newWeaknessesTemplate: "Nuevos puntos débiles (de A o más a C o menos): {categories}",

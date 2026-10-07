@@ -48,7 +48,9 @@ const CONTROL = /[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/;
 const SECRET = /(postgres(ql)?:\/\/[^ ]*:[^ ]*@|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{20,}|github_pat_|-----BEGIN [A-Z ]*PRIVATE KEY|eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}|sk_(live|test)_)/;
 const UNSAFE_LINK = /(javascript:|data:text\/html|http:\/\/(?!localhost))/i;
 const tags = (s) => (s.match(/<\/?[a-z][a-z0-9]*\b[^>]*>/gi) ?? []).length;
-const ph = (s) => (s.match(PLACEHOLDER) ?? []).sort().join(",");
+// ICU の複数形 `{n, plural, one {…} other {…}}` は、差し込みの名前 `{n}` として数える（2026-10-08）。
+const PLURAL_BLOCK = /\{([A-Za-z0-9_]+),\s*plural\s*,(?:[^{}]|\{[^{}]*\})*\}/g;
+const ph = (s) => (s.replace(PLURAL_BLOCK, "{$1}").match(PLACEHOLDER) ?? []).sort().join(",");
 const hash = (s) => createHash("sha256").update(s).digest("hex").slice(0, 12);
 
 function flatten(dict) {

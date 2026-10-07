@@ -1,6 +1,7 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/progressionTab";
+import { fillMessage } from "@/lib/i18n/message-format";
 import { useState, type ReactNode } from "react";
 import {
   valuePercentile,
@@ -232,7 +233,7 @@ function ModelPanel({ a }: { a: PlayerAnalysis["model"] }) {
         aria-expanded={all}
         className="min-h-[36px] rounded border border-border px-2 py-1 text-2xs text-text-dim hover:border-accent"
       >
-        {all ? tp("anShowPrimary") : tp("anShowAll").replace("{n}", String(a.fields.length))}
+        {all ? tp("anShowPrimary") : fillMessage(tp("anShowAll"), { n: String(a.fields.length) })}
       </button>
       <p className="text-[10px] text-text-muted">
         {tp("anModelCaveat")}

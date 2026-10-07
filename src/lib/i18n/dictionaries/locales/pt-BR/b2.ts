@@ -103,7 +103,7 @@ const part: PartialDictionary = {
     anRelativePending: "Avaliação relativa em preparação",
     anNotRecorded: "Não registrado",
     anShowPrimary: "Mostrar só os itens principais",
-    anShowAll: "Mostrar tudo ({n} itens)",
+    anShowAll: "Mostrar tudo ({n, plural, one {# item} other {# itens}})",
     anModelCaveat: "Valores internos do modelo do jogador, não confirmados como cm reais. 0 é um valor real (diferente de não registrado).",
     anInternalTraitsHeading: "Valores internos de características (significado dos níveis ainda em verificação)",
     anInternalValue: "Valor interno ",

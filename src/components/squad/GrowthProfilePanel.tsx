@@ -1,6 +1,7 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/growthProfile";
+import { fillMessage } from "@/lib/i18n/message-format";
 import "@/lib/i18n/dictionaries/ja-ns/titles";
 import { useMemo } from "react";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
@@ -91,9 +92,9 @@ export function GrowthProfilePanel({ entries }: { entries: readonly DiagnosisHis
               ) : null}
               <p className="mt-0.5 text-2xs text-text-dim">
                 {g("peakTemplate").replace("{overall}", String(s.peak.overall)).replace("{date}", s.peak.date)}
-                {s.improvingStreak >= 2 ? ` · ${g("streakTemplate").replace("{count}", String(s.improvingStreak))}` : ""}
+                {s.improvingStreak >= 2 ? ` · ${fillMessage(g("streakTemplate"), { count: String(s.improvingStreak) })}` : ""}
               </p>
-              {s.excludedOtherRules > 0 ? <p className="mt-0.5 text-2xs text-text-muted">{g("excludedRulesTemplate").replace("{count}", String(s.excludedOtherRules))}</p> : null}
+              {s.excludedOtherRules > 0 ? <p className="mt-0.5 text-2xs text-text-muted">{fillMessage(g("excludedRulesTemplate"), { count: String(s.excludedOtherRules) })}</p> : null}
             </li>
           ))}
         </ul>

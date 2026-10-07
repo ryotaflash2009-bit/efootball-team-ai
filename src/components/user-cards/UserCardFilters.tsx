@@ -1,6 +1,7 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/userCardFilters";
+import { fillMessage } from "@/lib/i18n/message-format";
 import { Icon } from "@/components/ui/Icon";
 import { useT } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
@@ -178,7 +179,7 @@ export function UserCardFilters({
         ) : null}
 
         <span className="ms-auto text-2xs text-text-muted">
-          {tuf("countTemplate").replace("{shown}", String(shown)).replace("{total}", String(total))}
+          {fillMessage(tuf("countTemplate"), { shown: String(shown), total: String(total) })}
         </span>
       </div>
     </div>
