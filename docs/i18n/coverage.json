@@ -1,12 +1,12 @@
 {
   "schema": "efta-i18n-coverage/v1",
   "source": "en",
-  "sourceKeys": 4600,
+  "sourceKeys": 4667,
   "totals": {
     "core": 78,
-    "publicUi": 4060,
+    "publicUi": 4127,
     "accessibility": 127,
-    "errorEmptyLoading": 262,
+    "errorEmptyLoading": 266,
     "metadata": 27,
     "shareCards": 139,
     "legal": 117,
@@ -27,7 +27,7 @@
     "es": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4060,
+      "translated": 4127,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -38,7 +38,7 @@
         "legal": 100,
         "legalEnglishFallback": 0,
         "internal": 0,
-        "overall": 88.3
+        "overall": 88.4
       },
       "missing": 540,
       "extra": {
@@ -88,7 +88,7 @@
     "pt-BR": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4060,
+      "translated": 4127,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -99,7 +99,7 @@
         "legal": 100,
         "legalEnglishFallback": 0,
         "internal": 0,
-        "overall": 88.3
+        "overall": 88.4
       },
       "missing": 540,
       "extra": {
@@ -149,7 +149,7 @@
     "fr": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4060,
+      "translated": 4127,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -160,7 +160,7 @@
         "legal": 100,
         "legalEnglishFallback": 0,
         "internal": 0,
-        "overall": 88.3
+        "overall": 88.4
       },
       "missing": 540,
       "extra": {
@@ -171,7 +171,7 @@
         "count": 0,
         "sample": []
       },
-      "sameAsEnglish": 156,
+      "sameAsEnglish": 160,
       "placeholderMismatch": {
         "count": 0,
         "sample": []
@@ -210,7 +210,7 @@
     "de": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4060,
+      "translated": 4127,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -221,68 +221,7 @@
         "legal": 100,
         "legalEnglishFallback": 0,
         "internal": 0,
-        "overall": 88.3
-      },
-      "missing": 540,
-      "extra": {
-        "count": 0,
-        "sample": []
-      },
-      "empty": {
-        "count": 0,
-        "sample": []
-      },
-      "sameAsEnglish": 157,
-      "placeholderMismatch": {
-        "count": 0,
-        "sample": []
-      },
-      "control": {
-        "count": 0,
-        "sample": []
-      },
-      "leakage": {
-        "count": 0,
-        "sample": []
-      },
-      "unsafe": {
-        "count": 0,
-        "sample": []
-      },
-      "secretLike": {
-        "count": 0,
-        "sample": []
-      },
-      "tagMismatch": {
-        "count": 0,
-        "sample": []
-      },
-      "tooLong": 0,
-      "stale": {
-        "count": 0,
-        "sample": []
-      },
-      "unrecorded": 0,
-      "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
-      "quality": "MACHINE_ASSISTED_COMPLETE",
-      "productionGate": "NOT_MET",
-      "releaseCandidateGate": "PASS"
-    },
-    "it": {
-      "state": "RELEASE_CANDIDATE",
-      "file": true,
-      "translated": 4060,
-      "coverage": {
-        "core": 100,
-        "publicUi": 100,
-        "accessibility": 100,
-        "errorEmptyLoading": 100,
-        "metadata": 100,
-        "shareCards": 100,
-        "legal": 100,
-        "legalEnglishFallback": 0,
-        "internal": 0,
-        "overall": 88.3
+        "overall": 88.4
       },
       "missing": 540,
       "extra": {
@@ -329,10 +268,10 @@
       "productionGate": "NOT_MET",
       "releaseCandidateGate": "PASS"
     },
-    "ko": {
+    "it": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4060,
+      "translated": 4127,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -343,7 +282,68 @@
         "legal": 100,
         "legalEnglishFallback": 0,
         "internal": 0,
-        "overall": 88.3
+        "overall": 88.4
+      },
+      "missing": 540,
+      "extra": {
+        "count": 0,
+        "sample": []
+      },
+      "empty": {
+        "count": 0,
+        "sample": []
+      },
+      "sameAsEnglish": 162,
+      "placeholderMismatch": {
+        "count": 0,
+        "sample": []
+      },
+      "control": {
+        "count": 0,
+        "sample": []
+      },
+      "leakage": {
+        "count": 0,
+        "sample": []
+      },
+      "unsafe": {
+        "count": 0,
+        "sample": []
+      },
+      "secretLike": {
+        "count": 0,
+        "sample": []
+      },
+      "tagMismatch": {
+        "count": 0,
+        "sample": []
+      },
+      "tooLong": 0,
+      "stale": {
+        "count": 0,
+        "sample": []
+      },
+      "unrecorded": 0,
+      "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
+      "quality": "MACHINE_ASSISTED_COMPLETE",
+      "productionGate": "NOT_MET",
+      "releaseCandidateGate": "PASS"
+    },
+    "ko": {
+      "state": "RELEASE_CANDIDATE",
+      "file": true,
+      "translated": 4127,
+      "coverage": {
+        "core": 100,
+        "publicUi": 100,
+        "accessibility": 100,
+        "errorEmptyLoading": 100,
+        "metadata": 100,
+        "shareCards": 100,
+        "legal": 100,
+        "legalEnglishFallback": 0,
+        "internal": 0,
+        "overall": 88.4
       },
       "missing": 540,
       "extra": {
@@ -393,7 +393,7 @@
     "zh-CN": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4060,
+      "translated": 4127,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -404,7 +404,7 @@
         "legal": 100,
         "legalEnglishFallback": 0,
         "internal": 0,
-        "overall": 88.3
+        "overall": 88.4
       },
       "missing": 540,
       "extra": {
@@ -454,7 +454,7 @@
     "zh-TW": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4060,
+      "translated": 4127,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -465,7 +465,7 @@
         "legal": 100,
         "legalEnglishFallback": 0,
         "internal": 0,
-        "overall": 88.3
+        "overall": 88.4
       },
       "missing": 540,
       "extra": {
@@ -515,7 +515,7 @@
     "id": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4060,
+      "translated": 4127,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -526,7 +526,7 @@
         "legal": 100,
         "legalEnglishFallback": 0,
         "internal": 0,
-        "overall": 88.3
+        "overall": 88.4
       },
       "missing": 540,
       "extra": {
@@ -576,7 +576,7 @@
     "tr": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4060,
+      "translated": 4127,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -587,7 +587,7 @@
         "legal": 100,
         "legalEnglishFallback": 0,
         "internal": 0,
-        "overall": 88.3
+        "overall": 88.4
       },
       "missing": 540,
       "extra": {
@@ -650,7 +650,7 @@
         "internal": 0,
         "overall": 0
       },
-      "missing": 4600,
+      "missing": 4667,
       "extra": {
         "count": 0,
         "sample": []
@@ -711,7 +711,7 @@
         "internal": 0,
         "overall": 0
       },
-      "missing": 4600,
+      "missing": 4667,
       "extra": {
         "count": 0,
         "sample": []
@@ -772,7 +772,7 @@
         "internal": 0,
         "overall": 0
       },
-      "missing": 4600,
+      "missing": 4667,
       "extra": {
         "count": 0,
         "sample": []
@@ -833,7 +833,7 @@
         "internal": 0,
         "overall": 0
       },
-      "missing": 4600,
+      "missing": 4667,
       "extra": {
         "count": 0,
         "sample": []
@@ -894,7 +894,7 @@
         "internal": 0,
         "overall": 0
       },
-      "missing": 4600,
+      "missing": 4667,
       "extra": {
         "count": 0,
         "sample": []
@@ -955,7 +955,7 @@
         "internal": 0,
         "overall": 0
       },
-      "missing": 4600,
+      "missing": 4667,
       "extra": {
         "count": 0,
         "sample": []
@@ -1012,5 +1012,5 @@
     }
   },
   "failures": [],
-  "sourceVersion": "e98c4f182fff"
+  "sourceVersion": "dbf2870c7529"
 }
