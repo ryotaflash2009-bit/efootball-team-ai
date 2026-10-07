@@ -11,3 +11,14 @@
 | コミュニティの安全 | `src/lib/community/moderation.ts`（`community-safety-operations.md`） | `moderation.test.ts` | 本人の判断 5 件・表と RLS の提案 |
 
 どれも生成 AI・外部の API・Production の DB を使わない。決定的・版つき・テストつき。
+
+## 公開プロフィール・公開ビルド（モック・2026-10-07 追加）
+
+`src/lib/profile/public-profile.ts`（テスト `public-profile.test.ts`・Production に接続しない・純関数）。
+
+- 公開の範囲は項目ごと（プロフィール・ビルド・称号）に private / friends / public。**既定はすべて private**。
+- ブロック（どちらから）・存在しない・非公開は、見る人には同じ「見つからない」（存在の推測を防ぐ）。本人には項目ごとの範囲も見せる。
+- 公開ビルドに出すのは、World のカード ID・ビルド名・OVR・育成の配分・ブースター・規則の版だけ（最大 30 件・ビルドごとに公開を選ぶ・既定は含めない）。
+  内部の buildId・作成と更新の時刻・育成の目的・計算の内訳は出さず、識別子は公開用の slug。
+- 表示名: 制御文字・双方向の制御文字を除き、なりすまし（公式・運営・KONAMI 等）・URL・メールアドレスを拒否。
+- 前提: 公開 ID の表（提案 `public-id-production-proposal.md`）・`user_blocks`・Auth の公開。画面と保存は本人の判断の後。

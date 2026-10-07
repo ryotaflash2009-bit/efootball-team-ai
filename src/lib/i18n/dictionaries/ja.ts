@@ -3140,6 +3140,14 @@ export interface Dictionary {
     limitationsHeading: string;
     limitationSingleFormationOnly: string;
     limitationNoBenchSelection: string;
+    benchHeadingTemplate: string;
+    benchIntro: string;
+    benchEmpty: string;
+    benchReasonBackupGoalkeeper: string;
+    benchReasonPositionCover: string;
+    benchReasonBestRemaining: string;
+    benchUncoveredTemplate: string;
+    benchRatingTemplate: string;
     limitationNoManagerSelection: string;
     limitationPersonIdentityUnavailable: string;
     limitationAdditionalPositionAptitudeLimited: string;
