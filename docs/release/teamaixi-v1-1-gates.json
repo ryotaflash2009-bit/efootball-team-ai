@@ -3,8 +3,8 @@
   "updated": "2026-10-07",
   "note": "true/false and state names only. Claude Code updates gates after each verified run; owner confirmations are set only by the owner.",
   "operations": {
-    "autoUpdate": { "state": "VERIFIED_BLOCKED_OWNER_ACTION", "evidence": "docs/production-readiness/auto-apply-db-secret-recovery.md" },
-    "backup": { "lastVerifiedAt": "2026-10-03T10:07:00Z", "evidence": "docs/production-readiness/evidence (Backup v2 restore and storage verified in the 2026-10-03 orchestrated runs)" }
+    "autoUpdate": { "state": "FULLY_AUTOMATED_UPDATE_RESTORED", "evidence": "docs/production-readiness/evidence/world-auto-apply-2026-10-07.json" },
+    "backup": { "lastVerifiedAt": "2026-10-07T15:22:44Z", "evidence": "docs/production-readiness/evidence/world-auto-apply-2026-10-07.json (Backup v2 run 37643213528: restore and storage verified)" }
   },
   "gates": {
     "ciPassed": true,

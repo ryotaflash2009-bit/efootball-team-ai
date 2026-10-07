@@ -1,0 +1,111 @@
+{
+  "schema": "efta-evidence/v1",
+  "date": "2026-10-07",
+  "kind": "world-production-update",
+  "pipeline": "fully unattended auto-apply (first live run; no human approval)",
+  "result": "applied_verified",
+  "verdict": "AUTO_APPLY_APPLIED_VERIFIED",
+  "approval": {
+    "environment": "reference-data-production-apply-automatic",
+    "approvedBy": "auto-apply-policy",
+    "policyVersion": "auto-apply-policy/2026-10-03.v1",
+    "approvedByOwner": false
+  },
+  "runs": {
+    "detection": "37626220256",
+    "orchestrator": "37640530762",
+    "plan": "37640607117",
+    "backup": "37643213528",
+    "dryRun": "37643461489",
+    "apply": "37643713008"
+  },
+  "previousAttemptSameDay": {
+    "orchestrator": "37629628433",
+    "apply": "37633894541",
+    "result": "connect_failed:sqlstate_28P01 (no writes; secret corrected by the owner with the v3 login check)"
+  },
+  "mainSha": "3c21ba9",
+  "source": {
+    "sourceChecksum12": "079f9eaf92a0",
+    "planChecksum12": "ab2cc87650f0",
+    "maxAppearanceUpdatedAt": "2026-10-01T16:42:06.399Z"
+  },
+  "counts": {
+    "before": 13372,
+    "after": 13372,
+    "inserted": 0,
+    "updated": 16,
+    "structuralChanged": 16,
+    "cardRatingOnlyChanged": 0,
+    "removed": 0,
+    "duplicate": 0,
+    "invalid": 0,
+    "schemaDrift": 0,
+    "hardBlock": 0
+  },
+  "changedFields": [
+    "maximum_level",
+    "ovr_max"
+  ],
+  "manualReview": [
+    "baseline_missing"
+  ],
+  "postVerify": {
+    "ok": true,
+    "problems": [],
+    "worldCount": 13372,
+    "managersCount": 69,
+    "importBatchesCount": 14,
+    "auditBatchStatus": "verified",
+    "batchId": "e60ab772-ecda-4d92-832b-e6af4bd6eaaa"
+  },
+  "publicVerification": {
+    "siteCount": 13372,
+    "updatedCardsChecked": 16,
+    "updatedCardsShowingNewValues": 16,
+    "method": "public /api/world/players/:id compared with the undo plan's previous values"
+  },
+  "automaticUndo": false,
+  "undoPlan": "artifact stage4-world-undo-plan of run 37643713008 (90 days); not executed",
+  "backup": {
+    "run": "37643213528",
+    "version": "2",
+    "category": "pre-apply",
+    "restoreVerified": true,
+    "storageVerified": true,
+    "rowCounts": {
+      "world_player_cards": 13372,
+      "managers": 69
+    }
+  },
+  "dryRun": {
+    "run": "37643461489",
+    "rediff": 0,
+    "observedAfterChecksumMatches": true,
+    "isolatedApplyAuditUndoVerified": true
+  },
+  "writes": "world_player_cards update 16 in one transaction; import_batches 1 audit row; no INSERT into world_player_cards; no DELETE/TRUNCATE; managers untouched",
+  "appliedState": "docs/production-readiness/reference-data-applied-state.json world_player_cards updated from the run's applied-state.candidate.json",
+  "f071Artifact": "src/lib/percentiles/data/world-base-distribution.json replaced with world-base-distribution-candidate of detection 37626220256 (datasetVersion world_player_cards@079f9eaf92a0)",
+  "notification": "Issue #112 comment 2026-10-07T15:27:06Z (AUTO_APPLY_APPLIED_VERIFIED, public site count matches)",
+  "secretValuesSeenByClaudeCode": 0,
+  "apply": {
+    "run": "37643713008",
+    "status": "applied_verified",
+    "appliedAt": "2026-10-07T15:26:29.608Z"
+  },
+  "candidate": {
+    "sourceChecksum12": "079f9eaf92a0",
+    "recordCount": 13372
+  },
+  "diff": {
+    "before": 13372,
+    "after": 13372,
+    "added": 0,
+    "changed": 16,
+    "removed": 0
+  },
+  "sourceTimestamps": {
+    "max": "2026-10-01T16:42:06.399Z"
+  }
+}

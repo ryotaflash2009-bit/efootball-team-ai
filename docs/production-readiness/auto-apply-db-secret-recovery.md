@@ -97,3 +97,12 @@ password を percent-encode して、URL をメモリの中だけで作り `gh s
 - 試験: 単体 13 件・使い捨て PostgreSQL（CI）で、間違ったパスワード・正しいパスワード + select 1・関係が無い・権限が無い（列単位）・
   TLS の失敗・ネットワークの失敗・確認の前後で行が変わらないこと。Windows PowerShell 5.1 の self-test 34/34。
 - 一度限りのスクリプトは v3（`data/work/set-auto-apply-db-secret.ps1`・Git 管理外）。`LOGIN_OK_AND_PRIVILEGES_OK` の場合だけ Secret を登録する。
+
+## 10. 復旧（2026-10-07）
+
+本人が v3 で確認の成功（`LOGIN_OK_AND_PRIVILEGES_OK`）の後に `REFERENCE_DATA_APPLY_DB_URL` を登録（14:52:44Z・値は見ていない）。
+最新の検出 37626220256（repeat ではない・World `079f9eaf92a0`）から orchestrator 37640530762 を手動で再開し、新しい Plan 37640607117（main 3c21ba9）→
+Backup v2 37643213528（restore・storage 検証済み）→ Dry run 37643461489（re-diff 0）→ policy 適格 → **無人の Apply 37643713008 = `applied_verified`**
+（更新 16・追加 0・削除 0・post-verify OK・監査の batch verified）。公開サイトで 16 件すべてが新しい値・件数 13,372 一致。
+状態: **`FULLY_AUTOMATED_UPDATE_RESTORED`**（Evidence `evidence/world-auto-apply-2026-10-07.json`）。
+
