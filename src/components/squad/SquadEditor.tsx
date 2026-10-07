@@ -1,5 +1,7 @@
 "use client";
 
+import dynamic from "next/dynamic";
+
 import "@/lib/i18n/dictionaries/ja-ns/bench";
 import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
 import "@/lib/i18n/dictionaries/ja-ns/squadEditor";
@@ -142,6 +144,9 @@ function useMoveErrorMessage(): Record<SquadMoveErrorCode, string> {
     bench_full: benchFull,
   };
 }
+
+// ゲームプランの欄は閉じた状態で下にあるため、初回の JS に含めず必要になってから読み込む（2026-10-07）。
+const GamePlanPanel = dynamic(() => import("@/components/squad/GamePlanPanel").then((m) => m.GamePlanPanel), { ssr: false });
 
 export function SquadEditor({
   squadId,
@@ -1057,6 +1062,18 @@ export function SquadEditor({
           label: `${s.position} · ${resolvePlayerDisplayName(s.entry!.display, locale, s.entry!.display.worldCardId)}`,
         })),
     [computed, locale],
+  );
+
+  // ゲームプランの交代で選べる控え（カードの ID があるものだけ・表示名つき）。
+  const benchOptions = useMemo(
+    () =>
+      (squad?.substitutes ?? [])
+        .filter((sub): sub is typeof sub & { worldCardId: string } => !!sub.worldCardId)
+        .map((sub) => {
+          const disp = computed.substitutes.find((x) => x.subId === sub.subId)?.display ?? null;
+          return { worldCardId: sub.worldCardId, label: resolvePlayerDisplayName(disp ?? {}, locale, sub.worldCardId) };
+        }),
+    [squad, computed, locale],
   );
 
   // ベンチ行（index は squad.substitutes と 1:1・未解決カードでもズレない）
@@ -2019,6 +2036,7 @@ export function SquadEditor({
         />
         <DiagnosisPerspectivesPanel results={perspectives} namePairs={namePairs} />
         {perspectiveInput && diagnosisInput ? <SquadUniquenessPanel formationId={diagnosisInput.formationId} perspective={perspectiveInput} /> : null}
+        {squad ? <GamePlanPanel squad={squad} starterOptions={starterOptions} benchOptions={benchOptions} /> : null}
       </div>
 
       {buildPanelTarget

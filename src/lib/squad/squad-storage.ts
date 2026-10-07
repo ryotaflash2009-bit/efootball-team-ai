@@ -17,6 +17,7 @@ import {
 } from "./types";
 import type { StoredSquad, SquadListEntry } from "./types";
 import { getCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
+import { activeGamePlanStorageKey, deleteGamePlan, duplicateGamePlan, loadGamePlan, saveGamePlan } from "./game-plan";
 import { buildScopedStorageKey } from "@/lib/local-storage-scope/keys";
 
 /**
@@ -443,7 +444,16 @@ export function duplicateSquad(squadId: string, name?: string): SquadSaveResult 
     createdAt: now,
     updatedAt: now,
   };
-  return saveSquad(copy);
+  const r = saveSquad(copy);
+  if (r.ok) {
+    // ゲームプラン（別のキー）も新しいスカッドへ写す。失敗してもスカッドの複製は成功のまま。
+    const ls = getStorage();
+    const key = activeGamePlanStorageKey();
+    const plan = key ? loadGamePlan(ls, key, squadId) : null;
+    const dup = plan ? duplicateGamePlan(plan, copy.squadId, now) : null;
+    if (key && dup) saveGamePlan(ls, key, dup);
+  }
+  return r;
 }
 
 /** ブラウザ内のユーザー作成スカッドのみ削除する。 */
@@ -452,5 +462,8 @@ export function deleteSquad(squadId: string): { ok: boolean; error?: string } {
   if (!getStorage()) return { ok: false, error: "この環境ではスカッドを更新できません（localStorage 不可）" };
   const store = readStore().filter((s) => s.squadId !== squadId);
   if (!writeStore(store)) return { ok: false, error: "この環境ではスカッドを更新できません" };
+  // そのスカッドのゲームプラン（別のキー）も消す（残っても読まれないが、端末にデータを残さない）。
+  const key = activeGamePlanStorageKey();
+  if (key) deleteGamePlan(getStorage(), key, squadId);
   return { ok: true };
 }
