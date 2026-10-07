@@ -195,6 +195,27 @@ async function main() {
     record("[フル充足4-3-3] 空きスロットの警告が表示されない", !fullBody.includes("空きスロット"), "");
 
     // ============================================================
+    // 1b. 控え(2026-10-07): 先発11人 + CB 1人 → 控えは CB の本職の控え 1 人だけ・先発の選手は入らない
+    // ============================================================
+    await setMyTeam(client, [...FULL_XI, BARESI_CB]);
+    await clearBuilds(client);
+    await hardReloadAndSettle(client);
+    await waitForCondition(async () => (await evalJson(client, `!!document.querySelector('[data-testid="best-xi-bench"]')`)) === true, {
+      timeoutMs: 10000,
+      intervalMs: 200,
+    }).catch(() => {});
+    const benchText = await evalJson(client, `document.querySelector('[data-testid="best-xi-bench"]')?.innerText ?? ""`);
+    const benchItems = await evalJson(client, `[...document.querySelectorAll('[data-testid="best-xi-bench"] li')].map((li) => li.innerText)`);
+    record("[控え] 控えの欄が表示され、人数は 1/12", benchText.includes("控え（1/12 人）"), benchText.split("\n")[0] ?? "");
+    record(
+      "[控え] 控えは CB の本職の控え(先発に入らなかった CB)",
+      benchItems.length === 1 && /^CB/.test(benchItems[0]) && benchItems[0].includes("本職の控え"),
+      JSON.stringify(benchItems),
+    );
+    record("[控え] 本職の控えがいないポジションを示す(GK を含む)", /本職の控えがいないポジション: GK/.test(benchText), "");
+    record("[控え] 制限事項に「ベンチメンバーの選出は行いません」が出ない", !(await bodyText(client)).includes("ベンチメンバーの選出は行いません"), "");
+
+    // ============================================================
     // 2. 局所貪欲との乖離の回帰(GK + CB本職1人だけ): CBへ正しく収まる(LBへ逃げない)
     // ============================================================
     await setMyTeam(client, [NEUER_GK, MALDINI_CB]);
