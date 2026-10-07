@@ -57,7 +57,7 @@
 | F-031 | Link-Up Play | completed | 75% | F-003 | R | — | 不要 | 不要 | Free | 監督フィルタ black-box | スカッド内の発動判定（要確認） |
 | F-032 | ポジション適性（表示） | completed | 80% | F-002 | R | — | 不要 | 不要 | Free | player-analysis tests | — |
 | F-032b | ポジション別OVR | blocked | 10% | 計算規則の確認 | R | — | 不要 | 不要 | Free | 規則が未確認なので推測で算式を作らない | 規則サンプルの収集（本人またはデータ源） |
-| F-033 | 完全ゲームプラン（戦術・役割・指示） | completed（MVP：配置編集。個別指示は deferred） | 70% | F-024, F-003 | R | L | 不要 | 不要 | Free | 本人判断 2026-09-27：現在の配置編集を MVP 完成版とする | 個別指示は、公式または許諾済みの信頼できる仕様を確認できるまで deferred（推測で実装しない） |
+| F-033 | 完全ゲームプラン（戦術・役割・指示） | completed（ローカル: 指示・交代・代わりの計画・相手ごと・書き出し/読み込み。選手ごとの個別指示は NEW-43） | 85% | F-024, F-003 | R | L | 不要 | 不要 | Free | 本人判断 2026-09-27：現在の配置編集を MVP 完成版とする | 個別指示は、公式または許諾済みの信頼できる仕様を確認できるまで deferred（推測で実装しない） |
 | F-035 | プレースタイル発動可否・選手間連携の分析 | idea（将来提案） | 0% | F-026 | R | L | 不要 | 不要 | Free | `docs/playing-style-ledger.md` | 公式の発動条件の確認後 |
 | F-036 | 配置補助の次候補（複数選択・選択だけの左右反転・一括整列・左右/上下の均等配置・配置のコピー/貼り付け） | **completed（2026-10-04）** | 95% | F-024 | — | L | 不要 | 不要 | Free | `docs/squad-placement-assist.md` §E・§F・`placement-assist.test.ts`・`placement-clipboard.test.ts`・`black-box-squad-placement-assist.mjs` | 違うフォーメーション間の写し（枠の対応づけの規則が必要） |
 | F-034 | 能力値直接操作・スライド式育成UI（能力タップ→関連強調→下部パネルの＋／－・スライダー・配分チップ・1タップ保存。選手詳細と比較画面（1人ずつの編集モード）。日英完全対応。eFHUB を UX の基準にし、素材はコピーしない） | verified | 100% | F-028 | R | L | 不要 | 不要 | Free | PR #80・#82・#83・#84、`docs/product/f034-human-factors-audit.md`（人間工学監査 15件・Sev3 全修正）、`evidence/f034-human-factors-l10n-compare-2026-09-27.json`（公開: 総合 568/568・育成 458/458・比較 168/168、8 viewport） | 本人の主観確認（発光・パネルの高さ・触り心地）。My Builds・ビルド分析の英語化は PR #89 で完了（公開 8 viewport で日本語 0） |
@@ -95,7 +95,7 @@
 | F-060 | 診断履歴（ブラウザー内） | verified | 100% | F-026, F-042 | — | L（スコープ別） | 不要 | 不要 | Free | PR #76、`evidence/f060-f043-2026-09-27.json`（公開 black-box 550/550） | 認証ユーザー向けの同期は別途設計（F-052） |
 | F-061 | 成長プロフィール（ブラウザー内の版） | completed | 85% | F-060 | — | L（スコープ別） | 不要 | 不要 | Free | PR #94・v2 PR #179（最高点・最も下がったカテゴリ・新しい弱点・連続の上昇） | クラウド同期の版は認証メールの公開と本番マイグレーションの後（`community-and-growth-design.md` §4） |
 | F-062 | 友達との比較・ライバル | designed | 5% | F-055 | — | C | 要 | 不要 | Free | `docs/product/community-and-growth-design.md` §3 | F-055 の後 |
-| F-070 | AI Best XI 高度化（戦術・監督・ブースター考慮） | partially_implemented | 40% | F-025 | R | L | 不要 | 不要 | Free | `src/lib/best-xi/*`。監督補正は未対応。判断パッケージ `docs/product/f070-decision-package.md`（PR #173・推奨 D） | **本人の判断**: D の採用（推奨）→ 監督の選択と補正の列 |
+| F-070 | AI Best XI 高度化（戦術・監督・ブースター考慮） | partially_implemented | 55% | F-025 | R | L | 不要 | 不要 | Free | `src/lib/best-xi/*`。監督補正は未対応。判断パッケージ `docs/product/f070-decision-package.md`（PR #173・推奨 D） | **本人の判断**: D の採用（推奨）→ 監督の選択と補正の列 |
 | F-071 | 基礎能力値のパーセンタイル（能力値ごと・範囲: 全World/同ポジション/フィールド・GK） | verified | 100% | F-026, reference data | R | — | 不要 | 不要 | Free | PR #90・#95（定期検出 run 36340696128 の候補・applied-state と一致・VALID）、`evidence/f071-artifact-2026-10-01.json`（公開 115/115・実データ） | カテゴリ・スカッド単位は確定した計算式が無いため deferred。次の更新は Production Apply 後の Evidence PR で成果物も更新 |
 | F-072 | 称号・バッジ（選手・スカッド診断・共有カード） | verified | 100% | F-026, F-071 | — | L | 不要 | 不要 | Free | PR #91・#95、`docs/product/f072-titles-badges.md`、`evidence/f071-artifact-2026-10-01.json`（公開 115/115。選手の称号も実データで表示） | 本人の主観確認（称号の名前・閾値の手応え） |
 | F-073 | 「あなたの一番」の自動発見（My Team） | verified | 100% | F-020, F-071, F-072 | R | L | 不要 | 不要 | Free | PR（F-073）・追加の項目 v2 PR #172（最高の OVR・伸びしろ・珍しいポジション・カード種別） | — |
@@ -113,6 +113,11 @@
 | F-139 | TeamAIXI v1.1 Release Validator | completed | 100% | — | — | — | 不要 | 不要 | Free | PR #175（2026-10-07: BLOCKED の理由は自動更新の Secret だけ） | 本人の確認 10 件 |
 | F-140 | コミュニティの安全の契約（運営者 1 人） | designed | 50% | F-084 | — | C | 要 | 不要 | Free | PR #176・`community-safety-operations.md`（本人の判断 5 件） | 表と RLS の提案 |
 | F-141 | 友達・友達との比較・ライバル・AI コーチ・相手の分析・メタ分析の契約（モック） | designed | 30% | F-053 | — | C | 要 | 不要（規則の提供元） | Free | PR #177・`future-feature-contracts-2026-10-07.md` | 公開 ID・Auth の公開の後 |
+| F-142 | AI ベスト11 の控え（決定的な規則・最大 12 人） | completed | 100% | F-025 | — | — | 不要 | 不要 | Free | PR #187・`docs/product/best-xi-bench.md`（本番 black-box 30/30） | 監督補正（F-070）は判断パッケージのまま |
+| F-143 | 完全なゲームプラン（ローカル） | completed | 85% | F-033 | — | L | 不要 | 不要 | Free | PR #189・`docs/product/complete-game-plan.md`（本番 black-box 15/15） | 共有画像・個別指示（NEW-43） |
+| F-144 | 公開プロフィール・公開ビルドの契約（モック） | designed | 30% | F-053 | — | C | 要 | 不要 | Free | PR #190・`future-feature-contracts-2026-10-07.md` | 公開 ID・Auth の公開の後 |
+| F-145 | 違うフォーメーション間の配置の写し（NEW-41） | completed | 100% | F-036 | — | L | 不要 | 不要 | Free | PR #185・`docs/product/placement-cross-formation.md`（本番 23/23） | — |
+| F-146 | 監督の比較（NEW-23） | completed | 100% | F-003 | — | — | 不要 | 不要 | Free | PR #184・`docs/product/manager-compare.md`（本番 16/16） | — |
 
 ## 6. コミュニティ（Phase 7）
 
@@ -159,6 +164,7 @@
 ## 9. 変更履歴
 
 - 2026-10-06: **多言語の基盤（F-007b）**。locale の契約（18 言語 + 疑似 2）・その言語 → English → 日本語の解決・言語ごとの別 chunk・coverage と品質の監査（CI）・用語集・RTL の論理プロパティ（255 か所）。10 言語の AI の下書き（核の UI・ホーム・内部の確認だけ）。公開の言語は変えていない（ja・en）。
+- 2026-10-07（夜）: 監督の比較（F-146）・違うフォーメーション間の配置の写し（F-145）・AI ベスト11 の控え（F-142）・完全なゲームプラン（F-143）・公開プロフィールの契約（F-144）・共有のファイル名とソースの制御文字（PR #186）・Next.js 16 の計画と Domain/SMTP/Auth の再開パッケージ（PR #188）。自動 Apply の再検証は Apply の接続で 28P01（書き込みなし・`auto-apply-db-secret-recovery.md` §8）。
 - 2026-10-07（続き）: F-045・F-070 の判断パッケージ・改善シミュレーション（F-134）・スカッドの独自性（F-135）・Your Best の追加（F-073 v2）・成長プロフィール v2（F-061）・公開 ID の migration の提案と PostgreSQL の検証（F-053）・v1.1 Release Validator（F-139）・コミュニティの安全の契約（F-140）・将来の機能の契約（F-141）・RTL の UI の位置 24 か所の論理化・ブースター一覧（F-136）・B2 の候補の統一（F-029b）・タブの題名（F-137）・release gate（F-138）。本番の総合 black-box 576/576・アクセシビリティ 32/32。
 - 2026-10-07: **夜間の作業**。Link-Up Play・OVR の契約（F-132）・Vercel Web Analytics（F-130）・ネイティブのレビュー資料 v2・npm audit の非破壊の修正（high 10 → 8）・止まった移動の早めの戻し（F-131）・かなの検索（F-133）・F-045 の判断パッケージ・改善シミュレーション（F-134）・機能の全面の再監査（`docs/product/feature-reaudit-2026-10-07.md`・127 件・新しい要件 43）。自動適用の DB の Secret は本人の入力待ち（`VERIFIED_BLOCKED_OWNER_ACTION`）。
 - 2026-10-07: **10 言語を RELEASE_CANDIDATE へ（F-007b）**。es・pt-BR（#158・#159）に続き fr・de・it・ko・zh-CN・zh-TW・id・tr。公開画面 100%・生成文 407/407・能力名・育成グループ・戦術・共有カード 4 比率。各言語 5 画面幅のブラックボックス 209/209・React #418 0。ネイティブのレビューの資料（言語ごとの CSV）。公開の言語は ja・en のまま（言語の選択には出さない）。
