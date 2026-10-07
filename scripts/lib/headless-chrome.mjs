@@ -450,3 +450,42 @@ export async function waitForCondition(fn, { timeoutMs = 8000, intervalMs = 150 
   }
   return last;
 }
+
+/**
+ * ローカル（localhost・127.0.0.1）で動かす black-box だけ: Vercel の Web Analytics の配信用の経路（`/_vercel/insights/*`）は Vercel の上にしか無く、
+ * `next start` では 404（HTML）になり、script の読み込みの console error になる（2026-10-08）。この経路だけを空の script で応答する。
+ * - 本番・Preview（https の公開 URL）では何もしない（本物の配信を確かめるため）。
+ * - Fetch のドメインを使うため、同じタブで Fetch を使う他のテストダブルと一緒に使わない（使う rail だけで呼ぶ）。
+ */
+export async function stubVercelInsightsOnLocalhost(client, baseUrl) {
+  let host = "";
+  try {
+    host = new URL(baseUrl).hostname;
+  } catch {
+    return false;
+  }
+  if (host !== "localhost" && host !== "127.0.0.1") return false;
+  client.on("Fetch.requestPaused", (p) => {
+    let local = false;
+    try {
+      const u = new URL(p.request.url);
+      local = (u.hostname === "localhost" || u.hostname === "127.0.0.1") && u.pathname.startsWith("/_vercel/insights/");
+    } catch {
+      local = false;
+    }
+    if (local) {
+      client
+        .send("Fetch.fulfillRequest", {
+          requestId: p.requestId,
+          responseCode: 200,
+          responseHeaders: [{ name: "Content-Type", value: "application/javascript; charset=utf-8" }],
+          body: Buffer.from("/* local stub: Vercel Web Analytics is served only on Vercel */\n").toString("base64"),
+        })
+        .catch(() => {});
+    } else {
+      client.send("Fetch.continueRequest", { requestId: p.requestId }).catch(() => {});
+    }
+  });
+  await client.send("Fetch.enable", { patterns: [{ urlPattern: "*/_vercel/insights/*" }] });
+  return true;
+}
