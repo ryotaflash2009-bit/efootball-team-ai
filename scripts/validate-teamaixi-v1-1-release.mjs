@@ -11,23 +11,11 @@ import { readFileSync, existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkLive } from "./lib/teamaixi-v1-release.mjs";
-import { checkRepoV1_1, checkOperations, decideV1_1 } from "./lib/teamaixi-v1-1-release.mjs";
+import { checkRepoV1_1, checkOperations, decideV1_1, V1_1_REPO_FILES } from "./lib/teamaixi-v1-1-release.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = (p) => (existsSync(path.join(ROOT, p)) ? readFileSync(path.join(ROOT, p), "utf8") : undefined);
-const files = {
-  layout: read("src/app/layout.tsx"),
-  localeStatus: read("docs/i18n/locale-status.json"),
-  registry: read("src/lib/i18n/locale-registry.ts"),
-  fixedTerms: read("scripts/lib/fixed-terms.mjs"),
-  navigationWatchdog: read("src/lib/navigation/navigation-watchdog.ts"),
-  analyticsSanitizer: read("src/lib/analytics/sanitize-analytics-event.ts"),
-  npmAuditDoc: read("docs/production-readiness/npm-audit-2026-10-07.md"),
-  improvementSimulation: read("src/lib/squad/improvement-simulation.ts"),
-  publicIdSql: read("docs/production-readiness/sql/create-public-profiles-schema.sql"),
-  publicIdPgTest: read("src/lib/profile/public-profiles.postgres.test.ts"),
-  photoStage2Sql: read("docs/production-readiness/sql/create-photo-posts-stage2-schema.sql"),
-};
+const files = Object.fromEntries(Object.entries(V1_1_REPO_FILES).map(([k, path]) => [k, read(path)]));
 const g = JSON.parse(read("docs/release/teamaixi-v1-1-gates.json") ?? "{}");
 const repoProblems = checkRepoV1_1(files);
 const operationProblems = checkOperations(g.operations ?? {});

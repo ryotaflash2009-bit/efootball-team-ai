@@ -21,6 +21,37 @@ export const V1_1_MANUAL_REVIEW_ITEMS = [
   "communitySafetyPackage", "domainAndSmtp", "legalReview", "nextjs16MigrationPlan", "npmAuditMajorUpgrades",
 ];
 
+/**
+ * 確認に使うリポジトリのファイル（CLI とテストで共通・2026-10-08 に一覧をここへ移した）。
+ */
+export const V1_1_REPO_FILES = Object.freeze({
+  layout: "src/app/layout.tsx",
+  localeStatus: "docs/i18n/locale-status.json",
+  registry: "src/lib/i18n/locale-registry.ts",
+  fixedTerms: "scripts/lib/fixed-terms.mjs",
+  navigationWatchdog: "src/lib/navigation/navigation-watchdog.ts",
+  analyticsSanitizer: "src/lib/analytics/sanitize-analytics-event.ts",
+  npmAuditDoc: "docs/production-readiness/npm-audit-2026-10-07.md",
+  improvementSimulation: "src/lib/squad/improvement-simulation.ts",
+  publicIdSql: "docs/production-readiness/sql/create-public-profiles-schema.sql",
+  publicIdPgTest: "src/lib/profile/public-profiles.postgres.test.ts",
+  photoStage2Sql: "docs/production-readiness/sql/create-photo-posts-stage2-schema.sql",
+  hourlyDetectionPackage: "docs/production-readiness/hourly-detection-decision-package.md",
+  growthProfile: "src/lib/squad/growth-profile.ts",
+  diagnosisHistory: "src/lib/squad/diagnosis-history.ts",
+  shareImage: "src/lib/share-image.ts",
+  bestXiBench: "src/lib/best-xi/bench.ts",
+  gamePlan: "src/lib/squad/game-plan.ts",
+  communitySafety: "src/lib/community/moderation.ts",
+  domainSmtpAuthPackage: "docs/production-readiness/domain-smtp-auth-resume-package-2026-10-07.md",
+  accountAvailability: "src/lib/supabase/account-availability.ts",
+  authEmailChecklist: "docs/production-readiness/auth-email-release-checklist.json",
+  dbLoginProbe: "scripts/lib/db-login-probe.mjs",
+  incidentResponse: "docs/production-readiness/auto-update-incident-response.md",
+  rightsAudit: "docs/production-readiness/data-distribution-rights-audit.md",
+  legalChecklist: "docs/release/legal-review-checklist.md",
+});
+
 /** リポジトリの確認（入力は読み込んだファイルの内容・JSON は文字列）。 */
 export function checkRepoV1_1(files) {
   const problems = [];
@@ -47,6 +78,29 @@ export function checkRepoV1_1(files) {
   if (!has("publicIdSql") || !has("publicIdPgTest")) problems.push("public_id_proposal_missing");
   if (!has("photoStage2Sql")) problems.push("photo_stage2_proposal_missing");
   if (!has("layout") || !/SITE_ROBOTS_METADATA/.test(files.layout)) problems.push("noindex_metadata_missing");
+  // 2026-10-08 に追加した確認（毎時の検出・成長・履歴・共有・Best XI・ゲームプラン・コミュニティ・Domain/SMTP/Auth・権利・法務・障害対応）
+  if (!has("hourlyDetectionPackage")) problems.push("hourly_detection_decision_package_missing");
+  if (!has("growthProfile") || !has("diagnosisHistory")) problems.push("growth_or_history_missing");
+  if (!has("shareImage") || !/AbortError/.test(files.shareImage) || !/revokeObjectURL/.test(files.shareImage)) problems.push("share_safeguards_missing");
+  if (!has("bestXiBench")) problems.push("best_xi_bench_missing");
+  if (!has("gamePlan") || !/GAME_PLAN_SCHEMA/.test(files.gamePlan)) problems.push("game_plan_missing");
+  if (!has("communitySafety")) problems.push("community_safety_contract_missing");
+  if (!has("domainSmtpAuthPackage")) problems.push("domain_smtp_auth_package_missing");
+  if (!has("dbLoginProbe")) problems.push("auto_apply_db_login_probe_missing");
+  if (!has("incidentResponse")) problems.push("incident_response_missing");
+  if (!has("rightsAudit")) problems.push("rights_audit_missing");
+  if (!has("legalChecklist")) problems.push("legal_checklist_missing");
+  // 新規登録の公開は、メールの公開の判定の本人の承認が記録されている場合だけ（自動では開かない）
+  if (!has("accountAvailability")) problems.push("account_availability_missing");
+  else if (/ACCOUNT_SIGNUP_MODE:\s*AccountSignupMode\s*=\s*"open"/.test(files.accountAvailability)) {
+    let approved = false;
+    try {
+      approved = Boolean(JSON.parse(files.authEmailChecklist ?? "{}").ownerApprovedAt);
+    } catch {
+      approved = false;
+    }
+    if (!approved) problems.push("public_signup_open_without_owner_approval");
+  }
   return problems;
 }
 
