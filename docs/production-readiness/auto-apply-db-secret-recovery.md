@@ -61,3 +61,18 @@ password を percent-encode して、URL をメモリの中だけで作り `gh s
 | 日時 | 状態 | 確認 |
 |---|---|---|
 | 2026-10-07 | `VERIFIED_BLOCKED_OWNER_ACTION`（本人の Secret 入力待ち） | self-test 22/22 PASS（ダミーの値・gh 未実行）。workflow の Environment 名・Secret 名・CA の契約が §2 と一致。自動用 Secret の更新日時は 2026-10-03T16:22:04Z のまま（値は見ていない）。Kill switch 5 つ `true`・open の halt Issue なし・applied-state World 13,372 / Managers 69 |
+| 2026-10-07 | `AUTO_APPLY_BLOCKED_DB_AUTH`（本人の Secret の再入力待ち） | 本人が 13:07:32Z に `REFERENCE_DATA_APPLY_DB_URL` を更新（値は見ていない）。最新の状態から再検証: 検出 37626220256（World `079f9eaf92a0`・update_available・repeat ではない／Managers no_change）→ Plan 37629701068（main 98ac4a8・追加 0・変更 16（`ovr_max`・`maximum_level` のみ）・削除 0・重複 0・不正 0）→ Backup v2 37633398038（restore・storage 検証済み・World 13,372／Managers 69）→ Dry run 37633643554（re-diff 0・after checksum 一致・隔離での apply / 監査 / undo 検証済み）→ policy 適格で自動 Apply 37633894541（Environment `reference-data-production-apply-automatic`）→ **接続で `connect_failed:sqlstate_28P01`**。書き込み 0・Rollback / Restore なし・halt Issue なし・Issue #112 に停止の通知。Candidate は失われない |
+
+## 8. 2 回目の 28P01 の後（2026-10-07）
+
+更新した値でも認証が拒否された。値は読み戻せないため、原因は本人の入力（パスワードの違い・別のロールのパスワード）と考えられる。
+同じ失敗を繰り返さないよう、一度限りのスクリプトを **v2** にした（`data/work/set-auto-apply-db-secret.ps1`・Git 管理外・self-test 24/24）。
+
+- v2 は登録の**前に**、本人の端末から実際にログインできるかを確かめる（`data/work/check-db-login.mjs`・TLS は CA 証明書で検証・読み取りの 1 文だけ・URL とパスワードは表示しない）。
+  ログインできない・ユーザーが `reference_data_updater` でない・World の更新権限が無い場合は**登録しない**で理由を示す（28P01 = パスワード違い 等）。
+- 入力: Session pooler の接続文字列・`reference_data_updater` のパスワード・Supabase の SSL 証明書のファイル（Database Settings の Download certificate）。
+- パスワードが分からない場合: Supabase の SQL Editor で `reference_data_updater` のパスワードを新しくする（本人の操作）。
+  その場合は手動用の Environment `reference-data-production-apply` の同名の Secret も古くなるため、同じ値で登録し直す必要がある（別途）。
+- 実行: `powershell -NoProfile -ExecutionPolicy Bypass -File .\data\work\set-auto-apply-db-secret.ps1`（`-DryRun` で確認だけ）。
+- 「設定完了」の後は §4 と同じく最新の状態から検出をやり直す（今回の Candidate は次の検出でも同じ checksum なら 24 時間以内は repeat になるため、
+  2026-10-08T13:34Z 以降の検出、または checksum が変わった検出で Pipeline へ渡る）。
