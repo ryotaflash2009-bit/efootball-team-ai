@@ -6,8 +6,12 @@ import { worldCardIdSchema } from "@/lib/world/schemas";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { buttonClasses } from "@/components/ui/Button";
+import { PRIVATE_PAGE_ROBOTS } from "@/lib/public-info/search-indexing";
 
 export const dynamic = "force-dynamic";
+
+/** 端末に保存したスカッドの画面（利用者ごと）。検索に出さない。 */
+export const metadata = { robots: PRIVATE_PAGE_ROBOTS };
 
 type SP = Record<string, string | string[] | undefined>;
 

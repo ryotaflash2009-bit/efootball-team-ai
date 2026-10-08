@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { getSupabaseEnv } from "@/lib/supabase/env";
 import { areInternalPagesVisible, isInternalPagePath } from "@/lib/public-info/internal-pages";
+import { xRobotsTagFor } from "@/lib/public-info/search-indexing";
 
 /** 存在しないpath。ここへrewriteするとアプリ共通のnot-found画面がHTTP 404で返る。 */
 const HIDDEN_INTERNAL_PAGE_REWRITE = "/__internal-page-not-available";
@@ -17,6 +18,17 @@ const HIDDEN_INTERNAL_PAGE_REWRITE = "/__internal-page-not-available";
  *   未ログイン状態を安全に表示する(本PoCの方針)。
  */
 export async function middleware(request: NextRequest) {
+  return withIndexingHeader(request, await handle(request));
+}
+
+/** 検索の公開中でも、非公開・端末だけ・内部・下書きの画面と、正式な URL 以外のホストは個別に noindex（search-indexing.ts）。 */
+function withIndexingHeader(request: NextRequest, response: NextResponse): NextResponse {
+  const tag = xRobotsTagFor({ pathname: request.nextUrl.pathname, host: request.headers.get("host") });
+  if (tag) response.headers.set("X-Robots-Tag", tag);
+  return response;
+}
+
+async function handle(request: NextRequest): Promise<NextResponse> {
   // 開発者向け内部ページは、表示不可の環境ではレンダリング前に404にする(fail-closed)。
   // ページ側のnotFound()だけでは、loading.tsxによるstreaming開始後でHTTP statusが200のままになるため。
   if (isInternalPagePath(request.nextUrl.pathname.replace(/\/+$/, "") || "/") && !areInternalPagesVisible()) {
