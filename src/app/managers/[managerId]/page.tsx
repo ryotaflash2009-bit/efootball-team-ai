@@ -3,6 +3,8 @@ import { cachedGetManagerById } from "@/lib/reference-data/runtime/cached-querie
 import { getManagerById, ManagerDataUnavailableError } from "@/lib/managers/repository";
 import { MANAGER_ID_RE } from "@/lib/managers/schemas";
 import { pageMetadata } from "@/lib/seo/page-metadata";
+import { JsonLdScript } from "@/components/seo/JsonLdScript";
+import { breadcrumbJsonLd } from "@/lib/seo/structured-data";
 import { ManagerDetailView, ManagerUnavailableView } from "@/components/managers/ManagerDetailView";
 
 export const runtime = "nodejs";
@@ -40,5 +42,10 @@ export default async function ManagerDetailPage({ params }: { params: Promise<{ 
   }
   if (!manager) notFound();
 
-  return <ManagerDetailView manager={manager} />;
+  return (
+    <>
+      <JsonLdScript data={breadcrumbJsonLd([{ name: "ホーム", path: "/" }, { name: "監督一覧", path: "/managers" }, { name: manager.nameEn, path: `/managers/${decoded}` }])} />
+      <ManagerDetailView manager={manager} />
+    </>
+  );
 }

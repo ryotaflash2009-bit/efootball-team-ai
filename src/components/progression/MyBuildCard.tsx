@@ -1,5 +1,6 @@
 "use client";
 
+import { ShareBuildLink } from "@/components/world/progression/ShareBuildLink";
 import "@/lib/i18n/dictionaries/ja-ns/buildUsage";
 import "@/lib/i18n/dictionaries/ja-ns/myBuildCard";
 import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
@@ -282,6 +283,8 @@ export function MyBuildCard({
           <Icon name="squad" size={12} />
           {tmc("useInSquadLink")}
         </Link>
+        {/* 配分の共有リンク（2026-10-09・比較の画面の URL・ID と配分だけ） */}
+        <ShareBuildLink compact worldCardId={build.worldCardId} allocation={build.progressionAllocation} />
       </div>
 
       {/* My Team 連携（selectedBuildId / favoriteBuildId のみ・独立操作。スカッド・カードのお気に入りは変更しない） */}

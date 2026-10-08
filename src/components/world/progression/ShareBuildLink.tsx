@@ -15,7 +15,7 @@ export function buildShareHref(worldCardId: string, allocation: Record<string, n
   return href.includes("al=") ? href : null;
 }
 
-export function ShareBuildLink({ worldCardId, allocation }: { worldCardId: string; allocation: Record<string, number> }) {
+export function ShareBuildLink({ worldCardId, allocation, compact = false }: { worldCardId: string; allocation: Record<string, number>; compact?: boolean }) {
   const t = useT();
   const tp = (k: "shareBuildLinkButton" | "shareBuildLinkCopied" | "shareBuildLinkFallback" | "shareBuildLinkNote") => t("progressionTab", k);
   const [state, setState] = useState<{ kind: "copied" | "fallback"; url: string } | null>(null);
@@ -37,12 +37,12 @@ export function ShareBuildLink({ worldCardId, allocation }: { worldCardId: strin
   };
 
   return (
-    <div className="mt-2 text-2xs" data-testid="share-build-link">
+    <div className={compact ? "text-2xs" : "mt-2 text-2xs"} data-testid="share-build-link">
       <button
         type="button"
         disabled={!href}
         onClick={() => void onCopy()}
-        className="min-h-[36px] rounded-md border border-border px-3 text-xs text-text-dim hover:enabled:border-accent disabled:cursor-not-allowed disabled:opacity-40"
+        className={`min-h-[36px] rounded-md border border-border ${compact ? "px-2 text-2xs" : "px-3 text-xs"} text-text-dim hover:enabled:border-accent disabled:cursor-not-allowed disabled:opacity-40`}
       >
         {tp("shareBuildLinkButton")}
       </button>
@@ -54,7 +54,7 @@ export function ShareBuildLink({ worldCardId, allocation }: { worldCardId: strin
       {state?.kind === "fallback" ? (
         <input readOnly value={state.url} onFocus={(e) => e.currentTarget.select()} className="mt-1 w-full rounded border border-border bg-surface px-2 py-1 text-2xs" data-testid="share-build-link-url" />
       ) : null}
-      <p className="mt-1 text-text-muted">{tp("shareBuildLinkNote")}</p>
+      {compact ? null : <p className="mt-1 text-text-muted">{tp("shareBuildLinkNote")}</p>}
     </div>
   );
 }

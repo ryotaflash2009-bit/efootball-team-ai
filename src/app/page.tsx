@@ -8,6 +8,8 @@ import { HomePageView, type HomeMiniCardData, type HomePageWorldSummary } from "
 import { settledInOrder } from "@/lib/settled-in-order";
 import { classifyHomeFailure } from "@/lib/home-failure";
 import { pageMetadata } from "@/lib/seo/page-metadata";
+import { JsonLdScript } from "@/components/seo/JsonLdScript";
+import { websiteJsonLd } from "@/lib/seo/structured-data";
 
 export const metadata = pageMetadata({
   path: "/",
@@ -69,13 +71,16 @@ export default async function HomePage() {
   if (settled.usable(3) && managersR.status === "fulfilled") managerCount = managersR.value;
 
   return (
-    <HomePageView
-      world={world}
-      efhubTotal={meta ? meta.totalReceived : null}
-      managerCount={managerCount}
-      topOvr={topOvr}
-      recent={recent}
-      temporaryError={temporaryError}
-    />
+    <>
+      <JsonLdScript data={websiteJsonLd()} />
+      <HomePageView
+        world={world}
+        efhubTotal={meta ? meta.totalReceived : null}
+        managerCount={managerCount}
+        topOvr={topOvr}
+        recent={recent}
+        temporaryError={temporaryError}
+      />
+    </>
   );
 }

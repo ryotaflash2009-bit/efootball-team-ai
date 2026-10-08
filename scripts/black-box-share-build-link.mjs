@@ -71,6 +71,17 @@ async function main() {
     const text = await ev(`document.querySelector("main").innerText`);
     const shown = (text.match(/(\d+) \/ (\d+)pt/) ?? [])[1];
     record("リンクを開くと比較の画面で同じ配分（手動育成・同じ消費ポイント）", /現在: 手動育成/.test(text) && Number(shown) === used, `期待 ${used}pt / 表示 ${shown}pt`);
+    // My Builds の各ビルドからも同じリンクを作れる
+    const BUILDS_KEY = "efootball-team-ai:local:guest:progression-builds:v1";
+    const build = { buildId: "bbShare01", worldCardId: CARD, buildName: "共有テスト", progressionAllocation: { shooting: 6, dribbling: 5 }, selectedPlayerBooster: null, conditionalBoosterSelections: [], calculatedStats: {}, calculatedOvr: null, calculationMode: "provisional", rulesVersion: "progression/2026-08-28.v2", costRuleId: "staged-2026-10-08", createdAt: "2026-10-09T00:00:00.000Z", updatedAt: "2026-10-09T00:00:00.000Z", schemaVersion: 1 };
+    await ev(`localStorage.setItem(${JSON.stringify(BUILDS_KEY)}, ${JSON.stringify(JSON.stringify({ [CARD]: [build] }))})`);
+    await nav(`${BASE}/my-builds`);
+    await must("my-builds share", async () => (await ev(`!!document.querySelector('[data-testid="share-build-link"] button:not([disabled])')`)) === true, 20000);
+    await ev(`document.querySelector('[data-testid="share-build-link"] button').click()`);
+    await must("my-builds status", async () => !!(await ev(`document.querySelector('[data-testid="share-build-link"] [role="status"]')?.textContent`)), 10000);
+    let url2 = await ev(`document.querySelector('[data-testid="share-build-link-url"]')?.value ?? null`);
+    if (!url2) url2 = await ev(`navigator.clipboard.readText().catch(() => null)`);
+    record("My Builds の保存したビルドから同じ形のリンクを作れる", !!url2 && decodeURIComponent(url2).endsWith("/compare?ids=89136409091415&al=dribbling~5.shooting~6"), url2 ?? "");
     record("JS の例外なし", errors.length === 0, errors.slice(0, 3).join(" | "));
   } finally {
     await closeTab(browser.port, tab.id).catch(() => {});

@@ -15,7 +15,15 @@ function page(path: string, opts: { noindex?: boolean; canonical?: string | null
     canonical && !opts.noindex ? `<link rel="canonical" href="${canonical}"/>` : "",
     opts.noindex ? "" : '<meta property="og:title" content="x"/><meta property="og:description" content="x"/><meta property="og:image" content="x"/><meta property="og:url" content="x"/><meta name="twitter:card" content="summary_large_image"/>',
   ].join("");
-  return { status: 200, headers: opts.noindex ? { "x-robots-tag": "noindex, nofollow" } : {}, body: `<html lang="ja"><head>${head}</head><body>${LEGAL}</body></html>` };
+  const base = path.split("?")[0];
+  const ld = opts.noindex
+    ? ""
+    : base === "/"
+      ? `<script type="application/ld+json">${JSON.stringify({ "@type": "WebSite", name: "TeamAIXI" })}</script>`
+      : /^\/(players\/world|managers)\/\d+$/.test(base)
+        ? `<script type="application/ld+json">${JSON.stringify({ "@type": "BreadcrumbList", itemListElement: [{ item: `${O}/` }, { item: `${O}${base}` }] })}</script>`
+        : "";
+  return { status: 200, headers: opts.noindex ? { "x-robots-tag": "noindex, nofollow" } : {}, body: `<html lang="ja"><head>${head}</head><body>${ld}${LEGAL}</body></html>` };
 }
 
 const sitemapBody = (urls: string[]) => `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map((u) => `<url><loc>${u}</loc></url>`).join("")}</urlset>`;
@@ -70,6 +78,15 @@ describe("Indexing Release Validator", () => {
       ]),
     );
     expect(decideIndexing({ live, repoProblems: [], analytics: true }).verdict).toBe("SEARCH_INDEXING_BLOCKED");
+  });
+
+  it("JSON-LD: ホームの WebSite・詳細のパンくず・壊れた JSON は BLOCKED", async () => {
+    const bad = site({
+      "/": { ...page("/"), body: page("/").body.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, '<script type="application/ld+json">{broken</script>') },
+      "/players/world/1": { ...page("/players/world/1"), body: page("/players/world/1").body.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, "") },
+    });
+    const live = await checkIndexingLive(bad, { origin: O, sampleDetailCount: 3 });
+    expect(live.problems).toEqual(expect.arrayContaining(["jsonld_invalid:/", "jsonld_website_missing", "jsonld_breadcrumb_missing:/players/world/1"]));
   });
 
   it("法務の表示・内部の画面・新規登録の公開を確かめる", async () => {
