@@ -1,42 +1,42 @@
 {
   "schema": "hourly-detection-observation/v1",
-  "generatedAt": "2026-10-08T15:02:57.221Z",
+  "generatedAt": "2026-10-08T17:41:53.879Z",
   "cron": "17 * * * *",
   "window": {
     "since": "2026-10-04T12:27:00.000Z",
-    "until": "2026-10-08T15:02:24.534Z"
+    "until": "2026-10-08T17:41:19.396Z"
   },
-  "expected": 98,
-  "actual": 16,
+  "expected": 101,
+  "actual": 17,
   "extraRuns": 0,
   "manualRuns": 2,
-  "missing": 82,
-  "missingRatio": 0.837,
+  "missing": 84,
+  "missingRatio": 0.832,
   "maxConsecutiveMissing": 8,
   "maxGapMinutes": 1448,
   "maxGapEndsAt": "2026-10-04T13:44:40.000Z",
-  "lastSuccessfulDetection": "2026-10-08T08:55:08.000Z",
+  "lastSuccessfulDetection": "2026-10-08T16:26:39.000Z",
   "delayMinutes": {
-    "median": 34,
+    "median": 31,
     "max": 56
   },
   "light": 5,
-  "fullScan": 11,
+  "fullScan": 12,
   "noChange": 3,
   "lightNoSignalChange": 5,
-  "changeDetected": 8,
+  "changeDetected": 9,
   "failure": 0,
   "skip": 0,
   "cancelled": 0,
   "concurrencyOverlaps": 0,
-  "requests": 4941,
-  "downloadedBytes": 323581149,
+  "requests": 5392,
+  "downloadedBytes": 353110827,
   "durationSeconds": {
     "median": 1552,
-    "total": 17300
+    "total": 18853
   },
-  "gapNotices": 12,
-  "delayedDetections": 8,
+  "gapNotices": 13,
+  "delayedDetections": 9,
   "workflowState": "active",
   "reconsider": {
     "gapAtLeast6h": true,
@@ -612,6 +612,29 @@
     },
     {
       "slot": "2026-10-08T14:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T15:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T16:17:00.000Z",
+      "status": "ran",
+      "runId": 37808820674,
+      "createdAt": "2026-10-08T16:26:39Z",
+      "startedAt": "2026-10-08T16:26:39Z",
+      "delayMinutes": 10,
+      "durationSeconds": 1553,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "change_detected",
+      "worldScan": "full_scan_due",
+      "requests": 451,
+      "bytes": 29529678
+    },
+    {
+      "slot": "2026-10-08T17:17:00.000Z",
       "status": "missing"
     }
   ]

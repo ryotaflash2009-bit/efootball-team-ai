@@ -56,14 +56,14 @@ export const RULE_TEXT_EN: Record<string, { ruleName: string; description: strin
     description: "OVR is a summary of stats weighted by the registered position.",
   },
   "booster.effect": {
-    ruleName: "Player booster effects",
+    ruleName: "Player booster effect",
     description:
-      "A booster has a name and a level N, and adds +N to fixed target stats (e.g. Ball-carrying +5 -> Dribbling / Tight Possession / Speed / Balance +5; Fantasista +2 -> Ball Control / Dribbling / Finishing / Balance +2).",
+      "A booster has a name and level N and adds +N to its fixed target stats. It is added after progression (after base + progression is capped at 99) and can exceed 99.",
   },
   "manager.correction": {
-    ruleName: "Manager bonuses",
+    ruleName: "Manager correction",
     description:
-      "A manager's team playstyle proficiency and manager boosters adjust specific stats (shown as \"{stat} +1\").",
+      "Manager boosters add +1 to their target stats, after progression, and can exceed 99. Team-playstyle proficiency corrections are not calculated.",
   },
 };
 

@@ -92,3 +92,18 @@ describe("POST /api/build-intent/extract", () => {
     expect(statuses).toContain(429);
   });
 });
+
+describe("POST /api/build-intent/extract: 別のサイトからの要求（2026-10-09・NEW-39）", () => {
+  it("Origin が別のホストなら 403・同じホストや Origin なしは通常どおり", async () => {
+    const { POST } = await import("./route");
+    const body = JSON.stringify({ freeText: "テスト", locale: "ja" });
+    const cross = await POST(new Request("https://app.test/api/build-intent/extract", { method: "POST", headers: { "content-type": "application/json", origin: "https://evil.test" }, body }));
+    expect(cross.status).toBe(403);
+    const bad = await POST(new Request("https://app.test/api/build-intent/extract", { method: "POST", headers: { "content-type": "application/json", origin: "null" }, body }));
+    expect(bad.status).toBe(403);
+    const same = await POST(new Request("https://app.test/api/build-intent/extract", { method: "POST", headers: { "content-type": "application/json", origin: "https://app.test" }, body }));
+    expect(same.status).not.toBe(403);
+    const none = await POST(new Request("https://app.test/api/build-intent/extract", { method: "POST", headers: { "content-type": "application/json" }, body }));
+    expect(none.status).not.toBe(403);
+  });
+});
