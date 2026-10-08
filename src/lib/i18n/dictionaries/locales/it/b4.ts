@@ -560,6 +560,8 @@ const part: PartialDictionary = {
     confidenceInsufficient: "Insufficiente",
     notComputed: "Non calcolato",
     rulesVersion: "Versione delle regole",
+    factsTitle: "Dati della rosa (conteggi)",
+    factsNote: "Solo conteggi che derivano direttamente dalla rosa. Senza pesi né punteggi; non usati nella valutazione complessiva, nella classifica o nell’immagine da condividere. Le formule provvisorie si confrontano sotto.",
   },
   comparisonCockpit: {
     abilitiesTableLink: "Alla tabella delle 26 statistiche ↓",

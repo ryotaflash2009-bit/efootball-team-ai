@@ -560,6 +560,8 @@ const part: PartialDictionary = {
     confidenceInsufficient: "부족",
     notComputed: "계산 안 됨",
     rulesVersion: "규칙 버전",
+    factsTitle: "스쿼드 사실(집계)",
+    factsNote: "스쿼드에서 바로 정해지는 수만 표시합니다. 가중치·점수를 쓰지 않으며 종합 평가·순위·공유 이미지에는 넣지 않습니다. 잠정 계산식은 아래에서 비교할 수 있습니다.",
   },
   comparisonCockpit: {
     abilitiesTableLink: "26개 능력치 표로 ↓",

@@ -560,6 +560,8 @@ const part: PartialDictionary = {
     confidenceInsufficient: "Insuficiente",
     notComputed: "No calculado",
     rulesVersion: "Versión de reglas",
+    factsTitle: "Datos de la plantilla (recuentos)",
+    factsNote: "Solo recuentos que se derivan de la plantilla. Sin pesos ni puntuaciones; no se usan en la valoración global, la clasificación ni la imagen para compartir. Las fórmulas provisionales se comparan abajo.",
   },
   comparisonCockpit: {
     abilitiesTableLink: "A la tabla de 26 atributos ↓",

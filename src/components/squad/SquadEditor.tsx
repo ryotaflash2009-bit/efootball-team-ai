@@ -2038,7 +2038,7 @@ export function SquadEditor({
           tacticalPlacements={tacticalPlacements}
           namePairs={namePairs}
         />
-        <DiagnosisPerspectivesPanel results={perspectives} namePairs={namePairs} />
+        <DiagnosisPerspectivesPanel results={perspectives} namePairs={namePairs} factsLoading={cardResolution.loading.length > 0} />
         {perspectiveInput && diagnosisInput ? <SquadUniquenessPanel formationId={diagnosisInput.formationId} perspective={perspectiveInput} /> : null}
         {squad ? <GamePlanPanel squad={squad} starterOptions={starterOptions} benchOptions={benchOptions} /> : null}
       </div>

@@ -560,6 +560,8 @@ const part: PartialDictionary = {
     confidenceInsufficient: "不足",
     notComputed: "未计算",
     rulesVersion: "规则版本",
+    factsTitle: "阵容事实（统计）",
+    factsNote: "仅显示由阵容直接得出的数值。不使用权重或分数，不计入综合评价、排名或分享图片。暂定公式可在下方比较。",
   },
   comparisonCockpit: {
     abilitiesTableLink: "前往 26 项能力值表 ↓",

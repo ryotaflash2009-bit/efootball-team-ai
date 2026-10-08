@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { buildDiagnosisPerspectives, lineRoleOfPosition, provisionalHeightBonus, statMean, toPerspectiveInput, PERSPECTIVES_RULES_VERSION, type PerspectivePlayer } from "./diagnosis-perspectives";
+import { buildDiagnosisPerspectives, perspectiveFactSummary, FACT_SUMMARY_FORMULAS, lineRoleOfPosition, provisionalHeightBonus, statMean, toPerspectiveInput, PERSPECTIVES_RULES_VERSION, type PerspectivePlayer } from "./diagnosis-perspectives";
 
 const stats = (v: number, gk = 40): Record<string, number> => ({
   offensiveAwareness: v, finishing: v, heading: v, setPieceTaking: v, curl: v,
@@ -132,5 +132,40 @@ describe("toPerspectiveInput（ベンチのプレースタイル）", () => {
     const bn = [{ key: "sub0", nameJa: "C", nameEn: null, registeredPosition: "CB", assignedPosition: null, role: null, compatibilityStatus: null, stats: null }];
     const input = toPerspectiveInput({ starters: [], bench: bn, placements: [], managerTactics: null, benchPlayingStyles: new Map([["sub0", "Build Up"]]) });
     expect(input.players[0].playingStyle).toBe("buildUp");
+  });
+});
+
+describe("事実の集計（2026-10-09・推奨の A だけ）", () => {
+  it("6 観点の A（fact）だけを出し、監督との相性・空中戦（身長）・暫定の式は出さない", () => {
+    const r = buildDiagnosisPerspectives({ players: [...XI, ...BENCH], managerTactics: { possessionGame: 88, quickCounter: 70, longBallCounter: null } });
+    const facts = perspectiveFactSummary(r);
+    expect(facts.map((f) => f.id).sort()).toEqual(["aerialFootPosition", "formationFit", "gkCategory", "roleOverlap", "sideBalance", "squadDepth"]);
+    for (const f of facts) {
+      const src = r.find((x) => x.id === f.id)!.formulas.find((x) => x.id === FACT_SUMMARY_FORMULAS[f.id]);
+      expect(src?.kind).toBe("fact");
+      expect(f.value).toBe(src?.value);
+    }
+    expect(facts.some((f) => f.id === "managerFit" || f.id === "aerialHeight")).toBe(false);
+  });
+
+  it("データ不足は null のまま（0 にしない）・同じ入力は同じ結果", () => {
+    const empty = buildDiagnosisPerspectives({ players: XI.map((x) => ({ ...x, stats: null, heightCm: null, x: null, playingStyle: null })), managerTactics: null });
+    const f = perspectiveFactSummary(empty);
+    expect(f.find((x) => x.id === "gkCategory")?.value).toBeNull();
+    const a = perspectiveFactSummary(buildDiagnosisPerspectives({ players: [...XI, ...BENCH], managerTactics: null }));
+    const b = perspectiveFactSummary(buildDiagnosisPerspectives({ players: [...BENCH, ...XI].reverse().reverse(), managerTactics: null }));
+    expect(a).toEqual(b);
+  });
+
+  it("総合点・共有カードの計算から参照しない（隔離）", () => {
+    for (const f of ["src/lib/squad/squad-diagnosis.ts", "src/lib/squad/share-card.ts"]) {
+      let src = "";
+      try {
+        src = readFileSync(path.resolve(f), "utf8");
+      } catch {
+        continue;
+      }
+      expect(src, f).not.toMatch(/perspectiveFactSummary|FACT_SUMMARY_FORMULAS/);
+    }
   });
 });

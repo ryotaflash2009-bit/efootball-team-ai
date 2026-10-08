@@ -1,21 +1,24 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/diagnosisPerspectives";
-import type { PerspectiveConfidence, PerspectiveResult } from "@/lib/squad/diagnosis-perspectives";
+import { perspectiveFactSummary, type PerspectiveConfidence, type PerspectiveResult } from "@/lib/squad/diagnosis-perspectives";
 import { Badge } from "@/components/ui/Badge";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import { localizePerspectiveText } from "@/lib/squad/diagnosis-perspectives-text-en";
 import { swapPlayerNames } from "@/lib/squad/squad-diagnosis-text-en";
 
 /**
- * F-045 診断の追加観点（暫定 / 比較検証用）。既定で閉じた折りたたみに置き、総合評価・共有画像とは分ける。
+ * F-045 診断の追加観点。事実の集計（2026-10-09）は上に常に出し、暫定の式の比較は既定で閉じた折りたたみに置く。総合評価・共有画像とは分ける。
  * 観点ごとに独立して表示し、合計しない。
  */
 export function DiagnosisPerspectivesPanel({
   results,
   namePairs = [],
+  factsLoading = false,
 }: {
   results: PerspectiveResult[];
+  /** 選手の詳細を読み込み中（事実の集計は全員の能力が揃ってから出す。途中の「計算しない」を見せない）。 */
+  factsLoading?: boolean;
   /** 英語の画面で選手名を英語名にそろえる [日本語名, 英語名]。 */
   namePairs?: readonly (readonly [string, string])[];
 }) {
@@ -30,7 +33,26 @@ export function DiagnosisPerspectivesPanel({
     insufficient: t("diagnosisPerspectives", "confidenceInsufficient"),
   };
   if (results.length === 0) return null;
+  const facts = factsLoading ? [] : perspectiveFactSummary(results);
   return (
+    <>
+    {facts.length > 0 ? (
+      <section className="mt-2 rounded-md border border-border/60 bg-surface p-2.5 text-sm" data-testid="diagnosis-perspective-facts" aria-label={t("diagnosisPerspectives", "factsTitle")}>
+        <h3 className="text-xs font-semibold text-text">{t("diagnosisPerspectives", "factsTitle")}</h3>
+        <dl className="mt-1.5 grid grid-cols-1 gap-x-4 gap-y-1 text-2xs sm:grid-cols-2">
+          {facts.map((f) => (
+            <div key={f.id} className="flex items-baseline justify-between gap-2 border-b border-border/40 pb-0.5">
+              <dt className="min-w-0 text-text-dim">
+                {lp(f.label)}
+                <span className="ms-1 text-text-muted">（{lp(f.formulaLabel)}）</span>
+              </dt>
+              <dd className="shrink-0 font-semibold tabular-nums text-text">{f.value === null ? t("diagnosisPerspectives", "notComputed") : `${f.value}${lp(f.unit)}`}</dd>
+            </div>
+          ))}
+        </dl>
+        <p className="mt-1.5 text-2xs text-text-muted">{t("diagnosisPerspectives", "factsNote")}</p>
+      </section>
+    ) : null}
     <details className="mt-2 rounded-md border border-border/60 bg-surface p-0 text-sm" data-testid="diagnosis-perspectives">
       <summary className="flex cursor-pointer flex-wrap items-center gap-2 px-2.5 py-2 text-xs font-semibold text-text-dim hover:text-text">
         {t("diagnosisPerspectives", "title")}（{results.length}）
@@ -106,5 +128,6 @@ export function DiagnosisPerspectivesPanel({
         </p>
       </div>
     </details>
+    </>
   );
 }
