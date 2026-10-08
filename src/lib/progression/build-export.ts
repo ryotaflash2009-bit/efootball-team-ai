@@ -114,6 +114,8 @@ export function canonicalizeExportBuild(b: SavedBuild): SavedBuild {
     }));
   }
   if (b.buildIntent) out.buildIntent = canonicalizeBuildIntent(b.buildIntent);
+  // コストの規則（2026-10-08）。無い既存のビルドは無いまま（旧規則）。現行の規則のビルドは書き出し・読み込みで失わない。
+  if (b.costRuleId) out.costRuleId = b.costRuleId;
   return out;
 }
 

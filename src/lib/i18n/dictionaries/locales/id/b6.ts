@@ -332,7 +332,7 @@ const part: PartialDictionary = {
     boosterModeNote: "Mode booster: Standar. Hanya booster yang telah dicocokkan dengan dua sumber eksternal untuk efek bawaan kartu, ditambah koreksi manajer, yang tercermin dalam total ini (tidak dikonfirmasi oleh KONAMI). Termasuk efek yang diasumsikan bertipe tetap dan Power of Many (diterapkan sementara karena tidak ada bukti konkret ke arah mana pun). Tidak termasuk booster variabel emas (efeknya bergantung pada jumlah pemain dari liga yang sama dalam Game Plan dan tidak dapat dievaluasi otomatis untuk skuad saat ini), nilai yang diisi pengguna, efek yang masih diverifikasi, serta booster gabungan yang belum teridentifikasi atau estimasi manual.",
     startingBenchLabel: "Inti / Cadangan",
     avgBaseOvrLabel: "Rata-rata OVR dasar",
-    avgDisplayedOvrLabel: "Rata-rata OVR tampil (belum diverifikasi)",
+    avgDisplayedOvrLabel: "Rata-rata OVR perkiraan (bukan rumus resmi)",
     sharedSkillCountLabel: "Jumlah skill bersama",
     managerBoostedLabel: "Booster manajer diterapkan",
     unresolvedCompatibilityLabel: "Kecocokan belum pasti",

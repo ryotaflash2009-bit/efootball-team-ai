@@ -250,7 +250,7 @@ const part: PartialDictionary = {
     powerOfManyNote: "골드, 변동형(Game Plan에 따라 다름) — 팀 합계에 반영 안 됨",
     verifiedScreenTemplate: "참조 화면에서 실측{fixedNote} — 팀에 반영",
     externalVerifiedTemplate: "외부 교차 검증(KONAMI 미확인){fixedNote} — 팀에 반영",
-    underVerificationNote: "효과 검증 중 — 반영 안 됨",
+    underVerificationNote: "효과 미확정·미반영",
     fixedTypeEstimateSuffix: ", 고정형 추정",
     experimentalBoosterPrefix: "실험적 부스터 추정(부착된 부스터보다 우선 — ",
     experimentalBoosterTeamNote: "팀 합계에는 영향 없음",

@@ -207,7 +207,7 @@ const part: PartialDictionary = {
     verifiedScreenshotNoteTemplate: "已透過參考截圖確認{fixedSuffix} · 反映於比較",
     fixedEstimateSuffix: " · 推測為固定型",
     externalCrossVerifiedNoteTemplate: "已經外部交叉驗證（非 KONAMI 確認）{fixedSuffix} · 反映於比較",
-    underVerificationNote: "效果驗證中 · 不反映於比較",
+    underVerificationNote: "效果未確認，不計入比較",
     additionalBoosterPrefix: "額外加成（B2，覆蓋附帶加成；",
     additionalBoosterHighlight: "已確認者會影響比較排名",
     additionalBoosterSuffix: "）",

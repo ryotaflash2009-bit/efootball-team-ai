@@ -332,7 +332,7 @@ const part: PartialDictionary = {
     boosterModeNote: "加成模式：标准。这些合计仅反映卡片自带效果经两个外部来源交叉核对过的加成以及主教练修正（未经 KONAMI 确认）。包括推定为固定型的效果和 Power of Many（因双方均无具体证据而暂时应用）。不包括金色可变加成（效果随比赛计划中同联赛球员人数变化，无法针对当前阵容自动评估）、用户指定值、仍在核实中的效果，以及未解析的附带加成或手动估算。",
     startingBenchLabel: "首发 / 替补",
     avgBaseOvrLabel: "平均基础 OVR",
-    avgDisplayedOvrLabel: "平均显示 OVR（未验证）",
+    avgDisplayedOvrLabel: "平均推定 OVR（非官方计算公式）",
     sharedSkillCountLabel: "共同技能数",
     managerBoostedLabel: "已应用主教练加成",
     unresolvedCompatibilityLabel: "适应性未确认",

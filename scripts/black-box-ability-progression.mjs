@@ -218,6 +218,34 @@ async function runViewport(browser, vp) {
   d = await dock();
   record("−で1段階戻す", d.level === L - 1 && d.remaining === TOTAL - cost(L - 1), `Lv${d.level}`);
   const keepL = d.level;
+  {
+    // 左側のカテゴリのスライダー（input range）との双方向の同期（同じ配分を操作する別の入口）
+    const leftNow = await ev(() => {
+      const r = [...document.querySelectorAll("input[type=range]")].find((x) => /ドリブル|Dribbling/.test(x.getAttribute("aria-label") ?? ""));
+      return r ? Number(r.value) : null;
+    });
+    record("左側のカテゴリのスライダーが育成パネルと同じレベル", leftNow === keepL, `left=${leftNow} dock=${keepL}`);
+    const target = keepL + 1;
+    await ev((t) => {
+      const r = [...document.querySelectorAll("input[type=range]")].find((x) => /ドリブル|Dribbling/.test(x.getAttribute("aria-label") ?? ""));
+      if (!r) return false;
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set.call(r, String(t));
+      r.dispatchEvent(new Event("input", { bubbles: true }));
+      r.dispatchEvent(new Event("change", { bubbles: true }));
+      return true;
+    }, target);
+    await sleep(250);
+    const dSync = await dock();
+    record("左側のスライダーを動かすと育成パネルのレベル・残りポイントも変わる", dSync.level === target && dSync.remaining === TOTAL - cost(target), `Lv${dSync.level} 残り${dSync.remaining}`);
+    // 元のレベルへ戻す（以降の確認の前提を変えない）
+    await ev((t) => {
+      const r = [...document.querySelectorAll("input[type=range]")].find((x) => /ドリブル|Dribbling/.test(x.getAttribute("aria-label") ?? ""));
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set.call(r, String(t));
+      r.dispatchEvent(new Event("input", { bubbles: true }));
+      r.dispatchEvent(new Event("change", { bubbles: true }));
+    }, keepL);
+    await sleep(250);
+  }
 
   // 13-14, 24. ポイント不足（ディフェンス）
   await tap("[data-stat=tackling]");

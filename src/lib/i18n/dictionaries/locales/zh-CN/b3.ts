@@ -250,7 +250,7 @@ const part: PartialDictionary = {
     powerOfManyNote: "金色、可变（取决于 Game Plan）— 不计入球队合计",
     verifiedScreenTemplate: "已在参考画面上实测{fixedNote} — 计入球队",
     externalVerifiedTemplate: "已通过外部交叉验证（非 KONAMI 确认）{fixedNote} — 计入球队",
-    underVerificationNote: "效果验证中 — 不计入",
+    underVerificationNote: "效果未确认，不计入",
     fixedTypeEstimateSuffix: "，推定为固定型",
     experimentalBoosterPrefix: "实验性加成估算（覆盖附带加成 — ",
     experimentalBoosterTeamNote: "不影响球队合计",

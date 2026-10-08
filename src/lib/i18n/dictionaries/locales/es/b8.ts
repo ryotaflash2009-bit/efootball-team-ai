@@ -207,7 +207,7 @@ const part: PartialDictionary = {
     verifiedScreenshotNoteTemplate: "Confirmado con capturas de referencia{fixedSuffix} · se refleja en la comparación",
     fixedEstimateSuffix: " · tipo fijo estimado",
     externalCrossVerifiedNoteTemplate: "Contrastado con fuentes externas (no confirmado por KONAMI){fixedSuffix} · se refleja en la comparación",
-    underVerificationNote: "Efecto en verificación · no se refleja en la comparación",
+    underVerificationNote: "Efecto sin confirmar · no se refleja en la comparación",
     additionalBoosterPrefix: "Potenciador adicional (B2, sustituye al incluido; ",
     additionalBoosterHighlight: "los confirmados afectan a la clasificación de la comparación",
     additionalBoosterSuffix: ")",

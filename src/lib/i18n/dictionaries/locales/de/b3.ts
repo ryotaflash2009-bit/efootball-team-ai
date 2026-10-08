@@ -250,7 +250,7 @@ const part: PartialDictionary = {
     powerOfManyNote: "Gold, variabel (abhängig vom Spielplan) — nicht in Teamwerten enthalten",
     verifiedScreenTemplate: "Auf einem Referenzbildschirm gemessen{fixedNote} — im Team berücksichtigt",
     externalVerifiedTemplate: "Extern gegengeprüft (nicht von KONAMI bestätigt){fixedNote} — im Team berücksichtigt",
-    underVerificationNote: "Wirkung wird geprüft — nicht berücksichtigt",
+    underVerificationNote: "Effekt unbestätigt — nicht angewendet",
     fixedTypeEstimateSuffix: ", vermutlich fester Typ",
     experimentalBoosterPrefix: "Experimentelle Booster-Schätzung (ersetzt den angehängten — ",
     experimentalBoosterTeamNote: "beeinflusst Teamwerte nicht",
