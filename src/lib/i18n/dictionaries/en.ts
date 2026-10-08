@@ -909,8 +909,7 @@ const en: Dictionary = {
     formationLabel: "Formation",
     createAndEditButton: "Create and edit",
     heroHeading: "Build a squad with 11 starters + bench",
-    heroDescription:
-      "Choose a formation and place players from all World cards. Check progression builds, manager corrections, and Link-Up Play conditions on one screen. Calculations reuse the existing progression and manager engines (rules are still being verified). Squads are saved only in this device's browser (localStorage).",
+    heroDescription: "Pick a formation and place players from every World card. See progression builds, manager boosts and Link-Up Play conditions on one screen. Progression targets follow the eFHUB reference and OVR is an estimate. Squads are stored only in this browser (localStorage).",
     createFirstSquadButton: "Create your first squad",
     createNewSquadButton: "Create a new squad",
     goToCompareButton: "Go to player compare",
@@ -2805,8 +2804,7 @@ const en: Dictionary = {
   },
   comparePage: {
     title: "Player Compare",
-    description:
-      "Compare 2-4 World cards side by side: basic info, 26 abilities, skills, progression builds, and manager corrections. Progression and manager corrections reuse the existing calculation engine (rules are still being verified). Players, progression policy, and manager are stored in the URL so you can share it.",
+    description: "Compare 2–4 World cards side by side: basics, 26 abilities, skills, progression builds and manager boosts. Progression targets follow the eFHUB reference and OVR is an estimate. The URL holds the players, build policy and manager, so you can share it.",
     backToPlayers: "Back to player list",
     dataUnavailableTitle: "Data unavailable",
     dataUnavailableDescription: "World data has not been imported into SQLite.",
@@ -4596,6 +4594,10 @@ const en: Dictionary = {
     ruCapUnconfirmedClamp: "unconfirmed; provisional clamp",
     ruCapNone: "no cap, can exceed 99",
     ruCapSourceNote: "Progression stops at 99; boosters and manager boosters add on top (per KONAMI's official v3.00 notes; same as eFHUB's calculation).",
+    shareBuildLinkButton: "Copy a link to this allocation",
+    shareBuildLinkCopied: "Link copied (it opens the same allocation on the compare page)",
+    shareBuildLinkFallback: "Couldn't copy automatically. Select the link below and copy it",
+    shareBuildLinkNote: "The link contains only the player and category levels (no build name, notes or device data). Points are counted with the current rule.",
     ruShowRuleStatus: "Show rule confirmation status",
     ruListConfirmed: "Confirmed",
     ruListProvisional: "Likely but not confirmed",

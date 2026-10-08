@@ -311,7 +311,7 @@ const part: PartialDictionary = {
     formationLabel: "Formação",
     createAndEditButton: "Criar e editar",
     heroHeading: "Monte um elenco com 11 titulares + banco",
-    heroDescription: "Escolha uma formação e posicione jogadores de todas as cartas World. Confira builds de progressão, ajustes do técnico e condições de Link-Up Play em uma só tela. Os cálculos reutilizam os mecanismos existentes de progressão e de técnico (regras ainda em verificação). Os elencos são salvos apenas no navegador deste dispositivo (localStorage).",
+    heroDescription: "Escolha uma formação e posicione jogadores de todas as cartas do World. Veja builds de progressão, bônus do técnico e condições de Link-Up Play em uma tela. Os atributos de progressão seguem a referência do eFHUB e o OVR é uma estimativa. Os elencos ficam só neste navegador (localStorage).",
     createFirstSquadButton: "Criar seu primeiro elenco",
     createNewSquadButton: "Criar um novo elenco",
     goToCompareButton: "Ir para comparação de jogadores",

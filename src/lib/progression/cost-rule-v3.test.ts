@@ -166,3 +166,22 @@ describe("境界の fixture（追加・2026-10-09）", () => {
     expect(valid.find((b) => b.buildId === "legacy")?.costRuleId).toBeUndefined();
   });
 });
+
+describe("自動配分は使うコストの規則の範囲に収まる（2026-10-09 の不具合の回帰）", () => {
+  it("現行の規則で、総ポイントを超えない（以前は版の文字列で旧規則の残りを数えていた）", async () => {
+    const { autoAllocate } = await import("./auto-allocate");
+    const { usedPoints } = await import("./group-allocation");
+    const { CURRENT_COST_RULE_ID, LEGACY_COST_RULE_ID } = await import("./progression-rules");
+    const { MESSI_BIGTIME, CANNAVARO_EPIC, NEUER_GK } = await import("./fixtures");
+    for (const card of [{ ...MESSI_BIGTIME, maximumLevel: 34 }, CANNAVARO_EPIC, NEUER_GK]) {
+      for (const profile of ["attack", "defense", "balance", "gk"] as const) {
+        for (const rule of [CURRENT_COST_RULE_ID, LEGACY_COST_RULE_ID]) {
+          const r = autoAllocate(card, profile, rule);
+          expect(usedPoints(r.allocation, rule)).toBeLessThanOrEqual(r.totalPoints);
+          expect(r.usedPoints).toBe(usedPoints(r.allocation, rule));
+          expect(r.remainingPoints).toBeGreaterThanOrEqual(0);
+        }
+      }
+    }
+  });
+});

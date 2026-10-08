@@ -394,7 +394,7 @@ const part: PartialDictionary = {
   },
   comparePage: {
     title: "Oyuncu Karşılaştırma",
-    description: "2-4 World kartını yan yana karşılaştırın: temel bilgiler, 26 özellik, beceriler, gelişim buildleri ve teknik direktör düzeltmeleri. Gelişim ve teknik direktör düzeltmeleri mevcut hesaplama motorunu kullanır (kurallar hâlâ doğrulanıyor). Oyuncular, gelişim politikası ve teknik direktör URL'de saklanır; böylece paylaşabilirsiniz.",
+    description: "2–4 World kartını yan yana karşılaştır: temel bilgiler, 26 yetenek, beceriler, gelişim yapıları ve teknik direktör bonusları. Gelişim hedefleri eFHUB referansına göredir, OVR tahminidir. URL oyuncuları, yapı politikasını ve teknik direktörü içerir; paylaşabilirsin.",
     backToPlayers: "Oyuncu listesine dön",
     dataUnavailableTitle: "Veri kullanılamıyor",
     dataUnavailableDescription: "World verileri SQLite'a aktarılmadı.",

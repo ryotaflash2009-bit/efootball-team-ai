@@ -394,7 +394,7 @@ const part: PartialDictionary = {
   },
   comparePage: {
     title: "球员对比",
-    description: "并排对比 2-4 张 World 球员卡：基本信息、26 项能力、技能、培养方案和主教练修正。培养和主教练修正沿用现有的计算引擎（规则仍在验证中）。球员、培养方针和主教练都会保存在 URL 中，方便分享。",
+    description: "并排比较 2–4 张 World 卡：基本信息、26 项能力、技能、培养构建和主教练加成。培养的对象能力按 eFHUB 基准，OVR 为推定。URL 包含球员、培养方针和主教练，可直接分享。",
     backToPlayers: "返回球员列表",
     dataUnavailableTitle: "数据不可用",
     dataUnavailableDescription: "World 数据尚未导入 SQLite。",

@@ -394,7 +394,7 @@ const part: PartialDictionary = {
   },
   comparePage: {
     title: "Confronto giocatori",
-    description: "Confronta da 2 a 4 carte World affiancate: informazioni di base, 26 statistiche, abilità, build di progressione e correzioni dell’allenatore. Progressione e correzioni dell’allenatore riusano il motore di calcolo esistente (regole ancora in verifica). Giocatori, criterio di progressione e allenatore sono salvati nell’URL, così puoi condividerlo.",
+    description: "Confronta 2–4 carte World: dati di base, 26 abilità, skill, build di progressione e bonus dell’allenatore. Le abilità di progressione seguono il riferimento eFHUB e l’OVR è una stima. L’URL contiene giocatori, impostazione e allenatore per la condivisione.",
     backToPlayers: "Torna all’elenco dei giocatori",
     dataUnavailableTitle: "Dati non disponibili",
     dataUnavailableDescription: "I dati World non sono stati importati in SQLite.",

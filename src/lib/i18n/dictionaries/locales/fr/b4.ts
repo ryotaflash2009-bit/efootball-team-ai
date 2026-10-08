@@ -311,7 +311,7 @@ const part: PartialDictionary = {
     formationLabel: "Formation",
     createAndEditButton: "Créer et modifier",
     heroHeading: "Composez un effectif de 11 titulaires + banc",
-    heroDescription: "Choisissez une formation et placez des joueurs parmi toutes les cartes World. Vérifiez les builds de progression, les corrections de l’entraîneur et les conditions du Link-Up Play sur un seul écran. Les calculs réutilisent les moteurs existants de progression et d’entraîneur (règles encore en cours de vérification). Les effectifs sont enregistrés uniquement dans le navigateur de cet appareil (localStorage).",
+    heroDescription: "Choisissez une formation et placez des joueurs parmi toutes les cartes World. Voyez builds de progression, bonus de l’entraîneur et conditions Link-Up Play sur un écran. Les capacités de progression suivent la référence eFHUB et l’OVR est une estimation. Les effectifs sont enregistrés uniquement dans ce navigateur (localStorage).",
     createFirstSquadButton: "Créer votre premier effectif",
     createNewSquadButton: "Créer un effectif",
     goToCompareButton: "Aller à la comparaison de joueurs",

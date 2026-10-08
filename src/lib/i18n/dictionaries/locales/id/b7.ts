@@ -394,7 +394,7 @@ const part: PartialDictionary = {
   },
   comparePage: {
     title: "Perbandingan Pemain",
-    description: "Bandingkan 2-4 kartu World berdampingan: info dasar, 26 atribut, skill, build progresi, dan koreksi manajer. Progresi dan koreksi manajer memakai mesin perhitungan yang sudah ada (aturannya masih diverifikasi). Pemain, kebijakan progresi, dan manajer disimpan di URL sehingga dapat dibagikan.",
+    description: "Bandingkan 2–4 kartu World: info dasar, 26 kemampuan, skill, build progresi, dan bonus manajer. Kemampuan target progresi mengikuti acuan eFHUB dan OVR adalah perkiraan. URL berisi pemain, kebijakan build, dan manajer sehingga bisa dibagikan.",
     backToPlayers: "Kembali ke daftar pemain",
     dataUnavailableTitle: "Data tidak tersedia",
     dataUnavailableDescription: "Data World belum diimpor ke SQLite.",
