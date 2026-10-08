@@ -1113,11 +1113,26 @@ async function main() {
   const raw = async (p, init = {}) => fetch(`${BASE}${p}`, { redirect: "manual", signal: AbortSignal.timeout(30000), ...init });
   const home = await raw("/");
   const homeHtml = await home.text();
-  secCheck("noindex meta", /<meta name="robots" content="[^"]*noindex/.test(homeHtml));
-  secCheck("X-Robots-Tag noindex", /noindex/.test(home.headers.get("x-robots-tag") ?? ""));
-  secCheck("no canonical/OG overriding noindex", !/rel="canonical"|property="og:/.test(homeHtml));
-  secCheck("robots.txt Disallow: /", /Disallow:\s*\/\s*$/m.test(await (await raw("/robots.txt")).text()));
-  secCheck("sitemap 404", (await raw("/sitemap.xml")).status === 404);
+  // 検索の公開（2026-10-09 本人の正式決定）: robots.txt から状態を読み、その状態の契約を確かめる。
+  const robotsTxt = await (await raw("/robots.txt")).text();
+  const indexing = /^Allow:\s*\/\s*$/m.test(robotsTxt) && /^Sitemap:/m.test(robotsTxt);
+  if (!indexing) {
+    secCheck("noindex meta", /<meta name="robots" content="[^"]*noindex/.test(homeHtml));
+    secCheck("X-Robots-Tag noindex", /noindex/.test(home.headers.get("x-robots-tag") ?? ""));
+    secCheck("no canonical/OG overriding noindex", !/rel="canonical"|property="og:/.test(homeHtml));
+    secCheck("robots.txt Disallow: /", /Disallow:\s*\/\s*$/m.test(robotsTxt));
+    secCheck("sitemap 404", (await raw("/sitemap.xml")).status === 404);
+  } else {
+    secCheck("indexing: home index, follow", /<meta name="robots" content="index, follow"/.test(homeHtml) && !/noindex/.test(home.headers.get("x-robots-tag") ?? ""));
+    secCheck("indexing: home canonical + OG", /rel="canonical"/.test(homeHtml) && /property="og:title"/.test(homeHtml));
+    secCheck("indexing: robots.txt disallows private", ["/api/", "/auth/", "/account", "/share/"].every((d) => robotsTxt.split(/\r?\n/).map((l) => l.trim()).includes(`Disallow: ${d}`)));
+    secCheck("indexing: sitemap 200", (await raw("/sitemap.xml")).status === 200);
+    for (const p of ["/my-team", "/share/diagnosis", "/auth/sign-in"]) {
+      const r = await raw(p);
+      const html = await r.text();
+      secCheck(`indexing: ${p} noindex (meta + header)`, r.status === 404 || (/noindex/.test(r.headers.get("x-robots-tag") ?? "") && /<meta name="robots" content="[^"]*noindex/.test(html)), `status ${r.status}`);
+    }
+  }
   secCheck("no nav links to internal pages", !/href="\/(account\/rls-test|release-readiness)/.test(homeHtml));
   const chunk = /\/_next\/static\/chunks\/[^"']+\.js/.exec(homeHtml)?.[0];
   if (chunk) {

@@ -63,17 +63,31 @@ export async function checkLive(fetchText, appliedState) {
   }
   const home = await fetchText("/");
   const h = home.headers ?? {};
-  if (!/noindex/i.test(h["x-robots-tag"] ?? "")) problems.push("x_robots_tag_missing");
+  // 検索の公開（2026-10-09 本人の正式決定）: robots.txt から状態を読み、その状態の契約を確かめる（どちらでも矛盾は不合格）。
+  const robots = await fetchText("/robots.txt");
+  const indexing = /^Allow:\s*\/\s*$/m.test(robots.body ?? "") && /^Sitemap:/m.test(robots.body ?? "") ? "enabled" : "disabled";
+  if (indexing === "disabled") {
+    if (!/noindex/i.test(h["x-robots-tag"] ?? "")) problems.push("x_robots_tag_missing");
+    if (/rel="canonical"|property="og:/.test(home.body ?? "")) problems.push("og_or_canonical_on_home");
+  } else {
+    if (/noindex/i.test(h["x-robots-tag"] ?? "")) problems.push("x_robots_tag_noindex_while_indexing");
+    if (/<meta name="robots" content="[^"]*noindex/.test(home.body ?? "")) problems.push("meta_noindex_while_indexing");
+    if (!/rel="canonical"/.test(home.body ?? "") || !/property="og:title"/.test(home.body ?? "")) problems.push("canonical_or_og_missing_while_indexing");
+  }
   if (!/TeamAIXI/.test(home.body ?? "")) problems.push("brand_not_on_home");
   if (/eFootball Team AI/.test(home.body ?? "")) problems.push("old_brand_on_home");
-  if (/rel="canonical"|property="og:/.test(home.body ?? "")) problems.push("og_or_canonical_on_home");
   if (!/content-security-policy/i.test(Object.keys(h).join(" "))) problems.push("csp_missing");
   if ((h["x-content-type-options"] ?? "") !== "nosniff") problems.push("nosniff_missing");
   if (!/DENY|SAMEORIGIN/i.test(h["x-frame-options"] ?? "") && !/frame-ancestors/i.test(h["content-security-policy"] ?? "")) problems.push("frame_protection_missing");
-  const robots = await fetchText("/robots.txt");
-  if (!/Disallow:\s*\/\s*$/m.test(robots.body ?? "")) problems.push("robots_not_disallow_all");
   const sitemap = await fetchText("/sitemap.xml");
-  if (sitemap.status === 200) problems.push("sitemap_exposed");
+  if (indexing === "disabled") {
+    if (!/Disallow:\s*\/\s*$/m.test(robots.body ?? "")) problems.push("robots_not_disallow_all");
+    if (sitemap.status === 200) problems.push("sitemap_exposed");
+  } else {
+    const robotLines = (robots.body ?? "").split(/\r?\n/).map((l) => l.trim());
+    for (const d of ["/api/", "/auth/", "/account", "/share/"]) if (!robotLines.includes(`Disallow: ${d}`)) problems.push(`robots_private_not_disallowed:${d}`);
+    if (sitemap.status !== 200 || !/<urlset/.test(sitemap.body ?? "")) problems.push("sitemap_missing_while_indexing");
+  }
   const signup = await fetchText("/auth/sign-up");
   if (/type="password"/.test(signup.body ?? "")) problems.push("signup_form_exposed");
   const world = await fetchText("/api/world/players?pageSize=1");
@@ -89,7 +103,7 @@ export async function checkLive(fetchText, appliedState) {
   const m = count(managers);
   if (w !== appliedState?.world) problems.push(`world_count_not_applied_state:${w}`);
   if (m !== appliedState?.managers) problems.push(`managers_count_not_applied_state:${m}`);
-  return { problems, counts: { world: w, managers: m } };
+  return { problems, counts: { world: w, managers: m }, indexing };
 }
 
 /** 判定（自動の確認・品質ゲート・本人の確認）。 */

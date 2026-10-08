@@ -20,6 +20,7 @@ import {
   getFacetsFromSupabase,
   getSourceMetaFromSupabase,
   _resetFacetCacheForSupabase,
+  listAllWorldCardIdsFromSupabase,
 } from "@/lib/reference-data/runtime/world-source";
 
 type Row = Record<string, unknown>;
@@ -293,4 +294,15 @@ function getSourceMetaSqlite(): WorldSourceMeta {
 export function _resetFacetCache(): void {
   facetCache = null;
   _resetFacetCacheForSupabase();
+}
+
+/** sitemap.xml 用: 全カードの world_card_id（2026-10-09）。 */
+export async function listAllWorldCardIds(): Promise<string[]> {
+  if (getWorldDataSource() === "supabase") return listAllWorldCardIdsFromSupabase();
+  try {
+    const rows = getDb().prepare("SELECT world_card_id id FROM world_player_cards ORDER BY world_card_id").all() as { id: string }[];
+    return rows.map((r) => String(r.id)).filter((id) => WORLD_CARD_ID_RE.test(id));
+  } catch {
+    throw new WorldQueryError();
+  }
 }

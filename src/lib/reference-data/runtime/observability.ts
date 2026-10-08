@@ -19,10 +19,12 @@ export type ReferenceDataOperation =
   | "world.image"
   | "world.facets"
   | "world.sourceMeta"
+  | "world.sitemapIds"
   | "managers.list"
   | "managers.detail"
   | "managers.count"
   | "managers.sourceMeta"
+  | "managers.sitemapIds"
   | "analysis.detail";
 
 /**

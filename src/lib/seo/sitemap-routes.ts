@@ -54,9 +54,9 @@ export const SITEMAP_EXCLUDED_ROUTES: Readonly<Record<string, string>> = {
 
 /** 動的な画面（[id] など）の扱い。 */
 export const SITEMAP_DYNAMIC_ROUTES: Readonly<Record<string, string>> = {
-  "/players/[id]": "旧形式の選手の画面（載せない）",
-  "/players/world/[worldCardId]": "13,000 件以上のデータの画面。載せるかは本人の判断（大量の薄い画面と見なされないか確認してから）",
-  "/managers/[managerId]": "同上（69 件）。本人の判断",
-  "/squads/[squadId]": "端末のスカッド（個人データ）",
+  "/players/[id]": "旧形式の選手の画面（載せない・noindex）",
+  "/players/world/[worldCardId]": "選手の詳細（載せる・2026-10-09 本人の正式決定。sitemap.ts が World の全カードの ID から作る）",
+  "/managers/[managerId]": "監督の詳細（載せる・同上）",
+  "/squads/[squadId]": "端末のスカッド（個人データ・noindex）",
   "/players/guide/[slug]": "選手の解説（公開にした記事だけを載せる・player-guides）",
 };

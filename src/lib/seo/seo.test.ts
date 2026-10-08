@@ -22,7 +22,7 @@ describe("検索への登録の切り替え（既定は登録しない）", () =
     expect(r.sitemap).toBe("https://example.test/sitemap.xml");
     const rule = Array.isArray(r.rules) ? r.rules[0] : r.rules;
     expect(rule.allow).toBe("/");
-    expect(rule.disallow).toEqual(expect.arrayContaining(["/api/", "/auth/", "/account/", "/share/"]));
+    expect(rule.disallow).toEqual(expect.arrayContaining(["/api/", "/auth/", "/account", "/share/", "/release-readiness", "/tier-pack-preview", "/community/"]));
   });
   it("X-Robots-Tag も同じ環境変数で切り替わる（security-headers）", () => {
     const src = readFileSync("src/lib/security/security-headers.mjs", "utf8");
@@ -72,9 +72,9 @@ describe("sitemap", () => {
     expect(urls.some((u) => /\/my-team|\/account|\/auth|\/share\//.test(u))).toBe(false);
     for (const g of PLAYER_GUIDES.filter((x) => !x.published)) expect(urls.some((u) => u.endsWith(`/players/guide/${g.slug}`))).toBe(false);
   });
-  it("登録しない間は 404（v1 の公開の契約）・登録する場合は XML", () => {
-    expect(sitemapResponseFor(false)).toEqual({ status: 404, body: "Not Found" });
-    const ok = sitemapResponseFor(true);
+  it("登録しない間は 404（v1 の公開の契約）・登録する場合は XML", async () => {
+    expect(await sitemapResponseFor(false)).toEqual({ status: 404, body: "Not Found", urlCount: 0 });
+    const ok = await sitemapResponseFor(true);
     expect(ok.status).toBe(200);
     expect(ok.body).toMatch(/^<\?xml version="1.0" encoding="UTF-8"\?><urlset xmlns="http:\/\/www.sitemaps.org\/schemas\/sitemap\/0.9">/);
     expect(sitemapXml([{ url: "https://e.test/?a=1&b=2", changeFrequency: "weekly", priority: 1 }])).toContain("<loc>https://e.test/?a=1&amp;b=2</loc>");
