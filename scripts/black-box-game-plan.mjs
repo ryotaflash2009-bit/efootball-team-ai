@@ -138,6 +138,22 @@ async function main() {
     const badMsg = await ev(`document.querySelector('[data-testid="game-plan"] [role="status"][aria-live]')?.textContent ?? ""`);
     record("壊れたファイルは読み込まず、案内だけ（保存の内容は変わらない）", badMsg.includes("読み込めませんでした") && (await plans())?.plans?.[squadId]?.instructions?.pressing === "high", badMsg);
 
+    // 共有画像（2026-10-09）: 端末へ保存する流れ（リンクの click を記録して、PNG の中身を確かめる）。
+    const planBeforeImage = JSON.stringify((await plans())?.plans?.[squadId]);
+    await ev(`(() => { window.__gpDl = null; window.__gpBlob = null; const oc = URL.createObjectURL; URL.createObjectURL = function (o) { if (o instanceof Blob && o.type === "image/png") window.__gpBlob = o; return oc.call(URL, o); }; const orig = HTMLAnchorElement.prototype.click; HTMLAnchorElement.prototype.click = function () { if (this.download) window.__gpDl = { name: this.download }; else orig.call(this); }; return true; })()`);
+    await ev(`document.querySelector('[data-testid="game-plan-image"]').click()`);
+    await waitForCondition(async () => !!(await ev("window.__gpDl")), { timeoutMs: 10000, intervalMs: 150 }).catch(() => {});
+    const dl = await ev(`(async () => { const d = window.__gpDl; if (!d || !window.__gpBlob) return null; const b = await window.__gpBlob.arrayBuffer(); const u = new Uint8Array(b);
+      const png = u[0] === 0x89 && u[1] === 0x50 && u[2] === 0x4e && u[3] === 0x47; const dv = new DataView(b); return { name: d.name, bytes: b.byteLength, png, w: dv.getUint32(16), h: dv.getUint32(20) }; })()`);
+    if (process.env.BB_SAVE_IMAGE) {
+      const b64 = await ev(`(async () => { const b = new Uint8Array(await window.__gpBlob.arrayBuffer()); let s = ""; for (const x of b) s += String.fromCharCode(x); return btoa(s); })()`);
+      (await import("node:fs")).writeFileSync(process.env.BB_SAVE_IMAGE, Buffer.from(b64, "base64"));
+    }
+    const imgMsg = await ev(`document.querySelector('[data-testid="game-plan"] [role="status"][aria-live]')?.textContent ?? ""`);
+    record("共有画像: PNG（1080×1440）を保存し、案内が出る", dl?.png === true && dl.w === 1080 && dl.h === 1440 && dl.bytes > 10000 && /画像を保存しました/.test(imgMsg), dl ? `${dl.name} ${dl.bytes}B ${dl.w}x${dl.h}` : "no download");
+    record("共有画像: ファイル名にスカッドの ID・名前を含まない", !!dl && !dl.name.includes(squadId) && /^efootball-team-ai-game-plan-4-3-3-\d{4}-\d{2}-\d{2}\.png$/.test(dl.name), dl?.name);
+    record("共有画像: 保存の内容を変えない", JSON.stringify((await plans())?.plans?.[squadId]) === planBeforeImage);
+
     // 英語の表示
     await ev(`localStorage.setItem(${JSON.stringify(LOCALE_KEY)}, "en")`);
     await nav(`${BASE}${squadPath}`);

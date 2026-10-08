@@ -4868,6 +4868,16 @@ export interface Dictionary {
     issue_alternative_trigger_without_formation: string;
     subIndexTemplate: string;
     exportButton: string;
+    imageButton: string;
+    imageTitle: string;
+    imageFooter: string;
+    imageSubTemplate: string;
+    imageMinuteTemplate: string;
+    imageMinuteUnknown: string;
+    imageNothing: string;
+    imageSaved: string;
+    imageShared: string;
+    imageFailed: string;
     importButton: string;
     importSuccess: string;
     importFormationMismatch: string;

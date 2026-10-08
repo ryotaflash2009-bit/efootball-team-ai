@@ -114,7 +114,7 @@
 | F-140 | コミュニティの安全の契約（運営者 1 人） | designed | 50% | F-084 | — | C | 要 | 不要 | Free | PR #176・`community-safety-operations.md`（本人の判断 5 件） | 表と RLS の提案 |
 | F-141 | 友達・友達との比較・ライバル・AI コーチ・相手の分析・メタ分析の契約（モック） | designed | 30% | F-053 | — | C | 要 | 不要（規則の提供元） | Free | PR #177・`future-feature-contracts-2026-10-07.md` | 公開 ID・Auth の公開の後 |
 | F-142 | AI ベスト11 の控え（決定的な規則・最大 12 人） | completed | 100% | F-025 | — | — | 不要 | 不要 | Free | PR #187・`docs/product/best-xi-bench.md`（本番 black-box 30/30） | 監督補正（F-070）は判断パッケージのまま |
-| F-143 | 完全なゲームプラン（ローカル） | completed | 85% | F-033 | — | L | 不要 | 不要 | Free | PR #189・`docs/product/complete-game-plan.md`（本番 black-box 15/15） | 共有画像・個別指示（NEW-43） |
+| F-143 | 完全なゲームプラン（ローカル） | completed | 95% | F-033 | — | L | 不要 | 不要 | Free | PR #189・`docs/product/complete-game-plan.md`（本番 black-box 15/15・共有画像 2026-10-09） | 個別指示（NEW-43） |
 | F-144 | 公開プロフィール・公開ビルドの契約（モック） | designed | 30% | F-053 | — | C | 要 | 不要 | Free | PR #190・`future-feature-contracts-2026-10-07.md` | 公開 ID・Auth の公開の後 |
 | F-145 | 違うフォーメーション間の配置の写し（NEW-41） | completed | 100% | F-036 | — | L | 不要 | 不要 | Free | PR #185・`docs/product/placement-cross-formation.md`（本番 23/23） | — |
 | F-146 | 監督の比較（NEW-23） | completed | 100% | F-003 | — | — | 不要 | 不要 | Free | PR #184・`docs/product/manager-compare.md`（本番 16/16） | — |

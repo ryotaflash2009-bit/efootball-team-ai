@@ -8,7 +8,9 @@ import { fillMessage } from "@/lib/i18n/message-format";
 import { FORMATIONS } from "@/lib/squad/formations";
 import type { StoredSquad } from "@/lib/squad/types";
 import { TACTICS, tacticName } from "@/components/managers/tactics";
-import { downloadBlobFile } from "@/lib/share-image";
+import { downloadBlobFile, shareOrSaveImage } from "@/lib/share-image";
+import { buildGamePlanImageModel, drawGamePlanCard, gamePlanImageFileName } from "@/lib/squad/game-plan-image";
+import { renderCanvasToPngBlob } from "@/lib/squad/squad-diagnosis-card";
 import {
   ADJUSTMENT_IDS,
   ALT_TRIGGERS,
@@ -69,6 +71,7 @@ export function GamePlanPanel({
   const [plan, setPlan] = useState<GamePlan | null>(null);
   const [message, setMessage] = useState<{ tone: "ok" | "warn" | "error"; text: string } | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
+  const [imageBusy, setImageBusy] = useState(false);
 
   useEffect(() => {
     const key = activeGamePlanStorageKey();
@@ -97,6 +100,57 @@ export function GamePlanPanel({
   const onExport = () => {
     const text = exportGamePlan(plan, squad.formationId);
     downloadBlobFile(new Blob([text], { type: "application/json" }), `efootball-team-ai-game-plan-${squad.formationId}-${new Date().toISOString().slice(0, 10)}.json`);
+  };
+  const onImage = async () => {
+    if (imageBusy) return;
+    const formationName = (id: string) => FORMATIONS.find((f) => f.id === id)?.name ?? id;
+    const model = buildGamePlanImageModel(plan, {
+      squadName: squad.squadName ?? "",
+      formationName: formationName(squad.formationId),
+      labels: {
+        title: tg("imageTitle"),
+        instructions: tg("instructionsHeading"),
+        attacking: tg("attackingLabel"),
+        defensiveLine: tg("defensiveLineLabel"),
+        pressing: tg("pressingLabel"),
+        note: tg("noteLabel"),
+        substitutions: tg("subsHeading"),
+        alternative: tg("altHeading"),
+        opponents: tg("oppHeading"),
+        footer: tg("imageFooter"),
+        subTemplate: tg("imageSubTemplate"),
+        minuteTemplate: tg("imageMinuteTemplate"),
+        minuteUnknown: tg("imageMinuteUnknown"),
+      },
+      r: {
+        attacking: (v) => tacticName(TACTICS.find((x) => x.key === STYLE_TACTIC[v])!, displayLocale),
+        defensiveLine: (v) => tg(`line_${v}` as Key),
+        pressing: (v) => tg(`press_${v}` as Key),
+        reason: (v) => tg(`reason_${v}` as Key),
+        trigger: (v) => tg(`trigger_${v}` as Key),
+        slotLabel: (id) => starterOptions.find((o) => o.slotId === id)?.label ?? id.toUpperCase(),
+        playerName: (id) => benchOptions.find((o) => o.worldCardId === id)?.label ?? "—",
+        formationName,
+        adjustment: (id) => tg(`adj_${id}` as Key),
+      },
+    });
+    if (!model) {
+      setMessage({ tone: "warn", text: tg("imageNothing") });
+      return;
+    }
+    setImageBusy(true);
+    try {
+      const blob = await renderCanvasToPngBlob((c) => drawGamePlanCard(c, model));
+      if (!blob) {
+        setMessage({ tone: "error", text: tg("imageFailed") });
+        return;
+      }
+      const r = await shareOrSaveImage(blob, gamePlanImageFileName(squad.formationId, new Date()), model.title);
+      if (r.ok) setMessage({ tone: "ok", text: tg(r.method === "share" ? "imageShared" : "imageSaved") });
+      else if (r.reason !== "cancelled") setMessage({ tone: "error", text: tg("imageFailed") });
+    } finally {
+      setImageBusy(false);
+    }
   };
   const onImportFile = async (file: File | undefined) => {
     if (!file) return;
@@ -415,6 +469,15 @@ export function GamePlanPanel({
         </button>
         <button type="button" className="min-h-[36px] rounded border border-border px-3 text-text-dim hover:border-accent" onClick={() => fileRef.current?.click()}>
           {tg("importButton")}
+        </button>
+        <button
+          type="button"
+          className="min-h-[36px] rounded border border-border px-3 text-text-dim hover:border-accent disabled:cursor-wait disabled:opacity-50"
+          disabled={imageBusy}
+          onClick={() => void onImage()}
+          data-testid="game-plan-image"
+        >
+          {tg("imageButton")}
         </button>
         <input
           ref={fileRef}
