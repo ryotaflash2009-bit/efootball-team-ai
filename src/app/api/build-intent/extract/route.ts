@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { buildIntentExtractionRequestSchema, getBuildIntentExtractor } from "@/lib/ai/build-intent-extractor";
+import { isCrossOriginRequest } from "@/lib/security/same-origin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -35,6 +36,9 @@ function isRateLimited(): boolean {
 }
 
 export async function POST(request: Request) {
+  if (isCrossOriginRequest(request)) {
+    return NextResponse.json({ error: { code: "FORBIDDEN", message: "Cross-origin requests are not allowed." } }, { status: 403 });
+  }
   const contentType = request.headers.get("content-type") ?? "";
   if (!contentType.toLowerCase().includes("application/json")) {
     return NextResponse.json({ error: { code: "INVALID_INPUT", message: "Content-Type must be application/json." } }, { status: 400 });
