@@ -27,7 +27,7 @@ const playerDetailPage: Dictionary["playerDetailPage"] = {
   noSkills: "スキル情報がありません。",
   aiStylesHeading: "AI Playing Styles",
   noAiStyles: "AI スキルはありません。",
-  progressionHeading: "育成（検証中）",
+  progressionHeading: "育成",
   dataProvenanceHeading: "データの来歴",
   dataSourceLabel: "データソース",
   sourceUrlLabel: "取得元 URL",

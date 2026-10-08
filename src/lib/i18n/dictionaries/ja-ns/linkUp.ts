@@ -3,7 +3,7 @@ import { registerJaNamespace } from "../ja-registry";
 
 /** 日本語の辞書の名前空間 linkUp（2026-10-04: 全画面の初回 JS から外し、使う画面だけが読み込む）。 */
 const linkUp: Dictionary["linkUp"] = {
-  notice: "発動条件の照合のみ対応。ゲーム内効果は追加検証中です。",
+  notice: "発動条件の照合だけに対応しています。ゲーム内の効果は未確認のため、能力値には反映しません。",
   noManagerNote: "監督を選択すると Link-Up Play の条件を照合します。",
   noDataNote: "この監督に Link-Up Play のデータはありません。",
   statusMet: "条件達成",

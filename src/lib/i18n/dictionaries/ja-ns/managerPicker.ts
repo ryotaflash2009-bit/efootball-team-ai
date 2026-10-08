@@ -55,7 +55,7 @@ const managerPicker: Dictionary["managerPicker"] = {
   linkUpHeading: "Link-Up Play",
   centerPiecePrefix: "Center Piece: ",
   keyManPrefix: "Key Man: ",
-  linkUpNote: "発動条件の照合のみ。ゲーム内効果は追加検証中です。",
+  linkUpNote: "発動条件の照合だけに対応しています。ゲーム内の効果は未確認のため、能力値には反映しません。",
   chooseThisSelected: "この監督を選択中（そのまま閉じる）",
   };
 

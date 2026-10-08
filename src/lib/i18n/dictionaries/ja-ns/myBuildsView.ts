@@ -112,7 +112,7 @@ const myBuildsView: Dictionary["myBuildsView"] = {
   estimatedOvrLabel: "保存時の推定OVR: ",
   calcModeConfirmed: "基礎値のみ",
   calcModeUnsupported: "計算不可",
-  calcModeProvisional: "暫定規則",
+  calcModeProvisional: "推定値",
   totalOvrPlaceholder: "総合値（ポジション別 OVR）: —（公式の計算式が非公開のため計算しません）",
   ownershipLabel: "所有状態",
   ownershipHint: "My Team は実際に保有しているカードの管理用です。あとで My Team 画面から変更できます。",
