@@ -1,0 +1,1023 @@
+{
+ "schema": "efhub-progression-crosscheck/1",
+ "checkedAt": "2026-10-09",
+ "authority": {
+  "primary": "eFHUB (progression and calculation reference; not official)",
+  "crossCheck": "eFootball World (identity, inventory, base values)",
+  "target": "TeamAIXI"
+ },
+ "dataVersions": {
+  "efhubClient": "dpl_7gGKaJc1jLQoxvhP9JHRJQakeEGq (fetched 2026-10-08T15:35Z)",
+  "efhubLocalCards": "19 cards fetched 2026-08-28",
+  "world": "13,009 cards, local DB (last sync in DB)"
+ },
+ "access": {
+  "method": "GET only, sequential, >= 5 s between requests, UA TeamAIXI-research/1.0, robots.txt: Allow / Crawl-delay 5",
+  "requests": 12,
+  "bytes": 1278820,
+  "targets": [
+   "/robots.txt",
+   "/sitemap.xml",
+   "/privacy (WebFetch)",
+   "/players/89138556575063",
+   "6 x /_next/static/chunks/*.js",
+   "2 x mistyped terms paths (404; Git Bash path rewrite)"
+  ],
+  "window": "2026-10-08T15:20Z .. 2026-10-08T15:35:42Z",
+  "storedOutsideRepo": false,
+  "committedCopies": "none (raw files stay in the ignored data/work/efhub-tmp and are deleted after the report)"
+ },
+ "rights": {
+  "state": "FACTS_ONLY",
+  "notes": [
+   "eFHUB robots.txt allows all paths (Crawl-delay 5); no terms page found; the privacy page states no usage restrictions",
+   "Adopted in TeamAIXI: the 10-category ability mapping (a short factual list about the game), labelled eFHUB基準 with source/date/version",
+   "Not adopted: eFHUB position weight table, manager-skill multiplier table, auto-allocation code (eFHUB internal data) -> RIGHTS_OR_ACCESS_BLOCKED",
+   "No images, article text, user builds, ratings, tiers or community content were read or stored"
+  ]
+ },
+ "contract": [
+  {
+   "item": "category ids/names (10)",
+   "efhub": "shooting, passing, dribbling, dexterity, lowerBodyStrength, aerialStrength, defending, gk1, gk2, gk3",
+   "teamAixi": "same (gk1..3 = goalkeeping1..3)",
+   "verdict": "EFHUB_MATCH_TEAM_AIXI"
+  },
+  {
+   "item": "mapping shooting",
+   "efhub": [
+    "finishing",
+    "setPieceTaking",
+    "curl"
+   ],
+   "teamAixiBefore": [
+    "finishing",
+    "setPieceTaking",
+    "curl"
+   ],
+   "teamAixiAfter": [
+    "finishing",
+    "setPieceTaking",
+    "curl"
+   ],
+   "verdict": "EFHUB_MATCH_TEAM_AIXI"
+  },
+  {
+   "item": "mapping passing",
+   "efhub": [
+    "lowPass",
+    "loftedPass"
+   ],
+   "teamAixiBefore": [
+    "lowPass",
+    "loftedPass",
+    "offensiveAwareness"
+   ],
+   "teamAixiAfter": [
+    "lowPass",
+    "loftedPass"
+   ],
+   "verdict": "EFHUB_PRIMARY / TEAM_AIXI_DEFECT -> FIXED (World has no mapping field)"
+  },
+  {
+   "item": "mapping dribbling",
+   "efhub": [
+    "ballControl",
+    "dribbling",
+    "tightPossession"
+   ],
+   "teamAixiBefore": [
+    "ballControl",
+    "dribbling",
+    "tightPossession"
+   ],
+   "teamAixiAfter": [
+    "ballControl",
+    "dribbling",
+    "tightPossession"
+   ],
+   "verdict": "EFHUB_MATCH_TEAM_AIXI"
+  },
+  {
+   "item": "mapping dexterity",
+   "efhub": [
+    "offensiveAwareness",
+    "acceleration",
+    "balance"
+   ],
+   "teamAixiBefore": [
+    "speed",
+    "acceleration"
+   ],
+   "teamAixiAfter": [
+    "offensiveAwareness",
+    "acceleration",
+    "balance"
+   ],
+   "verdict": "EFHUB_PRIMARY / TEAM_AIXI_DEFECT -> FIXED (World has no mapping field)"
+  },
+  {
+   "item": "mapping lowerBodyStrength",
+   "efhub": [
+    "speed",
+    "kickingPower",
+    "stamina"
+   ],
+   "teamAixiBefore": [
+    "kickingPower",
+    "balance",
+    "stamina"
+   ],
+   "teamAixiAfter": [
+    "speed",
+    "kickingPower",
+    "stamina"
+   ],
+   "verdict": "EFHUB_PRIMARY / TEAM_AIXI_DEFECT -> FIXED (World has no mapping field)"
+  },
+  {
+   "item": "mapping aerialStrength",
+   "efhub": [
+    "heading",
+    "jumping",
+    "physicalContact"
+   ],
+   "teamAixiBefore": [
+    "heading",
+    "jumping",
+    "physicalContact"
+   ],
+   "teamAixiAfter": [
+    "heading",
+    "jumping",
+    "physicalContact"
+   ],
+   "verdict": "EFHUB_MATCH_TEAM_AIXI"
+  },
+  {
+   "item": "mapping defending",
+   "efhub": [
+    "defensiveAwareness",
+    "tackling",
+    "aggression",
+    "defensiveEngagement"
+   ],
+   "teamAixiBefore": [
+    "defensiveAwareness",
+    "tackling",
+    "aggression",
+    "defensiveEngagement"
+   ],
+   "teamAixiAfter": [
+    "defensiveAwareness",
+    "tackling",
+    "aggression",
+    "defensiveEngagement"
+   ],
+   "verdict": "EFHUB_MATCH_TEAM_AIXI"
+  },
+  {
+   "item": "mapping goalkeeping1",
+   "efhub": [
+    "gkAwareness",
+    "jumping"
+   ],
+   "teamAixiBefore": [
+    "gkAwareness",
+    "gkReflexes"
+   ],
+   "teamAixiAfter": [
+    "gkAwareness",
+    "jumping"
+   ],
+   "verdict": "EFHUB_PRIMARY / TEAM_AIXI_DEFECT -> FIXED (World has no mapping field)"
+  },
+  {
+   "item": "mapping goalkeeping2",
+   "efhub": [
+    "gkParrying",
+    "gkReach"
+   ],
+   "teamAixiBefore": [
+    "gkCatching",
+    "gkParrying"
+   ],
+   "teamAixiAfter": [
+    "gkParrying",
+    "gkReach"
+   ],
+   "verdict": "EFHUB_PRIMARY / TEAM_AIXI_DEFECT -> FIXED (World has no mapping field)"
+  },
+  {
+   "item": "mapping goalkeeping3",
+   "efhub": [
+    "gkCatching",
+    "gkReflexes"
+   ],
+   "teamAixiBefore": [
+    "gkReach"
+   ],
+   "teamAixiAfter": [
+    "gkCatching",
+    "gkReflexes"
+   ],
+   "verdict": "EFHUB_PRIMARY / TEAM_AIXI_DEFECT -> FIXED (World has no mapping field)"
+  },
+  {
+   "item": "per-level gain",
+   "efhub": "+1 per affected ability per category level (clamp 99)",
+   "teamAixi": "+1 per level, clamp 99",
+   "verdict": "EFHUB_MATCH_TEAM_AIXI"
+  },
+  {
+   "item": "Jumping in two categories",
+   "efhub": "aerialStrength and gk1 both add",
+   "teamAixiAfter": "both add (calculateProgressionDeltas sums)",
+   "verdict": "EFHUB_MATCH_TEAM_AIXI (after fix)"
+  },
+  {
+   "item": "point cost",
+   "efhub": "ceil(L/4) to reach level L (1-4=1, 5-8=2, 9-12=3, 13-16=4, 17-20=5, 21-24=6, 25=7)",
+   "teamAixi": "current rule staged-2026-10-08 identical; legacy builds keep block-5 until the owner recalculates",
+   "verdict": "EFHUB_MATCH_TEAM_AIXI"
+  },
+  {
+   "item": "total points",
+   "efhub": "max(0, (level-1)*2)",
+   "teamAixi": "(maximumLevel-1)*2",
+   "verdict": "EFHUB_MATCH_TEAM_AIXI"
+  },
+  {
+   "item": "card max level",
+   "efhub": "level cap",
+   "world": "maximum_level",
+   "teamAixi": "World maximum_level",
+   "verdict": "EFHUB_MATCH_WORLD_MATCH_TEAM_AIXI (3/3 same-ID cards)"
+  },
+  {
+   "item": "category level cap",
+   "efhub": "slider max 25",
+   "teamAixi": "no fixed cap (until abilities reach 99)",
+   "affected": "90 World cards (maximum level >= 50) can afford level 26+",
+   "verdict": "GAME_EVIDENCE_REQUIRED (eFHUB UI limit vs game rule unknown; adopting it would clamp existing builds)"
+  },
+  {
+   "item": "final cap after boosters",
+   "efhub": "progression and manager skill clamp 99; manager boost +1 and player boosters not clamped",
+   "teamAixi": "final clamp 99 (STAT_CAPS.final unresolved)",
+   "verdict": "GAME_EVIDENCE_REQUIRED (World has base values only; calculation-protected)"
+  },
+  {
+   "item": "manager boost",
+   "efhub": "+1 to boosted abilities",
+   "teamAixi": "+1 from manager booster data",
+   "verdict": "EFHUB_MATCH_TEAM_AIXI"
+  },
+  {
+   "item": "manager skill (coaching affinity) multiplier",
+   "efhub": "skill 70-90 multiplier table",
+   "teamAixi": "not modelled",
+   "verdict": "RIGHTS_OR_ACCESS_BLOCKED (eFHUB internal table)"
+  },
+  {
+   "item": "Link-Up Play effect",
+   "efhub": "not found in the fetched client code",
+   "teamAixi": "conditions only; effect not applied",
+   "verdict": "EFHUB_DATA_MISSING"
+  },
+  {
+   "item": "position OVR",
+   "efhub": "position weight table; reproduces World base OVR for 11929 / 13009 cards (weak-foot accuracy not in World data -> assumed)",
+   "teamAixi": "own provisional weights; 4 / 13009 exact",
+   "verdict": "EFHUB_MATCH_WORLD_TEAM_AIXI_DEFECT; fix blocked: RIGHTS_OR_ACCESS_BLOCKED (owner decision). Shown as 推定 / 公式の計算式ではありません"
+  }
+ ],
+ "ovrByRegisteredPosition": {
+  "RWF": {
+   "cards": 730,
+   "efhubFormulaExact": 675,
+   "efhubWithin1": 730,
+   "teamaixiExact": 3,
+   "teamaixiMeanAbsError": 5.49
+  },
+  "DMF": {
+   "cards": 1026,
+   "efhubFormulaExact": 969,
+   "efhubWithin1": 1026,
+   "teamaixiExact": 0,
+   "teamaixiMeanAbsError": 7.2
+  },
+  "CB": {
+   "cards": 1919,
+   "efhubFormulaExact": 1688,
+   "efhubWithin1": 1919,
+   "teamaixiExact": 0,
+   "teamaixiMeanAbsError": 7.61
+  },
+  "SS": {
+   "cards": 240,
+   "efhubFormulaExact": 225,
+   "efhubWithin1": 240,
+   "teamaixiExact": 0,
+   "teamaixiMeanAbsError": 6.95
+  },
+  "CMF": {
+   "cards": 1456,
+   "efhubFormulaExact": 1382,
+   "efhubWithin1": 1456,
+   "teamaixiExact": 1,
+   "teamaixiMeanAbsError": 7.58
+  },
+  "CF": {
+   "cards": 2175,
+   "efhubFormulaExact": 2065,
+   "efhubWithin1": 2175,
+   "teamaixiExact": 0,
+   "teamaixiMeanAbsError": 8.26
+  },
+  "AMF": {
+   "cards": 1281,
+   "efhubFormulaExact": 1210,
+   "efhubWithin1": 1281,
+   "teamaixiExact": 0,
+   "teamaixiMeanAbsError": 7.08
+  },
+  "LB": {
+   "cards": 727,
+   "efhubFormulaExact": 631,
+   "efhubWithin1": 727,
+   "teamaixiExact": 0,
+   "teamaixiMeanAbsError": 8.15
+  },
+  "GK": {
+   "cards": 962,
+   "efhubFormulaExact": 841,
+   "efhubWithin1": 962,
+   "teamaixiExact": 0,
+   "teamaixiMeanAbsError": 9.18
+  },
+  "RB": {
+   "cards": 777,
+   "efhubFormulaExact": 709,
+   "efhubWithin1": 777,
+   "teamaixiExact": 0,
+   "teamaixiMeanAbsError": 7.64
+  },
+  "LWF": {
+   "cards": 740,
+   "efhubFormulaExact": 701,
+   "efhubWithin1": 740,
+   "teamaixiExact": 0,
+   "teamaixiMeanAbsError": 5.66
+  },
+  "RMF": {
+   "cards": 495,
+   "efhubFormulaExact": 409,
+   "efhubWithin1": 495,
+   "teamaixiExact": 0,
+   "teamaixiMeanAbsError": 7.3
+  },
+  "LMF": {
+   "cards": 481,
+   "efhubFormulaExact": 424,
+   "efhubWithin1": 481,
+   "teamaixiExact": 0,
+   "teamaixiMeanAbsError": 7.64
+  }
+ },
+ "identityCrossCheck": [
+  {
+   "efhubCardId": "88036092150743",
+   "worldCardId": "89138288133079",
+   "name": "Gianluigi Buffon",
+   "sameCardId": false,
+   "baseAbilitiesMatch": 11,
+   "baseAbilitiesDiffer": 15,
+   "levelCap": {
+    "efhub": 30,
+    "world": 29
+   },
+   "ovrBase": {
+    "efhub": 87,
+    "world": 87
+   },
+   "ovrMax": {
+    "efhub": 104,
+    "world": 103
+   },
+   "verdict": "VERSION_DIFFERENCE (name-based link to another card version)"
+  },
+  {
+   "efhubCardId": "88036092152543",
+   "worldCardId": "88040387119839",
+   "name": "Michel Platini",
+   "sameCardId": false,
+   "baseAbilitiesMatch": 8,
+   "baseAbilitiesDiffer": 18,
+   "levelCap": {
+    "efhub": 33,
+    "world": 33
+   },
+   "ovrBase": {
+    "efhub": 87,
+    "world": 87
+   },
+   "ovrMax": {
+    "efhub": 104,
+    "world": 102
+   },
+   "verdict": "VERSION_DIFFERENCE (name-based link to another card version)"
+  },
+  {
+   "efhubCardId": "88038776505238",
+   "worldCardId": "88038776505238",
+   "name": "Edwin van der Sar",
+   "sameCardId": true,
+   "baseAbilitiesMatch": 26,
+   "baseAbilitiesDiffer": 0,
+   "levelCap": {
+    "efhub": 30,
+    "world": 30
+   },
+   "ovrBase": {
+    "efhub": 87,
+    "world": 87
+   },
+   "ovrMax": {
+    "efhub": 104,
+    "world": 102
+   },
+   "verdict": "EFHUB_MATCH_WORLD (base) / EFHUB_WORLD_DISAGREEMENT (max OVR definition)"
+  },
+  {
+   "efhubCardId": "88039581945292",
+   "worldCardId": "17592991485388",
+   "name": "Roberto Carlos",
+   "sameCardId": false,
+   "baseAbilitiesMatch": 6,
+   "baseAbilitiesDiffer": 20,
+   "levelCap": {
+    "efhub": 35,
+    "world": 10
+   },
+   "ovrBase": {
+    "efhub": 87,
+    "world": 88
+   },
+   "ovrMax": {
+    "efhub": 104,
+    "world": 94
+   },
+   "verdict": "VERSION_DIFFERENCE (name-based link to another card version)"
+  },
+  {
+   "efhubCardId": "88039581945324",
+   "worldCardId": "87963346275820",
+   "name": "Franz Beckenbauer",
+   "sameCardId": false,
+   "baseAbilitiesMatch": 6,
+   "baseAbilitiesDiffer": 20,
+   "levelCap": {
+    "efhub": 33,
+    "world": 20
+   },
+   "ovrBase": {
+    "efhub": 87,
+    "world": 86
+   },
+   "ovrMax": {
+    "efhub": 105,
+    "world": 97
+   },
+   "verdict": "VERSION_DIFFERENCE (name-based link to another card version)"
+  },
+  {
+   "efhubCardId": "88040387117922",
+   "worldCardId": "88040387117922",
+   "name": "Xavi",
+   "sameCardId": true,
+   "baseAbilitiesMatch": 26,
+   "baseAbilitiesDiffer": 0,
+   "levelCap": {
+    "efhub": 33,
+    "world": 33
+   },
+   "ovrBase": {
+    "efhub": 87,
+    "world": 87
+   },
+   "ovrMax": {
+    "efhub": 104,
+    "world": 101
+   },
+   "verdict": "EFHUB_MATCH_WORLD (base) / EFHUB_WORLD_DISAGREEMENT (max OVR definition)"
+  },
+  {
+   "efhubCardId": "88045755960770",
+   "worldCardId": "17592186179010",
+   "name": "Paolo Maldini",
+   "sameCardId": false,
+   "baseAbilitiesMatch": 6,
+   "baseAbilitiesDiffer": 20,
+   "levelCap": {
+    "efhub": 27,
+    "world": 10
+   },
+   "ovrBase": {
+    "efhub": 89,
+    "world": 88
+   },
+   "ovrMax": {
+    "efhub": 106,
+    "world": 95
+   },
+   "verdict": "VERSION_DIFFERENCE (name-based link to another card version)"
+  },
+  {
+   "efhubCardId": "89136409091415",
+   "worldCardId": "89136409091415",
+   "name": "Lionel Messi",
+   "sameCardId": true,
+   "baseAbilitiesMatch": 26,
+   "baseAbilitiesDiffer": 0,
+   "levelCap": {
+    "efhub": 34,
+    "world": 34
+   },
+   "ovrBase": {
+    "efhub": 89,
+    "world": 89
+   },
+   "ovrMax": {
+    "efhub": 106,
+    "world": 105
+   },
+   "verdict": "EFHUB_MATCH_WORLD (base) / EFHUB_WORLD_DISAGREEMENT (max OVR definition)"
+  }
+ ],
+ "representativeCards": [
+  {
+   "source": "eFootball World (local DB, base values) + eFHUB progression contract",
+   "cardId": "89136409091415",
+   "role": "attacker",
+   "name": "Lionel Messi",
+   "position": "RWF",
+   "maximumLevel": 34,
+   "sameCardIdInLocalEfhubData": true,
+   "allocation": {
+    "dexterity": 4,
+    "lowerBodyStrength": 4,
+    "shooting": 4
+   },
+   "points": {
+    "total": 66,
+    "used": 12,
+    "remaining": 54,
+    "affordable": true
+   },
+   "changedAbilities": [
+    {
+     "ability": "offensiveAwareness",
+     "before": 79,
+     "after": 83,
+     "delta": 4,
+     "previousTeamAixiAfter": 79
+    },
+    {
+     "ability": "finishing",
+     "before": 80,
+     "after": 84,
+     "delta": 4,
+     "previousTeamAixiAfter": 84
+    },
+    {
+     "ability": "setPieceTaking",
+     "before": 67,
+     "after": 71,
+     "delta": 4,
+     "previousTeamAixiAfter": 71
+    },
+    {
+     "ability": "curl",
+     "before": 81,
+     "after": 85,
+     "delta": 4,
+     "previousTeamAixiAfter": 85
+    },
+    {
+     "ability": "speed",
+     "before": 78,
+     "after": 82,
+     "delta": 4,
+     "previousTeamAixiAfter": 82
+    },
+    {
+     "ability": "acceleration",
+     "before": 87,
+     "after": 91,
+     "delta": 4,
+     "previousTeamAixiAfter": 91
+    },
+    {
+     "ability": "kickingPower",
+     "before": 78,
+     "after": 82,
+     "delta": 4,
+     "previousTeamAixiAfter": 82
+    },
+    {
+     "ability": "balance",
+     "before": 81,
+     "after": 85,
+     "delta": 4,
+     "previousTeamAixiAfter": 85
+    },
+    {
+     "ability": "stamina",
+     "before": 74,
+     "after": 78,
+     "delta": 4,
+     "previousTeamAixiAfter": 78
+    }
+   ],
+   "abilitiesOnlyRaisedByPreviousMapping": [],
+   "ovr": {
+    "worldBase": 89,
+    "efhubFormulaBase": 89,
+    "efhubFormulaAfter": 92,
+    "teamAixiEstimateBase": 82,
+    "teamAixiEstimateAfter": 85
+   },
+   "conditions": {
+    "manager": null,
+    "booster": "none",
+    "positionOvr": "registered position",
+    "level": "World base values",
+    "cap": 99,
+    "linkUp": "not applied"
+   },
+   "verdict": "EFHUB_MATCH_TEAM_AIXI (abilities, after the 2026-10-09 mapping fix); OVR: TEAM_AIXI estimate differs"
+  },
+  {
+   "source": "eFootball World (local DB, base values) + eFHUB progression contract",
+   "cardId": "88040387117922",
+   "role": "midfielder",
+   "name": "Xavi",
+   "position": "CMF",
+   "maximumLevel": 33,
+   "sameCardIdInLocalEfhubData": true,
+   "allocation": {
+    "passing": 6,
+    "dexterity": 4
+   },
+   "points": {
+    "total": 64,
+    "used": 12,
+    "remaining": 52,
+    "affordable": true
+   },
+   "changedAbilities": [
+    {
+     "ability": "offensiveAwareness",
+     "before": 68,
+     "after": 72,
+     "delta": 4,
+     "previousTeamAixiAfter": 74
+    },
+    {
+     "ability": "lowPass",
+     "before": 84,
+     "after": 90,
+     "delta": 6,
+     "previousTeamAixiAfter": 90
+    },
+    {
+     "ability": "loftedPass",
+     "before": 84,
+     "after": 90,
+     "delta": 6,
+     "previousTeamAixiAfter": 90
+    },
+    {
+     "ability": "acceleration",
+     "before": 77,
+     "after": 81,
+     "delta": 4,
+     "previousTeamAixiAfter": 81
+    },
+    {
+     "ability": "balance",
+     "before": 82,
+     "after": 86,
+     "delta": 4,
+     "previousTeamAixiAfter": 82
+    }
+   ],
+   "abilitiesOnlyRaisedByPreviousMapping": [
+    {
+     "ability": "speed",
+     "previousTeamAixiAfter": 77,
+     "correctAfter": 73
+    }
+   ],
+   "ovr": {
+    "worldBase": 87,
+    "efhubFormulaBase": 87,
+    "efhubFormulaAfter": 90,
+    "teamAixiEstimateBase": 79,
+    "teamAixiEstimateAfter": 82
+   },
+   "conditions": {
+    "manager": null,
+    "booster": "none",
+    "positionOvr": "registered position",
+    "level": "World base values",
+    "cap": 99,
+    "linkUp": "not applied"
+   },
+   "verdict": "EFHUB_MATCH_TEAM_AIXI (abilities, after the 2026-10-09 mapping fix); OVR: TEAM_AIXI estimate differs"
+  },
+  {
+   "source": "eFootball World (local DB, base values) + eFHUB progression contract",
+   "cardId": "88038776505238",
+   "role": "goalkeeper",
+   "name": "Edwin van der Sar",
+   "position": "GK",
+   "maximumLevel": 30,
+   "sameCardIdInLocalEfhubData": true,
+   "allocation": {
+    "goalkeeping1": 4,
+    "goalkeeping2": 4,
+    "goalkeeping3": 4
+   },
+   "points": {
+    "total": 58,
+    "used": 12,
+    "remaining": 46,
+    "affordable": true
+   },
+   "changedAbilities": [
+    {
+     "ability": "gkAwareness",
+     "before": 80,
+     "after": 84,
+     "delta": 4,
+     "previousTeamAixiAfter": 84
+    },
+    {
+     "ability": "gkCatching",
+     "before": 79,
+     "after": 83,
+     "delta": 4,
+     "previousTeamAixiAfter": 83
+    },
+    {
+     "ability": "gkParrying",
+     "before": 82,
+     "after": 86,
+     "delta": 4,
+     "previousTeamAixiAfter": 86
+    },
+    {
+     "ability": "gkReflexes",
+     "before": 80,
+     "after": 84,
+     "delta": 4,
+     "previousTeamAixiAfter": 84
+    },
+    {
+     "ability": "gkReach",
+     "before": 82,
+     "after": 86,
+     "delta": 4,
+     "previousTeamAixiAfter": 86
+    },
+    {
+     "ability": "jumping",
+     "before": 67,
+     "after": 71,
+     "delta": 4,
+     "previousTeamAixiAfter": 67
+    }
+   ],
+   "abilitiesOnlyRaisedByPreviousMapping": [],
+   "ovr": {
+    "worldBase": 87,
+    "efhubFormulaBase": 87,
+    "efhubFormulaAfter": 92,
+    "teamAixiEstimateBase": 77,
+    "teamAixiEstimateAfter": 80
+   },
+   "conditions": {
+    "manager": null,
+    "booster": "none",
+    "positionOvr": "registered position",
+    "level": "World base values",
+    "cap": 99,
+    "linkUp": "not applied"
+   },
+   "verdict": "EFHUB_MATCH_TEAM_AIXI (abilities, after the 2026-10-09 mapping fix); OVR: TEAM_AIXI estimate differs"
+  },
+  {
+   "source": "eFootball World (local DB, base values) + eFHUB progression contract",
+   "cardId": "88045755960770",
+   "role": "defender",
+   "name": "Paolo Maldini",
+   "position": "CB",
+   "maximumLevel": 27,
+   "sameCardIdInLocalEfhubData": true,
+   "allocation": {
+    "defending": 6,
+    "aerialStrength": 4
+   },
+   "points": {
+    "total": 52,
+    "used": 12,
+    "remaining": 40,
+    "affordable": true
+   },
+   "changedAbilities": [
+    {
+     "ability": "heading",
+     "before": 77,
+     "after": 81,
+     "delta": 4,
+     "previousTeamAixiAfter": 81
+    },
+    {
+     "ability": "defensiveAwareness",
+     "before": 80,
+     "after": 86,
+     "delta": 6,
+     "previousTeamAixiAfter": 86
+    },
+    {
+     "ability": "tackling",
+     "before": 81,
+     "after": 87,
+     "delta": 6,
+     "previousTeamAixiAfter": 87
+    },
+    {
+     "ability": "aggression",
+     "before": 82,
+     "after": 88,
+     "delta": 6,
+     "previousTeamAixiAfter": 88
+    },
+    {
+     "ability": "defensiveEngagement",
+     "before": 86,
+     "after": 92,
+     "delta": 6,
+     "previousTeamAixiAfter": 92
+    },
+    {
+     "ability": "jumping",
+     "before": 81,
+     "after": 85,
+     "delta": 4,
+     "previousTeamAixiAfter": 85
+    },
+    {
+     "ability": "physicalContact",
+     "before": 80,
+     "after": 84,
+     "delta": 4,
+     "previousTeamAixiAfter": 84
+    }
+   ],
+   "abilitiesOnlyRaisedByPreviousMapping": [],
+   "ovr": {
+    "worldBase": 89,
+    "efhubFormulaBase": 89,
+    "efhubFormulaAfter": 94,
+    "teamAixiEstimateBase": 80,
+    "teamAixiEstimateAfter": 84
+   },
+   "conditions": {
+    "manager": null,
+    "booster": "none",
+    "positionOvr": "registered position",
+    "level": "World base values",
+    "cap": 99,
+    "linkUp": "not applied"
+   },
+   "verdict": "EFHUB_MATCH_TEAM_AIXI (abilities, after the 2026-10-09 mapping fix); OVR: TEAM_AIXI estimate differs"
+  },
+  {
+   "source": "eFootball World (local DB, base values) + eFHUB progression contract",
+   "cardId": "52902186095121",
+   "role": "level-1 card",
+   "name": "Carlos Espí",
+   "position": "CF",
+   "maximumLevel": 1,
+   "sameCardIdInLocalEfhubData": false,
+   "allocation": {},
+   "points": {
+    "total": 0,
+    "used": 0,
+    "remaining": 0,
+    "affordable": true
+   },
+   "changedAbilities": [],
+   "abilitiesOnlyRaisedByPreviousMapping": [],
+   "ovr": {
+    "worldBase": 92,
+    "efhubFormulaBase": 92,
+    "efhubFormulaAfter": 92,
+    "teamAixiEstimateBase": 81,
+    "teamAixiEstimateAfter": 81
+   },
+   "conditions": {
+    "manager": null,
+    "booster": "none",
+    "positionOvr": "registered position",
+    "level": "World base values",
+    "cap": 99,
+    "linkUp": "not applied"
+   },
+   "verdict": "EFHUB_MATCH_WORLD_MATCH_TEAM_AIXI (no allocation)"
+  },
+  {
+   "source": "eFootball World (local DB, base values) + eFHUB progression contract",
+   "cardId": "105584791774479",
+   "role": "high max level",
+   "name": "Yoneda Shunya",
+   "position": "LMF",
+   "maximumLevel": 77,
+   "sameCardIdInLocalEfhubData": false,
+   "allocation": {
+    "lowerBodyStrength": 10,
+    "dexterity": 8
+   },
+   "points": {
+    "total": 152,
+    "used": 30,
+    "remaining": 122,
+    "affordable": true
+   },
+   "changedAbilities": [
+    {
+     "ability": "offensiveAwareness",
+     "before": 64,
+     "after": 72,
+     "delta": 8,
+     "previousTeamAixiAfter": 64
+    },
+    {
+     "ability": "speed",
+     "before": 68,
+     "after": 78,
+     "delta": 10,
+     "previousTeamAixiAfter": 76
+    },
+    {
+     "ability": "acceleration",
+     "before": 70,
+     "after": 78,
+     "delta": 8,
+     "previousTeamAixiAfter": 78
+    },
+    {
+     "ability": "kickingPower",
+     "before": 64,
+     "after": 74,
+     "delta": 10,
+     "previousTeamAixiAfter": 74
+    },
+    {
+     "ability": "balance",
+     "before": 62,
+     "after": 70,
+     "delta": 8,
+     "previousTeamAixiAfter": 72
+    },
+    {
+     "ability": "stamina",
+     "before": 64,
+     "after": 74,
+     "delta": 10,
+     "previousTeamAixiAfter": 74
+    }
+   ],
+   "abilitiesOnlyRaisedByPreviousMapping": [],
+   "ovr": {
+    "worldBase": 67,
+    "efhubFormulaBase": 67,
+    "efhubFormulaAfter": 73,
+    "teamAixiEstimateBase": 66,
+    "teamAixiEstimateAfter": 70
+   },
+   "conditions": {
+    "manager": null,
+    "booster": "none",
+    "positionOvr": "registered position",
+    "level": "World base values",
+    "cap": 99,
+    "linkUp": "not applied"
+   },
+   "verdict": "EFHUB_MATCH_TEAM_AIXI (abilities, after the 2026-10-09 mapping fix); OVR: TEAM_AIXI estimate differs"
+  }
+ ]
+}

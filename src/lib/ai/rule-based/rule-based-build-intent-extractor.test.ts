@@ -87,10 +87,11 @@ describe("RuleBasedBuildIntentExtractor: 日本語解析", () => {
     expect(e.comparisonTargetBuildId).toBe("sib-1");
     expect(e.comparisonFocusGroups).toContain("dribbling");
     expect(e.strengthsToPreserve).toContain("shooting");
-    // dexterity(クイックネス)は「瞬発力を最優先」と「スピードは上げすぎない」の両方に該当し、
-    // 10領域モデルでは同一グループ内の異なる能力(瞬発力/スピード)を区別できないため、
-    // 矛盾として ambiguities へ残す(自動解消しない)。
-    expect(e.ambiguities.some((a) => a.includes("dexterity"))).toBe(true);
+    // eFHUB基準(2026-10-09)では瞬発力=dexterity・スピード=lowerBodyStrength で別のカテゴリのため、
+    // 「瞬発力を最優先」と「スピードは上げすぎない」は矛盾にならない。
+    // dexterity の矛盾は ambiguities に出ず、スピードは lowerBodyStrength の上げすぎ注意になる。
+    expect(e.ambiguities.some((a) => a.includes("dexterity"))).toBe(false);
+    expect(e.avoidOverinvestmentGroups).toContain("lowerBodyStrength");
   });
 
   it("「RWFで使いたい」からポジションを抽出する", async () => {
@@ -119,11 +120,11 @@ describe("RuleBasedBuildIntentExtractor: 日本語解析", () => {
     }
   });
 
-  it("「スピードは元から高いので上げすぎなくてよい」を上げすぎ注意(dexterity)として抽出する", async () => {
+  it("「スピードは元から高いので上げすぎなくてよい」を上げすぎ注意(lowerBodyStrength)として抽出する", async () => {
     const result = await extractor.extract(req("スピードは元から高いので上げすぎなくてよい"));
     if (result.ok) {
-      expect(result.extraction.avoidOverinvestmentGroups).toContain("dexterity");
-      expect(result.extraction.priorityGroups).not.toContain("dexterity");
+      expect(result.extraction.avoidOverinvestmentGroups).toContain("lowerBodyStrength");
+      expect(result.extraction.priorityGroups).not.toContain("lowerBodyStrength");
     }
   });
 
@@ -209,7 +210,7 @@ describe("RuleBasedBuildIntentExtractor: 英語解析", () => {
 
   it("\"Speed is already high, so I do not want to overinvest in it.\" を上げすぎ注意として抽出する", async () => {
     const result = await extractor.extract(req("Speed is already high, so I do not want to overinvest in it.", "en"));
-    if (result.ok) expect(result.extraction.avoidOverinvestmentGroups).toContain("dexterity");
+    if (result.ok) expect(result.extraction.avoidOverinvestmentGroups).toContain("lowerBodyStrength");
   });
 
   it("\"I am willing to sacrifice aerial strength and defending.\" を意図的に捨てる領域として抽出する", async () => {
@@ -229,7 +230,7 @@ describe("RuleBasedBuildIntentExtractor: 英語解析", () => {
     const result = await extractor.extract(req("Prioritize dribbling rather than speed.", "en"));
     if (result.ok) {
       expect(result.extraction.priorityGroups).toContain("dribbling");
-      expect(result.extraction.lowPriorityGroups).toContain("dexterity");
+      expect(result.extraction.lowPriorityGroups).toContain("lowerBodyStrength");
     }
   });
 
@@ -253,16 +254,16 @@ describe("RuleBasedBuildIntentExtractor: 英語解析", () => {
 });
 
 describe("RuleBasedBuildIntentExtractor: 否定表現", () => {
-  it("「スピードは重視しない」はdexterityを最優先にしない", async () => {
+  it("「スピードは重視しない」はlowerBodyStrengthを最優先にしない", async () => {
     const result = await extractor.extract(req("スピードは重視しない"));
-    if (result.ok) expect(result.extraction.priorityGroups).not.toContain("dexterity");
+    if (result.ok) expect(result.extraction.priorityGroups).not.toContain("lowerBodyStrength");
   });
 
   it("「スピードは重視しない。ドリブルを最優先にしたい。」で否定を別文へ誤適用しない", async () => {
     const result = await extractor.extract(req("スピードは重視しない。ドリブルを最優先にしたい。"));
     if (result.ok) {
       expect(result.extraction.priorityGroups).toEqual(["dribbling"]);
-      expect(result.extraction.lowPriorityGroups).toContain("dexterity");
+      expect(result.extraction.lowPriorityGroups).toContain("lowerBodyStrength");
     }
   });
 
@@ -453,8 +454,8 @@ describe("RuleBasedBuildIntentExtractor: クロス関連の役割表現(候補�
     // 「右」だけではRWF/RMF/RBのいずれにも確定しない(明示的な使用意図表現が別途必要なため)。
     expect(result.extraction.intendedPositions).toEqual([]);
     expect(result.extraction.primaryGoal).toBe("passing");
-    expect(result.extraction.intentionallyIgnoredGroups).toContain("dexterity");
-    expect(result.extraction.priorityGroups).not.toContain("dexterity");
+    expect(result.extraction.intentionallyIgnoredGroups).toContain("lowerBodyStrength");
+    expect(result.extraction.priorityGroups).not.toContain("lowerBodyStrength");
   });
 
   it("「リンクマンっぽくしたい」は能力領域を捏造せず、候補確認も出さずunanalyzedSegmentsへ回す", async () => {

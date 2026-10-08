@@ -262,11 +262,12 @@ async function runViewport(browser, vp) {
       shortfall: document.querySelector("[data-testid=dock-shortfall]")?.textContent ?? "",
       contract: document.querySelector("[data-testid=dock-contract]")?.textContent ?? "",
       estimated: !!document.querySelector("[data-testid=dock-targets-estimated]"),
+      source: document.querySelector("[data-testid=dock-targets-source]")?.textContent ?? "",
       blockedTitle: document.querySelector("[data-testid=dock-reachable]")?.parentElement?.getAttribute("title") ?? "",
     }));
     record("届かない範囲: 足りないポイントと、上限のレベルを文字で示す（斜線だけにしない）", /\d+/.test(extra.shortfall) && /pt/.test(extra.shortfall), extra.shortfall);
     record("契約の一文: 能力はカテゴリのレベルで育成する", extra.contract.length > 10, extra.contract.slice(0, 60));
-    record("対象能力が推定のカテゴリ（ディフェンス）に「推定」の印", extra.estimated === true);
+    record("対象能力は eFHUB基準の印（推定の印は無い・2026-10-09）", extra.estimated === false && /eFHUB/.test(extra.source), extra.source);
     record("カテゴリの上限の理由（99 に届くレベル）を title で示す", /99/.test(extra.blockedTitle), extra.blockedTitle.slice(0, 60));
   }
 

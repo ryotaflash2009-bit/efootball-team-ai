@@ -7,7 +7,7 @@ import type { PrimaryGoalId } from "@/lib/progression/build-intent-analysis";
  * - このファイル自体は解析ロジックを持たない(型と定数の置き場)。
  * - 能力領域の表現辞書は、必ず既存の確認済み定義(PROGRESSION_GROUPS / WORLD_STAT_DEFS の
  *   affectedStats・日本語ラベル)と矛盾しない対応関係だけを登録する
- *   (例: 「スピード」「キック力」は実際の育成領域(dexterity / lowerBodyStrength)に正しく対応させ、
+ *   (例: 「スピード」「キック力」は実際の育成領域(どちらも lowerBodyStrength・eFHUB基準)に正しく対応させ、
  *   一般的な語感だけで別領域へ誤って割り当てない)。
  */
 

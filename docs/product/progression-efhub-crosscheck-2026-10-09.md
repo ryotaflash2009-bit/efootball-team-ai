@@ -1,0 +1,69 @@
+# 育成・計算の照合（eFHUB基準・World 照合・2026-10-09）
+
+役割: **eFHUB = 育成・計算の主な基準**（公式ではない）／**eFootball World = 全件・Identity・基礎値の照合元**／**TeamAIXI = 検証して直す対象**。
+ゲームの画面は、説明できない不一致だけに使う。過去の報告や TeamAIXI の現在の実装は正解として扱っていない。
+
+記録（事実だけ・JSON）: `docs/production-readiness/evidence/efhub-progression-crosscheck-2026-10-09.json`
+
+## 1. 取得の方法と権利
+
+| 項目 | 内容 |
+|---|---|
+| 順序 | ① ローカルの既存データ（eFHUB 19 枚・World 13,009 枚の SQLite）→ ② 公開のページ・公開の JS（eFHUB の育成シミュレーターの定義） |
+| 要求 | GET だけ・1 本ずつ・5 秒以上の間隔・UA `TeamAIXI-research/1.0`。**12 件・1,278,820 bytes**（2026-10-08T15:20Z〜15:35:42Z） |
+| 対象 | robots.txt（Allow: / ・Crawl-delay: 5）・sitemap.xml・privacy・選手のページ 1 件・JS 6 件（うち 2 件は Git Bash のパスの書き換えで誤った URL → 404） |
+| しないこと | ログイン・Cookie・API の直接の呼び出し・他人のビルド・評価・Tier・記事・画像・一括のコピー。どれもしていない |
+| 権利 | 利用規約のページは無い・privacy に利用の制限の記載なし。**採用したのは 10 カテゴリの対象能力（ゲームについての短い事実の一覧）だけ**。eFHUB の OVR の重みの表・監督スキルの倍率の表・自動配分のコードは eFHUB の内部データのため採用しない（RIGHTS_OR_ACCESS_BLOCKED） |
+| 保存 | 生のファイルは無視対象の `data/work/efhub-tmp`（報告の後に削除）。リポジトリには結果の数値だけ |
+
+## 2. 判定
+
+| 項目 | eFHUB | World | TeamAIXI（以前 → 今） | 判定 |
+|---|---|---|---|---|
+| カテゴリの ID・名前（10） | shooting … gk3 | 項目なし | 同じ | EFHUB_MATCH_TEAM_AIXI |
+| 対象能力: Shooting・Dribbling・Aerial Strength・Defending | 定義あり | 項目なし | 一致 | EFHUB_MATCH_TEAM_AIXI |
+| 対象能力: Passing・Dexterity・Lower Body Strength・GK 1・GK 2・GK 3 | 定義あり | 項目なし | 違っていた → **eFHUB基準へ修正** | TeamAIXI の不具合 → 修正（World に対応の項目が無いため World は照合できない） |
+| 1 レベルの上昇 | 対象能力に +1（99 で止める） | — | 同じ | EFHUB_MATCH_TEAM_AIXI |
+| Jumping（2 つのカテゴリ） | Aerial Strength と GK 1 の両方 | — | 片方だけ → 合算に修正 | 修正 |
+| ポイントのコスト | レベル L に ceil(L/4)（1〜4=1・5〜8=2・9〜12=3・13〜16=4・17〜20=5・21〜24=6・25=7） | — | 現行の規則（staged-2026-10-08）が同じ。旧規則のビルドは本人が再計算するまで旧規則 | EFHUB_MATCH_TEAM_AIXI |
+| ポイントの総数 | (レベル − 1) × 2 | — | 同じ | EFHUB_MATCH_TEAM_AIXI |
+| 最大レベル | level cap | maximum_level | World の値 | 同じカード ID の 3 枚で 3/3 一致 → EFHUB_MATCH_WORLD_MATCH_TEAM_AIXI |
+| 基礎能力値（26） | ローカルの 19 枚 | 13,009 枚 | World の値 | 同じカード ID の 3 枚（Messi・Xavi・van der Sar）で 26/26 一致。他の 5 枚は名前での紐付けで別の版のカード → VERSION_DIFFERENCE |
+| 基礎 OVR | — | ovr_base | — | 同じカード ID の 3 枚で一致 |
+| 最大 OVR | 104〜106 | 101〜105 | World の値を表示 | 同じカードでも違う（定義の違い・eFHUB は自前の最適配分）→ EFHUB_WORLD_DISAGREEMENT。推測で直さない |
+| カテゴリのレベルの上限 | 25（スライダーの最大） | 項目なし | 決まった上限なし（能力が 99 に届くまで） | GAME_EVIDENCE_REQUIRED（eFHUB の画面の制限かゲームの規則か不明。合わせると保存ビルドの配分が丸められるため変えない。最大レベル 50 以上の 90 枚だけが 26 以上に届く） |
+| ブースター後の上限 | 育成・監督スキルは 99 で止め、監督ブースター +1・選手ブースターは止めない | 基礎値だけ | 最終で 99 に止める（未確定と表示） | GAME_EVIDENCE_REQUIRED（計算の保護の対象。証拠なしに変えない） |
+| 監督ブースター | 対象能力に +1 | — | 同じ | EFHUB_MATCH_TEAM_AIXI |
+| 監督スキル（適性）の倍率 | 70〜90 の倍率の表 | — | 計算しない | RIGHTS_OR_ACCESS_BLOCKED（eFHUB の内部の表） |
+| Link-Up Play の効果 | 取得した定義に無い | — | 条件だけ照合・効果は反映しない | EFHUB_DATA_MISSING |
+| ポジション別 OVR | 重みの表。World の基礎 OVR を 13,009 枚中 **11,929 枚で完全一致・全枚数で ±1 以内**（逆足の精度は World に無いので仮定） | ovr_base | 独自の暫定の重み。**完全一致 4 枚・平均の差 7.53** | EFHUB_MATCH_WORLD_TEAM_AIXI_DEFECT。直すには eFHUB の重みの表が必要で RIGHTS_OR_ACCESS_BLOCKED（本人の判断）。画面は「推定OVR（公式の計算式ではありません）」のまま |
+
+ポジション別の内訳（World の基礎 OVR と比べた完全一致の数）は JSON の `ovrByRegisteredPosition`。代表のカード（攻撃・中盤・守備・GK・レベル 1・最大レベルが高いカード）の
+配分・前後の能力・差・ポイント・OVR は JSON の `representativeCards`。
+
+## 3. 保存したビルドへの影響
+
+- **変えないもの**: 保存した配分（カテゴリのレベル）・コストの規則（`costRuleId`）・ポイント・書き出しのファイル・履歴。データの移行はしない。
+- **変わるもの**: Passing・Dexterity・Lower Body Strength・GK 1〜3 にレベルがあるビルドの、計算した能力値と推定 OVR（同じ配分を eFHUB基準の対応で計算）。
+  例: Dexterity Lv4 は以前 Speed・Acceleration に +4 だったが、今は Offensive Awareness・Acceleration・Balance に +4。
+- 旧の対応で計算し直す切り替えは作らない（以前の対応は根拠の無い推定だったため）。保存ビルドの配分はゲームで選んだカテゴリのレベルを表すので、その結果を eFHUB基準で示すのが正しい。
+- 共有のリンクはビルドの配分を含まない（診断の結果だけ）。書き出し → 読み込みは配分をそのまま保つ。
+
+## 4. 画面の表示
+
+| 種類 | 表示 |
+|---|---|
+| 10 カテゴリの対象能力 | 「eFHUB基準」（説明: eFHUB の育成シミュレーターの定義と照合・2026-10-09・KONAMI の公式の発表ではない） |
+| ポイントのコスト | 4 段階ごとに +1pt |
+| 推定 OVR | 「推定OVR（公式の計算式ではありません）」 |
+| 最終の上限・Link-Up の効果 | 未確認として表示（変更なし） |
+
+「ゲーム公式確認済み」とは書かない。
+
+## 5. 残り（本人の判断・ゲームの画面）
+
+1. **推定 OVR の直し方**（RIGHTS_OR_ACCESS_BLOCKED）: (a) eFHUB に重みの表の利用の許可を求める、(b) 推定 OVR を出さない、(c) 今のまま「推定」で出す — のどれにするか。
+2. **カテゴリのレベルの上限 25**（GAME_EVIDENCE_REQUIRED）: 最大レベルが 50 以上のカードで、ゲームの育成画面で 1 カテゴリを 26 以上にできるか（1 枚）。
+3. **ブースター後に 99 を超えるか**（GAME_EVIDENCE_REQUIRED）: 能力が 99 の選手にブースターを付けたときの表示（1 枚）。
+
+カテゴリごとの育成画面の記録（9 枚）は不要になった。

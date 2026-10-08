@@ -176,7 +176,8 @@ export function ProgressionDock({
     .replace("{reachable}", String(model.reachableMax))
     .replace("{remaining}", String(remainingPoints));
   const statusId = `dock-status-${groupId}`;
-  const targetsEstimated = getGroupDef(groupId)?.statsConfidence !== "confirmed";
+  // 対象能力は eFHUB基準で照合済み（2026-10-09）。辞書のキー名 targetsEstimated* は互換のため残し、値は「eFHUB基準」の説明。
+  const targetsChecked = getGroupDef(groupId)?.statsConfidence === "confirmed";
   const title = primary ? abilityName(primary.key, displayLocale) : catName;
   const hasMessage = blocked || plusReason != null || saveNotice != null;
 
@@ -198,8 +199,8 @@ export function ProgressionDock({
           </div>
           <p className="text-2xs text-text-dim [@media(max-height:520px)]:hidden">
             {tx("progressionCategory")}: <span className="font-semibold text-text">{catName}</span>
-            {targetsEstimated ? (
-              <span className="ms-1 rounded border border-warning/40 px-1 text-[9px] text-warning" title={tx("targetsEstimatedHint")} data-testid="dock-targets-estimated">
+            {targetsChecked ? (
+              <span className="ms-1 rounded border border-border px-1 text-[9px] text-text-dim" title={tx("targetsEstimatedHint")} data-testid="dock-targets-source">
                 {tx("targetsEstimated")}
               </span>
             ) : null}

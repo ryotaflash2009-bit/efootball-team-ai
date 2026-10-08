@@ -3,7 +3,7 @@ import type { RuleDictionary } from "./build-intent-rule-types";
 /**
  * RuleBasedBuildIntentExtractor の英語表現辞書。
  * 能力領域の対応関係は ja 辞書と同じ確認済み定義(affectedStats)を正本とする
- * (例: "speed" は dexterity、"kicking power" は lowerBodyStrength)。
+ * (例: "speed" と "kicking power" は lowerBodyStrength・"acceleration" は dexterity。2026-10-09 に eFHUB基準へ修正)。
  * 全て小文字で保持し、パーサー側で入力を小文字化してから照合する。
  */
 
@@ -12,13 +12,13 @@ export const BUILD_INTENT_RULE_DICTIONARY_EN: RuleDictionary = {
     { groupId: "shooting", phrases: ["shooting", "finishing", "scoring ability", "set piece taking", "curl"] },
     { groupId: "passing", phrases: ["passing", "playmaking", "chance creation", "through pass", "crossing", "low pass", "lofted pass"] },
     { groupId: "dribbling", phrases: ["dribbling", "ball control", "tight possession", "beat defenders", "beat players", "take on defenders"] },
-    { groupId: "dexterity", phrases: ["quickness", "dexterity", "acceleration", "speed", "agility"] },
-    { groupId: "lowerBodyStrength", phrases: ["lower body strength", "kicking power", "stamina", "lower body"] },
+    { groupId: "dexterity", phrases: ["quickness", "dexterity", "acceleration", "agility", "offensive awareness", "attacking awareness", "balance"] },
+    { groupId: "lowerBodyStrength", phrases: ["lower body strength", "kicking power", "stamina", "lower body", "speed"] },
     { groupId: "aerialStrength", phrases: ["aerial strength", "aerial", "heading", "jumping", "physical contact"] },
     { groupId: "defending", phrases: ["defending", "defensive awareness", "tackling", "aggression", "defensive engagement"] },
-    { groupId: "goalkeeping1", phrases: ["gk1", "gk awareness", "gk reflexes"] },
-    { groupId: "goalkeeping2", phrases: ["gk2", "catching", "parrying"] },
-    { groupId: "goalkeeping3", phrases: ["gk3", "reach"] },
+    { groupId: "goalkeeping1", phrases: ["gk1", "gk awareness"] },
+    { groupId: "goalkeeping2", phrases: ["gk2", "parrying", "reach"] },
+    { groupId: "goalkeeping3", phrases: ["gk3", "catching", "reflexes"] },
   ],
   ambiguousPhrases: [
     { phrase: "physical", candidateGroupIds: ["aerialStrength", "lowerBodyStrength"] },

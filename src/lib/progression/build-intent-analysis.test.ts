@@ -1013,7 +1013,7 @@ describe("analyzeBuildIntent: 補助的に重視(Secondary Priority)", () => {
       makeInput({
         intent: intentWith({ groupPriorities: { dribbling: "priority", dexterity: "secondary" }, avoidOverinvestmentGroups: ["dexterity"] }),
         allocation: { dribbling: 5, dexterity: 4 },
-        baseAbilities: makeStats({ speed: 85, acceleration: 82 }),
+        baseAbilities: makeStats({ acceleration: 85, balance: 82 }),
       }),
     );
     expect(r.avoidOverinvestmentFindings.some((f) => f.groupId === "dexterity")).toBe(true);
