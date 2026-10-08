@@ -48,6 +48,24 @@ describe("TeamAIXI v1.0 Release Validator", () => {
     expect(PUBLIC_ROUTES).toContain("/data-management");
   });
 
+  it("検索の公開中（2026-10-09）: robots.txt から状態を読み、公開の契約（noindex なし・canonical・sitemap・非公開の disallow）を確かめる", async () => {
+    const robotsOn = "User-Agent: *\nAllow: /\nDisallow: /api/\nDisallow: /auth/\nDisallow: /account\nDisallow: /share/\n\nSitemap: https://e.test/sitemap.xml\n";
+    const on = async (p: string) => {
+      if (HIDDEN_ROUTES.includes(p)) return { status: 404, headers: {}, body: "" };
+      if (p === "/robots.txt") return { status: 200, headers: {}, body: robotsOn };
+      if (p === "/sitemap.xml") return { status: 200, headers: {}, body: '<?xml version="1.0"?><urlset></urlset>' };
+      if (p.startsWith("/api/world")) return { status: 200, headers: {}, body: JSON.stringify({ totalCount: 13372 }) };
+      if (p.startsWith("/api/managers")) return { status: 200, headers: {}, body: JSON.stringify({ totalCount: 69 }) };
+      return { status: 200, headers: { "content-security-policy": "frame-ancestors 'none'", "x-content-type-options": "nosniff", "x-frame-options": "DENY" }, body: '<html>TeamAIXI<link rel="canonical" href="https://e.test"/><meta property="og:title" content="x"/></html>' };
+    };
+    const r = await checkLive(on, { world: 13372, managers: 69 });
+    expect(r).toMatchObject({ problems: [], indexing: "enabled" });
+    const leak = async (p: string) => (p === "/" ? { ...(await on(p)), headers: { "x-robots-tag": "noindex" } } : p === "/sitemap.xml" ? { status: 404, headers: {}, body: "" } : on(p));
+    expect((await checkLive(leak, { world: 13372, managers: 69 })).problems).toEqual(expect.arrayContaining(["x_robots_tag_noindex_while_indexing", "sitemap_missing_while_indexing"]));
+    const open = async (p: string) => (p === "/robots.txt" ? { status: 200, headers: {}, body: "User-Agent: *\nAllow: /\nSitemap: https://e.test/sitemap.xml\n" } : on(p));
+    expect((await checkLive(open, { world: 13372, managers: 69 })).problems).toEqual(expect.arrayContaining(["robots_private_not_disallowed:/api/", "robots_private_not_disallowed:/share/"]));
+  });
+
   it("判定: 自動の確認の不合格は BLOCKED、本人の確認が残れば MANUAL_REVIEW_REQUIRED、すべて揃えば READY（何も公開しない）", () => {
     const gates = Object.fromEntries(REQUIRED_GATES.map((g: string) => [g, true]));
     const owner = Object.fromEntries(MANUAL_REVIEW_ITEMS.map((k: string) => [k, true]));

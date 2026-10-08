@@ -382,3 +382,28 @@ export async function getSourceMetaFromSupabase(client?: ReferenceDataClient): P
     syncStatus: null,
   };
 }
+
+/**
+ * sitemap.xml 用: 全カードの world_card_id だけ（2026-10-09）。主キー順に 1,000 件ずつ直列で読む
+ * （PostgREST は Range 無しだと 1,000 件で切れる。行の内容は読まない）。
+ */
+export async function listAllWorldCardIdsFromSupabase(client?: ReferenceDataClient): Promise<string[]> {
+  const c = await getClient("world.sitemapIds", client);
+  const ids: string[] = [];
+  for (let pageIndex = 0; pageIndex < 100; pageIndex++) {
+    const from = pageIndex * FACET_PAGE_SIZE;
+    const { data, error, status } = await c
+      .from("world_player_cards")
+      .select("world_card_id")
+      .order("world_card_id", { ascending: true })
+      .range(from, from + FACET_PAGE_SIZE - 1);
+    if (error) throw normalizeQueryError(error, { operation: "world.sitemapIds", status, pageIndex });
+    const rows = (data ?? []) as Row[];
+    for (const r of rows) {
+      const id = String(r.world_card_id ?? "");
+      if (WORLD_CARD_ID_RE.test(id)) ids.push(id);
+    }
+    if (rows.length < FACET_PAGE_SIZE) break;
+  }
+  return ids;
+}

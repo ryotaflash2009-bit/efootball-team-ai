@@ -317,3 +317,16 @@ export async function getManagerCountFromSupabase(client?: ReferenceDataClient):
   if (error) throw normalizeQueryError(error, { operation: "managers.count", status });
   return count ?? 0;
 }
+
+/** sitemap.xml 用: 全監督の internal_manager_id だけ（2026-10-09）。 */
+export async function listAllManagerIdsFromSupabase(client?: ReferenceDataClient): Promise<string[]> {
+  let c: ReferenceDataClient;
+  try {
+    c = client ?? getReferenceDataClient();
+  } catch (err) {
+    throw normalizeClientError(err, { operation: "managers.sitemapIds" });
+  }
+  const { data, error, status } = await c.from("managers").select("internal_manager_id").order("internal_manager_id", { ascending: true }).range(0, 999);
+  if (error) throw normalizeQueryError(error, { operation: "managers.sitemapIds", status });
+  return ((data ?? []) as Record<string, unknown>[]).map((r) => String(r.internal_manager_id ?? "")).filter((id) => MANAGER_ID_RE.test(id));
+}

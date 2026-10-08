@@ -42,12 +42,20 @@ describe("middleware.ts: Edge Runtime互換性の静的監査", () => {
     expect(source).not.toMatch(/reference-data|WORLD_DATA_SOURCE|@\/lib\/world|@\/lib\/managers/);
   });
 
-  it("既知のimportのみ(next/server・@supabase/ssr・@/lib/supabase/env・@/lib/public-info/internal-pages)を使う", () => {
+  it("既知のimportのみ(next/server・@supabase/ssr・@/lib/supabase/env・@/lib/public-info/internal-pages・@/lib/public-info/search-indexing)を使う", () => {
     const source = readMiddlewareSource();
     const importLines = source.match(/^import .+$/gm) ?? [];
     for (const line of importLines) {
-      expect(line).toMatch(/next\/server|@supabase\/ssr|@\/lib\/supabase\/env|@\/lib\/public-info\/internal-pages/);
+      expect(line).toMatch(/next\/server|@supabase\/ssr|@\/lib\/supabase\/env|@\/lib\/public-info\/internal-pages|@\/lib\/public-info\/search-indexing/);
     }
+  });
+
+  it("追加依存の@/lib/public-info/search-indexing(2026-10-09)は型と記事のJSONだけをimportし、eval・new Function・require・node:を含まない", () => {
+    const dep = readFileSync(path.resolve(__dirname, "lib", "public-info", "search-indexing.ts"), "utf8");
+    for (const line of dep.match(/^import .+$/gm) ?? []) expect(line).toMatch(/^import type .+ from "next";$|^import \w+ from "@\/content\/player-guides\.json";$/);
+    expect(dep).not.toMatch(/\beval\s*\(/);
+    expect(dep).not.toMatch(/new\s+Function\s*\(/);
+    expect(dep).not.toMatch(/\brequire\s*\(|from "node:/);
   });
 
   it("追加依存の@/lib/public-info/internal-pagesも他moduleをimportせず、eval・new Function・requireを含まない", () => {

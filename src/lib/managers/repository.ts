@@ -11,7 +11,7 @@ import type {
 } from "./types";
 import { MANAGER_ID_RE } from "./schemas";
 import { getWorldDataSource } from "@/lib/reference-data/runtime/data-source";
-import { listManagersFromSupabase, getManagerByIdFromSupabase, getManagerCountFromSupabase, getManagersLatestFetchedAtFromSupabase } from "@/lib/reference-data/runtime/managers-source";
+import { listManagersFromSupabase, getManagerByIdFromSupabase, getManagerCountFromSupabase, getManagersLatestFetchedAtFromSupabase, listAllManagerIdsFromSupabase } from "@/lib/reference-data/runtime/managers-source";
 
 type Row = Record<string, unknown>;
 
@@ -276,6 +276,18 @@ function getManagerCountSqlite(): number {
   const db = getDb();
   try {
     return Number((db.prepare("SELECT COUNT(*) n FROM managers").get() as { n: number }).n);
+  } catch {
+    throw new WorldQueryError();
+  }
+}
+
+/** sitemap.xml 用: 全監督の ID（2026-10-09）。 */
+export async function listAllManagerIds(): Promise<string[]> {
+  if (getWorldDataSource() === "supabase") return listAllManagerIdsFromSupabase();
+  ensureManagerTables();
+  try {
+    const rows = getDb().prepare("SELECT internal_manager_id id FROM managers ORDER BY internal_manager_id").all() as { id: number }[];
+    return rows.map((r) => String(r.id)).filter((id) => MANAGER_ID_RE.test(id));
   } catch {
     throw new WorldQueryError();
   }
