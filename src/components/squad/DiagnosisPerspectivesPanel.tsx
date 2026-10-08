@@ -14,8 +14,11 @@ import { swapPlayerNames } from "@/lib/squad/squad-diagnosis-text-en";
 export function DiagnosisPerspectivesPanel({
   results,
   namePairs = [],
+  factsLoading = false,
 }: {
   results: PerspectiveResult[];
+  /** 選手の詳細を読み込み中（事実の集計は全員の能力が揃ってから出す。途中の「計算しない」を見せない）。 */
+  factsLoading?: boolean;
   /** 英語の画面で選手名を英語名にそろえる [日本語名, 英語名]。 */
   namePairs?: readonly (readonly [string, string])[];
 }) {
@@ -30,7 +33,7 @@ export function DiagnosisPerspectivesPanel({
     insufficient: t("diagnosisPerspectives", "confidenceInsufficient"),
   };
   if (results.length === 0) return null;
-  const facts = perspectiveFactSummary(results);
+  const facts = factsLoading ? [] : perspectiveFactSummary(results);
   return (
     <>
     {facts.length > 0 ? (
