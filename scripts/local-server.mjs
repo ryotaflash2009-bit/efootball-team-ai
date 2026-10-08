@@ -54,7 +54,13 @@ function processInfo(pids) {
       ["-NoProfile", "-NonInteractive", "-Command", `@(Get-CimInstance Win32_Process -Filter '${filter}' | Select-Object ProcessId,ParentProcessId,CommandLine) | ConvertTo-Json -Compress`],
       { encoding: "utf8" },
     ).trim();
-    const rows = out ? JSON.parse(out) : [];
+    let rows = [];
+    try {
+      rows = out ? JSON.parse(out) : [];
+    } catch {
+      // PowerShell が JSON 以外（警告など）を返したときは「分からない」として空を返す（呼び出し側が再試行する）。
+      return map;
+    }
     for (const r of Array.isArray(rows) ? rows : [rows]) map.set(Number(r.ProcessId), { commandLine: r.CommandLine ?? "", parentPid: Number(r.ParentProcessId) || null });
     return map;
   }
@@ -154,10 +160,17 @@ async function start() {
   let decision = { ok: false, reason: "no_listener" };
   for (let i = 0; i < 120; i++) {
     await sleep(500);
-    const listeners = listenerPids();
-    if (listeners.length === 0) continue;
-    decision = decideRecordedPid({ childPid: child.pid, listenerPids: listeners, processes: processInfoWithAncestors(listeners), root: ROOT, port: PORT });
-    break;
+    try {
+      const listeners = listenerPids();
+      if (listeners.length === 0) continue;
+      decision = decideRecordedPid({ childPid: child.pid, listenerPids: listeners, processes: processInfoWithAncestors(listeners), root: ROOT, port: PORT });
+      // プロセスの情報が一時的に取れなかったときは、待ち時間（最大 60 秒）の範囲で取り直す。
+      if (!decision.ok && decision.reason === "listener_not_workspace_next_start" && i < 119) continue;
+      break;
+    } catch (e) {
+      // netstat / PowerShell の一時的な失敗で落ちない（2026-10-09: build の直後に server.pid が 0 のまま残ることがあった）。
+      decision = { ok: false, reason: `inspect_error:${String(e?.message ?? e).slice(0, 80)}` };
+    }
   }
   if (!decision.ok) {
     writePid(0);
