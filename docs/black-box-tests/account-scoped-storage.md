@@ -1,6 +1,6 @@
 # アカウント別localStorage名前空間(Stage 1/2) ブラックボックステスト結果
 
-実行日時: 2026-10-06T18:09:40.265Z
+実行日時: 2026-10-08T18:56:51.257Z
 対象: http://localhost:3000（Production Build上の隔離ヘッドレスChrome確認。ブラウザー側Supabaseクライアント(auth・DBとも)はテストダブルへ差し替え、実Supabaseへは接続しない）
 
 実ユーザーのMy Team・保存ビルド・保存スカッド・SQLiteは一切変更しない。テストダブルの`__efbUserId`パラメーターで、単一の固定テストダブルのままユーザーA/B相当のアカウント切り替えを再現する。
@@ -165,7 +165,7 @@
 | PASS | [スモーク回帰] /squads/compare が引き続き200 | HTTP 200 |
 | PASS | [スモーク回帰] /favorites が引き続き200 | HTTP 200 |
 | PASS | [スモーク回帰] /account が引き続き200 | HTTP 200 |
-| PASS | [スモーク回帰] /account/rls-test が引き続き200 | HTTP 200 |
+| PASS | [スモーク回帰] /account/rls-test は内部の build で 200・通常の build で 404（5xx なし） | HTTP 404 |
 | PASS | [スモーク回帰] /account/my-team-cloud が引き続き200 | HTTP 200 |
 | PASS | [スモーク回帰] /data-management が引き続き200 | HTTP 200 |
 | PASS | [スモーク回帰] /auth/sign-in が引き続き200 | HTTP 200 |

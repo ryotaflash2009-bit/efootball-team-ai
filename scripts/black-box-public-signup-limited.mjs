@@ -16,7 +16,7 @@
 import { writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { launchIsolatedBrowser, openTab, closeTab, connectCDP, installSupabaseAuthTestDouble } from "./lib/headless-chrome.mjs";
+import { launchIsolatedBrowser, openTab, closeTab, connectCDP, installSupabaseAuthTestDouble, stubVercelInsightsOnLocalhost } from "./lib/headless-chrome.mjs";
 import { escapeMarkdownCell } from "../src/lib/testing/markdown-table.ts";
 
 const BASE = (process.env.BASE_URL ?? "http://localhost:3000").replace(/\/+$/, "");
@@ -128,6 +128,7 @@ async function main() {
   await client.ready;
   for (const d of ["Page", "Runtime", "Network", "Log"]) await client.send(`${d}.enable`);
   await installSupabaseAuthTestDouble(client); // localhost でだけ有効（公開サイトでは何もしない）
+  await stubVercelInsightsOnLocalhost(client, BASE); // localhost だけ: Vercel の解析の script は Vercel の上にしか無い
 
   const fmtArgs = (p) => (p.args ?? []).map((a) => a.value ?? a.description ?? "").join(" ").replace(/\s+/g, " ").slice(0, 200);
   client.on("Runtime.consoleAPICalled", (p) => {
