@@ -52,8 +52,8 @@ export function buildSecurityHeaders(isDev) {
       value: "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()",
     },
     { key: "Content-Security-Policy", value: buildContentSecurityPolicy(isDev) },
-    // 招待制ベータの間は、HTMLのmeta robotsが届かないAPI(JSON)・画像を含む全応答を検索対象外にする。
-    // 解除は一般公開の本人承認事項(search-indexing.tsのSITE_ROBOTS_METADATA・robots.tsと同時に変更する)。
-    { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
+    // 検索に登録しない間は、HTMLのmeta robotsが届かないAPI(JSON)・画像を含む全応答を検索対象外にする。
+    // 公開は本人の判断で、環境変数 NEXT_PUBLIC_SEARCH_INDEXING=enabled（search-indexing.ts と同じ値）で外れる。
+    ...(process.env.NEXT_PUBLIC_SEARCH_INDEXING === "enabled" ? [] : [{ key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" }]),
   ];
 }

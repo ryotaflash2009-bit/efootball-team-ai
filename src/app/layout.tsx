@@ -9,12 +9,18 @@ import { LocaleProvider } from "@/lib/i18n/LocaleContext";
 import { LOCALE_STORAGE_KEY } from "@/lib/i18n/locale";
 
 const LOCALE_PENDING_SCRIPT = `(function(){try{var s=localStorage.getItem(${JSON.stringify(LOCALE_STORAGE_KEY)});var l=(navigator.language||"").toLowerCase().split("-")[0];if((s&&s!=="ja")||(!s&&l&&l!=="ja")){var d=document.documentElement;d.setAttribute("data-locale-pending","");setTimeout(function(){d.removeAttribute("data-locale-pending")},2000)}}catch(e){}})();`;
-import { SITE_ROBOTS_METADATA } from "@/lib/public-info/search-indexing";
+import { SITE_ROBOTS_METADATA, SITE_URL } from "@/lib/public-info/search-indexing";
+
+// Google Search Console の所有権の確認（サーバーの環境変数。設定されたときだけ meta を出す・値は公開の確認用の文字列）。
+const GOOGLE_SITE_VERIFICATION = process.env.GOOGLE_SITE_VERIFICATION?.trim() || undefined;
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "TeamAIXI",
-  description: "TeamAIXI v1.0 — 非公式の eFootball™ スカッド分析ツール。無料・ログイン不要。KONAMI および eFootball™ の公式サービスではありません。",
+  description:
+    "イーフト（eFootball™）のチーム診断・選手比較・育成計算ができる非公式の分析ツール。AI ベスト11や戦術の適性も確認できます。無料・ログイン不要。KONAMI の公式サービスではありません。",
   applicationName: "TeamAIXI",
+  ...(GOOGLE_SITE_VERIFICATION ? { verification: { google: GOOGLE_SITE_VERIFICATION } } : {}),
   // noindex の間は canonical・Open Graph を出さない（検索・SNS のプレビューで noindex を打ち消さないため。公開 black-box の security で確認）。
   // アプリ自身が日本語/英語の表示切替を提供するため、ブラウザーの自動翻訳（Google翻訳等）による
   // 二重翻訳・表示の混乱を避ける（言語切り替えUI自体の文言まで翻訳されてしまうことを防ぐ）。
