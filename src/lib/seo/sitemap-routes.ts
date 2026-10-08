@@ -1,5 +1,5 @@
 /**
- * sitemap.xml に載せる公開の画面（2026-10-08）。新しい画面を足したら、ここ（載せる）か `SITEMAP_EXCLUDED_ROUTES`（載せない理由つき）の
+ * sitemap.xml に載せる公開の画面（2026-10-08・配信は src/app/sitemap.xml/route.ts・登録しない間は 404）。新しい画面を足したら、ここ（載せる）か `SITEMAP_EXCLUDED_ROUTES`（載せない理由つき）の
  * どちらかへ入れる。`sitemap-routes.test.ts` が src/app の全ての page.tsx を調べ、どちらにも無い画面があれば失敗する
  * （ページが増えたときに載せ忘れない・載せてはいけない画面を載せない）。
  */

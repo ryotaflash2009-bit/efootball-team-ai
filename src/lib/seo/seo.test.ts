@@ -5,7 +5,7 @@ import { buildRobotsTxt, isSearchIndexingEnabled, robotsMetadataFor, SEARCH_INDE
 import { pageMetadata } from "./page-metadata";
 import { SITEMAP_DYNAMIC_ROUTES, SITEMAP_EXCLUDED_ROUTES, SITEMAP_ROUTES } from "./sitemap-routes";
 import { PLAYER_GUIDES, publishedPlayerGuides, validatePlayerGuides } from "./player-guides";
-import sitemap from "@/app/sitemap";
+import { sitemapEntries, sitemapResponseFor, sitemapXml } from "./sitemap";
 
 describe("検索への登録の切り替え（既定は登録しない）", () => {
   it("既定（環境変数なし）は noindex・robots.txt は全体を disallow（今までと同じ）", () => {
@@ -67,10 +67,17 @@ describe("sitemap", () => {
     expect(SITEMAP_ROUTES.filter((r) => r.path in SITEMAP_EXCLUDED_ROUTES)).toEqual([]);
   });
   it("公開の画面と公開した記事だけ（下書きの記事・個人データの画面は載せない）", () => {
-    const urls = sitemap().map((e) => e.url);
+    const urls = sitemapEntries("https://example.test").map((e) => e.url);
     expect(urls.length).toBe(SITEMAP_ROUTES.length + publishedPlayerGuides().length);
     expect(urls.some((u) => /\/my-team|\/account|\/auth|\/share\//.test(u))).toBe(false);
     for (const g of PLAYER_GUIDES.filter((x) => !x.published)) expect(urls.some((u) => u.endsWith(`/players/guide/${g.slug}`))).toBe(false);
+  });
+  it("登録しない間は 404（v1 の公開の契約）・登録する場合は XML", () => {
+    expect(sitemapResponseFor(false)).toEqual({ status: 404, body: "Not Found" });
+    const ok = sitemapResponseFor(true);
+    expect(ok.status).toBe(200);
+    expect(ok.body).toMatch(/^<\?xml version="1.0" encoding="UTF-8"\?><urlset xmlns="http:\/\/www.sitemaps.org\/schemas\/sitemap\/0.9">/);
+    expect(sitemapXml([{ url: "https://e.test/?a=1&b=2", changeFrequency: "weekly", priority: 1 }])).toContain("<loc>https://e.test/?a=1&amp;b=2</loc>");
   });
 });
 

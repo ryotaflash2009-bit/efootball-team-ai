@@ -11,7 +11,7 @@
 | X-Robots-Tag | 全応答 `noindex, nofollow, noarchive` |
 | canonical・Open Graph・Twitter カード | 出さない（noindex を打ち消さないため） |
 | title・description | 全ての公開の画面に設定済み（イーフト・eFootball・チーム診断・AI・戦術 などを自然に含む） |
-| sitemap.xml | `/sitemap.xml` を生成（公開の画面 15 件＋公開にした選手の解説）。robots.txt が全体を disallow の間は使われない |
+| sitemap.xml | **404**（noindex の間は配信しない・v1 の公開の契約）。登録を許可すると公開の画面 15 件＋公開にした選手の解説を返す |
 | html lang | `ja` |
 | トップの本文 | サーバーで HTML に含まれる（h1 は 1 つ）。フッターに非公式・KONAMI と無関係である旨を明記 |
 
