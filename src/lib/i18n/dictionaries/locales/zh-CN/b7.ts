@@ -159,6 +159,7 @@ const part: PartialDictionary = {
     exclusionPositionSuitabilityUnresolved: "无法确认该球员对此位置的适应性，因此该候选已被排除在自动选择之外。",
     exclusionGkFieldMismatch: "门将与场上位置不匹配，因此该候选已被排除在自动选择之外。",
     limitationsHeading: "限制",
+    sameNameWarningTemplate: "包含同名球员：{names}。可能是同一球员的不同卡牌（游戏中的处理尚未确认，因此不会自动移除）。",
     limitationSingleFormationOnly: "此初始版本仅支持 4-3-3 阵型。",
     limitationNoBenchSelection: "不选择替补成员。",
     benchHeadingTemplate: "替补（{count}/{max} 人）",

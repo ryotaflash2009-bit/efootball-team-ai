@@ -3,7 +3,7 @@ import { WORLD_STAT_KEYS } from "@/lib/world/stats";
 import type { RatingResult, StatBreakdown } from "./types";
 
 /**
- * 推定 OVR（検証中）。
+ * 推定 OVR。
  *
  * 公式の OVR 計算式は未確認（docs/phase-progression-rules.md「D」）。
  * ここではポジション別の加重平均で概算する。**「最大OVR保証」とは表示しない。**
@@ -38,8 +38,18 @@ export function estimateOvr(
   stats: StatBreakdown[],
   position: string | null | undefined,
 ): number | null {
+  const raw = estimateOvrRaw(stats, position, "final");
+  return raw === null ? null : Math.round(raw);
+}
+
+/** 丸める前の加重平均。`which` で最終値か基礎値かを選ぶ。 */
+export function estimateOvrRaw(
+  stats: StatBreakdown[],
+  position: string | null | undefined,
+  which: "final" | "base" = "final",
+): number | null {
   if (!stats.length) return null;
-  const byKey = new Map(stats.map((s) => [s.key, s.finalValue]));
+  const byKey = new Map(stats.map((s) => [s.key, which === "final" ? s.finalValue : s.baseValue]));
   const weights = (position && POSITION_WEIGHTS[position]) || GENERIC_WEIGHTS;
 
   let weighted = 0;
@@ -52,7 +62,21 @@ export function estimateOvr(
     }
   }
   if (total === 0) return null;
-  return Math.round(weighted / total);
+  return weighted / total;
+}
+
+/**
+ * 公式の基礎 OVR に合わせた推定（2026-10-09）。登録ポジションで、World の基礎 OVR（公式の値）があるときは
+ *   推定OVR = 公式の基礎 OVR + （育成・ブースター後の加重平均 − 基礎値の加重平均）
+ * とする。育成もブースターも無ければ公式の値そのもの。暫定の重みは「変化の量」にだけ使う
+ * （重みの絶対値の誤差で、育成していないカードまで公式と大きく違う値を出していたため。13,009 枚で完全一致 4 枚・平均の差 7.53）。
+ */
+export function anchoredEstimatedOvr(stats: StatBreakdown[], position: string | null | undefined, officialBaseOvr: number | null | undefined): number | null {
+  if (typeof officialBaseOvr !== "number" || !Number.isFinite(officialBaseOvr)) return estimateOvr(stats, position);
+  const after = estimateOvrRaw(stats, position, "final");
+  const before = estimateOvrRaw(stats, position, "base");
+  if (after === null || before === null) return Math.round(officialBaseOvr);
+  return Math.round(officialBaseOvr + (after - before));
 }
 
 export function calculateRating(input: {
@@ -61,12 +85,13 @@ export function calculateRating(input: {
   storedOvrBase: number | null;
   storedOvrMax: number | null;
 }): RatingResult {
-  const estimatedOvr = estimateOvr(input.stats, input.position);
+  // 登録ポジションの推定は公式の基礎 OVR に合わせる（2026-10-09）。
+  const estimatedOvr = anchoredEstimatedOvr(input.stats, input.position, input.storedOvrBase);
   return {
     estimatedOvr,
     confidence: "provisional",
-    method: "position-weighted-average (weights are provisional)",
-    note: "推定OVR（検証中）。公式の OVR 計算式は未確認のため、ポジション別加重平均による概算です。ゲーム内 OVR とは一致しません。",
+    method: input.storedOvrBase != null ? "official-base-ovr + provisional-weighted-delta" : "position-weighted-average (weights are provisional)",
+    note: "推定OVR。公式の基礎 OVR に、育成・ブースターによる変化を暫定の重みで足した概算です（公式の計算式ではありません）。",
     storedOvrBase: input.storedOvrBase,
     storedOvrMax: input.storedOvrMax,
   };

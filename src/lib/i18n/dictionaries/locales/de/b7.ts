@@ -159,6 +159,7 @@ const part: PartialDictionary = {
     exclusionPositionSuitabilityUnresolved: "Die Eignung des Spielers für diese Position konnte nicht bestätigt werden, daher wurde der Kandidat von der automatischen Auswahl ausgeschlossen.",
     exclusionGkFieldMismatch: "Torwart- und Feldspielerposition passen nicht zusammen, daher wurde der Kandidat von der automatischen Auswahl ausgeschlossen.",
     limitationsHeading: "Einschränkungen",
+    sameNameWarningTemplate: "Spieler mit gleichem Namen enthalten: {names}. Es könnten verschiedene Karten desselben Spielers sein (wie das Spiel damit umgeht, ist nicht bestätigt; daher keine automatische Entfernung).",
     limitationSingleFormationOnly: "Diese erste Version unterstützt nur die 4-3-3-Formation.",
     limitationNoBenchSelection: "Ersatzspieler werden nicht ausgewählt.",
     benchHeadingTemplate: "Bank ({count}/{max})",

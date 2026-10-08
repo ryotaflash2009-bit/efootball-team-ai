@@ -3159,6 +3159,7 @@ export interface Dictionary {
     exclusionPositionSuitabilityUnresolved: string;
     exclusionGkFieldMismatch: string;
     limitationsHeading: string;
+    sameNameWarningTemplate: string;
     limitationSingleFormationOnly: string;
     limitationNoBenchSelection: string;
     benchHeadingTemplate: string;

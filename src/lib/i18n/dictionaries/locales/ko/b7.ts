@@ -159,6 +159,7 @@ const part: PartialDictionary = {
     exclusionPositionSuitabilityUnresolved: "이 포지션에 대한 선수의 적성을 확인할 수 없어 자동 선정에서 제외했습니다.",
     exclusionGkFieldMismatch: "골키퍼와 필드 포지션이 맞지 않아 자동 선정에서 제외했습니다.",
     limitationsHeading: "제한 사항",
+    sameNameWarningTemplate: "이름이 같은 선수가 포함되어 있습니다: {names}. 같은 선수의 다른 카드일 수 있습니다(게임에서의 처리가 확인되지 않아 자동으로 제외하지 않습니다).",
     limitationSingleFormationOnly: "이 초기 버전은 4-3-3 포메이션만 지원합니다.",
     limitationNoBenchSelection: "벤치 멤버는 선정하지 않습니다.",
     benchHeadingTemplate: "벤치 ({count}/{max}명)",
