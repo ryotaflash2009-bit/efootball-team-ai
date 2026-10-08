@@ -374,6 +374,11 @@ export interface Dictionary {
     simulationImprovedLabel: string;
     simulationWorsenedLabel: string;
     simulationNote: string;
+    simulationFormationHeading: string;
+    simulationFormationTemplate: string;
+    simulationFormationBenchTemplate: string;
+    simulationFormationEmpty: string;
+    simulationFormationNote: string;
     uniquenessHeading: string;
     uniquenessBadge: string;
     uniquenessIntro: string;

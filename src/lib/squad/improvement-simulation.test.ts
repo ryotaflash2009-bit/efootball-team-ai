@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { StatBreakdown } from "@/lib/progression/types";
 import { diagnoseSquad, type SquadDiagnosisInput, type SquadDiagnosisPlayerInput } from "./squad-diagnosis";
-import { getFormation } from "./formations";
-import { applySquadChanges, IMPROVEMENT_SIMULATION_VERSION, rankBenchSwaps, simulateSquadChanges } from "./improvement-simulation";
+import { FORMATIONS, getFormation } from "./formations";
+import { applyFormationChange, applySquadChanges, IMPROVEMENT_SIMULATION_VERSION, rankBenchSwaps, rankFormationChanges, simulateFormationChange, simulateSquadChanges } from "./improvement-simulation";
+import { changeFormation } from "./formation-change";
+import { inferFreshRole } from "./role-inference";
 
 const KEYS = [
   "offensiveAwareness", "ballControl", "dribbling", "tightPossession", "lowPass", "loftedPass",
@@ -102,5 +104,75 @@ describe("改善シミュレーション", () => {
     const empty = { ...input, starters: input.starters.map((s) => ({ ...s, cardResolved: false, stats: null })) };
     expect(diagnoseSquad(empty).overall.score).toBeNull();
     expect(rankBenchSwaps(empty)).toEqual([]);
+  });
+});
+
+describe("フォーメーションの変更（2026-10-09）", () => {
+
+  /** 同じスカッドを保存の形と診断の入力の両方で作る（先発 n 人・控え b 人・キャプテン）。 */
+  function both(formationId: string, filled: number, benchCount: number, captainIndex: number | null) {
+    const f = getFormation(formationId);
+    const starters = f.slots.map((s, i) =>
+      i < filled ? player({ key: s.slotId, worldCardId: String(1000 + i), role: s.role, assignedPosition: s.position, registeredPosition: s.position, isCaptain: i === captainIndex }) : player({ key: s.slotId, worldCardId: null, cardResolved: false, stats: null, role: s.role, assignedPosition: s.position, isCaptain: false }),
+    );
+    const bench = Array.from({ length: benchCount }, (_, i) => player({ key: `sub${i}`, worldCardId: String(2000 + i), role: null, assignedPosition: null, compatibilityStatus: null }));
+    const input: SquadDiagnosisInput = { squadId: "sq_f", squadName: "F", updatedAt: "2026-10-09T00:00:00.000Z", formationId, starters, bench, managerId: null, managerResolved: true, managerApplied: false };
+    const stored = {
+      squadId: "sq_f", squadName: "F", formationId, managerId: null,
+      slots: f.slots.map((s, i) => ({ slotId: s.slotId, worldCardId: i < filled ? String(1000 + i) : null, buildMode: "none" as const, savedBuildId: null })),
+      substitutes: Array.from({ length: benchCount }, (_, i) => ({ subId: `sub${i}`, worldCardId: String(2000 + i), buildMode: "none" as const, savedBuildId: null })),
+      captainSlotId: captainIndex == null ? null : f.slots[captainIndex].slotId,
+      setPieces: { corners: null, freeKicks: null, penalties: null }, linkUp: { centerPieceSlotId: null, keyManSlotId: null },
+      rulesVersion: "x", schemaVersion: 1, createdAt: "", updatedAt: "",
+    };
+    return { input, stored };
+  }
+
+  it("全てのフォーメーションの組み合わせで、アプリの変更（changeFormation）と同じ枠・控え・キャプテンになる", () => {
+    for (const from of FORMATIONS) {
+      for (const to of FORMATIONS) {
+        if (from.id === to.id) continue;
+        for (const [filled, benchCount, cap] of [[11, 2, 9], [8, 12, 0], [11, 12, 5]] as const) {
+          const { input, stored } = both(from.id, filled, benchCount, cap);
+          const app = changeFormation(stored as never, to.id);
+          const sim = applyFormationChange(input, to.id);
+          const appSlots = app.squad.slots.map((s) => [s.slotId, s.worldCardId]);
+          const simSlots = sim.input.starters.map((s) => [s.key, s.worldCardId]);
+          expect(simSlots, `${from.id}→${to.id}`).toEqual(appSlots);
+          expect(sim.movedToBench, `${from.id}→${to.id}`).toEqual(app.movedToBench);
+          expect(sim.dropped, `${from.id}→${to.id}`).toEqual(app.dropped);
+          const simCaptain = sim.input.starters.find((s) => s.isCaptain)?.key ?? null;
+          expect(simCaptain, `${from.id}→${to.id}`).toBe(app.squad.captainSlotId);
+        }
+      }
+    }
+  });
+
+  it("選手のいる枠のポジションは既定の座標から推定（変更の直後と同じ）・能力値は変えない", () => {
+    const { input } = both("4-3-3", 11, 0, null);
+    const sim = applyFormationChange(input, "3-5-2");
+    const f = getFormation("3-5-2");
+    for (const s of sim.input.starters) {
+      const fs = f.slots.find((x) => x.slotId === s.key)!;
+      expect(s.assignedPosition).toBe(inferFreshRole(fs.x, fs.y));
+    }
+    const statsBefore = new Map(input.starters.map((s) => [s.worldCardId, JSON.stringify(s.stats)]));
+    for (const s of sim.input.starters) if (s.worldCardId) expect(JSON.stringify(s.stats)).toBe(statsBefore.get(s.worldCardId));
+  });
+
+  it("前後の差・決定的・元を書き換えない・候補は改善のあるものだけ（外れる選手が出る変更は候補にしない）", () => {
+    const { input } = both("4-3-3", 11, 2, null);
+    const snapshot = JSON.stringify(input);
+    const a = simulateFormationChange(input, "4-4-2");
+    const b = simulateFormationChange(input, "4-4-2");
+    expect(JSON.stringify(a)).toBe(JSON.stringify(b));
+    expect(JSON.stringify(input)).toBe(snapshot);
+    expect(a.formationId).toBe("4-4-2");
+    expect(a.overall.before).toBe(diagnoseSquad(input).overall.score);
+    for (const c of rankFormationChanges(input, 10)) {
+      expect(c.overall.delta!).toBeGreaterThan(0);
+      expect(c.dropped).toEqual([]);
+      expect(c.formationId).not.toBe("4-3-3");
+    }
   });
 });
