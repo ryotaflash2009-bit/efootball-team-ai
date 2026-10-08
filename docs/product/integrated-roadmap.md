@@ -213,6 +213,8 @@ F-124: 自動更新が完成するまで、本人だけで検証する（他人�
 - npm audit（2026-10-08 の再確認）: 11 件（high 8・moderate 3）はすべて major の更新（tailwindcss 4・eslint-config-next・Next.js 16）でしか解消しない。
   patch / minor の安全な修正は無い（分類は `npm-audit-2026-10-07.md` のまま）。
 
+済み（2026-10-09・夜間）: #206〜#220（台帳 §9 の 2026-10-09）。検索への公開は Production の環境変数 `NEXT_PUBLIC_SEARCH_INDEXING=enabled` だけが残る（`search-console-package.md`）。
+
 本人の操作・本番の変更が不要な次の候補:
 
 1. F-085 投稿フィードのモック・F-084-S3 URL 限定の契約のモック（本番は 404 のまま）
