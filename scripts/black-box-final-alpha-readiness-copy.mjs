@@ -35,6 +35,8 @@ async function evalJson(client, expression) {
 }
 async function navigateAndSettle(client, url) {
   await client.send("Page.navigate", { url });
+  // 移動の前のページ（about:blank 等）の readyState を拾わないよう、URL が変わってから待つ（2026-10-09）。
+  await waitForCondition(async () => (await evalJson(client, "location.href")).startsWith(url.split("#")[0].split("?")[0]), { timeoutMs: 8000, intervalMs: 100 });
   await waitForCondition(async () => (await evalJson(client, "document.readyState")) === "complete", { timeoutMs: 8000, intervalMs: 100 });
   await new Promise((r) => setTimeout(r, 250));
 }
