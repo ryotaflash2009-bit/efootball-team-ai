@@ -28,8 +28,8 @@ describe("FakeBuildIntentExtractor: 日本語入力", () => {
     const result = await extractor.extract({ ...baseRequest, freeText: "スピードは元から高いので上げすぎなくてよい。" });
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.extraction.priorityGroups).not.toContain("dexterity");
-    expect(result.extraction.avoidOverinvestmentGroups).toContain("dexterity");
+    expect(result.extraction.priorityGroups).not.toContain("lowerBodyStrength");
+    expect(result.extraction.avoidOverinvestmentGroups).toContain("lowerBodyStrength");
   });
 
   it("「空中戦と守備は重視しない」を空中戦・守備の優先として誤解釈しない", async () => {
@@ -73,8 +73,8 @@ describe("FakeBuildIntentExtractor: 英語入力", () => {
     const result = await extractor.extract({ ...baseRequest, locale: "en", freeText: "Speed is already high so I don't need to raise it." });
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.extraction.priorityGroups).not.toContain("dexterity");
-    expect(result.extraction.avoidOverinvestmentGroups).toContain("dexterity");
+    expect(result.extraction.priorityGroups).not.toContain("lowerBodyStrength");
+    expect(result.extraction.avoidOverinvestmentGroups).toContain("lowerBodyStrength");
   });
 });
 

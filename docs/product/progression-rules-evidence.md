@@ -11,6 +11,7 @@
 | pesmastery（コードの以前の根拠） | 「0-4 段階は 1pt、5 段階目以降は 2pt」 | 4 段階ごとと読むのが自然。以前は 5 段階ごとと解釈していた（誤り） |
 | gamingonphone・gamemarket・pesmastery | Shooting = Finishing・Set Piece Taking（Place Kicking）・Curl | Shooting の対象（確認済みのまま） |
 | 同上・efootballlab・KONAMI の公式（Dream Team）・eFHUB | 他の 9 カテゴリの対象能力の一覧は**どこにも無い** | 確認できない（推定のまま） |
+| **訂正（2026-10-09）** eFHUB の育成シミュレーター（公開のページのクライアントの定義） | 10 カテゴリすべての対象能力の定義がある（2026-10-08 の調査はページの本文だけを見ていて見落とした） | eFHUB基準で照合し、6 カテゴリを直した（§4・`progression-efhub-crosscheck-2026-10-09.md`） |
 
 ## 2. コストの規則（版）
 
@@ -38,42 +39,44 @@
 - **カテゴリの上限**: 対象能力のうち最も伸びしろのある能力が 99 に届くレベル（`maxUsefulLevelForGroup`）。
 - 届かない位置へ動かすと最後の有効な値で止まり、エラーにしない。ポイントは負にならない。
 
-## 4. 能力値と育成カテゴリの対応表
+## 4. 能力値と育成カテゴリの対応表（2026-10-09・eFHUB基準）
 
-| 能力（ID） | English | 育成カテゴリ | 対応の確認 | 分類（指示の A〜H） |
+| 能力（ID） | English | 育成カテゴリ | 根拠 | 以前の TeamAIXI との比較 |
 |---|---|---|---|---|
-| finishing | Finishing | shooting | 確認済み | A |
-| setPieceTaking | Set Piece Taking | shooting | 確認済み | A |
-| curl | Curl | shooting | 確認済み | A |
-| lowPass | Low Pass | passing | 推定 | A（推定） |
-| loftedPass | Lofted Pass | passing | 推定 | A（推定） |
-| offensiveAwareness | Offensive Awareness | passing | 推定 | A（推定） |
-| ballControl | Ball Control | dribbling | 推定 | A（推定） |
-| dribbling | Dribbling | dribbling | 推定 | A（推定） |
-| tightPossession | Tight Possession | dribbling | 推定 | A（推定） |
-| speed | Speed | dexterity | 推定 | A（推定） |
-| acceleration | Acceleration | dexterity | 推定 | A（推定） |
-| kickingPower | Kicking Power | lowerBodyStrength | 推定 | A（推定） |
-| balance | Balance | lowerBodyStrength | 推定 | A（推定） |
-| stamina | Stamina | lowerBodyStrength | 推定 | A（推定） |
-| heading | Heading | aerialStrength | 推定 | A（推定） |
-| jumping | Jumping | aerialStrength | 推定 | A（推定） |
-| physicalContact | Physical Contact | aerialStrength | 推定 | A（推定） |
-| defensiveAwareness | Defensive Awareness | defending | 推定 | A（推定） |
-| tackling | Tackling | defending | 推定 | A（推定） |
-| aggression | Aggression | defending | 推定 | A（推定） |
-| defensiveEngagement | Defensive Engagement | defending | 推定 | A（推定） |
-| gkAwareness | GK Awareness | goalkeeping1 | 推定 | A（推定） |
-| gkReflexes | GK Reflexes | goalkeeping1 | 推定 | A（推定） |
-| gkCatching | GK Catching | goalkeeping2 | 推定 | A（推定） |
-| gkParrying | GK Parrying | goalkeeping2 | 推定 | A（推定） |
-| gkReach | GK Reach | goalkeeping3 | 推定 | A（推定） |
+| finishing | Finishing | shooting | eFHUB基準・外部ガイド複数 | 一致 |
+| setPieceTaking | Set Piece Taking | shooting | 同上 | 一致 |
+| curl | Curl | shooting | 同上 | 一致 |
+| lowPass | Low Pass | passing | eFHUB基準 | 一致 |
+| loftedPass | Lofted Pass | passing | eFHUB基準 | 一致 |
+| offensiveAwareness | Offensive Awareness | dexterity | eFHUB基準 | **修正**（以前は passing） |
+| ballControl | Ball Control | dribbling | eFHUB基準 | 一致 |
+| dribbling | Dribbling | dribbling | eFHUB基準 | 一致 |
+| tightPossession | Tight Possession | dribbling | eFHUB基準 | 一致 |
+| speed | Speed | lowerBodyStrength | eFHUB基準 | **修正**（以前は dexterity） |
+| acceleration | Acceleration | dexterity | eFHUB基準 | 一致 |
+| kickingPower | Kicking Power | lowerBodyStrength | eFHUB基準 | 一致 |
+| balance | Balance | dexterity | eFHUB基準 | **修正**（以前は lowerBodyStrength） |
+| stamina | Stamina | lowerBodyStrength | eFHUB基準 | 一致 |
+| heading | Heading | aerialStrength | eFHUB基準 | 一致 |
+| jumping | Jumping | aerialStrength **と** goalkeeping1 | eFHUB基準 | **修正**（GK 1 にも入る・両方のレベルが合算） |
+| physicalContact | Physical Contact | aerialStrength | eFHUB基準 | 一致 |
+| defensiveAwareness | Defensive Awareness | defending | eFHUB基準 | 一致 |
+| tackling | Tackling | defending | eFHUB基準 | 一致 |
+| aggression | Aggression | defending | eFHUB基準 | 一致 |
+| defensiveEngagement | Defensive Engagement | defending | eFHUB基準 | 一致 |
+| gkAwareness | GK Awareness | goalkeeping1 | eFHUB基準 | 一致 |
+| gkReflexes | GK Reflexes | goalkeeping3 | eFHUB基準 | **修正**（以前は goalkeeping1） |
+| gkCatching | GK Catching | goalkeeping3 | eFHUB基準 | **修正**（以前は goalkeeping2） |
+| gkParrying | GK Parrying | goalkeeping2 | eFHUB基準 | 一致 |
+| gkReach | GK Reach | goalkeeping2 | eFHUB基準 | **修正**（以前は goalkeeping3） |
 
-- どの能力も 1 つのカテゴリだけに属する（A）。監督の補正（C）・ブースター（D）は内訳に別に出し、育成前の基礎値と混ぜない。
-  ポジションの適性（E）は能力値を変えない（表示と OVR の推定だけ）。選手ごとの特例（F）は無い。育成で変えられない能力（G）は無い。
-- 1 つの情報源のヒントでは Dexterity = Acceleration・Offensive Awareness・Balance とする記述があり、上の推定と違う。独立の確認が無いため変えない。
-- **確認に必要なもの**: ゲームの育成画面で各カテゴリを選んだときに上がる能力の記録（カテゴリごとに 1 枚・本人の操作）。確認できたカテゴリから
-  `statsConfidence: "confirmed"` にし、対応が違えばテストと保存ビルドへの影響を確かめてから直す。
+- eFHUB基準 = eFHUB の公開の育成シミュレーターの定義と照合した（2026-10-09・クライアントの版 `dpl_7gGKaJc1jLQoxvhP9JHRJQakeEGq`）。
+  **ゲームの公式の発表ではない**（KONAMI は対象能力の一覧を公開していない）。画面では「eFHUB基準」と示し、「公式」「ゲーム内で確認済み」とは書かない。
+- 6 カテゴリ（Passing・Dexterity・Lower Body Strength・GK 1・GK 2・GK 3）が以前の TeamAIXI の推定と違っていたため、eFHUB基準へ直した。
+  以前の「1 つの情報源のヒント（Dexterity = Acceleration・Offensive Awareness・Balance）」は eFHUB と一致した。
+- Jumping だけが 2 つのカテゴリ（Aerial Strength・GK 1）の対象。両方を上げるとレベルが合算される（eFHUB と同じ）。
+- 保存したビルドの配分（カテゴリのレベル）とポイントは変えない。同じ配分から求める能力値が eFHUB基準の対応で計算し直される
+  （影響と照合の記録: `progression-efhub-crosscheck-2026-10-09.md`・`docs/production-readiness/evidence/efhub-progression-crosscheck-2026-10-09.json`）。
 
 ## 5. 画面の表示（未確定の文言の整理）
 

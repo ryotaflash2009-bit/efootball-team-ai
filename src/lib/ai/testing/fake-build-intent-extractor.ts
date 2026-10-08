@@ -25,8 +25,8 @@ const GROUP_KEYWORDS: GroupKeyword[] = [
   { groupId: "shooting", ja: ["シュート", "決定力"], en: ["shoot", "finish", "scoring"] },
   { groupId: "passing", ja: ["パス"], en: ["pass"] },
   { groupId: "dribbling", ja: ["ドリブル", "ボールコントロール"], en: ["dribbl", "ball control"] },
-  { groupId: "dexterity", ja: ["クイックネス", "瞬発力", "敏捷性", "スピード"], en: ["quickness", "dexterity", "speed", "acceleration"] },
-  { groupId: "lowerBodyStrength", ja: ["脚力", "フィジカル"], en: ["lower body", "physical", "leg power"] },
+  { groupId: "dexterity", ja: ["クイックネス", "瞬発力", "敏捷性"], en: ["quickness", "dexterity", "acceleration"] },
+  { groupId: "lowerBodyStrength", ja: ["脚力", "フィジカル", "スピード"], en: ["lower body", "physical", "leg power", "speed"] },
   { groupId: "aerialStrength", ja: ["空中戦", "エアバトル"], en: ["aerial", "heading"] },
   { groupId: "defending", ja: ["守備", "ディフェンス"], en: ["defen"] },
 ];

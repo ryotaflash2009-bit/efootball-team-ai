@@ -6,24 +6,23 @@ import type { RuleDictionary } from "./build-intent-rule-types";
  * 能力領域の対応関係は、既存の確認済み定義(src/lib/progression/stat-groups.ts の affectedStats、
  * src/lib/world/stat-labels.ts の日本語ラベル)を正本として使用する。
  * 具体的には以下を確認済みの事実として扱う:
- * - dexterity(クイックネス) の affectedStats は speed(スピード) / acceleration(瞬発力)。
- * - lowerBodyStrength(脚力) の affectedStats は kickingPower(キック力) / balance(ボディコントロール) / stamina(スタミナ)。
- * これにより、「スピード」は dexterity、「キック力」は lowerBodyStrength の表現として登録する
- * (俗に「脚の速さ=脚力」という語感はあるが、本プロジェクトの確認済み定義とは対応しないため採用しない)。
+ * - dexterity(クイックネス) の affectedStats は offensiveAwareness(オフェンスセンス) / acceleration(瞬発力) / balance(ボディコントロール)。
+ * - lowerBodyStrength(脚力) の affectedStats は speed(スピード) / kickingPower(キック力) / stamina(スタミナ)。
+ * （2026-10-09 に eFHUB基準へ修正。それまでは「スピード」を dexterity に入れていたが、eFHUB の定義では lowerBodyStrength。）
  */
 
 export const BUILD_INTENT_RULE_DICTIONARY_JA: RuleDictionary = {
   groupPhrases: [
     { groupId: "shooting", phrases: ["シュート", "決定力", "得点力", "フィニッシュ", "ゴール数", "セットプレー", "プレースキック", "カーブ"] },
-    { groupId: "passing", phrases: ["パス", "ラストパス", "チャンスメイク", "スルーパス", "クロス", "配球", "組み立て", "グラウンダーパス", "フライパス", "オフェンスセンス"] },
+    { groupId: "passing", phrases: ["パス", "ラストパス", "チャンスメイク", "スルーパス", "クロス", "配球", "組み立て", "グラウンダーパス", "フライパス"] },
     { groupId: "dribbling", phrases: ["ドリブル突破", "ドリブル", "ボール保持", "足元の技術", "ボールコントロール", "1人を剥がす", "突破力", "ボールキープ"] },
-    { groupId: "dexterity", phrases: ["クイックネス", "瞬発力", "敏捷性", "小回り", "初速", "スピード", "加速力", "加速"] },
-    { groupId: "lowerBodyStrength", phrases: ["脚力", "キック力", "スタミナ", "下半身", "ボディコントロール", "体のバランス"] },
+    { groupId: "dexterity", phrases: ["クイックネス", "瞬発力", "敏捷性", "小回り", "初速", "加速力", "加速", "オフェンスセンス", "ボディコントロール", "体のバランス"] },
+    { groupId: "lowerBodyStrength", phrases: ["脚力", "キック力", "スタミナ", "下半身", "スピード"] },
     { groupId: "aerialStrength", phrases: ["エアバトル", "空中戦", "ヘディング", "ジャンプ力", "ジャンプ", "競り合い", "フィジカルコンタクト"] },
     { groupId: "defending", phrases: ["ディフェンス", "守備意識", "守備", "ボール奪取", "アグレッシブネス", "対人守備"] },
-    { groupId: "goalkeeping1", phrases: ["GK1", "GKセンス", "コラプシング"] },
-    { groupId: "goalkeeping2", phrases: ["GK2", "キャッチング", "クリアリング"] },
-    { groupId: "goalkeeping3", phrases: ["GK3", "ディフレクティング"] },
+    { groupId: "goalkeeping1", phrases: ["GK1", "GKセンス"] },
+    { groupId: "goalkeeping2", phrases: ["GK2", "クリアリング", "ディフレクティング"] },
+    { groupId: "goalkeeping3", phrases: ["GK3", "キャッチング", "コラプシング"] },
   ],
   ambiguousPhrases: [
     { phrase: "フィジカル", candidateGroupIds: ["aerialStrength", "lowerBodyStrength"] },

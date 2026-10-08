@@ -80,3 +80,10 @@
 
 あわせて、保存ビルドの書き出しでコストの規則（`costRuleId`）が落ちていた不具合を直した（`canonicalizeExportBuild`）。読み込みも同じ関数を通るため、
 現行の規則で保存したビルドを書き出し → 読み込みすると旧規則として扱われていた。テストで往復を確認。
+
+## 8. eFHUB基準での照合（2026-10-09・3 回目）
+
+§6 の「9 カテゴリの育成画面の記録」は不要になった。eFHUB の育成シミュレーターの定義と照合し、6 カテゴリの対象能力を直した
+（`progression-efhub-crosscheck-2026-10-09.md`）。表示は「対象能力は推定」から「eFHUB基準」（公式の発表ではないと説明つき）へ変えた
+（progressionTab.confirmedTag・ruGrConfirmed・groupsHint・ruModeProvisional・abilityEditor.targetsEstimated・targetsEstimatedHint・12 言語）。
+残る本人の判断・ゲームの画面: 推定 OVR の直し方（権利）・カテゴリのレベルの上限 25・ブースター後の 99 超え。
