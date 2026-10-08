@@ -9,6 +9,8 @@ import { getEfhubAnalysisDetail } from "@/lib/world/analysis-repository";
 import { buildPlayerAnalysis } from "@/lib/world/player-analysis";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { pageMetadata } from "@/lib/seo/page-metadata";
+import { JsonLdScript } from "@/components/seo/JsonLdScript";
+import { breadcrumbJsonLd } from "@/lib/seo/structured-data";
 import { WorldPlayerDetailView } from "@/components/world/WorldPlayerDetailView";
 import { PlayerDetailWorldDataUnavailable } from "@/components/world/PlayerDetailWorldDataUnavailable";
 
@@ -86,7 +88,10 @@ export default async function WorldPlayerDetailPage({
   // クライアントへは生の CDN URL（imageUrlCandidate 等）を渡さず、解決済み imageSources だけ渡す。
   const { imageUrlCandidate: _imageUrlCandidate, mobileImageUrlCandidate: _mobileImageUrlCandidate, ...safePlayer } = player;
 
+  const crumbName = safePlayer.nameJa ?? safePlayer.nameEn ?? safePlayer.worldCardId;
   return (
+    <>
+    <JsonLdScript data={breadcrumbJsonLd([{ name: "ホーム", path: "/" }, { name: "選手一覧", path: "/players" }, { name: crumbName, path: `/players/world/${safePlayer.worldCardId}` }])} />
     <WorldPlayerDetailView
       player={safePlayer}
       progressionCard={progressionCard}
@@ -96,5 +101,6 @@ export default async function WorldPlayerDetailPage({
       hasEfhubAnalysis={analysisDetail != null}
       initialTab={initialTab}
     />
+    </>
   );
 }

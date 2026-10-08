@@ -30,6 +30,16 @@ const metaRobots = (body) => (body ?? "").match(/<meta name="robots" content="([
 const canonicalOf = (body) => (body ?? "").match(/<link rel="canonical" href="([^"]*)"/)?.[1] ?? null;
 const titleOf = (body) => (body ?? "").match(/<title>([^<]*)<\/title>/)?.[1] ?? "";
 const descriptionOf = (body) => (body ?? "").match(/<meta name="description" content="([^"]*)"/)?.[1] ?? "";
+/** ページの JSON-LD をすべて読む（読めないものは null）。 */
+export function jsonLdOf(body) {
+  return [...(body ?? "").matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => {
+    try {
+      return JSON.parse(m[1]);
+    } catch {
+      return null;
+    }
+  });
+}
 const isNoindex = (res) => /noindex/i.test(res.headers?.["x-robots-tag"] ?? "") || /noindex/i.test(metaRobots(res.body));
 const bothNoindex = (res) => /noindex/i.test(res.headers?.["x-robots-tag"] ?? "") && /noindex/i.test(metaRobots(res.body));
 
@@ -74,6 +84,7 @@ export async function checkIndexingLive(fetchText, opts) {
     if (!/noindex/i.test(metaRobots(home.body))) problems.push("disabled_but_meta_index");
     if (sitemap.status === 200) problems.push("disabled_but_sitemap_200");
     if (canonicalOf(home.body)) problems.push("disabled_but_canonical");
+    if (jsonLdOf(home.body).length > 0) problems.push("disabled_but_jsonld");
   }
 
   if (state === "enabled") {
@@ -123,6 +134,10 @@ export async function checkIndexingLive(fetchText, opts) {
       const expected = p === "/" ? origin : `${origin}${p}`;
       if (canonicalOf(res.body) !== expected) problems.push(`canonical_mismatch:${p}:${canonicalOf(res.body)}`);
       for (const tag of ['property="og:title"', 'property="og:description"', 'property="og:image"', 'property="og:url"', 'name="twitter:card"']) if (!(res.body ?? "").includes(tag)) problems.push(`og_missing:${p}:${tag}`);
+      const ld = jsonLdOf(res.body);
+      if (ld.some((x) => x === null)) problems.push(`jsonld_invalid:${p}`);
+      if (p === "/" && !ld.some((x) => x?.["@type"] === "WebSite")) problems.push("jsonld_website_missing");
+      if (detailPaths.includes(p) && !ld.some((x) => x?.["@type"] === "BreadcrumbList" && x.itemListElement?.at(-1)?.item === expected)) problems.push(`jsonld_breadcrumb_missing:${p}`);
       const t = titleOf(res.body);
       const d = descriptionOf(res.body);
       if (!/TeamAIXI/.test(t)) problems.push(`title_without_brand:${p}`);
