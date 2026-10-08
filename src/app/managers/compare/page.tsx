@@ -1,11 +1,13 @@
 import { Suspense } from "react";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { ManagerCompareView } from "@/components/managers/ManagerCompareView";
+import { pageMetadata } from "@/lib/seo/page-metadata";
 
-export const metadata = {
+export const metadata = pageMetadata({
+  path: "/managers/compare",
   title: "監督の比較 | TeamAIXI",
   description: "2〜4 人の監督の戦術の適性・ブースター・フォーメーションを並べて比較します。",
-};
+});
 
 // force-static にしない: 静的の生成では ?ids= が空になり、hydration が合わなくなる（React #418）。
 // useSearchParams を Suspense の中で使い、比較の部分はブラウザで描く。

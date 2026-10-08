@@ -2,10 +2,13 @@ import { SquadListBoard } from "@/components/squad/SquadListBoard";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { worldCardIdSchema } from "@/lib/world/schemas";
 import { BUILD_ID_RE } from "@/lib/squad/types";
+import { pageMetadata } from "@/lib/seo/page-metadata";
 
-export const metadata = {
+export const metadata = pageMetadata({
+  path: "/squads",
   title: "スカッド | TeamAIXI",
-};
+  description: "スカッドを組んで、イーフトのチーム診断（攻撃・守備・バランス・弱点）を確認できます。",
+});
 
 export default async function SquadsPage({
   searchParams,

@@ -1,0 +1,32 @@
+{
+  "schema": "player-guides/2026-10-08.v1",
+  "note": "選手ごとの解説の記事（人が書く）。published が true の記事だけを公開・sitemap に載せる。AI で大量に自動生成しない。",
+  "guides": [
+    {
+      "slug": "lionel-messi-bigtime",
+      "worldCardId": "89138556575063",
+      "title": "リオネル メッシ（BIG TIME）の育成と使い方",
+      "description": "イーフト（eFootball）のリオネル メッシ BIG TIME の分析・おすすめの育成・使った感想をまとめる予定のページです。",
+      "published": false,
+      "updatedAt": "2026-10-08",
+      "sections": [
+        { "heading": "分析", "body": "ここに分析を書く（能力値の強み・弱み・向いているポジション）。" },
+        { "heading": "育成", "body": "ここにおすすめの育成を書く（育成カテゴリの配分の例と理由）。" },
+        { "heading": "感想", "body": "ここに実際に使った感想を書く。" }
+      ]
+    },
+    {
+      "slug": "paolo-maldini",
+      "worldCardId": "88045755960770",
+      "title": "パオロ マルディーニの育成と使い方",
+      "description": "イーフト（eFootball）のパオロ マルディーニの分析・おすすめの育成・使った感想をまとめる予定のページです。",
+      "published": false,
+      "updatedAt": "2026-10-08",
+      "sections": [
+        { "heading": "分析", "body": "ここに分析を書く（能力値の強み・弱み・向いているポジション）。" },
+        { "heading": "育成", "body": "ここにおすすめの育成を書く（育成カテゴリの配分の例と理由）。" },
+        { "heading": "感想", "body": "ここに実際に使った感想を書く。" }
+      ]
+    }
+  ]
+}

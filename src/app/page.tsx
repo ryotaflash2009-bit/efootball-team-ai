@@ -7,6 +7,13 @@ import { resolveCardImageSources } from "@/lib/world/image";
 import { HomePageView, type HomeMiniCardData, type HomePageWorldSummary } from "@/components/HomePageView";
 import { settledInOrder } from "@/lib/settled-in-order";
 import { classifyHomeFailure } from "@/lib/home-failure";
+import { pageMetadata } from "@/lib/seo/page-metadata";
+
+export const metadata = pageMetadata({
+  path: "/",
+  title: "TeamAIXI | イーフト（eFootball）のチーム診断・選手比較ツール",
+  description: "イーフト（eFootball™）のスカッドを組んでチーム診断。選手の能力値・育成計算・監督の戦術の適性・AI ベスト11 を無料で確認できる非公式ツールです。",
+});
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
