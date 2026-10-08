@@ -1,4 +1,5 @@
 /**
+ * 前提（2026-10-09 に明記）: 内部の画面（/release-readiness）を見るため、`NEXT_PUBLIC_EFTA_INTERNAL_PAGES=enabled npm run build` の build で動かす。
  * 問い合わせ窓口(公開専用メールアドレス)有効化の専用ブラックボックステスト。
  *   npm run build && npm run start  の後に
  *   node scripts/black-box-support-contact.mjs

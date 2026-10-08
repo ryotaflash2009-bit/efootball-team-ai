@@ -1,4 +1,5 @@
 /**
+ * 前提（2026-10-09 に明記）: 内部の画面（/release-readiness）を見るため、`NEXT_PUBLIC_EFTA_INTERNAL_PAGES=enabled npm run build` の build で動かす。
  * 公開準備基盤フェーズ(サービス概要・利用規約・プライバシー・免責事項・データ管理・問い合わせ・
  * 公開準備状況・フッター・ローカルデータ削除)の専用ブラックボックステスト。
  *   npm run build && npm run start  の後に

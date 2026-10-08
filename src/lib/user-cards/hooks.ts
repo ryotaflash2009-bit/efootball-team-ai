@@ -7,7 +7,7 @@ import {
   isFavoritesStorageAvailable,
   toggleFavorite as toggleFavoriteStore,
 } from "./favorites-storage";
-import { getMyTeam, isMyTeamStorageAvailable, getMyTeamByWorldId } from "./my-team-storage";
+import { getMyTeam, isMyTeamStorageAvailable } from "./my-team-storage";
 import type { FavoriteRecord, MyTeamRecord } from "./types";
 import { useStorageScope } from "@/lib/local-storage-scope/resolve-scope";
 import { setCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
@@ -85,7 +85,9 @@ export function useMyTeam(): {
     () => true,
   );
   const myTeamIds = new Set(myTeam.map((r) => r.worldCardId));
-  const getByWorldId = useCallback((id: string) => getMyTeamByWorldId(id), [myTeam]); // eslint-disable-line react-hooks/exhaustive-deps
+  // スナップショット（hydration 中はサーバーの空のスナップショット）から引く。ストアを直接読むと、hydration の最初の描画で
+  // 「登録済み」になり、サーバーの HTML（未登録）と食い違って React #418 になっていた（2026-10-09・My Team に入れたカードの詳細）。
+  const getByWorldId = useCallback((id: string) => myTeam.find((r) => r.worldCardId === id) ?? null, [myTeam]);
   const scopeStatus: "loading" | "guest" | "account" = scopeState.status === "loading" ? "loading" : scopeState.scope.kind;
   return { myTeam, myTeamIds, getByWorldId, available, scopeStatus };
 }

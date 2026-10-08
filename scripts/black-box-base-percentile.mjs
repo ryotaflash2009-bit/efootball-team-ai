@@ -193,14 +193,18 @@ async function main() {
   // 合成の分布へ差し替える（ブラウザー内の応答だけ。サーバー・DB は変えない）。
   let synthetic = false;
   const body = Buffer.from(JSON.stringify(syntheticBody())).toString("base64");
+  const LOCAL = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(BASE);
   client.on("Fetch.requestPaused", async (p) => {
-    if (synthetic && p.request.url.startsWith(`${BASE}/api/percentiles/world-base`)) {
+    if (LOCAL && p.request.url.startsWith(`${BASE}/_vercel/insights/`)) {
+      // Vercel Web Analytics は Vercel の上にしか無い（next start では 404）。手元だけ空の script で応答（2026-10-09）。
+      await client.send("Fetch.fulfillRequest", { requestId: p.requestId, responseCode: 200, responseHeaders: [{ name: "Content-Type", value: "application/javascript" }], body: "" });
+    } else if (synthetic && p.request.url.startsWith(`${BASE}/api/percentiles/world-base`)) {
       await client.send("Fetch.fulfillRequest", { requestId: p.requestId, responseCode: 200, responseHeaders: [{ name: "Content-Type", value: "application/json" }], body });
     } else {
       await client.send("Fetch.continueRequest", { requestId: p.requestId });
     }
   });
-  await client.send("Fetch.enable", { patterns: [{ urlPattern: "*/api/percentiles/world-base*", requestStage: "Request" }] });
+  await client.send("Fetch.enable", { patterns: [{ urlPattern: "*/api/percentiles/world-base*", requestStage: "Request" }, ...(LOCAL ? [{ urlPattern: "*/_vercel/insights/*", requestStage: "Request" }] : [])] });
 
   const detail = `/players/world/${encodeURIComponent(field.worldCardId)}`;
   try {
