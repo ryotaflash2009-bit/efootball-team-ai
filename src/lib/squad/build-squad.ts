@@ -1,5 +1,5 @@
 import { calculateBuild } from "@/lib/progression/engine";
-import { estimateOvr } from "@/lib/progression/calculate-rating";
+import { estimateOvrRaw } from "@/lib/progression/calculate-rating";
 import { CURRENT_COST_RULE_ID } from "@/lib/progression/progression-rules";
 import { resolveAllocation } from "@/lib/progression/resolve-allocation";
 import { PROGRESSION_RULES_VERSION } from "@/lib/progression/constants";
@@ -55,12 +55,15 @@ function computeEntry(input: SquadEntryInput, manager: ManagerContext | null) {
     input.savedBuildRulesVersion != null &&
     input.savedBuildRulesVersion !== PROGRESSION_RULES_VERSION;
   const hasConditionalSelection = result.booster.hasConditionalSelection;
-  const conditionalDisplayedOvr = hasConditionalSelection
-    ? estimateOvr(
-        result.stats.map((s) => ({ ...s, finalValue: s.conditionalFinalValue })),
-        input.display.registeredPosition,
-      )
-    : result.rating.estimatedOvr;
+  // 条件つきの試算も同じ基準（公式の基礎 OVR に合わせた推定）で、通常の推定からの差だけを足す。
+  const conditionalRaw = hasConditionalSelection
+    ? estimateOvrRaw(result.stats.map((s) => ({ ...s, finalValue: s.conditionalFinalValue })), input.display.registeredPosition)
+    : null;
+  const standardRaw = hasConditionalSelection ? estimateOvrRaw(result.stats, input.display.registeredPosition) : null;
+  const conditionalDisplayedOvr =
+    hasConditionalSelection && conditionalRaw !== null && standardRaw !== null && result.rating.estimatedOvr !== null
+      ? Math.round(result.rating.estimatedOvr + (conditionalRaw - standardRaw))
+      : result.rating.estimatedOvr;
   return {
     display: input.display,
     buildMode: input.buildMode,

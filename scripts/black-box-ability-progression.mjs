@@ -470,8 +470,14 @@ async function runViewport(browser, vp) {
   await ev(() => [...document.querySelectorAll("button")].find((b) => b.textContent.trim() === "English")?.click());
   await sleep(500);
   await tap("[data-stat=tightPossession]");
-  const en = await ev(() => ({ list: document.querySelector("[data-testid=ability-direct-list]").textContent, dock: document.querySelector("[data-testid=progression-dock]")?.textContent ?? "" }));
   const jp = /[぀-ヿ一-龯]/;
+  // 英語の辞書は後から読み込まれる（本番では回線で数百 ms〜）。英語に切り替わるまで待ってから確かめる（条件は緩めない）。
+  for (let i = 0; i < 40; i++) {
+    const d = await ev(() => document.querySelector("[data-testid=progression-dock]")?.textContent ?? "");
+    if (/Train this ability/.test(d) && !jp.test(d)) break;
+    await sleep(200);
+  }
+  const en = await ev(() => ({ list: document.querySelector("[data-testid=ability-direct-list]").textContent, dock: document.querySelector("[data-testid=progression-dock]")?.textContent ?? "" }));
   record("英語: 能力一覧と育成パネルに日本語が混ざらない", !jp.test(en.list) && !jp.test(en.dock) && /Train this ability/.test(en.dock), jp.test(en.dock) ? "dock に日本語" : jp.test(en.list) ? "list に日本語" : "");
   // 英語: 選手詳細全体（育成タブの既存部分・計算根拠・ブースター・分析・能力値タブを含む）に日本語が残らない
   const enPage = await ev(async () => {

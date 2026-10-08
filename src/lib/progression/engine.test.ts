@@ -407,12 +407,21 @@ describe("グループ日本語名は仮称", () => {
 });
 
 describe("OVR 推定", () => {
-  it("estimatedOvr は provisional / note に「検証中」", () => {
+  it("estimatedOvr は provisional・公式の計算式ではないと明記・育成なしなら公式の基礎 OVR と同じ（2026-10-09）", () => {
     const r = calculateBuild({ card: MESSI_BIGTIME, allocation: {} });
     expect(r.rating.confidence).toBe("provisional");
-    expect(r.rating.note).toContain("検証中");
+    expect(r.rating.note).toContain("公式の計算式ではありません");
+    // このカードは付属ブースターがあるため、ブースターを外したときに公式の基礎 OVR と同じになる
+    const plain = calculateBuild({ card: { ...MESSI_BIGTIME, boost1: 0, boost2: 0 }, allocation: {} });
+    expect(plain.rating.estimatedOvr).toBe(plain.rating.storedOvrBase);
     expect(typeof r.rating.estimatedOvr).toBe("number");
     expect(r.rating.storedOvrBase).toBe(90);
     expect(r.rating.storedOvrMax).toBe(105);
+  });
+  it("育成・ブースターの分だけ公式の基礎 OVR から動く（暫定の重みは変化の量だけに使う）", () => {
+    const base = calculateBuild({ card: MESSI_BIGTIME, allocation: {} });
+    const trained = calculateBuild({ card: MESSI_BIGTIME, allocation: { shooting: 8, dribbling: 8 } });
+    expect(trained.rating.estimatedOvr!).toBeGreaterThan(base.rating.estimatedOvr!);
+    expect(trained.rating.estimatedOvr! - base.rating.estimatedOvr!).toBeLessThanOrEqual(8);
   });
 });
