@@ -1,4 +1,5 @@
 /**
+ * 前提（2026-10-09 に明記）: 内部の画面（/release-readiness）を見るため、`NEXT_PUBLIC_EFTA_INTERNAL_PAGES=enabled npm run build` の build で動かす。
  * 招待制アルファ公開前の最終表示整合(/release-readiness・/account metadata)の
  * 専用ブラックボックステスト。
  *   npm run build && (PORT=3001 npm run start) の後に
@@ -17,7 +18,7 @@ import { launchIsolatedBrowser, openTab, closeTab, connectCDP, waitForCondition,
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "..");
 const REPORT = path.join(ROOT, "docs", "black-box-tests", "final-alpha-readiness-copy.md");
-const BASE = process.env.BASE_URL ?? "http://localhost:3001";
+const BASE = process.env.BASE_URL ?? "http://localhost:3000";
 const LOCALE_KEY = "efootball-team-ai:locale:v1";
 
 const PAGES = ["/release-readiness", "/account", "/privacy", "/terms", "/support"];

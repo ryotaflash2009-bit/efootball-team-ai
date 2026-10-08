@@ -16,7 +16,7 @@ import { launchIsolatedBrowser, openTab, closeTab, connectCDP, waitForCondition,
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "..");
 const REPORT = path.join(ROOT, "docs", "black-box-tests", "alpha-copy-fixes.md");
-const BASE = process.env.BASE_URL ?? "http://localhost:3001";
+const BASE = process.env.BASE_URL ?? "http://localhost:3000";
 const LOCALE_KEY = "efootball-team-ai:locale:v1";
 
 const PAGES = ["/", "/managers", "/my-team", "/account", "/privacy", "/terms", "/support"];
