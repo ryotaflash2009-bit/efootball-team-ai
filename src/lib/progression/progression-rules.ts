@@ -1,5 +1,7 @@
 import {
+  COST_BLOCK_SIZE_V3,
   DEFAULT_RULESET_ID,
+  RULESET_ID_COST_V3,
   POINTS_PER_LEVEL,
   PROGRESSION_RULES_VERSION,
   PROGRESSION_RULES_VERSION_MISDATED,
@@ -20,6 +22,8 @@ import type { RuleConfidence } from "./types";
  * 育成ルールセット。
  * - staged-2026-08-28 (v2): グループ単位の配分・段階コスト（現行）
  * - provisional-linear (v1): 能力値単位の配分・線形コスト（旧・移行元）
+ * - staged-2026-10-08: v2 と同じグループ単位の配分で、段階コストを「4 段階ごとに +1」に直したもの（現行・2026-10-08）。
+ *   配分の解釈（能力値の上昇）は v2 と同じで、違うのはポイントの計算だけ。ビルドの `costRuleId` で選ぶ。
  */
 export interface Ruleset {
   id: string;
@@ -80,7 +84,31 @@ const V1: Ruleset = {
   maxUsefulPointsForStat,
 };
 
-const RULESETS: Record<string, Ruleset> = { [V2.id]: V2, [V1.id]: V1 };
+const V2_COST4: Ruleset = {
+  ...V2,
+  id: RULESET_ID_COST_V3,
+  costForNextLevel: (level) => costForNextLevel(level, COST_BLOCK_SIZE_V3),
+  cumulativeCost: (level) => cumulativeCost(level, COST_BLOCK_SIZE_V3),
+  maxLevelForBudget: (budget) => maxLevelForBudget(budget, COST_BLOCK_SIZE_V3),
+  costConfidence: "confirmed",
+};
+
+const RULESETS: Record<string, Ruleset> = { [V2.id]: V2, [V1.id]: V1, [V2_COST4.id]: V2_COST4 };
+
+/** 新しいビルドに保存するコストの規則（現行）。 */
+export const CURRENT_COST_RULE_ID = RULESET_ID_COST_V3;
+/** `costRuleId` の無い既存のビルドのコストの規則（保存した時の規則・5 段階ごと）。 */
+export const LEGACY_COST_RULE_ID = DEFAULT_RULESET_ID;
+export const COST_RULE_IDS: readonly string[] = [LEGACY_COST_RULE_ID, CURRENT_COST_RULE_ID];
+
+/** 保存されたコストの規則の ID を正規化する（無い・不明 → 旧規則。黙って現行へ変えない）。 */
+export function resolveCostRuleId(costRuleId: string | null | undefined): string {
+  return typeof costRuleId === "string" && COST_RULE_IDS.includes(costRuleId) ? costRuleId : LEGACY_COST_RULE_ID;
+}
+
+export function isCurrentCostRule(costRuleId: string | null | undefined): boolean {
+  return resolveCostRuleId(costRuleId) === CURRENT_COST_RULE_ID;
+}
 
 /** 規則バージョン文字列 → ルールセット（誤日付バージョンも v2 として受理） */
 const BY_VERSION: Record<string, Ruleset> = {

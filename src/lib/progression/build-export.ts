@@ -37,6 +37,7 @@ export const EXPORTED_SAVED_BUILD_KEYS = [
   "updatedAt",
   "schemaVersion",
   "buildIntent",
+  "costRuleId",
 ] as const;
 
 export interface SavedBuildExportFile {

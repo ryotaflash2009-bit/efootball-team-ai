@@ -1,5 +1,6 @@
 import { calculateBuild } from "@/lib/progression/engine";
 import { estimateOvr } from "@/lib/progression/calculate-rating";
+import { CURRENT_COST_RULE_ID } from "@/lib/progression/progression-rules";
 import { resolveAllocation } from "@/lib/progression/resolve-allocation";
 import { PROGRESSION_RULES_VERSION } from "@/lib/progression/constants";
 import type { ManagerContext } from "@/lib/progression/types";
@@ -37,10 +38,13 @@ export interface BuildSquadInput {
 function computeEntry(input: SquadEntryInput, manager: ManagerContext | null) {
   const allocation = resolveAllocation(input.card, input.buildMode, input.savedAllocation);
   const selectedConditionalBoosters = input.selectedConditionalBoosters ?? [];
+  const hasSaved = input.savedAllocation != null && Object.keys(input.savedAllocation).length > 0;
   const result = calculateBuild({
     card: input.card,
     allocation,
     manager,
+    // 保存ビルドの配分はそのビルドのコストの規則、自動配分は現行の規則（2026-10-08）
+    costRuleId: hasSaved ? input.savedBuildCostRuleId ?? null : CURRENT_COST_RULE_ID,
     selectedPlayerBoosters: input.selectedPlayerBoosters ?? [],
     selectedConditionalBoosters,
   });

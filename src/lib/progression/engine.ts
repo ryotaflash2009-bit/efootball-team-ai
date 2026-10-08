@@ -1,5 +1,5 @@
 import { PROGRESSION_RULES_VERSION, STAT_CAPS } from "./constants";
-import { getRuleset, isLegacyRulesVersion } from "./progression-rules";
+import { getRuleset, isLegacyRulesVersion, resolveCostRuleId } from "./progression-rules";
 import {
   normalizeGroupAllocation,
   summarizeGroupPoints,
@@ -27,7 +27,6 @@ const UNSUPPORTED_RULES = [
   "公式のOVR計算式・ポジション別OVRの正確な重み",
   "Max Level Stats（最大レベル時の各能力値）の内訳",
   "グループ配分1段階あたりの能力別の正確な上昇量（重み付き/上限）",
-  "段階コストの9段階/13段階以降の正確な値（外挿・confirmed ではない）",
   "育成・選手ブースター・監督補正を含む最終能力値の上限（暫定で99にクランプ）",
 ];
 
@@ -35,7 +34,9 @@ const UNSUPPORTED_RULES = [
 export function calculateBuild(input: ProgressionInput): ProgressionResult {
   const { card } = input;
   const inputRulesVersion = input.rulesetId ?? PROGRESSION_RULES_VERSION;
-  const ruleset = getRuleset(PROGRESSION_RULES_VERSION);
+  // ポイントの計算だけは、そのビルドのコストの規則（無ければ旧規則）。能力値の上昇は規則の版に依存しない。
+  const costRuleId = resolveCostRuleId(input.costRuleId);
+  const ruleset = getRuleset(costRuleId);
   const eligibility = getProgressionEligibility(card);
 
   // v1 形式（per-stat）が来たら v2（per-group）へ移行
@@ -47,8 +48,8 @@ export function calculateBuild(input: ProgressionInput): ProgressionResult {
   // 育成不可カードは配分を無視
   const effectiveAllocation = eligibility.canProgress ? allocation : {};
 
-  const points = summarizeGroupPoints(effectiveAllocation, card, PROGRESSION_RULES_VERSION);
-  const groups = groupBreakdowns(effectiveAllocation, card, PROGRESSION_RULES_VERSION);
+  const points = summarizeGroupPoints(effectiveAllocation, card, costRuleId);
+  const groups = groupBreakdowns(effectiveAllocation, card, costRuleId);
 
   const boosterMode: BoosterApplicationMode =
     input.boosterApplicationMode ??
@@ -110,6 +111,7 @@ export function calculateBuild(input: ProgressionInput): ProgressionResult {
   return {
     rulesVersion: PROGRESSION_RULES_VERSION,
     rulesetId: ruleset.id,
+    costRuleId,
     inputRulesVersion,
     isLegacyInput,
     eligibility: {

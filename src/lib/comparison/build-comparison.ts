@@ -1,5 +1,6 @@
 import { calculateBuild } from "@/lib/progression/engine";
 import type { ProgressionResult } from "@/lib/progression/types";
+import { CURRENT_COST_RULE_ID } from "@/lib/progression/progression-rules";
 import { resolveAllocation as resolveBuildAllocation } from "@/lib/progression/resolve-allocation";
 import { WORLD_STAT_DEFS, WORLD_STAT_GROUP_LABELS } from "@/lib/world/stats";
 import { PROGRESSION_RULES_VERSION } from "@/lib/progression/constants";
@@ -57,6 +58,7 @@ export function calculateComparisonPlayer(input: ComparisonPlayerInput, allocati
     manager: input.manager,
     selectedPlayerBoosters: input.selectedPlayerBoosters ?? [],
     selectedConditionalBoosters: input.selectedConditionalBoosters ?? [],
+    costRuleId: input.savedCostRuleId ?? CURRENT_COST_RULE_ID,
     boosterApplicationMode:
       input.boosterApplicationMode ??
       ((input.experimentalModeEnabled ?? input.applyProvisionalBoosters) ? "experimental" : "standard"),

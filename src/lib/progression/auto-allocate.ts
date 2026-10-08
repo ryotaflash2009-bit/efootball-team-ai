@@ -1,5 +1,4 @@
-import { PROGRESSION_RULES_VERSION } from "./constants";
-import { getRuleset } from "./progression-rules";
+import { CURRENT_COST_RULE_ID, getRuleset } from "./progression-rules";
 import { getProgressionEligibility } from "./card-eligibility";
 import {
   normalizeGroupAllocation,
@@ -42,7 +41,8 @@ export function autoAllocate(
   profile: AutoAllocateProfile,
   rulesetId?: string | null,
 ): AutoAllocateResult {
-  const ruleset = getRuleset(rulesetId ?? PROGRESSION_RULES_VERSION);
+  // 自動配分は保存データではなく毎回の計算なので、省略時は現行のコストの規則（2026-10-08）。
+  const ruleset = getRuleset(rulesetId ?? CURRENT_COST_RULE_ID);
   const eligibility = getProgressionEligibility(card);
   const totalPoints = eligibility.canProgress ? ruleset.totalPoints(card.maximumLevel) : 0;
   const weights = PROFILE_WEIGHTS[profile];

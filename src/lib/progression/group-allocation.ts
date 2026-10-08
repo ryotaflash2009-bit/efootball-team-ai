@@ -66,8 +66,9 @@ export function normalizeGroupAllocation(
   return { allocation: out, rejected };
 }
 
-export function usedPoints(allocation: Record<string, number>): number {
-  const ruleset = getRuleset();
+export function usedPoints(allocation: Record<string, number>, rulesetId?: string | null): number {
+  // コストの規則はビルドごと（2026-10-08）。省略時は既定（旧規則）。
+  const ruleset = getRuleset(rulesetId);
   let sum = 0;
   for (const level of Object.values(allocation)) {
     if (Number.isFinite(level) && level > 0) sum += ruleset.cumulativeCost(Math.trunc(level));
@@ -82,7 +83,7 @@ export function summarizeGroupPoints(
 ): PointsSummary {
   const ruleset = getRuleset(rulesetId);
   const totalPoints = ruleset.totalPoints(card.maximumLevel);
-  const used = usedPoints(allocation);
+  const used = usedPoints(allocation, rulesetId);
   const remaining = totalPoints - used;
   const overAllocated = used > totalPoints;
   return {
