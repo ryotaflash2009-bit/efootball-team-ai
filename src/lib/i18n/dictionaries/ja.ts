@@ -2859,6 +2859,20 @@ export interface Dictionary {
     maxOvrPlaceholder: string;
     maxOvrAriaLabel: string;
     clearAllButton: string;
+    savedLabel: string;
+    savedPlaceholder: string;
+    saveCurrentButton: string;
+    saveNameLabel: string;
+    saveConfirmButton: string;
+    saveCancelButton: string;
+    savedDeleteButton: string;
+    savedMsgSaved: string;
+    savedMsgReplaced: string;
+    savedMsgFull: string;
+    savedMsgEmpty: string;
+    savedMsgName: string;
+    savedMsgStorage: string;
+    savedLocalNote: string;
   };
   worldPlayerCard: {
     noEnglishName: string;

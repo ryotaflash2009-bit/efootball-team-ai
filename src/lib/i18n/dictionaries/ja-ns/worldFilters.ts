@@ -34,6 +34,20 @@ const worldFilters: Dictionary["worldFilters"] = {
   maxOvrPlaceholder: "最大OVR ≤",
   maxOvrAriaLabel: "最大OVR 上限",
   clearAllButton: "すべて解除",
+  savedLabel: "保存した絞り込み",
+  savedPlaceholder: "選ぶ…",
+  saveCurrentButton: "今の条件を保存",
+  saveNameLabel: "名前",
+  saveConfirmButton: "保存",
+  saveCancelButton: "やめる",
+  savedDeleteButton: "選んだものを削除",
+  savedMsgSaved: "保存しました",
+  savedMsgReplaced: "同じ名前の絞り込みを上書きしました",
+  savedMsgFull: "保存できるのは 10 件までです（不要なものを削除してください）",
+  savedMsgEmpty: "保存する条件がありません（検索・絞り込み・並べ替えを選んでください）",
+  savedMsgName: "名前を入れてください",
+  savedMsgStorage: "保存できませんでした（このブラウザーでは端末への保存が使えません）",
+  savedLocalNote: "この端末だけに保存します",
   };
 
 registerJaNamespace("worldFilters", worldFilters);

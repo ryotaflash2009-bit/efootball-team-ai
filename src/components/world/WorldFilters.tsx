@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import type { WorldFacets, WorldSortKey } from "@/lib/world/types";
 import { useT } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { SavedPlayerFilters } from "./SavedPlayerFilters";
 
 function useSortOptions(): { value: WorldSortKey; label: string }[] {
   const t = useT();
@@ -279,6 +280,9 @@ export function WorldFilters({ facets }: { facets: WorldFacets }) {
           </button>
         </div>
       ) : null}
+
+      {/* 保存した絞り込み（NEW-31・端末だけ） */}
+      <SavedPlayerFilters currentQuery={paramString} />
     </div>
   );
 }
