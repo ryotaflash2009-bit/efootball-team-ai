@@ -3225,6 +3225,7 @@ const en: Dictionary = {
     exclusionPositionSuitabilityUnresolved: "The player's suitability for this position could not be confirmed, so the candidate was excluded from automatic selection.",
     exclusionGkFieldMismatch: "The goalkeeper and outfield positions do not match, so the candidate was excluded from automatic selection.",
     limitationsHeading: "Limitations",
+    sameNameWarningTemplate: "Players with the same name are included: {names}. They may be different cards of the same player (how the game treats this isn't confirmed, so they aren't removed automatically).",
     limitationSingleFormationOnly: "This initial version only supports the 4-3-3 formation.",
     limitationNoBenchSelection: "Bench members are not selected.",
     benchHeadingTemplate: "Bench ({count}/{max})",

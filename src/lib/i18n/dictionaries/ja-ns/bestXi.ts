@@ -63,6 +63,7 @@ const bestXi: Dictionary["bestXi"] = {
   exclusionPositionSuitabilityUnresolved: "このポジションへの適性を確認できないため、自動選出の対象外です。",
   exclusionGkFieldMismatch: "GKとフィールドプレーヤーのポジションが一致しないため、自動選出の対象外です。",
   limitationsHeading: "制限事項",
+  sameNameWarningTemplate: "同じ名前の選手が含まれています: {names}。同じ選手の別のカードの可能性があります（ゲームでの扱いは確認できていないため、自動では外しません）。",
   limitationSingleFormationOnly: "初期版は4-3-3のみに対応しています。",
   limitationNoBenchSelection: "ベンチメンバーの選出は行いません。",
   benchHeadingTemplate: "控え（{count}/{max} 人）",

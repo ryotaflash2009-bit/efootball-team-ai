@@ -193,6 +193,37 @@ async function main() {
     record("[フル充足4-3-3] 11 / 11 スロットが埋まった旨が表示される", /11\s*\/\s*11/.test(fullBody), "");
     record("[フル充足4-3-3] 本職 11 人・同系統 0 人と表示される", /本職\s*11\s*人/.test(fullBody) && /同系統\s*0\s*人/.test(fullBody), "");
     record("[フル充足4-3-3] 空きスロットの警告が表示されない", !fullBody.includes("空きスロット"), "");
+    record("[同じ名前] 同じ名前のカードが無いときは知らせない", !fullBody.includes("同じ名前の選手が含まれています"), "");
+
+    // ============================================================
+    // 1a. 同じ名前のカード（NEW-25・2026-10-09）: 先発の 1 人と同じ英語名の別のカードを足すと、事実として知らせる（外さない）
+    // ============================================================
+    {
+      let twin = null;
+      for (const id of FULL_XI) {
+        const d = await (await fetch(`${BASE}/api/world/players/${id}`)).json().catch(() => null);
+        const name = d?.player?.nameEn ?? d?.data?.player?.nameEn;
+        if (!name) continue;
+        const list = await (await fetch(`${BASE}/api/world/players?q=${encodeURIComponent(name)}&pageSize=20`)).json().catch(() => null);
+        const other = (list?.players ?? []).find((p) => p.worldCardId !== id && (p.nameEn ?? "").trim().toLowerCase() === name.trim().toLowerCase());
+        if (other) {
+          twin = { id, name, other: other.worldCardId };
+          break;
+        }
+      }
+      if (!twin) {
+        record("[同じ名前] 準備: 先発と同じ英語名の別のカードが見つかる", false, "not found");
+      } else {
+        await setMyTeam(client, [...FULL_XI, twin.other]);
+        await hardReloadAndSettle(client);
+        await waitForCondition(async () => (await bodyText(client)).includes("選出選手一覧"), { timeoutMs: 10000, intervalMs: 200 });
+        await waitForCondition(async () => (await bodyText(client)).includes("同じ名前の選手が含まれています"), { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+        const twinBody = await bodyText(client);
+        const picked = /同じ名前の選手が含まれています/.test(twinBody);
+        record("[同じ名前] 同じ名前の別のカードが先発・控えにいると知らせる（自動では外さない）", picked && /自動では外しません/.test(twinBody), `${twin.name} ${twin.id}/${twin.other}`);
+        await setMyTeam(client, FULL_XI);
+      }
+    }
 
     // ============================================================
     // 1b. 控え(2026-10-07): 先発11人 + CB 1人 → 控えは CB の本職の控え 1 人だけ・先発の選手は入らない

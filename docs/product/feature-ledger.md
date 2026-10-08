@@ -118,6 +118,7 @@
 | F-144 | 公開プロフィール・公開ビルドの契約（モック） | designed | 30% | F-053 | — | C | 要 | 不要 | Free | PR #190・`future-feature-contracts-2026-10-07.md` | 公開 ID・Auth の公開の後 |
 | F-145 | 違うフォーメーション間の配置の写し（NEW-41） | completed | 100% | F-036 | — | L | 不要 | 不要 | Free | PR #185・`docs/product/placement-cross-formation.md`（本番 23/23） | — |
 | F-146 | 監督の比較（NEW-23） | completed | 100% | F-003 | — | — | 不要 | 不要 | Free | PR #184・`docs/product/manager-compare.md`（本番 16/16） | — |
+| F-148 | AI ベスト11 の同じ名前のカードの知らせ（NEW-25） | completed | 70% | F-025 | — | — | 不要 | 不要 | Free | `docs/product/best-xi-same-name.md`（2026-10-09・black-box 32/32） | 自動で外す規則はゲームの画面の確認の後 |
 | F-147 | 選手一覧の保存した絞り込み（NEW-31） | completed | 100% | F-001 | — | L | 不要 | 不要 | Free | `docs/product/saved-player-filters.md`（2026-10-09・black-box 10/10） | — |
 
 ## 6. コミュニティ（Phase 7）
