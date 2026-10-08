@@ -207,7 +207,7 @@ const part: PartialDictionary = {
     verifiedScreenshotNoteTemplate: "Dikonfirmasi lewat tangkapan layar referensi{fixedSuffix} · tercermin dalam perbandingan",
     fixedEstimateSuffix: " · perkiraan tipe tetap",
     externalCrossVerifiedNoteTemplate: "Diverifikasi silang secara eksternal (tidak dikonfirmasi KONAMI){fixedSuffix} · tercermin dalam perbandingan",
-    underVerificationNote: "Efek sedang diverifikasi · tidak tercermin dalam perbandingan",
+    underVerificationNote: "Efek belum dikonfirmasi · tidak dihitung dalam perbandingan",
     additionalBoosterPrefix: "Booster tambahan (B2, menggantikan booster terpasang; ",
     additionalBoosterHighlight: "yang terkonfirmasi memengaruhi peringkat perbandingan",
     additionalBoosterSuffix: ")",

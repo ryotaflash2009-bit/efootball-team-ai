@@ -207,7 +207,7 @@ const part: PartialDictionary = {
     verifiedScreenshotNoteTemplate: "참고 스크린샷으로 확인{fixedSuffix} · 비교에 반영",
     fixedEstimateSuffix: " · 고정형 추정",
     externalCrossVerifiedNoteTemplate: "외부 교차 검증(KONAMI 미확인){fixedSuffix} · 비교에 반영",
-    underVerificationNote: "효과 검증 중 · 비교에 반영되지 않음",
+    underVerificationNote: "효과 미확정·비교에 미반영",
     additionalBoosterPrefix: "추가 부스터(B2, 부착 부스터보다 우선; ",
     additionalBoosterHighlight: "확인된 것은 비교 순위에 영향을 줌",
     additionalBoosterSuffix: ")",

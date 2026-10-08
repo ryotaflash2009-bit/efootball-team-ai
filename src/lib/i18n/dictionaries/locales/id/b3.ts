@@ -250,7 +250,7 @@ const part: PartialDictionary = {
     powerOfManyNote: "Emas, variabel (tergantung Game Plan) — tidak tercermin dalam total tim",
     verifiedScreenTemplate: "Diukur pada layar referensi{fixedNote} — tercermin dalam tim",
     externalVerifiedTemplate: "Diverifikasi silang secara eksternal (tidak dikonfirmasi KONAMI){fixedNote} — tercermin dalam tim",
-    underVerificationNote: "Efek sedang diverifikasi — tidak tercermin",
+    underVerificationNote: "Efek belum dikonfirmasi — tidak diterapkan",
     fixedTypeEstimateSuffix: ", diduga tipe tetap",
     experimentalBoosterPrefix: "Estimasi booster eksperimental (menggantikan yang terpasang — ",
     experimentalBoosterTeamNote: "tidak memengaruhi total tim",

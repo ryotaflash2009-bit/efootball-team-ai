@@ -5,7 +5,9 @@ import { CURRENT_COST_RULE_ID, LEGACY_COST_RULE_ID, getRuleset, isCurrentCostRul
 import { calculateBuild } from "./engine";
 import { MESSI_BIGTIME } from "./fixtures";
 import { savedBuildSchema } from "./build-storage";
-import { EXPORTED_SAVED_BUILD_KEYS } from "./build-export";
+import { EXPORTED_SAVED_BUILD_KEYS, buildExport } from "./build-export";
+import { parseImportText, validateImportBuilds } from "./build-import";
+import { adjustGroupLevel, summarizeGroupPoints } from "./group-allocation";
 import { groupSliderModel, levelForKey, unreachableInfo, PAGE_STEP } from "./ability-direct-editor";
 
 /**
@@ -122,5 +124,45 @@ describe("能力値スライダー: Page Up / Down と届かない範囲", () =>
     expect(info.shortfall).toBe(getRuleset(CURRENT_COST_RULE_ID).cumulativeCost(model.absoluteMax) - 4);
     const full = groupSliderModel({}, { ...MESSI_BIGTIME, maximumLevel: 60 }, "shooting", CURRENT_COST_RULE_ID);
     expect(unreachableInfo(full, CURRENT_COST_RULE_ID)).toEqual({ limitedByPoints: false, shortfall: 0 });
+  });
+});
+
+describe("境界の fixture（追加・2026-10-09）", () => {
+  const cur = CURRENT_COST_RULE_ID;
+
+  it("最大レベル: カテゴリの上限で止まる（それ以上は上げない）", () => {
+    const card = { ...MESSI_BIGTIME, maximumLevel: 60 };
+    const m = groupSliderModel({}, card, "shooting", cur);
+    const atMax = adjustGroupLevel({}, card, "shooting", m.absoluteMax + 10, cur);
+    expect(atMax.shooting).toBe(m.absoluteMax);
+    expect(groupSliderModel(atMax, card, "shooting", cur).atCategoryMax).toBe(true);
+    expect(groupSliderModel(atMax, card, "shooting", cur).nextCost).toBeNull();
+  });
+
+  it("ポイント不足: 残りポイントで届く最大で止まり、残りは負にならない", () => {
+    const card = { ...MESSI_BIGTIME, maximumLevel: 4 }; // 6pt
+    const r = adjustGroupLevel({}, card, "shooting", 50, cur);
+    // 6pt では 1+1+1+1（Lv4）+ 2（Lv5）= 6 → Lv5
+    expect(r.shooting).toBe(5);
+    expect(summarizeGroupPoints(r, card, cur).remainingPoints).toBe(0);
+    const legacy = adjustGroupLevel({}, card, "shooting", 50, LEGACY_COST_RULE_ID);
+    expect(legacy.shooting).toBe(5); // 旧規則でも 1×5 = 5pt → Lv5（残り 1pt では Lv6 の 2pt に届かない）
+  });
+
+  it("書き出し → 読み込みでコストの規則が失われない（現行の規則・旧規則のビルドの両方）", () => {
+    const now = "2026-10-09T00:00:00.000Z";
+    const mk = (id: string, costRuleId?: string) => ({
+      buildId: id, worldCardId: "88045755960770", buildName: id, progressionAllocation: { shooting: 6 }, selectedPlayerBooster: null,
+      calculatedStats: {}, calculatedOvr: null, calculationMode: "provisional", rulesVersion: "progression/2026-08-28.v2",
+      createdAt: now, updatedAt: now, schemaVersion: 1, ...(costRuleId ? { costRuleId } : {}),
+    });
+    const exp = buildExport({ rawBuilds: [mk("cur", cur), mk("legacy")], exportedAt: now });
+    if (!exp.ok) throw new Error(exp.reason);
+    const parsed = parseImportText(exp.json);
+    if (!parsed.ok) throw new Error(parsed.code);
+    const { valid, invalid } = validateImportBuilds(parsed.rawBuilds);
+    expect(invalid).toEqual([]);
+    expect(valid.find((b) => b.buildId === "cur")?.costRuleId).toBe(cur);
+    expect(valid.find((b) => b.buildId === "legacy")?.costRuleId).toBeUndefined();
   });
 });

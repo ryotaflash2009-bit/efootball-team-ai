@@ -250,7 +250,7 @@ const part: PartialDictionary = {
     powerOfManyNote: "Altın, değişken (Oyun Planına bağlı) — takım toplamlarına yansıtılmaz",
     verifiedScreenTemplate: "Referans ekranda ölçüldü{fixedNote} — takıma yansıtılır",
     externalVerifiedTemplate: "Harici olarak çapraz doğrulandı (KONAMI onaylı değil){fixedNote} — takıma yansıtılır",
-    underVerificationNote: "Etki doğrulanıyor — yansıtılmaz",
+    underVerificationNote: "Etki doğrulanmadı — uygulanmaz",
     fixedTypeEstimateSuffix: ", sabit tür olduğu varsayılıyor",
     experimentalBoosterPrefix: "Deneysel güçlendirici tahmini (takılı olanı geçersiz kılar — ",
     experimentalBoosterTeamNote: "takım toplamlarını etkilemez",

@@ -332,7 +332,7 @@ const part: PartialDictionary = {
     boosterModeNote: "Güçlendirici modu: Standart. Bu toplamlara yalnızca kartın yerleşik etkisi için iki harici kaynakla çapraz kontrol edilmiş güçlendiriciler ve teknik direktör düzeltmeleri yansıtılır (KONAMI tarafından doğrulanmamıştır). Sabit tür olduğu varsayılan etkileri ve Power of Many'yi içerir (her iki yönde de somut kanıt olmadığı için geçici olarak uygulanır). Altın değişken güçlendiriciler (etkisi bir Game Plan'daki aynı lig oyuncu sayısıyla ölçeklenir ve mevcut kadro için otomatik değerlendirilemez), kullanıcının belirlediği değerler, hâlâ doğrulanmakta olan etkiler ve çözümlenmemiş paket güçlendiriciler ya da manuel tahminler hariçtir.",
     startingBenchLabel: "İlk 11 / Yedekler",
     avgBaseOvrLabel: "Ort. Temel OVR",
-    avgDisplayedOvrLabel: "Ort. Gösterilen OVR (doğrulanmadı)",
+    avgDisplayedOvrLabel: "Ortalama tahmini OVR (resmî formül değil)",
     sharedSkillCountLabel: "Ortak beceri sayısı",
     managerBoostedLabel: "Teknik direktör güçlendiricisi uygulandı",
     unresolvedCompatibilityLabel: "Uygunluk belirsiz",

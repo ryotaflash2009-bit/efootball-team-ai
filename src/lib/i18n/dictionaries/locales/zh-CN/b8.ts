@@ -207,7 +207,7 @@ const part: PartialDictionary = {
     verifiedScreenshotNoteTemplate: "已通过参考截图确认{fixedSuffix} · 计入对比",
     fixedEstimateSuffix: " · 估算为固定型",
     externalCrossVerifiedNoteTemplate: "已通过外部交叉验证（未经 KONAMI 确认）{fixedSuffix} · 计入对比",
-    underVerificationNote: "效果验证中 · 不计入对比",
+    underVerificationNote: "效果未确认，不计入比较",
     additionalBoosterPrefix: "额外加成（B2，覆盖附带加成；",
     additionalBoosterHighlight: "已确认的加成会影响对比排名",
     additionalBoosterSuffix: "）",

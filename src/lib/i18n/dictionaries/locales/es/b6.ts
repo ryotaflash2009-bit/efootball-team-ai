@@ -332,7 +332,7 @@ const part: PartialDictionary = {
     boosterModeNote: "Modo de potenciador: Estándar. En estos totales solo se reflejan los potenciadores cuyo efecto integrado en la carta se ha contrastado con dos fuentes externas, más las correcciones del entrenador (no confirmado por KONAMI). Incluye efectos que se suponen de tipo fijo y Power of Many (aplicados provisionalmente porque no hay pruebas concretas en ningún sentido). Excluye los potenciadores variables dorados (cuyo efecto depende del número de jugadores de la misma liga en un Game Plan y no se puede evaluar automáticamente para la plantilla actual), los valores especificados por el usuario, los efectos aún en verificación y los potenciadores agrupados sin resolver o las estimaciones manuales.",
     startingBenchLabel: "Titulares / Banquillo",
     avgBaseOvrLabel: "OVR base medio",
-    avgDisplayedOvrLabel: "OVR mostrado medio (sin verificar)",
+    avgDisplayedOvrLabel: "OVR estimado medio (no es la fórmula oficial)",
     sharedSkillCountLabel: "Habilidades compartidas",
     managerBoostedLabel: "Potenciador de entrenador aplicado",
     unresolvedCompatibilityLabel: "Encaje sin confirmar",

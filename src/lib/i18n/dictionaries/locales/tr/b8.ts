@@ -207,7 +207,7 @@ const part: PartialDictionary = {
     verifiedScreenshotNoteTemplate: "Referans ekran görüntüleriyle doğrulandı{fixedSuffix} · karşılaştırmaya yansıtılır",
     fixedEstimateSuffix: " · tahmini sabit tip",
     externalCrossVerifiedNoteTemplate: "Harici kaynaklarla çapraz doğrulandı (KONAMI tarafından doğrulanmadı){fixedSuffix} · karşılaştırmaya yansıtılır",
-    underVerificationNote: "Etki doğrulanıyor · karşılaştırmaya yansıtılmaz",
+    underVerificationNote: "Etki doğrulanmadı · karşılaştırmaya yansıtılmaz",
     additionalBoosterPrefix: "Ek güçlendirici (B2, ekli olanın yerine geçer; ",
     additionalBoosterHighlight: "doğrulanmış olanlar karşılaştırma sıralamasını etkiler",
     additionalBoosterSuffix: ")",

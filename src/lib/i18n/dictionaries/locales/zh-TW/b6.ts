@@ -332,7 +332,7 @@ const part: PartialDictionary = {
     boosterModeNote: "加成模式：標準。這些總計只反映已與兩個外部來源交叉核對過卡片內建效果的加成，以及總教練修正（未經 KONAMI 確認）。包含推定為固定型的效果與 Power of Many（由於正反兩方面都沒有具體證據，暫時套用）。不包含金色變動型加成（效果會隨 Game Plan 中同聯賽球員人數變化，無法對目前陣容自動評估）、使用者指定值、仍在驗證中的效果，以及未解析的組合加成或手動估算。",
     startingBenchLabel: "先發／板凳",
     avgBaseOvrLabel: "平均基礎 OVR",
-    avgDisplayedOvrLabel: "平均顯示 OVR（未驗證）",
+    avgDisplayedOvrLabel: "平均推定 OVR（非官方計算公式）",
     sharedSkillCountLabel: "共同技能數",
     managerBoostedLabel: "已套用總教練加成",
     unresolvedCompatibilityLabel: "適性未確認",

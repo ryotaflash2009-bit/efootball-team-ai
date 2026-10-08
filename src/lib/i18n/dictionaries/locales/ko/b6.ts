@@ -332,7 +332,7 @@ const part: PartialDictionary = {
     boosterModeNote: "부스터 모드: 표준. 카드 고유 효과가 외부 출처 2곳과 대조된 부스터와 감독 보정만 이 합계에 반영됩니다(KONAMI 확인 아님). 고정형으로 추정되는 효과와 Power of Many(어느 쪽이든 구체적 근거가 없어 잠정 적용)를 포함합니다. 골드 가변 부스터(게임 플랜의 같은 리그 선수 수에 따라 효과가 달라져 현재 스쿼드에서 자동 평가할 수 없음), 사용자 지정 값, 검증 중인 효과, 미확인 묶음 부스터나 수동 추정은 제외합니다.",
     startingBenchLabel: "선발 / 벤치",
     avgBaseOvrLabel: "평균 기본 OVR",
-    avgDisplayedOvrLabel: "평균 표시 OVR(미검증)",
+    avgDisplayedOvrLabel: "평균 추정 OVR(공식 계산식 아님)",
     sharedSkillCountLabel: "공통 스킬 수",
     managerBoostedLabel: "감독 부스터 적용",
     unresolvedCompatibilityLabel: "적성 미확인",

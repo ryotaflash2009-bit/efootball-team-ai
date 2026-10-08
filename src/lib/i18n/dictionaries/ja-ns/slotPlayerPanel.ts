@@ -24,7 +24,7 @@ const slotPlayerPanel: Dictionary["slotPlayerPanel"] = {
   powerOfManyNote: "金色・可変（Game Plan 依存）・チーム集計に不反映",
   verifiedScreenTemplate: "参考画面で実測確認{fixedNote}・チームに反映",
   externalVerifiedTemplate: "外部照合済み（公式未確認）{fixedNote}・チームに反映",
-  underVerificationNote: "効果検証中・不反映",
+  underVerificationNote: "効果未確定・不反映",
   fixedTypeEstimateSuffix: "・固定型推定",
   experimentalBoosterPrefix: "実験的なブースター試算（付属を上書き・",
   experimentalBoosterTeamNote: "チーム集計には影響しません",

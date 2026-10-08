@@ -250,7 +250,7 @@ const part: PartialDictionary = {
     powerOfManyNote: "Ouro, variável (depende do Game Plan) — não refletido nos totais do time",
     verifiedScreenTemplate: "Medido em uma tela de referência{fixedNote} — refletido no time",
     externalVerifiedTemplate: "Verificado com fontes externas (não confirmado pela KONAMI){fixedNote} — refletido no time",
-    underVerificationNote: "Efeito em verificação — não refletido",
+    underVerificationNote: "Efeito não confirmado — não aplicado",
     fixedTypeEstimateSuffix: ", presumivelmente do tipo fixo",
     experimentalBoosterPrefix: "Estimativa experimental de booster (substitui o equipado — ",
     experimentalBoosterTeamNote: "não afeta os totais do time",

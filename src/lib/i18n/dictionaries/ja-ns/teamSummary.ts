@@ -10,7 +10,7 @@ const teamSummary: Dictionary["teamSummary"] = {
     "ブースター適用モード: 標準。カード付属の効果を外部2ソースで照合したブースターと監督補正のみ集計に反映（KONAMI 公式未確認）。発動方式が固定型と推定のもの（Power of Many である具体的証拠がないため暫定適用）を含みます。金色の可変ブースター（Game Plan の同一リーグ人数で効果量が変化・現状のスカッドでは自動評価不可）のユーザー指定値・効果検証中・未解決の付属ブースターと手動試算は含めません。",
   startingBenchLabel: "先発 / ベンチ",
   avgBaseOvrLabel: "平均 基礎OVR",
-  avgDisplayedOvrLabel: "平均 表示OVR（検証中）",
+  avgDisplayedOvrLabel: "平均 推定OVR（公式の計算式ではない）",
   sharedSkillCountLabel: "共通スキル数",
   managerBoostedLabel: "監督ブースター適用",
   unresolvedCompatibilityLabel: "適性未確認",

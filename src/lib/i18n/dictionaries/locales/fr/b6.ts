@@ -332,7 +332,7 @@ const part: PartialDictionary = {
     boosterModeNote: "Mode booster : Standard. Seuls les boosters dont l’effet intégré à la carte a été recoupé avec deux sources externes, ainsi que les corrections d’entraîneur, sont pris en compte dans ces totaux (non confirmé par KONAMI). Inclut les effets supposés de type fixe et Power of Many (appliqués à titre provisoire, faute de preuve concrète dans un sens ou dans l’autre). Exclut les boosters variables dorés (dont l’effet dépend du nombre de joueurs de la même ligue dans un Game Plan et ne peut pas être évalué automatiquement pour l’effectif actuel), les valeurs indiquées par l’utilisateur, les effets encore en cours de vérification ainsi que les boosters groupés non identifiés et les estimations manuelles.",
     startingBenchLabel: "Titulaires / Banc",
     avgBaseOvrLabel: "OVR de base moyen",
-    avgDisplayedOvrLabel: "OVR affiché moyen (non vérifié)",
+    avgDisplayedOvrLabel: "OVR estimé moyen (pas la formule officielle)",
     sharedSkillCountLabel: "Compétences communes",
     managerBoostedLabel: "Booster d’entraîneur appliqué",
     unresolvedCompatibilityLabel: "Aptitude non confirmée",

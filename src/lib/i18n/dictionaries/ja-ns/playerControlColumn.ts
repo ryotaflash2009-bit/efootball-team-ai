@@ -27,7 +27,7 @@ const playerControlColumn: Dictionary["playerControlColumn"] = {
   verifiedScreenshotNoteTemplate: "参考画面で実測確認{fixedSuffix}・比較に反映",
   fixedEstimateSuffix: "・固定型推定",
   externalCrossVerifiedNoteTemplate: "外部照合済み（公式未確認）{fixedSuffix}・比較に反映",
-  underVerificationNote: "効果検証中・比較に不反映",
+  underVerificationNote: "効果未確定・比較に不反映",
   additionalBoosterPrefix: "追加ブースター（B2・付属を上書き・",
   additionalBoosterHighlight: "確認済みは比較の順位へ反映",
   additionalBoosterSuffix: "）",

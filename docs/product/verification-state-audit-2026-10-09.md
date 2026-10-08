@@ -56,3 +56,27 @@
 
 - 育成カテゴリの対象能力（Shooting 以外の 9 カテゴリ）: ゲームの育成画面の記録（カテゴリごとに 1 枚）が必要（`progression-rules-evidence.md` §4）。
 - F-045 の追加の観点の採用・問い合わせの窓口・アカウントの移行（Auth の公開）。
+
+## 7. 追加の整理（2026-10-09・2 回目）
+
+公開の画面に「検証中」という開発の状態の表示を残さないため、次の 14 キー（12 言語）も具体的な表現へ変えた。
+
+| キー | 今 | 分類 |
+|---|---|---|
+| progressionTab.boostEvidencePending・boostIconProvisional・boostFixedVerifying・ruListProvisional・ruExWarning・ruExBullet2・ruPbModeExperimentalDesc・anTrialFormula・anExcludedNote | 「効果未確定」「効果が未確定の付属ブースター」 | RELEASED（証拠の段階の名前。定義つき） |
+| playerControlColumn.underVerificationNote・slotPlayerPanel.underVerificationNote | 効果未確定・（比較に）不反映 | RELEASED |
+| progressionTab.anInternalTraitsHeading | 内部特性値（段階の意味は公式に未公開） | VERIFIED_PARTIAL |
+| progressionTab.underVerification（推定 OVR の横） | 公式の計算式ではありません | VERIFIED_PARTIAL |
+| teamSummary.avgDisplayedOvrLabel | 平均 推定OVR（公式の計算式ではない） | VERIFIED_PARTIAL（値は各選手の推定 OVR の平均） |
+
+残る「検証中・確認中」は次だけ:
+
+| キー | 分類 | 理由 |
+|---|---|---|
+| buildImportModal.validatingText（ファイルを検証中です…）・myTeamCloud.checkingMessage（確認中…） | LOADING_STATE | 処理中の一時的な表示 |
+| safetyMock.status_reviewing（確認中） | INTERNAL_PREVIEW | 内部の確認の画面（本番は 404）のモック |
+| progressionTab.pointsFormulaUnverified | 表示されない分岐 | ポイント総数は confirmed のため現在は出ない |
+| comparePage・comparisonTables・squadList・teamSummary・anPhysNoteRanks の説明文 | RELEASED | 「確認」は「照合した」の意味の説明文（状態の表示ではない） |
+
+あわせて、保存ビルドの書き出しでコストの規則（`costRuleId`）が落ちていた不具合を直した（`canonicalizeExportBuild`）。読み込みも同じ関数を通るため、
+現行の規則で保存したビルドを書き出し → 読み込みすると旧規則として扱われていた。テストで往復を確認。

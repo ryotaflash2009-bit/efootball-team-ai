@@ -250,7 +250,7 @@ const part: PartialDictionary = {
     powerOfManyNote: "金色、變動（取決於 Game Plan）— 不反映在球隊合計中",
     verifiedScreenTemplate: "已於參考畫面實測{fixedNote} — 反映在球隊中",
     externalVerifiedTemplate: "已經外部交叉驗證（非 KONAMI 確認）{fixedNote} — 反映在球隊中",
-    underVerificationNote: "效果驗證中 — 未反映",
+    underVerificationNote: "效果未確認，不計入",
     fixedTypeEstimateSuffix: "，推定為固定型",
     experimentalBoosterPrefix: "實驗性加成估算（覆寫附帶加成 — ",
     experimentalBoosterTeamNote: "不影響球隊合計",
