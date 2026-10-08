@@ -78,8 +78,8 @@ const FIXED_EN: Record<string, string> = {
     "This build was made with old rules. Recalculating with the current rules changes how the allocation is interpreted.",
   "Total Package の条件段階はユーザーが手動指定した試算値です（アプリが Game Plan の対象リーグ人数を自動検証した値ではありません）。標準最終値・比較の順位・チーム集計には含めていません。":
     "The Total Package tier is a trial value you set manually (the app has not verified the number of league players in your Game Plan). It is not included in standard final values, comparison rankings or team totals.",
-  "一部の能力値が99上限に達しています（超過分は無効）。ただし育成・ブースター・監督補正込みの最終上限が99である確証はまだありません（暫定処理）。":
-    "Some abilities reached the 99 cap (any excess is ignored). It is not yet confirmed that 99 is the final cap including progression, boosters and manager corrections (provisional handling).",
+  "一部の能力値が育成の上限 99 に達しています（超えた分の育成は無効）。ブースター・監督の補正は 99 を超えて加わります（KONAMI 公式の説明）。":
+    "Some abilities reached the progression cap of 99 (progression beyond it has no effect). Boosters and manager boosts still add on top and can go above 99 (per KONAMI).",
   "厳密モード: ユーザー保存済みスクリーンショットで実測できた付属ブースターだけを通常の最終値へ適用しています。適用の基準は効果内容の証拠で、発動方式（固定型 / Power of Many）は問いません。":
     "Strict mode: only attached boosters measured on user-saved screenshots are applied to the normal final values. Application is based on evidence of the effect, regardless of activation type (fixed / Power of Many).",
   "標準モード: 効果内容を外部データベース間で照合した高信頼値を含みます。KONAMI 公式の計算結果として確認された値ではありません。発動方式の証拠が不足するブースターは、Power of Many（条件型）である具体的証拠がないため固定型と推定して暫定適用しています（「外部照合済み・固定型推定を含む」）。":

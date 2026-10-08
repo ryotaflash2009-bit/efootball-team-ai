@@ -315,6 +315,8 @@ const part: PartialDictionary = {
     ruCapConfirmed: "bestätigt",
     ruCapUnconfirmed: "unbestätigt",
     ruCapUnconfirmedClamp: "unbestätigt; vorläufige Begrenzung",
+    ruCapNone: "keine Obergrenze, kann 99 übersteigen",
+    ruCapSourceNote: "Entwicklung endet bei 99; Booster und Trainer-Booster kommen obendrauf (laut offiziellen KONAMI-Notizen v3.00; wie die Berechnung von eFHUB).",
     ruShowRuleStatus: "Bestätigungsstatus der Regeln anzeigen",
     ruListConfirmed: "Bestätigt",
     ruListProvisional: "Wahrscheinlich, aber nicht bestätigt",

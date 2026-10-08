@@ -26,8 +26,6 @@ function rulesText(status: "confirmed" | "provisional" | "unresolved"): string[]
 const UNSUPPORTED_RULES = [
   "公式のOVR計算式・ポジション別OVRの正確な重み",
   "Max Level Stats（最大レベル時の各能力値）の内訳",
-  "グループ配分1段階あたりの能力別の正確な上昇量（重み付き/上限）",
-  "育成・選手ブースター・監督補正を含む最終能力値の上限（暫定で99にクランプ）",
 ];
 
 /** 育成計算のトップレベル（v2）。純関数。 */
@@ -104,7 +102,7 @@ export function calculateBuild(input: ProgressionInput): ProgressionResult {
   if (managerBooster.applied) warnings.push(managerBooster.note);
   if (finalStats.finalCapApplied) {
     warnings.push(
-      "一部の能力値が99上限に達しています（超過分は無効）。ただし育成・ブースター・監督補正込みの最終上限が99である確証はまだありません（暫定処理）。",
+      "一部の能力値が育成の上限 99 に達しています（超えた分の育成は無効）。ブースター・監督の補正は 99 を超えて加わります（KONAMI 公式の説明）。",
     );
   }
 

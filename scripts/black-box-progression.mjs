@@ -72,18 +72,19 @@ async function main() {
   const b = messi.body;
   record("育成: 「育成ポイント」表示", b.includes("育成ポイント"), "");
   record("育成: ポイント総数の式を明示（(最大レベル − 1) × 2）", b.includes("(最大レベル − 1) × 2"), "");
-  record("育成: ポイント総数は「確認済」表記", b.includes("(最大レベル − 1) × 2（確認済）"), "");
+  record("育成: ポイント総数は「確認済み」表記", b.includes("(最大レベル − 1) × 2（確認済み）"), "");
   record("育成: 計算モード「確定（基礎値のみ）」を初期表示", b.includes("確定（基礎値のみ）"), "");
   record("育成: 現行規則バージョン v2 表示（日付は作成日 08-28）", b.includes("progression/2026-08-28.v2"), "");
   record("育成: 未来日付 08-29 のバージョン名を使わない", !b.includes("progression/2026-08-29"), "");
-  record("育成: 能力値上限のレイヤー表示（基礎=確認済 / 最終=未確認）", b.includes("能力値上限:") && b.includes("暫定クランプ"), "");
-  record("育成: 最終能力値の99上限は暫定と明記", b.includes("最終能力値の上限（暫定で99にクランプ）"), "");
-  record("育成: 段階コストは「外挿・confirmed ではない」と明記", b.includes("外挿・confirmed ではない"), "");
-  record("育成: 「検証中」の明示がある", b.includes("検証中"), "");
+  // 2026-10-09: 上限は「育成 99・ブースターは 99 を超えられる」（KONAMI 公式・eFHUB）、段階コストは 4 段階ごと（確認済み）、対象能力は eFHUB基準。
+  record("育成: 能力値上限のレイヤー表示（育成 99・ブースター後は上限なし）", b.includes("能力値上限:") && b.includes("上限なし・99 を超えられる") && !b.includes("暫定クランプ"), "");
+  record("育成: 最終能力値を 99 で止める古い説明が無い", !b.includes("暫定で99にクランプ"), "");
+  record("育成: 段階コストは 4 段階ごと（確認済み）", b.includes("1〜4 段階が 1pt") && b.includes("4 段階ごとに +1pt（確認済み）"), "");
+  record("育成: 開発の状態の「対象能力は検証中」を出さない", !b.includes("対象能力は検証中"), "");
   record("育成: 能力値グループ10種を日本語表示", ["シュート", "パス", "ドリブル", "クイックネス", "脚力", "エアバトル", "ディフェンス", "GK1", "GK2", "GK3"].every((g) => b.includes(g)), "");
   record("育成: グループレベルの +/- ボタン（aria-label）", /aria-label="[^"]*のレベルを上げる"/.test(b) && /aria-label="[^"]*のレベルを下げる"/.test(b), "");
   record("育成: 次の1段階のコスト表示（次の+1: Npt）", /次の\+1: \d+pt/.test(b), "");
-  record("育成: Shooting は「確認済」、他グループは「検証中」表記", b.includes("確認済") && b.includes("対象能力は検証中"), "");
+  record("育成: 対象能力は「eFHUB基準」表記（公式とは書かない）", b.includes("eFHUB基準") && !b.includes("ゲーム公式確認済み"), "");
   record("育成: 自動育成（攻撃/守備/バランス/GK重視）", ["攻撃重視", "守備重視", "バランス重視", "GK重視"].every((x) => b.includes(x)), "");
   record("育成: 「最大OVR保証」を主張しない", !b.includes("最大OVR保証") && !b.includes("最大OVRを保証") && !b.includes("最大OVR を保証"), "");
   record("育成: 「育成リセット」ボタン", b.includes("育成リセット"), "");
@@ -153,7 +154,7 @@ async function main() {
   const rankTotal = (await json(`/api/world/players/${CARDS.messi}`)).data?.player?.appearance?.ranks?.legLength?.overall?.total ?? -1;
   record("分析: 物理順位は全カード実データ・「値の大きい順」明示", rankTotal > 0 && b.includes(rankTotal.toLocaleString("en-US")) && b.includes("値の大きい順") && b.includes("大きさ順位"), `rankTotal=${rankTotal}`);
   record("分析: パーセンタイルは「100 に近いほど大」で誤解を避ける", b.includes("100 に近いほど大") && !b.includes("上位 98%") && !b.includes("上位98%"), "");
-  record("分析: その他特性は内部値と表示名を分離（内部特性値・意味は追加検証中）", b.includes("内部特性値") && b.includes("段階の意味は追加検証中") && b.includes("逆足頻度"), "");
+  record("分析: その他特性は内部値と表示名を分離（内部特性値・段階の意味は公式に未公開）", b.includes("内部特性値") && b.includes("段階の意味は公式に未公開") && b.includes("逆足頻度"), "");
   record("分析: レールは育成計算に影響しない旨", b.includes("育成計算・ブースター計算・監督補正には影響しません"), "");
 
   // スキル / AI・COM プレースタイルは中央カラムへ移動（右レールと二重表示しない）

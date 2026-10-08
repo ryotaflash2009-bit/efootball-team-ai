@@ -4435,6 +4435,8 @@ export interface Dictionary {
     ruCapConfirmed: string;
     ruCapUnconfirmed: string;
     ruCapUnconfirmedClamp: string;
+    ruCapNone: string;
+    ruCapSourceNote: string;
     ruShowRuleStatus: string;
     ruListConfirmed: string;
     ruListProvisional: string;

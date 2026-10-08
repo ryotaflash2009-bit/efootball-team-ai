@@ -609,13 +609,22 @@ describe("B2標準統合: confirmedB2Deltas / standardFinalValue（本マイル�
       expect(spd.confirmedB2BoosterDelta).toBe(3);
       expect(spd.standardFinalValue).toBe(spd.baseValue + 3);
     });
-    it("能力値上限: confirmedB2 込みで 99 にクランプされる", () => {
+    it("能力値上限（2026-10-09 確定）: ブースターは 99 を超えられる（KONAMI 公式 v3.00・eFHUB と同じ）", () => {
       const r = calculateBuild({ card: { ...NEAR_CAP_CARD, boost1: 0, boost2: 0 }, allocation: {}, selectedPlayerBoosters: [{ slot: 1, boosterKey: "ball-carrying", level: 5 }] });
       const dr = r.stats.find((s) => s.key === "dribbling")!; // baseValue 99
       expect(dr.baseValue + dr.confirmedB2BoosterDelta).toBeGreaterThan(99);
-      expect(dr.standardFinalValue).toBe(99);
+      expect(dr.standardFinalValue).toBe(dr.baseValue + dr.confirmedB2BoosterDelta);
+      expect(dr.capApplied).toBe(false);
+      expect(r.finalCapApplied).toBe(false);
+    });
+    it("能力値上限（2026-10-09 確定）: 育成は 99 で止まり、ブースターはその上に足す", () => {
+      const r = calculateBuild({ card: { ...NEAR_CAP_CARD, boost1: 0, boost2: 0 }, allocation: { dribbling: 10 }, selectedPlayerBoosters: [{ slot: 1, boosterKey: "ball-carrying", level: 5 }] });
+      const dr = r.stats.find((s) => s.key === "dribbling")!; // baseValue 99 + 育成 +10 → 99 で止まる
+      expect(dr.progressionDelta).toBeGreaterThan(0);
+      expect(dr.standardFinalValue).toBe(99 + dr.confirmedB2BoosterDelta);
       expect(dr.capApplied).toBe(true);
       expect(r.finalCapApplied).toBe(true);
+      expect(dr.uncappedValue).toBe(dr.baseValue + dr.progressionDelta + dr.confirmedB2BoosterDelta);
     });
     it("丸め規則: レベルは 1..maxLevel へクランプ・整数化（既存 boosterDeltas のまま）", () => {
       const r = calculateBuild({ card: CLEAN(), allocation: {}, selectedPlayerBoosters: [{ slot: 1, boosterKey: "ball-carrying", level: 2.9 }] });

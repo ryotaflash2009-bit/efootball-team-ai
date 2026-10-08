@@ -12,23 +12,23 @@ export const PROGRESSION_RULES_VERSION_MISDATED = "progression/2026-08-29.v2";
 export const PROGRESSION_RULES_VERSION_V1 = "progression/2026-08-28.provisional-1";
 
 /**
- * 能力値上限のレイヤー別確認状態。
+ * 能力値上限のレイヤー別確認状態（2026-10-09 に確定）。
  * - base: 99 / confirmed（保存済み基礎能力値 338,234件に99超過なし + 外部記述 "40-99"）
- * - progression / playerBooster / managerBooster / final: 99 は暫定値。
- *   「育成・ブースター・監督補正を含む最終値の上限が99」という証拠はまだ無い（unresolved）。
- *
- * 将来 100以上 が確認されたら、この表と rule-registry の値だけ変更すればよい
- * （calculate-final-stats.ts はこの表を参照するだけ）。
+ * - progression: 99 / confirmed（基礎＋育成は 99 で止まる。eFHUB の applyProgression・KONAMI v3.00「通常の上限 99」）
+ * - playerBooster / managerBooster / final: 上限なし（null）/ confirmed。
+ *   KONAMI 公式 v3.00「Boosters … allow players to perform beyond the normal ceiling of 99」・eFHUB もブースターを止めない。
+ *   計算は calculate-final-stats.ts（min(99, 基礎＋育成) ＋ ブースター・監督の補正）。
  */
 export type CapConfidence = "confirmed" | "unresolved";
 export interface StatCapRule {
-  value: number;
+  /** null = 上限なし */
+  value: number | null;
   confidence: CapConfidence;
   note: string;
 }
 export const STAT_CAPS: {
-  base: StatCapRule;
-  progression: StatCapRule;
+  base: StatCapRule & { value: number };
+  progression: StatCapRule & { value: number };
   playerBooster: StatCapRule;
   managerBooster: StatCapRule;
   final: StatCapRule;
@@ -40,28 +40,28 @@ export const STAT_CAPS: {
   },
   progression: {
     value: 99,
-    confidence: "unresolved",
-    note: "育成適用時の能力値上限は未確認。暫定で99を使用。",
+    confidence: "confirmed",
+    note: "基礎＋育成は 99 で止まる（eFHUB の育成の計算・KONAMI 公式 v3.00 の「通常の上限 99」）。",
   },
   playerBooster: {
-    value: 99,
-    confidence: "unresolved",
-    note: "選手ブースター適用後の上限は未確認。暫定で99を使用。",
+    value: null,
+    confidence: "confirmed",
+    note: "ブースターは 99 を超えられる（KONAMI 公式 v3.00「beyond the normal ceiling of 99」・eFHUB も止めない）。",
   },
   managerBooster: {
-    value: 99,
-    confidence: "unresolved",
-    note: "監督補正適用後の上限は未確認。暫定で99を使用。",
+    value: null,
+    confidence: "confirmed",
+    note: "監督のブースター（+1）も育成の後に足し、99 で止めない（eFHUB と同じ・KONAMI のブースターの説明）。",
   },
   final: {
-    value: 99,
-    confidence: "unresolved",
-    note: "全レイヤー合成後の最終上限は未確認。暫定で99にクランプ（100以上が確認されたら STAT_CAPS.final のみ変更）。",
+    value: null,
+    confidence: "confirmed",
+    note: "最終値 = min(99, 基礎＋育成) ＋ 選手のブースター ＋ 監督のブースター。上限なし（2026-10-09 確定）。",
   },
 };
 
-/** 後方互換の別名（= 最終上限の暫定値 99） */
-export const STAT_CAP = STAT_CAPS.final.value;
+/** 育成の上限（= 基礎＋育成の上限 99）。育成で上げて意味のある範囲の計算に使う。 */
+export const STAT_CAP = STAT_CAPS.progression.value;
 
 /** 能力値の下限（表示・計算の安全側）。 */
 export const STAT_FLOOR = 1;

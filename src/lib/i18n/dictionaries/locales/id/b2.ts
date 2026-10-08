@@ -315,6 +315,8 @@ const part: PartialDictionary = {
     ruCapConfirmed: "dikonfirmasi",
     ruCapUnconfirmed: "belum dikonfirmasi",
     ruCapUnconfirmedClamp: "belum dikonfirmasi; pembatasan sementara",
+    ruCapNone: "tanpa batas, bisa melebihi 99",
+    ruCapSourceNote: "Progresi berhenti di 99; booster dan booster manajer ditambahkan di atasnya (menurut catatan resmi KONAMI v3.00; sama dengan perhitungan eFHUB).",
     ruShowRuleStatus: "Tampilkan status konfirmasi aturan",
     ruListConfirmed: "Dikonfirmasi",
     ruListProvisional: "Kemungkinan besar, tetapi belum dikonfirmasi",

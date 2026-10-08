@@ -315,6 +315,8 @@ const progressionTab: Dictionary["progressionTab"] = {
   ruCapConfirmed: "確認済",
   ruCapUnconfirmed: "未確認",
   ruCapUnconfirmedClamp: "未確認・暫定クランプ",
+  ruCapNone: "上限なし・99 を超えられる",
+  ruCapSourceNote: "育成は 99 で止まり、ブースター・監督のブースターはその上に足します（KONAMI 公式 v3.00 の説明・eFHUB の計算と同じ）。",
   ruShowRuleStatus: "規則の確認状態を表示",
   ruListConfirmed: "確認済み",
   ruListProvisional: "有力だが未確定",

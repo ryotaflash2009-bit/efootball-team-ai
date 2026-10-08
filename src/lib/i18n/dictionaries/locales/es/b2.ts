@@ -315,6 +315,8 @@ const part: PartialDictionary = {
     ruCapConfirmed: "confirmado",
     ruCapUnconfirmed: "sin confirmar",
     ruCapUnconfirmedClamp: "sin confirmar; límite provisional",
+    ruCapNone: "sin tope, puede superar 99",
+    ruCapSourceNote: "La progresión se detiene en 99; los potenciadores y los del entrenador se suman encima (según las notas oficiales v3.00 de KONAMI; igual que el cálculo de eFHUB).",
     ruShowRuleStatus: "Ver estado de confirmación de las reglas",
     ruListConfirmed: "Confirmado",
     ruListProvisional: "Probable pero sin confirmar",

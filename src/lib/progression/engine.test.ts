@@ -357,37 +357,40 @@ describe("自動育成（v2 グループ）", () => {
   });
 });
 
-describe("能力値上限のレイヤー分離（修正）", () => {
-  it("base のみ confirmed、progression/playerBooster/managerBooster/final は unresolved", () => {
+describe("能力値上限のレイヤー分離（2026-10-09 確定: 育成は 99・ブースターは 99 を超えられる）", () => {
+  it("base・progression は 99（confirmed）、ブースター・最終値は上限なし（confirmed）", () => {
     const r = calculateBuild({ card: MESSI_BIGTIME, allocation: {} });
-    expect(r.statCaps.base.confidence).toBe("confirmed");
-    expect(r.statCaps.base.value).toBe(99);
-    expect(r.statCaps.progression.confidence).toBe("unresolved");
-    expect(r.statCaps.playerBooster.confidence).toBe("unresolved");
-    expect(r.statCaps.managerBooster.confidence).toBe("unresolved");
-    expect(r.statCaps.final.confidence).toBe("unresolved");
+    expect(r.statCaps.base).toEqual({ value: 99, confidence: "confirmed" });
+    expect(r.statCaps.progression).toEqual({ value: 99, confidence: "confirmed" });
+    expect(r.statCaps.playerBooster).toEqual({ value: null, confidence: "confirmed" });
+    expect(r.statCaps.managerBooster).toEqual({ value: null, confidence: "confirmed" });
+    expect(r.statCaps.final).toEqual({ value: null, confidence: "confirmed" });
   });
-  it("最終値が99を超えるとき finalCapApplied=true + 暫定である旨の warning", () => {
+  it("育成で 99 を超える分は無効（finalCapApplied=true・育成の上限の warning）・ブースターが無ければ 99 のまま", () => {
     const r = calculateBuild({ card: NEAR_CAP_CARD, allocation: { dribbling: 20 } });
     expect(r.finalCapApplied).toBe(true);
-    expect(r.warnings.some((w) => w.includes("確証はまだありません"))).toBe(true);
+    expect(r.warnings.some((w) => w.includes("育成の上限 99"))).toBe(true);
+    expect(r.warnings.some((w) => w.includes("確証はまだありません"))).toBe(false);
     expect(r.stats.every((s) => s.finalValue <= 99)).toBe(true);
   });
   it("基礎のみ（配分ゼロ）なら finalCapApplied=false", () => {
     expect(calculateBuild({ card: MESSI_BIGTIME, allocation: {} }).finalCapApplied).toBe(false);
   });
-  it("unresolvedRules に最終上限の暫定処理が含まれる", () => {
-    const r = calculateBuild({ card: MESSI_BIGTIME, allocation: {} });
-    expect(r.unresolvedRules.some((x) => x.includes("最終能力値の上限"))).toBe(true);
+  it("最終上限の規則は confirmed（未確認の一覧に入らない）", async () => {
+    const { RULE_REGISTRY } = await import("./rule-registry");
+    const rule = RULE_REGISTRY.find((x) => x.ruleId === "stat.cap.final")!;
+    expect(rule.confirmationStatus).toBe("confirmed");
+    expect(rule.source.join(" ")).toMatch(/KONAMI/);
   });
 });
 
-describe("段階コストは confirmed へ昇格しない", () => {
-  it("rule-registry の cost.staged は provisional のまま・外挿の注記あり", async () => {
+describe("段階コスト（2026-10-09: eFHUB・外部・本人の確認が一致）", () => {
+  it("rule-registry の cost.staged は confirmed・現行は 4 段階ごと・旧規則のビルドの扱いを明記", async () => {
     const { RULE_REGISTRY } = await import("./rule-registry");
     const cost = RULE_REGISTRY.find((r) => r.ruleId === "cost.staged")!;
-    expect(cost.confirmationStatus).toBe("provisional");
-    expect(cost.evidence).toContain("外挿");
+    expect(cost.confirmationStatus).toBe("confirmed");
+    expect(cost.formula).toContain("floor(currentLevel / 4)");
+    expect(cost.description).toContain("旧規則");
   });
 });
 
