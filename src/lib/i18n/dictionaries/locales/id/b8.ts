@@ -200,7 +200,7 @@ const part: PartialDictionary = {
     registeredPositionLabel: "Posisi terdaftar: ",
     currentOverallLabel: "Rating keseluruhan per posisi dengan progresi saat ini: ",
     currentOverallValue: "—",
-    currentOverallNote: " (aturan perhitungan sedang ditinjau)",
+    currentOverallNote: " (tidak dihitung: rumus resmi tidak dipublikasikan)",
     overallExplanation: "Progresi saat ini tercermin dalam perbandingan 26 atribut di atas. Nilai keseluruhan per posisi tidak ditampilkan karena KONAMI belum memublikasikan rumus, bobot atribut, atau aturan pembulatannya, dan contoh nilai tampilan antarkartu belum cukup untuk memperkirakannya secara andal (kami tidak menampilkan angka karangan).",
     attachedBoosterPrefixTemplate: "Terpasang {slot}: ",
     powerOfManyNote: "Booster variabel (emas, bergantung pada Game Plan) · tidak tercermin dalam peringkat perbandingan",

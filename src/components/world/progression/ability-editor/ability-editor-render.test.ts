@@ -47,6 +47,7 @@ function dockMarkup(card: ProgressionCard, before: Record<string, number>, after
       baselineLevel,
       pointsChange: costBetweenLevels(baselineLevel, level),
       nextCost: nextCostAtLevel(level, model.absoluteMax),
+      shortfall: 0,
       primary: a.stats.find((s) => s.key === stat) ?? null,
       relatedDiffs: f.focus.relatedStats.map((k) => diffs.get(k)!),
       dirty: opts.dirty ?? true,

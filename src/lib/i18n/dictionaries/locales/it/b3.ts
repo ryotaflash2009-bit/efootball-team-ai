@@ -112,7 +112,7 @@ const part: PartialDictionary = {
     calcModeConfirmed: "Solo valore base",
     calcModeUnsupported: "Non calcolabile",
     calcModeProvisional: "Regola provvisoria",
-    totalOvrPlaceholder: "Complessivo (OVR per ruolo): — (regola di calcolo in revisione)",
+    totalOvrPlaceholder: "Complessivo (OVR per ruolo): — (non calcolato: la formula ufficiale non è pubblica)",
     ownershipLabel: "Stato di possesso",
     ownershipHint: "La mia squadra gestisce le carte che possiedi davvero. Puoi cambiarlo in seguito dalla schermata La mia squadra.",
     usageStatusLabel: "Stato di utilizzo",

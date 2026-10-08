@@ -112,7 +112,7 @@ const part: PartialDictionary = {
     calcModeConfirmed: "Yalnızca temel değer",
     calcModeUnsupported: "Hesaplanamıyor",
     calcModeProvisional: "Geçici kural",
-    totalOvrPlaceholder: "Genel (mevkiye özel OVR): — (hesaplama kuralı inceleniyor)",
+    totalOvrPlaceholder: "Genel (mevkiye özel OVR): — (hesaplanmıyor: resmî formül açıklanmadı)",
     ownershipLabel: "Sahiplik durumu",
     ownershipHint: "Takımım gerçekten sahip olduğunuz kartları yönetir. Bunu daha sonra Takımım ekranından değiştirebilirsiniz.",
     usageStatusLabel: "Kullanım durumu",

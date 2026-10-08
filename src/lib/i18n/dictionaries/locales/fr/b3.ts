@@ -112,7 +112,7 @@ const part: PartialDictionary = {
     calcModeConfirmed: "Valeur de base uniquement",
     calcModeUnsupported: "Calcul impossible",
     calcModeProvisional: "Règle provisoire",
-    totalOvrPlaceholder: "Global (OVR par poste) : — (règle de calcul en cours d’examen)",
+    totalOvrPlaceholder: "Global (OVR par poste) : — (non calculé : la formule officielle n’est pas publique)",
     ownershipLabel: "Statut de possession",
     ownershipHint: "Mon équipe gère les cartes que vous possédez réellement. Vous pourrez modifier ce statut plus tard depuis l’écran Mon équipe.",
     usageStatusLabel: "Statut d’utilisation",

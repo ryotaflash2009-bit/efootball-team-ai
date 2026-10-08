@@ -200,7 +200,7 @@ const part: PartialDictionary = {
     registeredPositionLabel: "Posición registrada: ",
     currentOverallLabel: "Valoración por posición con la progresión actual: ",
     currentOverallValue: "—",
-    currentOverallNote: " (regla de cálculo en revisión)",
+    currentOverallNote: " (no se calcula: la fórmula oficial no es pública)",
     overallExplanation: "La progresión actual se refleja en la comparación de los 26 atributos de arriba. No se muestran valoraciones por posición porque KONAMI no ha publicado la fórmula, la ponderación de atributos ni las reglas de redondeo, y no hay suficientes valores de muestra entre cartas para estimarlas de forma fiable (no mostramos cifras inventadas).",
     attachedBoosterPrefixTemplate: "{slot} incluido: ",
     powerOfManyNote: "Potenciador variable (dorado, depende del Plan de juego) · no se refleja en la clasificación de la comparación",

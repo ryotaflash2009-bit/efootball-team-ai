@@ -200,7 +200,7 @@ const part: PartialDictionary = {
     registeredPositionLabel: "登记位置：",
     currentOverallLabel: "当前培养下的位置综合值：",
     currentOverallValue: "—",
-    currentOverallNote: "（计算规则审核中）",
+    currentOverallNote: "（官方计算公式未公开，不计算）",
     overallExplanation: "当前培养已反映在上方的 26 项能力对比中。由于 KONAMI 未公开计算公式、能力权重和取整规则，且各球员卡的显示值样本不足以进行可靠估算，因此不显示位置综合值（我们不会显示编造的数字）。",
     attachedBoosterPrefixTemplate: "附带 {slot}：",
     powerOfManyNote: "可变加成（金色，取决于比赛计划）· 不计入对比排名",

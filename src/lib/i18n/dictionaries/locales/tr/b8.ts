@@ -200,7 +200,7 @@ const part: PartialDictionary = {
     registeredPositionLabel: "Kayıtlı mevki: ",
     currentOverallLabel: "Mevcut gelişimle mevkiye özel genel değer: ",
     currentOverallValue: "—",
-    currentOverallNote: " (hesaplama kuralı inceleniyor)",
+    currentOverallNote: " (hesaplanmıyor: resmî formül açıklanmadı)",
     overallExplanation: "Mevcut gelişim, yukarıdaki 26 özellik karşılaştırmasına yansıtılır. KONAMI formülü, özellik ağırlıklarını veya yuvarlama kurallarını yayımlamadığından ve kartlar arasında güvenilir tahmin için yeterli örnek görüntü değeri bulunmadığından mevkiye özel genel değerler gösterilmez (uydurma sayılar göstermeyiz).",
     attachedBoosterPrefixTemplate: "Ekli {slot}: ",
     powerOfManyNote: "Değişken güçlendirici (altın, oyun planına bağlıdır) · karşılaştırma sıralamasına yansıtılmaz",

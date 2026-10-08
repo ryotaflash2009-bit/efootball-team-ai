@@ -200,7 +200,7 @@ const part: PartialDictionary = {
     registeredPositionLabel: "Poste enregistré : ",
     currentOverallLabel: "Note générale par poste avec la progression actuelle : ",
     currentOverallValue: "—",
-    currentOverallNote: " (règle de calcul en cours d’examen)",
+    currentOverallNote: " (non calculé : la formule officielle n’est pas publique)",
     overallExplanation: "La progression actuelle est reflétée dans la comparaison des 26 statistiques ci-dessus. Les notes générales par poste ne sont pas affichées, car KONAMI n’a pas publié la formule, la pondération des statistiques ni les règles d’arrondi, et il n’y a pas assez de valeurs affichées d’exemple entre les cartes pour une estimation fiable (nous n’affichons pas de chiffres inventés).",
     attachedBoosterPrefixTemplate: "{slot} attaché : ",
     powerOfManyNote: "Booster variable (or, dépend du plan de jeu) · non reflété dans le classement de la comparaison",

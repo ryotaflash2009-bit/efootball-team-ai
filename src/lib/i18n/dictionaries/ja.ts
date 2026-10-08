@@ -4191,6 +4191,9 @@ export interface Dictionary {
     sliderValueText: string;
     confirmedTag: string;
     targetsUnverifiedTag: string;
+    legacyCostRuleRecalculate: string;
+    legacyCostRuleBody: string;
+    legacyCostRuleTitle: string;
     targetsLabel: string;
     sliderDecrease: string;
     sliderAria: string;
@@ -4472,6 +4475,11 @@ export interface Dictionary {
     sectionTitle: string;
     sectionHint: string;
     trainThisAbility: string;
+    reachLimitedTemplate: string;
+    categoryCapHint: string;
+    targetsEstimatedHint: string;
+    targetsEstimated: string;
+    contractNote: string;
     relatedAbilities: string;
     selected: string;
     related: string;

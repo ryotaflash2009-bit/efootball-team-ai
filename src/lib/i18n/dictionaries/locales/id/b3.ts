@@ -112,7 +112,7 @@ const part: PartialDictionary = {
     calcModeConfirmed: "Hanya nilai dasar",
     calcModeUnsupported: "Tidak dapat dihitung",
     calcModeProvisional: "Aturan sementara",
-    totalOvrPlaceholder: "Keseluruhan (OVR per posisi): — (aturan perhitungan sedang ditinjau)",
+    totalOvrPlaceholder: "Keseluruhan (OVR per posisi): — (tidak dihitung: rumus resmi tidak dipublikasikan)",
     ownershipLabel: "Status kepemilikan",
     ownershipHint: "Tim Saya mengelola kartu yang benar-benar Anda miliki. Anda dapat mengubahnya nanti dari layar Tim Saya.",
     usageStatusLabel: "Status penggunaan",

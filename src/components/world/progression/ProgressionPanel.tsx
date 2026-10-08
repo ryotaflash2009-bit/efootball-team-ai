@@ -27,7 +27,7 @@ import { calculateBuild } from "@/lib/progression/engine";
 import { adjustGroupLevel } from "@/lib/progression/group-allocation";
 import { autoAllocate } from "@/lib/progression/auto-allocate";
 import { migrateBuild } from "@/lib/progression/migrate-build";
-import { isV2RulesVersion } from "@/lib/progression/progression-rules";
+import { CURRENT_COST_RULE_ID, isCurrentCostRule, isV2RulesVersion, resolveCostRuleId } from "@/lib/progression/progression-rules";
 import { RulesNotice } from "./RulesNotice";
 import { BuildBar } from "./BuildBar";
 import { MigrationNotice } from "./MigrationNotice";
@@ -72,6 +72,8 @@ export function ProgressionPanel({
   analysisScope?: string;
 }) {
   const [allocation, setAllocation] = useState<Record<string, number>>({});
+  // コストの規則（2026-10-08）: 新しい育成は現行（4 段階ごと）。読み込んだビルドはそのビルドの規則（無ければ旧規則・黙って変えない）。
+  const [costRuleId, setCostRuleId] = useState<string>(CURRENT_COST_RULE_ID);
   const [manager, setManager] = useState<ManagerContext | null>(null);
   const [managerDetail, setManagerDetail] = useState<ManagerDetail | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -100,20 +102,21 @@ export function ProgressionPanel({
         selectedPlayerBoosters: selectedBoosters,
         selectedConditionalBoosters: conditionalSelections,
         boosterApplicationMode: boosterMode,
+        costRuleId,
       }),
-    [card, manager, selectedBoosters, conditionalSelections, boosterMode],
+    [card, manager, selectedBoosters, conditionalSelections, boosterMode, costRuleId],
   );
   const result = useMemo(() => calculate(allocation), [calculate, allocation]);
   const canProgress = result.eligibility.canProgress;
 
   function handleGroupAdjust(groupId: string, delta: number) {
     setUndoAllocation(null);
-    setAllocation((prev) => adjustGroupLevel(prev, card, groupId, delta));
+    setAllocation((prev) => adjustGroupLevel(prev, card, groupId, delta, costRuleId));
   }
   /** スライダーで目標レベルへ（engine が段階コスト・残ポイント・上限で丸める）。 */
   function handleGroupSet(groupId: string, level: number) {
     setUndoAllocation(null);
-    setAllocation((prev) => adjustGroupLevel(prev, card, groupId, level - (prev[groupId] ?? 0)));
+    setAllocation((prev) => adjustGroupLevel(prev, card, groupId, level - (prev[groupId] ?? 0), costRuleId));
   }
   function goToSave() {
     const el = typeof document !== "undefined" ? document.getElementById("progression-build-bar") : null;
@@ -148,10 +151,11 @@ export function ProgressionPanel({
   }
   function handleAuto(profile: AutoAllocateProfile) {
     setUndoAllocation(null);
-    setAllocation(autoAllocate(card, profile).allocation);
+    setAllocation(autoAllocate(card, profile, costRuleId).allocation);
   }
   function handleLoad(build: SavedBuild) {
     const migration = migrateBuild(build, card);
+    setCostRuleId(resolveCostRuleId(build.costRuleId));
     setConditionalSelections(validateConditionalBoosterSelection(build.conditionalBoosterSelections));
     setUndoAllocation(null);
     if (isV2RulesVersion(build.rulesVersion) && !migration.changed) {
@@ -183,6 +187,21 @@ export function ProgressionPanel({
         canReset={hasAllocation}
         onUndoReset={undoAllocation ? undoReset : null}
       />
+
+      {!isCurrentCostRule(costRuleId) ? (
+        <div className="rounded-md border border-warning/40 bg-warning/10 p-3 text-xs text-text" role="status" data-testid="legacy-cost-rule-notice">
+          <p className="font-semibold">{tp("legacyCostRuleTitle")}</p>
+          <p className="mt-1 text-text-dim">{tp("legacyCostRuleBody")}</p>
+          <button
+            type="button"
+            className="mt-2 min-h-[36px] rounded border border-border px-3 text-text hover:border-accent"
+            onClick={() => setCostRuleId(CURRENT_COST_RULE_ID)}
+            data-testid="legacy-cost-rule-recalculate"
+          >
+            {tp("legacyCostRuleRecalculate")}
+          </button>
+        </div>
+      ) : null}
 
       {pending ? (
         <MigrationNotice

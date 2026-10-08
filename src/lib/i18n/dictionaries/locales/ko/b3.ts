@@ -112,7 +112,7 @@ const part: PartialDictionary = {
     calcModeConfirmed: "기본값만",
     calcModeUnsupported: "계산 불가",
     calcModeProvisional: "잠정 규칙",
-    totalOvrPlaceholder: "종합(포지션별 OVR): —(계산 규칙 검토 중)",
+    totalOvrPlaceholder: "종합값(포지션별 OVR): —(공식 계산식이 비공개라 계산하지 않음)",
     ownershipLabel: "보유 상태",
     ownershipHint: "내 팀은 실제로 보유한 카드를 관리합니다. 나중에 내 팀 화면에서 변경할 수 있습니다.",
     usageStatusLabel: "사용 상태",
