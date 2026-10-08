@@ -105,7 +105,7 @@
 | F-131 | 止まった画面の移動の早めの戻し（v1.1） | verified | 100% | — | — | — | 不要 | 不要 | Free | PR #166・`navigation-fallback-v1.1.md`・`evidence/2026-10-07-navigation-early-fallback.json`（止まった移動 5.3 秒 → 2.1〜3.4 秒・通常の移動 97 回で誤作動 0） | 経過の観察 |
 | F-132 | 固有の用語の契約（Link-Up Play・OVR を全言語で原語） | completed | 100% | F-007b | — | — | 不要 | 不要 | Free | PR #161・`scripts/audit-fixed-terms.mjs`（43,740 文・違反 0）・`src/lib/i18n/fixed-terms.test.ts` | 正式な現地語の表記をデータ元で確認できた言語だけ更新 |
 | F-133 | かなを区別しない検索・短い検索語の安全化 | completed | 100% | F-001 | R | — | 不要 | 不要 | Free | PR #167（`name_ja` の imatch・schema の変更なし・テスト 223） | 本番での確認（次の公開の確認で） |
-| F-134 | 改善シミュレーション（控えとの入れ替え・配置の変更） | completed | 80% | F-026 | — | L | 不要 | 不要 | Free | PR #169・`docs/product/improvement-simulation.md`（決定的・保存しない・上位 3 件・約 16 ms） | 監督・フォーメーション・育成の変更（能力値の再計算が必要） |
+| F-134 | 改善シミュレーション（控えとの入れ替え・配置・フォーメーションの変更） | completed | 90% | F-026 | — | L | 不要 | 不要 | Free | PR #169・`docs/product/improvement-simulation.md`（決定的・保存しない・上位 3 件・約 16 ms・v2 フォーメーションの変更 2026-10-09） | 監督・育成の変更（能力値の再計算が必要） |
 | F-135 | スカッドの独自性（候補・比較用） | completed | 80% | F-045 | — | L | 不要 | 不要 | Free | PR #171・`docs/product/squad-uniqueness.md`（合成の事前分布・利用の統計は使わない） | 正式な点数の採用は本人の判断 |
 | F-136 | ブースター一覧（効果と証拠の段階） | completed | 100% | F-029 | — | — | 不要 | 不要 | Free | PR #181（`/boosters`・12 言語・能力の絞り込み・名前の検索） | 本番での読み取りの確認 |
 | F-137 | タブの題名の表示言語への追従 | completed | 100% | F-007b | — | — | 不要 | 不要 | Free | PR #182（英語と RC の言語・日本語は変えない） | — |

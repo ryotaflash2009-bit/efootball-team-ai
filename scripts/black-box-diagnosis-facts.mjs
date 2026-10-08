@@ -91,6 +91,20 @@ async function main() {
     record("総合評価は再読み込みで変わらない", scoreBefore !== null && scoreBefore === scoreAfter, `${scoreBefore} / ${scoreAfter}`);
     record("保存データを書き換えない", (await ev(`localStorage.getItem(${JSON.stringify(SQUADS_KEY)})`)) === stored);
 
+    // 改善シミュレーション: フォーメーションの変更（2026-10-09）
+    const t0 = Date.now();
+    await ev(`(() => { const d = document.querySelector('[data-testid="improvement-simulation"]'); d.open = true; d.dispatchEvent(new Event("toggle")); return true; })()`);
+    await waitForCondition(async () => (await ev(`!!document.querySelector('[data-testid="improvement-simulation"]')?.innerText.includes("フォーメーションを変えた場合")`)) === true, { timeoutMs: 10000, intervalMs: 100 });
+    await new Promise((r) => setTimeout(r, 300));
+    const fsim = await ev(`(() => { const box = document.querySelector('[data-testid="improvement-simulation"]'); const items = [...box.querySelectorAll('[data-testid="formation-simulation"] li')];
+      return { text: box.innerText, items: items.map((li) => ({ f: li.dataset.formation, text: li.innerText })) }; })()`);
+    const ms = Date.now() - t0;
+    const deltasOk = fsim.items.every((it) => /総合 \+\d/.test(it.text) || /\+\d/.test(it.text));
+    record("フォーメーションの変更: 見出しと、候補（最大 3 件・総合が上がるものだけ）または「ありません」", /フォーメーションを変えた場合/.test(fsim.text) && fsim.items.length <= 3 && (fsim.items.length > 0 ? deltasOk : /総合が上がるフォーメーションの変更はありません/.test(fsim.text)), fsim.items.map((i) => i.f).join(",") || "none");
+    record("フォーメーションの変更: 今のフォーメーションは候補に出ない・重複なし", !fsim.items.some((i) => i.f === "4-3-3") && new Set(fsim.items.map((i) => i.f)).size === fsim.items.length);
+    record("フォーメーションの変更: 開いてから表示まで 3 秒以内", ms < 3000, `${ms} ms`);
+    record("フォーメーションの変更: 保存データを書き換えない", (await ev(`localStorage.getItem(${JSON.stringify(SQUADS_KEY)})`)) === stored);
+
     await client.send("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });
     await nav(`${BASE}${squadPath}`);
     await waitForCondition(async () => (await facts()) !== null, { timeoutMs: 20000, intervalMs: 200 });
