@@ -311,7 +311,7 @@ const part: PartialDictionary = {
     formationLabel: "Formasi",
     createAndEditButton: "Buat dan edit",
     heroHeading: "Susun skuad dengan 11 pemain inti + cadangan",
-    heroDescription: "Pilih formasi dan tempatkan pemain dari semua kartu World. Periksa build progresi, koreksi manajer, dan syarat Link-Up Play dalam satu layar. Perhitungan memakai ulang mesin progresi dan manajer yang ada (aturannya masih diverifikasi). Skuad hanya disimpan di browser perangkat ini (localStorage).",
+    heroDescription: "Pilih formasi dan tempatkan pemain dari semua kartu World. Lihat build progresi, bonus manajer, dan kondisi Link-Up Play dalam satu layar. Kemampuan target progresi mengikuti acuan eFHUB dan OVR adalah perkiraan. Skuad hanya disimpan di browser ini (localStorage).",
     createFirstSquadButton: "Buat skuad pertama Anda",
     createNewSquadButton: "Buat skuad baru",
     goToCompareButton: "Ke perbandingan pemain",

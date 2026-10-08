@@ -54,7 +54,7 @@ export function autoAllocate(
 
     let guard = 0;
     while (guard++ < 100000) {
-      const summary = summarizeGroupPoints(allocation, card, ruleset.version);
+      const summary = summarizeGroupPoints(allocation, card, ruleset.id);
       let bestGid: string | null = null;
       let bestScore = -Infinity;
       for (const [gid, w] of Object.entries(weights)) {
@@ -74,7 +74,7 @@ export function autoAllocate(
   }
 
   const normalized = normalizeGroupAllocation(allocation, card).allocation;
-  const summary = summarizeGroupPoints(normalized, card, ruleset.version);
+  const summary = summarizeGroupPoints(normalized, card, ruleset.id);
 
   return {
     profile,

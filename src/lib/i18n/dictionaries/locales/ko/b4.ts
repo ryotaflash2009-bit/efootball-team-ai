@@ -311,7 +311,7 @@ const part: PartialDictionary = {
     formationLabel: "포메이션",
     createAndEditButton: "만들고 편집",
     heroHeading: "선발 11명 + 벤치로 스쿼드 구성",
-    heroDescription: "포메이션을 고르고 모든 World 카드에서 선수를 배치하세요. 육성 빌드, 감독 보정, Link-Up Play 조건을 한 화면에서 확인할 수 있습니다. 계산은 기존 육성·감독 엔진을 그대로 사용합니다(규칙은 아직 검증 중). 스쿼드는 이 기기의 브라우저(localStorage)에만 저장됩니다.",
+    heroDescription: "포메이션을 고르고 World의 모든 카드에서 선수를 배치합니다. 육성 빌드·감독 보정·Link-Up Play 조건을 한 화면에서 확인할 수 있습니다. 육성 대상 능력은 eFHUB 기준, OVR은 추정입니다. 스쿼드는 이 브라우저(localStorage)에만 저장됩니다.",
     createFirstSquadButton: "첫 스쿼드 만들기",
     createNewSquadButton: "새 스쿼드 만들기",
     goToCompareButton: "선수 비교로 이동",

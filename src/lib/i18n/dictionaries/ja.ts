@@ -4457,6 +4457,10 @@ export interface Dictionary {
     ruCapUnconfirmedClamp: string;
     ruCapNone: string;
     ruCapSourceNote: string;
+    shareBuildLinkButton: string;
+    shareBuildLinkCopied: string;
+    shareBuildLinkFallback: string;
+    shareBuildLinkNote: string;
     ruShowRuleStatus: string;
     ruListConfirmed: string;
     ruListProvisional: string;

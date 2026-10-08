@@ -395,7 +395,7 @@ const part: PartialDictionary = {
   },
   comparePage: {
     title: "선수 비교",
-    description: "World 카드 2~4장을 나란히 비교합니다: 기본 정보, 26개 능력치, 스킬, 육성 빌드, 감독 보정. 육성과 감독 보정은 기존 계산 엔진을 재사용합니다(규칙은 아직 검증 중). 선수, 육성 방침, 감독은 URL에 저장되므로 공유할 수 있습니다.",
+    description: "World 카드 2~4장을 나란히 놓고 기본 정보·26개 능력치·스킬·육성 빌드·감독 보정을 비교합니다. 육성 대상 능력은 eFHUB 기준, OVR은 추정입니다. URL에 선수·육성 방침·감독이 들어가 공유할 수 있습니다.",
     backToPlayers: "선수 목록으로 돌아가기",
     dataUnavailableTitle: "데이터를 사용할 수 없음",
     dataUnavailableDescription: "World 데이터가 SQLite로 가져와지지 않았습니다.",

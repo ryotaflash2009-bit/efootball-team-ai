@@ -311,7 +311,7 @@ const part: PartialDictionary = {
     formationLabel: "阵型",
     createAndEditButton: "创建并编辑",
     heroHeading: "组建 11 名首发 + 替补的阵容",
-    heroDescription: "选择阵型，从所有 World 球员卡中安排球员。在同一页面查看培养方案、主教练修正和 Link-Up Play 条件。计算沿用现有的培养和主教练引擎（规则仍在验证中）。阵容仅保存在此设备的浏览器中（localStorage）。",
+    heroDescription: "选择阵型，从所有 World 卡中安排球员。在一个画面中查看培养构建、主教练加成和 Link-Up Play 条件。培养的对象能力按 eFHUB 基准，OVR 为推定。阵容仅保存在此浏览器（localStorage）中。",
     createFirstSquadButton: "创建第一个阵容",
     createNewSquadButton: "创建新阵容",
     goToCompareButton: "前往球员对比",

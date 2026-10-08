@@ -395,7 +395,7 @@ const part: PartialDictionary = {
   },
   comparePage: {
     title: "球員比較",
-    description: "並排比較 2 至 4 張 World 卡片：基本資訊、26 項能力、技能、培養方案與總教練修正。培養與總教練修正沿用現有的計算引擎（規則仍在驗證中）。球員、培養方針與總教練皆會儲存在 URL 中，方便分享。",
+    description: "並排比較 2–4 張 World 卡：基本資訊、26 項能力、技能、培養構建與總教練加成。培養的對象能力按 eFHUB 基準，OVR 為推定。URL 包含球員、培養方針與總教練，可直接分享。",
     backToPlayers: "返回球員列表",
     dataUnavailableTitle: "無法取得資料",
     dataUnavailableDescription: "World 資料尚未匯入 SQLite。",

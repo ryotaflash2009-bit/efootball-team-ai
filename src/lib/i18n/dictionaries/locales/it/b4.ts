@@ -311,7 +311,7 @@ const part: PartialDictionary = {
     formationLabel: "Modulo",
     createAndEditButton: "Crea e modifica",
     heroHeading: "Crea una rosa con 11 titolari + panchina",
-    heroDescription: "Scegli un modulo e posiziona giocatori tra tutte le carte World. Controlla build di progressione, correzioni dell’allenatore e condizioni di Link-Up Play in un’unica schermata. I calcoli riusano i motori esistenti di progressione e allenatore (le regole sono ancora in verifica). Le rose vengono salvate solo nel browser di questo dispositivo (localStorage).",
+    heroDescription: "Scegli un modulo e schiera giocatori da tutte le carte World. Vedi build di progressione, bonus dell’allenatore e condizioni Link-Up Play in una schermata. Le abilità di progressione seguono il riferimento eFHUB e l’OVR è una stima. Le rose sono salvate solo in questo browser (localStorage).",
     createFirstSquadButton: "Crea la tua prima rosa",
     createNewSquadButton: "Crea una nuova rosa",
     goToCompareButton: "Vai al confronto giocatori",

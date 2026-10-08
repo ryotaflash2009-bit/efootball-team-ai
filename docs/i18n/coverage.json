@@ -1,12 +1,12 @@
 {
   "schema": "efta-i18n-coverage/v1",
   "source": "en",
-  "sourceKeys": 4683,
+  "sourceKeys": 4716,
   "totals": {
     "core": 78,
-    "publicUi": 4143,
+    "publicUi": 4176,
     "accessibility": 127,
-    "errorEmptyLoading": 267,
+    "errorEmptyLoading": 270,
     "metadata": 27,
     "shareCards": 139,
     "legal": 117,
@@ -27,7 +27,7 @@
     "es": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4143,
+      "translated": 4176,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -49,7 +49,7 @@
         "count": 0,
         "sample": []
       },
-      "sameAsEnglish": 129,
+      "sameAsEnglish": 131,
       "placeholderMismatch": {
         "count": 0,
         "sample": []
@@ -88,7 +88,7 @@
     "pt-BR": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4143,
+      "translated": 4176,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -110,7 +110,7 @@
         "count": 0,
         "sample": []
       },
-      "sameAsEnglish": 144,
+      "sameAsEnglish": 146,
       "placeholderMismatch": {
         "count": 0,
         "sample": []
@@ -149,7 +149,7 @@
     "fr": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4143,
+      "translated": 4176,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -171,7 +171,7 @@
         "count": 0,
         "sample": []
       },
-      "sameAsEnglish": 161,
+      "sameAsEnglish": 163,
       "placeholderMismatch": {
         "count": 0,
         "sample": []
@@ -210,68 +210,7 @@
     "de": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4143,
-      "coverage": {
-        "core": 100,
-        "publicUi": 100,
-        "accessibility": 100,
-        "errorEmptyLoading": 100,
-        "metadata": 100,
-        "shareCards": 100,
-        "legal": 100,
-        "legalEnglishFallback": 0,
-        "internal": 0,
-        "overall": 88.5
-      },
-      "missing": 540,
-      "extra": {
-        "count": 0,
-        "sample": []
-      },
-      "empty": {
-        "count": 0,
-        "sample": []
-      },
-      "sameAsEnglish": 159,
-      "placeholderMismatch": {
-        "count": 0,
-        "sample": []
-      },
-      "control": {
-        "count": 0,
-        "sample": []
-      },
-      "leakage": {
-        "count": 0,
-        "sample": []
-      },
-      "unsafe": {
-        "count": 0,
-        "sample": []
-      },
-      "secretLike": {
-        "count": 0,
-        "sample": []
-      },
-      "tagMismatch": {
-        "count": 0,
-        "sample": []
-      },
-      "tooLong": 0,
-      "stale": {
-        "count": 0,
-        "sample": []
-      },
-      "unrecorded": 0,
-      "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
-      "quality": "MACHINE_ASSISTED_COMPLETE",
-      "productionGate": "NOT_MET",
-      "releaseCandidateGate": "PASS"
-    },
-    "it": {
-      "state": "RELEASE_CANDIDATE",
-      "file": true,
-      "translated": 4143,
+      "translated": 4176,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -329,10 +268,71 @@
       "productionGate": "NOT_MET",
       "releaseCandidateGate": "PASS"
     },
+    "it": {
+      "state": "RELEASE_CANDIDATE",
+      "file": true,
+      "translated": 4176,
+      "coverage": {
+        "core": 100,
+        "publicUi": 100,
+        "accessibility": 100,
+        "errorEmptyLoading": 100,
+        "metadata": 100,
+        "shareCards": 100,
+        "legal": 100,
+        "legalEnglishFallback": 0,
+        "internal": 0,
+        "overall": 88.5
+      },
+      "missing": 540,
+      "extra": {
+        "count": 0,
+        "sample": []
+      },
+      "empty": {
+        "count": 0,
+        "sample": []
+      },
+      "sameAsEnglish": 164,
+      "placeholderMismatch": {
+        "count": 0,
+        "sample": []
+      },
+      "control": {
+        "count": 0,
+        "sample": []
+      },
+      "leakage": {
+        "count": 0,
+        "sample": []
+      },
+      "unsafe": {
+        "count": 0,
+        "sample": []
+      },
+      "secretLike": {
+        "count": 0,
+        "sample": []
+      },
+      "tagMismatch": {
+        "count": 0,
+        "sample": []
+      },
+      "tooLong": 0,
+      "stale": {
+        "count": 0,
+        "sample": []
+      },
+      "unrecorded": 0,
+      "engineText": "English (display-layer engine text is localized for en only; see docs/i18n/architecture.md §6)",
+      "quality": "MACHINE_ASSISTED_COMPLETE",
+      "productionGate": "NOT_MET",
+      "releaseCandidateGate": "PASS"
+    },
     "ko": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4143,
+      "translated": 4176,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -393,7 +393,7 @@
     "zh-CN": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4143,
+      "translated": 4176,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -454,7 +454,7 @@
     "zh-TW": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4143,
+      "translated": 4176,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -515,7 +515,7 @@
     "id": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4143,
+      "translated": 4176,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -537,7 +537,7 @@
         "count": 0,
         "sample": []
       },
-      "sameAsEnglish": 152,
+      "sameAsEnglish": 154,
       "placeholderMismatch": {
         "count": 0,
         "sample": []
@@ -576,7 +576,7 @@
     "tr": {
       "state": "RELEASE_CANDIDATE",
       "file": true,
-      "translated": 4143,
+      "translated": 4176,
       "coverage": {
         "core": 100,
         "publicUi": 100,
@@ -598,7 +598,7 @@
         "count": 0,
         "sample": []
       },
-      "sameAsEnglish": 97,
+      "sameAsEnglish": 99,
       "placeholderMismatch": {
         "count": 0,
         "sample": []
@@ -650,7 +650,7 @@
         "internal": 0,
         "overall": 0
       },
-      "missing": 4683,
+      "missing": 4716,
       "extra": {
         "count": 0,
         "sample": []
@@ -711,7 +711,7 @@
         "internal": 0,
         "overall": 0
       },
-      "missing": 4683,
+      "missing": 4716,
       "extra": {
         "count": 0,
         "sample": []
@@ -772,7 +772,7 @@
         "internal": 0,
         "overall": 0
       },
-      "missing": 4683,
+      "missing": 4716,
       "extra": {
         "count": 0,
         "sample": []
@@ -833,7 +833,7 @@
         "internal": 0,
         "overall": 0
       },
-      "missing": 4683,
+      "missing": 4716,
       "extra": {
         "count": 0,
         "sample": []
@@ -894,7 +894,7 @@
         "internal": 0,
         "overall": 0
       },
-      "missing": 4683,
+      "missing": 4716,
       "extra": {
         "count": 0,
         "sample": []
@@ -955,7 +955,7 @@
         "internal": 0,
         "overall": 0
       },
-      "missing": 4683,
+      "missing": 4716,
       "extra": {
         "count": 0,
         "sample": []
@@ -1012,5 +1012,5 @@
     }
   },
   "failures": [],
-  "sourceVersion": "66f519e1705d"
+  "sourceVersion": "621b249cca66"
 }

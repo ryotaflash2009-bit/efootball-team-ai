@@ -42,6 +42,7 @@ import type { PlayerAnalysis } from "@/lib/world/player-analysis";
 import type { WorldStatValue } from "@/lib/world/types";
 import { WorldBasePercentilePanel } from "@/components/world/WorldBasePercentilePanel";
 import { ManagerPicker } from "@/components/managers/ManagerPicker";
+import { ShareBuildLink } from "./ShareBuildLink";
 import { Button } from "@/components/ui/Button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 
@@ -408,6 +409,7 @@ export function ProgressionPanel({
             onSaved={(b) => setSavedAllocation(b.progressionAllocation)}
             refreshKey={buildsRefresh}
           />
+          <ShareBuildLink worldCardId={card.worldCardId} allocation={allocation} />
           </div>
         </div>
 

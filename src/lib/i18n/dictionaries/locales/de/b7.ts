@@ -395,7 +395,7 @@ const part: PartialDictionary = {
   },
   comparePage: {
     title: "Spielervergleich",
-    description: "Vergleiche 2–4 World-Karten nebeneinander: Basisinfos, 26 Attribute, Skills, Entwicklungs-Builds und Trainerkorrekturen. Entwicklung und Trainerkorrekturen nutzen die bestehende Berechnungslogik (die Regeln werden noch überprüft). Spieler, Entwicklungsstrategie und Trainer werden in der URL gespeichert, sodass du sie teilen kannst.",
+    description: "Vergleiche 2–4 World-Karten: Basisdaten, 26 Fähigkeiten, Skills, Entwicklungs-Builds und Trainerboni. Die Entwicklungsziele folgen der eFHUB-Referenz, die OVR ist eine Schätzung. Die URL enthält Spieler, Ausrichtung und Trainer zum Teilen.",
     backToPlayers: "Zurück zur Spielerliste",
     dataUnavailableTitle: "Daten nicht verfügbar",
     dataUnavailableDescription: "Die World-Daten wurden nicht in SQLite importiert.",
