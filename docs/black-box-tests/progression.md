@@ -1,7 +1,7 @@
 # 選手育成機能 ブラックボックステスト結果
 
-実行日時: 2026-10-08T17:19:05.282Z
-対象: http://localhost:3000（localhost のみ）  外部アクセス: **0 回**
+実行日時: 2026-10-08T17:28:48.735Z
+対象: https://efootball-team-ai.vercel.app（localhost のみ）  外部アクセス: **0 回**
 
 注: 育成の対話操作（ポイント +/- のクリック等）は JS 実行が必要なため、対話フローは
 `src/lib/progression/flow.test.ts`（vitest, item 22 の1〜20）で検証。本スクリプトは SSR HTML 構造を確認する。
@@ -106,7 +106,7 @@
 | PASS | 回帰: World 画像プロキシ 存在しないIDはプレースホルダー200（外部アクセスなし） | HTTP 200 |
 | PASS | 回帰: 一覧に画像プロキシ src が配線・画面外の画像を先に読み込まない（最初の最大4枚だけ即時） | eager 4 / lazy 0 / deferred 20 |
 | PASS | 回帰: cloudfront URL をブラウザへ露出しない |  |
-| PASS | 回帰: 旧サンプル詳細（ローカルサンプルあり）: 旧APIと同じ選手を表示 #1 | HTTP 200 |
+| PASS | 回帰: 旧サンプル詳細（サンプルなし）: 共通のnot-found画面・選手情報/内部情報なし | HTTP 200 |
 
 ## 判定: 全項目 PASS
 
