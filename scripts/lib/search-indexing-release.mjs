@@ -87,11 +87,12 @@ export async function checkIndexingLive(fetchText, opts) {
     if (!xmlOk) problems.push("sitemap_xml_invalid");
     if (new Set(locs).size !== locs.length) problems.push("sitemap_duplicate_urls");
     for (const u of locs) {
-      if (!u.startsWith(`${origin}/`) && u !== origin) problems.push(`sitemap_non_canonical_origin:${u}`);
       if (/[?#]/.test(u)) problems.push(`sitemap_query_or_fragment:${u}`);
       let path = "/";
       try {
-        path = new URL(u).pathname;
+        const parsed = new URL(u);
+        path = parsed.pathname;
+        if (parsed.origin !== new URL(origin).origin) problems.push(`sitemap_non_canonical_origin:${u}`);
       } catch {
         problems.push(`sitemap_bad_url:${u}`);
       }

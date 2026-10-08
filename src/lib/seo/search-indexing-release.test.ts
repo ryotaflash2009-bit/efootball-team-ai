@@ -74,7 +74,7 @@ describe("sitemap（公開中）", () => {
     expect(urls.filter((u) => u.includes("/players/world/"))).toHaveLength(1);
     expect(urls.filter((u) => u.includes("/managers/") && !u.endsWith("/compare") && u !== "https://example.test/managers")).toHaveLength(1);
     for (const u of urls) {
-      expect(u.startsWith("https://example.test")).toBe(true);
+      expect(new URL(u).origin).toBe("https://example.test");
       expect(u).not.toMatch(/[?#]/);
       expect(noindexReasonForPath(new URL(u).pathname), u).toBeNull();
     }
