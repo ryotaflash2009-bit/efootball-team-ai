@@ -1,4 +1,5 @@
 /**
+ * 前提（2026-10-09 に明記）: `/account/rls-test` の回帰の確認は内部の画面を使うため、`NEXT_PUBLIC_EFTA_INTERNAL_PAGES=enabled npm run build` の build で動かす。
  * My Teamクラウド保存(手動・任意PoC)専用のブラックボックステスト。
  *   npm run build && npm run start  の後に
  *   node scripts/black-box-my-team-cloud.mjs
@@ -96,8 +97,17 @@ async function callInPage(client, fn, ...args) {
 }
 async function navigateAndSettle(client, url) {
   await client.send("Page.navigate", { url });
+  // 2026-10-09: 前のページの readyState を拾わない（URL が変わるまで待つ）・hydration の後の文が落ち着くまで待つ。
+  const target = url.split("#")[0].split("?")[0];
+  await waitForCondition(async () => String(await evalJson(client, "location.href")).startsWith(target), { timeoutMs: 8000, intervalMs: 100 });
   await waitForCondition(async () => (await evalJson(client, "document.readyState")) === "complete", { timeoutMs: 8000, intervalMs: 100 });
-  await new Promise((r) => setTimeout(r, 250));
+  let prev = "";
+  for (let i = 0; i < 20; i++) {
+    await new Promise((r) => setTimeout(r, 300));
+    const cur = await evalJson(client, `(document.querySelector("main")?.innerText ?? "") + "|" + document.querySelectorAll("input,button").length`);
+    if (cur && cur === prev) break;
+    prev = cur;
+  }
 }
 async function bodyText(client) {
   return evalJson(client, "document.body.innerText");

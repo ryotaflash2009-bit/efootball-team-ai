@@ -1,7 +1,7 @@
 # My Teamクラウド保存(PoC) ブラックボックステスト結果
 
-実行日時: 2026-09-14T08:51:41.370Z
-対象: http://localhost:3001（Production Build上の隔離ヘッドレスChrome確認。ブラウザー側Supabaseクライアント(auth・DBとも)はテストダブルへ差し替え、実Supabaseへは接続しない）
+実行日時: 2026-10-08T19:06:01.823Z
+対象: http://localhost:3000（Production Build上の隔離ヘッドレスChrome確認。ブラウザー側Supabaseクライアント(auth・DBとも)はテストダブルへ差し替え、実Supabaseへは接続しない）
 
 実ユーザーのMy Team・保存ビルド・保存スカッド・SQLiteは一切変更しない。RLS自体の分離証明は実Supabase上のSQL監査・手動検証で別途行う。
 
@@ -36,7 +36,7 @@
 | PASS | [プレビュー/一致] 追加候補なしメッセージが表示される |  |
 | PASS | [プレビュー/一致] 反映ボタンは表示されない |  |
 | PASS | [再保存確認] 既存データの上書き警告が表示される |  |
-| PASS | [直接注入] クラウドのみのカードを注入できる(検証用) | {"data":[{"id":"efb-test-mt-row-1","schema_version":"my-team-cloud/2026-09-12.v1","team_data":{"items":[{"worldCardId":"10001","ownershipStatus":"owned","usageStatus":"main","selectedBuildId":null,"favoriteBuildId":null,"note":"","tags":[],"addedAt":"2026-09-01T00:00:00.000Z","updatedAt":"2026-09-01T00:00:00.000Z"},{"worldCardId":"10002","ownershipStatus":"owned","usageStatus":"main","selectedBuildId":null,"favoriteBuildId":null,"note":"","tags":[],"addedAt":"2026-09-01T00:00:00.000Z","updatedAt":"2026-09-01T00:00:00.000Z"},{"worldCardId":"99999","ownershipStatus":"owned","usageStatus":"main","selectedBuildId":null,"favoriteBuildId":null,"note":"","tags":[],"addedAt":"2026-09-05T00:00:00.000Z","updatedAt":"2026-09-05T00:00:00.000Z"}]},"item_count":3,"payload_hash":"0000000000000000000000000000000000000000000000000000000000000000","client_updated_at":"2026-09-14T08:51:33.469Z","created_at":"2026-09-14T08:51:33.285Z","updated_at":"2026-09-14T08:51:33.469Z"}],"error":null} |
+| PASS | [直接注入] クラウドのみのカードを注入できる(検証用) | {"data":[{"id":"efb-test-mt-row-1","schema_version":"my-team-cloud/2026-09-12.v1","team_data":{"items":[{"worldCardId":"10001","ownershipStatus":"owned","usageStatus":"main","selectedBuildId":null,"favoriteBuildId":null,"note":"","tags":[],"addedAt":"2026-09-01T00:00:00.000Z","updatedAt":"2026-09-01T00:00:00.000Z"},{"worldCardId":"10002","ownershipStatus":"owned","usageStatus":"main","selectedBuildId":null,"favoriteBuildId":null,"note":"","tags":[],"addedAt":"2026-09-01T00:00:00.000Z","updatedAt":"2026-09-01T00:00:00.000Z"},{"worldCardId":"99999","ownershipStatus":"owned","usageStatus":"main","selectedBuildId":null,"favoriteBuildId":null,"note":"","tags":[],"addedAt":"2026-09-05T00:00:00.000Z","updatedAt":"2026-09-05T00:00:00.000Z"}]},"item_count":3,"payload_hash":"0000000000000000000000000000000000000000000000000000000000000000","client_updated_at":"2026-10-08T19:05:49.747Z","created_at":"2026-10-08T19:05:49.561Z","updated_at":"2026-10-08T19:05:49.747Z"}],"error":null} |
 | PASS | [プレビュー/差分] クラウドのみカードが検出され反映ボタンが表示される |  |
 | PASS | [プレビュー/差分] 確認しただけではローカル未変更の旨が表示される |  |
 | PASS | [プレビュー/差分] プレビュー表示だけではローカルが変化しない |  |
@@ -90,7 +90,7 @@
 | PASS | [セキュリティ] 内部UUID/レコードIDを表示しない |  |
 | PASS | [セキュリティ] javascript:/data:スキームのリンクが存在しない |  |
 | PASS | [セキュリティ] 新規の外部通信が発生していない(実Supabaseを含む) |  |
-| PASS | [レスポンシブ1280px] 横スクロールが発生しない | overflow=0 |
+| PASS | [レスポンシブ1280px] 横スクロールが発生しない | overflow=-10 |
 | PASS | [レスポンシブ390px] 横スクロールが発生しない | overflow=0 |
 | PASS | [スモーク回帰] / が引き続き200 | HTTP 200 |
 | PASS | [スモーク回帰] /players が引き続き200 | HTTP 200 |
@@ -101,10 +101,10 @@
 | PASS | [スモーク回帰] /squads が引き続き200 | HTTP 200 |
 | PASS | [スモーク回帰] /favorites が引き続き200 | HTTP 200 |
 | PASS | [スモーク回帰] /account が引き続き200 | HTTP 200 |
-| PASS | [スモーク回帰] /account/rls-test が引き続き200 | HTTP 200 |
+| FAIL | [スモーク回帰] /account/rls-test が引き続き200 | HTTP 404 |
 | PASS | [スモーク回帰] /auth/sign-in が引き続き200 | HTTP 200 |
 | PASS | ページ内でJS例外が発生していない(全シナリオ通算) |  |
 | PASS | コンソールエラーが発生していない(全シナリオ通算) |  |
 
-## 判定: 全項目 PASS
+## 判定: 1 件 FAIL
 
