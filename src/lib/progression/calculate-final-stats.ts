@@ -17,7 +17,10 @@ import type { ProgressionCard, RuleConfidence, StatBreakdown, StatSource } from 
  * `finalValue` / `playerBoosterDelta` は現在の適用モードでの採用値（条件手動指定は含まない）。
  * `strictFinalValue` / `standardFinalValue` / `conditionalFinalValue` / `experimentalFinalValue` は
  * モードに関わらず常に持つ。条件未指定なら conditionalFinalValue = standardFinalValue。
- * 最終値の上限は **未確認**（STAT_CAPS.final.confidence = "unresolved"）。99クランプは暫定。
+ * 上限（2026-10-09 に確定）: **基礎＋育成は 99 で止まり、ブースター・監督の補正はその上に足す（99 を超えられる）**。
+ *   根拠: KONAMI 公式 v3.00「Boosters … allow players to perform beyond the normal ceiling of 99」・
+ *   eFHUB の計算（育成は min(99)・監督ブースターと選手ブースターは止めない）。下限 STAT_FLOOR は従来どおり。
+ *   `capApplied` / `finalCapApplied` は「育成が 99 で止まった」ことを示す。
  */
 
 export interface FinalStatsResult {
@@ -54,9 +57,9 @@ export function calculateFinalStats(input: {
   const confirmedB2 = input.confirmedB2Deltas ?? {};
   const experimentalExtra = input.experimentalExtraDeltas ?? {};
   const otherDeltas = input.otherDeltas ?? {};
-  const FINAL_CAP = STAT_CAPS.final.value;
+  const PROGRESSION_CAP = STAT_CAPS.progression.value;
   let finalCapApplied = false;
-  const clamp = (v: number) => Math.max(STAT_FLOOR, Math.min(FINAL_CAP, v));
+  const floor = (v: number) => Math.max(STAT_FLOOR, v);
 
   const stats = WORLD_STAT_DEFS.map((def) => {
     const baseValue = Math.max(STAT_FLOOR, Math.min(STAT_CAPS.base.value, intOr0(card.baseStats[def.key] ?? 0)));
@@ -70,16 +73,21 @@ export function calculateFinalStats(input: {
     const confirmedB2BoosterDelta = intOr0(confirmedB2[def.key]);
     const experimentalPlayerBoosterDelta = intOr0(experimentalExtra[def.key]);
 
-    const common = baseValue + progressionDelta + managerBoosterDelta + otherDelta;
-    const strictUncapped = common + gameMeasuredBoosterDelta;
-    const standardUncapped = strictUncapped + externalVerifiedBoosterDelta + confirmedB2BoosterDelta;
-    const conditionalUncapped = standardUncapped + conditionalBoosterDelta;
-    const experimentalUncapped = standardUncapped + experimentalPlayerBoosterDelta;
-
-    const strictFinalValue = clamp(strictUncapped);
-    const standardFinalValue = clamp(standardUncapped);
-    const conditionalFinalValue = clamp(conditionalUncapped);
-    const experimentalFinalValue = clamp(experimentalUncapped);
+    // 育成は 99 で止まる（基礎＋育成）。ブースター・監督の補正は止めずに足す。
+    const progressedRaw = baseValue + progressionDelta;
+    const progressed = Math.min(PROGRESSION_CAP, progressedRaw);
+    const progressionCapped = progressed !== progressedRaw;
+    const overflow = progressedRaw - progressed;
+    const common = progressed + managerBoosterDelta + otherDelta;
+    const strictRaw = common + gameMeasuredBoosterDelta;
+    const standardRaw = strictRaw + externalVerifiedBoosterDelta + confirmedB2BoosterDelta;
+    const strictFinalValue = floor(strictRaw);
+    const standardFinalValue = floor(standardRaw);
+    const conditionalFinalValue = floor(standardRaw + conditionalBoosterDelta);
+    const experimentalFinalValue = floor(standardRaw + experimentalPlayerBoosterDelta);
+    // 育成の 99 で止めた分を足し戻した値（上限が無かった場合・表示用）
+    const strictUncapped = strictRaw + overflow;
+    const standardUncapped = standardRaw + overflow;
 
     const playerBoosterDelta =
       mode === "strict"
@@ -87,8 +95,8 @@ export function calculateFinalStats(input: {
         : gameMeasuredBoosterDelta + externalVerifiedBoosterDelta + confirmedB2BoosterDelta;
     const uncappedValue = mode === "strict" ? strictUncapped : standardUncapped;
     const finalValue = mode === "strict" ? strictFinalValue : standardFinalValue;
-    const capApplied = finalValue !== uncappedValue;
-    if (capApplied && uncappedValue > FINAL_CAP) finalCapApplied = true;
+    const capApplied = progressionCapped;
+    if (capApplied) finalCapApplied = true;
 
     const deltaSources: StatSource[] = [];
     if (progressionDelta !== 0) deltaSources.push("progression");
@@ -121,16 +129,16 @@ export function calculateFinalStats(input: {
       strictFinalValue,
       standardFinalValue,
       conditionalFinalValue,
-      conditionalCapApplied: conditionalFinalValue !== conditionalUncapped,
+      conditionalCapApplied: progressionCapped,
       experimentalFinalValue,
-      experimentalCapApplied: experimentalFinalValue !== experimentalUncapped,
+      experimentalCapApplied: progressionCapped,
     };
   });
 
   return {
     stats,
     finalCapApplied,
-    finalCapValue: FINAL_CAP,
+    finalCapValue: PROGRESSION_CAP,
     finalCapConfidence: STAT_CAPS.final.confidence,
   };
 }

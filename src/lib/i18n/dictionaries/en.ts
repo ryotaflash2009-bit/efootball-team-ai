@@ -4580,6 +4580,8 @@ const en: Dictionary = {
     ruCapConfirmed: "confirmed",
     ruCapUnconfirmed: "unconfirmed",
     ruCapUnconfirmedClamp: "unconfirmed; provisional clamp",
+    ruCapNone: "no cap, can exceed 99",
+    ruCapSourceNote: "Progression stops at 99; boosters and manager boosters add on top (per KONAMI's official v3.00 notes; same as eFHUB's calculation).",
     ruShowRuleStatus: "Show rule confirmation status",
     ruListConfirmed: "Confirmed",
     ruListProvisional: "Likely but not confirmed",

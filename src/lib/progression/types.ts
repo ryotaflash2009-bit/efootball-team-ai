@@ -312,11 +312,12 @@ export interface ProgressionResult {
   statCaps: {
     base: { value: number; confidence: RuleConfidence };
     progression: { value: number; confidence: RuleConfidence };
-    playerBooster: { value: number; confidence: RuleConfidence };
-    managerBooster: { value: number; confidence: RuleConfidence };
-    final: { value: number; confidence: RuleConfidence };
+    /** null = 上限なし（2026-10-09 確定） */
+    playerBooster: { value: number | null; confidence: RuleConfidence };
+    managerBooster: { value: number | null; confidence: RuleConfidence };
+    final: { value: number | null; confidence: RuleConfidence };
   };
-  /** 暫定99クランプが最終値に適用されたか */
+  /** 育成が 99 で止まった能力があるか（ブースターは 99 を超えられる） */
   finalCapApplied: boolean;
   playerBoosters: PlayerBoosterInfo[];
   playerBoosterSelection: {

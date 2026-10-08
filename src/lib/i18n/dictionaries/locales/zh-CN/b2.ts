@@ -315,6 +315,8 @@ const part: PartialDictionary = {
     ruCapConfirmed: "已确认",
     ruCapUnconfirmed: "未确认",
     ruCapUnconfirmedClamp: "未确认；暂定限制",
+    ruCapNone: "无上限，可超过 99",
+    ruCapSourceNote: "培养止于 99，加成与主教练加成在其上叠加（依 KONAMI 官方 v3.00 说明，与 eFHUB 的计算相同）。",
     ruShowRuleStatus: "显示规则确认状态",
     ruListConfirmed: "已确认",
     ruListProvisional: "可能但未确认",

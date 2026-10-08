@@ -315,6 +315,8 @@ const part: PartialDictionary = {
     ruCapConfirmed: "확인됨",
     ruCapUnconfirmed: "미확인",
     ruCapUnconfirmedClamp: "미확인, 잠정 상한 적용",
+    ruCapNone: "상한 없음·99 초과 가능",
+    ruCapSourceNote: "육성은 99에서 멈추고, 부스터·감독 부스터는 그 위에 더합니다(KONAMI 공식 v3.00 설명·eFHUB 계산과 같음).",
     ruShowRuleStatus: "규칙 확인 상태 보기",
     ruListConfirmed: "확인됨",
     ruListProvisional: "유력하지만 미확정",

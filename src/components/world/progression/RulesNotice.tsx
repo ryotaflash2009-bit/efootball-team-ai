@@ -37,6 +37,8 @@ function localizedRules(
 export function RulesNotice({ result }: { result: ProgressionResult }) {
   const t = useT();
   const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
+  // null = 上限なし（ブースター・最終値。2026-10-09 確定）
+  const capText = (v: number | null) => (v == null ? tp("ruCapNone") : String(v));
   const { locale, displayLocale } = useLocale();
   const modeKey = MODE_LABEL_KEY[result.calculationMode as keyof typeof MODE_LABEL_KEY];
   return (
@@ -70,12 +72,13 @@ export function RulesNotice({ result }: { result: ProgressionResult }) {
         <span>{tp("ruCapBase").replace("{value}", String(result.statCaps.base.value))}
           <span className="text-lime-300">{tp("ruCapConfirmed")}</span>{tp("ruCapClose")}</span>
         <span>{tp("ruCapProgression").replace("{value}", String(result.statCaps.progression.value))}
-          <span className="text-yellow-300">{tp("ruCapUnconfirmed")}</span>{tp("ruCapClose")}</span>
-        <span>{tp("ruCapBooster").replace("{value}", String(result.statCaps.playerBooster.value))}
-          <span className="text-yellow-300">{tp("ruCapUnconfirmed")}</span>{tp("ruCapClose")}</span>
-        <span>{tp("ruCapFinal").replace("{value}", String(result.statCaps.final.value))}
-          <span className="text-yellow-300">{tp("ruCapUnconfirmedClamp")}</span>{tp("ruCapClose")}</span>
+          <span className="text-lime-300">{tp("ruCapConfirmed")}</span>{tp("ruCapClose")}</span>
+        <span>{tp("ruCapBooster").replace("{value}", capText(result.statCaps.playerBooster.value))}
+          <span className="text-lime-300">{tp("ruCapConfirmed")}</span>{tp("ruCapClose")}</span>
+        <span>{tp("ruCapFinal").replace("{value}", capText(result.statCaps.final.value))}
+          <span className="text-lime-300">{tp("ruCapConfirmed")}</span>{tp("ruCapClose")}</span>
       </div>
+      <p className="mt-0.5 text-[10px] text-text-muted" data-testid="cap-source-note">{tp("ruCapSourceNote")}</p>
 
       <details className="mt-2">
         <summary className="cursor-pointer text-text-dim">{tp("ruShowRuleStatus")}</summary>

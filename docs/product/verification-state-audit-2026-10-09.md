@@ -87,3 +87,9 @@
 （`progression-efhub-crosscheck-2026-10-09.md`）。表示は「対象能力は推定」から「eFHUB基準」（公式の発表ではないと説明つき）へ変えた
 （progressionTab.confirmedTag・ruGrConfirmed・groupsHint・ruModeProvisional・abilityEditor.targetsEstimated・targetsEstimatedHint・12 言語）。
 残る本人の判断・ゲームの画面: 推定 OVR の直し方（権利）・カテゴリのレベルの上限 25・ブースター後の 99 超え。
+
+## 9. 能力値の上限（2026-10-09・4 回目）
+
+`progressionTab.ruCapUnconfirmedClamp`（最終値の 99 の上限は未確認）を解決した。KONAMI 公式 v3.00 の Version Info に
+「Boosters … allow players to perform beyond the normal ceiling of 99」とあり、eFHUB の計算（育成は 99 で止め、ブースターは止めない）と一致。
+計算を「min(99, 基礎＋育成) ＋ 選手のブースター ＋ 監督のブースター」に直し、上限の表示を「育成 99（確認済み）・ブースター後／最終: 上限なし・99 を超えられる（確認済み）」へ変えた。

@@ -315,6 +315,8 @@ const part: PartialDictionary = {
     ruCapConfirmed: "doğrulandı",
     ruCapUnconfirmed: "doğrulanmadı",
     ruCapUnconfirmedClamp: "doğrulanmadı; geçici sınırlama",
+    ruCapNone: "sınır yok, 99’u aşabilir",
+    ruCapSourceNote: "Gelişim 99’da durur; güçlendiriciler ve teknik direktör güçlendiricileri üstüne eklenir (KONAMI resmî v3.00 notlarına göre; eFHUB hesaplamasıyla aynı).",
     ruShowRuleStatus: "Kuralların doğrulanma durumunu göster",
     ruListConfirmed: "Doğrulandı",
     ruListProvisional: "Muhtemel ama doğrulanmadı",
