@@ -76,7 +76,7 @@ const myTeamBuildPanel: Dictionary["myTeamBuildPanel"] = {
   estimatedOvrLabel: "保存時の推定OVR: ",
   calcModeConfirmed: "基礎値のみ",
   calcModeUnsupported: "計算不可",
-  calcModeProvisional: "暫定規則",
+  calcModeProvisional: "推定値",
   totalOvrPlaceholder: "総合値（ポジション別 OVR）: —（公式の計算式が非公開のため計算しません）",
   createdUpdatedTemplate: "作成 {created} / 更新 {updated}",
   setSelectedButton: "選択中ビルドに設定",

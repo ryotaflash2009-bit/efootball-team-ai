@@ -15,7 +15,7 @@ const slotPlayerPanel: Dictionary["slotPlayerPanel"] = {
   roleAriaLabelTemplate: "{position} の配置ロール",
   autoRoleOptionTemplate: "自動（{role}）",
   baseToDisplayedOvrPrefixTemplate: "基礎OVR {base} → 表示OVR ",
-  estimateNote: "（推定・検証中）",
+  estimateNote: "（推定）",
   progressionDeltaTemplate: "育成 {delta}",
   playerBoosterDeltaTemplate: "選手ブースター（標準適用・固定型推定含む）{delta}",
   managerDeltaTemplate: "監督 {delta}",

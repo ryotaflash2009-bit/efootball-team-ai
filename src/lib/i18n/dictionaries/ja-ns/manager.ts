@@ -14,7 +14,7 @@ const manager: Dictionary["manager"] = {
   clear: "解除",
   confirmedBoosterActive: "確認済みブースターを適用中",
   unconfirmedBoosterNotice: "この監督のブースター効果は未確認のため適用していません（表示のみ）。",
-  linkUpPlayAvailable: "Link-Up Play あり（照合のみ・効果は検証中）",
+  linkUpPlayAvailable: "Link-Up Play あり（条件の照合のみ・効果は未反映）",
   applicationOrderUnconfirmed: "適用順序（育成前 / 育成後）は未確認です。",
   viewManagerDetail: "監督詳細を見る",
   bestAt: "得意",

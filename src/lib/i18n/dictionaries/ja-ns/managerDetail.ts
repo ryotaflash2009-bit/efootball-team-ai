@@ -18,7 +18,7 @@ const managerDetail: Dictionary["managerDetail"] = {
   boosterKeyUnmapped: "・キー未変換",
   boosterNone: "この監督に能力値ブースターはありません。",
   boosterNote: "確認済みブースターのみ育成・比較・スカッドの能力値へ適用します。適用順序（育成前 / 後）は未確認です。",
-  linkUpHint: "発動条件は検証中・能力値へは適用しません",
+  linkUpHint: "発動条件の照合のみ・能力値へは適用しません",
   centerPieceLabel: "Center Piece 条件",
   keyManLabel: "Key Man 条件",
   linkUpNone: "この監督に Link-Up Play はありません。",

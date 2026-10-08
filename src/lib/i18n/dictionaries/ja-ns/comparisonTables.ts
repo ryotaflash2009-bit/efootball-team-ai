@@ -8,7 +8,7 @@ const comparisonTables: Dictionary["comparisonTables"] = {
   deltaConditionalPrefix: "条",
   deltaManagerBoosterPrefix: "監",
   rulesLabel: "規則: ",
-  estimatedOvrLabel: "推定OVR（検証中）: ",
+  estimatedOvrLabel: "推定OVR（公式の計算式ではありません）: ",
   boosterModePrefix: "ブースター適用モード: ",
   boosterModeStandard: "標準",
   boosterModeNoteSuffix:
