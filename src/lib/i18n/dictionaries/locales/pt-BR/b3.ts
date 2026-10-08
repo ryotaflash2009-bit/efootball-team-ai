@@ -112,7 +112,7 @@ const part: PartialDictionary = {
     calcModeConfirmed: "Somente valor base",
     calcModeUnsupported: "Não calculável",
     calcModeProvisional: "Regra provisória",
-    totalOvrPlaceholder: "Geral (OVR por posição): — (regra de cálculo em análise)",
+    totalOvrPlaceholder: "Geral (OVR por posição): — (não calculado: a fórmula oficial não é pública)",
     ownershipLabel: "Status de posse",
     ownershipHint: "O Meu time gerencia as cartas que você realmente possui. Você pode alterar isso depois na tela Meu time.",
     usageStatusLabel: "Status de uso",

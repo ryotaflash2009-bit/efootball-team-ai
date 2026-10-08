@@ -112,7 +112,7 @@ const part: PartialDictionary = {
     calcModeConfirmed: "仅基础值",
     calcModeUnsupported: "无法计算",
     calcModeProvisional: "暂定规则",
-    totalOvrPlaceholder: "综合（各位置 OVR）：—（计算规则审核中）",
+    totalOvrPlaceholder: "综合值（各位置 OVR）：—（官方计算公式未公开，不计算）",
     ownershipLabel: "持有状态",
     ownershipHint: "我的球队用于管理你实际持有的球员卡。之后可在我的球队页面中更改。",
     usageStatusLabel: "使用状态",

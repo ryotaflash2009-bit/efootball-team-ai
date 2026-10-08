@@ -9,26 +9,26 @@ import { COST_BLOCK_SIZE, STAT_CAP, STAT_FLOOR } from "./constants";
  * 9段階/13段階以降は外挿。
  */
 
-/** currentLevel から currentLevel+1 へ上げるのに必要なポイント */
-export function costForNextLevel(currentLevel: number): number {
+/** currentLevel から currentLevel+1 へ上げるのに必要なポイント（block = 何段階ごとに 1pt 増えるか。既定は旧規則の 5）。 */
+export function costForNextLevel(currentLevel: number, block: number = COST_BLOCK_SIZE): number {
   const lv = Math.max(0, Math.trunc(currentLevel));
-  return 1 + Math.floor(lv / COST_BLOCK_SIZE);
+  return 1 + Math.floor(lv / block);
 }
 
 /** 0 から level までの累積コスト */
-export function cumulativeCost(level: number): number {
+export function cumulativeCost(level: number, block: number = COST_BLOCK_SIZE): number {
   const target = Math.max(0, Math.trunc(level));
   let sum = 0;
-  for (let i = 0; i < target; i++) sum += costForNextLevel(i);
+  for (let i = 0; i < target; i++) sum += costForNextLevel(i, block);
   return sum;
 }
 
 /** 予算 budget で到達できる最大レベル */
-export function maxLevelForBudget(budget: number): number {
+export function maxLevelForBudget(budget: number, block: number = COST_BLOCK_SIZE): number {
   let spent = 0;
   let level = 0;
-  while (spent + costForNextLevel(level) <= budget) {
-    spent += costForNextLevel(level);
+  while (spent + costForNextLevel(level, block) <= budget) {
+    spent += costForNextLevel(level, block);
     level++;
     if (level > 200) break;
   }

@@ -200,7 +200,7 @@ const part: PartialDictionary = {
     registeredPositionLabel: "Registrierte Position: ",
     currentOverallLabel: "Positionsspezifische Gesamtwertung mit aktueller Entwicklung: ",
     currentOverallValue: "—",
-    currentOverallNote: " (Berechnungsregel wird geprüft)",
+    currentOverallNote: " (nicht berechnet: die offizielle Formel ist nicht öffentlich)",
     overallExplanation: "Die aktuelle Entwicklung fließt oben in den Vergleich der 26 Attribute ein. Positionsspezifische Gesamtwerte werden nicht angezeigt, da KONAMI weder die Formel noch die Gewichtung der Attribute oder die Rundungsregeln veröffentlicht hat und es nicht genug angezeigte Vergleichswerte über verschiedene Karten gibt, um sie verlässlich zu schätzen (wir zeigen keine erfundenen Zahlen).",
     attachedBoosterPrefixTemplate: "Angehängt {slot}: ",
     powerOfManyNote: "Variabler Booster (gold, abhängig vom Spielplan) · nicht im Vergleichsranking berücksichtigt",

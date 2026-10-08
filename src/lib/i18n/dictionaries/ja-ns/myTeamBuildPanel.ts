@@ -77,7 +77,7 @@ const myTeamBuildPanel: Dictionary["myTeamBuildPanel"] = {
   calcModeConfirmed: "基礎値のみ",
   calcModeUnsupported: "計算不可",
   calcModeProvisional: "暫定規則",
-  totalOvrPlaceholder: "総合値（ポジション別 OVR）: —（計算規則を確認中）",
+  totalOvrPlaceholder: "総合値（ポジション別 OVR）: —（公式の計算式が非公開のため計算しません）",
   createdUpdatedTemplate: "作成 {created} / 更新 {updated}",
   setSelectedButton: "選択中ビルドに設定",
   setFavoriteButton: "お気に入りビルドに設定",

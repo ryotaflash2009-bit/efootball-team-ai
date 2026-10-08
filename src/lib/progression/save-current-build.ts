@@ -1,3 +1,4 @@
+import type { CostRuleId } from "./types";
 import { saveBuild, type SaveResult } from "./build-storage";
 import type { ProgressionResult, SelectedConditionalBooster } from "./types";
 
@@ -25,6 +26,8 @@ export function saveCurrentBuild(input: {
     calculatedOvr: input.result.rating.estimatedOvr,
     calculationMode: input.result.calculationMode,
     rulesVersion: input.result.rulesVersion,
+    // 計算に使ったコストの規則（新しい育成は現行・旧規則のビルドを「現行の規則で再計算」せずに保存した場合は旧規則のまま）
+    costRuleId: input.result.costRuleId as CostRuleId,
   });
 }
 

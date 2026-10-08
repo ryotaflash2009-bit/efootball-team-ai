@@ -106,6 +106,7 @@ import { DiagnosisPerspectivesPanel } from "./DiagnosisPerspectivesPanel";
 import { SquadUniquenessPanel } from "./SquadUniquenessPanel";
 import { buildDiagnosisPerspectives, toPerspectiveInput } from "@/lib/squad/diagnosis-perspectives";
 import { fillMessage } from "@/lib/i18n/message-format";
+import { resolveCostRuleId } from "@/lib/progression/progression-rules";
 
 type LoadedCard = { card: ReturnType<typeof toProgressionCard>; display: ReturnType<typeof worldDetailToSquadDisplay> };
 type CardState = LoadedCard | "loading" | "error";
@@ -944,12 +945,14 @@ export function SquadEditor({
       let savedAllocation: Record<string, number> | null = null;
       let savedBuildName: string | null = null;
       let savedBuildRulesVersion: string | null = null;
+      let savedBuildCostRuleId: string | null = null;
       if (savedBuildId) {
         const b = (savedBuildsByCard[worldCardId] ?? []).find((x) => x.buildId === savedBuildId);
         if (b) {
           savedAllocation = b.progressionAllocation;
           savedBuildName = b.buildName;
           savedBuildRulesVersion = b.rulesVersion;
+          savedBuildCostRuleId = resolveCostRuleId(b.costRuleId);
         }
       }
       return {
@@ -959,6 +962,7 @@ export function SquadEditor({
         savedAllocation,
         savedBuildName,
         savedBuildRulesVersion,
+        savedBuildCostRuleId,
         selectedPlayerBoosters: boosters ?? [],
         selectedConditionalBoosters: conditionalBoosters ?? [],
       };

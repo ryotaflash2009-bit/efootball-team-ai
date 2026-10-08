@@ -200,7 +200,7 @@ const part: PartialDictionary = {
     registeredPositionLabel: "등록 포지션: ",
     currentOverallLabel: "현재 육성 기준 포지션별 종합: ",
     currentOverallValue: "—",
-    currentOverallNote: " (계산 규칙 검토 중)",
+    currentOverallNote: " (공식 계산식이 비공개라 계산하지 않음)",
     overallExplanation: "현재 육성은 위의 26개 능력치 비교에 반영됩니다. KONAMI가 계산식, 능력치 가중치, 반올림 규칙을 공개하지 않았고, 신뢰할 수 있게 추정할 만큼 카드별 표시값 샘플도 부족하므로 포지션별 종합값은 표시하지 않습니다(지어낸 숫자는 표시하지 않습니다).",
     attachedBoosterPrefixTemplate: "부착 {slot}: ",
     powerOfManyNote: "가변 부스터(금색, 게임 플랜에 따라 다름) · 비교 순위에 반영되지 않음",

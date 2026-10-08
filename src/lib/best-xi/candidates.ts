@@ -5,6 +5,7 @@ import type { ProgressionCard, SavedBuild } from "@/lib/progression/types";
 import type { MyTeamRecord } from "@/lib/user-cards/types";
 import type { BuildRuleKind } from "@/lib/progression/build-inventory";
 import type { BestXiCandidate, BestXiUnavailableCard } from "./types";
+import { CURRENT_COST_RULE_ID, resolveCostRuleId } from "@/lib/progression/progression-rules";
 
 /**
  * My Team + 保存ビルドから、AIベスト11の候補一覧を構築する純関数。
@@ -84,6 +85,7 @@ function makeCandidate(params: {
       selectedPlayerBoosters: [],
       selectedConditionalBoosters: build?.conditionalBoosterSelections ?? [],
       manager: null,
+      costRuleId: build ? resolveCostRuleId(build.costRuleId) : CURRENT_COST_RULE_ID,
     });
     return {
       candidateKey,

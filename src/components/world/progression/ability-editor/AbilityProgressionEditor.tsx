@@ -12,6 +12,7 @@ import {
   editorReducer,
   groupSliderModel,
   nextCostAtLevel,
+  unreachableInfo,
   type AbilityFocus,
 } from "@/lib/progression/ability-direct-editor";
 import { abilityName, categoryName } from "@/lib/progression/ability-editor-labels";
@@ -67,17 +68,19 @@ export function AbilityProgressionEditor({
   const [saveNotice, setSaveNotice] = useState<{ ok: boolean; message: string } | null>(null);
   const [announcement, setAnnouncement] = useState("");
 
-  const model = useMemo(() => (groupId ? groupSliderModel(allocation, card, groupId) : null), [allocation, card, groupId]);
+  // コストの規則は計算結果と同じもの（新しい育成は現行・旧規則のビルドは旧規則）。
+  const costRuleId = result.costRuleId;
+  const model = useMemo(() => (groupId ? groupSliderModel(allocation, card, groupId, costRuleId) : null), [allocation, card, groupId, costRuleId]);
 
   const baselineResult = useMemo(() => (baseline ? calculate(baseline) : null), [baseline, calculate]);
   const previewAllocation = useMemo(
-    () => (groupId && dragLevel != null ? allocationWithGroupLevel(allocation, card, groupId, dragLevel) : null),
-    [allocation, card, groupId, dragLevel],
+    () => (groupId && dragLevel != null ? allocationWithGroupLevel(allocation, card, groupId, dragLevel, costRuleId) : null),
+    [allocation, card, groupId, dragLevel, costRuleId],
   );
   const previewResult = useMemo(() => (previewAllocation ? calculate(previewAllocation) : null), [previewAllocation, calculate]);
   const shown = previewResult ?? result;
   const diffs = useMemo(() => abilityDiffs((baselineResult ?? result).stats, shown.stats), [baselineResult, result, shown]);
-  const chips = useMemo(() => allocationChips(previewAllocation ?? allocation, card), [previewAllocation, allocation, card]);
+  const chips = useMemo(() => allocationChips(previewAllocation ?? allocation, card, costRuleId), [previewAllocation, allocation, card, costRuleId]);
 
   const level = groupId ? (previewAllocation ?? allocation)[groupId] ?? 0 : 0;
   const baselineLevel = groupId && baseline ? baseline[groupId] ?? 0 : level;
@@ -186,8 +189,9 @@ export function AbilityProgressionEditor({
         remainingPoints={shown.points.remainingPoints}
         totalPoints={shown.points.totalPoints}
         baselineLevel={baselineLevel}
-        pointsChange={costBetweenLevels(baselineLevel, level)}
-        nextCost={model ? nextCostAtLevel(level, model.absoluteMax) : null}
+        pointsChange={costBetweenLevels(baselineLevel, level, costRuleId)}
+        nextCost={model ? nextCostAtLevel(level, model.absoluteMax, costRuleId) : null}
+        shortfall={model ? unreachableInfo(model, costRuleId).shortfall : 0}
         primary={primary}
         relatedDiffs={relatedDiffs}
         dirty={dirty}

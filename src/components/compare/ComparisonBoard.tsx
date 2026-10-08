@@ -28,6 +28,7 @@ import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { useSyncedStorageScope } from "@/lib/local-storage-scope/resolve-scope";
 import { fillMessage } from "@/lib/i18n/message-format";
+import { CURRENT_COST_RULE_ID, resolveCostRuleId } from "@/lib/progression/progression-rules";
 
 // 表示ラベルは i18n の bench.mode* に集約。ここは順序と値のみ定義。
 const SHARED_MODES: CompareBuildMode[] = ["none", "attack", "defense", "balance", "gk"];
@@ -70,8 +71,8 @@ export function ComparisonBoard({ initialInputs }: { initialInputs: ComparisonPl
         return {
           allocation,
           manualAllocation,
-          groups: groupBreakdowns(allocation, p.card),
-          points: summarizeGroupPoints(allocation, p.card),
+          groups: groupBreakdowns(allocation, p.card, p.savedCostRuleId ?? CURRENT_COST_RULE_ID),
+          points: summarizeGroupPoints(allocation, p.card, p.savedCostRuleId ?? CURRENT_COST_RULE_ID),
           canProgress: (p.card.maximumLevel ?? 0) > 1,
         };
       }),
@@ -132,7 +133,7 @@ export function ComparisonBoard({ initialInputs }: { initialInputs: ComparisonPl
 
   const doApplySharedMode = useCallback((mode: CompareBuildMode) => {
     setPlayers((prev) =>
-      prev.map((p) => ({ ...p, buildMode: mode, savedAllocation: null, savedBuildName: null })),
+      prev.map((p) => ({ ...p, buildMode: mode, savedAllocation: null, savedBuildName: null, savedCostRuleId: null })),
     );
   }, []);
   /** 全員へ育成方針を適用。手動配分／保存ビルドがある列があれば確認する（無ければ即適用）。 */
@@ -158,7 +159,7 @@ export function ComparisonBoard({ initialInputs }: { initialInputs: ComparisonPl
       prev.map((p, i) => {
         if (i !== idx) return p;
         const cur = resolveAllocation(p.card, p.buildMode, p.savedAllocation ?? null);
-        const next = adjustGroupLevel(cur, p.card, groupId, level - (cur[groupId] ?? 0));
+        const next = adjustGroupLevel(cur, p.card, groupId, level - (cur[groupId] ?? 0), p.savedCostRuleId ?? CURRENT_COST_RULE_ID);
         return { ...p, savedAllocation: next, savedBuildName: null };
       }),
     );
@@ -168,7 +169,7 @@ export function ComparisonBoard({ initialInputs }: { initialInputs: ComparisonPl
       prev.map((p, i) => {
         if (i !== idx) return p;
         const cur = resolveAllocation(p.card, p.buildMode, p.savedAllocation ?? null);
-        const next = adjustGroupLevel(cur, p.card, groupId, delta);
+        const next = adjustGroupLevel(cur, p.card, groupId, delta, p.savedCostRuleId ?? CURRENT_COST_RULE_ID);
         return { ...p, savedAllocation: next, savedBuildName: null };
       }),
     );
@@ -177,7 +178,7 @@ export function ComparisonBoard({ initialInputs }: { initialInputs: ComparisonPl
     setPlayers((prev) =>
       prev.map((p, i) =>
         i === idx
-          ? { ...p, savedAllocation: autoAllocate(p.card, profile).allocation, savedBuildName: null }
+          ? { ...p, savedAllocation: autoAllocate(p.card, profile).allocation, savedBuildName: null, savedCostRuleId: null }
           : p,
       ),
     );
@@ -185,7 +186,7 @@ export function ComparisonBoard({ initialInputs }: { initialInputs: ComparisonPl
   const resetTraining = useCallback((idx: number) => {
     setPlayers((prev) =>
       prev.map((p, i) =>
-        i === idx ? { ...p, savedAllocation: null, savedBuildName: null, buildMode: "none" } : p,
+        i === idx ? { ...p, savedAllocation: null, savedBuildName: null, savedCostRuleId: null, buildMode: "none" } : p,
       ),
     );
   }, []);
@@ -362,7 +363,7 @@ export function ComparisonBoard({ initialInputs }: { initialInputs: ComparisonPl
               buildsRefreshKey={buildsRefreshKey}
               onRemove={() => removePlayer(i)}
               onBuildMode={(mode) => patch(i, { buildMode: mode })}
-              onSavedBuild={(alloc, name) => patch(i, { savedAllocation: alloc, savedBuildName: name })}
+              onSavedBuild={(alloc, name, costRuleId) => patch(i, { savedAllocation: alloc, savedBuildName: name, savedCostRuleId: alloc ? costRuleId ?? null : null })}
               onManager={(ctx: ManagerContext | null) => patch(i, { manager: ctx })}
               onOpenManagerPicker={() => setPerPlayerPicker(i)}
               onBoosters={(next) => patch(i, { selectedPlayerBoosters: next })}

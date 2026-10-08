@@ -25,6 +25,7 @@ import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { fillMessage } from "@/lib/i18n/message-format";
+import { resolveCostRuleId } from "@/lib/progression/progression-rules";
 
 // B2 の候補は育成の画面と同じ一覧（F-029b: 確認済み・条件つきを除く・同じ順序）。
 const CONFIRMED_BOOSTERS = CONFIRMED_B2_CANDIDATES;
@@ -81,7 +82,7 @@ export function PlayerControlColumn({
   buildsRefreshKey?: number;
   onRemove: () => void;
   onBuildMode: (mode: CompareBuildMode) => void;
-  onSavedBuild: (allocation: Record<string, number> | null, name: string | null) => void;
+  onSavedBuild: (allocation: Record<string, number> | null, name: string | null, costRuleId?: string | null) => void;
   onManager: (ctx: ManagerContext | null) => void;
   onOpenManagerPicker: () => void;
   onBoosters: (next: { slot: 1 | 2; boosterKey: string; level: number }[]) => void;
@@ -190,7 +191,7 @@ export function PlayerControlColumn({
             value=""
             onChange={(e) => {
               const b = builds.find((x) => x.buildId === e.target.value);
-              if (b) onSavedBuild(b.progressionAllocation, b.buildName);
+              if (b) onSavedBuild(b.progressionAllocation, b.buildName, resolveCostRuleId(b.costRuleId));
             }}
             aria-label={fillPc(tpc("applyBuildAriaTemplate"), { name })}
             className="mt-1 w-full rounded border border-border bg-surface px-1 py-1 text-xs"

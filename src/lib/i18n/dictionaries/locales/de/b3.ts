@@ -112,7 +112,7 @@ const part: PartialDictionary = {
     calcModeConfirmed: "Nur Grundwert",
     calcModeUnsupported: "Nicht berechenbar",
     calcModeProvisional: "Vorläufige Regel",
-    totalOvrPlaceholder: "Gesamt (positionsspezifische OVR): — (Berechnungsregel wird geprüft)",
+    totalOvrPlaceholder: "Gesamt (positionsbezogene OVR): — (nicht berechnet: die offizielle Formel ist nicht öffentlich)",
     ownershipLabel: "Besitzstatus",
     ownershipHint: "Mein Team verwaltet Karten, die du wirklich besitzt. Du kannst das später in Mein Team ändern.",
     usageStatusLabel: "Nutzungsstatus",

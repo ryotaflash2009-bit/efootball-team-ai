@@ -262,6 +262,11 @@ export interface ProgressionInput {
   manager?: ManagerContext | null;
   /** 明示的なルールセット/バージョン。省略時は v2。 */
   rulesetId?: string;
+  /**
+   * ポイントの計算に使うコストの規則（2026-10-08）。保存ビルドは `SavedBuild.costRuleId`（無ければ旧規則）、
+   * 保存前の新しい育成は現行の規則を渡す。省略時は旧規則（既存の挙動を変えない）。能力値の上昇には影響しない。
+   */
+  costRuleId?: string | null;
 }
 
 /** 育成可否 */
@@ -283,6 +288,8 @@ export interface RatingResult {
 export interface ProgressionResult {
   rulesVersion: string;
   rulesetId: string;
+  /** ポイントの計算に使ったコストの規則（正規化済み）。 */
+  costRuleId: string;
   /** 入力ビルドが作られた規則バージョン（レガシー判定用） */
   inputRulesVersion: string;
   isLegacyInput: boolean;
@@ -396,6 +403,9 @@ export interface ProgressionResult {
 
 export type AutoAllocateProfile = "attack" | "defense" | "balance" | "gk";
 
+/** コストの規則の ID（旧: 5 段階ごと / 現行: 4 段階ごと・2026-10-08）。 */
+export type CostRuleId = "staged-2026-08-28" | "staged-2026-10-08";
+
 export interface SavedBuild {
   buildId: string;
   worldCardId: string;
@@ -421,6 +431,11 @@ export interface SavedBuild {
    * 表示文章・自由記述・診断結果・通常/辛口モードは含まない（分析を再現するための入力のみ）。
    */
   buildIntent?: SavedBuildIntent;
+  /**
+   * ポイントのコストの規則（2026-10-08 に追加・省略可）。無い既存のビルドは保存した時の規則（5 段階ごと）で計算する。
+   * 新しく保存するビルドは現行の規則（4 段階ごと）。値の検証は build-storage のスキーマ（不明な値は旧規則として読む）。
+   */
+  costRuleId?: CostRuleId;
 }
 
 /** 旧ビルドを新規則へ移行した結果 */

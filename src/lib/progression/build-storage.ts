@@ -104,6 +104,8 @@ export const savedBuildSchema = z.object({
   updatedAt: z.string(),
   schemaVersion: z.number().int(),
   buildIntent: buildIntentSchema,
+  // コストの規則（2026-10-08・省略可）。知らない値は「無し」（= 旧規則）として読む（壊れた値で読み込みを失敗させない）。
+  costRuleId: z.enum(["staged-2026-08-28", "staged-2026-10-08"]).optional().catch(undefined),
 });
 
 /** { [worldCardId]: SavedBuild[] } */
@@ -204,6 +206,11 @@ export interface SaveBuildInput {
   calculatedOvr: number | null;
   calculationMode: SavedBuild["calculationMode"];
   rulesVersion: string;
+  /**
+   * コストの規則（2026-10-08）。新しいビルドは現行の規則を渡す。既存のビルドの更新で省略すると、そのビルドの規則を変えない
+   * （「現行の規則で再計算」を選んだときだけ現行の規則を渡す）。
+   */
+  costRuleId?: import("./types").CostRuleId;
   /** 指定すると上書き（rename / 更新） */
   buildId?: string;
 }
@@ -237,6 +244,7 @@ export function saveBuild(input: SaveBuildInput): SaveResult {
       calculatedOvr: intOrNull(input.calculatedOvr),
       calculationMode: input.calculationMode,
       rulesVersion: input.rulesVersion,
+      ...(input.costRuleId !== undefined ? { costRuleId: input.costRuleId } : {}),
       updatedAt: now,
     };
   } else {
@@ -251,6 +259,7 @@ export function saveBuild(input: SaveBuildInput): SaveResult {
       calculatedOvr: intOrNull(input.calculatedOvr),
       calculationMode: input.calculationMode,
       rulesVersion: input.rulesVersion,
+      ...(input.costRuleId !== undefined ? { costRuleId: input.costRuleId } : {}),
       createdAt: now,
       updatedAt: now,
       schemaVersion: BUILD_SCHEMA_VERSION,

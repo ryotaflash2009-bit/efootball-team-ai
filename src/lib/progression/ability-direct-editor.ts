@@ -243,6 +243,16 @@ export function levelFromRatio(ratio: number, absoluteMax: number): number {
   return Math.round(Math.min(1, Math.max(0, ratio)) * absoluteMax);
 }
 
+/** Page Up / Page Down の段数（現行のコストが 4 段階ごとに変わるため、その区切りに合わせる）。 */
+export const PAGE_STEP = 4;
+
+/** 到達可能上限より先（斜線の範囲）の理由と、上限まで届くのに足りないポイント。 */
+export function unreachableInfo(model: GroupSliderModel, rulesetId?: string | null): { limitedByPoints: boolean; shortfall: number } {
+  if (!model.limitedByPoints) return { limitedByPoints: false, shortfall: 0 };
+  const need = costBetweenLevels(model.current, model.absoluteMax, rulesetId);
+  return { limitedByPoints: true, shortfall: Math.max(0, need - Math.max(0, model.remainingPoints)) };
+}
+
 /** キー操作 → 目標レベル（null = このキーは扱わない）。 */
 export function levelForKey(key: string, model: GroupSliderModel): number | null {
   switch (key) {
@@ -252,6 +262,10 @@ export function levelForKey(key: string, model: GroupSliderModel): number | null
     case "ArrowLeft":
     case "ArrowDown":
       return Math.max(model.current - 1, 0);
+    case "PageUp":
+      return Math.min(model.current + PAGE_STEP, model.reachableMax);
+    case "PageDown":
+      return Math.max(model.current - PAGE_STEP, 0);
     case "Home":
       return 0;
     case "End":

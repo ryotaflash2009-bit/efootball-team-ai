@@ -75,14 +75,24 @@ export const POINTS_PER_LEVEL = 2;
 export const PROVISIONAL_POINTS_PER_LEVEL = POINTS_PER_LEVEL;
 
 /**
- * 段階コストのブロックサイズ。**provisional**。
- * 確認済みなのは pesmastery の実例（0-4段階は1pt、5段階目は2pt）だけ。
- * 「5段階ごとに +1」および 9段階/13段階以降は**外挿**であり confirmed ではない。
+ * 段階コストのブロックサイズ（**旧規則**・`costRuleId` の無い既存のビルドだけが使う）。
+ * pesmastery の実例（0-4段階は1pt、5段階目は2pt）を「5段階ごとに +1」と解釈していたが、2026-10-08 の確認で
+ * 正しくは 4 段階ごと（`COST_BLOCK_SIZE_V3`）と分かった。既存のビルドを黙って変えないため、値は残している。
  */
 export const COST_BLOCK_SIZE = 5;
 
-/** 既定ルールセット ID（v2）。 */
+/**
+ * 段階コストのブロックサイズ（現行・2026-10-08）: 1〜4 段階は 1pt、5〜8 段階は 2pt、9〜12 段階は 3pt … と **4 段階ごとに +1**。
+ * 根拠: efootballlab の育成ポイントの計算機と解説（"levels 1–4 cost one point each, 5–8 cost two each, 9–12 cost three each,
+ * and the pattern continues every four levels"）と、本人の確認（2026-10-08）。上の 5 段階ごとの規則は pesmastery の実例の解釈の誤り。
+ * 既存の保存ビルド（`costRuleId` なし）は保存した時の規則（5 段階ごと）のまま計算し、黙って変えない。
+ */
+export const COST_BLOCK_SIZE_V3 = 4;
+
+/** 既定ルールセット ID（v2・コストは 5 段階ごと。`costRuleId` の無い既存のビルドはこれで計算する）。 */
 export const DEFAULT_RULESET_ID = "staged-2026-08-28";
+/** 現行のコストの規則のルールセット ID（4 段階ごと・2026-10-08）。新しいビルドはこれを `costRuleId` に保存する。 */
+export const RULESET_ID_COST_V3 = "staged-2026-10-08";
 /** 旧ルールセット ID（v1） */
 export const RULESET_ID_V1 = "provisional-linear";
 

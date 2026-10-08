@@ -164,6 +164,8 @@ export interface SquadEntryInput {
   display: SquadPlayerDisplay;
   buildMode: SquadBuildMode;
   savedAllocation: Record<string, number> | null;
+  /** 保存ビルドの配分を使う場合の、そのビルドのコストの規則（正規化済み）。保存ビルドでなければ null（現行の規則）。 */
+  savedBuildCostRuleId?: string | null;
   savedBuildName: string | null;
   savedBuildRulesVersion: string | null;
   selectedPlayerBoosters?: SelectedPlayerBooster[];

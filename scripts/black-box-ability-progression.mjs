@@ -6,7 +6,8 @@
  *
  * - 対象サイトへの GET と、ブラウザー内の操作だけ（保存はこのブラウザーの localStorage。本番DBへは書き込まない）。
  * - 非GETのリクエストが1件でもあれば失敗として記録する。
- * - 期待値は同じ計算規則（段階コスト 1 + floor(level / 5)、総ポイント (最大Lv − 1) × 2）から求める。
+ * - 期待値は現行の計算規則（段階コスト 1 + floor(level / 4)＝4段階ごとに +1pt・2026-10-08、総ポイント (最大Lv − 1) × 2）から求める。
+ *   新しい育成（保存していない状態）は現行の規則で計算する。
  * - 結果は REPORT_PATH（./data 配下のみ）へ Markdown と JSON で書く。
  */
 import { writeFileSync, mkdirSync } from "node:fs";
@@ -33,7 +34,7 @@ const VIEWPORTS = [
   { name: "mobile-430x932", width: 430, height: 932, dpr: 3, mobile: true },
 ].filter((v) => !process.env.BB_VIEWPORTS || process.env.BB_VIEWPORTS.split(",").includes(v.name));
 
-const cost = (lv) => { let s = 0; for (let i = 0; i < lv; i++) s += 1 + Math.floor(i / 5); return s; };
+const cost = (lv) => { let s = 0; for (let i = 0; i < lv; i++) s += 1 + Math.floor(i / 4); return s; };
 const TOTAL = 62;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -99,7 +100,7 @@ async function runViewport(browser, vp) {
     return true;
   };
   const key = async (k, code = k) => {
-    await c.send("Input.dispatchKeyEvent", { type: "rawKeyDown", key: k, code, windowsVirtualKeyCode: { ArrowRight: 39, ArrowLeft: 37, ArrowUp: 38, ArrowDown: 40, Home: 36, End: 35, Escape: 27 }[k] ?? 0 });
+    await c.send("Input.dispatchKeyEvent", { type: "rawKeyDown", key: k, code, windowsVirtualKeyCode: { ArrowRight: 39, ArrowLeft: 37, ArrowUp: 38, ArrowDown: 40, Home: 36, End: 35, Escape: 27, PageUp: 33, PageDown: 34 }[k] ?? 0 });
     await c.send("Input.dispatchKeyEvent", { type: "keyUp", key: k, code });
     await sleep(80);
   };
@@ -192,6 +193,12 @@ async function runViewport(browser, vp) {
   await key("Home");
   d = await dock();
   record("Home で 0（ポイント全返却）", d.level === 0 && d.remaining === TOTAL, `Lv${d.level} 残り${d.remaining}`);
+  await key("PageUp");
+  d = await dock();
+  record("Page Up で 4 段階（コストの区切り）", d.level === 4 && d.remaining === TOTAL - cost(4), `Lv${d.level} 残り${d.remaining}`);
+  await key("PageDown");
+  d = await dock();
+  record("Page Down で 4 段階戻る", d.level === 0 && d.remaining === TOTAL, `Lv${d.level}`);
   const focusVisible = await ev(() => { const e = document.querySelector("[data-testid=category-slider]"); return document.activeElement === e && getComputedStyle(e).outlineStyle !== "none"; });
   record("スライダーにフォーカスが見える", focusVisible);
 
@@ -222,6 +229,18 @@ async function runViewport(browser, vp) {
   d = await dock();
   record("到達不能区間の表示と＋の無効化（理由つき）", d.level === reach && d.plusDisabled === true && (await ev(() => !!document.querySelector(".cat-slider-blocked"))) && /不足|Not enough/.test(d.status), `Lv${d.level} 残り${d.remaining}`);
   record("残りポイントは負にならない", d.remaining >= 0 && d.remaining === remainingForDef - cost(reach), `残り${d.remaining}`);
+  {
+    const extra = await ev(() => ({
+      shortfall: document.querySelector("[data-testid=dock-shortfall]")?.textContent ?? "",
+      contract: document.querySelector("[data-testid=dock-contract]")?.textContent ?? "",
+      estimated: !!document.querySelector("[data-testid=dock-targets-estimated]"),
+      blockedTitle: document.querySelector("[data-testid=dock-reachable]")?.parentElement?.getAttribute("title") ?? "",
+    }));
+    record("届かない範囲: 足りないポイントと、上限のレベルを文字で示す（斜線だけにしない）", /\d+/.test(extra.shortfall) && /pt/.test(extra.shortfall), extra.shortfall);
+    record("契約の一文: 能力はカテゴリのレベルで育成する", extra.contract.length > 10, extra.contract.slice(0, 60));
+    record("対象能力が推定のカテゴリ（ディフェンス）に「推定」の印", extra.estimated === true);
+    record("カテゴリの上限の理由（99 に届くレベル）を title で示す", /99/.test(extra.blockedTitle), extra.blockedTitle.slice(0, 60));
+  }
 
   // 16-17. 元に戻す / スライダーで0へ
   await tap("[data-testid=dock-revert]");

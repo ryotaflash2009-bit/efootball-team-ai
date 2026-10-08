@@ -30,7 +30,7 @@ const VIEWPORTS = [
   { name: "mobile-430x932", width: 430, height: 932, dpr: 3, mobile: true },
 ].filter((v) => !process.env.BB_VIEWPORTS || process.env.BB_VIEWPORTS.split(",").includes(v.name));
 
-const cost = (lv) => { let s = 0; for (let i = 0; i < lv; i++) s += 1 + Math.floor(i / 5); return s; };
+const cost = (lv) => { let s = 0; for (let i = 0; i < lv; i++) s += 1 + Math.floor(i / 4); return s; }; // 現行のコストの規則（4 段階ごと・2026-10-08）
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const results = [];
 let current = "";
@@ -156,7 +156,7 @@ async function run(browser, vp) {
   await tap("[data-testid=compare-ability-sheet] [data-stat=tackling]");
   const blocked = await dragTo(0.995);
   s = await sheet();
-  record("ポイント不足: 到達可能上限で止まり理由を表示", blocked === "true" && s.remaining >= 0 && s.remaining < 1 + Math.floor(s.level / 5), `Lv${s.level} 残り${s.remaining}`);
+  record("ポイント不足: 到達可能上限で止まり理由を表示", blocked === "true" && s.remaining >= 0 && s.remaining < 1 + Math.floor(s.level / 4), `Lv${s.level} 残り${s.remaining}`);
   await tap("[data-testid=compare-ability-sheet] [data-testid=dock-revert]");
   // 保存
   await tap("[data-testid=compare-ability-sheet] [data-stat=tightPossession]");

@@ -7,6 +7,7 @@ import {
   isLegacyRulesVersion,
   isV2RulesVersion,
   normalizeRulesVersion,
+  resolveCostRuleId,
 } from "./progression-rules";
 import type { SquadUsage } from "@/lib/squad/usage";
 import {
@@ -65,7 +66,8 @@ export function buildPointSummary(
   build: SavedBuild,
   maximumLevel: number | null | undefined,
 ): BuildPointSummary {
-  const ruleset = getRuleset(build.rulesVersion);
+  // v1（能力値単位）は v1 の規則、グループ単位のビルドはそのビルドのコストの規則（無ければ旧規則・2026-10-08）。
+  const ruleset = isLegacyRulesVersion(build.rulesVersion) ? getRuleset(build.rulesVersion) : getRuleset(resolveCostRuleId(build.costRuleId));
   let used = 0;
   for (const v of Object.values(build.progressionAllocation ?? {})) {
     if (typeof v === "number" && Number.isFinite(v) && v > 0) {

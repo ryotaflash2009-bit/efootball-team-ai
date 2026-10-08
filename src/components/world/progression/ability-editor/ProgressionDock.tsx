@@ -4,6 +4,7 @@ import "@/lib/i18n/dictionaries/ja-ns/abilityEditor";
 import type { CSSProperties } from "react";
 import type { StatBreakdown } from "@/lib/progression/types";
 import type { AbilityDiff, AbilityFocus, AllocationChip, GroupSliderModel } from "@/lib/progression/ability-direct-editor";
+import { getGroupDef } from "@/lib/progression/stat-groups";
 import { abilityName, categoryColorVar, categoryName } from "@/lib/progression/ability-editor-labels";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import { AllocationChips } from "./AllocationChips";
@@ -34,6 +35,7 @@ export function ProgressionDock({
   baselineLevel,
   pointsChange,
   nextCost,
+  shortfall,
   primary,
   relatedDiffs,
   dirty,
@@ -66,6 +68,8 @@ export function ProgressionDock({
   pointsChange: number;
   /** 表示中レベルから次の1段階のコスト（上限なら null）。 */
   nextCost: number | null;
+  /** カテゴリの上限まで届くのに足りないポイント（ポイントで制限されていなければ 0）。 */
+  shortfall: number;
   primary: StatBreakdown | null;
   relatedDiffs: AbilityDiff[];
   /** 保存済み（読み込んだ）状態から変わっている。 */
@@ -172,6 +176,7 @@ export function ProgressionDock({
     .replace("{reachable}", String(model.reachableMax))
     .replace("{remaining}", String(remainingPoints));
   const statusId = `dock-status-${groupId}`;
+  const targetsEstimated = getGroupDef(groupId)?.statsConfidence !== "confirmed";
   const title = primary ? abilityName(primary.key, displayLocale) : catName;
   const hasMessage = blocked || plusReason != null || saveNotice != null;
 
@@ -193,7 +198,17 @@ export function ProgressionDock({
           </div>
           <p className="text-2xs text-text-dim [@media(max-height:520px)]:hidden">
             {tx("progressionCategory")}: <span className="font-semibold text-text">{catName}</span>
+            {targetsEstimated ? (
+              <span className="ms-1 rounded border border-warning/40 px-1 text-[9px] text-warning" title={tx("targetsEstimatedHint")} data-testid="dock-targets-estimated">
+                {tx("targetsEstimated")}
+              </span>
+            ) : null}
           </p>
+          {primary ? (
+            <p className="text-[10px] text-text-muted [@media(max-height:620px)]:hidden" data-testid="dock-contract">
+              {tx("contractNote").replace("{category}", catName)}
+            </p>
+          ) : null}
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
           <div className="flex items-center gap-1.5">
@@ -232,9 +247,14 @@ export function ProgressionDock({
         <span className="text-text-dim">
           {tx("nextUpgrade")}: <span className="text-text">{nextCost == null ? tx("maxBadge") : `${nextCost}${tx("pointsUnit")}`}</span>
         </span>
-        <span className="text-text-dim">
-          {tx("maximumReachable")}: <span className="text-text">{tx("levelPrefix")} {model.reachableMax}</span>
+        <span className="text-text-dim" title={tx("categoryCapHint").replace("{max}", String(model.absoluteMax))}>
+          {tx("maximumReachable")}: <span className="text-text" data-testid="dock-reachable">{tx("levelPrefix")} {model.reachableMax}</span>
           {model.atCategoryMax ? <span className="ms-1 font-bold text-[rgb(var(--cat))]">{tx("maxBadge")}</span> : null}
+          {model.limitedByPoints ? (
+            <span className="ms-1" data-testid="dock-shortfall">
+              {tx("reachLimitedTemplate").replace("{max}", String(model.absoluteMax)).replace("{shortfall}", String(shortfall))}
+            </span>
+          ) : null}
         </span>
       </div>
 
@@ -278,7 +298,10 @@ export function ProgressionDock({
 
       <p id={statusId} className={`min-h-[1rem] px-1 text-2xs ${hasMessage ? "" : "[@media(max-height:520px)]:hidden"}`} role="status" aria-live="polite">
         {blocked ? (
-          <span className="font-semibold text-danger">⚠ {tx("notEnoughToReach")}</span>
+          <span className="font-semibold text-danger">
+            ⚠ {tx("notEnoughToReach")}
+            {model.limitedByPoints ? ` ${tx("reachLimitedTemplate").replace("{max}", String(model.absoluteMax)).replace("{shortfall}", String(shortfall))}` : ""}
+          </span>
         ) : plusReason ? (
           <span className={model.atCategoryMax ? "font-semibold text-[rgb(var(--cat))]" : "font-semibold text-warning"}>
             {model.atCategoryMax ? "★" : "⚠"} {plusReason}

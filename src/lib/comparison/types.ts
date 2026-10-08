@@ -58,6 +58,8 @@ export interface ComparisonPlayerInput {
   experimentalModeEnabled?: boolean;
   /** @deprecated 同上。 */
   applyProvisionalBoosters?: boolean;
+  /** 保存ビルドを読み込んだ場合の、そのビルドのコストの規則（正規化済み）。無ければ現行の規則（自動配分・手で作った配分）。 */
+  savedCostRuleId?: string | null;
 }
 
 export interface StatComparisonRow {

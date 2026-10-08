@@ -112,7 +112,7 @@ const part: PartialDictionary = {
     calcModeConfirmed: "僅基礎值",
     calcModeUnsupported: "無法計算",
     calcModeProvisional: "暫定規則",
-    totalOvrPlaceholder: "綜合（各位置 OVR）：—（計算規則審查中）",
+    totalOvrPlaceholder: "綜合值（各位置 OVR）：—（官方計算公式未公開，不計算）",
     ownershipLabel: "持有狀態",
     ownershipHint: "我的球隊用來管理你實際持有的球員卡。之後可在我的球隊畫面變更。",
     usageStatusLabel: "使用狀態",

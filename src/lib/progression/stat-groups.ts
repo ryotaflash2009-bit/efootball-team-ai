@@ -10,6 +10,9 @@ import type { RuleConfidence } from "./types";
  *   Shooting は「シュート」を候補とし『撮影』とは訳さない。
  * - Shooting の対象能力値: confirmed（Finishing / Set Piece Taking(Place Kicking) / Curl。pesmastery + gamemarket + mobilegaminghub）
  * - 他9グループの対象能力値: provisional（本アプリの暫定割当。26能力を重複なく10分割）
+ *   2026-10-08 に公開の情報を再調査（読み取りだけ・13 件）したが、9 グループの対象能力を書いた独立の情報源は見つからなかった
+ *   （pesmastery・efootballlab・gamemarket・gamingonphone・KONAMI の公式ページ・eFHUB）。確認にはゲームの育成画面の記録が必要。
+ *   画面では「推定」と示し、推測で割り当てを変えない（`docs/product/progression-rules-evidence.md`）。
  */
 
 export interface StatGroupDef {

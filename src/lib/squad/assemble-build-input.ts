@@ -7,6 +7,7 @@ import { getFormation } from "./formations";
 import { clampCoord, inferFreshRole, isPlacementRole } from "./role-inference";
 import type { BuildSquadInput } from "./build-squad";
 import type { SquadEntryInput, StoredSquad } from "./types";
+import { resolveCostRuleId } from "@/lib/progression/progression-rules";
 
 /**
  * StoredSquad ＋ 解決済み選手詳細 → buildSquad の入力（純関数）。
@@ -57,12 +58,14 @@ function makeEntry(
   let savedAllocation: Record<string, number> | null = null;
   let savedBuildName: string | null = null;
   let savedBuildRulesVersion: string | null = null;
+  let savedBuildCostRuleId: string | null = null;
   if (savedBuildId) {
     const b = (args.savedBuildsByCard.get(worldCardId) ?? []).find((x) => x.buildId === savedBuildId);
     if (b) {
       savedAllocation = b.progressionAllocation;
       savedBuildName = b.buildName;
       savedBuildRulesVersion = b.rulesVersion;
+      savedBuildCostRuleId = resolveCostRuleId(b.costRuleId);
     }
   }
   return {
@@ -72,6 +75,7 @@ function makeEntry(
     savedAllocation,
     savedBuildName,
     savedBuildRulesVersion,
+    savedBuildCostRuleId,
     selectedPlayerBoosters: boosters ?? [],
     selectedConditionalBoosters: conditionalBoosters ?? [],
   };

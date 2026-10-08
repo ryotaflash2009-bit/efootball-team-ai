@@ -200,7 +200,7 @@ const part: PartialDictionary = {
     registeredPositionLabel: "Ruolo registrato: ",
     currentOverallLabel: "Valutazione complessiva per ruolo con la progressione attuale: ",
     currentOverallValue: "—",
-    currentOverallNote: " (regola di calcolo in verifica)",
+    currentOverallNote: " (non calcolato: la formula ufficiale non è pubblica)",
     overallExplanation: "La progressione attuale è applicata al confronto delle 26 statistiche qui sopra. Le valutazioni complessive per ruolo non vengono mostrate perché KONAMI non ha pubblicato la formula, il peso delle statistiche né le regole di arrotondamento, e non ci sono abbastanza valori di esempio visualizzati su più carte per stimarle in modo affidabile (non mostriamo numeri inventati).",
     attachedBoosterPrefixTemplate: "{slot} associato: ",
     powerOfManyNote: "Booster variabile (oro, dipende dal Piano di gioco) · non applicato alla classifica del confronto",

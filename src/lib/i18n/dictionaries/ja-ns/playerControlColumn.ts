@@ -19,7 +19,7 @@ const playerControlColumn: Dictionary["playerControlColumn"] = {
   registeredPositionLabel: "登録ポジション: ",
   currentOverallLabel: "現在の育成でのポジション別総合値: ",
   currentOverallValue: "—",
-  currentOverallNote: "（計算規則を確認中）",
+  currentOverallNote: "（公式の計算式が非公開のため計算しません）",
   overallExplanation:
     "現在の育成内容は上の 26 能力値比較へ反映されています。ポジション別総合値は KONAMI が算式・能力重み・丸め規則を公開しておらず、複数カードの表示値サンプルも不足しているため、推測値を表示していません（架空の数値は出しません）。",
   attachedBoosterPrefixTemplate: "付属{slot}: ",
