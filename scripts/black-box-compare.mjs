@@ -99,7 +99,7 @@ async function main() {
   record("比較: 26能力値に英語 Offensive Awareness/Ball Control を主表示しない", !/>Offensive Awareness<|>Ball Control<|>Low Pass<|>Set Piece Taking</.test(c2.body), "");
   record("比較: 近接プレビューが日本語（対象能力）", c2.body.includes("の対象能力"), "");
   record("比較列: カード画像＋選手詳細/育成画面の導線", c2.body.includes("選手詳細") && c2.body.includes("育成画面"), "");
-  record("比較列: ポジション適性の総合値は「—」＋「計算規則を確認中」を維持", /ポジション別総合値: <b>—<\/b>/.test(c2.body) && c2.body.includes("計算規則を確認中"), "");
+  record("比較列: ポジション適性の総合値は「—」＋「公式の計算式が非公開のため計算しません」（2026-10-08 の文言）", /ポジション別総合値: <b>—<\/b>/.test(c2.body) && c2.body.includes("公式の計算式が非公開のため計算しません") && !c2.body.includes("計算規則を確認中"), "");
   record("比較列: 架空のポジション別 OVR（RWF 105 等の数値行）を表示しない", !/(LWF|RWF|AMF|SS|CF|CB|CMF|DMF)\s*(105|103|101|97|94)\b/.test(c2.text), "");
   const alUrl = await get(`/compare?ids=${messiA},${cb}&al=shooting~5.dribbling~3_`);
   record("比較 al=（手動育成配分）: 200・500 にならない", alUrl.status === 200, `HTTP ${alUrl.status}`);
