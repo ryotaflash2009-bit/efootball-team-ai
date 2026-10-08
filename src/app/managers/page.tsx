@@ -3,6 +3,13 @@ import { cachedGetManagersLatestFetchedAt, cachedListManagers } from "@/lib/refe
 import { getManagersLatestFetchedAt, listManagers, ManagerDataUnavailableError } from "@/lib/managers/repository";
 import { ManagersPageView, ManagersUnavailableView, ManagersFailedView, ManagersSearchRejectedView } from "@/components/managers/ManagersPageView";
 import { SearchInputRejectedError, checkSearchInput } from "@/lib/search/search-input";
+import { pageMetadata } from "@/lib/seo/page-metadata";
+
+export const metadata = pageMetadata({
+  path: "/managers",
+  title: "監督一覧（戦術の適性・ブースター） | TeamAIXI",
+  description: "イーフトの監督の戦術の適性（ポゼッション・カウンター など）・監督ブースター・Link-Up Play を一覧で比べられます。",
+});
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

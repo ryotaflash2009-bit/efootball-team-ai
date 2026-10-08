@@ -9,6 +9,13 @@ import { ComparisonBoard } from "@/components/compare/ComparisonBoard";
 import type { ComparisonPlayerInput } from "@/lib/comparison/types";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { ComparePageHeader, ComparePageDataUnavailable } from "@/components/compare/ComparePageHeader";
+import { pageMetadata } from "@/lib/seo/page-metadata";
+
+export const metadata = pageMetadata({
+  path: "/compare",
+  title: "選手比較 | TeamAIXI",
+  description: "eFootball™ の選手を最大 4 人まで並べて、能力値・スキル・育成後の値を比較できます。",
+});
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

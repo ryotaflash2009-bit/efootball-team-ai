@@ -9,6 +9,13 @@ import { PlayersPageView, PlayersPageUnavailable, PlayersPageFailed, PlayersPage
 import { SearchInputRejectedError, checkSearchInput } from "@/lib/search/search-input";
 import type { WorldPlayerCardData } from "@/components/world/WorldPlayerCard";
 import { settledInOrder } from "@/lib/settled-in-order";
+import { pageMetadata } from "@/lib/seo/page-metadata";
+
+export const metadata = pageMetadata({
+  path: "/players",
+  title: "選手一覧・能力値検索 | TeamAIXI",
+  description: "eFootball™ World の全カードを能力値・ポジション・カード種別で検索。気になる選手の育成計算やチーム診断に使えます。",
+});
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
