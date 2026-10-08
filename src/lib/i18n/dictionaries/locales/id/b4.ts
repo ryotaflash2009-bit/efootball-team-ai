@@ -560,6 +560,8 @@ const part: PartialDictionary = {
     confidenceInsufficient: "Tidak cukup",
     notComputed: "Tidak dihitung",
     rulesVersion: "Versi aturan",
+    factsTitle: "Fakta skuad (hitungan)",
+    factsNote: "Hanya hitungan yang langsung berasal dari skuad. Tanpa bobot atau skor; tidak dipakai di penilaian keseluruhan, peringkat, atau gambar berbagi. Rumus sementara dapat dibandingkan di bawah.",
   },
   comparisonCockpit: {
     abilitiesTableLink: "Ke tabel 26 atribut ↓",

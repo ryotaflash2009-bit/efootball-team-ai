@@ -560,6 +560,8 @@ const part: PartialDictionary = {
     confidenceInsufficient: "Insuficiente",
     notComputed: "Não calculado",
     rulesVersion: "Versão das regras",
+    factsTitle: "Fatos do elenco (contagens)",
+    factsNote: "Apenas contagens que vêm direto do elenco. Sem pesos nem pontuações; não entram na avaliação geral, no ranking nem na imagem de compartilhamento. As fórmulas provisórias podem ser comparadas abaixo.",
   },
   comparisonCockpit: {
     abilitiesTableLink: "Tabela de 26 atributos ↓",

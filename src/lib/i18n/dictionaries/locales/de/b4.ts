@@ -560,6 +560,8 @@ const part: PartialDictionary = {
     confidenceInsufficient: "Unzureichend",
     notComputed: "Nicht berechnet",
     rulesVersion: "Regelversion",
+    factsTitle: "Kaderfakten (Zählungen)",
+    factsNote: "Nur Zählungen, die sich direkt aus dem Kader ergeben. Keine Gewichte oder Punkte; nicht in Gesamtbewertung, Rangliste oder Teilen-Bild. Vorläufige Formeln lassen sich unten vergleichen.",
   },
   comparisonCockpit: {
     abilitiesTableLink: "Zur Tabelle mit 26 Attributen ↓",

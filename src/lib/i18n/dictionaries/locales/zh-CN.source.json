@@ -2263,6 +2263,8 @@
  "diagnosisPerspectives.confidenceInsufficient": "ca57f7a4da7e",
  "diagnosisPerspectives.notComputed": "9292f2b0825d",
  "diagnosisPerspectives.rulesVersion": "f357f8e2422e",
+ "diagnosisPerspectives.factsTitle": "ac45a0175efd",
+ "diagnosisPerspectives.factsNote": "9f8fc922216c",
  "comparisonCockpit.abilitiesTableLink": "d742f6306062",
  "comparisonCockpit.backToTrainingLink": "d14ac9757351",
  "comparisonCockpit.ariaLabel": "5ae5040178d9",

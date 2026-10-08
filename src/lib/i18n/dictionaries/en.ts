@@ -233,6 +233,8 @@ const en: Dictionary = {
     confidenceInsufficient: "Insufficient",
     notComputed: "Not computed",
     rulesVersion: "Rules version",
+    factsTitle: "Squad facts (counts)",
+    factsNote: "Counts that follow directly from the squad. No weights or scores; not used in the overall rating, ranking or share image. Provisional formulas can be compared in the section below.",
   },
   tierPackPreview: {
     pageTitle: "Tier lists and packs (display prototype)",

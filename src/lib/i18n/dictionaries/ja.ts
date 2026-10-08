@@ -232,6 +232,8 @@ export interface Dictionary {
     confidenceInsufficient: string;
     notComputed: string;
     rulesVersion: string;
+    factsTitle: string;
+    factsNote: string;
   };
   tierPackPreview: {
     pageTitle: string;

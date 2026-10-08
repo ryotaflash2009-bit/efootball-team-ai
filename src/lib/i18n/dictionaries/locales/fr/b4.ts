@@ -560,6 +560,8 @@ const part: PartialDictionary = {
     confidenceInsufficient: "Insuffisante",
     notComputed: "Non calculé",
     rulesVersion: "Version des règles",
+    factsTitle: "Faits de l’effectif (décomptes)",
+    factsNote: "Uniquement des décomptes issus de l’effectif. Sans pondération ni score ; non utilisés dans la note globale, le classement ou l’image de partage. Les formules provisoires se comparent ci-dessous.",
   },
   comparisonCockpit: {
     abilitiesTableLink: "Vers le tableau des 26 statistiques ↓",

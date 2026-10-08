@@ -560,6 +560,8 @@ const part: PartialDictionary = {
     confidenceInsufficient: "Yetersiz",
     notComputed: "Hesaplanmadı",
     rulesVersion: "Kural sürümü",
+    factsTitle: "Kadro gerçekleri (sayımlar)",
+    factsNote: "Yalnızca kadrodan doğrudan çıkan sayımlar. Ağırlık veya puan yok; genel değerlendirmede, sıralamada veya paylaşım görselinde kullanılmaz. Geçici formüller aşağıda karşılaştırılabilir.",
   },
   comparisonCockpit: {
     abilitiesTableLink: "26 özellik tablosuna ↓",

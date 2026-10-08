@@ -20,6 +20,8 @@ const diagnosisPerspectives: Dictionary["diagnosisPerspectives"] = {
   confidenceInsufficient: "判定できない",
   notComputed: "計算しない",
   rulesVersion: "規則の版",
+  factsTitle: "スカッドの事実（集計）",
+  factsNote: "入力から決まる数だけです。重み・点数を使わず、総合評価・順位・共有画像には入れていません。暫定の計算式は下の「診断の追加観点」で比べられます。",
   };
 
 registerJaNamespace("diagnosisPerspectives", diagnosisPerspectives);

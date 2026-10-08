@@ -560,6 +560,8 @@ const part: PartialDictionary = {
     confidenceInsufficient: "不足",
     notComputed: "未計算",
     rulesVersion: "規則版本",
+    factsTitle: "陣容事實（統計）",
+    factsNote: "僅顯示由陣容直接得出的數值。不使用權重或分數，不計入綜合評價、排名或分享圖片。暫定公式可在下方比較。",
   },
   comparisonCockpit: {
     abilitiesTableLink: "前往 26 項能力值表 ↓",

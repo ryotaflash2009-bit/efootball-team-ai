@@ -400,3 +400,36 @@ export function toPerspectiveInput(params: {
   }
   return { players, managerTactics: params.managerTactics };
 }
+
+/**
+ * 事実の集計として画面の上に出す式（2026-10-09・f045-decision-package.md の推奨）。
+ * 入力から一意に決まる数だけ（重み・閾値なし）。総合点・カテゴリの点数・順位・称号・共有カードには入れない。
+ * 監督との相性・空中戦（身長）は推奨どおり比較のまま（ここに入れない）。
+ */
+export const FACT_SUMMARY_FORMULAS: Readonly<Partial<Record<PerspectiveId, string>>> = Object.freeze({
+  squadDepth: "A",
+  sideBalance: "A",
+  roleOverlap: "A",
+  formationFit: "A",
+  gkCategory: "A",
+  aerialFootPosition: "A",
+});
+
+export interface PerspectiveFactSummaryItem {
+  id: PerspectiveId;
+  label: string;
+  formulaLabel: string;
+  value: number | null;
+  unit: string;
+}
+
+/** 事実の集計の一覧（式が fact のものだけ・値が null は「計算しない」のまま出す）。 */
+export function perspectiveFactSummary(results: readonly PerspectiveResult[]): PerspectiveFactSummaryItem[] {
+  const out: PerspectiveFactSummaryItem[] = [];
+  for (const r of results) {
+    const fid = FACT_SUMMARY_FORMULAS[r.id];
+    const f = fid ? r.formulas.find((x) => x.id === fid && x.kind === "fact") : undefined;
+    if (f) out.push({ id: r.id, label: r.label, formulaLabel: f.label, value: f.value, unit: f.unit });
+  }
+  return out;
+}
