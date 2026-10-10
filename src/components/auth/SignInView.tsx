@@ -130,7 +130,14 @@ export function SignInView() {
             {isSignupOpen() ? ta("signInSignUpLink") : ta("signInLimitedLink")}
           </Link>
         </p>
-        {google ? null : (
+        {google ? (
+          // パスワードの再設定の導線は外す（パスワードでのログインを一般に提供しないため）。以前のアカウントの人はサポートへ。
+          <p>
+            <Link href="/support" className="text-accent hover:underline" data-testid="password-forgot-support">
+              {ta("passwordForgotContactSupport")}
+            </Link>
+          </p>
+        ) : (
           <p>
             <Link href="/auth/forgot-password" className="text-accent hover:underline">
               {ta("signInForgotPasswordLink")}

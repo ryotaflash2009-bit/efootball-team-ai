@@ -3621,6 +3621,7 @@ export interface Dictionary {
     inAppAfterOpen: string;
     oauthFailedBrowserHint: string;
     passwordExistingAccountsLead: string;
+    passwordForgotContactSupport: string;
     googleSignUpTitle: string;
     googleSignUpBody: string;
     confirmRetryButton: string;

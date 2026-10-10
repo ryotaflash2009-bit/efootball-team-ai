@@ -3683,6 +3683,7 @@ const en: Dictionary = {
     inAppAfterOpen: "After signing in with Safari or Chrome, keep using that browser (if you go back to the app, it may show you as signed out).",
     oauthFailedBrowserHint: "If it keeps failing, reopen this page in Safari or Chrome and try again.",
     passwordExistingAccountsLead: "For accounts created earlier with an email address (new accounts are created with Google).",
+    passwordForgotContactSupport: "If you forgot the password for an earlier account, please contact us through the Support page.",
     googleSignUpTitle: "Create an account",
     googleSignUpBody: "Accounts are created with a Google account (sign-up with email and password isn't offered). No confirmation email is sent.",
     confirmRetryButton: "Try again",

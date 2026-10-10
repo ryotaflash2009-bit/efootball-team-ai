@@ -28,6 +28,7 @@ const part: PartialDictionary = {
     inAppAfterOpen: "Nach der Anmeldung in Safari oder Chrome bitte dort weitermachen (zurück in der App bist du eventuell abgemeldet).",
     oauthFailedBrowserHint: "Klappt es weiterhin nicht, öffne die Seite in Safari oder Chrome neu und versuche es erneut.",
     passwordExistingAccountsLead: "Für früher per E-Mail-Adresse erstellte Konten (neue Konten werden mit Google erstellt).",
+    passwordForgotContactSupport: "Passwort eines früheren Kontos vergessen? Bitte über die Support-Seite Kontakt aufnehmen.",
     googleSignUpTitle: "Konto erstellen",
     googleSignUpBody: "Konten werden mit einem Google-Konto erstellt (Registrierung mit E-Mail und Passwort wird nicht angeboten). Es wird keine Bestätigungs-E-Mail gesendet.",
     confirmRetryButton: "Erneut versuchen",

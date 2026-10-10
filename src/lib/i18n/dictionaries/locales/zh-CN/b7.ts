@@ -28,6 +28,7 @@ const part: PartialDictionary = {
     inAppAfterOpen: "在 Safari 或 Chrome 中登录后，请继续使用该浏览器（返回应用时可能显示为未登录）。",
     oauthFailedBrowserHint: "如果仍然失败，请在 Safari 或 Chrome 中重新打开此页面后再试。",
     passwordExistingAccountsLead: "以前用邮箱创建的账号请在此登录（新账号使用 Google 创建）。",
+    passwordForgotContactSupport: "如果忘记了以前账号的密码，请通过支持页面联系我们。",
     googleSignUpTitle: "创建账号",
     googleSignUpBody: "账号使用 Google 账号创建（不提供邮箱和密码注册），不会发送确认邮件。",
     confirmRetryButton: "重试",

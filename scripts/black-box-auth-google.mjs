@@ -70,6 +70,7 @@ async function main() {
     const t1 = await text();
     record("[プレビュー] Google のボタン「Google で続ける」を出す", /Google で続ける/.test(t1), "");
     record("[プレビュー] パスワードの再設定の導線を出さない（パスワードでのログインを一般に提供しないため）", !(await ev(`!!document.querySelector('a[href="/auth/forgot-password"]')`)), "");
+    record("[プレビュー] 以前のアカウントでパスワードを忘れた人の代わりの導線（サポート）", await has('[data-testid="password-forgot-support"]'), "");
     record("[プレビュー] メール＋パスワードは以前のアカウント用と示す", /以前にメールアドレスで作成したアカウント/.test(t1), "");
     record("[プレビュー] ゲストのまま使える・自動では統合しない旨", /ゲストとしてすべての機能/.test(t1) && /自動では統合しません/.test(t1), "");
     await ev(`document.querySelector('[data-testid="google-sign-in-button"]').click()`);

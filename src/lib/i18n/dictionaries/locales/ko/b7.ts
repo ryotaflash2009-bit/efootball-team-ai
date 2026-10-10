@@ -28,6 +28,7 @@ const part: PartialDictionary = {
     inAppAfterOpen: "Safari·Chrome에서 로그인한 뒤에는 그 브라우저에서 계속 이용해 주세요(앱으로 돌아가면 로그아웃 상태로 보일 수 있습니다).",
     oauthFailedBrowserHint: "계속 실패하면 Safari 또는 Chrome에서 이 페이지를 다시 열고 시도해 주세요.",
     passwordExistingAccountsLead: "예전에 이메일 주소로 만든 계정은 여기에서 로그인하세요(새 계정은 Google로 만듭니다).",
+    passwordForgotContactSupport: "이전 계정의 비밀번호를 잊으셨다면 지원 페이지의 문의 창구로 연락해 주세요.",
     googleSignUpTitle: "계정 만들기",
     googleSignUpBody: "계정은 Google 계정으로 만듭니다(이메일과 비밀번호로 가입은 받지 않습니다). 확인 메일은 발송되지 않습니다.",
     confirmRetryButton: "다시 시도",

@@ -28,6 +28,7 @@ const auth: Dictionary["auth"] = {
   inAppAfterOpen: "Safari・Chrome でログインした後は、そのブラウザーで続けてください（アプリに戻ると、ログインしていない状態で表示されることがあります）。",
   oauthFailedBrowserHint: "うまくいかない場合は、Safari または Chrome でこのページを開き直してからお試しください。",
   passwordExistingAccountsLead: "以前にメールアドレスで作成したアカウントの方はこちら（新しいアカウントは Google で作成します）。",
+  passwordForgotContactSupport: "以前のアカウントのパスワードを忘れた場合は、サポートのページの窓口からご連絡ください。",
   googleSignUpTitle: "アカウントの作成",
   googleSignUpBody: "アカウントは Google アカウントで作成します（メールアドレスとパスワードでの新規登録は受け付けていません）。確認メールは届きません。",
   confirmRetryButton: "もう一度試す",

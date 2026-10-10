@@ -28,6 +28,7 @@ const part: PartialDictionary = {
     inAppAfterOpen: "Setelah masuk di Safari atau Chrome, lanjutkan di browser itu (jika kembali ke aplikasi, kamu bisa tampak belum masuk).",
     oauthFailedBrowserHint: "Jika terus gagal, buka ulang halaman ini di Safari atau Chrome lalu coba lagi.",
     passwordExistingAccountsLead: "Untuk akun yang dibuat sebelumnya dengan alamat email (akun baru dibuat dengan Google).",
+    passwordForgotContactSupport: "Jika lupa kata sandi akun lama, hubungi kami melalui halaman Dukungan.",
     googleSignUpTitle: "Buat akun",
     googleSignUpBody: "Akun dibuat dengan akun Google (pendaftaran dengan email dan kata sandi tidak tersedia). Tidak ada email konfirmasi.",
     confirmRetryButton: "Coba lagi",

@@ -28,6 +28,7 @@ const part: PartialDictionary = {
     inAppAfterOpen: "Dopo l’accesso con Safari o Chrome, continua in quel browser (tornando all’app potresti risultare disconnesso).",
     oauthFailedBrowserHint: "Se continua a non funzionare, riapri questa pagina in Safari o Chrome e riprova.",
     passwordExistingAccountsLead: "Per gli account creati in precedenza con un indirizzo email (i nuovi account si creano con Google).",
+    passwordForgotContactSupport: "Se hai dimenticato la password di un account precedente, contattaci dalla pagina Supporto.",
     googleSignUpTitle: "Crea un account",
     googleSignUpBody: "Gli account si creano con un account Google (la registrazione con email e password non è disponibile). Non viene inviata alcuna email di conferma.",
     confirmRetryButton: "Riprova",

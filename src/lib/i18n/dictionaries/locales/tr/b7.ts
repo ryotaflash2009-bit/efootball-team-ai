@@ -28,6 +28,7 @@ const part: PartialDictionary = {
     inAppAfterOpen: "Safari veya Chrome’da giriş yaptıktan sonra o tarayıcıda devam et (uygulamaya dönersen çıkış yapmış görünebilirsin).",
     oauthFailedBrowserHint: "Başarısız olmaya devam ederse bu sayfayı Safari veya Chrome’da yeniden açıp tekrar dene.",
     passwordExistingAccountsLead: "Daha önce e-posta adresiyle oluşturulan hesaplar için (yeni hesaplar Google ile oluşturulur).",
+    passwordForgotContactSupport: "Önceki bir hesabın şifresini unuttuysan Destek sayfasından bize ulaş.",
     googleSignUpTitle: "Hesap oluştur",
     googleSignUpBody: "Hesaplar bir Google hesabıyla oluşturulur (e-posta ve şifreyle kayıt sunulmuyor). Onay e-postası gönderilmez.",
     confirmRetryButton: "Tekrar dene",
