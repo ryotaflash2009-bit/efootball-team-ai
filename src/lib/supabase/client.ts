@@ -37,6 +37,8 @@ export interface AuthTestDouble {
 /** ブラックボックステスト専用: `.from(table)`だけを差し替えるDB用テストダブル。 */
 export interface DbTestDouble {
   from: SupabaseClient["from"];
+  /** アカウントの削除（`delete_my_account`）の black-box 用（2026-10-11）。 */
+  rpc?: SupabaseClient["rpc"];
 }
 
 declare global {
@@ -54,7 +56,7 @@ function resolveTestDouble(): SupabaseClient | null {
   const authDouble = window.__EFB_AUTH_TEST_DOUBLE__;
   if (!authDouble) return null;
   const dbDouble = window.__EFB_DB_TEST_DOUBLE__;
-  return { auth: authDouble, from: dbDouble?.from } as unknown as SupabaseClient;
+  return { auth: authDouble, from: dbDouble?.from, rpc: dbDouble?.rpc } as unknown as SupabaseClient;
 }
 
 /** 検証済みの環境変数からブラウザー用クライアントを生成する。未設定/不正なら`null`。 */
