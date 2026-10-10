@@ -79,3 +79,26 @@ export function buildAppliedStateUpdate({ appliedState, candidates, detections }
   }
   return { changed: updates.length > 0, appliedState: next, updates, skipped };
 }
+
+/**
+ * リポジトリに置く Evidence（2026-10-11 修正）。workflow の evidence.json（run の事実・入出力の sha256）に、
+ * リポジトリの契約（update-detection.test.ts: applied-state と最新の Evidence の一致）が読む項目を足す:
+ * candidate（checksum・件数）・diff（前後の件数）・apply（appliedAt・run）・sourceTimestamps（World の max）。
+ * 最初の自動の同期（bb2d335）は evidence.json をそのまま置き、これらが無かったため main のテストが失敗した。
+ *
+ * @param {unknown} evidence workflow の evidence.json（無ければ注記だけ）
+ * @param {any} entry 更新後の applied-state の dataset の項目
+ * @param {number | null} previousRecordCount 更新前の件数
+ * @param {string} applyRunId
+ */
+export function buildRepositoryEvidence(evidence, entry, previousRecordCount, applyRunId) {
+  const base = isObj(evidence) ? evidence : { note: "evidence.json was not available in the artifact" };
+  const out = {
+    ...base,
+    candidate: { sourceChecksum12: entry.sourceChecksum12, recordCount: entry.recordCount },
+    diff: { before: Number.isInteger(previousRecordCount) ? previousRecordCount : null, after: entry.recordCount },
+    apply: { appliedAt: entry.appliedAt, applyRunId },
+  };
+  if (typeof entry.maxAppearanceUpdatedAt === "string") out.sourceTimestamps = { max: entry.maxAppearanceUpdatedAt };
+  return out;
+}
