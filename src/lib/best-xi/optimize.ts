@@ -2,6 +2,7 @@ import type { FormationSlot } from "@/lib/squad/types";
 import { compareRankTuples, computeRankTuple, type BestXiRankTuple } from "./rank";
 import { buildTeamRankTuple, compareTeamTuples } from "./team-rank";
 import type { BestXiCandidate } from "./types";
+import { personKeyOf } from "@/lib/world/person-identity";
 
 /**
  * AIベスト11(総合型・全体配置最適化)の探索本体。
@@ -9,7 +10,8 @@ import type { BestXiCandidate } from "./types";
  * 合成スコア(重み付き合計の「AIスコア」)は一切使わない。決定的な二段階アルゴリズムのみを用いる。
  *
  * ## フェーズA: 最大二部マッチング(Kuhn法・増加パス法)
- * 「スロット」×「候補カード(worldCardId単位。同一カードは1枠にしか入れない)」の二部グラフで、
+ * 「スロット」×「候補の選手(人物単位。同じ選手の別カード・別ビルドは1つの節点にまとめ、1枠にしか入れない)」の二部グラフで、
+ * (2026-10-10: ゲームでは同じ選手の別カードを2枚編成できないため、カード単位から人物単位へ。人物はカード ID の下位20ビット・person-identity.ts)
  * 辺は「そのカードの少なくとも1つのビルド変体がそのスロットへ適格(eligible)」で張る。
  * Kuhn法は数学的に最大カード数のマッチングを必ず見つけることが保証されているアルゴリズムであり、
  * これによりタスク優先度1位の「埋められる必須スロット数の最大化」を**証明可能な形で**保証する
@@ -61,11 +63,13 @@ export function optimizeBestXi(params: {
   // 入力配列の並び順に依存しないよう、決定的な固定順へ正規化する。
   const sortedCandidates = [...params.candidates].sort(compareCandidateCanonical);
 
+  // 節点は人物（同じ選手の別カードは同じ節点・各スロットではその人物の最良のカード×ビルドを使う）。ID が不正なら従来どおりカード単位。
   const candidatesByCard = new Map<string, BestXiCandidate[]>();
   for (const c of sortedCandidates) {
-    const list = candidatesByCard.get(c.worldCardId);
+    const key = personKeyOf(c.worldCardId) ?? `card:${c.worldCardId}`;
+    const list = candidatesByCard.get(key);
     if (list) list.push(c);
-    else candidatesByCard.set(c.worldCardId, [c]);
+    else candidatesByCard.set(key, [c]);
   }
   const cardIds = [...candidatesByCard.keys()];
   const candidatePoolBounded = cardIds.length > CANDIDATE_POOL_CAP;

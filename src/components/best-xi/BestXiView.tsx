@@ -13,7 +13,6 @@ import { useBestXiProgressionCards } from "@/lib/best-xi/use-candidate-cards";
 import { buildBestXiCandidates } from "@/lib/best-xi/candidates";
 import { selectBestXi } from "@/lib/best-xi/select";
 import { selectBestXiBench, type BestXiBenchResult } from "@/lib/best-xi/bench";
-import { sameNameGroups } from "@/lib/best-xi/same-name";
 import {
   EXCLUSION_REASON_LABEL_KEY,
   LIMITATION_LABEL_KEY,
@@ -273,7 +272,6 @@ export function BestXiView() {
 
               {bench ? <BestXiBench bench={bench} displayName={displayName} tb={tb} fillTb={fillTb} /> : null}
 
-              <BestXiSameNameNotice candidates={[...result.slots.map((s) => s.candidate), ...(bench?.entries ?? []).map((e) => e.candidate)]} displayName={displayName} fillTb={fillTb} />
 
               <BestXiExclusions result={result} displayName={displayName} tb={tb} fillTb={fillTb} t={t} />
 
@@ -290,27 +288,6 @@ export function BestXiView() {
         </>
       )}
     </div>
-  );
-}
-
-/** 同じ名前のカード（NEW-25・2026-10-09）: 事実として知らせるだけ（自動では外さない）。 */
-function BestXiSameNameNotice({
-  candidates,
-  displayName,
-  fillTb,
-}: {
-  candidates: BestXiCandidate[];
-  displayName: (c: BestXiCandidate) => string;
-  fillTb: (key: string, vars: Record<string, string>) => string;
-}) {
-  const groups = sameNameGroups(candidates);
-  if (groups.length === 0) return null;
-  const byId = new Map(candidates.map((c) => [c.worldCardId, c]));
-  const names = groups.map((g) => `${displayName(byId.get(g.worldCardIds[0])!)}（${g.worldCardIds.length}）`).join("、");
-  return (
-    <p className="rounded-card border border-warning/50 bg-warning/5 p-3 text-2xs text-warning sm:p-4" role="status" data-testid="best-xi-same-name">
-      {fillTb("sameNameWarningTemplate", { names })}
-    </p>
   );
 }
 
@@ -399,7 +376,7 @@ function BestXiSlotList({
           const sel = selectedBySlotId.get(slot.slotId);
           const unfilled = unfilledBySlotId.get(slot.slotId);
           return (
-            <li key={slot.slotId} className="rounded-md border border-border/60 p-2 text-xs">
+            <li key={slot.slotId} data-world-card-id={sel?.candidate.worldCardId} className="rounded-md border border-border/60 p-2 text-xs">
               {sel ? (
                 <details>
                   <summary
@@ -482,7 +459,7 @@ function BestXiBench({
       ) : (
         <ol className="mt-2 grid gap-1.5 sm:grid-cols-2">
           {bench.entries.map((e) => (
-            <li key={e.candidate.candidateKey} className="flex min-w-0 items-center gap-2 rounded border border-border/60 p-2">
+            <li key={e.candidate.candidateKey} data-world-card-id={e.candidate.worldCardId} className="flex min-w-0 items-center gap-2 rounded border border-border/60 p-2">
               <span className="w-10 shrink-0 font-semibold text-accent">{e.position}</span>
               <span className="min-w-0 flex-1">
                 <span className="block break-words font-semibold text-text">{displayName(e.candidate)}</span>
