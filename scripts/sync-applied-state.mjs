@@ -25,7 +25,8 @@ const readJson = (p) => {
 const subdirs = (dir) => (dir && existsSync(dir) ? readdirSync(dir).map((n) => path.join(dir, n)).filter((p) => statSync(p).isDirectory()) : []);
 
 const runs = subdirs(process.env.CANDIDATE_DIR ?? "").map((d) => ({ dir: d, candidate: readJson(path.join(d, "applied-state.candidate.json")), evidence: readJson(path.join(d, "evidence.json")) }));
-const detections = subdirs(process.env.DETECTION_DIR ?? "").map((d) => readJson(path.join(d, "reference-data-detection-summary.json"))).filter(Boolean);
+const detectionRuns = subdirs(process.env.DETECTION_DIR ?? "").map((d) => ({ runId: path.basename(d), summary: readJson(path.join(d, "reference-data-detection-summary.json")) })).filter((d) => d.summary);
+const detections = detectionRuns.map((d) => d.summary);
 const appliedState = readJson(STATE);
 const result = buildAppliedStateUpdate({ appliedState, candidates: runs.map((r) => r.candidate).filter(Boolean), detections });
 
@@ -38,4 +39,8 @@ if (result.changed) {
     writeFileSync(out, JSON.stringify(run?.evidence ?? { note: "evidence.json was not available in the artifact" }, null, 2) + "\n");
   }
 }
-console.log(JSON.stringify({ changed: result.changed, updates: result.updates, skipped: result.skipped }));
+// World を更新したときは、同じ checksum の検出の run（F-071 の基礎能力の分布の候補を持つ）を示す（workflow が取り込みに使う）。
+const worldUpdate = result.updates.find((u) => u.dataset === "world_player_cards");
+const worldChecksum = worldUpdate ? result.appliedState.datasets.world_player_cards.sourceChecksum12 : null;
+const worldDetectionRunId = worldChecksum ? (detectionRuns.find((d) => d.summary?.world?.sourceChecksum12 === worldChecksum)?.runId ?? null) : null;
+console.log(JSON.stringify({ changed: result.changed, updates: result.updates, skipped: result.skipped, worldDetectionRunId }));
