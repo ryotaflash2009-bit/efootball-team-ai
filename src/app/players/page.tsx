@@ -68,13 +68,14 @@ export default async function PlayersPage({ searchParams }: { searchParams: Prom
     playingStyleDef: pick(sp, "playingStyleDef"),
     nationality: pick(sp, "nationality"),
     league: pick(sp, "league"),
+    team: pick(sp, "team"),
     minOvr: pick(sp, "minOvr"),
     maxOvr: pick(sp, "maxOvr"),
     hasBooster: pick(sp, "hasBooster"),
   });
 
   let result: Awaited<ReturnType<typeof listPlayers>> | null = null;
-  let facets: WorldFacets = { positions: [], cardTypes: [], playingStyles: [], playingStyleDefensives: [], nationalities: [], leagues: [] };
+  let facets: WorldFacets = { positions: [], cardTypes: [], playingStyles: [], playingStyleDefensives: [], nationalities: [], leagues: [], teams: [] };
   let sourceMeta: Awaited<ReturnType<typeof getSourceMeta>> | null = null;
   let unavailable = false;
   let failed = false;
@@ -127,6 +128,7 @@ export default async function PlayersPage({ searchParams }: { searchParams: Prom
     query.playingStyleDefensive ||
     query.nationality ||
     query.league ||
+    query.team ||
     query.minOvr != null ||
     query.maxOvr != null ||
     query.hasBooster != null

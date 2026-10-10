@@ -2870,6 +2870,9 @@ export interface Dictionary {
     filterLabelLeague: string;
     leagueAriaLabel: string;
     leagueAll: string;
+    filterLabelTeam: string;
+    teamAriaLabel: string;
+    teamAll: string;
     minOvrPlaceholder: string;
     minOvrAriaLabel: string;
     maxOvrPlaceholder: string;

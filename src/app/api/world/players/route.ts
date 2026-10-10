@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 /**
  * GET /api/world/players
  *   ?page= &pageSize=(24|50|100) &q= &sort= &position= &cardType=
- *   &playingStyle= &playingStyleDef= &nationality= &league= &minOvr= &maxOvr= &hasBooster=(1|0) &facets=1
+ *   &playingStyle= &playingStyleDef= &nationality= &league= &team= &minOvr= &maxOvr= &hasBooster=(1|0) &facets=1
  *
  * 保存済みの eFootball World データ（SQLite）だけを返す。外部アクセスなし。
  */
@@ -37,6 +37,7 @@ export async function GET(request: Request) {
     playingStyleDef: searchParams.get("playingStyleDef"),
     nationality: searchParams.get("nationality"),
     league: searchParams.get("league"),
+    team: searchParams.get("team"),
     minOvr: searchParams.get("minOvr"),
     maxOvr: searchParams.get("maxOvr"),
     hasBooster: searchParams.get("hasBooster"),

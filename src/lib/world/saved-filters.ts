@@ -9,7 +9,7 @@ import { getCurrentScope } from "@/lib/local-storage-scope/current-scope-store";
 export const SAVED_FILTERS_SCHEMA = "saved-player-filters/2026-10-09.v1";
 export const MAX_SAVED_FILTERS = 10;
 export const SAVED_FILTER_NAME_MAX = 30;
-export const SAVED_FILTER_PARAMS = ["q", "position", "cardType", "playingStyle", "playingStyleDef", "nationality", "league", "minOvr", "maxOvr", "hasBooster", "sort"] as const;
+export const SAVED_FILTER_PARAMS = ["q", "position", "cardType", "playingStyle", "playingStyleDef", "nationality", "league", "team", "minOvr", "maxOvr", "hasBooster", "sort"] as const;
 const VALUE_MAX = 60;
 const ID_RE = /^sf_[a-z0-9]{6,16}$/;
 

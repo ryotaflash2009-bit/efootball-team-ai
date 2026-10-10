@@ -143,6 +143,12 @@ async function main() {
     lg.status === 200 && lg.data?.totalCount > 0 && lgDetails.length > 0 && lgDetails.every((d) => d.data?.player?.league === j1 && d.data?.player?.nationality === "Japan"),
     `total=${lg.data?.totalCount}`,
   );
+  // チーム（2026-10-11）
+  const teams = facetsRes.data?.facets?.teams ?? [];
+  record("フィルター: facets にチームの一覧（FC Barcelona を含む）", teams.length >= 200 && teams.includes("FC Barcelona"), `n=${teams.length}`);
+  const tm = await json("/api/world/players?team=" + encodeURIComponent("München RW") + "&pageSize=100");
+  const tmDetails = await Promise.all((tm.data?.players ?? []).slice(0, 5).map((p) => json(`/api/world/players/${p.worldCardId}`)));
+  record("フィルター: チーム（ウムラウト）で絞り込める", tm.status === 200 && tm.data?.totalCount > 0 && tmDetails.length > 0 && tmDetails.every((d) => d.data?.player?.team === "München RW"), `total=${tm.data?.totalCount}`);
   const natPage = await http("/players?nationality=Japan");
   record("画面: 国籍の選択肢と選択中の値（Japan）を描画", natPage.status === 200 && /data-testid="world-filter-nationality"/.test(natPage.body) && /data-rendered-value="Japan"/.test(natPage.body), `HTTP ${natPage.status}`);
   const cleared = await json("/api/world/players?pageSize=24");
