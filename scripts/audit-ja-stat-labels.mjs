@@ -77,7 +77,8 @@ async function main() {
   const buildModeLabels = parseLabelMap(statLabelsSrc, "BUILD_MODE_LABEL_JA") ?? {};
 
   const statKeys = [...statsSrc.matchAll(/\{\s*key:\s*"([^"]+)"/g)].map((m) => m[1]);
-  const groupIds = [...groupsSrc.matchAll(/groupId:\s*"([^"]+)"/g)].map((m) => m[1]);
+  // 2026-10-09（#207）から定義は `group("shooting", ...)` の形。旧形式（`groupId: "..."`）も読む。
+  const groupIds = [...groupsSrc.matchAll(/(?:groupId:\s*|\bgroup\(\s*)"([^"]+)"/g)].map((m) => m[1]);
   const radarAxisIds = [...catsSrc.matchAll(/\{\s*id:\s*"([^"]+)"/g)].map((m) => m[1]);
   // CompareBuildMode / SquadBuildMode の union（両者とも同じ 5 値）
   const buildModeValues = ["none", "attack", "defense", "balance", "gk"];
