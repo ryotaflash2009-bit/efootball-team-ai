@@ -223,6 +223,8 @@ async function main() {
         record("[同じ選手] 同じ選手の別のカードは先発・控えをまたいで 1 枚だけ選ばれる", both.length === 1, `${twin.name} ${twin.id}/${twin.other} selected=${both.join(",")}`);
         const keys = (ids ?? []).map(personKey);
         record("[同じ選手] 選出・控えに同じ選手（人物キー）の重複が無い", new Set(keys).size === keys.length && keys.length >= 11, `n=${keys.length}`);
+        const excludedText = await evalJson(client, `document.querySelector('[data-testid="best-xi-same-player-excluded"]')?.textContent ?? ""`);
+        record("[同じ選手] 選ばなかった同じ選手のカードを「同じ選手の別のカードを使ったため」と説明する", /同じ選手の別のカードを使ったため選ばなかったカード（1）/.test(excludedText), excludedText.slice(0, 80));
         await setMyTeam(client, FULL_XI);
       }
     }

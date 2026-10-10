@@ -11,6 +11,7 @@ import type { SavedBuild } from "@/lib/progression/types";
 import { getFormation } from "@/lib/squad/formations";
 import { useBestXiProgressionCards } from "@/lib/best-xi/use-candidate-cards";
 import { buildBestXiCandidates } from "@/lib/best-xi/candidates";
+import { samePlayerExcluded } from "@/lib/best-xi/same-player-excluded";
 import { selectBestXi } from "@/lib/best-xi/select";
 import { selectBestXiBench, type BestXiBenchResult } from "@/lib/best-xi/bench";
 import {
@@ -137,6 +138,11 @@ export function BestXiView() {
   const selectedBySlotId = new Map((result?.slots ?? []).map((s) => [s.slotId, s]));
   const unfilledBySlotId = new Map((result?.unfilledSlots ?? []).map((s) => [s.slotId, s]));
 
+  // 同じ選手の別のカードを使ったため選ばなかったカード（説明だけ・選考の結果は変えない・2026-10-11）
+  const samePlayerExcludedCards = useMemo(
+    () => (result ? samePlayerExcluded(candidates, [...result.slots.map((s) => s.candidate.worldCardId), ...(bench?.entries ?? []).map((e) => e.candidate.worldCardId)]) : []),
+    [result, bench, candidates],
+  );
   const displayName = useCallback(
     (c: BestXiCandidate) => resolvePlayerDisplayName({ nameJa: c.nameJa, nameEn: c.nameEn }, locale, null),
     [locale],
@@ -271,6 +277,12 @@ export function BestXiView() {
               ) : null}
 
               {bench ? <BestXiBench bench={bench} displayName={displayName} tb={tb} fillTb={fillTb} /> : null}
+
+              {samePlayerExcludedCards.length > 0 ? (
+                <p className="rounded-card border border-border bg-surface p-3 text-xs text-text-dim sm:p-4" data-testid="best-xi-same-player-excluded">
+                  {fillTb("samePlayerExcludedTemplate", { count: String(samePlayerExcludedCards.length), names: samePlayerExcludedCards.map((c) => displayName(c)).join("、") })}
+                </p>
+              ) : null}
 
 
               <BestXiExclusions result={result} displayName={displayName} tb={tb} fillTb={fillTb} t={t} />

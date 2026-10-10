@@ -215,6 +215,7 @@ const part: PartialDictionary = {
     exclusionGkFieldMismatch: "門將與場上球員的位置不相符，因此已從自動選拔中排除。",
     limitationsHeading: "限制事項",
     sameNameWarningTemplate: "包含同名球員：{names}。可能是同一球員的不同卡牌（遊戲中的處理尚未確認，因此不會自動移除）。",
+    samePlayerExcludedTemplate: "因已使用同一球員的另一張卡而未選擇的卡（{count}）：{names}",
     limitationSingleFormationOnly: "此初始版本僅支援 4-3-3 陣型。",
     limitationNoBenchSelection: "不選拔板凳球員。",
     benchHeadingTemplate: "替補（{count}/{max} 人）",
