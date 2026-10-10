@@ -205,7 +205,7 @@ OD = `docs/product/owner-decisions-2026-10-02.md`、PR- = `docs/production-readi
 | NEW-40 | コミュニティのガイドライン・通報の運用 | `product/community-guidelines-draft.md:3` | OWNER_ACTION_REQUIRED | 草案 | F-056 | H | none | 承認・法務 | 10 | — | 規約への反映 | Local only |
 | NEW-41 | 違うフォーメーション間の配置の写し | 台帳:62 | IMPLEMENTATION_READY | 同じ配置どうしの写しはある（91435d0） | F-036 | L | none | なし（枠の対応の規則を文書化） | 6 | 位置の対応の決定的な規則を実装 | test+black-box | Local only |
 | NEW-42 | カテゴリ・スカッド単位のパーセンタイル | 台帳:99・RM:57 | OWNER_DECISION_REQUIRED | なし | F-071 | L | none | 計算式 | 7 | — | — | Local only |
-| NEW-43 | ゲームプランの個別指示 | 台帳:60・RM:183 | DEFERRED | なし | 公式の仕様 | L | none | — | 7 | — | — | Local only |
+| NEW-43 | ゲームプランの個別指示 | 台帳:60・RM:183 | CLOSED（2026-10-10 本人の判断で不要） | なし | 公式の仕様 | L | none | — | 7 | — | — | Local only |
 
 ## 3. 文書の食い違いと判断
 
