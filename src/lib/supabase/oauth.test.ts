@@ -45,3 +45,23 @@ describe("Google の Provider の状態（緊急停止の検出）", () => {
     expect(googleProviderStatusFromSettings(null)).toBe("unknown");
   });
 });
+
+import { isGoogleOAuthLimitedTest } from "./oauth";
+
+describe("限定モード（2026-10-11 の本人の決定）", () => {
+  it("limited: 本番でも ?oauthPreview=1 のときだけボタン・通常の URL では出さない", () => {
+    expect(isGoogleOAuthAvailable("efootball-team-ai.vercel.app", "?oauthPreview=1", isLocalDevHostname, "limited")).toBe(true);
+    expect(isGoogleOAuthAvailable("efootball-team-ai.vercel.app", "", isLocalDevHostname, "limited")).toBe(false);
+    expect(isGoogleOAuthAvailable("efootball-team-ai.vercel.app", "?oauthPreview=0", isLocalDevHostname, "limited")).toBe(false);
+    expect(isGoogleOAuthAvailable("efootball-team-ai.vercel.app", "?next=%2F&oauthPreview=1", isLocalDevHostname, "limited")).toBe(true);
+  });
+  it("disabled は本番で preview を付けても出さない・想定外の値は無効（fail closed）", () => {
+    expect(isGoogleOAuthAvailable("efootball-team-ai.vercel.app", "?oauthPreview=1", isLocalDevHostname, "disabled")).toBe(false);
+    expect(isGoogleOAuthAvailable("efootball-team-ai.vercel.app", "?oauthPreview=1", isLocalDevHostname, "bogus" as never)).toBe(false);
+  });
+  it("限定テストの表示は enabled 以外・redirectTo に oauthPreview を引き継がない", () => {
+    expect(isGoogleOAuthLimitedTest("limited")).toBe(true);
+    expect(isGoogleOAuthLimitedTest("enabled")).toBe(false);
+    expect(buildGoogleRedirectTo("https://efootball-team-ai.vercel.app", "/account", undefined)).not.toContain("oauthPreview");
+  });
+});

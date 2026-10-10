@@ -15,6 +15,7 @@ const part: PartialDictionary = {
     googleRedirecting: "正在前往 Google…",
     googlePrimaryLead: "可使用 Google 账号登录或创建账号，无需密码。",
     googleGuestNotice: "无需登录即可以访客身份使用全部功能（数据保存在此设备上）。登录后可在账号页面选择是否迁移访客数据（不会自动合并）。",
+    googleLimitedTestNotice: "限定测试中：Google 登录仅供运营方验证，尚未向公众提供（只有登记为测试的账号才能登录）。",
     inAppTitle: "您可能正在使用其他应用内置的浏览器",
     inAppBody: "Google 可能不允许在其他应用内置的浏览器中登录。请在 Safari 或 Chrome 中打开此页面后再登录。在这里也可以继续以访客身份使用。",
     inAppStepsIos: "iPhone：从“…”或分享按钮中选择“在 Safari 中打开”（或“在浏览器中打开”）。如果找不到，请用下方按钮复制 URL 并粘贴到 Safari。",

@@ -15,6 +15,7 @@ const part: PartialDictionary = {
     googleRedirecting: "Membuka Google…",
     googlePrimaryLead: "Masuk atau buat akun dengan akun Google. Tidak perlu kata sandi.",
     googleGuestNotice: "Kamu bisa memakai semua fitur sebagai tamu tanpa masuk (data disimpan di perangkat ini). Setelah masuk, kamu memilih di halaman akun apakah data tamu dipindahkan (tidak digabung otomatis).",
+    googleLimitedTestNotice: "Uji terbatas: masuk dengan Google hanya untuk verifikasi pengelola dan belum tersedia untuk umum (hanya akun yang terdaftar untuk pengujian yang bisa masuk).",
     inAppTitle: "Kamu mungkin memakai browser di dalam aplikasi lain",
     inAppBody: "Google mungkin tidak mengizinkan masuk dari browser di dalam aplikasi lain. Buka halaman ini di Safari atau Chrome, lalu masuk. Di sini kamu tetap bisa memakai situs sebagai tamu.",
     inAppStepsIos: "iPhone: dari tombol “…” atau bagikan, pilih “Buka di Safari” (atau “Buka di browser”). Jika tidak ada, salin URL dengan tombol di bawah lalu tempel di Safari.",

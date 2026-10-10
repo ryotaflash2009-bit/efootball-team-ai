@@ -5,6 +5,12 @@
 
 関連: `auth-google-oauth-plan.md`（方針・設計）・`account-deletion-apply-package.md`（削除）・`billing-auth-boundary.md`（将来の課金）。
 
+> **2026-10-11 の改訂（正）**: ゲートは 2 段階。**A. LIMITED_OAUTH_TEST_READY**（`limitedTest` の 13 項目・コードを `"limited"` にしてよい＝本番でも
+> `/auth/sign-in?oauthPreview=1` のときだけボタン・画面に「限定テスト中」・Google 側は Testing）と **B. PUBLIC_GOOGLE_OAUTH_READY**（A ＋ 限定テストの 12 項目が GO ＋
+> Google 側の本番公開・ポリシーの一般公開の記述・コードを `"enabled"` にしてよい）。`oauthPreview` は表示の条件だけで、認証・callback・RLS の判断には使わない。
+> 最初の設定は他のプロダクト用だった可能性のある Google Cloud プロジェクトに作られたため、記録はすべて pending に戻した。本人の手順は
+> **`google-oauth-owner-steps.md`**（TeamAIXI 専用のプロジェクトで最初から）。下の §1 の `preEnable` は旧い名前（今は `limitedTest`）。
+
 ## 1. ゲート（機械的な判定）
 
 ```
