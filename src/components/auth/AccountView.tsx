@@ -10,7 +10,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Surface } from "@/components/ui/Surface";
 import { Button } from "@/components/ui/Button";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
-import { useSupabaseSession } from "@/lib/supabase/use-auth-session";
+import { isOAuthOnly, useSupabaseSession } from "@/lib/supabase/use-auth-session";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { isSignupOpen } from "@/lib/supabase/account-availability";
 import { EmailChangeSection } from "@/components/auth/EmailChangeSection";
@@ -95,7 +95,8 @@ export function AccountView() {
             </Surface>
           ) : null}
 
-          <EmailChangeSection />
+          {/* Google だけでログインする人には、メールアドレスの変更（Google が管理）を出さない（2026-10-11） */}
+          {isOAuthOnly(session.providers) ? null : <EmailChangeSection />}
 
           <Surface tone="inset" padding="md" className="flex flex-col gap-1.5">
             <p className="text-sm font-semibold text-text">{ta("accountCloudSyncNoticeTitle")}</p>

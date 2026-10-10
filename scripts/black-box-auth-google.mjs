@@ -217,6 +217,14 @@ async function main() {
     await waitForCondition(async () => /一時的に停止しています/.test(await text()), { timeoutMs: 5000 }).catch(() => {});
     record("[緊急停止] Provider が無効なら Google へ移らず「一時的に停止」の案内", /一時的に停止しています/.test(await text()) && (await ev("window.__EFB_TEST_OAUTH_CALLS__.length")) === 0, "");
 
+    // Google だけでログインする人にはメールアドレスの変更を出さない・メールのアカウントには従来どおり
+    await go(`${BASE}/account?__efbAuth=1&__efbUserId=efb-google-only&__efbProviders=google`);
+    await waitForCondition(async () => /ログイン中/.test(await text()), { timeoutMs: 10000 }).catch(() => {});
+    record("[アカウント] Google だけのユーザーにはメールアドレスの変更の欄を出さない", /ログイン中/.test(await text()) && !/メールアドレスの変更/.test(await text()), "");
+    await go(`${BASE}/account?__efbAuth=1&__efbUserId=efb-email-user&__efbProviders=email`);
+    await waitForCondition(async () => /ログイン中/.test(await text()), { timeoutMs: 10000 }).catch(() => {});
+    record("[アカウント] メールのアカウントにはメールアドレスの変更の欄を従来どおり出す", /メールアドレスの変更/.test(await text()), "");
+
     // アカウントの削除: 既定（無効）は手動の案内・アカウントの画面から入れる
     await go(`${BASE}/account?__efbAuth=1&__efbUserId=efb-delete-user`);
     await waitForCondition(() => has('[data-testid="account-delete-entry"]'), { timeoutMs: 10000 }).catch(() => {});
