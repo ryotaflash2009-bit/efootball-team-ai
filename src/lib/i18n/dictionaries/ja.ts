@@ -3193,6 +3193,10 @@ export interface Dictionary {
     affiliationKind_team: string;
     affiliationActiveTemplate: string;
     formationSelectAriaLabel: string;
+    saveAsSquadButton: string;
+    saveAsSquadNameTemplate: string;
+    saveAsSquadHint: string;
+    saveAsSquadFailed: string;
     limitationSingleFormationOnly: string;
     limitationNoBenchSelection: string;
     benchHeadingTemplate: string;

@@ -255,6 +255,32 @@ async function main() {
     }
 
     // ============================================================
+    // 1a-4. スカッドとして保存（2026-10-11）: 3-5-2 の結果を保存 → スカッドの画面へ移り、同じフォーメーション・同じ先発で保存されている
+    // ============================================================
+    {
+      await setMyTeam(client, FULL_XI);
+      await client.send("Runtime.evaluate", { expression: `localStorage.removeItem("efootball-team-ai:local:guest:squads:v1")` });
+      await hardReloadAndSettle(client);
+      await waitForCondition(async () => (await bodyText(client)).includes("選出選手一覧"), { timeoutMs: 10000, intervalMs: 200 });
+      await evalJson(client, `(() => { const s = document.querySelector('[data-testid="best-xi-formation"]'); Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value").set.call(s, "3-5-2"); s.dispatchEvent(new Event("change", { bubbles: true })); return true; })()`);
+      await waitForCondition(async () => (await evalJson(client, `[...document.querySelectorAll('[data-pitch-position="CB"]')].length`)) === 3, { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+      await new Promise((r) => setTimeout(r, 400));
+      const starters = await evalJson(client, `[...new Set([...document.querySelectorAll('[data-world-card-id]')].map((e) => e.getAttribute('data-world-card-id')))]`);
+      await evalJson(client, `document.querySelector('[data-testid="best-xi-save-as-squad"]')?.click()`);
+      await waitForCondition(async () => /\/squads\/sq_/.test(await evalJson(client, "location.pathname")), { timeoutMs: 10000, intervalMs: 200 }).catch(() => {});
+      const path = await evalJson(client, "location.pathname");
+      const saved = await evalJson(client, `(() => { const all = JSON.parse(localStorage.getItem("efootball-team-ai:local:guest:squads:v1") || "[]"); const id = location.pathname.split("/").pop(); return all.find((x) => x.squadId === id) ?? null; })()`);
+      const savedIds = (saved?.slots ?? []).map((x) => x.worldCardId).filter(Boolean);
+      record(
+        "[スカッドとして保存] 保存するとスカッドの画面へ移り、同じフォーメーション（3-5-2）・同じ先発で保存されている",
+        /^\/squads\/sq_/.test(path ?? "") && saved?.formationId === "3-5-2" && /AIベスト11（3-5-2）/.test(saved?.squadName ?? "") && Array.isArray(starters) && starters.length > 0 && starters.filter((id) => !(saved?.substitutes ?? []).some((x) => x.worldCardId === id)).every((id) => savedIds.includes(id)),
+        `${path} ${saved?.squadName} starters=${savedIds.length} subs=${saved?.substitutes?.length}`,
+      );
+      await client.send("Runtime.evaluate", { expression: `localStorage.removeItem("efootball-team-ai:local:guest:squads:v1")` });
+      await navigateAndSettle(client, `${BASE}/best-xi`);
+    }
+
+    // ============================================================
     // 1a-2. 縛り（2026-10-11）: 先発11人 + バレージ → 国籍で縛ると、その国籍のカードだけが選ばれる・解除で 11 人に戻る
     // ============================================================
     {

@@ -1,6 +1,6 @@
 # AIベスト11 全体配置最適化 専用ブラックボックステスト結果
 
-実行日時: 2026-10-10T22:04:05.032Z
+実行日時: 2026-10-10T22:10:37.639Z
 対象: http://localhost:3000（Production Build上の隔離ヘッドレスChrome確認。実機ではない）
 
 実ユーザーのMy Team・保存ビルド・保存スカッド・SQLiteは一切変更しない(隔離プロファイルのlocalStorageのみ操作)。
@@ -18,6 +18,7 @@
 | PASS | [同じ選手] 選ばなかった同じ選手のカードを「同じ選手の別のカードを使ったため」と説明する | 同じ選手の別のカードを使ったため選ばなかったカード（1）: マヌエル ノイアー |
 | PASS | [フォーメーション] 3-5-2 を選ぶと、ピッチが 3-5-2 の 11 枠（CB 3・CF 2・LMF/RMF）になり選び直す | GK,CB,CB,CB,DMF,LMF,CMF,CMF,RMF,CF,CF picked=11 |
 | PASS | [フォーメーション] 4-3-3 に戻せる（CB 2・LWF/RWF） | GK,LB,CB,CB,RB,DMF,CMF,CMF,LWF,CF,RWF |
+| PASS | [スカッドとして保存] 保存するとスカッドの画面へ移り、同じフォーメーション（3-5-2）・同じ先発で保存されている | /squads/sq_fdae9455ce6b480f AIベスト11（3-5-2） starters=9 subs=2 |
 | PASS | [縛り] 選択肢は自分のカードの国籍・リーグ・チーム（枚数つき） | 縛りなし（全カード） \| Germany (3) \| Italy (2) \| Argentina (1) \| Belgium (1) \| Brazil (1) \| England (1) \| France (1) \| Spain (1) \| |
 | PASS | [縛り] 国籍で縛ると、その国籍のカードだけが選ばれ、縛りの知らせが出る | Italy: picked=2 expected=2 |
 | PASS | [縛り] 縛りなしに戻すと全カードから選び直す | n=12 |
@@ -38,8 +39,8 @@
 | PASS | [破損データ耐性] 破損したビルドJSON・存在しないworldCardIdが混在してもクラッシュしない |  |
 | PASS | [破損データ耐性] 存在しないカードは取得不可カードとして扱われる(内部IDそのままの露出はしない) |  |
 | PASS | [決定性] My Teamの保存順を逆にしても選出選手一覧の内容は変わらない |  |
-| PASS | [大規模候補プール] 候補100件でも選考が完了する | elapsedMs=1465 |
-| PASS | [大規模候補プール] 妥当な時間内(15秒以内)に完了する | elapsedMs=1465 |
+| PASS | [大規模候補プール] 候補100件でも選考が完了する | elapsedMs=2186 |
+| PASS | [大規模候補プール] 妥当な時間内(15秒以内)に完了する | elapsedMs=2186 |
 | PASS | [390px] 横スクロールが発生しない(scrollWidthがinnerWidthを大きく超えない) | overflow=0 |
 | PASS | [390px] 見出し・選考結果が表示される |  |
 | PASS | [内部情報非露出] 選考結果表示中もcandidateKey/savedBuildId等の内部識別子を含まない |  |
