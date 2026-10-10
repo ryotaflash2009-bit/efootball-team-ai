@@ -190,3 +190,21 @@ describe("executeMigrationForKind: favorites", () => {
     expect(target.records.map((r: { worldCardId: string }) => r.worldCardId).sort()).toEqual(["10001", "99999"]);
   });
 });
+
+describe("executeMigrationForKind: ゲスト領域からの引き継ぎ（2026-10-11・Google ログインの後）", () => {
+  const GUEST_KEY = "efootball-team-ai:local:guest:my-team:v1";
+  it("ゲストの領域を読み取るだけでアカウントへ不足分だけ追加・競合は書かない・コピー元のバックアップは guest として別に保存", async () => {
+    const guestValue = JSON.stringify({ records: [{ worldCardId: "1" }, { worldCardId: "2", note: "guest" }] });
+    const map = installMemoryStorage({
+      [GUEST_KEY]: guestValue,
+      [TARGET_KEY]: JSON.stringify({ records: [{ worldCardId: "2", note: "account" }] }),
+    });
+    const result = await executeMigrationForKind("myTeam", GUEST_KEY, TARGET_KEY, "guest");
+    expect(result).toMatchObject({ ok: true, addedCount: 1, conflictCount: 1 });
+    expect(map.get(GUEST_KEY)).toBe(guestValue);
+    const target = JSON.parse(map.get(TARGET_KEY)!);
+    expect(target.records.find((r: { worldCardId: string }) => r.worldCardId === "2").note).toBe("account");
+    expect(readPersistedBackup("myTeam", "guest")?.payload).toBe(guestValue);
+    expect(readPersistedBackup("myTeam", "legacy")).toBeNull();
+  });
+});

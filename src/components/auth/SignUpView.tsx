@@ -14,6 +14,7 @@ import { isValidEmailFormat, validatePasswordRules } from "@/lib/supabase/passwo
 import { classifySignUpFailure } from "@/lib/supabase/auth-errors";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { isSignupOpen, isSignupPreviewAllowed, resolveAuthRedirectOrigin } from "@/lib/supabase/account-availability";
+import { GoogleSignInButton, useGoogleOAuthAvailable } from "./GoogleSignInButton";
 import { isLocalDevHostname } from "@/lib/supabase/local-dev";
 
 type AuthKey = keyof Dictionary["auth"];
@@ -34,6 +35,7 @@ export function SignUpView() {
   // ローカル開発ホストだけ、?signupPreview=1 で登録フォームを表示する（black-box で登録フォームの挙動を検証し続けるため）。
   // 本番ホストでは常に限定表示。マウント後に切り替えるので SSR の表示（限定）とずれない。
   const [localPreview, setLocalPreview] = useState(false);
+  const google = useGoogleOAuthAvailable();
   useEffect(() => {
     if (isSignupPreviewAllowed(window.location.hostname, window.location.search, isLocalDevHostname)) setLocalPreview(true);
   }, []);
@@ -95,6 +97,32 @@ export function SignUpView() {
     } finally {
       setSubmitting(false);
     }
+  }
+
+  // 2026-10-11 の方針: アカウントの作成は Google だけ（メール＋パスワードの新規登録は提供しない・確認メールを使わない）。
+  if (google && !localPreview) {
+    return (
+      <div className="flex flex-col gap-5" data-testid="signup-google">
+        <PageHeader title={ta("googleSignUpTitle")} icon="shield" />
+        <Surface padding="md" className="flex max-w-md flex-col gap-3">
+          <p className="text-sm">{ta("googleSignUpBody")}</p>
+          <GoogleSignInButton next="/account" onError={setErrorMessage} />
+          {errorMessage ? (
+            <p role="alert" className="text-sm text-danger">
+              {errorMessage}
+            </p>
+          ) : null}
+          <p className="text-2xs text-text-muted">{ta("googleGuestNotice")}</p>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/players">
+              <Button variant="secondary" size="sm">
+                {ta("accountLimitedBrowse")}
+              </Button>
+            </Link>
+          </div>
+        </Surface>
+      </div>
+    );
   }
 
   // カスタム SMTP の配信確認までは新規登録を受け付けない（メールが一般の利用者へ届かないため）。

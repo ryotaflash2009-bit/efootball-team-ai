@@ -31,6 +31,7 @@ export interface AuthTestDouble {
   updateUser: SupabaseClient["auth"]["updateUser"];
   resetPasswordForEmail: SupabaseClient["auth"]["resetPasswordForEmail"];
   verifyOtp?: SupabaseClient["auth"]["verifyOtp"];
+  signInWithOAuth?: SupabaseClient["auth"]["signInWithOAuth"];
 }
 
 /** ブラックボックステスト専用: `.from(table)`だけを差し替えるDB用テストダブル。 */
