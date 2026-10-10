@@ -29,6 +29,7 @@ export function WorldPlayerSearchCard({
   onPick,
   disabled = false,
   disabledReason = null,
+  note = null,
   imageWidthClass = "w-16 sm:w-20",
   detailInNewTab = true,
 }: {
@@ -39,6 +40,8 @@ export function WorldPlayerSearchCard({
   disabled?: boolean;
   /** disabled の理由（文字表示・「配置済み: ベンチ」「比較に追加済み」など） */
   disabledReason?: string | null;
+  /** 押せるときの注意（例: 同じ選手の別のカードがスカッドにいる・2026-10-11） */
+  note?: string | null;
   /** カード画像の幅（Tailwind クラス）。PC は 64–88px 相当・モバイルは 56–72px 相当を目安に。 */
   imageWidthClass?: string;
   detailInNewTab?: boolean;
@@ -147,6 +150,11 @@ export function WorldPlayerSearchCard({
                 {actionLabel}
               </span>
             )}
+            {!disabled && note ? (
+              <span className="text-2xs text-warning" data-testid="search-card-note">
+                {note}
+              </span>
+            ) : null}
             <Link
               href={`/players/world/${encodeURIComponent(v.worldCardId)}`}
               {...(detailInNewTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}

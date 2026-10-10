@@ -2479,6 +2479,7 @@ const en: Dictionary = {
     sortNoteWithPositionTemplate: " Order: name match → {position} match → highest OVR.",
     sortNoteDefault: " Order: name match → highest OVR.",
     placedLabel: "Placed",
+    samePlayerInSquadNote: "Another card of this player is in the squad (choosing it offers a swap)",
     placedWithLocationTemplate: "Placed: {where}",
   },
   formationSelect: {

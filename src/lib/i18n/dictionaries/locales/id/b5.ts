@@ -486,6 +486,7 @@ const part: PartialDictionary = {
     sortNoteWithPositionTemplate: " Urutan: kecocokan nama → kecocokan {position} → OVR tertinggi.",
     sortNoteDefault: " Urutan: kecocokan nama → OVR tertinggi.",
     placedLabel: "Ditempatkan",
+    samePlayerInSquadNote: "Kartu lain pemain ini ada di skuad (memilihnya menawarkan penukaran)",
     placedWithLocationTemplate: "Ditempatkan: {where}",
   },
   worldPlayerHero: {

@@ -486,6 +486,7 @@ const part: PartialDictionary = {
     sortNoteWithPositionTemplate: " Orden: coincidencia de nombre → coincidencia de {position} → mayor OVR.",
     sortNoteDefault: " Orden: coincidencia de nombre → mayor OVR.",
     placedLabel: "Colocado",
+    samePlayerInSquadNote: "Hay otra carta de este jugador en la plantilla (al elegirla se ofrece un cambio)",
     placedWithLocationTemplate: "Colocado: {where}",
   },
   worldPlayerHero: {

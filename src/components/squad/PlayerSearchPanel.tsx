@@ -10,6 +10,7 @@ import { SquadPlayerSearchCard } from "./SquadPlayerSearchCard";
 import { useT } from "@/lib/i18n/LocaleContext";
 import { isSearchInputRejectedResponse } from "@/lib/search/search-input";
 import { fillMessage } from "@/lib/i18n/message-format";
+import { personKeyOf } from "@/lib/world/person-identity";
 
 /**
  * 選手検索（World の全カード・件数は参照データの更新で変わる。docs/product/world-card-counts.md）。
@@ -55,6 +56,8 @@ export function PlayerSearchPanel({
   const reqIdRef = useRef(0);
   const lastQueryRef = useRef("");
   const t = useT();
+  // 同じ選手（人物のキー）がスカッドにいるカードには注意を出す（押せる・選ぶと入れ替えの確認・2026-10-11）
+  const placedPersonKeys = useMemo(() => new Set([...placedIds].map((id) => personKeyOf(id)).filter((k): k is string => !!k)), [placedIds]);
   const fillPs = (s: string, vars: Record<string, string>) =>
     fillMessage(s, vars);
 
@@ -186,6 +189,7 @@ export function PlayerSearchPanel({
                   targetLabel={targetLabel}
                   duplicate={placedIds.has(p.worldCardId)}
                   duplicateWhere={placedIds.has(p.worldCardId) && placedLabel ? placedLabel(p.worldCardId) : null}
+                  samePlayerInSquad={placedPersonKeys.has(personKeyOf(p.worldCardId) ?? "")}
                   onPick={() => onPick(p.worldCardId)}
                 />
               ))}

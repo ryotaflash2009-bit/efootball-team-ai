@@ -15,6 +15,7 @@ export function SquadPlayerSearchCard({
   targetLabel,
   duplicate,
   duplicateWhere,
+  samePlayerInSquad = false,
   onPick,
 }: {
   player: WorldPlayerListItem;
@@ -22,6 +23,8 @@ export function SquadPlayerSearchCard({
   targetLabel: string;
   duplicate: boolean;
   duplicateWhere: string | null;
+  /** 同じ選手の別のカードがスカッドにいる（押せるが、入れ替えの確認になる） */
+  samePlayerInSquad?: boolean;
   onPick: () => void;
 }) {
   const t = useT();
@@ -37,6 +40,7 @@ export function SquadPlayerSearchCard({
       onPick={onPick}
       disabled={duplicate}
       disabledReason={disabledReason}
+      note={!duplicate && samePlayerInSquad ? t("playerSearchPanel", "samePlayerInSquadNote") : null}
       imageWidthClass="w-14 sm:w-16"
     />
   );
