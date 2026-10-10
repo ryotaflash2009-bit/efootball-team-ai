@@ -11,7 +11,7 @@
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildAppliedStateUpdate } from "./lib/applied-state-sync.mjs";
+import { buildAppliedStateUpdate, buildRepositoryEvidence } from "./lib/applied-state-sync.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const STATE = path.join(ROOT, "docs", "production-readiness", "reference-data-applied-state.json");
@@ -36,7 +36,9 @@ if (result.changed) {
     const run = runs.find((r) => String(r.candidate?.entry?.applyRunId) === u.applyRunId);
     const out = path.resolve(ROOT, u.evidencePath);
     if (!out.startsWith(path.join(ROOT, "docs", "production-readiness", "evidence") + path.sep)) throw new Error("evidence_path_outside");
-    writeFileSync(out, JSON.stringify(run?.evidence ?? { note: "evidence.json was not available in the artifact" }, null, 2) + "\n");
+    const previous = appliedState?.datasets?.[u.dataset]?.recordCount ?? null;
+    const evidence = buildRepositoryEvidence(run?.evidence, result.appliedState.datasets[u.dataset], previous, u.applyRunId);
+    writeFileSync(out, JSON.stringify(evidence, null, 2) + "\n");
   }
 }
 // World を更新したときは、同じ checksum の検出の run（F-071 の基礎能力の分布の候補を持つ）を示す（workflow が取り込みに使う）。
