@@ -101,7 +101,7 @@
 | プライバシーポリシーの Google の記述 | C | 下書き（`google-oauth-release-gate.md` §11）。本人の確認の後に反映 |
 | Search Console の任意の確認 | E | 停止の理由ではない |
 | 独自ドメイン・本番の課金 | E | 本人の判断（`billing-auth-boundary.md` §5） |
-| 未使用の i18n キー `bestXi.sameNameWarningTemplate` | E | 次の辞書の整理 |
+| 未使用の i18n キー `bestXi.sameNameWarningTemplate` | F | 2026-10-11 に 12 言語の辞書から削除 |
 
 ### 本人の操作の手順（削除の候補）
 

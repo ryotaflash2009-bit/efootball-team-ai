@@ -3242,7 +3242,6 @@ const en: Dictionary = {
     exclusionPositionSuitabilityUnresolved: "The player's suitability for this position could not be confirmed, so the candidate was excluded from automatic selection.",
     exclusionGkFieldMismatch: "The goalkeeper and outfield positions do not match, so the candidate was excluded from automatic selection.",
     limitationsHeading: "Limitations",
-    sameNameWarningTemplate: "Players with the same name are included: {names}. They may be different cards of the same player (how the game treats this isn't confirmed, so they aren't removed automatically).",
     samePlayerExcludedTemplate: "Not picked because another card of the same player is used ({count}): {names}",
     affiliationFilterAriaLabel: "Restriction (nationality, league, club)",
     affiliationFilterNone: "No restriction (all cards)",

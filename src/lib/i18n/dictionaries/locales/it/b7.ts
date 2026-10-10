@@ -214,7 +214,6 @@ const part: PartialDictionary = {
     exclusionPositionSuitabilityUnresolved: "Non è stato possibile confermare l’idoneità del giocatore a questo ruolo, quindi il candidato è stato escluso dalla selezione automatica.",
     exclusionGkFieldMismatch: "Il ruolo di portiere e quello di giocatore di movimento non corrispondono, quindi il candidato è stato escluso dalla selezione automatica.",
     limitationsHeading: "Limitazioni",
-    sameNameWarningTemplate: "Sono presenti giocatori con lo stesso nome: {names}. Potrebbero essere carte diverse dello stesso giocatore (il comportamento del gioco non è confermato, quindi non vengono rimossi automaticamente).",
     samePlayerExcludedTemplate: "Non scelte perché è usata un’altra carta dello stesso giocatore ({count}): {names}",
     affiliationFilterAriaLabel: "Vincolo (nazionalità, campionato, club)",
     affiliationFilterNone: "Nessun vincolo (tutte le carte)",

@@ -214,7 +214,6 @@ const part: PartialDictionary = {
     exclusionPositionSuitabilityUnresolved: "Die Eignung des Spielers für diese Position konnte nicht bestätigt werden, daher wurde der Kandidat von der automatischen Auswahl ausgeschlossen.",
     exclusionGkFieldMismatch: "Torwart- und Feldspielerposition passen nicht zusammen, daher wurde der Kandidat von der automatischen Auswahl ausgeschlossen.",
     limitationsHeading: "Einschränkungen",
-    sameNameWarningTemplate: "Spieler mit gleichem Namen enthalten: {names}. Es könnten verschiedene Karten desselben Spielers sein (wie das Spiel damit umgeht, ist nicht bestätigt; daher keine automatische Entfernung).",
     samePlayerExcludedTemplate: "Nicht gewählt, da eine andere Karte desselben Spielers verwendet wird ({count}): {names}",
     affiliationFilterAriaLabel: "Einschränkung (Nationalität, Liga, Verein)",
     affiliationFilterNone: "Keine Einschränkung (alle Karten)",
