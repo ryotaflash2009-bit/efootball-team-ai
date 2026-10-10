@@ -509,3 +509,29 @@ describe("selectBestXi: 決定性(候補配列の並び順・防御的な候補�
     expect(result).toEqual(result2);
   });
 });
+
+describe("selectBestXi: フォーメーションの選択（2026-10-11）", () => {
+  it("すべてのフォーメーションで、結果はそのフォーメーションのスロットだけ・11 枠・同じカードを 2 回使わない・GK は GK の枠", async () => {
+    const { FORMATIONS } = await import("@/lib/squad/formations");
+    const pool = [
+      ...fullPool(),
+      baseCandidate(card("12", "AMF")),
+      baseCandidate(card("13", "LMF")),
+      baseCandidate(card("14", "RMF")),
+      baseCandidate(card("15", "SS")),
+      baseCandidate(card("16", "CB")),
+      baseCandidate(card("17", "CF")),
+    ];
+    for (const f of FORMATIONS) {
+      const r = selectBestXi({ formationId: f.id, candidates: pool, unavailableCards: [], generatedAt: NOW });
+      expect(r.formationId, f.id).toBe(f.id);
+      const slotIds = new Set(f.slots.map((s) => s.slotId));
+      expect(r.slots.length + r.unfilledSlots.length, f.id).toBe(11);
+      expect([...r.slots, ...r.unfilledSlots].every((s) => slotIds.has(s.slotId)), f.id).toBe(true);
+      const ids = r.slots.map((s) => s.candidate.worldCardId);
+      expect(new Set(ids).size, f.id).toBe(ids.length);
+      const gkSlot = f.slots.find((s) => s.position === "GK")!;
+      expect(r.slots.find((s) => s.slotId === gkSlot.slotId)?.candidate.worldCardId, f.id).toBe("1");
+    }
+  });
+});
