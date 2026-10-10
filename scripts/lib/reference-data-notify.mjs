@@ -216,11 +216,16 @@ export function shouldThrottleNotification(n, last, now) {
   return last.body.startsWith(`**${n.title}**`) && Number.isFinite(age) && age >= 0 && age < REPEAT_NOTIFICATION_WINDOW_MS;
 }
 
-/** 毎時の検出の間隔の上限（1 時間 + GitHub の schedule の遅れの余裕）。これを超えたら通知する。 */
-export const SCHEDULE_GAP_THRESHOLD_MS = 130 * 60 * 1000;
+/**
+ * 検出の間隔の上限。これを超えたら通知する。
+ * 2026-10-10: 130 分 → 600 分。GitHub の毎時の schedule は 8 割以上が欠落し（evidence/hourly-detection-observation-*.json）、
+ * 130 分では毎回の通知になっていた。watchdog（reference-data-detection-watchdog.yml）が 6 時間 30 分を超えた欠落を
+ * 3 時間ごとに埋めるため、正常なら間隔は最大でおよそ 10 時間。これを超えるのは watchdog も止まったときだけ。
+ */
+export const SCHEDULE_GAP_THRESHOLD_MS = 600 * 60 * 1000;
 
 /**
- * 検出の定期実行の間隔の確認（GitHub の schedule の遅れ・欠落）。前回の検出 run の開始から今回までが 130 分を超えたら通知する。
+ * 検出の定期実行の間隔の確認（GitHub の schedule の遅れ・欠落）。前回の検出 run の開始から今回までが SCHEDULE_GAP_THRESHOLD_MS を超えたら通知する。
  * 同じ GitHub の schedule の中の確認なので、schedule 自体が止まった場合は検知できない（外部の確認は運用文書を参照）。
  * @param {string | null | undefined} prevAt
  * @param {string | null | undefined} thisAt
@@ -239,9 +244,9 @@ export function buildScheduleGapNotice(prevAt, thisAt, event) {
     kind: "schedule_gap",
     title: "参照データの毎時の検出に間隔があきました / Hourly detection schedule gap",
     body: [
-      `前回の検出 run から ${gapMinutes} 分あきました（基準: 130 分）。GitHub の schedule の遅れ・欠落の可能性があります。`,
+      `前回の検出 run から ${gapMinutes} 分あきました（基準: ${SCHEDULE_GAP_THRESHOLD_MS / 60000} 分）。GitHub の schedule と watchdog の両方の遅れ・欠落の可能性があります。`,
       "",
-      "次: Actions の detection workflow が有効か、既定ブランチが main か、Actions の利用枠を確認する。自動では何も適用しません。",
+      "次: Actions の detection と watchdog の workflow が有効か、既定ブランチが main か、Actions の利用枠を確認する。自動では何も適用しません。",
       "",
       "この通知は自動作成です（非秘密の情報だけ）。",
     ].join("\n"),

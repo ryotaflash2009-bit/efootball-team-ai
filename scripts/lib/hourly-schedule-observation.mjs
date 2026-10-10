@@ -9,7 +9,7 @@
 
 export const SLOT_MINUTE = 17;
 export const HOUR_MS = 60 * 60 * 1000;
-/** 既存の通知の基準（buildScheduleGapNotice と同じ 130 分）。 */
+/** 観測の指標「更新の検出の遅れ」の基準（130 分＝毎時 + 遅れの余裕）。通知の基準（600 分・reference-data-notify.mjs）とは別。 */
 export const GAP_NOTICE_MS = 130 * 60 * 1000;
 /** 再検討の条件: 6 時間以上 Detection がない。 */
 export const RECONSIDER_GAP_MS = 6 * HOUR_MS;

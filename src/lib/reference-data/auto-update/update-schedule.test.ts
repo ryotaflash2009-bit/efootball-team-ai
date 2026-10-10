@@ -117,13 +117,31 @@ describe("検出workflowの静的監査", () => {
   });
 });
 
-describe("リポジトリ内の全workflow: scheduleは検出workflowだけ", () => {
-  it("検出workflow以外は`schedule:`トリガーを持たない(Backup・apply・rollbackは特に禁止)", () => {
+const WATCHDOG_WORKFLOW_FILE = "reference-data-detection-watchdog.yml";
+
+describe("リポジトリ内の全workflow: scheduleは検出workflowと検出のwatchdogだけ", () => {
+  it("検出workflow・watchdog以外は`schedule:`トリガーを持たない(Backup・apply・rollbackは特に禁止)", () => {
     const files = readdirSync(WORKFLOWS).filter((f) => /\.ya?ml$/.test(f));
     expect(files.length).toBeGreaterThanOrEqual(3);
     for (const f of files) {
-      if (f === DETECTION_WORKFLOW_FILE) expect(code(readWf(f)).match(/^\s*schedule\s*:/gm), f).toHaveLength(1);
+      if (f === DETECTION_WORKFLOW_FILE || f === WATCHDOG_WORKFLOW_FILE) expect(code(readWf(f)).match(/^\s*schedule\s*:/gm), f).toHaveLength(1);
       else expect(code(readWf(f)), f).not.toMatch(/^\s*schedule\s*:/m);
     }
+  });
+
+  it("watchdog(2026-10-10): 起動するのは検出workflowだけ・Secrets/Environmentなし・検出の変数と停止の変数のGate・3時間ごと", () => {
+    const body = code(readWf(WATCHDOG_WORKFLOW_FILE));
+    expect(body).toMatch(/- cron: "43 \*\/3 \* \* \*"/);
+    expect(body).not.toMatch(/secrets\./);
+    expect(body).not.toMatch(/environment\s*:/);
+    // workflow の起動は検出の workflow_dispatch（confirm detect）の 1 か所だけ
+    const dispatches = body.match(/gh workflow run [^\n]+/g) ?? [];
+    expect(dispatches).toEqual([`gh workflow run ${DETECTION_WORKFLOW_FILE} --repo "$REPO" --ref main -f confirm=detect`]);
+    expect(body).not.toMatch(/gh (api|run rerun|run cancel|variable|secret)/);
+    expect(body).toContain(`vars.${DETECTION_ENABLE_VARIABLE} == 'true' && vars.REFERENCE_DATA_DETECTION_WATCHDOG_DISABLED != 'true'`);
+    // 書き込みの権限は job の actions: write だけ（workflow 全体は contents: read）
+    expect(body.match(/:\s*write/g)).toEqual([": write"]);
+    expect(body).toMatch(/permissions:\s*\n\s+contents: read\s*\n\s+actions: write/);
+    expect(body).toMatch(/concurrency:\s*\n\s+group: reference-data-detection-watchdog\s*\n\s+cancel-in-progress: false/);
   });
 });
