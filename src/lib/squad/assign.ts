@@ -98,3 +98,49 @@ export function addWorldCardToBench(
     },
   };
 }
+
+export type ReplaceSamePlayerResult =
+  | { ok: true; squad: StoredSquad; replaced: { area: "starter"; slotId: string; previousWorldCardId: string } | { area: "bench"; subId: string; previousWorldCardId: string } }
+  | { ok: false; errorCode: "invalid_world_card_id" | "duplicate_not_allowed" | "no_same_player"; squad: StoredSquad };
+
+/**
+ * 同じ選手の別のカードと入れ替える（2026-10-11）。スカッドにいる同じ選手のカードを、新しいカードに置き換える。
+ * 位置（先発の枠・キャプテン・セットプレー・連携の枠・控えの順番）はそのまま、カードに付いていたビルド・ブースターは外す（別のカードのため）。
+ * 先発にいればその枠を、いなければ控えの最初の 1 枚を置き換える。新しいカードが既にいる・同じ選手がいないときは何もしない。
+ */
+export function replaceSamePlayerCard(squad: StoredSquad, worldCardId: string): ReplaceSamePlayerResult {
+  if (typeof worldCardId !== "string" || !WORLD_CARD_ID_RE.test(worldCardId)) return { ok: false, errorCode: "invalid_world_card_id", squad };
+  if (isPlaced(squad, worldCardId)) return { ok: false, errorCode: "duplicate_not_allowed", squad };
+  const now = new Date().toISOString();
+  const slot = squad.slots.find((s) => !!s.worldCardId && isSamePerson(s.worldCardId, worldCardId));
+  if (slot?.worldCardId) {
+    return {
+      ok: true,
+      squad: {
+        ...squad,
+        slots: squad.slots.map((s) =>
+          s.slotId === slot.slotId
+            ? { ...s, worldCardId, buildMode: "none" as SquadBuildMode, savedBuildId: null, boosters: undefined, conditionalBoosters: undefined }
+            : s,
+        ),
+        updatedAt: now,
+      },
+      replaced: { area: "starter", slotId: slot.slotId, previousWorldCardId: slot.worldCardId },
+    };
+  }
+  const sub = squad.substitutes.find((s) => isSamePerson(s.worldCardId, worldCardId));
+  if (sub) {
+    return {
+      ok: true,
+      squad: {
+        ...squad,
+        substitutes: squad.substitutes.map((s) =>
+          s.subId === sub.subId ? { ...s, worldCardId, buildMode: "none" as SquadBuildMode, savedBuildId: null, boosters: undefined, conditionalBoosters: undefined } : s,
+        ),
+        updatedAt: now,
+      },
+      replaced: { area: "bench", subId: sub.subId, previousWorldCardId: sub.worldCardId },
+    };
+  }
+  return { ok: false, errorCode: "no_same_player", squad };
+}

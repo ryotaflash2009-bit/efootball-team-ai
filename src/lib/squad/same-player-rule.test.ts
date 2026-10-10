@@ -93,3 +93,29 @@ describe("改善シミュレーション: 入れ替えで同じ選手を 2 人�
     for (const c of rankBenchSwaps(input, 20)) expect(c.starterKey === starters[10].key).toBe(true);
   });
 });
+
+import { replaceSamePlayerCard } from "./assign";
+
+describe("同じ選手のカードの入れ替え（2026-10-11）", () => {
+  it("先発にいる同じ選手を新しいカードに置き換える（枠・キャプテンはそのまま・ビルドは外す）", () => {
+    let sq = assignWorldCardToSlot(emptySquad("t", "4-3-3"), "cf", B1).squad;
+    sq = { ...sq, captainSlotId: "cf", slots: sq.slots.map((s) => (s.slotId === "cf" ? { ...s, savedBuildId: "b_1", buildMode: "attack" as const } : s)) };
+    const r = replaceSamePlayerCard(sq, B2);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.replaced).toEqual({ area: "starter", slotId: "cf", previousWorldCardId: B1 });
+    const cf = r.squad.slots.find((s) => s.slotId === "cf")!;
+    expect(cf).toMatchObject({ worldCardId: B2, savedBuildId: null, buildMode: "none" });
+    expect(r.squad.captainSlotId).toBe("cf");
+    expect(duplicatePersons([...r.squad.slots.map((s) => s.worldCardId), ...r.squad.substitutes.map((s) => s.worldCardId)])).toEqual([]);
+  });
+  it("控えにいれば控えの同じ順番で置き換える・同じ選手がいない／既にいる／不正な ID は何もしない", () => {
+    const bench = addWorldCardToBench(emptySquad("t", "4-3-3"), B1, newSubId).squad;
+    const r = replaceSamePlayerCard(bench, B2);
+    expect(r.ok && r.replaced.area).toBe("bench");
+    if (r.ok) expect(r.squad.substitutes.map((s) => s.worldCardId)).toEqual([B2]);
+    expect(replaceSamePlayerCard(bench, C1)).toMatchObject({ ok: false, errorCode: "no_same_player" });
+    expect(replaceSamePlayerCard(bench, B1)).toMatchObject({ ok: false, errorCode: "duplicate_not_allowed" });
+    expect(replaceSamePlayerCard(bench, "x")).toMatchObject({ ok: false, errorCode: "invalid_world_card_id" });
+  });
+});
