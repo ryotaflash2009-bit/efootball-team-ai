@@ -12,7 +12,7 @@ import { isSearchInputRejectedResponse } from "@/lib/search/search-input";
 import { fillMessage } from "@/lib/i18n/message-format";
 
 /**
- * 選手検索（World 13,009件・既存 SQLite API）。
+ * 選手検索（World の全カード・件数は参照データの更新で変わる。docs/product/world-card-counts.md）。
  *  - 一度に全件は送らない（pageSize=20）。ドラッグ非依存＝クリック/タップで追加。
  *  - 結果はカード画像付きで表示し、同名選手の別カード（別 worldCardId）を判別できるようにする。
  *  - 画像は既存の解決処理を再利用（外部取得なし・複製保存なし）。

@@ -14,7 +14,7 @@ import { isSearchInputRejectedResponse } from "@/lib/search/search-input";
 import { fillMessage } from "@/lib/i18n/message-format";
 
 /**
- * 比較へ追加する選手を検索して選ぶ（World 13,009件・既存 SQLite API）。
+ * 比較へ追加する選手を検索して選ぶ（World の全カード・件数は参照データの更新で変わる。docs/product/world-card-counts.md）。
  *  - 検索結果はカード画像付き（`WorldPlayerSearchCard`・スカッド検索と共通）。同名選手の別カード
  *    （別 worldCardId）を画像・タイプ・OVR・World ID で判別できる。
  *  - 一度に全件は送らない（`pageSize=20`・最小 2 文字）。クリック / タップ / Enter / Space で追加。

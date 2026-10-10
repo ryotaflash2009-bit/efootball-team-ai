@@ -7,16 +7,23 @@
  *   **別人**（例: Hashimoto Kento 健人 / 拳人・Rodri 2 名）。16 ビットでは 59 組が別名の人と混ざる。
  * - 表示名では判定しない（同名の別人・表記の揺れ・翻訳名に左右されないため）。
  * - KONAMI の公開の仕様ではない（データから確かめた規則）。World の更新ごとに監査の script で確かめ直す。
+ *   本番 13,372 枚（2026-10-10）でも食い違い 0。
+ * - 食い違い（同じキーで名前・国籍が違う＝別人）が見つかった場合の停止: そのキーを `PERSON_KEY_CONFLICT_EXCEPTIONS` に入れる
+ *   （そのキーだけカード ID 単位の扱いに戻す＝別人を誤って同じ選手として止めない側に倒す）。規則全体は止めない。
  */
 const PERSON_BITS = 20n;
 const PERSON_MASK = (1n << PERSON_BITS) - 1n;
 const WORLD_CARD_ID_RE = /^\d{1,20}$/;
 
+/** 監査で食い違いが見つかった人物のキー（2026-10-11 時点で 0 件）。追加したら same-player-rule.md に理由と日付を書く。 */
+export const PERSON_KEY_CONFLICT_EXCEPTIONS: ReadonlySet<string> = new Set<string>();
+
 /** 人物のキー（World のカード ID の下位 20 ビット）。ID が不正なら null（判定しない）。 */
-export function personKeyOf(worldCardId: string | null | undefined): string | null {
+export function personKeyOf(worldCardId: string | null | undefined, exceptions: ReadonlySet<string> = PERSON_KEY_CONFLICT_EXCEPTIONS): string | null {
   if (typeof worldCardId !== "string" || !WORLD_CARD_ID_RE.test(worldCardId)) return null;
   try {
-    return (BigInt(worldCardId) & PERSON_MASK).toString();
+    const key = (BigInt(worldCardId) & PERSON_MASK).toString();
+    return exceptions.has(key) ? null : key;
   } catch {
     return null;
   }

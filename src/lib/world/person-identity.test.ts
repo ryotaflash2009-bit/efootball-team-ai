@@ -24,3 +24,16 @@ describe("同じ選手の判定（カード ID の下位 20 ビット）", () =>
     expect(duplicatePersons([BUONGIORNO[0], COSTACURTA[0]])).toEqual([]);
   });
 });
+
+import { personKeyOf as keyOf, PERSON_KEY_CONFLICT_EXCEPTIONS } from "./person-identity";
+
+describe("人物のキーの食い違いの例外（停止の手段）", () => {
+  it("今は例外 0 件・例外のキーはカード ID 単位に戻す（別人を同じ選手として止めない）", () => {
+    expect(PERSON_KEY_CONFLICT_EXCEPTIONS.size).toBe(0);
+    const id = "105869601784218";
+    const k = keyOf(id);
+    expect(k).not.toBeNull();
+    expect(keyOf(id, new Set([k as string]))).toBeNull();
+    expect(keyOf("88036360587367", new Set([k as string]))).not.toBeNull();
+  });
+});

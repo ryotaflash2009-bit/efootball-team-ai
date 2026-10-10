@@ -77,7 +77,7 @@ function squadCardIds(squad: StoredSquad): string[] {
 /**
  * 比較ビューのデータ読み込み（読み取り専用）。
  *  - スカッド 2 件を localStorage から読む（内容は書き換えない）。
- *  - 必要な worldCardId を Set で統合し、既存の by-id API で重複なく取得（全 13,009 走査なし）。
+ *  - 必要な worldCardId を Set で統合し、既存の by-id API で重複なく取得（全カードの走査なし）。
  *  - 監督詳細・保存ビルドも取得し、既存 buildSquad で集計する（比較専用の計算はしない）。
  *  - 別タブでのスカッド更新（storage イベント）を検知して再読込を促す。
  */
