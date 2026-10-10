@@ -156,6 +156,10 @@ export interface SquadPlayerDisplay {
   mobileImageUrlCandidate: string | null;
   playerSkills: string[];
   aiStyles: string[];
+  /** 所属（先発の内訳用・2026-10-11）。古い経路で作られた表示には無い（任意）。 */
+  nationality?: string | null;
+  league?: string | null;
+  team?: string | null;
 }
 
 /** buildSquad に渡す1選手ぶんの入力 */
