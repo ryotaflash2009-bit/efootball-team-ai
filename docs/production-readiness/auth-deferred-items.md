@@ -9,7 +9,7 @@
 | メールアドレスの変更 | 画面はあるが無効（利用できない旨を表示・送信しない） | 確認メールが届かない | `AUTH_EMAIL_DELIVERY = "custom_smtp_verified"` | なし（PR で切り替え） | 0円 | 同上＋変更メールの配信テスト（runbook F） |
 | 招待 | テンプレートと着地点（`/auth/confirm?type=invite` → パスワード設定）だけ準備済み。送る操作は Supabase の画面から本人だけ | 配信確認前 | カスタム SMTP | Supabase → Users → Invite | 0円 | runbook F の招待テスト |
 | 再認証（Reauthentication） | テンプレートのみ。パスワード変更で必要と返された場合は案内を表示 | Supabase の「Secure password change」は無効のまま（有効にするとメールが必要） | カスタム SMTP ＋本人の判断 | Supabase → Providers → Email | 0円 | 配信テスト |
-| アカウントの削除（本人が自分で） | 未実装。プライバシーポリシーとアカウント画面で「サポートへ連絡すれば運営者が手動で削除」と案内 | 削除にはサーバー側の管理者権限（service role）か、本番 DB の関数（マイグレーション）が必要。どちらも本番の権限・スキーマ変更で、本人の判断が必要 | 本人が方式（Edge Function / DB 関数）を承認 | 本番マイグレーションの承認 | 0円 | 削除の black-box（本人のデータだけ消える・他人は消せない・ローカルデータの扱い） |
+| アカウントの削除（本人が自分で） | 実装済み・既定で無効（2026-10-11・`ACCOUNT_DELETION_MODE`）。`/account/delete` は今は「運営への連絡で削除」の案内（12 言語）。DB の関数（service role なし）の SQL・テスト・apply package を用意 | Production への関数の適用が必要（本人の操作） | `account-deletion-apply-package.md` §3〜§5 | SQL Editor で適用・検証・テスト用のアカウントでの確認 | 0円 | §7 の停止の条件・§5 の検証 |
 | Google OAuth（2026-10-11 の方針: 主な経路） | 実装済み・既定で無効（`GOOGLE_OAUTH_MODE`）。ゲストのデータの引き継ぎの導線あり | 本人の Google Cloud・Supabase の設定が必要 | `auth-google-oauth-plan.md` §3・§4・§7 | Google Cloud・Supabase の Provider | 0円 | §7 のテスト＋本人の承認（新規登録の一般公開に当たる） |
 | ローカルデータの削除 | 実装済み（`/data-management`。端末内だけ・本番に影響なし） | — | — | — | — | — |
 
