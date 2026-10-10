@@ -81,6 +81,11 @@ describe("workflow の監査（reference-data-applied-state-sync.yml）", () => 
     expect(body).toMatch(/for wf in reference-data-update-orchestrator\.yml reference-data-production-apply\.yml reference-data-production-backup\.yml/);
     expect(body).toContain("unexpected file in the sync commit");
     expect(body.match(/git push [^\n]+/g)).toEqual(["git push origin HEAD:main"]);
+    // push の前に main の契約のテストを通す（2026-10-11）。その step は Commit より前
+    const check = body.indexOf("Check the record against the repository contract before pushing");
+    expect(check).toBeGreaterThan(0);
+    expect(check).toBeLessThan(body.indexOf("name: Commit to main"));
+    expect(body).toContain("npx vitest run src/lib/reference-data/auto-update/update-detection.test.ts");
     expect(body).not.toMatch(/--force|-f origin/);
     // F-071 の分布は、World を更新したときだけ・照合（import-world-distribution.mjs）を通して取り込む
     expect(body).toContain("node scripts/import-world-distribution.mjs data/work/distribution/world-base-distribution.candidate.json");
