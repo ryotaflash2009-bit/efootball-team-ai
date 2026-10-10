@@ -3170,6 +3170,7 @@ export interface Dictionary {
     exclusionGkFieldMismatch: string;
     limitationsHeading: string;
     sameNameWarningTemplate: string;
+    samePlayerExcludedTemplate: string;
     limitationSingleFormationOnly: string;
     limitationNoBenchSelection: string;
     benchHeadingTemplate: string;

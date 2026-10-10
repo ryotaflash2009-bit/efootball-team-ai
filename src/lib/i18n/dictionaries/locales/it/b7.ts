@@ -215,6 +215,7 @@ const part: PartialDictionary = {
     exclusionGkFieldMismatch: "Il ruolo di portiere e quello di giocatore di movimento non corrispondono, quindi il candidato è stato escluso dalla selezione automatica.",
     limitationsHeading: "Limitazioni",
     sameNameWarningTemplate: "Sono presenti giocatori con lo stesso nome: {names}. Potrebbero essere carte diverse dello stesso giocatore (il comportamento del gioco non è confermato, quindi non vengono rimossi automaticamente).",
+    samePlayerExcludedTemplate: "Non scelte perché è usata un’altra carta dello stesso giocatore ({count}): {names}",
     limitationSingleFormationOnly: "Questa versione iniziale supporta solo il modulo 4-3-3.",
     limitationNoBenchSelection: "I giocatori in panchina non vengono selezionati.",
     benchHeadingTemplate: "Panchina ({count}/{max})",

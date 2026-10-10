@@ -215,6 +215,7 @@ const part: PartialDictionary = {
     exclusionGkFieldMismatch: "As posições de goleiro e de linha não correspondem, então o candidato foi excluído da seleção automática.",
     limitationsHeading: "Limitações",
     sameNameWarningTemplate: "Há jogadores com o mesmo nome: {names}. Podem ser cartas diferentes do mesmo jogador (não está confirmado como o jogo trata isso, então não são removidos automaticamente).",
+    samePlayerExcludedTemplate: "Não escolhidas porque outra carta do mesmo jogador é usada ({count}): {names}",
     limitationSingleFormationOnly: "Esta versão inicial suporta apenas a formação 4-3-3.",
     limitationNoBenchSelection: "Os reservas do banco não são selecionados.",
     benchHeadingTemplate: "Banco ({count}/{max})",

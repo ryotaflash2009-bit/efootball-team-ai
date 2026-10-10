@@ -215,6 +215,7 @@ const part: PartialDictionary = {
     exclusionGkFieldMismatch: "Kaleci ve saha oyuncusu mevkileri eşleşmediği için aday otomatik seçimden çıkarıldı.",
     limitationsHeading: "Sınırlamalar",
     sameNameWarningTemplate: "Aynı adlı oyuncular var: {names}. Aynı oyuncunun farklı kartları olabilir (oyunun bunu nasıl ele aldığı doğrulanmadı, bu yüzden otomatik çıkarılmaz).",
+    samePlayerExcludedTemplate: "Aynı oyuncunun başka bir kartı kullanıldığı için seçilmeyenler ({count}): {names}",
     limitationSingleFormationOnly: "Bu ilk sürüm yalnızca 4-3-3 dizilişini destekler.",
     limitationNoBenchSelection: "Yedek oyuncular seçilmez.",
     benchHeadingTemplate: "Yedekler ({count}/{max})",
