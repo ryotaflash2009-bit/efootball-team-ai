@@ -96,6 +96,25 @@ async function main() {
     await sleep(200);
     record("選んだものを削除できる", (await stored())?.items?.length === 0 && !(await ev(`!!document.querySelector('[data-testid="saved-filter-select"]')`)));
 
+    // 国籍（2026-10-11 F-001a）: 画面の select で選ぶ → URL・条件のチップ・保存の対象に入る
+    await nav(`${BASE}/players`);
+    await ev(`(() => { const s = document.querySelector('[data-testid="world-filter-nationality"]'); if (!s) return false; Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value").set.call(s, "Côte d'Ivoire"); s.dispatchEvent(new Event("change", { bubbles: true })); return true; })()`);
+    const natUrlOk = await waitForCondition(async () => /nationality=C%C3%B4te/.test(await ev("location.search")), { timeoutMs: 15000, intervalMs: 150 }).then(() => true, () => false);
+    await waitForCondition(async () => /国籍:\s*Côte d'Ivoire/.test(await ev("document.body.innerText")), { timeoutMs: 15000, intervalMs: 150 }).catch(() => {});
+    const natText = await ev("document.body.innerText");
+    await click('[data-testid="saved-filter-save"]');
+    await typeName("CIV");
+    await click('[data-testid="saved-filter-confirm"]');
+    await sleep(200);
+    const sNat = await stored();
+    const natItem = sNat?.items?.find((i) => i.name === "CIV");
+    record(
+      "国籍を画面で選ぶと URL・条件のチップ・保存した条件に入る",
+      natUrlOk && /国籍:\s*Côte d'Ivoire/.test(natText) && /nationality=C%C3%B4te/.test(natItem?.query ?? ""),
+      natItem?.query ?? "(not saved)",
+    );
+    await ev(`localStorage.removeItem(${JSON.stringify(KEY)})`);
+
     // 390px
     await client.send("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });
     await nav(`${BASE}/players?position=CF`);

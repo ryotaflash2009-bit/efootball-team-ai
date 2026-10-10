@@ -101,3 +101,18 @@ describe("worldCardIdSchema", () => {
     expect(worldCardIdSchema.safeParse("../../etc").success).toBe(false);
   });
 });
+
+describe("parseWorldListQuery: 国籍（2026-10-11 F-001a）", () => {
+  it("World の表記（アクセント・アポストロフィ・カンマ）のまま通す", () => {
+    for (const n of ["Japan", "Côte d'Ivoire", "Hong Kong, China", "Türkiye", "Curaçao", "Bosnia and Herzegovina"]) {
+      expect(parseWorldListQuery({ nationality: n }).nationality).toBe(n);
+    }
+  });
+  it("未指定・空・記号での注入・長すぎる値は null", () => {
+    expect(parseWorldListQuery({}).nationality).toBeNull();
+    expect(parseWorldListQuery({ nationality: "" }).nationality).toBeNull();
+    expect(parseWorldListQuery({ nationality: "Japan); DROP TABLE x;--" }).nationality).toBeNull();
+    expect(parseWorldListQuery({ nationality: "a=eq.b" }).nationality).toBeNull();
+    expect(parseWorldListQuery({ nationality: "x".repeat(41) }).nationality).toBeNull();
+  });
+});

@@ -113,6 +113,8 @@ export interface WorldListQuery {
   cardType: string | null;
   playingStyle: string | null;
   playingStyleDefensive: string | null;
+  /** 国籍（World の表記のまま・完全一致）。2026-10-11 F-001a */
+  nationality: string | null;
   minOvr: number | null;
   maxOvr: number | null;
   hasBooster: boolean | null;
@@ -136,6 +138,7 @@ export interface WorldFacets {
   cardTypes: string[];
   playingStyles: string[];
   playingStyleDefensives: string[];
+  nationalities: string[];
 }
 
 /** データソースのメタ情報 */

@@ -73,3 +73,12 @@ describe("orderByClause", () => {
     }
   });
 });
+
+describe("buildWhere: 国籍（2026-10-11 F-001a）", () => {
+  it("完全一致をバインドパラメーターで渡す（値を SQL に連結しない）", () => {
+    const r = buildWhere(parseWorldListQuery({ nationality: "Côte d'Ivoire" }));
+    expect(r.sql).toContain("c.nationality = ?");
+    expect(r.sql).not.toContain("Ivoire");
+    expect(r.params).toEqual(["Côte d'Ivoire"]);
+  });
+});

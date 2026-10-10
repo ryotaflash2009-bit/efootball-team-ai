@@ -91,6 +91,7 @@ function buildAppliedFilters(q: WorldListQuery): Record<string, string | number 
   if (q.cardType) f.cardType = q.cardType;
   if (q.playingStyle) f.playingStyle = q.playingStyle;
   if (q.playingStyleDefensive) f.playingStyleDef = q.playingStyleDefensive;
+  if (q.nationality) f.nationality = q.nationality;
   if (q.minOvr != null) f.minOvr = q.minOvr;
   if (q.maxOvr != null) f.maxOvr = q.maxOvr;
   if (q.hasBooster != null) f.hasBooster = q.hasBooster;
@@ -255,6 +256,7 @@ function getFacetsSqlite(): WorldFacets {
       cardTypes: distinct("card_type"),
       playingStyles: distinct("playing_style"),
       playingStyleDefensives: distinct("playing_style_def"),
+      nationalities: distinct("nationality"),
     };
   } catch {
     throw new WorldQueryError();
