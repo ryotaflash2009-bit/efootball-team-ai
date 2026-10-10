@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { LoadingState } from "@/components/ui/LoadingState";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { SignInView } from "@/components/auth/SignInView";
 import { PRIVATE_PAGE_ROBOTS } from "@/lib/public-info/search-indexing";
@@ -12,7 +13,7 @@ export const metadata = {
 export default function SignInPage() {
   return (
     <PageContainer width="regular">
-      <Suspense fallback={null}>
+      <Suspense fallback={<LoadingState variant="list" count={3} />}>
         <SignInView />
       </Suspense>
     </PageContainer>

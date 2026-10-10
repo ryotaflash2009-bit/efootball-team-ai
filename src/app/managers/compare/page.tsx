@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { LoadingState } from "@/components/ui/LoadingState";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { ManagerCompareView } from "@/components/managers/ManagerCompareView";
 import { pageMetadata } from "@/lib/seo/page-metadata";
@@ -14,7 +15,7 @@ export const metadata = pageMetadata({
 export default function ManagerComparePage() {
   return (
     <PageContainer>
-      <Suspense fallback={null}>
+      <Suspense fallback={<LoadingState variant="compare" count={3} />}>
         <ManagerCompareView />
       </Suspense>
     </PageContainer>
