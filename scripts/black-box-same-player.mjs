@@ -112,6 +112,22 @@ async function main() {
         `n=${ids?.length}`,
       );
     }
+    // 入れ替えの提案（2026-10-11）: 先発の LB に RC_A がいるスカッドへ、RC_B を控えに追加しようとする → 提案 → 入れ替え → LB が RC_B
+    {
+      const store2 = [squad("sq_bbswaptest01", RC_A, null)];
+      await client.send("Runtime.evaluate", { expression: `localStorage.setItem(${JSON.stringify(SQUADS_KEY)}, ${JSON.stringify(JSON.stringify(store2))})` });
+      await go(client, `${BASE}/squads/sq_bbswaptest01?card=${RC_B}`);
+      await waitForCondition(async () => evalJson(client, `!![...document.querySelectorAll("button")].find((b) => /ベンチに追加/.test(b.textContent))`), { timeoutMs: 15000, intervalMs: 250 }).catch(() => {});
+      await evalJson(client, `[...document.querySelectorAll("button")].find((b) => /ベンチに追加/.test(b.textContent))?.click()`);
+      await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="squad-same-player-swap"]')`), { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+      const offer = await evalJson(client, `document.querySelector('[data-testid="squad-same-player-swap"]')?.textContent ?? ""`);
+      record("[入れ替え] 同じ選手の別のカードを入れようとすると「入れ替えますか」と提案する（名前つき）", /入れ替えますか/.test(offer) && /ロベルト|Roberto/.test(offer), offer.slice(0, 80));
+      await evalJson(client, `document.querySelector('[data-testid="squad-same-player-swap-confirm"]')?.click()`);
+      await new Promise((r) => setTimeout(r, 800));
+      const saved = await evalJson(client, `JSON.parse(localStorage.getItem(${JSON.stringify(SQUADS_KEY)})).find((x) => x.squadId === "sq_bbswaptest01")`);
+      const lb = saved?.slots?.find((x) => x.slotId === "lb")?.worldCardId;
+      record("[入れ替え] 入れ替えると、元のカードの位置（LB）に新しいカード・控えには増えない・同じ選手の重複なし", lb === RC_B && (saved?.substitutes?.length ?? -1) === 0, `lb=${lb} subs=${saved?.substitutes?.length}`);
+    }
     record("ページ内で JS の例外が起きない", errors.length === 0, errors.slice(0, 2).join(" / "));
   } finally {
     await closeTab(browser.port, tab.id).catch(() => {});
