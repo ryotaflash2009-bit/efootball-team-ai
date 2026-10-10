@@ -67,3 +67,14 @@ BASE_URL=https://efootball-team-ai.vercel.app node scripts/validate-search-index
 戻す場合: Production の `NEXT_PUBLIC_SEARCH_INDEXING` を消して再デプロイ（Search Console の「削除」で一時的に検索結果から外せる）。
 
 Search Console の登録の手順: `search-console-package.md`
+
+## 7. 完了（2026-10-10・本人の判断）
+
+本人の操作（2026-10-10）: Production に `NEXT_PUBLIC_SEARCH_INDEXING=enabled` を設定して再デプロイ（Ready / Current）・
+Search Console の URL プレフィックスの所有権の確認（HTML タグ）・sitemap.xml の送信（「サイトマップは正常に処理されました」）。
+
+読み取りだけの最終の確認（Evidence `evidence/search-indexing-enabled-2026-10-10.json`）:
+**SEARCH_INDEXING_ENABLED**（問題 0 件・要求 59 件）・sitemap.xml 13,456 URL（重複 0）・本番の総合 black-box 576/576・
+端末の保存データありの hydration の確認 95/95。本人の判断で**検索への公開は完了**。追加の SEO の修正はしない。
+
+経過の確認: 数日〜数週間後に Search Console の「ページ」を見る。非公開の画面の除外は想定どおり。公開の画面の予期しない除外だけを調べる。
