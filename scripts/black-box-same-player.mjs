@@ -128,6 +128,22 @@ async function main() {
       const lb = saved?.slots?.find((x) => x.slotId === "lb")?.worldCardId;
       record("[入れ替え] 入れ替えると、元のカードの位置（LB）に新しいカード・控えには増えない・同じ選手の重複なし", lb === RC_B && (saved?.substitutes?.length ?? -1) === 0, `lb=${lb} subs=${saved?.substitutes?.length}`);
     }
+    // 先発の所属の内訳（2026-10-11）: LB と RB に同じ国籍の 2 枚 → 「国籍」に「<国籍> ×2」・選手一覧の絞り込みへのリンク
+    {
+      const d = await (await fetch(`${BASE}/api/world/players/${RC_A}`)).json().catch(() => null);
+      const nat = d?.player?.nationality;
+      const s3 = squad("sq_bbaffiliat01", RC_A, null);
+      s3.slots = s3.slots.map((x) => (x.slotId === "rb" ? { ...x, worldCardId: RC_B } : x));
+      await client.send("Runtime.evaluate", { expression: `localStorage.setItem(${JSON.stringify(SQUADS_KEY)}, ${JSON.stringify(JSON.stringify([s3]))})` });
+      await go(client, `${BASE}/squads/sq_bbaffiliat01`);
+      await waitForCondition(async () => /×2/.test(await evalJson(client, `document.querySelector('[data-testid="squad-affiliation-summary"]')?.textContent ?? ""`)), { timeoutMs: 15000, intervalMs: 250 }).catch(() => {});
+      const panel = await evalJson(client, `(() => { const p = document.querySelector('[data-testid="squad-affiliation-summary"]'); if (!p) return null; const n = [...p.querySelectorAll('[data-affiliation-kind="nationality"]')].map((e) => e.textContent.trim()); const href = p.querySelector('[data-affiliation-kind="nationality"] a')?.getAttribute("href") ?? ""; return { n, href }; })()`);
+      record(
+        "[所属の内訳] 先発の同じ国籍を「国籍 ×人数」で示し、選手一覧の絞り込みへリンクする",
+        !!nat && Array.isArray(panel?.n) && panel.n.some((x) => x.startsWith(nat) && x.endsWith("×2")) && panel.href.startsWith("/players?nationality="),
+        `${nat} ${JSON.stringify(panel)}`,
+      );
+    }
     record("ページ内で JS の例外が起きない", errors.length === 0, errors.slice(0, 2).join(" / "));
   } finally {
     await closeTab(browser.port, tab.id).catch(() => {});

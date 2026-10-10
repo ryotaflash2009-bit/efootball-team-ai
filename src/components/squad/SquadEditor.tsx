@@ -16,6 +16,8 @@ import { managerToContext } from "@/lib/managers/to-context";
 import { getBuild, listBuilds } from "@/lib/progression/build-storage";
 import { toProgressionCard } from "@/lib/progression/from-world";
 import { worldDetailToSquadDisplay } from "@/lib/squad/from-world";
+import { squadAffiliationSummary } from "@/lib/squad/affiliation-summary";
+import { SquadAffiliationPanel } from "@/components/squad/SquadAffiliationPanel";
 import { buildSquad } from "@/lib/squad/build-squad";
 import { diagnoseSquad, buildSquadDiagnosisInput } from "@/lib/squad/squad-diagnosis";
 import { buildTacticalPlacementInputs } from "@/lib/squad/squad-tactical-review";
@@ -2097,6 +2099,18 @@ export function SquadEditor({
         />
         <DiagnosisPerspectivesPanel results={perspectives} namePairs={namePairs} factsLoading={cardResolution.loading.length > 0} />
         {perspectiveInput && diagnosisInput ? <SquadUniquenessPanel formationId={diagnosisInput.formationId} perspective={perspectiveInput} /> : null}
+        {squad ? (
+          <SquadAffiliationPanel
+            summary={squadAffiliationSummary(
+              squad.slots
+                .filter((s) => s.worldCardId)
+                .map((s) => {
+                  const c = cards[s.worldCardId as string];
+                  return c && c !== "loading" && c !== "error" ? c.display : null;
+                }),
+            )}
+          />
+        ) : null}
         {squad ? <GamePlanPanel squad={squad} starterOptions={starterOptions} benchOptions={benchOptions} /> : null}
       </div>
 

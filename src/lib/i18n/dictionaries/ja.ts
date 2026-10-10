@@ -725,6 +725,13 @@ export interface Dictionary {
     assignErrorDuplicate: string;
     assignErrorSamePlayer: string;
     samePlayerWarningTemplate: string;
+    affiliationHeading: string;
+    affiliationNote: string;
+    affiliationNationality: string;
+    affiliationLeague: string;
+    affiliationTeam: string;
+    affiliationNoneShared: string;
+    affiliationUnknownTemplate: string;
     samePlayerSwapOfferTemplate: string;
     samePlayerSwapButton: string;
     samePlayerSwapCancel: string;

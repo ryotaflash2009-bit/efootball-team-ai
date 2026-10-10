@@ -21,6 +21,9 @@ export function worldDetailToSquadDisplay(detail: WorldPlayerDetail): SquadPlaye
     mobileImageUrlCandidate: detail.mobileImageUrlCandidate,
     playerSkills: detail.playerSkills,
     aiStyles: detail.aiStyles,
+    nationality: detail.nationality,
+    league: detail.league,
+    team: detail.team,
   };
 }
 
