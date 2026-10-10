@@ -19,7 +19,7 @@ import { worldDetailToSquadDisplay } from "@/lib/squad/from-world";
 import { buildSquad } from "@/lib/squad/build-squad";
 import { diagnoseSquad, buildSquadDiagnosisInput } from "@/lib/squad/squad-diagnosis";
 import { buildTacticalPlacementInputs } from "@/lib/squad/squad-tactical-review";
-import { assignWorldCardToSlot, addWorldCardToBench, type SquadAssignErrorCode } from "@/lib/squad/assign";
+import { assignWorldCardToSlot, addWorldCardToBench, replaceSamePlayerCard, type SquadAssignErrorCode } from "@/lib/squad/assign";
 import {
   applySquadMove,
   removeSquadPlayer,
@@ -101,7 +101,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
-import { duplicatePersons } from "@/lib/world/person-identity";
+import { duplicatePersons, isSamePerson } from "@/lib/world/person-identity";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { DiagnosisPerspectivesPanel } from "./DiagnosisPerspectivesPanel";
 import { SquadUniquenessPanel } from "./SquadUniquenessPanel";
@@ -223,6 +223,8 @@ export function SquadEditor({
   );
   /** 直前の配置操作の1回 Undo（再読込では保持しない）。 */
   const [undo, setUndo] = useState<{ squad: StoredSquad; label: string } | null>(null);
+  // 同じ選手の別のカードを入れようとしたときの「入れ替える」の提案（新しいカードの worldCardId・2026-10-11）
+  const [swapOffer, setSwapOffer] = useState<string | null>(null);
   const [compareSel, setCompareSel] = useState<string[]>([]);
   const [mobileTab, setMobileTab] = useState<MobileTab>("pitch");
   const [toast, setToast] = useState<string | null>(null);
@@ -522,7 +524,8 @@ export function SquadEditor({
       if (!cur) return false;
       const r = assignWorldCardToSlot(cur, slotId, worldCardId);
       if (!r.ok) {
-        flashToast(ASSIGN_ERROR_MESSAGE[r.errorCode]);
+        if (r.errorCode === "same_player_not_allowed") setSwapOffer(worldCardId);
+        else flashToast(ASSIGN_ERROR_MESSAGE[r.errorCode]);
         return false;
       }
       const verifiedBuildId = savedBuildId && getBuild(worldCardId, savedBuildId) ? savedBuildId : null;
@@ -544,7 +547,8 @@ export function SquadEditor({
       if (!cur) return null;
       const r = addWorldCardToBench(cur, worldCardId, newSubId);
       if (!r.ok) {
-        flashToast(ASSIGN_ERROR_MESSAGE[r.errorCode]);
+        if (r.errorCode === "same_player_not_allowed") setSwapOffer(worldCardId);
+        else flashToast(ASSIGN_ERROR_MESSAGE[r.errorCode]);
         return null;
       }
       const verifiedBuildId = savedBuildId && getBuild(worldCardId, savedBuildId) ? savedBuildId : null;
@@ -567,6 +571,20 @@ export function SquadEditor({
     const cur = squadRef.current;
     if (cur) setUndo({ squad: cur, label });
   }, []);
+
+  /** 同じ選手の別のカードを、新しいカードに入れ替える（位置はそのまま・元に戻せる）。 */
+  const confirmSamePlayerSwap = useCallback(() => {
+    const cur = squadRef.current;
+    const worldCardId = swapOffer;
+    setSwapOffer(null);
+    if (!cur || !worldCardId) return;
+    const r = replaceSamePlayerCard(cur, worldCardId);
+    if (!r.ok) return;
+    snapshotForUndo(tse("samePlayerSwapUndoLabel"));
+    setSquad(r.squad);
+    setPickTarget(null);
+    flashToast(tse("samePlayerSwappedTemplate").replace("{name}", swapOfferNameRef.current ?? r.replaced.previousWorldCardId));
+  }, [swapOffer, snapshotForUndo, flashToast, tse]);
 
   /** 移動・交代の単一エントリ（クリック / ドラッグ / キーボード共通）。 */
   const applyMove = useCallback(
@@ -1085,6 +1103,17 @@ export function SquadEditor({
   // ベンチ行（index は squad.substitutes と 1:1・未解決カードでもズレない）
   // 英語の画面で、診断の文に入る選手の日本語名を英語名にそろえるための組（先発の表示データから）。
   // 同じ選手の別のカードが 2 枚以上あるか（2026-10-10・ゲームでは編成できない）。保存したデータは変えず、知らせるだけ。
+  const swapOfferName = useMemo(() => {
+    if (!swapOffer || !squad) return null;
+    const existing = [...squad.slots.map((sl) => sl.worldCardId), ...squad.substitutes.map((sb) => sb.worldCardId)].find((id) => !!id && id !== swapOffer && isSamePerson(id, swapOffer));
+    if (!existing) return null;
+    const slotEntry = computed.slots.find((sl) => sl.entry?.display.worldCardId === existing)?.entry?.display;
+    const subEntry = computed.substitutes.find((sb) => sb.display.worldCardId === existing)?.display;
+    const disp = slotEntry ?? subEntry;
+    return disp ? resolvePlayerDisplayName(disp, locale, existing) : existing;
+  }, [swapOffer, squad, computed, locale]);
+  const swapOfferNameRef = useRef<string | null>(null);
+  swapOfferNameRef.current = swapOfferName;
   const samePlayerNames = useMemo(() => {
     const ids = [...(squad?.slots ?? []).map((sl) => sl.worldCardId), ...(squad?.substitutes ?? []).map((sb) => sb.worldCardId)];
     const nameOf = new Map<string, string>();
@@ -2040,6 +2069,19 @@ export function SquadEditor({
 
       {/* 下段: スカッド診断（編成エリア全体の下・PC/モバイル共通で常時表示・SquadDiagnosisPanelは1回だけレンダリング） */}
       <div className="mt-2">
+        {swapOffer ? (
+          <div className="mb-2 flex flex-col gap-2 rounded-md border border-accent/50 bg-accent/10 p-2.5 text-xs text-text" role="alert" data-testid="squad-same-player-swap">
+            <p>{tse("samePlayerSwapOfferTemplate").replace("{name}", swapOfferName ?? "")}</p>
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" size="sm" onClick={confirmSamePlayerSwap} data-testid="squad-same-player-swap-confirm">
+                {tse("samePlayerSwapButton")}
+              </Button>
+              <Button type="button" size="sm" variant="secondary" onClick={() => setSwapOffer(null)}>
+                {tse("samePlayerSwapCancel")}
+              </Button>
+            </div>
+          </div>
+        ) : null}
         {samePlayerNames.length > 0 ? (
           <p className="mb-2 rounded-md border border-warning/50 bg-warning/10 p-2.5 text-xs text-warning" role="status" data-testid="squad-same-player-warning">
             {t("squadEditor", "samePlayerWarningTemplate").replace("{names}", samePlayerNames.join("、"))}
