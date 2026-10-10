@@ -42,6 +42,31 @@ const filterTokenSchema = z
   .nullable()
   .catch(null);
 
+/**
+ * 国籍（2026-10-11 F-001a）。World の表記は「Côte d'Ivoire」「Hong Kong, China」「Türkiye」のように
+ * 英字以外の文字・アポストロフィ・カンマを含むため、filterTokenSchema より広く文字（\p{L}）を許す。
+ * 値はバインドパラメーター・PostgREST の eq でだけ使う（SQL・フィルター式へ連結しない）。
+ */
+const nationalitySchema = z
+  .string()
+  .trim()
+  .max(40)
+  .regex(/^[\p{L} .,'&\-]+$/u)
+  .nullable()
+  .catch(null);
+
+/**
+ * リーグ（2026-10-11）。「2026/27 MEIJI YASUDA J1 LEAGUE」「Ligue 1 McDonald’s」「Trendyol Süper Lig」のように
+ * 数字・スラッシュ・右の引用符を含むため、国籍より広く許す。使い方は国籍と同じ（バインド・eq だけ）。
+ */
+const leagueSchema = z
+  .string()
+  .trim()
+  .max(60)
+  .regex(/^[\p{L}\p{N} .,'’&\-/()]+$/u)
+  .nullable()
+  .catch(null);
+
 const ovrSchema = z.coerce
   .number()
   .int()
@@ -64,6 +89,8 @@ export function parseWorldListQuery(input: {
   cardType?: string | null;
   playingStyle?: string | null;
   playingStyleDef?: string | null;
+  nationality?: string | null;
+  league?: string | null;
   minOvr?: string | null;
   maxOvr?: string | null;
   hasBooster?: string | null;
@@ -106,6 +133,8 @@ export function parseWorldListQuery(input: {
     cardType: filterTokenSchema.parse(input.cardType ?? null),
     playingStyle: filterTokenSchema.parse(input.playingStyle ?? null),
     playingStyleDefensive: filterTokenSchema.parse(input.playingStyleDef ?? null),
+    nationality: nationalitySchema.parse(input.nationality ?? null),
+    league: leagueSchema.parse(input.league ?? null),
     minOvr,
     maxOvr,
     hasBooster,

@@ -83,6 +83,8 @@ function applyWorldFilters(builder: any, q: WorldListQuery): any {
   if (q.cardType) b = b.eq("card_type", q.cardType);
   if (q.playingStyle) b = b.eq("playing_style", q.playingStyle);
   if (q.playingStyleDefensive) b = b.eq("playing_style_def", q.playingStyleDefensive);
+  if (q.nationality) b = b.eq("nationality", q.nationality);
+  if (q.league) b = b.eq("league", q.league);
   if (q.minOvr != null) b = b.gte("ovr_max", q.minOvr);
   if (q.maxOvr != null) b = b.lte("ovr_max", q.maxOvr);
   if (q.hasBooster === true) b = b.or("boost1.neq.0,boost2.neq.0");
@@ -97,6 +99,8 @@ function buildAppliedFilters(q: WorldListQuery): Record<string, string | number 
   if (q.cardType) f.cardType = q.cardType;
   if (q.playingStyle) f.playingStyle = q.playingStyle;
   if (q.playingStyleDefensive) f.playingStyleDef = q.playingStyleDefensive;
+  if (q.nationality) f.nationality = q.nationality;
+  if (q.league) f.league = q.league;
   if (q.minOvr != null) f.minOvr = q.minOvr;
   if (q.maxOvr != null) f.maxOvr = q.maxOvr;
   if (q.hasBooster != null) f.hasBooster = q.hasBooster;
@@ -299,13 +303,15 @@ export async function getFacetsFromSupabase(client?: ReferenceDataClient): Promi
   const cardTypes = new Set<string>();
   const playingStyles = new Set<string>();
   const playingStyleDefensives = new Set<string>();
+  const nationalities = new Set<string>();
+  const leagues = new Set<string>();
 
   // 主キー順で固定したページ(並列取得してもページ間で行が重複・欠落しない)。
   const fetchPage = async (pageIndex: number, withCount: boolean): Promise<{ rows: Row[]; count: number | null }> => {
     const from = pageIndex * FACET_PAGE_SIZE;
     const { data, error, count, status } = await c
       .from("world_player_cards")
-      .select("registered_position,card_type,playing_style,playing_style_def", withCount ? { count: "exact" } : undefined)
+      .select("registered_position,card_type,playing_style,playing_style_def,nationality,league", withCount ? { count: "exact" } : undefined)
       .order("world_card_id", { ascending: true })
       .range(from, from + FACET_PAGE_SIZE - 1);
     // TTL経過後の再取得に失敗した場合も含め、期限切れの値を黙って返さずここで伝播させる
@@ -320,6 +326,8 @@ export async function getFacetsFromSupabase(client?: ReferenceDataClient): Promi
       addNonEmpty(cardTypes, r.card_type);
       addNonEmpty(playingStyles, r.playing_style);
       addNonEmpty(playingStyleDefensives, r.playing_style_def);
+      addNonEmpty(nationalities, r.nationality);
+      addNonEmpty(leagues, r.league);
     }
   };
 
@@ -351,6 +359,8 @@ export async function getFacetsFromSupabase(client?: ReferenceDataClient): Promi
     cardTypes: sortedArray(cardTypes),
     playingStyles: sortedArray(playingStyles),
     playingStyleDefensives: sortedArray(playingStyleDefensives),
+    nationalities: sortedArray(nationalities),
+    leagues: sortedArray(leagues),
   };
   facetCacheEntry = { value, expiresAt: Date.now() + FACET_CACHE_TTL_MS };
   return value;

@@ -56,6 +56,8 @@ function baseQuery(over: Partial<WorldListQuery> = {}): WorldListQuery {
     cardType: null,
     playingStyle: null,
     playingStyleDefensive: null,
+    nationality: null,
+    league: null,
     minOvr: null,
     maxOvr: null,
     hasBooster: null,
@@ -525,5 +527,37 @@ describe("getSourceMetaFromSupabase", () => {
     const meta = await getSourceMetaFromSupabase(client as never);
     expect(meta.totalCount).toBe(2);
     expect(meta.source).toBe("eFootball World");
+  });
+});
+
+describe("国籍の絞り込み（2026-10-11 F-001a）", () => {
+  it("一覧は国籍の完全一致で絞り込み、facets は国籍の一覧（重複・空を除く）を返す", async () => {
+    const rows = [
+      makeCardRow("1", { nationality: "Japan" }),
+      makeCardRow("2", { nationality: "Côte d'Ivoire" }),
+      makeCardRow("3", { nationality: "Japan" }),
+      makeCardRow("4", { nationality: null }),
+    ];
+    const client = createFakeReferenceDataClient({ world_player_cards: rows, player_card_analysis: [] });
+    const result = await listPlayersFromSupabase(baseQuery({ nationality: "Côte d'Ivoire" }), client as never);
+    expect(result.players.map((p) => p.worldCardId)).toEqual(["2"]);
+    expect(result.appliedFilters.nationality).toBe("Côte d'Ivoire");
+    const facets = await getFacetsFromSupabase(client as never);
+    expect(facets.nationalities).toEqual(["Côte d'Ivoire", "Japan"]);
+  });
+});
+
+describe("リーグの絞り込み（2026-10-11）", () => {
+  it("一覧はリーグの完全一致で絞り込み、facets はリーグの一覧を返す", async () => {
+    const rows = [
+      makeCardRow("1", { league: "Ligue 1 McDonald’s" }),
+      makeCardRow("2", { league: "English League" }),
+      makeCardRow("3", { league: null }),
+    ];
+    const client = createFakeReferenceDataClient({ world_player_cards: rows, player_card_analysis: [] });
+    const result = await listPlayersFromSupabase(baseQuery({ league: "Ligue 1 McDonald’s" }), client as never);
+    expect(result.players.map((p) => p.worldCardId)).toEqual(["1"]);
+    const facets = await getFacetsFromSupabase(client as never);
+    expect(facets.leagues).toEqual(["English League", "Ligue 1 McDonald’s"]);
   });
 });

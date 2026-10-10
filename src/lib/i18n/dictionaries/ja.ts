@@ -2864,6 +2864,12 @@ export interface Dictionary {
     playingStyleAll: string;
     playingStyleDefAriaLabel: string;
     playingStyleDefAll: string;
+    filterLabelNationality: string;
+    nationalityAriaLabel: string;
+    nationalityAll: string;
+    filterLabelLeague: string;
+    leagueAriaLabel: string;
+    leagueAll: string;
     minOvrPlaceholder: string;
     minOvrAriaLabel: string;
     maxOvrPlaceholder: string;

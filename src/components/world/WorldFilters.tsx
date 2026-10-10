@@ -31,6 +31,8 @@ function useFilterLabels(): Record<string, string> {
     cardType: key("filterLabelCardType"),
     playingStyle: key("filterLabelPlayingStyle"),
     playingStyleDef: key("filterLabelPlayingStyleDef"),
+    nationality: key("filterLabelNationality"),
+    league: key("filterLabelLeague"),
     minOvr: key("filterLabelMinOvr"),
     maxOvr: key("filterLabelMaxOvr"),
     hasBooster: key("filterLabelBooster"),
@@ -93,7 +95,7 @@ export function WorldFilters({ facets }: { facets: WorldFacets }) {
   const sort = (params.get("sort") as WorldSortKey) ?? "ovr_max_desc";
   const activeChips = useMemo(() => {
     const chips: { key: string; label: string; value: string }[] = [];
-    for (const key of ["q", "position", "cardType", "playingStyle", "playingStyleDef", "minOvr", "maxOvr", "hasBooster"]) {
+    for (const key of ["q", "position", "cardType", "playingStyle", "playingStyleDef", "nationality", "league", "minOvr", "maxOvr", "hasBooster"]) {
       const v = params.get(key);
       if (v) chips.push({ key, label: FILTER_LABELS[key] ?? key, value: v });
     }
@@ -213,6 +215,41 @@ export function WorldFilters({ facets }: { facets: WorldFacets }) {
           ))}
         </select>
 
+        <select
+          value={params.get("nationality") ?? ""}
+          data-adopt-param="nationality"
+          data-rendered-value={params.get("nationality") ?? ""}
+          onChange={(e) => push({ nationality: e.target.value || null })}
+          aria-label={twf("nationalityAriaLabel")}
+          data-testid="world-filter-nationality"
+          className={selectClass}
+        >
+          <option value="">{twf("nationalityAll")}</option>
+          {/* 古い形の facets（国籍なし）を受け取っても壊れない */}
+          {(facets.nationalities ?? []).map((n) => (
+            <option key={n} value={n}>
+              {n}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={params.get("league") ?? ""}
+          data-adopt-param="league"
+          data-rendered-value={params.get("league") ?? ""}
+          onChange={(e) => push({ league: e.target.value || null })}
+          aria-label={twf("leagueAriaLabel")}
+          data-testid="world-filter-league"
+          className={selectClass}
+        >
+          <option value="">{twf("leagueAll")}</option>
+          {(facets.leagues ?? []).map((l) => (
+            <option key={l} value={l}>
+              {l}
+            </option>
+          ))}
+        </select>
+
         <input
           type="number"
           min={1}
@@ -269,6 +306,8 @@ export function WorldFilters({ facets }: { facets: WorldFacets }) {
                 cardType: null,
                 playingStyle: null,
                 playingStyleDef: null,
+                nationality: null,
+                league: null,
                 minOvr: null,
                 maxOvr: null,
                 hasBooster: null,

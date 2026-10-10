@@ -73,3 +73,21 @@ describe("orderByClause", () => {
     }
   });
 });
+
+describe("buildWhere: 国籍（2026-10-11 F-001a）", () => {
+  it("完全一致をバインドパラメーターで渡す（値を SQL に連結しない）", () => {
+    const r = buildWhere(parseWorldListQuery({ nationality: "Côte d'Ivoire" }));
+    expect(r.sql).toContain("c.nationality = ?");
+    expect(r.sql).not.toContain("Ivoire");
+    expect(r.params).toEqual(["Côte d'Ivoire"]);
+  });
+});
+
+describe("buildWhere: リーグ（2026-10-11）", () => {
+  it("国籍と組み合わせてもバインドパラメーターで渡す", () => {
+    const r = buildWhere(parseWorldListQuery({ nationality: "Japan", league: "2026/27 MEIJI YASUDA J1 LEAGUE" }));
+    expect(r.sql).toContain("c.nationality = ?");
+    expect(r.sql).toContain("c.league = ?");
+    expect(r.params).toEqual(["Japan", "2026/27 MEIJI YASUDA J1 LEAGUE"]);
+  });
+});
