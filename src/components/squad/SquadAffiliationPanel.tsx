@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/squadEditor";
 import Link from "next/link";
 import { useT } from "@/lib/i18n/LocaleContext";
 import { SQUAD_AFFILIATION_KINDS, type SquadAffiliationSummary } from "@/lib/squad/affiliation-summary";
