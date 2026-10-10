@@ -214,7 +214,6 @@ const part: PartialDictionary = {
     exclusionPositionSuitabilityUnresolved: "Kecocokan pemain untuk posisi ini tidak dapat dikonfirmasi, jadi kandidat dikecualikan dari pemilihan otomatis.",
     exclusionGkFieldMismatch: "Posisi kiper dan pemain lapangan tidak cocok, jadi kandidat dikecualikan dari pemilihan otomatis.",
     limitationsHeading: "Batasan",
-    sameNameWarningTemplate: "Ada pemain dengan nama yang sama: {names}. Bisa jadi kartu berbeda dari pemain yang sama (perlakuan di game belum dikonfirmasi, jadi tidak dihapus otomatis).",
     samePlayerExcludedTemplate: "Tidak dipilih karena kartu lain dari pemain yang sama sudah dipakai ({count}): {names}",
     affiliationFilterAriaLabel: "Batasan (kewarganegaraan, liga, klub)",
     affiliationFilterNone: "Tanpa batasan (semua kartu)",

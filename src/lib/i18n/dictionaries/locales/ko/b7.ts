@@ -214,7 +214,6 @@ const part: PartialDictionary = {
     exclusionPositionSuitabilityUnresolved: "이 포지션에 대한 선수의 적성을 확인할 수 없어 자동 선정에서 제외했습니다.",
     exclusionGkFieldMismatch: "골키퍼와 필드 포지션이 맞지 않아 자동 선정에서 제외했습니다.",
     limitationsHeading: "제한 사항",
-    sameNameWarningTemplate: "이름이 같은 선수가 포함되어 있습니다: {names}. 같은 선수의 다른 카드일 수 있습니다(게임에서의 처리가 확인되지 않아 자동으로 제외하지 않습니다).",
     samePlayerExcludedTemplate: "같은 선수의 다른 카드를 사용해서 선택하지 않은 카드({count}): {names}",
     affiliationFilterAriaLabel: "제한 (국적·리그·클럽)",
     affiliationFilterNone: "제한 없음 (모든 카드)",

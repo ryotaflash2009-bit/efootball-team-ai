@@ -214,7 +214,6 @@ const part: PartialDictionary = {
     exclusionPositionSuitabilityUnresolved: "L’aptitude du joueur à ce poste n’a pas pu être confirmée : le candidat a été exclu de la sélection automatique.",
     exclusionGkFieldMismatch: "Les postes de gardien et de joueur de champ ne correspondent pas : le candidat a été exclu de la sélection automatique.",
     limitationsHeading: "Limites",
-    sameNameWarningTemplate: "Des joueurs portent le même nom : {names}. Il peut s’agir de cartes différentes du même joueur (le traitement par le jeu n’est pas confirmé, ils ne sont donc pas retirés automatiquement).",
     samePlayerExcludedTemplate: "Non retenues car une autre carte du même joueur est utilisée ({count}) : {names}",
     affiliationFilterAriaLabel: "Restriction (nationalité, ligue, club)",
     affiliationFilterNone: "Aucune restriction (toutes les cartes)",

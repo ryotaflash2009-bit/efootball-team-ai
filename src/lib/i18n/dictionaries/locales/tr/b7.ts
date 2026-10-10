@@ -214,7 +214,6 @@ const part: PartialDictionary = {
     exclusionPositionSuitabilityUnresolved: "Oyuncunun bu mevkiye uygunluğu doğrulanamadığı için aday otomatik seçimden çıkarıldı.",
     exclusionGkFieldMismatch: "Kaleci ve saha oyuncusu mevkileri eşleşmediği için aday otomatik seçimden çıkarıldı.",
     limitationsHeading: "Sınırlamalar",
-    sameNameWarningTemplate: "Aynı adlı oyuncular var: {names}. Aynı oyuncunun farklı kartları olabilir (oyunun bunu nasıl ele aldığı doğrulanmadı, bu yüzden otomatik çıkarılmaz).",
     samePlayerExcludedTemplate: "Aynı oyuncunun başka bir kartı kullanıldığı için seçilmeyenler ({count}): {names}",
     affiliationFilterAriaLabel: "Kısıtlama (uyruk, lig, kulüp)",
     affiliationFilterNone: "Kısıtlama yok (tüm kartlar)",

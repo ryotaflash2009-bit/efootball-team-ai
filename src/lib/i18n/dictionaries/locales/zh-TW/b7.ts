@@ -214,7 +214,6 @@ const part: PartialDictionary = {
     exclusionPositionSuitabilityUnresolved: "無法確認此球員對此位置的適性，因此已從自動選拔中排除。",
     exclusionGkFieldMismatch: "門將與場上球員的位置不相符，因此已從自動選拔中排除。",
     limitationsHeading: "限制事項",
-    sameNameWarningTemplate: "包含同名球員：{names}。可能是同一球員的不同卡牌（遊戲中的處理尚未確認，因此不會自動移除）。",
     samePlayerExcludedTemplate: "因已使用同一球員的另一張卡而未選擇的卡（{count}）：{names}",
     affiliationFilterAriaLabel: "限定（國籍、聯賽、俱樂部）",
     affiliationFilterNone: "不限定（全部卡）",

@@ -63,7 +63,6 @@ const bestXi: Dictionary["bestXi"] = {
   exclusionPositionSuitabilityUnresolved: "このポジションへの適性を確認できないため、自動選出の対象外です。",
   exclusionGkFieldMismatch: "GKとフィールドプレーヤーのポジションが一致しないため、自動選出の対象外です。",
   limitationsHeading: "制限事項",
-  sameNameWarningTemplate: "同じ名前の選手が含まれています: {names}。同じ選手の別のカードの可能性があります（ゲームでの扱いは確認できていないため、自動では外しません）。",
   samePlayerExcludedTemplate: "同じ選手の別のカードを使ったため選ばなかったカード（{count}）: {names}",
   affiliationFilterAriaLabel: "縛り（国籍・リーグ・チーム）",
   affiliationFilterNone: "縛りなし（全カード）",

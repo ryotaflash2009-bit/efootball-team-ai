@@ -3178,7 +3178,6 @@ export interface Dictionary {
     exclusionPositionSuitabilityUnresolved: string;
     exclusionGkFieldMismatch: string;
     limitationsHeading: string;
-    sameNameWarningTemplate: string;
     samePlayerExcludedTemplate: string;
     affiliationFilterAriaLabel: string;
     affiliationFilterNone: string;
