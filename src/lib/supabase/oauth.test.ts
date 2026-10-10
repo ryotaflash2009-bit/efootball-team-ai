@@ -65,3 +65,14 @@ describe("限定モード（2026-10-11 の本人の決定）", () => {
     expect(buildGoogleRedirectTo("https://efootball-team-ai.vercel.app", "/account", undefined)).not.toContain("oauthPreview");
   });
 });
+
+import { signInHrefFor } from "./oauth";
+
+describe("限定テストのログインの導線（2026-10-11）", () => {
+  it("limited で確認用の URL を開いたタブだけ ?oauthPreview=1・それ以外は通常の URL", () => {
+    expect(signInHrefFor(true, "limited")).toBe("/auth/sign-in?oauthPreview=1");
+    expect(signInHrefFor(false, "limited")).toBe("/auth/sign-in");
+    expect(signInHrefFor(true, "enabled")).toBe("/auth/sign-in");
+    expect(signInHrefFor(true, "disabled")).toBe("/auth/sign-in");
+  });
+});

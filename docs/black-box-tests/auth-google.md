@@ -1,6 +1,6 @@
 # Google OAuth の準備 ブラックボックステスト結果
 
-実行日時: 2026-10-10T18:14:24.324Z
+実行日時: 2026-10-10T18:31:46.732Z
 対象: http://localhost:3000（Production Build 上の隔離ヘッドレス Chrome・認証のテストダブル。実 Supabase・Google へは接続しない）
 
 | 結果 | 項目 | 詳細 |
@@ -16,6 +16,7 @@
 | PASS | [プレビュー] signInWithOAuth は provider google・redirect 方式（popup の指定なし） | "google" |
 | PASS | [プレビュー] redirectTo は自サイトの /auth/callback?flow=google&next=%2Fsquads | http://localhost:3000/auth/callback?flow=google&next=%2Fsquads |
 | PASS | [プレビュー] 毎回アカウントを選ばせる（prompt=select_account） |  |
+| PASS | [限定テスト] 確認用の URL を開いたタブでは「ログイン」の導線が ?oauthPreview=1 | ["/auth/sign-in?oauthPreview=1","/auth/sign-in?oauthPreview=1"] |
 | PASS | [プレビュー] 開始の失敗は一般化した文で表示（生の文なし） |  |
 | PASS | [ja] Google の画面でキャンセル → ログイン画面に案内（生の文なし） |  |
 | PASS | [ja] Google の失敗 → ログイン画面に案内 |  |

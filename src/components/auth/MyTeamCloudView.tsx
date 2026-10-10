@@ -31,6 +31,7 @@ import { ConfirmDialog } from "@/components/user-cards/ConfirmDialog";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { isSignupOpen } from "@/lib/supabase/account-availability";
 import { fillMessage } from "@/lib/i18n/message-format";
+import { useSignInHref } from "@/components/auth/useSignInHref";
 
 type MtcKey = keyof Dictionary["myTeamCloud"];
 type AuthKey = keyof Dictionary["auth"];
@@ -48,6 +49,7 @@ type AuthKey = keyof Dictionary["auth"];
  * - Supabaseの生エラーは表示せず、閉じた理由コードだけをi18nメッセージへ変換する。
  */
 export function MyTeamCloudView() {
+  const signInHref = useSignInHref();
   const t = useT();
   const ta = useCallback((key: MtcKey) => t("myTeamCloud", key), [t]);
   const taAuth = useCallback((key: AuthKey) => t("auth", key), [t]);
@@ -289,7 +291,7 @@ export function MyTeamCloudView() {
         <Surface padding="md" className="flex flex-col gap-3">
           <p className="text-sm text-text-dim">{ta("loginRequiredMessage")}</p>
           <div className="flex flex-wrap gap-2">
-            <Link href="/auth/sign-in">
+            <Link href={signInHref}>
               <Button variant="primary" size="sm">
                 {taAuth("navSignIn")}
               </Button>

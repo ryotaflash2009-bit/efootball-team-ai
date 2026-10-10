@@ -86,6 +86,12 @@ async function main() {
     );
     record("[プレビュー] 毎回アカウントを選ばせる（prompt=select_account）", call?.options?.queryParams?.prompt === "select_account", "");
 
+    // 限定テストのタブでは、ログアウトの後などの「ログイン」の導線も確認用の URL（Google のボタンが消えない）
+    await go(`${BASE}/account`);
+    await waitForCondition(async () => /ログインが必要/.test(await text()), { timeoutMs: 8000 }).catch(() => {});
+    const signInLinks = await ev(`[...document.querySelectorAll('a')].filter((a) => a.textContent.trim() === "ログイン").map((a) => a.getAttribute("href"))`);
+    record("[限定テスト] 確認用の URL を開いたタブでは「ログイン」の導線が ?oauthPreview=1", (signInLinks ?? []).length > 0 && signInLinks.every((h) => h === "/auth/sign-in?oauthPreview=1"), JSON.stringify(signInLinks));
+
     // 失敗の表示（クライアント側）
     await go(`${BASE}/auth/sign-in?oauthPreview=1`);
     await waitForCondition(() => has('[data-testid="google-sign-in-button"]'), { timeoutMs: 8000 }).catch(() => {});

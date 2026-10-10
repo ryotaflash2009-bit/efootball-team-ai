@@ -5,13 +5,23 @@ import { useEffect, useState } from "react";
 import { useT } from "@/lib/i18n/LocaleContext";
 import { Button } from "@/components/ui/Button";
 import { isLocalDevHostname } from "@/lib/supabase/local-dev";
-import { buildGoogleRedirectTo, isGoogleOAuthAvailable } from "@/lib/supabase/oauth";
+import { buildGoogleRedirectTo, GOOGLE_OAUTH_MODE, isGoogleOAuthAvailable, OAUTH_PREVIEW_SESSION_KEY } from "@/lib/supabase/oauth";
 
 /** Google の公開の状態（コードの値・ローカルの ?oauthPreview=1）。マウント後に決めるので SSR の表示（なし）とずれない。 */
 export function useGoogleOAuthAvailable(): boolean {
   const [available, setAvailable] = useState(false);
   useEffect(() => {
-    if (isGoogleOAuthAvailable(window.location.hostname, window.location.search, isLocalDevHostname)) setAvailable(true);
+    if (isGoogleOAuthAvailable(window.location.hostname, window.location.search, isLocalDevHostname)) {
+      setAvailable(true);
+      // 限定テスト: このタブの「ログイン」の導線にも確認用の URL を使う（ログアウトの後に Google のボタンが消えないように）
+      if (GOOGLE_OAUTH_MODE === "limited") {
+        try {
+          window.sessionStorage.setItem(OAUTH_PREVIEW_SESSION_KEY, "1");
+        } catch {
+          /* 使えない環境は通常の URL */
+        }
+      }
+    }
   }, []);
   return available;
 }
