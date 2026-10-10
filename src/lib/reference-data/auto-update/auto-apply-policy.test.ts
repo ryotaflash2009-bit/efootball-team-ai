@@ -56,7 +56,7 @@ describe("自動 Apply の判定（検証済みの実績）", () => {
     expect(r.decision).toBe("AUTO_APPLY_ELIGIBLE");
     expect(r).toMatchObject({ contractVersion: AUTO_APPLY_POLICY.version, dataset: "world", expectedAfterCount: 13372, bindingSha: SHA, backupRunId: "37118268591", dryRunRunId: "37118367153", evaluatedAt: NOW });
     expect(r.thresholdResults.every((t) => t.ok)).toBe(true);
-    expect(r.allowedOperations).toContain("UPDATE world_player_cards (card_rating, maximum_level, ovr_max)");
+    expect(r.allowedOperations.join(" ")).toMatch(/UPDATE world_player_cards \(card_rating, maximum_level, ovr_max, name_en/);
     expect(r.blockedOperations).toEqual(expect.arrayContaining(["DELETE", "TRUNCATE", "UPDATE managers (existing rows)"]));
   });
 
@@ -94,10 +94,12 @@ describe("自動 Apply の判定（拒否の fixture）", () => {
     ["future timestamp", world((i) => { i.plan.futureTimestamps = 1; }), "AUTO_APPLY_BLOCKED", "future_timestamp"],
     ["timestamp regression", world((i) => { i.plan.timestampRegression = true; }), "AUTO_APPLY_BLOCKED", "timestamp_regression"],
     ["post-verifier not ready", world((i) => { i.readiness.postVerifier = false; }), "AUTO_APPLY_BLOCKED", "postVerifier_not_ready"],
-    ["unknown changed field", world((i) => { i.plan.changedFields.push("appearance_updated_at"); }), "MANUAL_APPLY_REQUIRED", "unknown_changed_field"],
+    ["unknown changed field (stats)", world((i) => { i.plan.changedFields.push("stats"); }), "MANUAL_APPLY_REQUIRED", "unknown_changed_field"],
+    ["unknown changed field (registered_position)", world((i) => { i.plan.changedFields.push("registered_position"); }), "MANUAL_APPLY_REQUIRED", "unknown_changed_field"],
+    ["unknown changed field (nationality)", world((i) => { i.plan.changedFields.push("nationality"); }), "MANUAL_APPLY_REQUIRED", "unknown_changed_field"],
     ["add ratio over 2%", world((i) => { i.plan.added = 300; i.plan.afterCount = 13597; }), "MANUAL_APPLY_REQUIRED", "threshold_add_ratio"],
     ["update ratio over 50%", world((i) => { i.plan.changed = 7000; i.plan.cardRatingOnlyChanged = 6994; }), "MANUAL_APPLY_REQUIRED", "threshold_update_ratio"],
-    ["structural over 100", world((i) => { i.plan.structuralChanged = 101; i.plan.cardRatingOnlyChanged = 5574; }), "MANUAL_APPLY_REQUIRED", "threshold_structural"],
+    ["structural over 10%", world((i) => { i.plan.structuralChanged = 1330; i.plan.cardRatingOnlyChanged = 4345; }), "MANUAL_APPLY_REQUIRED", "threshold_structural"],
     ["unknown manual review code", world((i) => { i.plan.manualReviewCodes.push("world_large_change"); }), "MANUAL_APPLY_REQUIRED", "manual_review:world_large_change"],
     ["Managers UPDATE 1", managers((i) => { i.plan.changed = 1; }), "MANUAL_APPLY_REQUIRED", "managers_update"],
     ["Managers added over 10", managers((i) => { i.plan.added = 11; i.plan.afterCount = 78; }), "MANUAL_APPLY_REQUIRED", "threshold_managers_added"],
@@ -124,6 +126,41 @@ describe("自動 Apply の判定（拒否の fixture）", () => {
     expect(decide({ ...world(), bindingSha: "x" }).decision).toBe("INVALID_INPUT");
     expect(decide({} as AutoApplyPolicyInput).decision).toBe("INVALID_INPUT");
     expect(decide(world((i) => { (i.plan as { added: unknown }).added = -1; })).decision).toBe("INVALID_INPUT");
+  });
+});
+
+describe("v2（2026-10-11）: 2026-10-09 の World の通常の大型更新（本人の承認待ちで 40 時間止まった実際の Plan）", () => {
+  /** Plan run 37875124827: 13,372 → 13,455・追加 83・更新 3,310（card_rating だけ 2,588・構造 722）。 */
+  const oct09 = () =>
+    world((i) => {
+      i.plan.beforeCount = 13372;
+      i.plan.afterCount = 13455;
+      i.plan.added = 83;
+      i.plan.changed = 3310;
+      i.plan.cardRatingOnlyChanged = 2588;
+      i.plan.structuralChanged = 722;
+      i.plan.changedFields = ["card_rating", "name_en", "name_sort_key", "team", "league", "appearance_updated_at", "name_ja"];
+      i.plan.productionCounts = { world_player_cards: 13372, managers: 69, import_batches: 14 };
+      i.backup.rowCounts = { world_player_cards: 13372, managers: 69, player_card_analysis: 19, import_batches: 14 };
+    });
+  it("v2 では AUTO_APPLY_ELIGIBLE（v1 では threshold_structural・unknown_changed_field で手動だった）", () => {
+    const r = decide(oct09());
+    expect(r.reasonCodes).toEqual([]);
+    expect(r.decision).toBe("AUTO_APPLY_ELIGIBLE");
+    expect(r.contractVersion).toBe("auto-apply-policy/2026-10-11.v2");
+    expect(r.thresholdResults.find((t) => t.name === "world.structuralRatio")).toMatchObject({ ok: true, limit: 0.1 });
+  });
+  it("同じ更新でも、計算に効く列（stats・skills・playing_style・ovr_base）が混ざれば手動の経路", () => {
+    for (const f of ["stats", "skills", "playing_style", "ovr_base", "card_type", "preferred_foot"]) {
+      const r = decide(oct09().plan ? world((i) => { Object.assign(i, oct09()); i.plan.changedFields = [...oct09().plan.changedFields, f]; }) : oct09());
+      expect(r.decision, f).toBe("MANUAL_APPLY_REQUIRED");
+      expect(r.reasonCodes).toContain("unknown_changed_field");
+    }
+  });
+  it("削除・不正・件数の不一致は v2 でも止まる（自動の範囲を広げても安全の関門は同じ）", () => {
+    expect(decide(world((i) => { Object.assign(i, oct09()); i.plan.removed = 1; })).decision).toBe("AUTO_APPLY_BLOCKED");
+    expect(decide(world((i) => { Object.assign(i, oct09()); i.plan.invalid = 1; })).decision).toBe("AUTO_APPLY_BLOCKED");
+    expect(decide(world((i) => { Object.assign(i, oct09()); i.plan.afterCount = 13454; })).decision).toBe("AUTO_APPLY_BLOCKED");
   });
 });
 

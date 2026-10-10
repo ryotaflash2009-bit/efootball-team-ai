@@ -4,11 +4,17 @@
  * - ここに無い値（隠れた閾値）は使わない。値を変えるときは版（version）を上げ、テストと Evidence を更新する。
  * - 閾値は、検証済みの実績（World 2026-10-03: 13,297 → 13,372・追加 75・更新 5,675・構造 6、Managers: 67 → 69・追加 2）を
  *   必要以上に広げない値にする。
+ * - v2（2026-10-11・本人の指示「完全自動更新を完成させて」）: 2026-10-09 の World の通常の大型更新（13,372 → 13,455・追加 83・
+ *   更新 3,310・構造 722: league 560・team 85・name_ja 22・name_en 18・name_sort_key 18・appearance_updated_at 91）が、v1 の
+ *   「構造 100 件まで・card_rating 系だけ」に当たって本人の承認待ちのまま 40 時間止まった。v2 は、通常の更新で変わる**表示の列**
+ *   （名前・チーム・リーグ・地域・画像・掲載日・年齢）を自動にし、構造の変更の上限を件数から割合（10%）に変える。
+ *   計算に効く列（stats・skills・registered_position・playing_style・ovr_base・card_type・preferred_foot・nationality 等）は
+ *   引き続き手動の経路。削除・重複・不正・件数の減少・時刻の逆行・スキーマの差は v1 と同じく止める。
  * - Rollout: A（validator・mock・静的監査・使い捨て PostgreSQL）→ B（shadow: 手動承認のまま判定を記録）→ C（自動 Apply）。
  *   実際に自動で書き込むのは、Repository variable の kill switch がすべて "true" のときだけ（それ以外は手動承認の経路）。
  */
 export const AUTO_APPLY_POLICY = {
-  version: "auto-apply-policy/2026-10-03.v1",
+  version: "auto-apply-policy/2026-10-11.v2",
   rollout: "C",
   world: {
     targetTable: "world_player_cards",
@@ -16,10 +22,24 @@ export const AUTO_APPLY_POLICY = {
     maxAddRatio: 0.02,
     /** 更新件数 / 適用前の件数 の上限（card_rating だけの変更を含む）。 */
     maxUpdateRatio: 0.5,
-    /** card_rating 以外の列も変わる「構造の変更」の件数の上限。 */
-    maxStructuralChanged: 100,
-    /** 自動で書き換えてよい列（それ以外の列の変更は手動の経路）。 */
-    changedFieldAllowlist: ["card_rating", "maximum_level", "ovr_max"],
+    /** card_rating 以外の列も変わる「構造の変更」の件数 / 適用前の件数 の上限（v2: 件数 100 → 割合 10%）。 */
+    maxStructuralRatio: 0.1,
+    /** 自動で書き換えてよい列（それ以外の列の変更は手動の経路）。v2 で表示の列を追加。 */
+    changedFieldAllowlist: [
+      "card_rating",
+      "maximum_level",
+      "ovr_max",
+      "name_en",
+      "name_ja",
+      "name_sort_key",
+      "team",
+      "league",
+      "region",
+      "image_url",
+      "mobile_image_url",
+      "appearance_updated_at",
+      "age",
+    ],
     /** 自動でも許す手動確認の理由（baseline_missing は World の適用で毎回付く構造上のもの）。 */
     allowedManualReviewCodes: ["baseline_missing"],
   },

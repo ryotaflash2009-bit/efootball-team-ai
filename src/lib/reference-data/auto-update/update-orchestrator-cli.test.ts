@@ -206,7 +206,7 @@ describe("自動 Apply の経路（kill switch・halt・事後検証）", () => 
   });
 
   it("契約の外（許可外の列）なら kill switch が on でも手動の経路", async () => {
-    const f = fake({ artifacts: { "reference-data-apply-plan-world-summary": planSummary((p) => { p.changedFieldFrequency = { ovr_max: 2, appearance_updated_at: 2 }; }) } });
+    const f = fake({ artifacts: { "reference-data-apply-plan-world-summary": planSummary((p) => { p.changedFieldFrequency = { ovr_max: 2, stats: 2 }; }) } });
     const out = await runOrchestrator(f.deps, { detectionSummaryText: DETECTION, autoApply: ON });
     expect(out.kind).toBe("awaiting_approval");
     if (out.kind === "awaiting_approval") {
