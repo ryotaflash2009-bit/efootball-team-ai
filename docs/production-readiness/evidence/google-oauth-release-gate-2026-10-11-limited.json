@@ -1,0 +1,42 @@
+{
+  "schema": "google-oauth-release-gate-evidence/v1",
+  "generatedAt": "2026-10-10T18:17:10.595Z",
+  "codeMode": "limited",
+  "codeChecks": {
+    "entryModeExplicit": true,
+    "entryMode": "limited",
+    "unknownModeFailsClosed": true,
+    "limitedModeNeedsPreview": true,
+    "callbackSeparatesGoogleFlow": true,
+    "callbackIgnoresPreviewFlag": true,
+    "manualDeletionNoticeJa": true,
+    "manualDeletionNoticeEn": true,
+    "limitedTestNoticeJa": true,
+    "accountPageLinksDeletion": true
+  },
+  "limitedVerdict": "LIMITED_OAUTH_TEST_READY",
+  "postEnableVerdict": "PENDING",
+  "publicVerdict": "BLOCKED",
+  "rollbackRequired": false,
+  "counts": {
+    "limitedTest": {
+      "pending": 0,
+      "pass": 13,
+      "fail": 0,
+      "n/a": 0
+    },
+    "postEnable": {
+      "pending": 12,
+      "pass": 0,
+      "fail": 0,
+      "n/a": 0
+    },
+    "publicRelease": {
+      "pending": 2,
+      "pass": 0,
+      "fail": 0,
+      "n/a": 0
+    }
+  },
+  "problems": []
+}
