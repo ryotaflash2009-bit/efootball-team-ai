@@ -25,7 +25,20 @@ export type AuthSessionState =
   | { status: "unconfigured" }
   | { status: "loading" }
   | { status: "unauthenticated" }
-  | { status: "authenticated"; email: string | null; userId: string };
+  | { status: "authenticated"; email: string | null; userId: string; providers: string[] };
+
+/** ログインの方法（`app_metadata.providers`。例: ["google"]・["email"]・["email","google"]）。不明なら空。 */
+export function providersOf(user: { app_metadata?: { provider?: unknown; providers?: unknown } } | null | undefined): string[] {
+  const list = user?.app_metadata?.providers;
+  if (Array.isArray(list)) return list.filter((p): p is string => typeof p === "string");
+  const one = user?.app_metadata?.provider;
+  return typeof one === "string" ? [one] : [];
+}
+
+/** メールアドレスでログインする方法を持たない（Google だけ等）か。不明（空）のときは false（従来どおりの表示）。 */
+export function isOAuthOnly(providers: readonly string[]): boolean {
+  return providers.length > 0 && !providers.includes("email");
+}
 
 const LOADING_STATE: AuthSessionState = { status: "loading" };
 
@@ -66,7 +79,7 @@ function startWithClient(supabase: ReturnType<typeof import("./client").getSupab
   supabase.auth
     .getUser()
     .then(({ data }) => {
-      setState(data.user ? { status: "authenticated", email: data.user.email ?? null, userId: data.user.id } : { status: "unauthenticated" });
+      setState(data.user ? { status: "authenticated", email: data.user.email ?? null, userId: data.user.id, providers: providersOf(data.user) } : { status: "unauthenticated" });
     })
     .catch(() => {
       // ネットワーク不通等でSupabase Authへ到達できない場合も、読み込み中のまま止まらず
@@ -75,7 +88,7 @@ function startWithClient(supabase: ReturnType<typeof import("./client").getSupab
     });
 
   supabase.auth.onAuthStateChange((_event, session) => {
-    setState(session?.user ? { status: "authenticated", email: session.user.email ?? null, userId: session.user.id } : { status: "unauthenticated" });
+    setState(session?.user ? { status: "authenticated", email: session.user.email ?? null, userId: session.user.id, providers: providersOf(session.user) } : { status: "unauthenticated" });
   });
   // タブ(ドキュメント)の生存期間中は購読を維持する(認証状態はページ全体で単一の
   // 真実源であり、個々のコンポーネントのマウント/アンマウントに従属させる必要がないため、

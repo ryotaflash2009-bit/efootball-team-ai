@@ -183,7 +183,9 @@ export async function installSupabaseAuthTestDouble(client) {
       // ?__efbUserId=<id>で偽ユーザーIDを切り替えられる(アカウント別localStorage名前空間の
       // 分離を、同一の固定テストダブルのままA/B相当で検証するため)。省略時は既存の固定IDのまま。
       var fakeUserId = params.get("__efbUserId") || "efb-test-double-user-id";
-      var fakeUser = { id: fakeUserId, email: "efb-test-double@example.invalid" };
+      // ?__efbProviders=google でログインの方法を切り替える（Google だけのユーザーの表示の確認用・既定は不明＝従来どおり）
+      var providersParam = params.get("__efbProviders");
+      var fakeUser = { id: fakeUserId, email: "efb-test-double@example.invalid", app_metadata: providersParam ? { providers: providersParam.split(",") } : {} };
       var listeners = [];
       function notify(event, session) {
         listeners.slice().forEach(function (cb) {
