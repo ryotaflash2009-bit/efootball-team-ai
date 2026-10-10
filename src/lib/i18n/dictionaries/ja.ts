@@ -3908,6 +3908,13 @@ export interface Dictionary {
     migrateConfirmIntroGuest: string;
     migrateConfirmGuestKeptNotice: string;
     migrateConfirmCheckboxLabelGuest: string;
+    copyAllGuestHeading: string;
+    copyAllGuestBody: string;
+    copyAllGuestAck: string;
+    copyAllGuestButton: string;
+    copyAllGuestRunning: string;
+    copyAllGuestResultTemplate: string;
+    copyAllGuestNothing: string;
     noCloudSendNotice: string;
     cloudUnchangedNotice: string;
     conflictNotMigratedNotice: string;

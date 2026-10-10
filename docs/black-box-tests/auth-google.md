@@ -1,6 +1,6 @@
 # Google OAuth の準備 ブラックボックステスト結果
 
-実行日時: 2026-10-10T19:24:29.168Z
+実行日時: 2026-10-10T19:32:27.704Z
 対象: http://localhost:3000（Production Build 上の隔離ヘッドレス Chrome・認証のテストダブル。実 Supabase・Google へは接続しない）
 
 | 結果 | 項目 | 詳細 |
@@ -33,6 +33,8 @@
 | PASS | [引き継ぎ] 実行するとアカウントの領域へ追加・ゲストのデータは残る | keys=1 |
 | PASS | [引き継ぎ] 同じ ID で内容が違う記録は「競合」として数える |  |
 | PASS | [引き継ぎ] 競合はアカウントの側を上書きしない |  |
+| PASS | [まとめてコピー] ゲストを選んだときだけ「まとめてコピー」の欄を出す |  |
+| PASS | [まとめてコピー] 確認のチェックまで押せない・実行すると追加の件数を表示・ゲストのデータは残る | 追加 1 件・重複 0 件・競合 0 件（上書きしていません）・失敗 0 種類 |
 | PASS | [アプリ内 iosLine] 案内を出し、Google のボタンは残す（遮断しない） |  |
 | PASS | [アプリ内 iosLine] LINE は openExternalBrowser=1・認証のエラー等の値を含めない | http://localhost:3000/auth/sign-in?next=%2Fsquads&openExternalBrowser=1 |
 | PASS | [アプリ内 iosLine] 390px で横のはみ出しなし | overflow=0 |

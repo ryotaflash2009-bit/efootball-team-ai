@@ -173,6 +173,20 @@ async function main() {
       }
     }
 
+    // ゲストのデータをまとめてコピー（2026-10-11）: 別の新しいアカウントの領域へ、5 種類を不足分だけ一度に
+    {
+      const guestBeforeAll = await ev(`localStorage.getItem(${JSON.stringify(GUEST_MY_TEAM)})`);
+      await go(`${BASE}/account/local-data-migration?source=guest&__efbAuth=1&__efbUserId=efb-copyall-user`);
+      await waitForCondition(() => has('[data-testid="local-data-migration-copy-all"]'), { timeoutMs: 10000 }).catch(() => {});
+      record("[まとめてコピー] ゲストを選んだときだけ「まとめてコピー」の欄を出す", await has('[data-testid="local-data-migration-copy-all"]'), "");
+      const disabledBefore = await ev(`document.querySelector('[data-testid="local-data-migration-copy-all-button"]')?.disabled ?? null`);
+      await ev(`document.querySelector('input[name="local-data-migration-copy-all-ack"]').click()`);
+      await ev(`document.querySelector('[data-testid="local-data-migration-copy-all-button"]').click()`);
+      await waitForCondition(() => has('[data-testid="local-data-migration-copy-all-result"]'), { timeoutMs: 8000 }).catch(() => {});
+      const res = await ev(`document.querySelector('[data-testid="local-data-migration-copy-all-result"]')?.textContent ?? ""`);
+      record("[まとめてコピー] 確認のチェックまで押せない・実行すると追加の件数を表示・ゲストのデータは残る", disabledBefore === true && /追加 1 件/.test(res) && (await ev(`localStorage.getItem(${JSON.stringify(GUEST_MY_TEAM)})`)) === guestBeforeAll, res);
+    }
+
     // アプリ内ブラウザー（User-Agent を差し替え）
     const UAS = {
       iosLine: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Safari Line/14.9.0",

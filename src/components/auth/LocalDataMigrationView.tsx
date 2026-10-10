@@ -175,6 +175,35 @@ export function LocalDataMigrationView() {
     }
   }
 
+  // ゲストのデータをまとめてコピー（2026-10-11）: 5 種類を順に、不足分だけ追加（競合は上書きしない・ゲストのデータは残す）。
+  const [copyAllAck, setCopyAllAck] = useState(false);
+  const [copyAllRunning, setCopyAllRunning] = useState(false);
+  const [copyAllSummary, setCopyAllSummary] = useState<{ added: number; duplicate: number; conflict: number; failed: number } | null>(null);
+  async function handleCopyAllGuest() {
+    if (copyAllRunning || !copyAllAck || !accountScope || source !== "guest") return;
+    setCopyAllRunning(true);
+    try {
+      const sum = { added: 0, duplicate: 0, conflict: 0, failed: 0 };
+      const nextResults: Partial<Record<DataKind, MigrationExecutionResult>> = {};
+      for (const kind of MIGRATABLE_KINDS) {
+        if (!legacy || legacy[kind].itemCount === 0) continue;
+        const r = await executeMigrationForKind(kind, sourceKey(kind), buildScopedStorageKey(accountScope, kind), "guest");
+        nextResults[kind] = r;
+        sum.added += r.addedCount;
+        sum.duplicate += r.duplicateCount;
+        sum.conflict += r.conflictCount;
+        if (!r.ok) sum.failed += 1;
+      }
+      setResults((prev) => ({ ...prev, ...nextResults }));
+      setCopyAllSummary(sum);
+      setCopyAllAck(false);
+      refreshLegacy();
+      refreshReferenceIntegrity();
+    } finally {
+      setCopyAllRunning(false);
+    }
+  }
+
   async function handleDownloadBackup(kind: DataKind) {
     const legacyRaw = readRawJson(sourceKey(kind));
     const payload = { exportedAt: new Date().toISOString(), dataKind: kind, data: legacyRaw };
@@ -247,6 +276,37 @@ export function LocalDataMigrationView() {
         </Surface>
       ) : (
         <>
+          {source === "guest" ? (
+            <Surface padding="md" className="flex flex-col gap-2" data-testid="local-data-migration-copy-all">
+              <p className="text-sm font-semibold text-text">{ta("copyAllGuestHeading")}</p>
+              <p className="text-xs text-text-muted">{ta("copyAllGuestBody")}</p>
+              {legacy && MIGRATABLE_KINDS.every((k) => legacy[k].itemCount === 0) ? (
+                <p className="text-xs text-text-dim">{ta("copyAllGuestNothing")}</p>
+              ) : (
+                <>
+                  <label className="flex cursor-pointer items-center gap-2 text-sm">
+                    <input type="checkbox" name="local-data-migration-copy-all-ack" checked={copyAllAck} onChange={(e) => setCopyAllAck(e.target.checked)} disabled={copyAllRunning} />
+                    <span>{ta("copyAllGuestAck")}</span>
+                  </label>
+                  <div>
+                    <Button size="sm" onClick={handleCopyAllGuest} disabled={!copyAllAck || copyAllRunning} data-testid="local-data-migration-copy-all-button">
+                      {copyAllRunning ? ta("copyAllGuestRunning") : ta("copyAllGuestButton")}
+                    </Button>
+                  </div>
+                </>
+              )}
+              {copyAllSummary ? (
+                <p role="status" className="text-sm text-text" data-testid="local-data-migration-copy-all-result">
+                  {fill(ta("copyAllGuestResultTemplate"), {
+                    added: String(copyAllSummary.added),
+                    duplicate: String(copyAllSummary.duplicate),
+                    conflict: String(copyAllSummary.conflict),
+                    failed: String(copyAllSummary.failed),
+                  })}
+                </p>
+              ) : null}
+            </Surface>
+          ) : null}
           <Surface padding="md" className="flex flex-col gap-2">
             <p className="text-sm text-text-dim">{ta("currentAccountLabel")}</p>
             <p className="text-xs text-text-muted">{ta("selectionIntro")}</p>
