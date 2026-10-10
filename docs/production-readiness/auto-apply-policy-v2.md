@@ -33,3 +33,14 @@ Production への書き込みは無い。取り消しの後、次の検出の候
 
 停止: 自動 Apply の kill switch（`REFERENCE_DATA_AUTO_APPLY_ENABLED` 等）・halt の Issue・検出の変数・watchdog の停止の変数（従来どおり）。
 Rollback: v1 に戻す PR（`auto-apply-policy-config.ts`）。
+
+## 適用済みの記録の自動の更新（`reference-data-applied-state-sync.yml`）
+
+Apply（applied_verified）の後、Evidence の artifact の `applied-state.candidate.json` から `reference-data-applied-state.json` と
+Evidence の JSON（`evidence/<world|managers>-auto-apply-<日付>-<run>.json`）を作り、`github-actions[bot]` が main へ直接 commit する（手の PR は不要）。
+- 起動: Orchestrator・Production apply の完了（workflow_run）・手動（confirm `sync`）。
+- Orchestrator・Apply・Backup が実行中・待機中なら何もしない（Apply が binding した main の SHA を変えない）。次の完了で再試行。
+- World の `maxAppearanceUpdatedAt` は、同じ候補の checksum の検出の要約の `timestamps.max` から取る（無ければ更新しない）。
+- 古い・同じ checksum・件数の減少・形の不正な候補は使わない（`scripts/lib/applied-state-sync.mjs`・テスト）。
+- commit できるのは 2 種類のファイルだけ（それ以外が混ざれば失敗）。push は main の fast-forward だけ。
+- 停止: リポジトリの変数 `REFERENCE_DATA_APPLIED_STATE_SYNC_DISABLED` = `true`。
