@@ -45,3 +45,5 @@ World のカード ID の**下位 20 ビット**を人物キーとする（`BigI
 - `src/lib/world/person-identity.test.ts`（4）・`src/lib/squad/same-player-rule.test.ts`（5）・`improvement-simulation.test.ts`（フィクスチャのカード ID を別々に変更）。
 - `scripts/black-box-best-xi-optimization.mjs` の「[同じ選手]」: 実データで先発の 1 人と同じ人物キーの別のカードを My Team に足し、
   選出・控え（`data-world-card-id`）に 2 枚のうち 1 枚だけ・人物キーの重複なし。
+- `scripts/black-box-same-player.mjs`（5/5・2026-10-10）: 同じ選手の 2 枚（先発と控え）を含む既存の保存データを開くと「同じ選手が 2 枚以上います: ロベルト カルロス（2）」と知らせ、
+  保存データは変えない。同じ選手がいないスカッドでは知らせない。
