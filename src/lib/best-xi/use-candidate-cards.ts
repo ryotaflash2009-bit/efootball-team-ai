@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toProgressionCard } from "@/lib/progression/from-world";
 import type { ProgressionCard } from "@/lib/progression/types";
 import type { WorldPlayerDetail } from "@/lib/world/types";
+import type { BestXiAffiliation } from "./affiliation-filter";
 
 const WORLD_ID_RE = /^[0-9]{1,20}$/;
 
@@ -23,10 +24,13 @@ const WORLD_ID_RE = /^[0-9]{1,20}$/;
  */
 export function useBestXiProgressionCards(worldCardIds: string[]): {
   cards: Map<string, ProgressionCard>;
+  /** 国籍・リーグ・チーム（縛り用・2026-10-11）。同じ選手詳細の応答から取る（追加の取得なし）。 */
+  affiliations: Map<string, BestXiAffiliation>;
   loading: boolean;
   error: string | null;
 } {
   const [cards, setCards] = useState<Map<string, ProgressionCard>>(new Map());
+  const [affiliations, setAffiliations] = useState<Map<string, BestXiAffiliation>>(new Map());
   const [error, setError] = useState<string | null>(null);
   const attemptedRef = useRef<Set<string>>(new Set());
   // attemptedRefの更新(ref)だけではレンダーが誘発されないため、取得完了ごとに1つインクリメントして
@@ -56,7 +60,8 @@ export function useBestXiProgressionCards(worldCardIds: string[]): {
           if (!res.ok) return null;
           const body: { player?: WorldPlayerDetail } = await res.json();
           if (!body.player) return null;
-          return { id, card: toProgressionCard(body.player) };
+          const p = body.player;
+          return { id, card: toProgressionCard(p), affiliation: { nationality: p.nationality ?? null, league: p.league ?? null, team: p.team ?? null } };
         } catch {
           return null;
         }
@@ -69,6 +74,13 @@ export function useBestXiProgressionCards(worldCardIds: string[]): {
           const next = new Map(prev);
           for (const r of results) {
             if (r) next.set(r.id, r.card);
+          }
+          return next;
+        });
+        setAffiliations((prev) => {
+          const next = new Map(prev);
+          for (const r of results) {
+            if (r) next.set(r.id, r.affiliation);
           }
           return next;
         });
@@ -88,5 +100,5 @@ export function useBestXiProgressionCards(worldCardIds: string[]): {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 
-  return { cards, loading, error };
+  return { cards, affiliations, loading, error };
 }

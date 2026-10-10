@@ -12,6 +12,14 @@ import { getFormation } from "@/lib/squad/formations";
 import { useBestXiProgressionCards } from "@/lib/best-xi/use-candidate-cards";
 import { buildBestXiCandidates } from "@/lib/best-xi/candidates";
 import { samePlayerExcluded } from "@/lib/best-xi/same-player-excluded";
+import {
+  affiliationOptions,
+  applyAffiliationFilter,
+  decodeAffiliationFilter,
+  encodeAffiliationFilter,
+  BEST_XI_AFFILIATION_KINDS,
+  type BestXiAffiliationFilter,
+} from "@/lib/best-xi/affiliation-filter";
 import { selectBestXi } from "@/lib/best-xi/select";
 import { selectBestXiBench, type BestXiBenchResult } from "@/lib/best-xi/bench";
 import {
@@ -61,7 +69,7 @@ export function BestXiView() {
     () => [...new Set(myTeam.filter((r) => r.ownershipStatus === "owned").map((r) => r.worldCardId))],
     [myTeam],
   );
-  const { cards: progressionCards, loading: cardsLoading } = useBestXiProgressionCards(ownedWorldCardIds);
+  const { cards: progressionCards, affiliations, loading: cardsLoading } = useBestXiProgressionCards(ownedWorldCardIds);
 
   // 保存ビルドはクライアントのlocalStorageから読む(build-storageに変更通知イベントが無いため、
   // マウント時と「再選出」操作のタイミングで読み直す)。
@@ -76,9 +84,12 @@ export function BestXiView() {
     reloadBuilds();
   }, [reloadBuilds]);
 
+  // 縛り（国籍・リーグ・チーム・2026-10-11）。選ぶと、その条件に合う自分のカードだけで選び直す。
+  const [affiliationFilter, setAffiliationFilter] = useState<BestXiAffiliationFilter | null>(null);
+  const options = useMemo(() => affiliationOptions(ownedWorldCardIds, affiliations), [ownedWorldCardIds, affiliations]);
   const { candidates, unavailableCards } = useMemo(
-    () => buildBestXiCandidates({ myTeam, progressionCards, buildsByWorldCardId }),
-    [myTeam, progressionCards, buildsByWorldCardId],
+    () => applyAffiliationFilter(buildBestXiCandidates({ myTeam, progressionCards, buildsByWorldCardId }), affiliations, affiliationFilter),
+    [myTeam, progressionCards, buildsByWorldCardId, affiliations, affiliationFilter],
   );
 
   const poolPlayerCount = useMemo(
@@ -124,6 +135,12 @@ export function BestXiView() {
     runSelection();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [candidates, unavailableCards, cardsLoading]);
+
+  const handleAffiliationChange = useCallback((raw: string) => {
+    // 明示の操作なので、候補が変わった直後に 1 回だけ選び直す（再選出のボタンと同じ経路）。
+    pendingGenerateRef.current = true;
+    setAffiliationFilter(decodeAffiliationFilter(raw));
+  }, []);
 
   const handleGenerateButton = useCallback(() => {
     pendingGenerateRef.current = true;
@@ -196,7 +213,28 @@ export function BestXiView() {
             <p aria-live="polite" className="text-text-dim">
               {fillTb("candidatePoolTemplate", { playerCount: String(poolPlayerCount), buildCount: String(poolBuildCount) })}
             </p>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <select
+                value={encodeAffiliationFilter(affiliationFilter)}
+                onChange={(e) => handleAffiliationChange(e.target.value)}
+                aria-label={tb("affiliationFilterAriaLabel")}
+                data-testid="best-xi-affiliation-filter"
+                disabled={cardsLoading}
+                className="min-h-[32px] max-w-[16rem] rounded-md border border-border bg-surface px-2 text-xs text-text"
+              >
+                <option value="">{tb("affiliationFilterNone")}</option>
+                {BEST_XI_AFFILIATION_KINDS.map((kind) =>
+                  options[kind].length > 0 ? (
+                    <optgroup key={kind} label={tb(`affiliationKind_${kind}`)}>
+                      {options[kind].map((o) => (
+                        <option key={o.value} value={encodeAffiliationFilter(o)}>
+                          {o.value} ({o.cardCount})
+                        </option>
+                      ))}
+                    </optgroup>
+                  ) : null,
+                )}
+              </select>
               {cardsLoading ? (
                 <span role="status" aria-live="polite" className="text-2xs text-text-muted">
                   {tb("generatingText")}
@@ -207,6 +245,12 @@ export function BestXiView() {
               </Button>
             </div>
           </div>
+
+          {affiliationFilter ? (
+            <p role="status" className="rounded border border-accent/40 bg-accent-soft px-3 py-2 text-xs text-text" data-testid="best-xi-affiliation-active">
+              {fillTb("affiliationActiveTemplate", { kind: tb(`affiliationKind_${affiliationFilter.kind}`), value: affiliationFilter.value })}
+            </p>
+          ) : null}
 
           {isStale ? (
             <p role="status" className="rounded border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning">
