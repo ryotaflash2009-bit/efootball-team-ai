@@ -192,7 +192,7 @@ export function evaluateAutoApplyPolicy(input: AutoApplyPolicyInput): AutoApplyP
     check("world.updateRatio", Number((plan.changed / denom).toFixed(6)), w.maxUpdateRatio, plan.changed / denom <= w.maxUpdateRatio, "manual", "threshold_update_ratio");
     if (plan.structuralChanged === null || plan.cardRatingOnlyChanged === null) manual.push("change_breakdown_missing");
     else {
-      check("world.structuralChanged", plan.structuralChanged, w.maxStructuralChanged, plan.structuralChanged <= w.maxStructuralChanged, "manual", "threshold_structural");
+      check("world.structuralRatio", Number((plan.structuralChanged / denom).toFixed(6)), w.maxStructuralRatio, plan.structuralChanged / denom <= w.maxStructuralRatio, "manual", "threshold_structural");
       if (plan.structuralChanged + plan.cardRatingOnlyChanged !== plan.changed) manual.push("change_breakdown_inconsistent");
     }
     const unknown = plan.changedFields.filter((f) => !(w.changedFieldAllowlist as readonly string[]).includes(f));

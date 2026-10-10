@@ -137,7 +137,13 @@ describe("リポジトリ内の全workflow: scheduleは検出workflowと検出�
     // workflow の起動は検出の workflow_dispatch（confirm detect）の 1 か所だけ
     const dispatches = body.match(/gh workflow run [^\n]+/g) ?? [];
     expect(dispatches).toEqual([`gh workflow run ${DETECTION_WORKFLOW_FILE} --repo "$REPO" --ref main -f confirm=detect`]);
-    expect(body).not.toMatch(/gh (api|run rerun|run cancel|variable|secret)/);
+    expect(body).not.toMatch(/gh (api|run rerun|variable|secret)/);
+    // 取り消しは、古い承認待ちの Production Apply の run だけ（数字の ID を確かめてから・2026-10-11）
+    const cancels = body.match(/gh run cancel [^\n]+/g) ?? [];
+    expect(cancels).toEqual([`gh run cancel "$id" --repo "$REPO"`]);
+    expect(body).toContain("--workflow reference-data-production-apply.yml");
+    expect(body).toMatch(/\[\[ "\$id" =~ \^\[0-9\]\{1,20\}\$ \]\]/);
+    expect(body).toContain("staleApprovalRunsToCancel");
     expect(body).toContain(`vars.${DETECTION_ENABLE_VARIABLE} == 'true' && vars.REFERENCE_DATA_DETECTION_WATCHDOG_DISABLED != 'true'`);
     // 書き込みの権限は job の actions: write だけ（workflow 全体は contents: read）
     expect(body.match(/:\s*write/g)).toEqual([": write"]);

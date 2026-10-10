@@ -39,13 +39,41 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          sparse-checkout: scripts/lib/detection-watchdog.mjs
+          sparse-checkout: |
+            scripts/lib/detection-watchdog.mjs
+            scripts/lib/stale-approval.mjs
           sparse-checkout-cone-mode: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "24"
+
+      # 2026-10-11: 承認待ちのまま 24 時間を過ぎた Production Apply（Backup の期限切れで実行できない）を取り消し、
+      # 書き込みの concurrency が埋まって次の候補が進めない状態を解く。Production への書き込みは無い（run の取り消しだけ）。
+      - name: Cancel stale approval-waiting applies
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh run list --repo "$REPO" --workflow reference-data-production-apply.yml --limit 30 \
+            --json databaseId,status,createdAt > apply-runs.json
+          node --input-type=module -e '
+            import { readFileSync, writeFileSync, appendFileSync } from "node:fs";
+            import { staleApprovalRunsToCancel } from "./scripts/lib/stale-approval.mjs";
+            const runs = JSON.parse(readFileSync("apply-runs.json", "utf8")).map((r) => ({ id: r.databaseId, status: r.status, createdAt: r.createdAt }));
+            const d = staleApprovalRunsToCancel({ now: new Date().toISOString(), runs });
+            writeFileSync("cancel-ids.txt", d.cancel.map((id) => `${id}\n`).join(""));
+            appendFileSync(process.env.GITHUB_STEP_SUMMARY ?? "/dev/null", `stale approval-waiting applies: cancel ${d.cancel.length}, kept ${d.kept}\n`);
+            console.log(JSON.stringify(d));
+          '
+          while IFS= read -r id; do
+            if [[ "$id" =~ ^[0-9]{1,20}$ ]]; then
+              gh run cancel "$id" --repo "$REPO"
+              echo "cancelled stale apply run $id" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done < cancel-ids.txt
 
       - name: Decide and dispatch
         env:
