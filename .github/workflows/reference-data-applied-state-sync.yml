@@ -1,0 +1,123 @@
+name: Reference data applied-state sync
+
+# 適用済みの記録の自動の更新（2026-10-11・本人の指示「完全自動更新を完成させて」）。
+# - Apply（applied_verified）の後、Evidence の artifact の applied-state.candidate.json から
+#   docs/production-readiness/reference-data-applied-state.json と Evidence の JSON を作り、main へ直接 commit する（手の PR を不要にする）。
+# - 起動: Orchestrator・Production apply の完了（workflow_run）と、手動（confirm "sync"）。
+# - main を動かすため、Orchestrator・Production apply・Backup が実行中・待機中なら何もしない（Apply の binding した SHA を変えない）。次の完了で再試行。
+# - 書くのは 2 種類のファイルだけ（記録と Evidence）。Secrets・Environment・Production への接続は無い。GITHUB_TOKEN の push は他の workflow を起動しない。
+# - 停止: リポジトリの変数 REFERENCE_DATA_APPLIED_STATE_SYNC_DISABLED を "true"。検出の変数が "true" でなければ動かない。
+# The names below are workflow_run filter patterns: they must equal the workflows' `name:` exactly.
+
+on:
+  workflow_run:
+    workflows: ["Reference data update orchestrator (automatic up to the Apply approval)", "Reference data Production apply (plan/dry-run automated; apply approval-gated)"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type 'sync' to update the applied-state record from verified applies."
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: reference-data-applied-state-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: ${{ vars.REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED == 'true' && vars.REFERENCE_DATA_APPLIED_STATE_SYNC_DISABLED != 'true' && ((github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main') || inputs.confirm == 'sync') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Skip while a pipeline run is active
+        id: busy
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          busy=0
+          for wf in reference-data-update-orchestrator.yml reference-data-production-apply.yml reference-data-production-backup.yml; do
+            n=$(gh run list --repo "$REPO" --workflow "$wf" --limit 10 --json status --jq '[.[] | select(.status != "completed")] | length')
+            if [ "$n" != "0" ]; then busy=1; echo "active runs in $wf: $n" >> "$GITHUB_STEP_SUMMARY"; fi
+          done
+          echo "busy=$busy" >> "$GITHUB_OUTPUT"
+
+      - name: Collect verified applies and detection summaries
+        if: steps.busy.outputs.busy == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/cand" "$RUNNER_TEMP/det"
+          gh run list --repo "$REPO" --workflow reference-data-production-apply.yml --status success --limit 20 \
+            --json databaseId,displayTitle --jq '.[] | select(.displayTitle | startswith("reference-data apply")) | .databaseId' > apply-ids.txt
+          while IFS= read -r id; do
+            [[ "$id" =~ ^[0-9]{1,20}$ ]] || continue
+            for name in reference-data-apply-apply-world-evidence reference-data-apply-apply-evidence; do
+              gh run download "$id" --repo "$REPO" -n "$name" -D "$RUNNER_TEMP/cand/$id" 2>/dev/null || true
+            done
+          done < apply-ids.txt
+          gh run list --repo "$REPO" --workflow reference-data-update-detection.yml --status success --limit 30 \
+            --json databaseId --jq '.[].databaseId' > det-ids.txt
+          while IFS= read -r id; do
+            [[ "$id" =~ ^[0-9]{1,20}$ ]] || continue
+            gh run download "$id" --repo "$REPO" -n reference-data-detection-summary -D "$RUNNER_TEMP/det/$id" 2>/dev/null || true
+          done < det-ids.txt
+
+      - name: Update the applied-state record
+        if: steps.busy.outputs.busy == '0'
+        id: sync
+        run: |
+          set -euo pipefail
+          out=$(CANDIDATE_DIR="$RUNNER_TEMP/cand" DETECTION_DIR="$RUNNER_TEMP/det" node scripts/sync-applied-state.mjs)
+          echo "$out" >> "$GITHUB_STEP_SUMMARY"
+          if echo "$out" | grep -q '"changed":true'; then echo "changed=1" >> "$GITHUB_OUTPUT"; else echo "changed=0" >> "$GITHUB_OUTPUT"; fi
+          det=$(echo "$out" | tail -n 1 | node -e 'let s="";process.stdin.on("data",(d)=>s+=d).on("end",()=>{const id=JSON.parse(s).worldDetectionRunId;process.stdout.write(/^[0-9]{1,20}$/.test(String(id))?String(id):"")})')
+          echo "world_detection_run=$det" >> "$GITHUB_OUTPUT"
+
+      # F-071: World を更新したときは、同じ検出の基礎能力の分布の候補を照合してから取り込む（VALID のときだけ）。
+      - name: Refresh the base-ability distribution (World only)
+        if: steps.busy.outputs.busy == '0' && steps.sync.outputs.changed == '1' && steps.sync.outputs.world_detection_run != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          DET_RUN: ${{ steps.sync.outputs.world_detection_run }}
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          mkdir -p data/work/distribution
+          if gh run download "$DET_RUN" --repo "$REPO" -n world-base-distribution-candidate -D data/work/distribution; then
+            node scripts/import-world-distribution.mjs data/work/distribution/world-base-distribution.candidate.json || echo "distribution not imported (not VALID)" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "distribution candidate not found for run $DET_RUN" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Commit to main
+        if: steps.busy.outputs.busy == '0' && steps.sync.outputs.changed == '1'
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/production-readiness/reference-data-applied-state.json docs/production-readiness/evidence/ src/lib/percentiles/data/world-base-distribution.json
+          git diff --cached --name-only | grep -vE '^(docs/production-readiness/(reference-data-applied-state\.json|evidence/(world|managers)-auto-apply-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]+\.json)|src/lib/percentiles/data/world-base-distribution\.json)$' && { echo "::error::unexpected file in the sync commit"; exit 1; } || true
+          git commit -m "chore(reference-data): applied-state after verified automatic apply"
+          git push origin HEAD:main
