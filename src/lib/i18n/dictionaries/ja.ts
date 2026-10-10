@@ -3192,6 +3192,7 @@ export interface Dictionary {
     affiliationKind_league: string;
     affiliationKind_team: string;
     affiliationActiveTemplate: string;
+    formationSelectAriaLabel: string;
     limitationSingleFormationOnly: string;
     limitationNoBenchSelection: string;
     benchHeadingTemplate: string;

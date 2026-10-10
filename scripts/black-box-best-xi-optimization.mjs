@@ -230,6 +230,31 @@ async function main() {
     }
 
     // ============================================================
+    // 1a-3. フォーメーションの選択（2026-10-11）: 3-5-2 を選ぶと、ピッチは 3-5-2 の 11 枠（CB 3・CF 2）で選び直す・4-3-3 に戻せる
+    // ============================================================
+    {
+      await setMyTeam(client, FULL_XI);
+      await hardReloadAndSettle(client);
+      await waitForCondition(async () => (await bodyText(client)).includes("選出選手一覧"), { timeoutMs: 10000, intervalMs: 200 });
+      const pick = (v) => evalJson(client, `(() => { const s = document.querySelector('[data-testid="best-xi-formation"]'); if (!s) return false; Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value").set.call(s, ${JSON.stringify(v)}); s.dispatchEvent(new Event("change", { bubbles: true })); return true; })()`);
+      const positions = () => evalJson(client, `[...document.querySelectorAll('[data-pitch-position]')].map((e) => e.getAttribute('data-pitch-position'))`);
+      const count = (arr, p) => (arr ?? []).filter((x) => x === p).length;
+      const okPick = await pick("3-5-2");
+      await waitForCondition(async () => count(await positions(), "CB") === 3, { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+      const p352 = await positions();
+      const filled352 = await evalJson(client, `new Set([...document.querySelectorAll('[data-world-card-id]')].map((e) => e.getAttribute('data-world-card-id'))).size`);
+      record(
+        "[フォーメーション] 3-5-2 を選ぶと、ピッチが 3-5-2 の 11 枠（CB 3・CF 2・LMF/RMF）になり選び直す",
+        okPick === true && p352?.length === 11 && count(p352, "CB") === 3 && count(p352, "CF") === 2 && count(p352, "LMF") === 1 && filled352 >= 8,
+        `${(p352 ?? []).join(",")} picked=${filled352}`,
+      );
+      await pick("4-3-3");
+      await waitForCondition(async () => count(await positions(), "CB") === 2, { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+      const p433 = await positions();
+      record("[フォーメーション] 4-3-3 に戻せる（CB 2・LWF/RWF）", p433?.length === 11 && count(p433, "CB") === 2 && count(p433, "LWF") === 1, (p433 ?? []).join(","));
+    }
+
+    // ============================================================
     // 1a-2. 縛り（2026-10-11）: 先発11人 + バレージ → 国籍で縛ると、その国籍のカードだけが選ばれる・解除で 11 人に戻る
     // ============================================================
     {
