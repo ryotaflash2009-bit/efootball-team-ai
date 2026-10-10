@@ -31,7 +31,9 @@ describe("AccountView: 一般利用者向けナビゲーション", () => {
 
   it("ログイン・ログアウト導線は維持されている", () => {
     const source = readAccountViewSource();
-    expect(source).toContain("/auth/sign-in");
+    // ログインの導線は useSignInHref（通常は /auth/sign-in・限定テストのタブだけ ?oauthPreview=1）
+    expect(source).toContain("href={signInHref}");
+    expect(source).toContain("useSignInHref()");
     expect(source).toContain("/auth/sign-up");
     expect(source).toContain("handleLogout");
   });
