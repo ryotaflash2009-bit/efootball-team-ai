@@ -15,6 +15,7 @@ const part: PartialDictionary = {
     googleRedirecting: "正在前往 Google…",
     googlePrimaryLead: "可使用 Google 帳號登入或建立帳號，無需密碼。",
     googleGuestNotice: "無需登入即可以訪客身分使用全部功能（資料儲存在此裝置上）。登入後可在帳號頁面選擇是否轉移訪客資料（不會自動合併）。",
+    googleLimitedTestNotice: "限定測試中：Google 登入僅供營運方驗證，尚未向大眾提供（只有登記為測試的帳號才能登入）。",
     inAppTitle: "您可能正在使用其他應用程式內建的瀏覽器",
     inAppBody: "Google 可能不允許在其他應用程式內建的瀏覽器中登入。請在 Safari 或 Chrome 中開啟此頁面後再登入。在這裡也可以繼續以訪客身分使用。",
     inAppStepsIos: "iPhone：從「…」或分享按鈕中選擇「在 Safari 中開啟」（或「在瀏覽器中開啟」）。如果找不到，請用下方按鈕複製 URL 並貼到 Safari。",

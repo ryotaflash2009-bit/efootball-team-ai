@@ -15,6 +15,7 @@ const part: PartialDictionary = {
     googleRedirecting: "Google 화면으로 이동 중…",
     googlePrimaryLead: "Google 계정으로 로그인하거나 계정을 만들 수 있습니다. 비밀번호가 필요 없습니다.",
     googleGuestNotice: "로그인하지 않아도 게스트로 모든 기능을 이용할 수 있습니다(데이터는 이 기기에 저장). 로그인 후 게스트 데이터를 옮길지는 계정 화면에서 선택합니다(자동으로 합치지 않습니다).",
+    googleLimitedTestNotice: "제한 테스트 중: Google 로그인은 운영자 확인용이며 아직 일반에 제공하지 않습니다(테스트용으로 등록된 계정만 로그인할 수 있습니다).",
     inAppTitle: "다른 앱 안의 브라우저로 열었을 수 있습니다",
     inAppBody: "Google은 다른 앱 안의 브라우저에서의 로그인을 허용하지 않을 수 있습니다. Safari 또는 Chrome에서 연 뒤 로그인해 주세요. 여기서는 게스트로 계속 이용할 수 있습니다.",
     inAppStepsIos: "iPhone: 화면의 ‘…’ 또는 공유 버튼에서 ‘Safari로 열기’(또는 ‘브라우저로 열기’)를 선택해 주세요. 찾을 수 없으면 아래 버튼으로 URL을 복사해 Safari에 붙여 넣어 주세요.",

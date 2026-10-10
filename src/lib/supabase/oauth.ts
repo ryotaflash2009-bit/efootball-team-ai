@@ -11,15 +11,23 @@ import { resolveSafeInternalPath } from "./safe-redirect";
  * - Google のメールアドレスが既存のアカウントと同じでも、TeamAIXI のデータ（端末内・クラウド）は自動では統合しない
  *   （端末内のゲストのデータの引き継ぎは本人が `/account/local-data-migration?source=guest` で選ぶ）。
  */
-export type GoogleOAuthMode = "disabled" | "enabled";
+/**
+ * - "disabled": ボタンを出さない（ローカル開発ホストの `?oauthPreview=1` だけ例外）。
+ * - "limited": 本番でも `?oauthPreview=1` のときだけボタンを出す（2026-10-11 の本人の決定: 限定テスト）。
+ *   `oauthPreview` は**表示の条件だけ**で、認証・認可・callback・RLS の判断には使わない（URL を知る人を本人とはみなさない。
+ *   ログインできるのは Google の側の Test user だけ）。callback の後へは引き継がない（redirectTo は next だけ）。
+ * - "enabled": 全員にボタンを出す（一般公開）。PUBLIC_GOOGLE_OAUTH_READY の後に PR で変える。
+ */
+export type GoogleOAuthMode = "disabled" | "limited" | "enabled";
 export const GOOGLE_OAUTH_MODE: GoogleOAuthMode = "disabled";
 
 export const OAUTH_FLOW_PARAM = "flow";
 export const OAUTH_FLOW_GOOGLE = "google";
 
 /**
- * Google のボタンを出してよいか。"enabled" のとき、またはローカル開発ホストで `?oauthPreview=1` のとき（black-box でボタンと
- * 失敗の表示を検証し続けるため。テストダブルで実 Supabase には接続しない）。本番・プレビューのホストではクエリだけでは出ない。
+ * Google のボタンを出してよいか。"enabled" のとき・"limited" で `?oauthPreview=1` のとき・ローカル開発ホストで `?oauthPreview=1` のとき
+ * （black-box でボタンと失敗の表示を検証し続けるため。テストダブルで実 Supabase には接続しない）。
+ * "disabled" の本番・プレビューのホストではクエリだけでは出ない。想定外の値は "disabled" と同じ（fail closed）。
  */
 export function isGoogleOAuthAvailable(
   hostname: string,
@@ -28,8 +36,15 @@ export function isGoogleOAuthAvailable(
   mode: GoogleOAuthMode = GOOGLE_OAUTH_MODE,
 ): boolean {
   if (mode === "enabled") return true;
+  const preview = new URLSearchParams(search).get("oauthPreview") === "1";
+  if (mode === "limited") return preview;
   if (!isLocalDevHostname(hostname)) return false;
-  return new URLSearchParams(search).get("oauthPreview") === "1";
+  return preview;
+}
+
+/** 限定テストの表示（画面に「限定テスト中」と明示する）か。 */
+export function isGoogleOAuthLimitedTest(mode: GoogleOAuthMode = GOOGLE_OAUTH_MODE): boolean {
+  return mode !== "enabled";
 }
 
 /**

@@ -15,6 +15,7 @@ const auth: Dictionary["auth"] = {
   googleRedirecting: "Google の画面へ移動しています…",
   googlePrimaryLead: "Google アカウントでログイン・アカウントの作成ができます。パスワードは不要です。",
   googleGuestNotice: "ログインしなくても、ゲストとしてすべての機能を使えます（データはこの端末に保存されます）。ログインの後、ゲストのデータを引き継ぐかはアカウントの画面で選べます（自動では統合しません）。",
+  googleLimitedTestNotice: "限定テスト中: Google でのログインは運営者の動作確認用で、一般にはまだ提供していません（テスト用に登録されたアカウントだけがログインできます）。",
   inAppTitle: "アプリの中のブラウザーで開いている可能性があります",
   inAppBody: "Google は、アプリの中のブラウザーからのログインを受け付けないことがあります。Safari または Chrome で開いてからログインしてください。ゲストとしてはこのまま使えます。",
   inAppStepsIos: "iPhone: 画面の「…」や共有のボタンから「Safari で開く」（または「ブラウザで開く」）を選んでください。見つからない場合は、下のボタンで URL をコピーして Safari に貼り付けてください。",

@@ -15,6 +15,7 @@ const part: PartialDictionary = {
     googleRedirecting: "Abrindo o Google…",
     googlePrimaryLead: "Entre ou crie uma conta com sua conta do Google. Não é preciso senha.",
     googleGuestNotice: "Você pode usar todos os recursos como convidado sem entrar (os dados ficam neste dispositivo). Depois de entrar, você escolhe na página da conta se quer transferir os dados de convidado (nada é mesclado automaticamente).",
+    googleLimitedTestNotice: "Teste limitado: o login com o Google é apenas para verificação do operador e ainda não é oferecido ao público (só contas registradas para teste podem entrar).",
     inAppTitle: "Você pode estar usando o navegador de outro app",
     inAppBody: "O Google pode não permitir login a partir do navegador de outro app. Abra esta página no Safari ou no Chrome e então entre. Aqui você pode continuar como convidado.",
     inAppStepsIos: "iPhone: no botão “…” ou de compartilhar, escolha “Abrir no Safari” (ou “Abrir no navegador”). Se não encontrar, copie a URL com o botão abaixo e cole no Safari.",

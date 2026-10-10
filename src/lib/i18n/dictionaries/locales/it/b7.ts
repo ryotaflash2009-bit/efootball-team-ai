@@ -15,6 +15,7 @@ const part: PartialDictionary = {
     googleRedirecting: "Apertura di Google…",
     googlePrimaryLead: "Accedi o crea un account con il tuo account Google. Nessuna password necessaria.",
     googleGuestNotice: "Puoi usare tutte le funzioni come ospite senza accedere (i dati restano su questo dispositivo). Dopo l’accesso scegli nella pagina dell’account se trasferire i dati da ospite (nulla viene unito automaticamente).",
+    googleLimitedTestNotice: "Test limitato: l’accesso con Google serve solo alle verifiche del gestore e non è ancora disponibile al pubblico (possono accedere solo gli account registrati per i test).",
     inAppTitle: "Potresti usare il browser interno di un’altra app",
     inAppBody: "Google potrebbe non consentire l’accesso dal browser interno di un’altra app. Apri questa pagina in Safari o Chrome e poi accedi. Qui puoi continuare come ospite.",
     inAppStepsIos: "iPhone: dal pulsante “…” o Condividi scegli “Apri in Safari” (o “Apri nel browser”). Se non lo trovi, copia l’URL con il pulsante qui sotto e incollalo in Safari.",

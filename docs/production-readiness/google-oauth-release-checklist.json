@@ -1,8 +1,23 @@
 {
-  "schema": "google-oauth-release-checklist/v1",
-  "note": "Owner-recorded results for enabling Google OAuth. Status: pending | pass | fail | n/a. Evidence fields hold short non-personal notes only (no email address, user ID, client ID, secret, token or screenshot of them). Evaluated by scripts/validate-google-oauth-release.mjs (docs/production-readiness/google-oauth-release-gate.md).",
-  "preEnable": {
-    "googleConsentScreenConfigured": {
+  "schema": "google-oauth-release-checklist/v2",
+  "note": "TeamAIXI (https://efootball-team-ai.vercel.app, Supabase kbauokzninaervjgwzdd) only. Owner-recorded results. Status: pending | pass | fail | n/a. Evidence holds short non-personal notes only (no email address, user ID, client ID, secret, token, Google Cloud project ID or screenshot of them). 2026-10-11: settings first reported for Google Cloud were made in a project that may belong to another product, so nothing is recorded as pass until the owner redoes them in a TeamAIXI-dedicated Google Cloud project. Evaluated by scripts/validate-google-oauth-release.mjs.",
+  "limitedTest": {
+    "googleProjectDedicatedToTeamAixi": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "googleConsentScreenExternalTesting": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "googleTestUserRegistered": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "googleScopesBasicOnly": {
       "status": "pending",
       "evidence": "",
       "checkedAt": null
@@ -18,6 +33,11 @@
       "checkedAt": null
     },
     "supabaseGoogleProviderEnabled": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "supabaseCredentialsFromDedicatedProject": {
       "status": "pending",
       "evidence": "",
       "checkedAt": null
@@ -42,7 +62,7 @@
       "evidence": "",
       "checkedAt": null
     },
-    "privacyPolicyGoogleReviewed": {
+    "privacyPolicyGoogleSectionLive": {
       "status": "pending",
       "evidence": "",
       "checkedAt": null
@@ -106,6 +126,18 @@
       "observedLinking": null
     },
     "prodRlsIsolationAB": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    }
+  },
+  "publicRelease": {
+    "googleConsentPublishedProduction": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "privacyPolicyGeneralAvailability": {
       "status": "pending",
       "evidence": "",
       "checkedAt": null

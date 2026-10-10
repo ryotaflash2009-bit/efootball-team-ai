@@ -69,6 +69,7 @@ async function main() {
     await waitForCondition(() => has('[data-testid="google-sign-in-button"]'), { timeoutMs: 8000 }).catch(() => {});
     const t1 = await text();
     record("[プレビュー] Google のボタン「Google で続ける」を出す", /Google で続ける/.test(t1), "");
+    record("[プレビュー] 限定テスト中であることを画面に明示（一般公開中と誤解させない）", (await has('[data-testid="google-limited-test-notice"]')) && /限定テスト中/.test(t1), "");
     record("[プレビュー] パスワードの再設定の導線を出さない（パスワードでのログインを一般に提供しないため）", !(await ev(`!!document.querySelector('a[href="/auth/forgot-password"]')`)), "");
     record("[プレビュー] 以前のアカウントでパスワードを忘れた人の代わりの導線（サポート）", await has('[data-testid="password-forgot-support"]'), "");
     record("[プレビュー] メール＋パスワードは以前のアカウント用と示す", /以前にメールアドレスで作成したアカウント/.test(t1), "");

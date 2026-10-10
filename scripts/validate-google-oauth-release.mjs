@@ -5,7 +5,7 @@
  *   EVIDENCE_PATH=./docs/production-readiness/evidence/google-oauth-release-gate-YYYY-MM-DD.json node scripts/validate-google-oauth-release.mjs
  *
  * 入力: docs/production-readiness/google-oauth-release-checklist.json（本人の記録）とコード（oauth.ts・辞書・アカウントの画面・callback）。
- * 出力: 判定（READY_TO_ENABLE / BLOCKED、GO / NO_GO / PENDING / NOT_STARTED）。EVIDENCE_PATH を指定したときだけ、
+ * 出力: 判定（A. LIMITED_OAUTH_TEST_READY / BLOCKED・限定テストの結果 GO / NO_GO / PENDING / NOT_STARTED・B. PUBLIC_GOOGLE_OAUTH_READY / BLOCKED）。EVIDENCE_PATH を指定したときだけ、
  *       個人情報・秘密情報を含まない要約をワークスペースの中に書く。終了コード: rollbackRequired なら 2、BLOCKED なら 1、それ以外 0。
  */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
@@ -27,11 +27,12 @@ const code = codeChecks({
 const result = evaluateOAuthReleaseGate({ checklist, code });
 
 // モードは公開の値（"disabled" | "enabled"）。秘密ではないが、決まった語だけを出す。
-console.log(`[google-oauth-release] code mode: ${code.entryMode === "enabled" ? "enabled" : code.entryMode === "disabled" ? "disabled" : "invalid"}`);
-console.log(`[google-oauth-release] pre-enable: ${result.preEnableVerdict} (pass ${result.preEnable.counts.pass} / pending ${result.preEnable.counts.pending} / fail ${result.preEnable.counts.fail})`);
-console.log(`[google-oauth-release] post-enable: ${result.postEnableVerdict} (pass ${result.postEnable.counts.pass} / pending ${result.postEnable.counts.pending} / fail ${result.postEnable.counts.fail})`);
+console.log(`[google-oauth-release] code mode: ${["disabled", "limited", "enabled"].includes(code.entryMode) ? code.entryMode : "invalid"}`);
+console.log(`[google-oauth-release] A. limited test: ${result.limitedVerdict} (pass ${result.limitedTest.counts.pass} / pending ${result.limitedTest.counts.pending} / fail ${result.limitedTest.counts.fail})`);
+console.log(`[google-oauth-release] limited test results: ${result.postEnableVerdict} (pass ${result.postEnable.counts.pass} / pending ${result.postEnable.counts.pending} / fail ${result.postEnable.counts.fail})`);
+console.log(`[google-oauth-release] B. public: ${result.publicVerdict}`);
 for (const f of result.codeFailures) console.log(`  code check failed: ${f}`);
-for (const p of [...result.preEnable.problems, ...result.postEnable.problems]) console.log(`  ${p}`);
+for (const p of [...result.limitedTest.problems, ...result.postEnable.problems, ...result.publicRelease.problems]) console.log(`  ${p}`);
 if (result.rollbackRequired) console.log("[google-oauth-release] ROLLBACK REQUIRED: close the entry (Supabase Google provider Disable, or GOOGLE_OAUTH_MODE = disabled).");
 
 if (process.env.EVIDENCE_PATH) {
@@ -46,11 +47,12 @@ if (process.env.EVIDENCE_PATH) {
         generatedAt: new Date().toISOString(),
         codeMode: code.entryMode,
         codeChecks: code,
-        preEnableVerdict: result.preEnableVerdict,
+        limitedVerdict: result.limitedVerdict,
         postEnableVerdict: result.postEnableVerdict,
+        publicVerdict: result.publicVerdict,
         rollbackRequired: result.rollbackRequired,
-        counts: { preEnable: result.preEnable.counts, postEnable: result.postEnable.counts },
-        problems: [...result.preEnable.problems, ...result.postEnable.problems],
+        counts: { limitedTest: result.limitedTest.counts, postEnable: result.postEnable.counts, publicRelease: result.publicRelease.counts },
+        problems: [...result.limitedTest.problems, ...result.postEnable.problems, ...result.publicRelease.problems],
       },
       null,
       2,
@@ -58,4 +60,4 @@ if (process.env.EVIDENCE_PATH) {
   );
   console.log(`[google-oauth-release] evidence: ${path.relative(ROOT, out)}`);
 }
-process.exitCode = result.rollbackRequired ? 2 : result.preEnableVerdict === "BLOCKED" ? 1 : 0;
+process.exitCode = result.rollbackRequired ? 2 : result.limitedVerdict === "BLOCKED" ? 1 : 0;

@@ -16,6 +16,7 @@ import { isSignupOpen } from "@/lib/supabase/account-availability";
 import { authErrorMessageKey } from "@/lib/supabase/email-link";
 import { GoogleSignInButton, useGoogleOAuthAvailable } from "./GoogleSignInButton";
 import { InAppBrowserNotice } from "./InAppBrowserNotice";
+import { isGoogleOAuthLimitedTest } from "@/lib/supabase/oauth";
 
 type AuthKey = keyof Dictionary["auth"];
 
@@ -75,6 +76,11 @@ export function SignInView() {
 
       {google ? (
         <Surface padding="md" className="flex max-w-md flex-col gap-3" data-testid="google-sign-in">
+          {isGoogleOAuthLimitedTest() ? (
+            <p className="rounded-md border border-warning/50 bg-warning/10 p-2 text-xs text-text" role="note" data-testid="google-limited-test-notice">
+              {ta("googleLimitedTestNotice")}
+            </p>
+          ) : null}
           <p className="text-sm text-text-dim">{ta("googlePrimaryLead")}</p>
           <InAppBrowserNotice force={oauthFailed} />
           <GoogleSignInButton next={nextPath} onError={setErrorMessage} />
