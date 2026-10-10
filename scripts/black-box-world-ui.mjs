@@ -214,6 +214,16 @@ async function main() {
   record("画面: 詳細に 26 能力値の内容が描画される（有効IDのみ）", /能力値（26/.test(worldDetailPage.body), "");
   // 注: Next 15 の force-dynamic + notFound() は本文を not-found UI にしつつ HTTP は 200 を返す。
   //     ここでは「クラッシュ（500）せず、詳細本文を描画しない」ことを確認する。
+  // 選手の詳細の国籍・リーグ・チーム・プレースタイルは、選手一覧の絞り込みへのリンク（2026-10-11）
+  {
+    const links = [...worldDetailPage.body.matchAll(/data-testid="player-detail-filter-link"[^>]*href="([^"]+)"|href="([^"]+)"[^>]*data-testid="player-detail-filter-link"/g)].map((m) => (m[1] ?? m[2]).replace(/&amp;/g, "&"));
+    const params = links.map((h) => [...new URLSearchParams(h.split("?")[1] ?? "").keys()][0]);
+    record("画面: 詳細の国籍・リーグ・チームが選手一覧の絞り込みへのリンク", ["nationality", "league", "team"].every((k) => params.includes(k)) && links.every((h) => h.startsWith("/players?")), params.join(","));
+    const natHref = links.find((h) => h.includes("nationality="));
+    const natList = natHref ? await json("/api/world/players" + natHref.slice("/players".length) + "&pageSize=1") : { status: 0 };
+    record("画面: 国籍のリンク先は絞り込まれた一覧（全件より少ない）", natList.status === 200 && natList.data?.totalCount > 0 && natList.data.totalCount < 12000, `total=${natList.data?.totalCount}`);
+  }
+
   const badDetailPage = await http("/players/world/not-real");
   record(
     "画面: 不正 World ID の詳細はクラッシュせず not-found（詳細本文を描画しない）",

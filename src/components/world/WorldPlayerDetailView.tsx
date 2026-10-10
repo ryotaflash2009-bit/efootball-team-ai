@@ -8,6 +8,8 @@ import { WorldBasePercentilePanel } from "@/components/world/WorldBasePercentile
 import { PlayerTitles } from "@/components/titles/PlayerTitles";
 import { WorldPlayerHero, type SafeWorldPlayerDetail } from "@/components/world/WorldPlayerHero";
 import { SamePlayerOtherCards } from "@/components/world/SamePlayerOtherCards";
+import Link from "next/link";
+import { playersFilterHref } from "@/lib/world/filter-patterns";
 import dynamic from "next/dynamic";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { PageContainer } from "@/components/ui/PageContainer";
@@ -58,17 +60,18 @@ export function WorldPlayerDetailView({
     return Number.isNaN(d.getTime()) ? iso : formatDateTime(d, displayLocale);
   };
 
-  const basicInfo: { label: string; value: string }[] = [
-    { label: tp("nationalityLabel"), value: player.nationality ?? "—" },
+  // 国籍・リーグ・チーム・プレースタイルは、選手一覧をその値で絞り込むリンクにする（2026-10-11）
+  const basicInfo: { label: string; value: string; href?: string | null }[] = [
+    { label: tp("nationalityLabel"), value: player.nationality ?? "—", href: playersFilterHref("nationality", player.nationality) },
     { label: tp("regionLabel"), value: player.region ?? "—" },
-    { label: tp("leagueLabel"), value: player.league ?? "—" },
-    { label: tp("teamLabel"), value: player.team ?? "—" },
+    { label: tp("leagueLabel"), value: player.league ?? "—", href: playersFilterHref("league", player.league) },
+    { label: tp("teamLabel"), value: player.team ?? "—", href: playersFilterHref("team", player.team) },
     { label: tp("ageLabel"), value: player.age != null ? `${player.age}` : "—" },
     { label: tp("heightLabel"), value: player.height != null ? `${player.height} cm` : "—" },
     { label: tp("weightLabel"), value: player.weight != null ? `${player.weight} kg` : "—" },
     { label: tp("preferredFootLabel"), value: player.preferredFoot ?? "—" },
-    { label: tp("playingStyleLabel"), value: player.playingStyle ?? "—" },
-    { label: tp("playingStyleDefLabel"), value: player.playingStyleDefensive ?? "—" },
+    { label: tp("playingStyleLabel"), value: player.playingStyle ?? "—", href: playersFilterHref("playingStyle", player.playingStyle) },
+    { label: tp("playingStyleDefLabel"), value: player.playingStyleDefensive ?? "—", href: playersFilterHref("playingStyleDef", player.playingStyleDefensive) },
     { label: tp("booster1Label"), value: player.boost1 != null ? `${player.boost1}` : "—" },
     { label: tp("booster2Label"), value: player.boost2 != null ? `${player.boost2}` : "—" },
   ];
@@ -80,7 +83,15 @@ export function WorldPlayerDetailView({
         {basicInfo.map((row) => (
           <div key={row.label}>
             <dt className="text-2xs text-text-muted">{row.label}</dt>
-            <dd className="mt-0.5 font-medium">{row.value}</dd>
+            <dd className="mt-0.5 font-medium">
+              {row.href ? (
+                <Link href={row.href} className="text-accent hover:underline" data-testid="player-detail-filter-link">
+                  {row.value}
+                </Link>
+              ) : (
+                row.value
+              )}
+            </dd>
           </div>
         ))}
       </dl>
