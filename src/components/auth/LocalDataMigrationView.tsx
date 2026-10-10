@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/Button";
 import { ConfirmDialog } from "@/components/user-cards/ConfirmDialog";
 import { useSupabaseSession } from "@/lib/supabase/use-auth-session";
 import { useStorageScope } from "@/lib/local-storage-scope/resolve-scope";
-import { detectAllLegacyData, type LegacyDataSummary } from "@/lib/local-storage-scope/legacy-detect";
+import { detectAllLegacyData, detectAllGuestData, type LegacyDataSummary } from "@/lib/local-storage-scope/legacy-detect";
 import { previewMigration, type MigrationPreview } from "@/lib/local-storage-scope/migration-preview";
 import { executeMigrationForKind, type MigrationExecutionResult } from "@/lib/local-storage-scope/migration-execute";
 import { getLegacyStorageKey, buildScopedStorageKey } from "@/lib/local-storage-scope/keys";
@@ -71,8 +71,18 @@ export function LocalDataMigrationView() {
   const scopeState = useStorageScope();
   const accountScope: StorageScope | null = scopeState.status === "resolved" && scopeState.scope.kind === "account" ? scopeState.scope : null;
 
+  // コピー元: legacy＝アカウント分離前の共通データ / guest＝未ログイン（ゲスト）で保存したデータ（2026-10-11・Google ログインの後の引き継ぎ）。
+  // どちらも読み取るだけで、コピー元は変えない。初期値は legacy（従来どおり）。`?source=guest` で開いたときだけ guest。
+  const [source, setSource] = useState<"legacy" | "guest">("legacy");
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("source") === "guest") setSource("guest");
+  }, []);
+  const sourceKey = useCallback(
+    (kind: DataKind) => (source === "guest" ? buildScopedStorageKey({ kind: "guest" }, kind) : getLegacyStorageKey(kind)),
+    [source],
+  );
   const [legacy, setLegacy] = useState<Record<DataKind, LegacyDataSummary> | null>(null);
-  const refreshLegacy = useCallback(() => setLegacy(detectAllLegacyData()), []);
+  const refreshLegacy = useCallback(() => setLegacy(source === "guest" ? detectAllGuestData() : detectAllLegacyData()), [source]);
   useEffect(() => {
     refreshLegacy();
   }, [refreshLegacy]);
@@ -87,6 +97,15 @@ export function LocalDataMigrationView() {
   const [migrateAck, setMigrateAck] = useState(false);
   const [migrating, setMigrating] = useState(false);
   const [downloadNotice, setDownloadNotice] = useState<Partial<Record<DataKind, string>>>({});
+
+  function changeSource(next: "legacy" | "guest") {
+    setSource(next);
+    setSelected({});
+    setPreviews({});
+    setResults({});
+    setConfirmKind(null);
+    setMigrateAck(false);
+  }
 
   function toggleSelected(kind: DataKind) {
     setSelected((prev) => ({ ...prev, [kind]: !prev[kind] }));
@@ -118,14 +137,14 @@ export function LocalDataMigrationView() {
     const next: Partial<Record<DataKind, MigrationPreview>> = {};
     for (const kind of MIGRATABLE_KINDS) {
       if (!selected[kind]) continue;
-      const legacyRaw = readRawJson(getLegacyStorageKey(kind));
+      const legacyRaw = readRawJson(sourceKey(kind));
       const targetRaw = readRawJson(buildScopedStorageKey(accountScope, kind));
       next[kind] = previewMigration(kind, legacyRaw, targetRaw);
     }
     setPreviews(next);
     setResults({});
     refreshReferenceIntegrity();
-  }, [accountScope, selected, refreshReferenceIntegrity]);
+  }, [accountScope, selected, refreshReferenceIntegrity, sourceKey]);
 
   function openMigrateConfirm(kind: DataKind) {
     setConfirmKind(kind);
@@ -137,9 +156,9 @@ export function LocalDataMigrationView() {
     if (migrating || !migrateAck || !accountScope || !kind) return;
     setMigrating(true);
     try {
-      const legacyKey = getLegacyStorageKey(kind);
+      const legacyKey = sourceKey(kind);
       const targetKey = buildScopedStorageKey(accountScope, kind);
-      const execResult = await executeMigrationForKind(kind, legacyKey, targetKey);
+      const execResult = await executeMigrationForKind(kind, legacyKey, targetKey, source);
       setResults((prev) => ({ ...prev, [kind]: execResult }));
       setConfirmKind(null);
       setMigrateAck(false);
@@ -155,7 +174,7 @@ export function LocalDataMigrationView() {
   }
 
   async function handleDownloadBackup(kind: DataKind) {
-    const legacyRaw = readRawJson(getLegacyStorageKey(kind));
+    const legacyRaw = readRawJson(sourceKey(kind));
     const payload = { exportedAt: new Date().toISOString(), dataKind: kind, data: legacyRaw };
     const outcome = await saveTextFile(BACKUP_FILE_NAME[kind], JSON.stringify(payload, null, 2));
     setDownloadNotice((prev) => ({
@@ -173,8 +192,23 @@ export function LocalDataMigrationView() {
         <p className="text-xs text-text-muted">{ta("noAutoMigrationNotice")}</p>
       </Surface>
 
+      <Surface padding="md" className="flex flex-col gap-2" data-testid="local-data-migration-source">
+        <fieldset className="flex flex-col gap-1.5">
+          <legend className="mb-1 text-sm font-semibold text-text">{ta("sourceHeading")}</legend>
+          <label className="flex cursor-pointer items-center gap-2 text-sm">
+            <input type="radio" name="local-data-migration-source" checked={source === "legacy"} onChange={() => changeSource("legacy")} />
+            <span>{ta("sourceLegacyOption")}</span>
+          </label>
+          <label className="flex cursor-pointer items-center gap-2 text-sm">
+            <input type="radio" name="local-data-migration-source" checked={source === "guest"} onChange={() => changeSource("guest")} />
+            <span>{ta("sourceGuestOption")}</span>
+          </label>
+        </fieldset>
+        <p className="text-2xs text-text-muted">{ta("sourceNoAutoMergeNotice")}</p>
+      </Surface>
+
       <Surface padding="md" className="flex flex-col gap-2">
-        <p className="text-sm font-semibold text-text">{ta("legacySummaryHeading")}</p>
+        <p className="text-sm font-semibold text-text">{source === "guest" ? ta("guestSummaryHeading") : ta("legacySummaryHeading")}</p>
         {legacy ? (
           <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm sm:grid-cols-3">
             {DATA_KINDS.map((kind) => (
@@ -356,7 +390,7 @@ export function LocalDataMigrationView() {
                     <dd className="font-bold tabular-nums">{preview.resultCountIfApplied}</dd>
                   </div>
                 </dl>
-                <p className="text-xs text-text-muted">{ta("legacyPreservedNotice")}</p>
+                <p className="text-xs text-text-muted">{source === "guest" ? ta("guestPreservedNotice") : ta("legacyPreservedNotice")}</p>
                 <p className="text-xs text-text-muted">{ta("noCloudSendNotice")}</p>
                 {kind === "myTeam" ? <p className="text-xs text-text-muted">{ta("cloudUnchangedNotice")}</p> : null}
                 {preview.conflictCount > 0 ? <p className="text-xs text-warning">{ta("conflictNotMigratedNotice")}</p> : null}
@@ -390,7 +424,7 @@ export function LocalDataMigrationView() {
                         {result.rolledBack ? ta("migrationFailedRolledBackMessage") : ta("migrationFailedMessage")}
                       </p>
                     )}
-                    <p className="text-2xs text-text-muted">{ta("legacyPreservedNotice")}</p>
+                    <p className="text-2xs text-text-muted">{source === "guest" ? ta("guestPreservedNotice") : ta("legacyPreservedNotice")}</p>
                   </div>
                 ) : null}
               </Surface>

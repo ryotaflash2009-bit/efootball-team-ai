@@ -98,3 +98,31 @@ describe("GET /auth/callback", () => {
     expect((await GET(makeRequest("/auth/callback?code=abc123"))).headers.get("location")).toContain("authError=rate_limited");
   });
 });
+
+describe("GET /auth/callback: Google OAuth（flow=google・2026-10-11）", () => {
+  afterEach(() => {
+    setSupabaseServerClientForTesting(null);
+  });
+  const loc = async (path: string) => (await GET(makeRequest(path))).headers.get("location") ?? "";
+
+  it("Google の画面でキャンセル（error=access_denied）→ oauth_cancelled（メールのリンクの「期限切れ」とは区別）", async () => {
+    expect(await loc("/auth/callback?flow=google&next=%2Faccount&error=access_denied&error_description=secret-detail")).toContain("authError=oauth_cancelled");
+    // flow=google が無い access_denied（メールのリンクの期限切れ等）は従来どおり
+    expect(await loc("/auth/callback?error=access_denied&error_code=otp_expired")).toContain("authError=link_expired");
+  });
+  it("Google 側の一時的な障害 → unavailable・その他 → oauth_failed・生の文は含めない", async () => {
+    expect(await loc("/auth/callback?flow=google&error=temporarily_unavailable")).toContain("authError=unavailable");
+    const l = await loc("/auth/callback?flow=google&error=invalid_request&error_description=secret-detail");
+    expect(l).toContain("authError=oauth_failed");
+    expect(l).not.toContain("secret-detail");
+  });
+  it("code が無い・交換に失敗 → oauth_failed／成功 → 安全な next へ（外部 URL は /account）", async () => {
+    expect(await loc("/auth/callback?flow=google")).toContain("authError=oauth_failed");
+    setSupabaseServerClientForTesting(async () => makeFakeClient({ error: { message: "bad" } }));
+    expect(await loc("/auth/callback?flow=google&code=abc123")).toContain("authError=oauth_failed");
+    setSupabaseServerClientForTesting(async () => makeFakeClient({ error: null }));
+    expect(new URL(await loc("/auth/callback?flow=google&code=abc123&next=%2Fsquads")).pathname).toBe("/squads");
+    expect(new URL(await loc("/auth/callback?flow=google&code=abc123&next=https%3A%2F%2Fevil.example")).pathname).toBe("/account");
+  });
+});
+

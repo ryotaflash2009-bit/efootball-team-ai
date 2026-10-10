@@ -15,7 +15,8 @@ import { getSafeLocalStorage, readRawJson } from "./storage-access";
 
 export const STORAGE_BACKUP_VERSION = "local-storage-scope-backup/2026-09-13.v1";
 
-export type BackupRole = "legacy" | "account";
+/** legacy: アカウント分離前の共通データ / guest: 未ログイン（ゲスト）領域（2026-10-11: Google ログインの後の引き継ぎ）/ account: コピー先。 */
+export type BackupRole = "legacy" | "guest" | "account";
 
 export interface StorageBackup {
   version: string;
@@ -47,7 +48,7 @@ function isStorageBackup(v: unknown): v is StorageBackup {
     typeof r.version === "string" &&
     typeof r.createdAt === "string" &&
     typeof r.kind === "string" &&
-    (r.role === "legacy" || r.role === "account") &&
+    (r.role === "legacy" || r.role === "guest" || r.role === "account") &&
     (r.payload === null || typeof r.payload === "string") &&
     typeof r.payloadHash === "string"
   );

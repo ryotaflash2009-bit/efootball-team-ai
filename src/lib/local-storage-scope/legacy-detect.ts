@@ -1,5 +1,5 @@
 import { DATA_KINDS, type DataKind } from "./types";
-import { getLegacyStorageKey } from "./keys";
+import { getLegacyStorageKey, buildScopedStorageKey } from "./keys";
 import { readRawJson } from "./storage-access";
 import { extractScopedItems } from "./adapters";
 
@@ -30,4 +30,20 @@ export function detectAllLegacyData(): Record<DataKind, LegacyDataSummary> {
 
 export function hasAnyLegacyData(summary: Record<DataKind, LegacyDataSummary>): boolean {
   return DATA_KINDS.some((k) => summary[k].hasData);
+}
+
+/**
+ * 未ログイン（ゲスト）領域の件数（2026-10-11）。Google でログインした後、ゲストとして保存したデータを
+ * アカウントの領域へ「不足分だけ追加」でコピーするかを本人が選ぶために使う（自動ではコピーしない）。
+ */
+export function detectGuestDataForKind(kind: DataKind): LegacyDataSummary {
+  const raw = readRawJson(buildScopedStorageKey({ kind: "guest" }, kind));
+  const items = extractScopedItems(kind, raw);
+  return { kind, hasData: items.length > 0, itemCount: items.length };
+}
+
+export function detectAllGuestData(): Record<DataKind, LegacyDataSummary> {
+  const out = {} as Record<DataKind, LegacyDataSummary>;
+  for (const kind of DATA_KINDS) out[kind] = detectGuestDataForKind(kind);
+  return out;
 }

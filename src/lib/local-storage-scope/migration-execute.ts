@@ -57,6 +57,8 @@ export async function executeMigrationForKind(
   kind: DataKind,
   legacyStorageKey: string,
   targetStorageKey: string,
+  /** コピー元の種類（バックアップの区別だけに使う）。ゲスト領域からの引き継ぎは "guest"。コピー元は常に読み取るだけ。 */
+  sourceRole: "legacy" | "guest" = "legacy",
 ): Promise<MigrationExecutionResult> {
   const ls = getSafeLocalStorage();
   if (!ls) return failure(kind, "STORAGE_UNAVAILABLE");
@@ -71,7 +73,7 @@ export async function executeMigrationForKind(
   }
 
   // 1. バックアップ(成功を確認できるまで移行を開始しない)。
-  const legacyBackup = await createBackup(kind, "legacy", legacyRawString);
+  const legacyBackup = await createBackup(kind, sourceRole, legacyRawString);
   const accountBackup: StorageBackup = await createBackup(kind, "account", targetRawStringBefore);
   const legacyBackupOk = persistBackup(legacyBackup);
   const accountBackupOk = persistBackup(accountBackup);

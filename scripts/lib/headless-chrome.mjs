@@ -228,6 +228,13 @@ export async function installSupabaseAuthTestDouble(client) {
         updateUser: async function () { return { data: {}, error: null }; },
         signInWithPassword: async function () { return { data: {}, error: null }; },
         resetPasswordForEmail: async function () { return { data: {}, error: null }; },
+        // Google OAuth（2026-10-11）。実 Supabase・Google へは移動しない。呼び出しの引数を window.__EFB_TEST_OAUTH_CALLS__ に記録し、
+        // window.__EFB_TEST_OAUTH_MODE__ === "failure" なら失敗を返す。
+        signInWithOAuth: async function (p) {
+          (window.__EFB_TEST_OAUTH_CALLS__ = window.__EFB_TEST_OAUTH_CALLS__ || []).push(JSON.parse(JSON.stringify(p)));
+          if (window.__EFB_TEST_OAUTH_MODE__ === "failure") return { data: {}, error: { status: 400, code: "validation_failed", message: "test double: oauth failure" } };
+          return { data: { provider: p.provider, url: "about:blank" }, error: null };
+        },
         // メールのリンク確認（/auth/confirm）。window.__EFB_TEST_VERIFY_MODE__ で結果を切り替える（実メール・実Supabaseなし）。
         verifyOtp: async function () {
           var mode = window.__EFB_TEST_VERIFY_MODE__ || "success";

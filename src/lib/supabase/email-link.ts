@@ -69,6 +69,8 @@ export type AuthErrorMessageKey =
   | "authErrorRateLimited"
   | "authErrorNotConfigured"
   | "authErrorServiceUnavailable"
+  | "authErrorOAuthCancelled"
+  | "authErrorOAuthFailed"
   | "signInFailedMessage";
 
 export function authErrorMessageKey(value: string | null): AuthErrorMessageKey | null {
@@ -86,6 +88,10 @@ export function authErrorMessageKey(value: string | null): AuthErrorMessageKey |
       return "authErrorNotConfigured";
     case "unavailable":
       return "authErrorServiceUnavailable";
+    case "oauth_cancelled":
+      return "authErrorOAuthCancelled";
+    case "oauth_failed":
+      return "authErrorOAuthFailed";
     default:
       return "signInFailedMessage";
   }

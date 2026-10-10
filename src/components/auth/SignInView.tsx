@@ -14,6 +14,7 @@ import { resolveSafeInternalPath } from "@/lib/supabase/safe-redirect";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { isSignupOpen } from "@/lib/supabase/account-availability";
 import { authErrorMessageKey } from "@/lib/supabase/email-link";
+import { GoogleSignInButton, useGoogleOAuthAvailable } from "./GoogleSignInButton";
 
 type AuthKey = keyof Dictionary["auth"];
 
@@ -33,6 +34,9 @@ export function SignInView() {
   });
 
   const nextPath = resolveSafeInternalPath(searchParams.get("next"), "/account");
+  // 2026-10-11 の方針: Google が主な経路。Google が使えるときは、メール＋パスワードは「以前に作成したアカウント」用に畳み、
+  // パスワードの再設定の導線は出さない（パスワードでのログインを一般に提供しないため）。Google が使えない間は従来どおり。
+  const google = useGoogleOAuthAvailable();
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -66,7 +70,21 @@ export function SignInView() {
     <div className="flex flex-col gap-5">
       <PageHeader title={ta("signInPageTitle")} icon="shield" />
 
+      {google ? (
+        <Surface padding="md" className="flex max-w-md flex-col gap-3" data-testid="google-sign-in">
+          <p className="text-sm text-text-dim">{ta("googlePrimaryLead")}</p>
+          <GoogleSignInButton next={nextPath} onError={setErrorMessage} />
+          {errorMessage ? (
+            <p role="alert" className="text-sm text-danger">
+              {errorMessage}
+            </p>
+          ) : null}
+          <p className="text-2xs text-text-muted">{ta("googleGuestNotice")}</p>
+        </Surface>
+      ) : null}
+
       <Surface padding="md" className="max-w-md">
+        {google ? <p className="mb-3 text-xs text-text-muted">{ta("passwordExistingAccountsLead")}</p> : null}
         <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
           <Input
             type="email"
@@ -89,13 +107,13 @@ export function SignInView() {
             disabled={submitting}
           />
 
-          {errorMessage ? (
+          {errorMessage && !google ? (
             <p role="alert" className="text-sm text-danger">
               {errorMessage}
             </p>
           ) : null}
 
-          <Button type="submit" disabled={submitting}>
+          <Button type="submit" variant={google ? "secondary" : "primary"} disabled={submitting}>
             {ta("signInSubmitButton")}
           </Button>
         </form>
@@ -108,11 +126,13 @@ export function SignInView() {
             {isSignupOpen() ? ta("signInSignUpLink") : ta("signInLimitedLink")}
           </Link>
         </p>
-        <p>
-          <Link href="/auth/forgot-password" className="text-accent hover:underline">
-            {ta("signInForgotPasswordLink")}
-          </Link>
-        </p>
+        {google ? null : (
+          <p>
+            <Link href="/auth/forgot-password" className="text-accent hover:underline">
+              {ta("signInForgotPasswordLink")}
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   );
