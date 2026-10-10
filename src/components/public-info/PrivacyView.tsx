@@ -65,6 +65,18 @@ export function PrivacyView() {
         </ul>
       </Surface>
 
+      <Surface padding="md" data-testid="privacy-google-login">
+        <p className="text-sm font-semibold text-text">{tp("authGoogleHeading")}</p>
+        <p className="mt-1 text-xs text-text-muted">{tp("authGoogleLimitedNotice")}</p>
+        <ul className="mt-2 list-disc space-y-1 ps-5 text-sm text-text-dim">
+          <li>{tp("authGoogleReceived")}</li>
+          <li>{tp("authGooglePurpose")}</li>
+          <li>{tp("authGoogleNotAccessed")}</li>
+          <li>{tp("authGoogleStorage")}</li>
+          <li>{tp("authGoogleDisconnect")}</li>
+        </ul>
+      </Surface>
+
       <Surface padding="md">
         <p className="text-sm font-semibold text-text">{tp("storageLocationHeading")}</p>
         <ul className="mt-2 list-disc space-y-1 ps-5 text-sm text-text-dim">

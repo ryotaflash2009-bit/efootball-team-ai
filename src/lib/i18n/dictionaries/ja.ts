@@ -3306,6 +3306,13 @@ export interface Dictionary {
     authEmailUsage: string;
     authSessionCookie: string;
     authPasswordHandling: string;
+    authGoogleHeading: string;
+    authGoogleLimitedNotice: string;
+    authGoogleReceived: string;
+    authGooglePurpose: string;
+    authGoogleNotAccessed: string;
+    authGoogleStorage: string;
+    authGoogleDisconnect: string;
     storageLocationHeading: string;
     storageLocationBrowserOnly: string;
     storageLocationNoServerAccount: string;
