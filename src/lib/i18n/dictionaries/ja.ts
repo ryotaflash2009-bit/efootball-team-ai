@@ -723,6 +723,8 @@ export interface Dictionary {
     assignErrorInvalidSlot: string;
     assignErrorSlotNotFound: string;
     assignErrorDuplicate: string;
+    assignErrorSamePlayer: string;
+    samePlayerWarningTemplate: string;
     assignErrorSlotOccupied: string;
     assignErrorBenchFullTemplate: string;
     moveErrorInvalidSquad: string;
