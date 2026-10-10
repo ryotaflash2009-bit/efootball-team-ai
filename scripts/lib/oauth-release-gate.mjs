@@ -17,6 +17,7 @@ export const PRE_ENABLE_ITEMS = [
   "supabaseConfirmEmailOn",
   "supabaseManualLinkingOff",
   "secretNotInRepoOrChat",
+  "privacyPolicyGoogleReviewed",
 ];
 export const POST_ENABLE_ITEMS = [
   "prodNewGoogleLogin",

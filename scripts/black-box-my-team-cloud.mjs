@@ -655,9 +655,18 @@ async function main() {
     // ============================================================
     // 既存機能スモーク回帰
     // ============================================================
-    for (const p of ["/", "/players", "/my-team", "/my-builds", "/build-inventory", "/best-xi", "/squads", "/favorites", "/account", "/account/rls-test", "/auth/sign-in"]) {
+    for (const p of ["/", "/players", "/my-team", "/my-builds", "/build-inventory", "/best-xi", "/squads", "/favorites", "/account", "/auth/sign-in"]) {
       const r = await fetch(`${BASE}${p}`);
       record(`[スモーク回帰] ${p} が引き続き200`, r.status === 200, `HTTP ${r.status}`);
+    }
+    // 内部ページ（/account/rls-test）は build の設定で表示が変わる（NEXT_PUBLIC_EFTA_INTERNAL_PAGES=enabled のときだけ 200・
+    // Production 相当の build では 404）。別の内部ページ（/release-readiness）と同じ状態であること＝意図した環境の差であることを確かめる
+    // （単純に飛ばして合格にしない。2026-10-11）。
+    {
+      const rls = (await fetch(`${BASE}/account/rls-test`)).status;
+      const other = (await fetch(`${BASE}/release-readiness`)).status;
+      const mode = rls === 200 && other === 200 ? "internal-build" : rls === 404 && other === 404 ? "production-build" : "inconsistent";
+      record(`[スモーク回帰] /account/rls-test は build の設定と一致（${mode}）`, mode !== "inconsistent", `rls-test=${rls} release-readiness=${other}`);
     }
 
     record("ページ内でJS例外が発生していない(全シナリオ通算)", errors.length === 0, errors.slice(0, 3).join(" / "));

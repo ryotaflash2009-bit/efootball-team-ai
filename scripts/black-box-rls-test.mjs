@@ -117,6 +117,17 @@ const UNREPLACED_VAR_RE = /\{[a-zA-Z][a-zA-Z0-9_]*\}|__[A-Z_]+__/;
 const UUID_LIKE_RE = /\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/i;
 
 async function main() {
+  // 前提（2026-10-11）: 内部ページを含む build（NEXT_PUBLIC_EFTA_INTERNAL_PAGES=enabled npm run build）。Production 相当の build では
+  // /account/rls-test が 404（公開しない）なので、このレールは「前提を満たさない」として終了コード 3 で止める（合格にはしない）。
+  {
+    const status = (await fetch(`${BASE}/account/rls-test`)).status;
+    if (status === 404) {
+      console.log("[black-box-rls-test] PREREQUISITE NOT MET: /account/rls-test is 404 (internal pages hidden). Build with NEXT_PUBLIC_EFTA_INTERNAL_PAGES=enabled to run this rail. Not counted as PASS.");
+      process.exitCode = 3;
+      return;
+    }
+  }
+
   const browser = await launchIsolatedBrowser();
   const tab = await openTab(browser.port, "about:blank");
   const client = connectCDP(tab.webSocketDebuggerUrl);
