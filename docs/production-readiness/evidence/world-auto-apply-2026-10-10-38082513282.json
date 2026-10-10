@@ -69,5 +69,20 @@
     }
   ],
   "productionWritten": true,
-  "automaticUndo": false
+  "automaticUndo": false,
+  "candidate": {
+    "sourceChecksum12": "3c064cdf73ae",
+    "recordCount": 13455
+  },
+  "diff": {
+    "before": 13372,
+    "after": 13455
+  },
+  "apply": {
+    "appliedAt": "2026-10-10T20:17:04.938Z",
+    "applyRunId": "38082513282"
+  },
+  "sourceTimestamps": {
+    "max": "2026-10-08T17:01:43.390Z"
+  }
 }

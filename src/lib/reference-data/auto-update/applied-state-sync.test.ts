@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { buildAppliedStateUpdate, parseCandidate } from "../../../../scripts/lib/applied-state-sync.mjs";
+import { buildAppliedStateUpdate, buildRepositoryEvidence, parseCandidate } from "../../../../scripts/lib/applied-state-sync.mjs";
 
 const STATE = {
   schema: "reference-data-applied-state/v1",
@@ -48,6 +48,22 @@ describe("適用済みの記録の自動の更新（2026-10-11）", () => {
     expect(r.appliedState.datasets.managers.recordCount).toBe(71);
     expect(r.skipped).toContain("candidate_invalid");
     expect(parseCandidate(cand("managers", "XYZ", 1, "2026-10-09T00:00:00Z", "1"))).toBeNull();
+  });
+});
+
+describe("リポジトリの Evidence（2026-10-11 修正: 最初の同期 bb2d335 で main のテストが失敗）", () => {
+  it("applied-state と最新の Evidence の一致の契約（update-detection.test.ts）が読む項目を持つ", () => {
+    const r = buildAppliedStateUpdate({ appliedState: STATE, candidates: [cand("world_player_cards", "3c064cdf73ae", 13455, "2026-10-10T20:17:04.938Z", "38082513282")], detections: [det("3c064cdf73ae", "2026-10-08T17:01:43.390Z")] });
+    const entry = r.appliedState.datasets.world_player_cards;
+    const ev = buildRepositoryEvidence({ schema: "reference-data-apply-evidence/v1", runId: "38082513282", outcome: "applied_verified" }, entry, 13372, "38082513282");
+    expect(ev).toMatchObject({ schema: "reference-data-apply-evidence/v1", runId: "38082513282", outcome: "applied_verified" });
+    // update-detection.test.ts と同じ照合
+    expect(entry).toMatchObject({ sourceChecksum12: ev.candidate.sourceChecksum12, recordCount: ev.diff.after, appliedAt: ev.apply.appliedAt, maxAppearanceUpdatedAt: ev.sourceTimestamps?.max });
+    expect(ev.diff.before).toBe(13372);
+    const m = buildRepositoryEvidence(undefined, { sourceChecksum12: "dddddddddddd", recordCount: 71, appliedAt: "2026-10-09T01:00:00.000Z" }, 69, "5");
+    expect(m).toMatchObject({ candidate: { sourceChecksum12: "dddddddddddd" }, diff: { before: 69, after: 71 } });
+    expect(m.sourceTimestamps).toBeUndefined();
+    expect(m.note).toMatch(/not available/);
   });
 });
 
