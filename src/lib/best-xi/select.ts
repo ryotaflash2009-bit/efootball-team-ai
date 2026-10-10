@@ -257,7 +257,7 @@ export function selectBestXi(params: {
     "singleFormationOnly",
     "noBenchSelection",
     "noManagerSelection",
-    "personIdentityUnavailable",
+    // personIdentityUnavailable は出さない（2026-10-10: 同じ選手の別カードは人物単位で 1 枚だけ選ぶ・person-identity.ts）
     "additionalPositionAptitudeLimited",
   ];
   if (candidatePoolBounded) limitationCodes.push("largeCandidatePoolBounded");

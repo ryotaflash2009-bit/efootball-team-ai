@@ -101,6 +101,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
+import { duplicatePersons } from "@/lib/world/person-identity";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { DiagnosisPerspectivesPanel } from "./DiagnosisPerspectivesPanel";
 import { SquadUniquenessPanel } from "./SquadUniquenessPanel";
@@ -126,6 +127,7 @@ function useAssignErrorMessage(): Record<SquadAssignErrorCode, string> {
     invalid_slot_id: key("assignErrorInvalidSlot"),
     slot_not_found: key("assignErrorSlotNotFound"),
     duplicate_not_allowed: key("assignErrorDuplicate"),
+    same_player_not_allowed: key("assignErrorSamePlayer"),
     slot_occupied: key("assignErrorSlotOccupied"),
     bench_full: benchFull,
   };
@@ -1082,6 +1084,14 @@ export function SquadEditor({
 
   // ベンチ行（index は squad.substitutes と 1:1・未解決カードでもズレない）
   // 英語の画面で、診断の文に入る選手の日本語名を英語名にそろえるための組（先発の表示データから）。
+  // 同じ選手の別のカードが 2 枚以上あるか（2026-10-10・ゲームでは編成できない）。保存したデータは変えず、知らせるだけ。
+  const samePlayerNames = useMemo(() => {
+    const ids = [...(squad?.slots ?? []).map((sl) => sl.worldCardId), ...(squad?.substitutes ?? []).map((sb) => sb.worldCardId)];
+    const nameOf = new Map<string, string>();
+    for (const sl of computed.slots) if (sl.entry) nameOf.set(sl.entry.display.worldCardId, resolvePlayerDisplayName(sl.entry.display, locale, sl.entry.display.worldCardId));
+    for (const sb of computed.substitutes) nameOf.set(sb.display.worldCardId, resolvePlayerDisplayName(sb.display, locale, sb.display.worldCardId));
+    return duplicatePersons(ids).map((g) => `${nameOf.get(g.worldCardIds[0]) ?? g.worldCardIds[0]}（${g.worldCardIds.length}）`);
+  }, [squad, computed, locale]);
   const namePairs = useMemo(
     () =>
       computed.slots
@@ -2030,6 +2040,11 @@ export function SquadEditor({
 
       {/* 下段: スカッド診断（編成エリア全体の下・PC/モバイル共通で常時表示・SquadDiagnosisPanelは1回だけレンダリング） */}
       <div className="mt-2">
+        {samePlayerNames.length > 0 ? (
+          <p className="mb-2 rounded-md border border-warning/50 bg-warning/10 p-2.5 text-xs text-warning" role="status" data-testid="squad-same-player-warning">
+            {t("squadEditor", "samePlayerWarningTemplate").replace("{names}", samePlayerNames.join("、"))}
+          </p>
+        ) : null}
         <SquadDiagnosisPanel
           simulationInput={diagnosisInput}
           result={diagnosis}

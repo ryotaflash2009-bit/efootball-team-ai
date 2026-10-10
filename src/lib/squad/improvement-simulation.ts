@@ -4,6 +4,7 @@ import { evaluateDiagnosisTitles, type DiagnosisTitleResult } from "@/lib/titles
 import { FORMATIONS, getFormation } from "./formations";
 import { inferFreshRole } from "./role-inference";
 import { MAX_SUBSTITUTES } from "./types";
+import { isSamePerson } from "@/lib/world/person-identity";
 
 /**
  * 改善シミュレーション（2026-10-07・決定的・ルールベース・保存しない）。
@@ -80,6 +81,11 @@ export function applySquadChanges(input: SquadDiagnosisInput, changes: readonly 
         rejected.push(`swap: bench ${c.benchKey} has no resolved card`);
         continue;
       }
+      // ゲームでは同じ選手の別カードを 2 枚編成できない（2026-10-10）。入れ替えで先発に同じ選手が 2 人になる案は出さない。
+      if (starters.some((x, i) => i !== si && x.cardResolved && isSamePerson(x.worldCardId, b.worldCardId))) {
+        rejected.push(`swap: bench ${c.benchKey} is the same player as another starter`);
+        continue;
+      }
       starters = starters.map((x, i) => (i === si ? asStarter(b, s) : x));
       bench = bench.map((x, i) => (i === bi ? asBench(s, b) : x));
     } else {
@@ -152,6 +158,7 @@ export function rankBenchSwaps(input: SquadDiagnosisInput, limit = 3): SwapCandi
     if (!s.cardResolved || !s.role) continue;
     for (const b of input.bench) {
       if (!b.cardResolved) continue;
+      if (input.starters.some((x) => x.key !== s.key && x.cardResolved && isSamePerson(x.worldCardId, b.worldCardId))) continue;
       const benchRole = roleOfPosition(b.registeredPosition);
       if ((s.role === "GK") !== (benchRole === "GK")) continue;
       const sim = simulateSquadChanges(input, [{ kind: "swap", starterKey: s.key, benchKey: b.key }], before);

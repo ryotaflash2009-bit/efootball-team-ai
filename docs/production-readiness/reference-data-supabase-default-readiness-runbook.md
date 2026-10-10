@@ -1,5 +1,8 @@
 # 参照データ Supabase既定化 前提条件・切戻しランブック
 
+> **現状（2026-10-10 の棚卸し）**: Phase E（`WORLD_DATA_SOURCE` の既定を `supabase` へ）は実施済み（`src/lib/world/repository.ts` の既定は `supabase`）。
+> §2 のチェックリストは当時の事前確認の記録として残す（新たな作業ではない）。§ の切戻し（`WORLD_DATA_SOURCE=sqlite`）は今も有効な手順。
+
 **本書は既定化そのものの承認ではない。** `WORLD_DATA_SOURCE`の既定値を`"supabase"`へ変更する判断(`docs/production-readiness/app-hybrid-switch-implementation-plan.md`が定義する正式な「Phase E: 既定値の切り替え」)を安全に行うための、事前チェックリストと障害時の切戻し手順をまとめたものである。
 
 このランブック自体の追加は、Reference Data Operational Hardening(既定化前の運用強化、フェーズ番号なし)の一部であり、Phase Eそのものではない。

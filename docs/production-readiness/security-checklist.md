@@ -1,5 +1,9 @@
 # セキュリティチェックリスト(将来実装時の必須事項)
 
+> **現状（2026-10-10 の棚卸し）**: このチェックリストは「アカウント機能（新規登録・ログイン）を公開するとき」のためのもので、新規登録は未開放のため未チェックのまま残す。
+> 既に満たしているもの: Git と `.gitignore`（`.env` / `.env.*`）・セキュリティヘッダー（CSP・`X-Frame-Options: DENY`・`X-Content-Type-Options`・`Referrer-Policy`・`Permissions-Policy`・`X-Robots-Tag`。`src/lib/security/security-headers.mjs`）・
+> 別サイトからの POST の拒否（#214）・Dependabot の PR・品質ゲートの secret scan（ローカル）。§1 の「Git リポジトリが存在しない」は古い記述。
+
 調査日: 2026-09-11。本書はチェックリストであり、今回は実装しない。将来の認証・DB実装フェーズで、この一覧を満たすことを完了条件とすることを推奨する。
 
 ## 1. 秘密情報の取り扱い

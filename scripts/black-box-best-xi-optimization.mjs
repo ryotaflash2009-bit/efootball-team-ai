@@ -193,34 +193,36 @@ async function main() {
     record("[フル充足4-3-3] 11 / 11 スロットが埋まった旨が表示される", /11\s*\/\s*11/.test(fullBody), "");
     record("[フル充足4-3-3] 本職 11 人・同系統 0 人と表示される", /本職\s*11\s*人/.test(fullBody) && /同系統\s*0\s*人/.test(fullBody), "");
     record("[フル充足4-3-3] 空きスロットの警告が表示されない", !fullBody.includes("空きスロット"), "");
-    record("[同じ名前] 同じ名前のカードが無いときは知らせない", !fullBody.includes("同じ名前の選手が含まれています"), "");
-
     // ============================================================
-    // 1a. 同じ名前のカード（NEW-25・2026-10-09）: 先発の 1 人と同じ英語名の別のカードを足すと、事実として知らせる（外さない）
+    // 1a. 同じ選手の別のカード（2026-10-10 本人のゲームの画面の確認: 同じ選手は 2 枚編成できない）
+    //     先発の 1 人と同じ選手（カード ID の下位 20 ビットが同じ）の別のカードを足しても、先発・控えには 1 枚だけ。
     // ============================================================
     {
+      const personKey = (id) => (BigInt(id) & ((1n << 20n) - 1n)).toString();
       let twin = null;
       for (const id of FULL_XI) {
         const d = await (await fetch(`${BASE}/api/world/players/${id}`)).json().catch(() => null);
         const name = d?.player?.nameEn ?? d?.data?.player?.nameEn;
         if (!name) continue;
-        const list = await (await fetch(`${BASE}/api/world/players?q=${encodeURIComponent(name)}&pageSize=20`)).json().catch(() => null);
-        const other = (list?.players ?? []).find((p) => p.worldCardId !== id && (p.nameEn ?? "").trim().toLowerCase() === name.trim().toLowerCase());
+        const list = await (await fetch(`${BASE}/api/world/players?q=${encodeURIComponent(name)}&pageSize=50`)).json().catch(() => null);
+        const other = (list?.players ?? []).find((p) => p.worldCardId !== id && personKey(p.worldCardId) === personKey(id));
         if (other) {
           twin = { id, name, other: other.worldCardId };
           break;
         }
       }
       if (!twin) {
-        record("[同じ名前] 準備: 先発と同じ英語名の別のカードが見つかる", false, "not found");
+        record("[同じ選手] 準備: 先発と同じ選手の別のカードが見つかる", false, "not found");
       } else {
         await setMyTeam(client, [...FULL_XI, twin.other]);
         await hardReloadAndSettle(client);
         await waitForCondition(async () => (await bodyText(client)).includes("選出選手一覧"), { timeoutMs: 10000, intervalMs: 200 });
-        await waitForCondition(async () => (await bodyText(client)).includes("同じ名前の選手が含まれています"), { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
-        const twinBody = await bodyText(client);
-        const picked = /同じ名前の選手が含まれています/.test(twinBody);
-        record("[同じ名前] 同じ名前の別のカードが先発・控えにいると知らせる（自動では外さない）", picked && /自動では外しません/.test(twinBody), `${twin.name} ${twin.id}/${twin.other}`);
+        await waitForCondition(async () => (await evalJson(client, `document.querySelectorAll('[data-world-card-id]').length`)) >= 11, { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+        const ids = await evalJson(client, `[...document.querySelectorAll('[data-world-card-id]')].map((e) => e.getAttribute('data-world-card-id'))`);
+        const both = (ids ?? []).filter((x) => x === twin.id || x === twin.other);
+        record("[同じ選手] 同じ選手の別のカードは先発・控えをまたいで 1 枚だけ選ばれる", both.length === 1, `${twin.name} ${twin.id}/${twin.other} selected=${both.join(",")}`);
+        const keys = (ids ?? []).map(personKey);
+        record("[同じ選手] 選出・控えに同じ選手（人物キー）の重複が無い", new Set(keys).size === keys.length && keys.length >= 11, `n=${keys.length}`);
         await setMyTeam(client, FULL_XI);
       }
     }

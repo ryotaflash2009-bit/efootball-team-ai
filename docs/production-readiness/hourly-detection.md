@@ -66,7 +66,7 @@ stale lock: 独自の lock は持たない（GitHub の concurrency と DB の a
 
 - 軽い回の変化なし（`no_change_light`）・同じ候補の繰り返しは通知しない。
 - 同じ失敗・要確認の通知は、6 時間以内なら繰り返さない（`shouldThrottleNotification`）。Issue は 1 件にまとめる（既存）。
-- **定期実行の間隔**: 前回の検出 run から 130 分を超えたら通知する（`buildScheduleGapNotice`。GitHub の schedule の遅れ・欠落）。
+- **定期実行の間隔**: 前回の検出 run から **600 分**を超えたら通知する（`buildScheduleGapNotice`。2026-10-10 に 130 分から変更: 毎時の schedule の 8 割以上が欠落し、130 分では毎回の通知になっていた。watchdog（§7.2）が 6 時間 30 分を超えた欠落を埋めるため、600 分を超えるのは watchdog も止まったときだけ）。
 
 ## 6. 使用量・費用・上流の負荷（見積もり）
 
@@ -110,12 +110,25 @@ stale lock: 独自の lock は持たない（GitHub の concurrency と DB の a
 - その後の 18:17 の枠は **run が作られなかった**（GitHub 側で欠落）。19:17 の枠も 20:02Z の時点で run が無い（欠落）。workflow は active・変数は `true`・
   ファイルは main で正しい（設定の問題ではない）。GitHub の schedule は混雑時に遅れ・欠落がある（ベストエフォート）。
 - 影響: 検出が 1〜2 時間あくことがある。次の run が状態を引き継ぐため、取りこぼしは無い（World の完全な比較は 6 時間ごとの条件で必ず走る）。
-  130 分を超えるあきは `buildScheduleGapNotice` が次の run で通知する。
+  あきは `buildScheduleGapNotice` が次の run で通知する（基準は当時 130 分・2026-10-10 から 600 分）。
 - 変えない理由: 自分で dispatch し直す方式は手動の run と同じく World の完全な検出（約 445 request）になり上流の負荷が増える。
   外部の cron から GitHub API で起動する方式は token（Secret）が必要で、本人の判断が要る（Secret の変更は禁止事項）。
 - 本人の判断の候補: (a) 現状のまま（推奨・費用 0）、(b) 外部の cron サービス + 細かい権限の token で workflow_dispatch（軽い回の入力を追加する変更が必要）。
 - **本人の決定（2026-10-06）**: (a)。当面は GitHub Actions の schedule だけを使い、外部 Cron・新しい Token・Secret・外部契約・有料サービスは追加しない。
   2026-10-13 まで観測する。観測の定義・手順・再検討の条件は `hourly-detection-observation.md`。
+
+### 7.2 検出の watchdog（2026-10-10・本人の指示「自動更新を完全に完成させて」）
+
+- 観測（2026-10-06〜10-10・`evidence/hourly-detection-observation-2026-10-10.json`）: 期待 111 枠のうち実行 19・欠落 83%・最大の間隔 452 分。
+  10-04〜07 には約 24 時間の間隔もあった。毎時の schedule だけでは「6 時間ごとの完全な検出」が守れない。
+- 追加: `.github/workflows/reference-data-detection-watchdog.yml`（3 時間ごとの 43 分）。最後に成功した検出が **6 時間 30 分**より古いときだけ、
+  `GITHUB_TOKEN` で検出を 1 回 `workflow_dispatch`（confirm `detect`）する。判定は `scripts/lib/detection-watchdog.mjs`（pure・テスト 6）。
+- 起動しない条件: 検出が実行中・待機中／直近の検出が失敗（既存の失敗の通知に任せる）／直近が skip（検出の変数で停止中）／検出の変数が `true` でない。
+- 上流の負荷: 起動されるのは「6 時間ごとの完全な検出」の規則で本来走るはずの回だけ（約 445 request）。設計の 1 日 約 1,830 request を超えない。
+- 新しい Secret・Token・外部サービス・Production の変更・費用はない（2026-10-06 の本人の決定 (a) の範囲: 外部 Cron・新しい Token を使わない）。
+- 停止: watchdog だけ → リポジトリの変数 `REFERENCE_DATA_DETECTION_WATCHDOG_DISABLED` を `true`。全体 → 検出の変数を `true` 以外。
+- 限界: watchdog も GitHub の schedule なので同時に欠落しうる（3 時間ごとに 8 回の機会）。60 日間の無活動による schedule の自動無効は防げない（§7）。
+- 観測（`observe-hourly-detection.mjs`）では watchdog の起動は `workflow_dispatch`（manualRuns）に数えられる。
 
 ## 8. 変えていないもの
 

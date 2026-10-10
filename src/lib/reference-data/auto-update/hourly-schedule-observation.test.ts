@@ -104,11 +104,11 @@ describe("毎時の検出の観測: 予定の枠と実際の run", () => {
     expect(delayed.reconsiderExternalTrigger).toBe(true);
   });
 
-  it("130 分の通知の基準は変えていない", () => {
+  it("通知の基準は 600 分（2026-10-10 に watchdog とあわせて 130 分から変更）", () => {
     const t = "2026-10-06T00:17:00.000Z";
     const at = (m: number) => new Date(Date.parse(t) + m * 60_000).toISOString();
-    expect(buildScheduleGapNotice(t, at(130), "schedule").notify).toBe(false);
-    expect(buildScheduleGapNotice(t, at(131), "schedule").notify).toBe(true);
+    expect(buildScheduleGapNotice(t, at(600), "schedule").notify).toBe(false);
+    expect(buildScheduleGapNotice(t, at(601), "schedule").notify).toBe(true);
   });
 });
 

@@ -1,0 +1,20 @@
+{
+  "schema": "search-indexing-evidence/1",
+  "checkedAt": "2026-10-10T13:26:39.683Z",
+  "base": "https://efootball-team-ai.vercel.app",
+  "mainHead": "d75ed30",
+  "ownerActions2026_10_10": [
+    "Vercel Production: NEXT_PUBLIC_SEARCH_INDEXING=enabled, redeployed (Ready / Current)",
+    "Google Search Console: URL-prefix property verified (HTML tag)",
+    "sitemap.xml submitted; Search Console: processed successfully"
+  ],
+  "validator": { "script": "scripts/validate-search-indexing.mjs", "verdict": "SEARCH_INDEXING_ENABLED", "blocked": [], "requests": 59, "analytics": true, "checkedIndexed": 15, "checkedNoindex": 19, "checkedDetails": 12 },
+  "robotsTxt": "Allow /; Disallow /api/ /auth/ /account /share/ /release-readiness /tier-pack-preview /community/; Sitemap on canonical origin",
+  "sitemap": { "status": 200, "contentType": "application/xml; charset=utf-8", "bytes": 1917635, "urls": 13456, "duplicates": 0, "queryOrPrivateOrDraftUrls": 0 },
+  "canonical": "home / player / manager details on the canonical origin; query and tracking parameters removed",
+  "noindexBoundary": "My Team, auth, share links, account, device squads: 200 with meta + X-Robots-Tag noindex; internal pages 404; draft guides (2) noindex and not in sitemap; deployment-specific URL behind Vercel auth (302) with noindex",
+  "structuredData": "WebSite on home, BreadcrumbList on details; valid JSON; last breadcrumb item equals canonical",
+  "siteVerificationMeta": "present",
+  "blackBox": { "publicFull": "576/576 (perf 14/14, security 20/20)", "hydrationSeeded": "95/95 (ja/en, desktop/mobile)", "react418": 0, "consoleErrors": 0, "http5xx": 0 },
+  "status": "COMPLETE (owner decision 2026-10-10)"
+}

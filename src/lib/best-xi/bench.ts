@@ -1,4 +1,5 @@
 import { getFormation } from "@/lib/squad/formations";
+import { personKeyOf } from "@/lib/world/person-identity";
 import { MAX_SUBSTITUTES } from "@/lib/squad/types";
 import { compareRankTuples, computeRankTuple, type BestXiRankTuple } from "./rank";
 import type { BestXiCandidate, BestXiSelectionResult } from "./types";
@@ -49,16 +50,18 @@ export function selectBestXiBench(params: {
   for (const s of [...formation.slots].sort((a, b) => a.displayOrder - b.displayOrder)) {
     if (!positions.includes(s.position)) positions.push(s.position);
   }
-  const usedCards = new Set(params.selection.slots.map((s) => s.candidate.worldCardId));
+  // 人物単位（2026-10-10: 同じ選手の別カードは先発・控えをまたいで 1 枚だけ。person-identity.ts）。
+  const pk = (c: BestXiCandidate) => personKeyOf(c.worldCardId) ?? `card:${c.worldCardId}`;
+  const usedCards = new Set(params.selection.slots.map((s) => pk(s.candidate)));
 
   // カードごと・ポジションごとに、そのカードで最も良い候補（ビルド）を 1 つ残す。
   const bestByCardPosition = new Map<string, Scored>();
   for (const candidate of params.candidates) {
-    if (usedCards.has(candidate.worldCardId) || candidate.abilityStatus !== "available") continue;
+    if (usedCards.has(pk(candidate)) || candidate.abilityStatus !== "available") continue;
     for (const position of positions) {
       const { tuple, suitability } = computeRankTuple(candidate, position);
       if (!tuple.eligible) continue;
-      const key = `${candidate.worldCardId}\u0000${position}`;
+      const key = `${pk(candidate)}\u0000${position}`;
       const prev = bestByCardPosition.get(key);
       if (!prev || compareRankTuples(tuple, prev.tuple) < 0) {
         bestByCardPosition.set(key, { candidate, position, tuple, exact: suitability.tier === "exact" });
@@ -69,13 +72,13 @@ export function selectBestXiBench(params: {
   const taken = new Set<string>();
   const entries: BestXiBenchEntry[] = [];
   const add = (s: Scored, reason: BestXiBenchReason) => {
-    taken.add(s.candidate.worldCardId);
+    taken.add(pk(s.candidate));
     entries.push({ candidate: s.candidate, position: s.position, positionRating: s.tuple.positionRating, reason });
   };
   const bestFor = (pred: (s: Scored) => boolean): Scored | null => {
     let best: Scored | null = null;
     for (const s of all) {
-      if (taken.has(s.candidate.worldCardId) || !pred(s)) continue;
+      if (taken.has(pk(s.candidate)) || !pred(s)) continue;
       if (!best || compareRankTuples(s.tuple, best.tuple) < 0) best = s;
     }
     return best;
@@ -98,16 +101,16 @@ export function selectBestXiBench(params: {
   }
   // 4. 残りの枠: 各カードの最も良いポジションでの評価の順（GK の 2 人目以降は入れない）。
   while (entries.length < maxSize) {
-    const s = bestFor((x) => x.position !== "GK" && bestPositionOf(x.candidate.worldCardId) === x);
+    const s = bestFor((x) => x.position !== "GK" && bestPositionOf(pk(x.candidate)) === x);
     if (!s) break;
     add(s, "bestRemaining");
   }
   return { entries, uncoveredPositions, maxSize };
 
-  function bestPositionOf(worldCardId: string): Scored | null {
+  function bestPositionOf(personKey: string): Scored | null {
     let best: Scored | null = null;
     for (const s of all) {
-      if (s.candidate.worldCardId !== worldCardId || s.position === "GK") continue;
+      if (pk(s.candidate) !== personKey || s.position === "GK") continue;
       if (!best || compareRankTuples(s.tuple, best.tuple) < 0) best = s;
     }
     return best;

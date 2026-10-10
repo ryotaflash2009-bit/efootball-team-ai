@@ -26,8 +26,8 @@ function player(o: Partial<SquadDiagnosisPlayerInput>): SquadDiagnosisPlayerInpu
 }
 function squad(benchValues: number[] = [], weakSlot = 9, weakValue = 50): SquadDiagnosisInput {
   const f = getFormation("4-3-3");
-  const starters = f.slots.map((s, i) => player({ key: s.slotId, role: s.role, assignedPosition: s.position, registeredPosition: s.position, stats: makeStats(i === weakSlot ? weakValue : 65) }));
-  const bench = benchValues.map((v, i) => player({ key: `sub${i}`, role: null, assignedPosition: null, compatibilityStatus: null, registeredPosition: i === 0 ? starters[weakSlot].assignedPosition : "CMF", stats: makeStats(v) }));
+  const starters = f.slots.map((s, i) => player({ key: s.slotId, worldCardId: String(100 + i), role: s.role, assignedPosition: s.position, registeredPosition: s.position, stats: makeStats(i === weakSlot ? weakValue : 65) }));
+  const bench = benchValues.map((v, i) => player({ key: `sub${i}`, worldCardId: String(200 + i), role: null, assignedPosition: null, compatibilityStatus: null, registeredPosition: i === 0 ? starters[weakSlot].assignedPosition : "CMF", stats: makeStats(v) }));
   return { squadId: "sq_sim0001", squadName: "Sim", updatedAt: "2026-10-07T00:00:00.000Z", formationId: "4-3-3", starters, bench, managerId: null, managerResolved: true, managerApplied: false };
 }
 

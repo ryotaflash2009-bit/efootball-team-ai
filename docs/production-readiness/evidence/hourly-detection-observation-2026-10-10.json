@@ -1,0 +1,608 @@
+{
+  "schema": "hourly-detection-observation/v1",
+  "generatedAt": "2026-10-10T14:21:25.465Z",
+  "cron": "17 * * * *",
+  "window": {
+    "since": "2026-10-06T00:00:00.000Z",
+    "until": "2026-10-10T14:21:22.350Z"
+  },
+  "expected": 111,
+  "actual": 19,
+  "extraRuns": 0,
+  "manualRuns": 1,
+  "missing": 92,
+  "missingRatio": 0.829,
+  "maxConsecutiveMissing": 7,
+  "maxGapMinutes": 452,
+  "maxGapEndsAt": "2026-10-08T16:26:39.000Z",
+  "lastSuccessfulDetection": "2026-10-10T13:37:48.000Z",
+  "delayMinutes": {
+    "median": 37,
+    "max": 56
+  },
+  "light": 0,
+  "fullScan": 0,
+  "noChange": 0,
+  "lightNoSignalChange": 0,
+  "changeDetected": 0,
+  "failure": 0,
+  "skip": 0,
+  "cancelled": 0,
+  "concurrencyOverlaps": 0,
+  "requests": null,
+  "downloadedBytes": null,
+  "durationSeconds": {
+    "median": 1552,
+    "total": 20466
+  },
+  "gapNotices": 15,
+  "delayedDetections": 0,
+  "workflowState": "active",
+  "reconsider": {
+    "gapAtLeast6h": true,
+    "missingAboutHalfOrMore": true,
+    "delayedDetectionsTwiceOrMore": false,
+    "scheduleDisabled": false
+  },
+  "reconsiderExternalTrigger": true,
+  "slots": [
+    {
+      "slot": "2026-10-06T00:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T01:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T02:17:00.000Z",
+      "status": "ran",
+      "runId": 37406597404,
+      "createdAt": "2026-10-06T02:56:37Z",
+      "startedAt": "2026-10-06T02:56:37Z",
+      "delayMinutes": 40,
+      "durationSeconds": 35,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-06T03:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T04:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T05:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T06:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T07:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T08:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T09:17:00.000Z",
+      "status": "ran",
+      "runId": 37448295735,
+      "createdAt": "2026-10-06T10:13:02Z",
+      "startedAt": "2026-10-06T10:13:02Z",
+      "delayMinutes": 56,
+      "durationSeconds": 1559,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-06T10:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T11:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T12:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T13:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T14:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T15:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T16:17:00.000Z",
+      "status": "ran",
+      "runId": 37498533208,
+      "createdAt": "2026-10-06T16:47:57Z",
+      "startedAt": "2026-10-06T16:47:57Z",
+      "delayMinutes": 31,
+      "durationSeconds": 1573,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-06T17:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T18:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T19:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T20:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T21:17:00.000Z",
+      "status": "ran",
+      "runId": 37535103497,
+      "createdAt": "2026-10-06T21:36:43Z",
+      "startedAt": "2026-10-06T21:36:43Z",
+      "delayMinutes": 20,
+      "durationSeconds": 33,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-06T22:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T23:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T00:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T01:17:00.000Z",
+      "status": "ran",
+      "runId": 37557473749,
+      "createdAt": "2026-10-07T01:30:50Z",
+      "startedAt": "2026-10-07T01:30:50Z",
+      "delayMinutes": 14,
+      "durationSeconds": 1552,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-07T02:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T03:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T04:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T05:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T06:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T07:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T08:17:00.000Z",
+      "status": "ran",
+      "runId": 37594873163,
+      "createdAt": "2026-10-07T08:36:18Z",
+      "startedAt": "2026-10-07T08:36:18Z",
+      "delayMinutes": 19,
+      "durationSeconds": 1549,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-07T09:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T10:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T11:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T12:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T13:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T14:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T15:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T16:17:00.000Z",
+      "status": "ran",
+      "runId": 37651900415,
+      "createdAt": "2026-10-07T16:25:24Z",
+      "startedAt": "2026-10-07T16:25:24Z",
+      "delayMinutes": 8,
+      "durationSeconds": 39,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-07T17:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T18:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T19:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T20:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T21:17:00.000Z",
+      "status": "ran",
+      "runId": 37693006106,
+      "createdAt": "2026-10-07T21:57:39Z",
+      "startedAt": "2026-10-07T21:57:39Z",
+      "delayMinutes": 41,
+      "durationSeconds": 1544,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-07T22:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T23:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T00:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T01:17:00.000Z",
+      "status": "ran",
+      "runId": 37715220665,
+      "createdAt": "2026-10-08T01:54:18Z",
+      "startedAt": "2026-10-08T01:54:18Z",
+      "delayMinutes": 37,
+      "durationSeconds": 24,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-08T02:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T03:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T04:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T05:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T06:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T07:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T08:17:00.000Z",
+      "status": "ran",
+      "runId": 37753049243,
+      "createdAt": "2026-10-08T08:55:08Z",
+      "startedAt": "2026-10-08T08:55:08Z",
+      "delayMinutes": 38,
+      "durationSeconds": 1566,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-08T09:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T10:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T11:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T12:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T13:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T14:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T15:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T16:17:00.000Z",
+      "status": "ran",
+      "runId": 37808820674,
+      "createdAt": "2026-10-08T16:26:39Z",
+      "startedAt": "2026-10-08T16:26:39Z",
+      "delayMinutes": 10,
+      "durationSeconds": 1553,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-08T17:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T18:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T19:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T20:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T21:17:00.000Z",
+      "status": "ran",
+      "runId": 37850987850,
+      "createdAt": "2026-10-08T22:03:20Z",
+      "startedAt": "2026-10-08T22:03:20Z",
+      "delayMinutes": 46,
+      "durationSeconds": 29,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-08T22:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T23:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T00:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T01:17:00.000Z",
+      "status": "ran",
+      "runId": 37873007864,
+      "createdAt": "2026-10-09T02:06:47Z",
+      "startedAt": "2026-10-09T02:06:47Z",
+      "delayMinutes": 50,
+      "durationSeconds": 1557,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-09T02:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T03:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T04:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T05:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T06:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T07:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T08:17:00.000Z",
+      "status": "ran",
+      "runId": 37908341902,
+      "createdAt": "2026-10-09T08:58:59Z",
+      "startedAt": "2026-10-09T08:58:59Z",
+      "delayMinutes": 42,
+      "durationSeconds": 1556,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-09T09:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T10:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T11:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T12:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T13:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T14:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T15:17:00.000Z",
+      "status": "ran",
+      "runId": 37957076352,
+      "createdAt": "2026-10-09T16:09:41Z",
+      "startedAt": "2026-10-09T16:09:41Z",
+      "delayMinutes": 53,
+      "durationSeconds": 1577,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-09T16:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T17:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T18:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T19:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T20:17:00.000Z",
+      "status": "ran",
+      "runId": 37989788547,
+      "createdAt": "2026-10-09T20:51:42Z",
+      "startedAt": "2026-10-09T20:51:42Z",
+      "delayMinutes": 35,
+      "durationSeconds": 31,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-09T21:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T22:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T23:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T00:17:00.000Z",
+      "status": "ran",
+      "runId": 38010534554,
+      "createdAt": "2026-10-10T00:47:11Z",
+      "startedAt": "2026-10-10T00:47:11Z",
+      "delayMinutes": 30,
+      "durationSeconds": 1592,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-10T01:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T02:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T03:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T04:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T05:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T06:17:00.000Z",
+      "status": "ran",
+      "runId": 38033055807,
+      "createdAt": "2026-10-10T07:02:52Z",
+      "startedAt": "2026-10-10T07:02:52Z",
+      "delayMinutes": 46,
+      "durationSeconds": 1542,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-10T07:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T08:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T09:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T10:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T11:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T12:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T13:17:00.000Z",
+      "status": "ran",
+      "runId": 38056453535,
+      "createdAt": "2026-10-10T13:37:48Z",
+      "startedAt": "2026-10-10T13:37:48Z",
+      "delayMinutes": 21,
+      "durationSeconds": 1555,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-10T14:17:00.000Z",
+      "status": "missing"
+    }
+  ]
+}

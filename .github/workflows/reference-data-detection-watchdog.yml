@@ -1,0 +1,70 @@
+name: Reference data detection watchdog
+
+# 案 D: GitHub の schedule の欠落で検出が 6 時間 30 分を超えて成功していないときだけ、検出を 1 回 workflow_dispatch する。
+# - 新しい Secret・Token・外部サービスなし（GITHUB_TOKEN の actions: write はこの job だけ）。
+# - Production・Backup・apply には触れない（起動するのは検出の workflow だけ。検出は Secrets なし・読み取りだけ）。
+# - 二重の起動の防止: 検出が実行中・待機中なら起動しない／concurrency で watchdog 自身も 1 本だけ。
+# - 有効の条件: 検出の変数 REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED が "true"（検出が止まっていれば watchdog も動かない）。
+# - 停止（watchdog だけ）: リポジトリの変数 REFERENCE_DATA_DETECTION_WATCHDOG_DISABLED を "true" にする（即時・0 request）。
+#   全体の停止は今までどおり検出の変数を "true" 以外にする。
+# - 追加: 2026-10-10（本人の指示「自動更新を完全に完成させて」）。GitHub の毎時の schedule は 8 割以上が欠落し、最大の間隔が約 24 時間あった
+#   （docs/production-readiness/evidence/hourly-detection-observation-*.json）。判断の材料は hourly-detection-decision-package.md。
+
+on:
+  schedule:
+    - cron: "43 */3 * * *"   # 3 時間ごとの 43 分（検出の 17 分と重ならない）
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type 'watchdog' to evaluate once (dispatches detection only if it is stale)."
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: reference-data-detection-watchdog
+  cancel-in-progress: false
+
+jobs:
+  watchdog:
+    if: ${{ vars.REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED == 'true' && vars.REFERENCE_DATA_DETECTION_WATCHDOG_DISABLED != 'true' && (github.event_name == 'schedule' || inputs.confirm == 'watchdog') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts/lib/detection-watchdog.mjs
+          sparse-checkout-cone-mode: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Decide and dispatch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh run list --repo "$REPO" --workflow reference-data-update-detection.yml --limit 30 \
+            --json databaseId,event,createdAt,status,conclusion > runs.json
+          node --input-type=module -e '
+            import { readFileSync, appendFileSync } from "node:fs";
+            import { decideWatchdogDispatch } from "./scripts/lib/detection-watchdog.mjs";
+            const runs = JSON.parse(readFileSync("runs.json", "utf8")).map((r) => ({ id: r.databaseId, event: r.event, createdAt: r.createdAt, status: r.status, conclusion: r.conclusion }));
+            const d = decideWatchdogDispatch({ now: new Date().toISOString(), runs, enabled: true });
+            console.log(JSON.stringify(d));
+            appendFileSync(process.env.GITHUB_OUTPUT ?? "/dev/null", `dispatch=${d.dispatch}\n`);
+            appendFileSync(process.env.GITHUB_STEP_SUMMARY ?? "/dev/null", `watchdog: ${d.reason} (last success ${d.lastSuccessAt ?? "none"}, ${d.ageMinutes ?? "?"} min)\n`);
+          ' | tee decision.json
+          if grep -q '"dispatch":true' decision.json; then
+            gh workflow run reference-data-update-detection.yml --repo "$REPO" --ref main -f confirm=detect
+            echo "dispatched detection" >> "$GITHUB_STEP_SUMMARY"
+          fi

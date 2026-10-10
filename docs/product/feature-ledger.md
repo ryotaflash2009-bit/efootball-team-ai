@@ -57,7 +57,7 @@
 | F-031 | Link-Up Play | completed | 75% | F-003 | R | — | 不要 | 不要 | Free | 監督フィルタ black-box | スカッド内の発動判定（要確認） |
 | F-032 | ポジション適性（表示） | completed | 80% | F-002 | R | — | 不要 | 不要 | Free | player-analysis tests | — |
 | F-032b | ポジション別OVR | blocked | 10% | 計算規則の確認 | R | — | 不要 | 不要 | Free | 規則が未確認なので推測で算式を作らない | 規則サンプルの収集（本人またはデータ源） |
-| F-033 | 完全ゲームプラン（戦術・役割・指示） | completed（ローカル: 指示・交代・代わりの計画・相手ごと・書き出し/読み込み。選手ごとの個別指示は NEW-43） | 85% | F-024, F-003 | R | L | 不要 | 不要 | Free | 本人判断 2026-09-27：現在の配置編集を MVP 完成版とする | 個別指示は、公式または許諾済みの信頼できる仕様を確認できるまで deferred（推測で実装しない） |
+| F-033 | 完全ゲームプラン（戦術・役割・指示） | completed（ローカル: 指示・交代・代わりの計画・相手ごと・書き出し/読み込み。選手ごとの個別指示は不要（2026-10-10 本人の判断・NEW-43 を閉じた）） | 85% | F-024, F-003 | R | L | 不要 | 不要 | Free | 本人判断 2026-09-27：現在の配置編集を MVP 完成版とする | 個別指示は 2026-10-10 に本人の判断で不要（作らない） |
 | F-035 | プレースタイル発動可否・選手間連携の分析 | idea（将来提案） | 0% | F-026 | R | L | 不要 | 不要 | Free | `docs/playing-style-ledger.md` | 公式の発動条件の確認後 |
 | F-036 | 配置補助の次候補（複数選択・選択だけの左右反転・一括整列・左右/上下の均等配置・配置のコピー/貼り付け） | **completed（2026-10-04）** | 95% | F-024 | — | L | 不要 | 不要 | Free | `docs/squad-placement-assist.md` §E・§F・`placement-assist.test.ts`・`placement-clipboard.test.ts`・`black-box-squad-placement-assist.mjs` | 違うフォーメーション間の写し（枠の対応づけの規則が必要） |
 | F-034 | 能力値直接操作・スライド式育成UI（能力タップ→関連強調→下部パネルの＋／－・スライダー・配分チップ・1タップ保存。選手詳細と比較画面（1人ずつの編集モード）。日英完全対応。eFHUB を UX の基準にし、素材はコピーしない） | verified | 100% | F-028 | R | L | 不要 | 不要 | Free | PR #80・#82・#83・#84、`docs/product/f034-human-factors-audit.md`（人間工学監査 15件・Sev3 全修正）、`evidence/f034-human-factors-l10n-compare-2026-09-27.json`（公開: 総合 568/568・育成 458/458・比較 168/168、8 viewport） | 本人の主観確認（発光・パネルの高さ・触り心地）。My Builds・ビルド分析の英語化は PR #89 で完了（公開 8 viewport で日本語 0） |
@@ -114,11 +114,11 @@
 | F-140 | コミュニティの安全の契約（運営者 1 人） | designed | 50% | F-084 | — | C | 要 | 不要 | Free | PR #176・`community-safety-operations.md`（本人の判断 5 件） | 表と RLS の提案 |
 | F-141 | 友達・友達との比較・ライバル・AI コーチ・相手の分析・メタ分析の契約（モック） | designed | 30% | F-053 | — | C | 要 | 不要（規則の提供元） | Free | PR #177・`future-feature-contracts-2026-10-07.md` | 公開 ID・Auth の公開の後 |
 | F-142 | AI ベスト11 の控え（決定的な規則・最大 12 人） | completed | 100% | F-025 | — | — | 不要 | 不要 | Free | PR #187・`docs/product/best-xi-bench.md`（本番 black-box 30/30） | 監督補正（F-070）は判断パッケージのまま |
-| F-143 | 完全なゲームプラン（ローカル） | completed | 95% | F-033 | — | L | 不要 | 不要 | Free | PR #189・`docs/product/complete-game-plan.md`（本番 black-box 15/15・共有画像 2026-10-09） | 個別指示（NEW-43） |
+| F-143 | 完全なゲームプラン（ローカル） | completed | 100% | F-033 | — | L | 不要 | 不要 | Free | PR #189・`docs/product/complete-game-plan.md`（本番 black-box 15/15・共有画像 2026-10-09） | ~~個別指示~~（NEW-43） |
 | F-144 | 公開プロフィール・公開ビルドの契約（モック） | designed | 30% | F-053 | — | C | 要 | 不要 | Free | PR #190・`future-feature-contracts-2026-10-07.md` | 公開 ID・Auth の公開の後 |
 | F-145 | 違うフォーメーション間の配置の写し（NEW-41） | completed | 100% | F-036 | — | L | 不要 | 不要 | Free | PR #185・`docs/product/placement-cross-formation.md`（本番 23/23） | — |
 | F-146 | 監督の比較（NEW-23） | completed | 100% | F-003 | — | — | 不要 | 不要 | Free | PR #184・`docs/product/manager-compare.md`（本番 16/16） | — |
-| F-148 | AI ベスト11 の同じ名前のカードの知らせ（NEW-25） | completed | 70% | F-025 | — | — | 不要 | 不要 | Free | `docs/product/best-xi-same-name.md`（2026-10-09・black-box 32/32） | 自動で外す規則はゲームの画面の確認の後 |
+| F-148 | 同じ選手の別のカードは同じスカッドに 1 枚だけ（NEW-25 の置き換え・2026-10-10 本人の確認） | completed | 100% | F-025 | — | — | 不要 | 不要 | Free | `docs/product/same-player-rule.md`（人物キー＝カード ID の下位 20 ビット・本番 13,372 枚で食い違い 0・テスト 9） | World の更新ごとに `audit-person-identity.mjs` で再監査 |
 | F-147 | 選手一覧の保存した絞り込み（NEW-31） | completed | 100% | F-001 | — | L | 不要 | 不要 | Free | `docs/product/saved-player-filters.md`（2026-10-09・black-box 10/10） | — |
 
 ## 6. コミュニティ（Phase 7）
