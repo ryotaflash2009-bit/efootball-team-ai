@@ -3,69 +3,69 @@
   "note": "TeamAIXI (https://efootball-team-ai.vercel.app, Supabase kbauokzninaervjgwzdd) only. Owner-recorded results. Status: pending | pass | fail | n/a. Evidence holds short non-personal notes only (no email address, user ID, client ID, secret, token, Google Cloud project ID or screenshot of them). 2026-10-11: settings first reported for Google Cloud were made in a project that may belong to another product, so nothing is recorded as pass until the owner redoes them in a TeamAIXI-dedicated Google Cloud project. Evaluated by scripts/validate-google-oauth-release.mjs.",
   "limitedTest": {
     "googleProjectDedicatedToTeamAixi": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "Observed by Claude Code in the Google Cloud console: project name TeamAIXI (project id teamaixi) under the owner's personal Google account; the other product's account was not used.",
+      "checkedAt": "2026-10-11"
     },
     "googleConsentScreenExternalTesting": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "Observed: Branding app name TeamAIXI; Audience user type External, publishing status Testing.",
+      "checkedAt": "2026-10-11"
     },
     "googleTestUserRegistered": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "Observed: the owner's own Google account is the only test user (1 of 100).",
+      "checkedAt": "2026-10-11"
     },
     "googleScopesBasicOnly": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "Set by Claude Code: non-sensitive scopes userinfo.email, userinfo.profile, openid only; no sensitive or restricted scopes; no logo.",
+      "checkedAt": "2026-10-11"
     },
     "googleWebClientCreated": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "Created by Claude Code: Web application client named TeamAIXI Web in project teamaixi (ID and secret not viewed by Claude Code).",
+      "checkedAt": "2026-10-11"
     },
     "googleRedirectUriExact": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "Entered and checked: JavaScript origin https://efootball-team-ai.vercel.app; redirect URI https://kbauokzninaervjgwzdd.supabase.co/auth/v1/callback.",
+      "checkedAt": "2026-10-11"
     },
     "supabaseGoogleProviderEnabled": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "Read-only check of the public auth settings: external.google = true.",
+      "checkedAt": "2026-10-11"
     },
     "supabaseCredentialsFromDedicatedProject": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "Owner reported pasting the new TeamAIXI Web client ID and secret into the Supabase Google provider and saving (2026-10-11).",
+      "checkedAt": "2026-10-11"
     },
     "supabaseRedirectUrlsExact": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "Owner reported Redirect URLs = https://efootball-team-ai.vercel.app/auth/callback** (unchanged).",
+      "checkedAt": "2026-10-11"
     },
     "supabaseConfirmEmailOn": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "Read-only check of the public auth settings: mailer_autoconfirm = false; anonymous sign-ins off; owner reported Skip nonce checks off and Allow users without an email off.",
+      "checkedAt": "2026-10-11"
     },
     "supabaseManualLinkingOff": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "Owner reported Allow manual linking = off.",
+      "checkedAt": "2026-10-11"
     },
     "secretNotInRepoOrChat": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "Owner reported the secret was pasted only into Supabase; Claude Code did not view, store or transmit the client ID or secret.",
+      "checkedAt": "2026-10-11"
     },
     "privacyPolicyGoogleSectionLive": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "Read-only check: https://efootball-team-ai.vercel.app/privacy shows the Google sign-in section (PR #232, ja/en).",
+      "checkedAt": "2026-10-11"
     }
   },
   "postEnable": {

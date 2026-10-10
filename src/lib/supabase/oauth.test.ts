@@ -4,8 +4,8 @@ import { isLocalDevHostname } from "./local-dev";
 import { authErrorMessageKey } from "./email-link";
 
 describe("Google OAuth（2026-10-11 の方針）", () => {
-  it("既定は無効（本人の Google Cloud・Supabase の設定とテストの後に PR で有効にする）", () => {
-    expect(GOOGLE_OAUTH_MODE).toBe("disabled");
+  it("今は限定テスト（2026-10-11: ゲート A の後に limited。一般公開の enabled はゲート B の後）", () => {
+    expect(GOOGLE_OAUTH_MODE).toBe("limited");
   });
   it("ボタン: 有効なら表示・無効でもローカルの ?oauthPreview=1 だけ表示・本番やプレビューのホストではクエリで開かない", () => {
     expect(isGoogleOAuthAvailable("efootball-team-ai.vercel.app", "", isLocalDevHostname, "enabled")).toBe(true);

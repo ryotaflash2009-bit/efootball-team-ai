@@ -19,7 +19,7 @@ import { resolveSafeInternalPath } from "./safe-redirect";
  * - "enabled": 全員にボタンを出す（一般公開）。PUBLIC_GOOGLE_OAUTH_READY の後に PR で変える。
  */
 export type GoogleOAuthMode = "disabled" | "limited" | "enabled";
-export const GOOGLE_OAUTH_MODE: GoogleOAuthMode = "disabled";
+export const GOOGLE_OAUTH_MODE: GoogleOAuthMode = "limited";
 
 export const OAUTH_FLOW_PARAM = "flow";
 export const OAUTH_FLOW_GOOGLE = "google";
