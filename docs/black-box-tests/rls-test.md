@@ -1,7 +1,7 @@
 # Supabase RLS 分離検証(PoC) ブラックボックステスト結果
 
-実行日時: 2026-09-14T08:52:05.065Z
-対象: http://localhost:3001（Production Build上の隔離ヘッドレスChrome確認。ブラウザー側Supabaseクライアント(auth・DBとも)はテストダブルへ差し替え、実Supabaseへは接続しない）
+実行日時: 2026-10-10T15:53:07.911Z
+対象: http://localhost:3000（Production Build上の隔離ヘッドレスChrome確認。ブラウザー側Supabaseクライアント(auth・DBとも)はテストダブルへ差し替え、実Supabaseへは接続しない）
 
 実ユーザーのMy Team・保存ビルド・保存スカッド・SQLiteは一切変更しない。RLS自体の分離証明は実Supabase上のSQL監査・手動検証で別途行う。
 
@@ -64,7 +64,7 @@
 | PASS | [セキュリティ] 実際のメールアドレス形式の値を表示しない(テストダブルの偽アドレスのみ) |  |
 | PASS | [セキュリティ] javascript:/data:スキームのリンクが存在しない |  |
 | PASS | [セキュリティ] 新規の外部通信が発生していない(実Supabaseを含む) |  |
-| PASS | [レスポンシブ1280px] 横スクロールが発生しない | overflow=0 |
+| PASS | [レスポンシブ1280px] 横スクロールが発生しない | overflow=-10 |
 | PASS | [レスポンシブ390px] 横スクロールが発生しない | overflow=0 |
 | PASS | [スモーク回帰] / が引き続き200 | HTTP 200 |
 | PASS | [スモーク回帰] /players が引き続き200 | HTTP 200 |

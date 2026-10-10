@@ -56,6 +56,8 @@ async function navigateAndSettle(client, url) {
   await client.send("Page.navigate", { url });
   await waitForCondition(async () => (await evalJson(client, "document.readyState")) === "complete", { timeoutMs: 8000, intervalMs: 100 });
   await new Promise((r) => setTimeout(r, 250));
+  // 2026-10-05 から Supabase の client を必要なときだけ読み込むため、一覧の「読み込んでいます…」が消えるまで待つ（2026-10-11）。
+  await waitForCondition(async () => !(await bodyText(client)).includes("読み込んでいます"), { timeoutMs: 8000, intervalMs: 150 }).catch(() => {});
 }
 async function bodyText(client) {
   return evalJson(client, "document.body.innerText");

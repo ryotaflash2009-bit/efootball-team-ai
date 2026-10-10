@@ -151,13 +151,13 @@ export function AccountDeletionView() {
 
       <Surface padding="md" className="flex max-w-xl flex-col gap-2">
         <p className="text-sm font-semibold text-text">{ta("deletionWillDeleteHeading")}</p>
-        <ul className="list-disc pl-5 text-sm text-text-dim">
+        <ul className="list-disc ps-5 text-sm text-text-dim">
           <li>{ta("deletionItemLogin")}</li>
           <li>{ta("deletionItemCloud")}</li>
           <li>{ta("deletionItemSessions")}</li>
         </ul>
         <p className="mt-2 text-sm font-semibold text-text">{ta("deletionKeptHeading")}</p>
-        <ul className="list-disc pl-5 text-sm text-text-dim">
+        <ul className="list-disc ps-5 text-sm text-text-dim">
           <li>{ta("deletionKeptGuest")}</li>
           <li>{ta("deletionKeptAudit")}</li>
           <li>{ta("deletionKeptLogs")}</li>

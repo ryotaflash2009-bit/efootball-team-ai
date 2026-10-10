@@ -1,0 +1,33 @@
+{
+  "schema": "quality-gate-evidence/v1",
+  "date": "2026-10-11",
+  "branch": "feat/account-deletion-oauth-gate-2026-10-11",
+  "base": "main 594f29c",
+  "selected": {
+    "npmRunVerify": "PASS (358 files, 5,225 tests; ja-labels, i18n keys, locale coverage, typecheck, lint)",
+    "productionBuild": "PASS",
+    "internalPagesBuild": "PASS (NEXT_PUBLIC_EFTA_INTERNAL_PAGES=enabled, for internal-page rails only)",
+    "blackBox": {
+      "auth-google": "49/49",
+      "supabase-auth": "173/173",
+      "public-signup-limited": "117/117",
+      "account-scoped-storage": "164/164",
+      "my-team-cloud": "98/98 (production build) and 98/98 (internal build)",
+      "rls-test": "71/71 (internal build); production build stops with PREREQUISITE NOT MET (not counted as pass)",
+      "hydration-seeded": "95/95 (ja/en, PC/mobile; account and auth pages changed)",
+      "same-player": "5/5",
+      "best-xi-optimization": "32/32 (person key function changed)",
+      "squads": "51/51"
+    },
+    "disposablePostgres": "account-deletion.postgres.test.ts runs in CI (Reference data PostgreSQL validation); no local PostgreSQL",
+    "secretScan": "0 findings in the branch diff (test fixtures of the sensitive-value filter excluded)",
+    "npmAudit": "unchanged: production 2 (next-bundled postcss, build-time only), full 11 (dev tooling); see npm-audit-2026-10-11.md",
+    "googleOAuthGate": "pre-enable BLOCKED (owner settings pending), post-enable NOT_STARTED, mode disabled"
+  },
+  "notSelected": {
+    "searchPublication576": "no change to shared layout, robots, sitemap generation logic or canonical; /account/delete is under the existing /account noindex and robots disallow, sitemap classification test passes",
+    "fullThirteenRails": "only rails touching auth, account, storage scope, squads and Best XI were affected",
+    "baseOvrPercentile": "no change to progression or rating code"
+  },
+  "productionChanges": "none (no Supabase, Vercel, Google Cloud, GitHub settings or data changes); Dependabot PR #151 closed with a comment"
+}
