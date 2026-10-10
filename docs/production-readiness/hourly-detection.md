@@ -135,3 +135,10 @@ stale lock: 独自の lock は持たない（GitHub の concurrency と DB の a
 Auto Apply Policy（版・World / Managers の閾値・変更列の allowlist・removed 0・不明な列で停止・Managers の UPDATE で停止）、
 Backup 必須・Restore / Storage の検証・Dry run 必須・re-diff 0・checksum の一致・事後検証・halt Issue・Kill switch（3 変数）・
 手動の経路・Rollback / Restore は手動だけ・Environment・Secret。
+
+### 7.3 完全自動の残りの手作業をなくした（2026-10-11）
+
+- 判定 v2（`auto-apply-policy/2026-10-11.v2`）: 通常の大型更新（league・team・名前などの表示の列・構造の変更 10% まで）は自動の対象。
+- 古い承認待ちの取り消し: watchdog が、24 時間を過ぎた承認待ちの Production Apply（Backup の期限切れ）を取り消す。
+- 適用済みの記録の自動の更新: `reference-data-applied-state-sync.yml` が、Apply の後に記録・Evidence・F-071 の分布（World のとき・照合つき）を main へ commit。
+- 詳細: `auto-apply-policy-v2.md`。
