@@ -70,39 +70,39 @@
   },
   "postEnable": {
     "prodNewGoogleLogin": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "Claude Code on the production site in the connected desktop Chrome: /auth/sign-in?oauthPreview=1 -> Google account chooser -> the owner's test-user account -> back on /account.",
+      "checkedAt": "2026-10-11"
     },
     "prodCallbackSuccess": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "Callback returned to /account with the signed-in state (twice: first login and re-login).",
+      "checkedAt": "2026-10-11"
     },
     "prodAccountRecordCreated": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "Account page shows the signed-in state with a verified email (Supabase auth user exists); the Supabase Users screen was not opened by Claude Code.",
+      "checkedAt": "2026-10-11"
     },
     "prodSessionRestore": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "Closed the tab and opened /account in a new tab: still signed in.",
+      "checkedAt": "2026-10-11"
     },
     "prodLogoutAndRelogin": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "Logout -> signed-out page; sign-in link kept ?oauthPreview=1 (fix PR #235) -> Google -> signed in again.",
+      "checkedAt": "2026-10-11"
     },
     "prodGuestCarryOver": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "Seeded 1 guest My Team test record -> after login the account page showed 1 guest item -> migration center (source=guest) added 1, guest data kept. Test records removed afterwards.",
+      "checkedAt": "2026-10-11"
     },
     "prodPcBrowser": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "Desktop Chrome (Windows): items above passed.",
+      "checkedAt": "2026-10-11"
     },
     "prodIphoneSafari": {
       "status": "pending",

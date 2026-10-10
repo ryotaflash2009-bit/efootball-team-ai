@@ -215,3 +215,24 @@ EVIDENCE_PATH=./docs/production-readiness/evidence/google-oauth-release-gate-<�
 > （削除の方法は「アカウントの削除について」）。
 
 （反映は `src/lib/i18n/dictionaries/ja-ns/privacy.ts` と各言語。法的な文書のため Claude Code は本人の確認なしに公開の文面を変えない。）
+
+## 12. 限定テストの結果（2026-10-11）と一般公開の前の残り
+
+Claude Code が本番（接続した PC の Chrome・本人のテストユーザーのアカウント）で確認: 新規のログイン・callback・アカウントの作成・
+セッションの復元（タブを閉じて開き直す）・ログアウトと再ログイン・ゲストのデータの引き継ぎ（1 件追加・ゲストのデータは残る・テストのデータは後で削除）・PC。
+`postEnable` は 7/12 pass（`google-oauth-release-checklist.json`）。
+
+見つけて直したもの: ログアウトの後、「ログイン」の導線が通常の URL で Google のボタンが出ない → 限定テストのタブだけ `?oauthPreview=1` を保つ（PR #235）。
+
+本人の確認が残るもの（5 項目）:
+- iPhone Safari・Android Chrome（§6）
+- Google の画面での「キャンセル」（アカウントの選択の画面にはキャンセルが無く、ブラウザーの戻るではログインの画面に戻るだけ。同意の画面が出たときの「キャンセル」で確認）
+- 既存のメールのアカウントとの衝突（§3・`observedLinking` の記録）
+- 2 つのアカウントでの RLS の分離（2 つ目の Google アカウント・またはメールのアカウントが必要）
+
+一般公開（ゲート B）の前に必要なもの（記録済みの判断）:
+- Google の同意画面のサポート用メールを、本人の個人の Gmail から Google グループのアドレスへ差し替える（本人の希望）。
+- Google の画面に「kbauokzninaervjgwzdd.supabase.co に移動」と表示される。アプリ名（TeamAIXI）を出すには、独自ドメイン
+  （承認済みドメイン・ホームページ・プライバシーポリシーの URL）と Google のブランドの確認が必要（`vercel.app` は承認済みドメインにできない）。
+  または Supabase のカスタムドメイン（有料）。独自ドメインの判断と合わせて決める。
+- 同意画面の公開ステータスを「本番環境」へ・ポリシーの一般公開の記述（`alphaBody`・`authEmailUsage`）。
