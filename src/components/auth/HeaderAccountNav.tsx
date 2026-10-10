@@ -5,6 +5,7 @@ import { Icon } from "@/components/ui/Icon";
 import { useT } from "@/lib/i18n/LocaleContext";
 import { useSupabaseSession } from "@/lib/supabase/use-auth-session";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
+import { useSignInHref } from "@/components/auth/useSignInHref";
 
 type HeaderKey = keyof Dictionary["header"];
 
@@ -14,6 +15,7 @@ type HeaderKey = keyof Dictionary["header"];
  * 読み込み中は同じ大きさのプレースホルダーを表示し、レイアウトのガタつきを避ける。
  */
 export function HeaderAccountNav() {
+  const signInHref = useSignInHref();
   const t = useT();
   const ta = (key: HeaderKey) => t("header", key);
   const session = useSupabaseSession();
@@ -48,7 +50,7 @@ export function HeaderAccountNav() {
 
   return (
     <Link
-      href="/auth/sign-in"
+      href={signInHref}
       title={ta("accountNavSignIn")}
       className="flex h-9 shrink-0 items-center gap-1.5 rounded-md border border-border bg-surface-2 px-2.5 text-xs text-text-dim transition-colors hover:border-accent hover:text-text"
     >

@@ -92,3 +92,11 @@ export function googleProviderStatusFromSettings(json: unknown): GoogleProviderS
   const google = (external as { google?: unknown }).google;
   return google === true ? "enabled" : google === false ? "disabled" : "unknown";
 }
+
+/** 限定テストのタブで、ログインへの導線に `?oauthPreview=1` を付け続けるための sessionStorage のキー（表示の条件だけ・認証には使わない）。 */
+export const OAUTH_PREVIEW_SESSION_KEY = "efootball-team-ai:oauth-preview:v1";
+
+/** ログインの画面への href。limited でこのタブが確認用の URL を開いていれば `?oauthPreview=1` を付ける。それ以外は通常の URL。 */
+export function signInHrefFor(previewSession: boolean, mode: GoogleOAuthMode = GOOGLE_OAUTH_MODE): string {
+  return mode === "limited" && previewSession ? "/auth/sign-in?oauthPreview=1" : "/auth/sign-in";
+}

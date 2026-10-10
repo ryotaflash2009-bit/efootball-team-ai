@@ -16,10 +16,12 @@ import { isSignupOpen } from "@/lib/supabase/account-availability";
 import { EmailChangeSection } from "@/components/auth/EmailChangeSection";
 import { detectAllGuestData } from "@/lib/local-storage-scope/legacy-detect";
 import { DATA_KINDS } from "@/lib/local-storage-scope/types";
+import { useSignInHref } from "@/components/auth/useSignInHref";
 
 type AuthKey = keyof Dictionary["auth"];
 
 export function AccountView() {
+  const signInHref = useSignInHref();
   const t = useT();
   const ta = (key: AuthKey) => t("auth", key);
   const session = useSupabaseSession();
@@ -60,7 +62,7 @@ export function AccountView() {
         <Surface padding="md" className="flex flex-col gap-3">
           <p className="text-sm text-text-dim">{ta("accountLoginRequiredMessage")}</p>
           <div className="flex flex-wrap gap-2">
-            <Link href="/auth/sign-in">
+            <Link href={signInHref}>
               <Button variant="primary" size="sm">
                 {ta("navSignIn")}
               </Button>

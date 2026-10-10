@@ -28,6 +28,7 @@ import { DATA_KINDS, type DataKind, type StorageScope } from "@/lib/local-storag
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { isSignupOpen } from "@/lib/supabase/account-availability";
 import { fillMessage } from "@/lib/i18n/message-format";
+import { useSignInHref } from "@/components/auth/useSignInHref";
 
 type LdmKey = keyof Dictionary["localDataMigration"];
 type AuthKey = keyof Dictionary["auth"];
@@ -58,6 +59,7 @@ const BACKUP_FILE_NAME: Record<DataKind, string> = {
  *   内部localStorageキー全文は画面に一切表示しない。「現在ログイン中のアカウント」とだけ表示する。
  */
 export function LocalDataMigrationView() {
+  const signInHref = useSignInHref();
   const t = useT();
   const ta = useCallback((key: LdmKey) => t("localDataMigration", key), [t]);
   const taAuth = useCallback((key: AuthKey) => t("auth", key), [t]);
@@ -231,7 +233,7 @@ export function LocalDataMigrationView() {
         <Surface padding="md" className="flex flex-col gap-3">
           <p className="text-sm text-text-dim">{ta("loginRequiredMessage")}</p>
           <div className="flex flex-wrap gap-2">
-            <Link href="/auth/sign-in">
+            <Link href={signInHref}>
               <Button variant="primary" size="sm">
                 {taAuth("navSignIn")}
               </Button>
