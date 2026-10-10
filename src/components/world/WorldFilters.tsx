@@ -32,6 +32,7 @@ function useFilterLabels(): Record<string, string> {
     playingStyle: key("filterLabelPlayingStyle"),
     playingStyleDef: key("filterLabelPlayingStyleDef"),
     nationality: key("filterLabelNationality"),
+    league: key("filterLabelLeague"),
     minOvr: key("filterLabelMinOvr"),
     maxOvr: key("filterLabelMaxOvr"),
     hasBooster: key("filterLabelBooster"),
@@ -94,7 +95,7 @@ export function WorldFilters({ facets }: { facets: WorldFacets }) {
   const sort = (params.get("sort") as WorldSortKey) ?? "ovr_max_desc";
   const activeChips = useMemo(() => {
     const chips: { key: string; label: string; value: string }[] = [];
-    for (const key of ["q", "position", "cardType", "playingStyle", "playingStyleDef", "nationality", "minOvr", "maxOvr", "hasBooster"]) {
+    for (const key of ["q", "position", "cardType", "playingStyle", "playingStyleDef", "nationality", "league", "minOvr", "maxOvr", "hasBooster"]) {
       const v = params.get(key);
       if (v) chips.push({ key, label: FILTER_LABELS[key] ?? key, value: v });
     }
@@ -232,6 +233,23 @@ export function WorldFilters({ facets }: { facets: WorldFacets }) {
           ))}
         </select>
 
+        <select
+          value={params.get("league") ?? ""}
+          data-adopt-param="league"
+          data-rendered-value={params.get("league") ?? ""}
+          onChange={(e) => push({ league: e.target.value || null })}
+          aria-label={twf("leagueAriaLabel")}
+          data-testid="world-filter-league"
+          className={selectClass}
+        >
+          <option value="">{twf("leagueAll")}</option>
+          {(facets.leagues ?? []).map((l) => (
+            <option key={l} value={l}>
+              {l}
+            </option>
+          ))}
+        </select>
+
         <input
           type="number"
           min={1}
@@ -289,6 +307,7 @@ export function WorldFilters({ facets }: { facets: WorldFacets }) {
                 playingStyle: null,
                 playingStyleDef: null,
                 nationality: null,
+                league: null,
                 minOvr: null,
                 maxOvr: null,
                 hasBooster: null,

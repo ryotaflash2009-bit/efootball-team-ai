@@ -24,7 +24,7 @@
 
 | ID | 機能 | 状態 | 完成率 | 依存 | Prod | UD | Auth | AI | Tier | Release Gate / Evidence | 次の作業 |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| F-001 | 選手・カード検索（日英・Unicode・記号・絞り込み・並べ替え・ページ送り） | verified | 95% | reference data | R | — | 不要 | 不要 | Free | 総合black-box 8 viewport（2026-09-27）| 国籍の絞り込み（F-001a）は 2026-10-11 に実装（World の表記のまま完全一致・facets・保存した条件・black-box world-ui / saved-filters） |
+| F-001 | 選手・カード検索（日英・Unicode・記号・絞り込み・並べ替え・ページ送り） | verified | 95% | reference data | R | — | 不要 | 不要 | Free | 総合black-box 8 viewport（2026-09-27）| 国籍・リーグの絞り込み（F-001a）は 2026-10-11 に実装（World の表記のまま完全一致・facets・保存した条件・black-box world-ui / saved-filters） |
 | F-002 | 選手詳細（能力・育成・物理データ・適性） | verified | 90% | F-001 | R | — | 不要 | 不要 | Free | 同上、物理順位の母数は時点を明示 | ポジション別OVRは F-032b（blocked） |
 | F-003 | 監督検索・詳細（戦術適性・ブースター・Link-Up） | verified | 90% | reference data | R | — | 不要 | 不要 | Free | 同上 | 監督画像は実装しない（イニシャルアバターが正式。`docs/phase-manager-picker.md`・`phase-manager-photos-efdb.md`） |
 | F-004 | 選手比較（2〜4人・レーダー・育成比較） | verified | 90% | F-002 | R | L | 不要 | 不要 | Free | 同上 | 友達比較は F-062 |

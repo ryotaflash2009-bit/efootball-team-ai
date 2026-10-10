@@ -67,6 +67,10 @@ export function buildWhere(q: WorldListQuery): { sql: string; params: SqlParam[]
     clauses.push("c.nationality = ?");
     params.push(q.nationality);
   }
+  if (q.league) {
+    clauses.push("c.league = ?");
+    params.push(q.league);
+  }
   if (q.minOvr != null) {
     clauses.push("c.ovr_max >= ?");
     params.push(q.minOvr);

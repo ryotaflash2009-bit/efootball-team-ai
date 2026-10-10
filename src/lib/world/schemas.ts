@@ -55,6 +55,18 @@ const nationalitySchema = z
   .nullable()
   .catch(null);
 
+/**
+ * リーグ（2026-10-11）。「2026/27 MEIJI YASUDA J1 LEAGUE」「Ligue 1 McDonald’s」「Trendyol Süper Lig」のように
+ * 数字・スラッシュ・右の引用符を含むため、国籍より広く許す。使い方は国籍と同じ（バインド・eq だけ）。
+ */
+const leagueSchema = z
+  .string()
+  .trim()
+  .max(60)
+  .regex(/^[\p{L}\p{N} .,'’&\-/()]+$/u)
+  .nullable()
+  .catch(null);
+
 const ovrSchema = z.coerce
   .number()
   .int()
@@ -78,6 +90,7 @@ export function parseWorldListQuery(input: {
   playingStyle?: string | null;
   playingStyleDef?: string | null;
   nationality?: string | null;
+  league?: string | null;
   minOvr?: string | null;
   maxOvr?: string | null;
   hasBooster?: string | null;
@@ -121,6 +134,7 @@ export function parseWorldListQuery(input: {
     playingStyle: filterTokenSchema.parse(input.playingStyle ?? null),
     playingStyleDefensive: filterTokenSchema.parse(input.playingStyleDef ?? null),
     nationality: nationalitySchema.parse(input.nationality ?? null),
+    league: leagueSchema.parse(input.league ?? null),
     minOvr,
     maxOvr,
     hasBooster,

@@ -2859,6 +2859,9 @@ export interface Dictionary {
     filterLabelNationality: string;
     nationalityAriaLabel: string;
     nationalityAll: string;
+    filterLabelLeague: string;
+    leagueAriaLabel: string;
+    leagueAll: string;
     minOvrPlaceholder: string;
     minOvrAriaLabel: string;
     maxOvrPlaceholder: string;

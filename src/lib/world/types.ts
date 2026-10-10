@@ -115,6 +115,8 @@ export interface WorldListQuery {
   playingStyleDefensive: string | null;
   /** 国籍（World の表記のまま・完全一致）。2026-10-11 F-001a */
   nationality: string | null;
+  /** リーグ（World の表記のまま・完全一致）。2026-10-11 */
+  league: string | null;
   minOvr: number | null;
   maxOvr: number | null;
   hasBooster: boolean | null;
@@ -139,6 +141,7 @@ export interface WorldFacets {
   playingStyles: string[];
   playingStyleDefensives: string[];
   nationalities: string[];
+  leagues: string[];
 }
 
 /** データソースのメタ情報 */

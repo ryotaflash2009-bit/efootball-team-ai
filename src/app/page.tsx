@@ -51,7 +51,7 @@ export default async function HomePage() {
   // WorldDataUnavailableErrorなら部分表示。WorldQueryError（一時的な照会の失敗。サーバー側には分類つきで記録済み）も、
   // ホームは要約の画面なので error boundary へ投げず、失敗より前に得た値だけで表示して「一時的に読み込めなかった」と示す
   // （2026-10-02 の公開 black-box で一度だけ観測。再現 0/60）。それ以外の例外は従来どおり error boundary へ。
-  const base = { page: 1, pageSize: 14, query: "", position: null, cardType: null, playingStyle: null, playingStyleDefensive: null, nationality: null, minOvr: null, maxOvr: null, hasBooster: null } as const;
+  const base = { page: 1, pageSize: 14, query: "", position: null, cardType: null, playingStyle: null, playingStyleDefensive: null, nationality: null, league: null, minOvr: null, maxOvr: null, hasBooster: null } as const;
   const [metaR, topR, recentR, managersR] = await Promise.allSettled([
     cachedGetSourceMeta(),
     cachedListPlayers({ ...base, sort: "ovr_max_desc" }),

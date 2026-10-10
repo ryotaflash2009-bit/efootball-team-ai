@@ -132,6 +132,17 @@ async function main() {
   record("フィルター: 国籍とポジションの組み合わせ", natCombo.status === 200 && natCombo.data?.totalCount > 0 && natCombo.data.players.every((p) => p.registeredPosition === "GK"), `total=${natCombo.data?.totalCount}`);
   const natBad = await json("/api/world/players?nationality=" + encodeURIComponent("Japan); DROP TABLE x;--") + "&pageSize=1");
   record("フィルター: 不正な国籍は無視して全件（クラッシュしない）", natBad.status === 200 && natBad.data?.totalCount >= 12000, `total=${natBad.data?.totalCount}`);
+  // リーグ（2026-10-11）
+  const leagues = facetsRes.data?.facets?.leagues ?? [];
+  const j1 = leagues.find((l) => /J1 LEAGUE/.test(l));
+  record("フィルター: facets にリーグの一覧（J1 を含む）", leagues.length >= 20 && !!j1, `n=${leagues.length} j1=${j1}`);
+  const lg = j1 ? await json("/api/world/players?league=" + encodeURIComponent(j1) + "&nationality=Japan&pageSize=100") : { status: 0 };
+  const lgDetails = await Promise.all((lg.data?.players ?? []).slice(0, 5).map((p) => json(`/api/world/players/${p.worldCardId}`)));
+  record(
+    "フィルター: リーグ（数字・スラッシュ）と国籍の組み合わせで絞り込める",
+    lg.status === 200 && lg.data?.totalCount > 0 && lgDetails.length > 0 && lgDetails.every((d) => d.data?.player?.league === j1 && d.data?.player?.nationality === "Japan"),
+    `total=${lg.data?.totalCount}`,
+  );
   const natPage = await http("/players?nationality=Japan");
   record("画面: 国籍の選択肢と選択中の値（Japan）を描画", natPage.status === 200 && /data-testid="world-filter-nationality"/.test(natPage.body) && /data-rendered-value="Japan"/.test(natPage.body), `HTTP ${natPage.status}`);
   const cleared = await json("/api/world/players?pageSize=24");

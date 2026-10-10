@@ -82,3 +82,12 @@ describe("buildWhere: 国籍（2026-10-11 F-001a）", () => {
     expect(r.params).toEqual(["Côte d'Ivoire"]);
   });
 });
+
+describe("buildWhere: リーグ（2026-10-11）", () => {
+  it("国籍と組み合わせてもバインドパラメーターで渡す", () => {
+    const r = buildWhere(parseWorldListQuery({ nationality: "Japan", league: "2026/27 MEIJI YASUDA J1 LEAGUE" }));
+    expect(r.sql).toContain("c.nationality = ?");
+    expect(r.sql).toContain("c.league = ?");
+    expect(r.params).toEqual(["Japan", "2026/27 MEIJI YASUDA J1 LEAGUE"]);
+  });
+});
