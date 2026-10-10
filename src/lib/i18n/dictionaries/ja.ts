@@ -3177,6 +3177,12 @@ export interface Dictionary {
     limitationsHeading: string;
     sameNameWarningTemplate: string;
     samePlayerExcludedTemplate: string;
+    affiliationFilterAriaLabel: string;
+    affiliationFilterNone: string;
+    affiliationKind_nationality: string;
+    affiliationKind_league: string;
+    affiliationKind_team: string;
+    affiliationActiveTemplate: string;
     limitationSingleFormationOnly: string;
     limitationNoBenchSelection: string;
     benchHeadingTemplate: string;

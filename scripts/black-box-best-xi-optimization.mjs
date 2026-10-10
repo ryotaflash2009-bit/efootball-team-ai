@@ -230,6 +230,41 @@ async function main() {
     }
 
     // ============================================================
+    // 1a-2. 縛り（2026-10-11）: 先発11人 + バレージ → 国籍で縛ると、その国籍のカードだけが選ばれる・解除で 11 人に戻る
+    // ============================================================
+    {
+      const ids0 = [...FULL_XI, BARESI_CB];
+      const nat = {};
+      for (const id of ids0) {
+        const d = await (await fetch(`${BASE}/api/world/players/${id}`)).json().catch(() => null);
+        nat[id] = d?.player?.nationality ?? null;
+      }
+      const target = nat[BARESI_CB];
+      const expected = ids0.filter((id) => nat[id] === target);
+      await setMyTeam(client, ids0);
+      await hardReloadAndSettle(client);
+      await waitForCondition(async () => (await bodyText(client)).includes("選出選手一覧"), { timeoutMs: 10000, intervalMs: 200 });
+      const optionText = await evalJson(client, `[...document.querySelectorAll('[data-testid="best-xi-affiliation-filter"] option')].map((o) => o.textContent).join(" | ")`);
+      record("[縛り] 選択肢は自分のカードの国籍・リーグ・チーム（枚数つき）", typeof optionText === "string" && optionText.includes(`${target} (${expected.length})`), String(optionText).slice(0, 120));
+      await evalJson(client, `(() => { const s = document.querySelector('[data-testid="best-xi-affiliation-filter"]'); const v = "nationality:" + ${JSON.stringify(target)}; Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value").set.call(s, v); s.dispatchEvent(new Event("change", { bubbles: true })); return s.value; })()`);
+      await waitForCondition(async () => !!(await evalJson(client, `document.querySelector('[data-testid="best-xi-affiliation-active"]')?.textContent`)), { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+      await new Promise((r) => setTimeout(r, 600));
+      const picked = await evalJson(client, `[...new Set([...document.querySelectorAll('[data-world-card-id]')].map((e) => e.getAttribute('data-world-card-id')))]`);
+      const active = await evalJson(client, `document.querySelector('[data-testid="best-xi-affiliation-active"]')?.textContent ?? ""`);
+      record(
+        "[縛り] 国籍で縛ると、その国籍のカードだけが選ばれ、縛りの知らせが出る",
+        Array.isArray(picked) && picked.length === expected.length && picked.every((id) => expected.includes(id)) && active.includes(target),
+        `${target}: picked=${picked?.length} expected=${expected.length}`,
+      );
+      await evalJson(client, `(() => { const s = document.querySelector('[data-testid="best-xi-affiliation-filter"]'); Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value").set.call(s, ""); s.dispatchEvent(new Event("change", { bubbles: true })); return true; })()`);
+      await waitForCondition(async () => (await evalJson(client, `new Set([...document.querySelectorAll('[data-world-card-id]')].map((e) => e.getAttribute('data-world-card-id'))).size`)) >= 11, { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+      const afterClear = await evalJson(client, `new Set([...document.querySelectorAll('[data-world-card-id]')].map((e) => e.getAttribute('data-world-card-id'))).size`);
+      const activeGone = await evalJson(client, `!document.querySelector('[data-testid="best-xi-affiliation-active"]')`);
+      record("[縛り] 縛りなしに戻すと全カードから選び直す", afterClear >= 11 && activeGone === true, `n=${afterClear}`);
+      await setMyTeam(client, FULL_XI);
+    }
+
+    // ============================================================
     // 1b. 控え(2026-10-07): 先発11人 + CB 1人 → 控えは CB の本職の控え 1 人だけ・先発の選手は入らない
     // ============================================================
     await setMyTeam(client, [...FULL_XI, BARESI_CB]);
