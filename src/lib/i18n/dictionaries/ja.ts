@@ -725,6 +725,11 @@ export interface Dictionary {
     assignErrorDuplicate: string;
     assignErrorSamePlayer: string;
     samePlayerWarningTemplate: string;
+    samePlayerSwapOfferTemplate: string;
+    samePlayerSwapButton: string;
+    samePlayerSwapCancel: string;
+    samePlayerSwappedTemplate: string;
+    samePlayerSwapUndoLabel: string;
     assignErrorSlotOccupied: string;
     assignErrorBenchFullTemplate: string;
     moveErrorInvalidSquad: string;

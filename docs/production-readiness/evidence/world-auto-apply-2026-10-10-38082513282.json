@@ -1,0 +1,88 @@
+{
+  "schema": "reference-data-apply-evidence/v1",
+  "createdAt": "2026-10-10T20:17:04.938Z",
+  "repository": "ryotaflash2009-bit/efootball-team-ai",
+  "workflow": "reference-data-production-apply.yml",
+  "runId": "38082513282",
+  "runAttempt": "1",
+  "commitSha": "f19c8be05ee318190e5afb356ea6a8c5acb89443",
+  "ref": "refs/heads/main",
+  "actor": "github-actions[bot]",
+  "approvedBy": "auto-apply-policy",
+  "mode": "apply",
+  "dataset": "world",
+  "jobStatus": "success",
+  "outcome": "applied_verified",
+  "summary": {
+    "ok": true,
+    "phase": "apply",
+    "reasons": [],
+    "status": "applied_verified",
+    "checkedAt": "2026-10-10T20:17:01.526Z"
+  },
+  "inputs": [
+    {
+      "path": "plan/stage4-world-bundle.json",
+      "sha256": "68b1b8fc3f468cc36ffa739298ecff1bf252c99c17c7a804c3077e6d1bee48f7"
+    },
+    {
+      "path": "backup/reference-data-backup-summary.json",
+      "sha256": "f65915bbdb8e047518902b3f76f6560d83e5892884ead234833477c7f05a38f2"
+    },
+    {
+      "path": "dry-run/stage4-world-dry-run.json",
+      "sha256": "74e298463237230533afdbc885a41f806698ab94ffe8b9f47424e770a1929ff8"
+    },
+    {
+      "path": "facts-backup.json",
+      "sha256": "789ff7a988707ecd09fd0c3af942cf9b402b1378b0b1cfbf8cd6c15c52dbca17"
+    },
+    {
+      "path": "facts-dry-run.json",
+      "sha256": "0d4d4669fd00d339303e28c50958e37af5d883231678f3fabae9b85fb7832bd8"
+    },
+    {
+      "path": "facts-plan.json",
+      "sha256": "509203d9376b335ff76f7d305dc3533d6d227e3c74283598752f24cedae82c2c"
+    },
+    {
+      "path": "plan-runs.json",
+      "sha256": "d081f744d2618faee2437a43622167d66f9b0bbf335d751925add2494c63df2e"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "out/auto-apply-check.json",
+      "sha256": "b55f1a99220b662ae35eaf2a184fc4d2b2d19f6d54971c7a557f34a95cbed15f"
+    },
+    {
+      "path": "out/stage4-world-apply-result.json",
+      "sha256": "4ab7d5fddd5603b5a5f6fe8905e53d2ec4889f07ecdadb7da41ecf0a019af423"
+    },
+    {
+      "path": "out/stage4-world-undo-plan.json",
+      "sha256": "2bb02bb88e3ffda05efd7321cb13167b439bf9c6893eef5044e9af004eacf5f2"
+    },
+    {
+      "path": "reference-data-apply-summary.json",
+      "sha256": "43bab0da2e25f614d9c79c2b172cddf206d9e0f6738908ff6b61a838c932759e"
+    }
+  ],
+  "productionWritten": true,
+  "automaticUndo": false,
+  "candidate": {
+    "sourceChecksum12": "3c064cdf73ae",
+    "recordCount": 13455
+  },
+  "diff": {
+    "before": 13372,
+    "after": 13455
+  },
+  "apply": {
+    "appliedAt": "2026-10-10T20:17:04.938Z",
+    "applyRunId": "38082513282"
+  },
+  "sourceTimestamps": {
+    "max": "2026-10-08T17:01:43.390Z"
+  }
+}
