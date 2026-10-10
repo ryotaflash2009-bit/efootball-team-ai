@@ -1,0 +1,64 @@
+"use client";
+
+import "@/lib/i18n/dictionaries/ja-ns/playerDetailPage";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useT, useLocale } from "@/lib/i18n/LocaleContext";
+import { Surface } from "@/components/ui/Surface";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { personKeyOf } from "@/lib/world/person-identity";
+import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
+import { otherCardsOfSamePlayer, type OtherCardSummary } from "@/lib/world/same-player-cards";
+
+/**
+ * 同じ選手の別のカード（2026-10-11）。同じ選手かどうかはカード ID の下位 20 ビット（人物のキー）で決める。
+ * 候補は英語名の検索で絞り、人物のキーで確定する（名前だけで同じ選手と判定しない）。監査では、同じキーのカードは名前が同じ
+ * （食い違い 0）なので、英語名で絞っても取りこぼしは無い。最大 3 ページ（300 件）まで読む。
+ */
+export function SamePlayerOtherCards({ worldCardId, nameEn }: { worldCardId: string; nameEn: string | null }) {
+  const t = useT();
+  const { locale } = useLocale();
+  const [cards, setCards] = useState<OtherCardSummary[] | null>(null);
+  useEffect(() => {
+    const key = personKeyOf(worldCardId);
+    const name = (nameEn ?? "").trim();
+    if (!key || !name) {
+      setCards([]);
+      return;
+    }
+    const controller = new AbortController();
+    (async () => {
+      const found: unknown[] = [];
+      for (let page = 1; page <= 3; page++) {
+        const res = await fetch(`/api/world/players?q=${encodeURIComponent(name)}&pageSize=100&page=${page}`, { signal: controller.signal });
+        if (!res.ok) break;
+        const json = (await res.json()) as { players?: unknown[]; hasNext?: boolean };
+        found.push(...(json.players ?? []));
+        if (!json.hasNext) break;
+      }
+      setCards(otherCardsOfSamePlayer(worldCardId, found));
+    })().catch(() => {
+      if (!controller.signal.aborted) setCards([]);
+    });
+    return () => controller.abort();
+  }, [worldCardId, nameEn]);
+
+  if (!cards || cards.length === 0) return null;
+  return (
+    <Surface data-testid="same-player-other-cards">
+      <SectionHeader title={t("playerDetailPage", "samePlayerOtherCardsHeadingTemplate").replace("{count}", String(cards.length))} as="h2" hint={t("playerDetailPage", "samePlayerOtherCardsHint")} />
+      <ul className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
+        {cards.map((c) => (
+          <li key={c.worldCardId}>
+            <Link href={`/players/world/${c.worldCardId}`} className="flex items-center justify-between gap-2 rounded border border-border/60 p-2 text-sm hover:border-accent">
+              <span className="min-w-0 truncate">{resolvePlayerDisplayName({ nameEn: c.nameEn, nameJa: c.nameJa }, locale, c.worldCardId)}</span>
+              <span className="shrink-0 text-xs text-text-muted">
+                {c.cardType ?? "—"} · {c.ovrMax ?? "—"}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </Surface>
+  );
+}

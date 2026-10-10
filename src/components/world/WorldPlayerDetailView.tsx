@@ -7,6 +7,7 @@ import { WorldStatGrid } from "@/components/world/WorldStatGrid";
 import { WorldBasePercentilePanel } from "@/components/world/WorldBasePercentilePanel";
 import { PlayerTitles } from "@/components/titles/PlayerTitles";
 import { WorldPlayerHero, type SafeWorldPlayerDetail } from "@/components/world/WorldPlayerHero";
+import { SamePlayerOtherCards } from "@/components/world/SamePlayerOtherCards";
 import dynamic from "next/dynamic";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { PageContainer } from "@/components/ui/PageContainer";
@@ -191,6 +192,8 @@ export function WorldPlayerDetailView({
           </div>
         </Surface>
       ) : null}
+
+      <SamePlayerOtherCards worldCardId={player.worldCardId} nameEn={player.nameEn} />
 
       <Surface tone="outline">
         <SectionHeader title={tp("notYetHeading")} as="h2" hint={tp("notYetHint")} />

@@ -100,6 +100,18 @@ async function main() {
     await waitForCondition(async () => /Costacurta|コスタクルタ/.test(await evalJson(client, "document.body.innerText")), { timeoutMs: 15000, intervalMs: 200 }).catch(() => {});
     const none = await evalJson(client, `!!document.querySelector('[data-testid="squad-same-player-warning"]')`);
     record("[別の選手] 同じ選手がいないスカッドでは知らせない", none === false, "");
+    // 選手の詳細: 同じ選手の別のカード（2026-10-11）
+    {
+      await go(client, `${BASE}/players/world/${RC_A}`);
+      await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="same-player-other-cards"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+      const ids = await evalJson(client, `[...document.querySelectorAll('[data-testid="same-player-other-cards"] a')].map((a) => a.getAttribute("href").split("/").pop())`);
+      const key = (id) => (BigInt(id) & ((1n << 20n) - 1n)).toString();
+      record(
+        "[選手の詳細] 同じ選手の別のカードを出す（人物のキーが同じものだけ・自分は含めない・RC_B を含む）",
+        Array.isArray(ids) && ids.length > 0 && ids.every((id) => key(id) === key(RC_A) && id !== RC_A) && ids.includes(RC_B),
+        `n=${ids?.length}`,
+      );
+    }
     record("ページ内で JS の例外が起きない", errors.length === 0, errors.slice(0, 2).join(" / "));
   } finally {
     await closeTab(browser.port, tab.id).catch(() => {});

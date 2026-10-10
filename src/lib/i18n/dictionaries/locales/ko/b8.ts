@@ -343,6 +343,8 @@ const part: PartialDictionary = {
     tableWorldHeader: "World",
     tableEfhubHeader: "eFHUB",
     notYetHeading: "아직 제공되지 않음(조사 중)",
+    samePlayerOtherCardsHeadingTemplate: "같은 선수의 다른 카드({count})",
+    samePlayerOtherCardsHint: "스쿼드에는 같은 선수의 카드를 1장만 넣을 수 있습니다.",
     notYetHint: "players/search API에 포함되지 않은 항목",
     notYetZeroNote: "값이 0이거나 비어 있으면 표시하지 않습니다.",
     notYetBadgeSuffix: ": 조사 중",
