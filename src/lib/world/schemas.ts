@@ -91,6 +91,7 @@ export function parseWorldListQuery(input: {
   playingStyleDef?: string | null;
   nationality?: string | null;
   league?: string | null;
+  team?: string | null;
   minOvr?: string | null;
   maxOvr?: string | null;
   hasBooster?: string | null;
@@ -135,6 +136,8 @@ export function parseWorldListQuery(input: {
     playingStyleDefensive: filterTokenSchema.parse(input.playingStyleDef ?? null),
     nationality: nationalitySchema.parse(input.nationality ?? null),
     league: leagueSchema.parse(input.league ?? null),
+    // チームもリーグと同じ文字の範囲（「Madrid Chamartin B」「München RW」等・本番 410 件で確認）
+    team: leagueSchema.parse(input.team ?? null),
     minOvr,
     maxOvr,
     hasBooster,

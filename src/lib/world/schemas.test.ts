@@ -117,6 +117,14 @@ describe("parseWorldListQuery: 国籍（2026-10-11 F-001a）", () => {
   });
 });
 
+describe("parseWorldListQuery: チーム（2026-10-11）", () => {
+  it("World の表記のまま通し、注入は null", () => {
+    for (const tm of ["Madrid Chamartin B", "München RW", "Free Agents", "Internazionale Milano"]) expect(parseWorldListQuery({ team: tm }).team).toBe(tm);
+    expect(parseWorldListQuery({ team: "x; DROP TABLE y" }).team).toBeNull();
+    expect(parseWorldListQuery({}).team).toBeNull();
+  });
+});
+
 describe("parseWorldListQuery: リーグ（2026-10-11）", () => {
   it("World の表記（数字・スラッシュ・右の引用符・アクセント）のまま通す", () => {
     for (const l of ["2026/27 MEIJI YASUDA J1 LEAGUE", "Ligue 1 McDonald’s", "Trendyol Süper Lig", "English League", "Other"]) {

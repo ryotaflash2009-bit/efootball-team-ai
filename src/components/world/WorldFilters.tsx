@@ -33,6 +33,7 @@ function useFilterLabels(): Record<string, string> {
     playingStyleDef: key("filterLabelPlayingStyleDef"),
     nationality: key("filterLabelNationality"),
     league: key("filterLabelLeague"),
+    team: key("filterLabelTeam"),
     minOvr: key("filterLabelMinOvr"),
     maxOvr: key("filterLabelMaxOvr"),
     hasBooster: key("filterLabelBooster"),
@@ -95,7 +96,7 @@ export function WorldFilters({ facets }: { facets: WorldFacets }) {
   const sort = (params.get("sort") as WorldSortKey) ?? "ovr_max_desc";
   const activeChips = useMemo(() => {
     const chips: { key: string; label: string; value: string }[] = [];
-    for (const key of ["q", "position", "cardType", "playingStyle", "playingStyleDef", "nationality", "league", "minOvr", "maxOvr", "hasBooster"]) {
+    for (const key of ["q", "position", "cardType", "playingStyle", "playingStyleDef", "nationality", "league", "team", "minOvr", "maxOvr", "hasBooster"]) {
       const v = params.get(key);
       if (v) chips.push({ key, label: FILTER_LABELS[key] ?? key, value: v });
     }
@@ -250,6 +251,23 @@ export function WorldFilters({ facets }: { facets: WorldFacets }) {
           ))}
         </select>
 
+        <select
+          value={params.get("team") ?? ""}
+          data-adopt-param="team"
+          data-rendered-value={params.get("team") ?? ""}
+          onChange={(e) => push({ team: e.target.value || null })}
+          aria-label={twf("teamAriaLabel")}
+          data-testid="world-filter-team"
+          className={selectClass}
+        >
+          <option value="">{twf("teamAll")}</option>
+          {(facets.teams ?? []).map((tm) => (
+            <option key={tm} value={tm}>
+              {tm}
+            </option>
+          ))}
+        </select>
+
         <input
           type="number"
           min={1}
@@ -308,6 +326,7 @@ export function WorldFilters({ facets }: { facets: WorldFacets }) {
                 playingStyleDef: null,
                 nationality: null,
                 league: null,
+                team: null,
                 minOvr: null,
                 maxOvr: null,
                 hasBooster: null,

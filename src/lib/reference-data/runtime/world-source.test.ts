@@ -58,6 +58,7 @@ function baseQuery(over: Partial<WorldListQuery> = {}): WorldListQuery {
     playingStyleDefensive: null,
     nationality: null,
     league: null,
+    team: null,
     minOvr: null,
     maxOvr: null,
     hasBooster: null,

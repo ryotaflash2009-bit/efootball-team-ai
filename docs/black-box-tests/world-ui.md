@@ -1,48 +1,50 @@
 # World データ UI 接続 ブラックボックステスト結果
 
-実行日時: 2026-10-10T20:01:16.794Z
+実行日時: 2026-10-10T21:05:49.250Z
 対象: http://localhost:3000（localhost のみ）  外部アクセス: 0 回
 
 | 結果 | 項目 | 詳細 |
 |---|---|---|
 | PASS | 一覧API: HTTP 200 | HTTP 200 |
-| PASS | 一覧API: 総件数がおよそ 13,009 | totalCount=13372 |
+| PASS | 一覧API: 総件数がおよそ 13,009 | totalCount=13455 |
 | PASS | 一覧API: 1ページ 24 件前後 | players=24 |
-| PASS | 一覧API: totalPages 計算 | totalPages=558 |
+| PASS | 一覧API: totalPages 計算 | totalPages=561 |
 | PASS | 一覧API: source=eFootball World | eFootball World |
 | PASS | 一覧API: 要素は必須フィールドを持つ |  |
 | PASS | 一覧API: 26能力値やスキルを含めない（軽量） |  |
 | PASS | 一覧API: 内部情報/パス/SQLを含まない |  |
 | PASS | ページ2へ移動できる | page=2 |
-| PASS | 最終ページを表示できる | page=558/558 |
-| PASS | 範囲外ページはクラッシュせず最終ページへ丸める | page=558 |
+| PASS | 最終ページを表示できる | page=561/561 |
+| PASS | 範囲外ページはクラッシュせず最終ページへ丸める | page=561 |
 | PASS | 不正な page/pageSize でも 200（既定へ丸め） | page=1 size=24 |
 | PASS | pageSize 上限 100 に丸める | pageSize=100 |
-| PASS | 日本語名検索 | total=46 |
-| PASS | 英語名検索（部分一致） | total=46 |
-| PASS | 英語検索は大文字小文字を無視 | 46 vs 46 |
+| PASS | 日本語名検索 | total=48 |
+| PASS | 英語名検索（部分一致） | total=48 |
+| PASS | 英語検索は大文字小文字を無視 | 48 vs 48 |
 | PASS | World ID 検索で 1 件 | total=1 |
 | PASS | 存在しない検索は 0 件（200） | total=0 |
-| PASS | 空検索は全件 | total=13372 |
+| PASS | 空検索は全件 | total=13455 |
 | PASS | 記号入力でクラッシュしない | HTTP 200 |
 | PASS | 非常に長い入力を制限（クラッシュしない） | HTTP 200 |
-| PASS | SQLインジェクション風入力でテーブルが無事 | HTTP 400 after=13372 |
-| PASS | フィルター: GK | total=987 |
-| PASS | フィルター: CB | total=1978 |
-| PASS | フィルター: CMF | total=1490 |
-| PASS | フィルター: AMF | total=1324 |
-| PASS | フィルター: CF | total=2237 |
-| PASS | フィルター: カードタイプ EPIC | total=894 |
-| PASS | フィルター: 攻撃プレースタイル | total=1136 |
-| PASS | フィルター: 複数条件の組み合わせ | total=214 |
+| PASS | SQLインジェクション風入力でテーブルが無事 | HTTP 400 after=13455 |
+| PASS | フィルター: GK | total=995 |
+| PASS | フィルター: CB | total=1993 |
+| PASS | フィルター: CMF | total=1496 |
+| PASS | フィルター: AMF | total=1332 |
+| PASS | フィルター: CF | total=2253 |
+| PASS | フィルター: カードタイプ EPIC | total=900 |
+| PASS | フィルター: 攻撃プレースタイル | total=1140 |
+| PASS | フィルター: 複数条件の組み合わせ | total=217 |
 | PASS | フィルター: facets に国籍の一覧（Japan・Côte d'Ivoire を含む） | n=123 |
-| PASS | フィルター: 国籍 Côte d'Ivoire（アクセント・アポストロフィ）で絞り込める | total=91 |
-| PASS | フィルター: 国籍とポジションの組み合わせ | total=122 |
-| PASS | フィルター: 不正な国籍は無視して全件（クラッシュしない） | total=13372 |
+| PASS | フィルター: 国籍 Côte d'Ivoire（アクセント・アポストロフィ）で絞り込める | total=92 |
+| PASS | フィルター: 国籍とポジションの組み合わせ | total=123 |
+| PASS | フィルター: 不正な国籍は無視して全件（クラッシュしない） | total=13455 |
 | PASS | フィルター: facets にリーグの一覧（J1 を含む） | n=33 j1=2026/27 MEIJI YASUDA J1 LEAGUE |
 | PASS | フィルター: リーグ（数字・スラッシュ）と国籍の組み合わせで絞り込める | total=890 |
+| PASS | フィルター: facets にチームの一覧（FC Barcelona を含む） | n=420 |
+| PASS | フィルター: チーム（ウムラウト）で絞り込める | total=299 |
 | PASS | 画面: 国籍の選択肢と選択中の値（Japan）を描画 | HTTP 200 |
-| PASS | フィルター解除で全件へ戻る | total=13372 |
+| PASS | フィルター解除で全件へ戻る | total=13455 |
 | PASS | 並べ替え: 最大OVR降順 |  |
 | PASS | 並べ替え: 最大OVR昇順 |  |
 | PASS | 並べ替え: 基礎OVR降順 |  |

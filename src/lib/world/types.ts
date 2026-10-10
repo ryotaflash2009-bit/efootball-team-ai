@@ -117,6 +117,8 @@ export interface WorldListQuery {
   nationality: string | null;
   /** リーグ（World の表記のまま・完全一致）。2026-10-11 */
   league: string | null;
+  /** チーム（World の表記のまま・完全一致）。2026-10-11 */
+  team: string | null;
   minOvr: number | null;
   maxOvr: number | null;
   hasBooster: boolean | null;
@@ -142,6 +144,7 @@ export interface WorldFacets {
   playingStyleDefensives: string[];
   nationalities: string[];
   leagues: string[];
+  teams: string[];
 }
 
 /** データソースのメタ情報 */
