@@ -343,6 +343,8 @@ const part: PartialDictionary = {
     tableWorldHeader: "World",
     tableEfhubHeader: "eFHUB",
     notYetHeading: "Henüz mevcut değil (araştırılıyor)",
+    samePlayerOtherCardsHeadingTemplate: "Bu oyuncunun diğer kartları ({count})",
+    samePlayerOtherCardsHint: "Bir kadroda aynı oyuncunun yalnızca bir kartı olabilir.",
     notYetHint: "players/search API'sinde bulunmayan öğeler",
     notYetZeroNote: "Değer 0 veya boş olduğunda gösterilmez.",
     notYetBadgeSuffix: ": araştırılıyor",

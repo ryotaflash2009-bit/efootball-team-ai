@@ -2807,6 +2807,8 @@ export interface Dictionary {
     tableWorldHeader: string;
     tableEfhubHeader: string;
     notYetHeading: string;
+    samePlayerOtherCardsHeadingTemplate: string;
+    samePlayerOtherCardsHint: string;
     notYetHint: string;
     notYetZeroNote: string;
     notYetBadgeSuffix: string;

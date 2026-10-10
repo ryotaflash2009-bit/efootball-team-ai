@@ -343,6 +343,8 @@ const part: PartialDictionary = {
     tableWorldHeader: "World",
     tableEfhubHeader: "eFHUB",
     notYetHeading: "Belum Tersedia (sedang diselidiki)",
+    samePlayerOtherCardsHeadingTemplate: "Kartu lain pemain ini ({count})",
+    samePlayerOtherCardsHint: "Hanya satu kartu dari pemain yang sama yang bisa ada di skuad.",
     notYetHint: "Item yang tidak termasuk dalam API players/search",
     notYetZeroNote: "Tidak ditampilkan jika nilainya 0 atau kosong.",
     notYetBadgeSuffix: ": sedang diselidiki",

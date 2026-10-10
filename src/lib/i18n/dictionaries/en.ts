@@ -2866,6 +2866,8 @@ const en: Dictionary = {
     tableWorldHeader: "World",
     tableEfhubHeader: "eFHUB",
     notYetHeading: "Not Yet Available (under investigation)",
+    samePlayerOtherCardsHeadingTemplate: "Other cards of this player ({count})",
+    samePlayerOtherCardsHint: "Only one card of the same player can be in a squad.",
     notYetHint: "Items not included in the players/search API",
     notYetZeroNote: "Not shown when the value is 0 or empty.",
     notYetBadgeSuffix: ": under investigation",

@@ -343,6 +343,8 @@ const part: PartialDictionary = {
     tableWorldHeader: "World",
     tableEfhubHeader: "eFHUB",
     notYetHeading: "Non ancora disponibile (in analisi)",
+    samePlayerOtherCardsHeadingTemplate: "Altre carte di questo giocatore ({count})",
+    samePlayerOtherCardsHint: "In una rosa può esserci una sola carta dello stesso giocatore.",
     notYetHint: "Voci non incluse nell’API players/search",
     notYetZeroNote: "Non mostrato quando il valore è 0 o vuoto.",
     notYetBadgeSuffix: ": in analisi",

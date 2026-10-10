@@ -38,6 +38,8 @@ const playerDetailPage: Dictionary["playerDetailPage"] = {
   tableWorldHeader: "World",
   tableEfhubHeader: "eFHUB",
   notYetHeading: "未取得（追加調査中）",
+  samePlayerOtherCardsHeadingTemplate: "同じ選手の別のカード（{count}）",
+  samePlayerOtherCardsHint: "スカッドに入れられるのは同じ選手のうち 1 枚だけです。",
   notYetHint: "players/search API に含まれない項目",
   notYetZeroNote: "0 や空文字では表示しません。",
   notYetBadgeSuffix: ": 追加調査中",

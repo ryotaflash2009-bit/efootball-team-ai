@@ -343,6 +343,8 @@ const part: PartialDictionary = {
     tableWorldHeader: "World",
     tableEfhubHeader: "eFHUB",
     notYetHeading: "尚未提供（調查中）",
+    samePlayerOtherCardsHeadingTemplate: "同一球員的其他卡（{count}）",
+    samePlayerOtherCardsHint: "同一球員在陣容中只能放 1 張卡。",
     notYetHint: "players/search API 中未包含的項目",
     notYetZeroNote: "數值為 0 或空白時不顯示。",
     notYetBadgeSuffix: "：調查中",
