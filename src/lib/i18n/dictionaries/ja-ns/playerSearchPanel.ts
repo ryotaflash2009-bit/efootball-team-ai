@@ -8,6 +8,7 @@ const playerSearchPanel: Dictionary["playerSearchPanel"] = {
   sortNoteWithPositionTemplate: " 並び: 名前一致 → {position} 一致 → OVR 高い順。",
   sortNoteDefault: " 並び: 名前一致 → OVR 高い順。",
   placedLabel: "配置済み",
+  samePlayerInSquadNote: "同じ選手の別のカードがスカッドにいます（選ぶと入れ替えの確認が出ます）",
   placedWithLocationTemplate: "配置済み: {where}",
   };
 

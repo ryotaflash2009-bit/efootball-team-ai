@@ -2425,6 +2425,7 @@ export interface Dictionary {
     sortNoteWithPositionTemplate: string;
     sortNoteDefault: string;
     placedLabel: string;
+    samePlayerInSquadNote: string;
     placedWithLocationTemplate: string;
   };
   formationSelect: {

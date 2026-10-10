@@ -481,6 +481,7 @@ const part: PartialDictionary = {
     sortNoteWithPositionTemplate: " 순서: 이름 일치 → {position} 일치 → OVR 높은 순.",
     sortNoteDefault: " 순서: 이름 일치 → OVR 높은 순.",
     placedLabel: "배치됨",
+    samePlayerInSquadNote: "같은 선수의 다른 카드가 스쿼드에 있습니다(선택하면 교체 확인이 나옵니다)",
     placedWithLocationTemplate: "배치됨: {where}",
   },
   worldPlayerHero: {

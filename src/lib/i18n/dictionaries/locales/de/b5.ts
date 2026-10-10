@@ -481,6 +481,7 @@ const part: PartialDictionary = {
     sortNoteWithPositionTemplate: " Reihenfolge: Namenstreffer → Treffer bei {position} → höchste OVR.",
     sortNoteDefault: " Reihenfolge: Namenstreffer → höchste OVR.",
     placedLabel: "Aufgestellt",
+    samePlayerInSquadNote: "Eine andere Karte dieses Spielers ist im Kader (Auswahl bietet einen Tausch an)",
     placedWithLocationTemplate: "Aufgestellt: {where}",
   },
   worldPlayerHero: {

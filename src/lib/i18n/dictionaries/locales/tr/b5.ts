@@ -481,6 +481,7 @@ const part: PartialDictionary = {
     sortNoteWithPositionTemplate: " Sıra: ad eşleşmesi → mevki eşleşmesi ({position}) → en yüksek OVR.",
     sortNoteDefault: " Sıra: ad eşleşmesi → en yüksek OVR.",
     placedLabel: "Yerleştirildi",
+    samePlayerInSquadNote: "Bu oyuncunun başka bir kartı kadroda (seçince değiştirme önerilir)",
     placedWithLocationTemplate: "Yerleştirildi: {where}",
   },
   worldPlayerHero: {

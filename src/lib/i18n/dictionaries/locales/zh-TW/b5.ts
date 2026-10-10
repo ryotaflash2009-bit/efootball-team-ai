@@ -481,6 +481,7 @@ const part: PartialDictionary = {
     sortNoteWithPositionTemplate: " 排序：名稱符合 → {position} 符合 → OVR 由高到低。",
     sortNoteDefault: " 排序：名稱符合 → OVR 由高到低。",
     placedLabel: "已配置",
+    samePlayerInSquadNote: "陣容中已有該球員的另一張卡（選擇後會提示更換）",
     placedWithLocationTemplate: "已配置：{where}",
   },
   worldPlayerHero: {
