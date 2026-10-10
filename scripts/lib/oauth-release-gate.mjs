@@ -47,8 +47,8 @@ const SENSITIVE_RE = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}|\b[0-9a-f]{
 export function codeChecks(src) {
   const mode = /export const GOOGLE_OAUTH_MODE: GoogleOAuthMode = "(\w+)"/.exec(src.oauthSource)?.[1] ?? null;
   return {
-    oauthModeExplicit: mode === "disabled" || mode === "enabled",
-    oauthMode: mode,
+    entryModeExplicit: mode === "disabled" || mode === "enabled",
+    entryMode: mode,
     // 不明な値は無効（isGoogleOAuthAvailable は "enabled" のときだけ true）
     unknownModeFailsClosed: /if \(mode === "enabled"\) return true;/.test(src.oauthSource),
     callbackSeparatesGoogleFlow: /oauthCallbackFailure\(url\.search\)/.test(src.callbackSource) && /exchangeCodeForSession\(code\)/.test(src.callbackSource),
@@ -82,7 +82,7 @@ export function evaluateOAuthReleaseGate({ checklist, code }) {
   const pre = evaluateGroup(checklist?.preEnable, PRE_ENABLE_ITEMS);
   const post = evaluateGroup(checklist?.postEnable, POST_ENABLE_ITEMS);
   const codeFailures = Object.entries(code)
-    .filter(([k, v]) => k !== "oauthMode" && v !== true)
+    .filter(([k, v]) => k !== "entryMode" && v !== true)
     .map(([k]) => k);
   const preReady = codeFailures.length === 0 && pre.problems.length === 0 && pre.counts.pass + pre.counts["n/a"] === PRE_ENABLE_ITEMS.length;
   const preEnableVerdict = preReady ? "READY_TO_ENABLE" : "BLOCKED";
@@ -91,14 +91,14 @@ export function evaluateOAuthReleaseGate({ checklist, code }) {
   const conflict = checklist?.postEnable?.prodExistingEmailConflictRecorded;
   const conflictRecorded = conflict?.status !== "pass" || conflict?.observedLinking === "linked" || conflict?.observedLinking === "separate";
   let postEnableVerdict = "NOT_STARTED";
-  if (code.oauthMode === "enabled" || post.counts.pass + post.counts.fail > 0) {
+  if (code.entryMode === "enabled" || post.counts.pass + post.counts.fail > 0) {
     if (rollbackFailed.length > 0 || post.counts.fail > 0) postEnableVerdict = "NO_GO";
     else if (!conflictRecorded || post.problems.length > 0) postEnableVerdict = "PENDING";
     else if (post.counts.pass + post.counts["n/a"] === POST_ENABLE_ITEMS.length) postEnableVerdict = "GO";
     else postEnableVerdict = "PENDING";
   }
   // 有効のコードなのに有効化の前の条件がそろっていない（設定の前に PR がマージされた）→ 入口を閉じる
-  const enabledWithoutReadiness = code.oauthMode === "enabled" && !preReady;
+  const enabledWithoutReadiness = code.entryMode === "enabled" && !preReady;
   return {
     preEnableVerdict,
     postEnableVerdict: enabledWithoutReadiness ? "NO_GO" : postEnableVerdict,

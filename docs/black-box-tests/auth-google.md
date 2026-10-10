@@ -1,6 +1,6 @@
 # Google OAuth の準備 ブラックボックステスト結果
 
-実行日時: 2026-10-10T15:54:09.681Z
+実行日時: 2026-10-10T16:05:56.374Z
 対象: http://localhost:3000（Production Build 上の隔離ヘッドレス Chrome・認証のテストダブル。実 Supabase・Google へは接続しない）
 
 | 結果 | 項目 | 詳細 |

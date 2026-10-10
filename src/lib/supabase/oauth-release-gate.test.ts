@@ -20,7 +20,7 @@ const all = (items: string[], status: string, extra: Record<string, unknown> = {
 describe("Google OAuth の公開のゲート", () => {
   it("今のリポジトリ: コードの確認はすべて合格・モードは disabled・本人の記録は未着手 → BLOCKED / NOT_STARTED", () => {
     const code = realCode();
-    expect(code.oauthMode).toBe("disabled");
+    expect(code.entryMode).toBe("disabled");
     const r = evaluateOAuthReleaseGate({ checklist: realChecklist(), code });
     expect(r.codeFailures).toEqual([]);
     expect(r.preEnableVerdict).toBe("BLOCKED");
@@ -30,16 +30,16 @@ describe("Google OAuth の公開のゲート", () => {
 
   it("CI の防御: コードを enabled にするなら、有効化の前の記録がすべて pass であること（設定の前のマージを止める）", () => {
     const code = realCode();
-    if (code.oauthMode === "enabled") {
+    if (code.entryMode === "enabled") {
       expect(evaluateOAuthReleaseGate({ checklist: realChecklist(), code }).preEnableVerdict).toBe("READY_TO_ENABLE");
     }
     // 仮に enabled で記録が不足していれば NO_GO・入口を閉じる
-    const r = evaluateOAuthReleaseGate({ checklist: realChecklist(), code: { ...code, oauthMode: "enabled" } });
+    const r = evaluateOAuthReleaseGate({ checklist: realChecklist(), code: { ...code, entryMode: "enabled" } });
     expect(r).toMatchObject({ postEnableVerdict: "NO_GO", rollbackRequired: true });
   });
 
   it("有効化の前の記録がすべて pass → READY_TO_ENABLE。有効化の後: すべて pass → GO・RLS の分離の失敗 → NO_GO", () => {
-    const code = { ...realCode(), oauthMode: "enabled" };
+    const code = { ...realCode(), entryMode: "enabled" };
     const pre = all(PRE_ENABLE_ITEMS, "pass");
     const post = all(POST_ENABLE_ITEMS, "pass");
     post.prodExistingEmailConflictRecorded = { ...post.prodExistingEmailConflictRecorded, observedLinking: "linked" };
@@ -49,7 +49,7 @@ describe("Google OAuth の公開のゲート", () => {
   });
 
   it("同じメールの統合は推測で保証しない: 観測の結果（linked / separate）を記録しない限り GO にしない", () => {
-    const code = { ...realCode(), oauthMode: "enabled" };
+    const code = { ...realCode(), entryMode: "enabled" };
     const post = all(POST_ENABLE_ITEMS, "pass");
     const r = evaluateOAuthReleaseGate({ checklist: { preEnable: all(PRE_ENABLE_ITEMS, "pass"), postEnable: post }, code });
     expect(r.postEnableVerdict).toBe("PENDING");

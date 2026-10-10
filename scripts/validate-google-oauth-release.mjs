@@ -26,7 +26,8 @@ const code = codeChecks({
 });
 const result = evaluateOAuthReleaseGate({ checklist, code });
 
-console.log(`[google-oauth-release] code mode: ${code.oauthMode}`);
+// モードは公開の値（"disabled" | "enabled"）。秘密ではないが、決まった語だけを出す。
+console.log(`[google-oauth-release] code mode: ${code.entryMode === "enabled" ? "enabled" : code.entryMode === "disabled" ? "disabled" : "invalid"}`);
 console.log(`[google-oauth-release] pre-enable: ${result.preEnableVerdict} (pass ${result.preEnable.counts.pass} / pending ${result.preEnable.counts.pending} / fail ${result.preEnable.counts.fail})`);
 console.log(`[google-oauth-release] post-enable: ${result.postEnableVerdict} (pass ${result.postEnable.counts.pass} / pending ${result.postEnable.counts.pending} / fail ${result.postEnable.counts.fail})`);
 for (const f of result.codeFailures) console.log(`  code check failed: ${f}`);
@@ -43,7 +44,7 @@ if (process.env.EVIDENCE_PATH) {
       {
         schema: "google-oauth-release-gate-evidence/v1",
         generatedAt: new Date().toISOString(),
-        codeMode: code.oauthMode,
+        codeMode: code.entryMode,
         codeChecks: code,
         preEnableVerdict: result.preEnableVerdict,
         postEnableVerdict: result.postEnableVerdict,

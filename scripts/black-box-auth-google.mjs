@@ -152,8 +152,9 @@ async function main() {
       const afterKeys = await ev(`Object.keys(localStorage).filter((k) => k.startsWith("efootball-team-ai:local:account:") && k.endsWith(":my-team:v1"))`);
       record("[引き継ぎ] 実行するとアカウントの領域へ追加・ゲストのデータは残る", ackBox && (afterKeys ?? []).length === 1 && (await ev(`localStorage.getItem(${JSON.stringify(GUEST_MY_TEAM)})`)) === guestBefore, `keys=${(afterKeys ?? []).length}`);
       if ((afterKeys ?? []).length === 1) {
-        const accKey = afterKeys[0];
-        const accBefore = await ev(`localStorage.getItem(${JSON.stringify(accKey)})`);
+        // ページから得たキーをコードに埋め込まない（同じ条件で読み直す）
+        const ACCOUNT_MY_TEAM = `localStorage.getItem(Object.keys(localStorage).find((k) => k.startsWith("efootball-team-ai:local:account:") && k.endsWith(":my-team:v1")))`;
+        const accBefore = await ev(ACCOUNT_MY_TEAM);
         await ev(`(() => { const g = JSON.parse(localStorage.getItem(${JSON.stringify(GUEST_MY_TEAM)})); g.records[0].note = "guest-edit"; g.records[0].updatedAt = "2026-10-11T01:00:00.000Z"; localStorage.setItem(${JSON.stringify(GUEST_MY_TEAM)}, JSON.stringify(g)); })()`);
         await go(`${BASE}/account/local-data-migration?source=guest&__efbAuth=1&__efbUserId=efb-google-user-1`);
         await waitForCondition(async () => /ゲストとして保存したデータ（この端末）/.test(await text()), { timeoutMs: 10000 }).catch(() => {});
@@ -161,7 +162,7 @@ async function main() {
         await ev(`[...document.querySelectorAll("button")].find((b) => /プレビュー/.test(b.textContent))?.click()`);
         await waitForCondition(async () => /競合/.test(await text()), { timeoutMs: 5000 }).catch(() => {});
         record("[引き継ぎ] 同じ ID で内容が違う記録は「競合」として数える", /競合/.test(await text()), "");
-        record("[引き継ぎ] 競合はアカウントの側を上書きしない", (await ev(`localStorage.getItem(${JSON.stringify(accKey)})`)) === accBefore, "");
+        record("[引き継ぎ] 競合はアカウントの側を上書きしない", (await ev(ACCOUNT_MY_TEAM)) === accBefore, "");
       }
     }
 
