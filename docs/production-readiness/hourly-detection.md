@@ -142,3 +142,7 @@ Backup 必須・Restore / Storage の検証・Dry run 必須・re-diff 0・check
 - 古い承認待ちの取り消し: watchdog が、24 時間を過ぎた承認待ちの Production Apply（Backup の期限切れ）を取り消す。
 - 適用済みの記録の自動の更新: `reference-data-applied-state-sync.yml` が、Apply の後に記録・Evidence・F-071 の分布（World のとき・照合つき）を main へ commit。
 - 詳細: `auto-apply-policy-v2.md`。
+- 初回の実運用（2026-10-10〜11）: 自動の Apply 38082513282（World 13,372 → 13,455・承認者 `auto-apply-policy`）の後、同期（run 38083284700）が
+  記録を main へ commit（bb2d335）。ただし Evidence に契約の項目（candidate・diff・apply・sourceTimestamps）が無く main のテストが失敗した
+  → #246 で修正。GITHUB_TOKEN の push は CI を起動しないため、同期は push の前に契約のテスト（update-detection・applied-state-sync・percentiles）を
+  通し、失敗したら push せずに job を失敗にする（本人に失敗の通知）。

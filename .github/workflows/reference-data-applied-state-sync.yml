@@ -111,6 +111,16 @@ jobs:
             echo "distribution candidate not found for run $DET_RUN" >> "$GITHUB_STEP_SUMMARY"
           fi
 
+      # GITHUB_TOKEN の push は CI を起動しないため、main の契約のテストをここで通してから push する（2026-10-11:
+      # 最初の同期 bb2d335 が Evidence の項目の不足で update-detection.test.ts を壊し、次の PR の CI で初めて分かった）。
+      # 失敗したら push せずに job を失敗にする（本人に GitHub の失敗の通知が届く）。
+      - name: Check the record against the repository contract before pushing
+        if: steps.busy.outputs.busy == '0' && steps.sync.outputs.changed == '1'
+        run: |
+          set -euo pipefail
+          [ -d node_modules ] || npm ci --ignore-scripts --no-audit --no-fund
+          npx vitest run src/lib/reference-data/auto-update/update-detection.test.ts src/lib/reference-data/auto-update/applied-state-sync.test.ts src/lib/percentiles
+
       - name: Commit to main
         if: steps.busy.outputs.busy == '0' && steps.sync.outputs.changed == '1'
         run: |
