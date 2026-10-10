@@ -34,3 +34,14 @@ describe("Google OAuth（2026-10-11 の方針）", () => {
     expect(authErrorMessageKey("oauth_failed")).toBe("authErrorOAuthFailed");
   });
 });
+
+import { googleProviderStatusFromSettings } from "./oauth";
+
+describe("Google の Provider の状態（緊急停止の検出）", () => {
+  it("Supabase の公開の設定の external.google が true / false / それ以外", () => {
+    expect(googleProviderStatusFromSettings({ external: { google: true, email: true } })).toBe("enabled");
+    expect(googleProviderStatusFromSettings({ external: { google: false } })).toBe("disabled");
+    expect(googleProviderStatusFromSettings({ external: {} })).toBe("unknown");
+    expect(googleProviderStatusFromSettings(null)).toBe("unknown");
+  });
+});

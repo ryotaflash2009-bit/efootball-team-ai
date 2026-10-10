@@ -28,8 +28,14 @@ export function GoogleSignInButton({ next, onError }: { next: string | null; onE
     if (pending) return; // 連打防止
     setPending(true);
     try {
-      const { getSupabaseBrowserClient } = await import("@/lib/supabase/client");
+      const { getSupabaseBrowserClient, fetchGoogleProviderStatus } = await import("@/lib/supabase/client");
       const supabase = getSupabaseBrowserClient();
+      // 緊急停止（Supabase の Google の Provider を Disable）の間は、Supabase の生のエラーの画面へ移さずに案内する。
+      if ((await fetchGoogleProviderStatus()) === "disabled") {
+        onError(t("auth", "googleProviderDisabled"));
+        setPending(false);
+        return;
+      }
       if (!supabase?.auth.signInWithOAuth) {
         onError(t("auth", "authErrorNotConfigured"));
         setPending(false);

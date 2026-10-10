@@ -15,6 +15,7 @@ import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { isSignupOpen } from "@/lib/supabase/account-availability";
 import { authErrorMessageKey } from "@/lib/supabase/email-link";
 import { GoogleSignInButton, useGoogleOAuthAvailable } from "./GoogleSignInButton";
+import { InAppBrowserNotice } from "./InAppBrowserNotice";
 
 type AuthKey = keyof Dictionary["auth"];
 
@@ -37,6 +38,8 @@ export function SignInView() {
   // 2026-10-11 の方針: Google が主な経路。Google が使えるときは、メール＋パスワードは「以前に作成したアカウント」用に畳み、
   // パスワードの再設定の導線は出さない（パスワードでのログインを一般に提供しないため）。Google が使えない間は従来どおり。
   const google = useGoogleOAuthAvailable();
+  // Google の失敗の後は、アプリ内ブラウザーの判定に関係なく「Safari / Chrome で開き直す」案内を出す。
+  const oauthFailed = searchParams.get("authError") === "oauth_failed";
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -73,6 +76,7 @@ export function SignInView() {
       {google ? (
         <Surface padding="md" className="flex max-w-md flex-col gap-3" data-testid="google-sign-in">
           <p className="text-sm text-text-dim">{ta("googlePrimaryLead")}</p>
+          <InAppBrowserNotice force={oauthFailed} />
           <GoogleSignInButton next={nextPath} onError={setErrorMessage} />
           {errorMessage ? (
             <p role="alert" className="text-sm text-danger">

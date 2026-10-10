@@ -188,7 +188,7 @@ export function LocalDataMigrationView() {
       <PageHeader title={ta("pageTitle")} icon="database" />
 
       <Surface tone="outline" padding="md" className="flex flex-col gap-1.5">
-        <p className="text-sm text-text-dim">{ta("introBody")}</p>
+        <p className="text-sm text-text-dim">{source === "guest" ? ta("introBodyGuest") : ta("introBody")}</p>
         <p className="text-xs text-text-muted">{ta("noAutoMigrationNotice")}</p>
       </Surface>
 
@@ -444,7 +444,7 @@ export function LocalDataMigrationView() {
         body={
           confirmKind ? (
             <div className="flex flex-col gap-1.5">
-              <p>{ta("migrateConfirmIntro")}</p>
+              <p>{source === "guest" ? ta("migrateConfirmIntroGuest") : ta("migrateConfirmIntro")}</p>
               <p className="font-semibold">{kindLabel(confirmKind)}</p>
               <p className="font-semibold">
                 {fill(ta("migrateConfirmCountTemplate"), { kind: kindLabel(confirmKind), count: String(previews[confirmKind]?.addCount ?? 0) })}
@@ -455,7 +455,7 @@ export function LocalDataMigrationView() {
               <p className="text-2xs text-text-muted">
                 {fill(ta("migrateConfirmConflictTemplate"), { kind: kindLabel(confirmKind), count: String(previews[confirmKind]?.conflictCount ?? 0) })}
               </p>
-              <p>{ta("migrateConfirmLegacyKeptNotice")}</p>
+              <p>{source === "guest" ? ta("migrateConfirmGuestKeptNotice") : ta("migrateConfirmLegacyKeptNotice")}</p>
               <p>{ta("migrateConfirmNoCloudNotice")}</p>
               <p>{ta("migrateConfirmNoOverwriteNotice")}</p>
               <p>{ta("migrateConfirmConflictSkippedNotice")}</p>
@@ -467,7 +467,7 @@ export function LocalDataMigrationView() {
                   onChange={(e) => setMigrateAck(e.target.checked)}
                   className="mt-0.5"
                 />
-                <span>{ta("migrateConfirmCheckboxLabel")}</span>
+                <span>{source === "guest" ? ta("migrateConfirmCheckboxLabelGuest") : ta("migrateConfirmCheckboxLabel")}</span>
               </label>
             </div>
           ) : null

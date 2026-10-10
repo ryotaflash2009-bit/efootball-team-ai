@@ -42,3 +42,16 @@ describe("アプリ内ブラウザーの検出", () => {
     expect(externalBrowserUrl("javascript:alert(1)", detectInAppBrowser(UA.iosLine))).toBeNull();
   });
 });
+
+import { shareableAuthUrl } from "./in-app-browser";
+import { resolveSafeInternalPath } from "@/lib/supabase/safe-redirect";
+
+describe("コピー・外部で開く URL（秘密情報を含めない）", () => {
+  const safe = (p: string) => resolveSafeInternalPath(p, "") === p;
+  it("origin＋パス＋安全な next だけ。code・error・プレビューのフラグは落とす・callback はログインの画面へ", () => {
+    expect(shareableAuthUrl("https://x.app/auth/sign-in?next=%2Fsquads&oauthPreview=1&authError=oauth_failed", safe)).toBe("https://x.app/auth/sign-in?next=%2Fsquads");
+    expect(shareableAuthUrl("https://x.app/auth/callback?flow=google&code=SECRET&next=%2Faccount", safe)).toBe("https://x.app/auth/sign-in?next=%2Faccount");
+    expect(shareableAuthUrl("https://x.app/auth/sign-in?next=https%3A%2F%2Fevil.example", safe)).toBe("https://x.app/auth/sign-in");
+    expect(shareableAuthUrl("javascript:alert(1)", safe)).toBeNull();
+  });
+});

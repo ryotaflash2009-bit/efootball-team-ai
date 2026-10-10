@@ -35,10 +35,22 @@ export async function GET(request: Request) {
 
   const { error } = await supabase.auth.exchangeCodeForSession(code);
   if (error) {
+    // 同じ code の 2 回目（再読み込み・戻るボタン・二重の callback）は交換に失敗するが、1 回目でセッションが作られていれば
+    // そのまま進める（サーバーで getUser により確かめる。Cookie の値だけを信用しない）。
+    if (await hasSession(supabase)) return NextResponse.redirect(new URL(next, request.url));
     const reason = classifyEmailLinkFailure(error as { status?: number; code?: string });
     if (google) return signIn(reason === "rate_limited" || reason === "unavailable" ? reason : "oauth_failed");
     return signIn(reason === "unknown" ? "callback_failed" : reason);
   }
 
   return NextResponse.redirect(new URL(next, request.url));
+}
+
+async function hasSession(supabase: { auth: { getUser?: () => Promise<{ data: { user: unknown } | null }> } }): Promise<boolean> {
+  try {
+    const r = await supabase.auth.getUser?.();
+    return Boolean(r?.data?.user);
+  } catch {
+    return false;
+  }
 }

@@ -68,3 +68,22 @@ export function externalBrowserUrl(currentUrl: string, info: InAppBrowserInfo): 
   }
   return null;
 }
+
+/**
+ * 外部のブラウザーで開く・コピーする URL。origin＋パスと、安全な内部パスの `next` だけを残す（`code`・`error_description`・
+ * プレビューのフラグ等は落とす。認証のコードや callback の URL を手で扱わせない）。
+ */
+export function shareableAuthUrl(href: string, isSafeInternalPath: (p: string) => boolean): string | null {
+  let u: URL;
+  try {
+    u = new URL(href);
+  } catch {
+    return null;
+  }
+  if (u.protocol !== "https:" && u.protocol !== "http:") return null;
+  if (u.pathname.startsWith("/auth/callback") || u.pathname.startsWith("/auth/confirm")) u.pathname = "/auth/sign-in";
+  const next = u.searchParams.get("next");
+  const out = new URL(u.pathname, u.origin);
+  if (next && isSafeInternalPath(next)) out.searchParams.set("next", next);
+  return out.toString();
+}

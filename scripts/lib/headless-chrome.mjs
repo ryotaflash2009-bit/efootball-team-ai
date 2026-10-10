@@ -437,7 +437,23 @@ export async function installSupabaseAuthTestDouble(client) {
           },
         };
       }
-      window.__EFB_DB_TEST_DOUBLE__ = { from: rlsFrom };
+      // アカウントの削除（delete_my_account・2026-10-11）。window.__EFB_TEST_DELETE_MODE__:
+      // "success"（既定）| "reauth" | "billing" | "unavailable" | "hang"（応答しない）。呼び出しの引数を __EFB_TEST_RPC_CALLS__ に記録する。
+      var deleted = false;
+      async function rpc(fn, args) {
+        (window.__EFB_TEST_RPC_CALLS__ = window.__EFB_TEST_RPC_CALLS__ || []).push({ fn: fn, args: args });
+        if (fn !== "delete_my_account") return { data: null, error: { code: "PGRST202", message: "test double: unknown function" } };
+        var mode = window.__EFB_TEST_DELETE_MODE__ || "success";
+        if (mode === "hang") return new Promise(function () {});
+        if (mode === "reauth") return { data: null, error: { code: "42501", message: "reauthentication_required" } };
+        if (mode === "billing") return { data: null, error: { code: "P0001", message: "billing_active" } };
+        if (mode === "unavailable") return { data: null, error: { code: "PGRST202", message: "Could not find the function" } };
+        if (!args || args.confirm !== "DELETE") return { data: null, error: { code: "22023", message: "confirmation_required" } };
+        var already = deleted;
+        deleted = true;
+        return { data: { deleted: true, alreadyDeleted: already, counts: {} }, error: null };
+      }
+      window.__EFB_DB_TEST_DOUBLE__ = { from: rlsFrom, rpc: rpc };
     })();
   `;
   await client.send("Page.addScriptToEvaluateOnNewDocument", { source });
