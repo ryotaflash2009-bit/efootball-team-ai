@@ -86,7 +86,7 @@
 §6 の「9 カテゴリの育成画面の記録」は不要になった。eFHUB の育成シミュレーターの定義と照合し、6 カテゴリの対象能力を直した
 （`progression-efhub-crosscheck-2026-10-09.md`）。表示は「対象能力は推定」から「eFHUB基準」（公式の発表ではないと説明つき）へ変えた
 （progressionTab.confirmedTag・ruGrConfirmed・groupsHint・ruModeProvisional・abilityEditor.targetsEstimated・targetsEstimatedHint・12 言語）。
-残る本人の判断・ゲームの画面: 推定 OVR の直し方（権利）・カテゴリのレベルの上限 25・ブースター後の 99 超え。
+残る本人の判断・ゲームの画面: 推定 OVR の直し方（権利）・カテゴリのレベルの上限 25（→ 2026-10-10 に解決: 上限なし）・ブースター後の 99 超え（→ 2026-10-09 に解決: KONAMI 公式で 99 を超える）。
 
 ## 9. 能力値の上限（2026-10-09・4 回目）
 

@@ -15,6 +15,7 @@ import { classifySignUpFailure } from "@/lib/supabase/auth-errors";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { isSignupOpen, isSignupPreviewAllowed, resolveAuthRedirectOrigin } from "@/lib/supabase/account-availability";
 import { GoogleSignInButton, useGoogleOAuthAvailable } from "./GoogleSignInButton";
+import { InAppBrowserNotice } from "./InAppBrowserNotice";
 import { isLocalDevHostname } from "@/lib/supabase/local-dev";
 
 type AuthKey = keyof Dictionary["auth"];
@@ -106,6 +107,7 @@ export function SignUpView() {
         <PageHeader title={ta("googleSignUpTitle")} icon="shield" />
         <Surface padding="md" className="flex max-w-md flex-col gap-3">
           <p className="text-sm">{ta("googleSignUpBody")}</p>
+          <InAppBrowserNotice />
           <GoogleSignInButton next="/account" onError={setErrorMessage} />
           {errorMessage ? (
             <p role="alert" className="text-sm text-danger">

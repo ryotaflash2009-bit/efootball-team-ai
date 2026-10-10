@@ -47,7 +47,7 @@ function useSortOptions(): { value: UserCardSort; label: string }[] {
 
 /**
  * お気に入り / My Team の一覧フィルター（登録済みカードだけを対象に client 側で解決）。
- * 全 13,009 カードを再取得しない。
+ * 全カードを再取得しない。
  */
 export function UserCardFilters({
   state,

@@ -73,3 +73,45 @@
 
 本人の操作（不要と判断した場合）: エクスプローラーで `C:\Development\eFootball-Team-AI\data\work\efhub-tmp` フォルダを開き、11 ファイルを選んで削除する
 （フォルダ ごと削除してもよい。OneDrive の同期の対象外のため大量削除の警告は出ない）。
+
+---
+
+## 2026-10-11 の更新（夜間の作業の後）
+
+分類: **A** 今夜実行 / **B** 設計・Dry run・文書まで / **C** 本人の操作 / **D** Production の適用の待ち / **E** 将来 / **F** 完了 / **G** 削除・閉鎖の候補。
+
+| 項目 | 分類 | 状態 |
+|---|---|---|
+| アカウントの削除（画面・テスト・SQL・apply package） | A → D | 実装済み・既定で無効。関数の適用は本人（`account-deletion-apply-package.md`）。それまでは運営への連絡で削除（案内済み・12 言語） |
+| Google OAuth の公開のゲート | A | `validate-google-oauth-release.mjs`（2 段階・CI の防御）。今は `BLOCKED`（本人の設定の前） |
+| Google OAuth の有効化 | C | 本人の Google Cloud・Supabase の操作の後に PR（`google-oauth-release-gate.md` §7） |
+| アプリ内ブラウザーの案内 | A | 実装済み（12 言語・black-box） |
+| callback の安全（PKCE・returnTo・二重の callback） | A | 確認・二重の callback の修正 |
+| Provider の停止の検出 | A | 実装済み（Supabase の生のエラーの画面へ移さない） |
+| ゲストの引き継ぎの競合 | A | black-box（追加・競合・ゲストのデータを残す） |
+| 内部ページに依存する black-box（rls-test・my-team-cloud） | A | 前提の確認（`PREREQUISITE NOT MET` で止める・合格にしない）・build の設定と一致の確認 |
+| 課金の前の認証の境界 | B | `billing-auth-boundary.md`（コードの変更なし） |
+| 13,009 と 13,372 | F | 意図した差（ローカルのスナップショットと本番の更新）・`world-card-counts.md` |
+| 人物のキーの食い違いの停止 | A | `PERSON_KEY_CONFLICT_EXCEPTIONS`（今は 0 件） |
+| watchdog の監査・10-13 の観測 | A → B | 監査は不具合なし。10-13 の観測の script と GO / NO-GO（`hourly-detection-decision-package.md` §7・§9） |
+| npm audit（next 同梱の postcss） | E | 本番に到達しない。Next 16.4 は独立のフェーズ（`npm-audit-2026-10-11.md` §3） |
+| Dependabot #151 | G → F | **閉じた**（Tailwind 4 の移行は別のフェーズ） |
+| `data/work/efhub-tmp`（11 ファイル） | C | 削除の候補（下の手順）。コード・workflow からの参照なし（文書の記述だけ） |
+| `data/work/wt-head` | C | 削除の候補（下の手順）。中身は main に反映済み（#158）。未コミットは生成物 2 ファイルだけ |
+| プライバシーポリシーの Google の記述 | C | 下書き（`google-oauth-release-gate.md` §11）。本人の確認の後に反映 |
+| Search Console の任意の確認 | E | 停止の理由ではない |
+| 独自ドメイン・本番の課金 | E | 本人の判断（`billing-auth-boundary.md` §5） |
+| 未使用の i18n キー `bestXi.sameNameWarningTemplate` | E | 次の辞書の整理 |
+
+### 本人の操作の手順（削除の候補）
+
+**`data/work/efhub-tmp`**（11 ファイル・約 1.3 MB・Git の対象外・再取得できる・結果は Evidence に要約済み）:
+エクスプローラーで `C:\Development\eFootball-Team-AI\data\work\efhub-tmp` を開き、フォルダごと削除（またはターミナルで
+`Remove-Item -LiteralPath "C:\Development\eFootball-Team-AI\data\work\efhub-tmp" -Recurse`）。消えても壊れる参照は無い（文書の「報告の後に削除」の記述どおり）。
+
+**`data/work/wt-head`**（detached の worktree・555daf4 = #158 と同じ内容・未 push のコミットなし・未コミットは `docs/i18n/coverage.json`・`coverage.md` の生成物だけ）:
+`node_modules` は本体の `node_modules` への **junction**。先に junction だけを外し、本体を消さないこと。
+1. `cmd /c rmdir "C:\Development\eFootball-Team-AI\data\work\wt-head\node_modules"`（junction のリンクだけを消す。中身は消えない）
+2. `git -C C:\Development\eFootball-Team-AI worktree remove --force data/work/wt-head`（`--force` は生成物の未コミットの変更を捨てるため）
+3. `git -C C:\Development\eFootball-Team-AI worktree list` で 1 行だけになったことと、本体の `node_modules` が残っていることを確認。
+`rm -rf` は使わない（junction の先を消す恐れ）。

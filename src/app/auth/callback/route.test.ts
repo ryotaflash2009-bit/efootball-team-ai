@@ -9,10 +9,11 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  * ルートハンドラーの分岐(コード交換の成否・遷移先の安全性)だけを決定的に検証する。
  */
 
-function makeFakeClient(exchangeResult: { error: { message: string } | null }): SupabaseClient {
+function makeFakeClient(exchangeResult: { error: { message: string } | null }, currentUser: { id: string } | null = null): SupabaseClient {
   return {
     auth: {
       exchangeCodeForSession: async () => exchangeResult,
+      getUser: async () => ({ data: { user: currentUser }, error: null }),
     },
   } as unknown as SupabaseClient;
 }
@@ -123,6 +124,19 @@ describe("GET /auth/callback: Google OAuth（flow=google・2026-10-11）", () =>
     setSupabaseServerClientForTesting(async () => makeFakeClient({ error: null }));
     expect(new URL(await loc("/auth/callback?flow=google&code=abc123&next=%2Fsquads")).pathname).toBe("/squads");
     expect(new URL(await loc("/auth/callback?flow=google&code=abc123&next=https%3A%2F%2Fevil.example")).pathname).toBe("/account");
+  });
+});
+
+describe("GET /auth/callback: 二重の callback・再読み込み・戻るボタン（2026-10-11）", () => {
+  afterEach(() => {
+    setSupabaseServerClientForTesting(null);
+  });
+  it("交換に失敗しても、既にセッションがあれば next へ進む（同じ code の 2 回目）・無ければ失敗の表示", async () => {
+    setSupabaseServerClientForTesting(async () => makeFakeClient({ error: { message: "code already used" } }, { id: "u1" }));
+    const ok = (await GET(makeRequest("/auth/callback?flow=google&code=used&next=%2Fsquads"))).headers.get("location") ?? "";
+    expect(new URL(ok).pathname).toBe("/squads");
+    setSupabaseServerClientForTesting(async () => makeFakeClient({ error: { message: "code already used" } }, null));
+    expect((await GET(makeRequest("/auth/callback?flow=google&code=used"))).headers.get("location")).toContain("authError=oauth_failed");
   });
 });
 

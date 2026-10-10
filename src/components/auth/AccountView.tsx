@@ -104,6 +104,12 @@ export function AccountView() {
             <p className="text-sm text-text-dim">{ta("accountDeletionFutureNoticeDesc")}</p>
           </Surface>
 
+          <Surface tone="outline" padding="md" className="flex flex-col gap-1.5" data-testid="account-delete-entry">
+            <Link href="/account/delete" className="w-fit text-sm text-danger hover:underline">
+              {ta("accountDeleteLink")}
+            </Link>
+          </Surface>
+
           <Surface tone="outline" padding="md" className="flex flex-col gap-1.5">
             <p className="text-xs font-semibold text-text-muted">{t("myTeamCloud", "devNoticeTitle")}</p>
             <Link href="/account/my-team-cloud" className="w-fit text-sm text-accent hover:underline">

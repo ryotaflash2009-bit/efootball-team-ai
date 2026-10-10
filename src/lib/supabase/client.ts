@@ -37,12 +37,16 @@ export interface AuthTestDouble {
 /** ブラックボックステスト専用: `.from(table)`だけを差し替えるDB用テストダブル。 */
 export interface DbTestDouble {
   from: SupabaseClient["from"];
+  /** アカウントの削除（`delete_my_account`）の black-box 用（2026-10-11）。 */
+  rpc?: SupabaseClient["rpc"];
 }
 
 declare global {
   interface Window {
     __EFB_AUTH_TEST_DOUBLE__?: AuthTestDouble;
     __EFB_DB_TEST_DOUBLE__?: DbTestDouble;
+    /** black-box 用: false なら Google の Provider が無効（緊急停止）を模擬する。 */
+    __EFB_TEST_GOOGLE_PROVIDER__?: boolean;
   }
 }
 
@@ -54,7 +58,7 @@ function resolveTestDouble(): SupabaseClient | null {
   const authDouble = window.__EFB_AUTH_TEST_DOUBLE__;
   if (!authDouble) return null;
   const dbDouble = window.__EFB_DB_TEST_DOUBLE__;
-  return { auth: authDouble, from: dbDouble?.from } as unknown as SupabaseClient;
+  return { auth: authDouble, from: dbDouble?.from, rpc: dbDouble?.rpc } as unknown as SupabaseClient;
 }
 
 /** 検証済みの環境変数からブラウザー用クライアントを生成する。未設定/不正なら`null`。 */
@@ -79,4 +83,27 @@ export function getSupabaseBrowserClient(): SupabaseClient | null {
 /** テスト専用: キャッシュされたクライアントをリセットする。 */
 export function resetSupabaseBrowserClientForTesting(): void {
   cached = undefined;
+}
+
+/**
+ * Google の Provider の状態（2026-10-11）。Google の画面へ移る前に、Supabase の公開の設定（publishable key だけ・秘密なし）を読む。
+ * Provider が無効（緊急停止）なら、Supabase の生のエラーの画面へ移さずに案内を出すため。読めない・遅いときは unknown（ログインは止めない）。
+ * テストダブルのときは実 Supabase へ接続しない（`__EFB_TEST_GOOGLE_PROVIDER__` で模擬）。
+ */
+export async function fetchGoogleProviderStatus(timeoutMs = 4000): Promise<"enabled" | "disabled" | "unknown"> {
+  const { googleProviderStatusFromSettings } = await import("./oauth");
+  if (resolveTestDouble()) return typeof window !== "undefined" && window.__EFB_TEST_GOOGLE_PROVIDER__ === false ? "disabled" : "unknown";
+  const env = getSupabaseEnv();
+  if (!env.ok) return "unknown";
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(new URL("/auth/v1/settings", env.config.url), { headers: { apikey: env.config.publishableKey }, signal: controller.signal });
+    if (!res.ok) return "unknown";
+    return googleProviderStatusFromSettings(await res.json());
+  } catch {
+    return "unknown";
+  } finally {
+    clearTimeout(timer);
+  }
 }

@@ -1,0 +1,32 @@
+{
+  "schema": "google-oauth-release-gate-evidence/v1",
+  "generatedAt": "2026-10-10T16:05:34.583Z",
+  "codeMode": "disabled",
+  "codeChecks": {
+    "entryModeExplicit": true,
+    "entryMode": "disabled",
+    "unknownModeFailsClosed": true,
+    "callbackSeparatesGoogleFlow": true,
+    "manualDeletionNoticeJa": true,
+    "manualDeletionNoticeEn": true,
+    "accountPageLinksDeletion": true
+  },
+  "preEnableVerdict": "BLOCKED",
+  "postEnableVerdict": "NOT_STARTED",
+  "rollbackRequired": false,
+  "counts": {
+    "preEnable": {
+      "pending": 9,
+      "pass": 0,
+      "fail": 0,
+      "n/a": 0
+    },
+    "postEnable": {
+      "pending": 12,
+      "pass": 0,
+      "fail": 0,
+      "n/a": 0
+    }
+  },
+  "problems": []
+}

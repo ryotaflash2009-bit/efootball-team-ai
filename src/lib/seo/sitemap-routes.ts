@@ -36,6 +36,7 @@ export const SITEMAP_EXCLUDED_ROUTES: Readonly<Record<string, string>> = {
   "/diagnosis-history": "同上",
   "/data-management": "端末のデータの管理の画面",
   "/account": "アカウント（ログインが必要）",
+  "/account/delete": "アカウントの削除（ログインが必要・noindex）",
   "/account/local-data-migration": "アカウント",
   "/account/my-team-cloud": "アカウント",
   "/account/public-id-preview": "内部の確認の画面（本番は 404）",

@@ -4,14 +4,13 @@
  *   node scripts/observe-hourly-detection.mjs
  *   SINCE=2026-10-06T00:00:00Z UNTIL=2026-10-13T23:59:59Z REPORT_PATH=./docs/production-readiness/evidence/hourly-detection-observation-2026-10-13.json node scripts/observe-hourly-detection.mjs
  *
- * - 書き込みは REPORT_PATH（ワークスペース内）だけ。workflow の起動・変数・Secret・cron には触れない。
+ * - 書き込みは REPORT_PATH（ワークスペース内）と、要約の一時の展開先 data/work/tmp-observe-*（Git の対象外）だけ。workflow の起動・変数・Secret・cron には触れない。
  * - 要約（reference-data-detection-summary）は保持期間 7 日。取れない run は request・bytes・軽い/完全を null のままにする。
  * - 判定と集計は scripts/lib/hourly-schedule-observation.mjs（pure・テストあり）。
  */
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import path from "node:path";
-import os from "node:os";
 import { fileURLToPath } from "node:url";
 import { observeSchedule } from "./lib/hourly-schedule-observation.mjs";
 
@@ -33,7 +32,9 @@ const since = Date.parse(SINCE);
 const until = Date.parse(UNTIL);
 const summaries = {};
 if (process.env.SKIP_SUMMARIES !== "1") {
-  const tmp = mkdtempSync(path.join(os.tmpdir(), "efta-detect-"));
+  // 要約の artifact はワークスペースの中（Git の対象外の data/work）へ落とす（2026-10-11: OS の一時フォルダ＝ワークスペースの外を使わない）。
+  mkdirSync(path.join(ROOT, "data", "work"), { recursive: true });
+  const tmp = mkdtempSync(path.join(ROOT, "data", "work", "tmp-observe-"));
   for (const r of runs) {
     const t = Date.parse(r.createdAt);
     if (t < since || t > until || r.status !== "completed") continue;

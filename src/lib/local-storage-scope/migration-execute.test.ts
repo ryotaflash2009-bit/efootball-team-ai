@@ -208,3 +208,46 @@ describe("executeMigrationForKind: ゲスト領域からの引き継ぎ（2026-1
     expect(readPersistedBackup("myTeam", "legacy")).toBeNull();
   });
 });
+
+describe("ゲストの引き継ぎ: 再実行・多数・不正なデータ（2026-10-11）", () => {
+  const GUEST_KEY = "efootball-team-ai:local:guest:my-team:v1";
+  it("再実行しても重複しない（2 回目は追加 0・重複 n）", async () => {
+    const map = installMemoryStorage({ [GUEST_KEY]: JSON.stringify({ records: [{ worldCardId: "1" }, { worldCardId: "2" }] }) });
+    expect((await executeMigrationForKind("myTeam", GUEST_KEY, TARGET_KEY, "guest")).addedCount).toBe(2);
+    const second = await executeMigrationForKind("myTeam", GUEST_KEY, TARGET_KEY, "guest");
+    expect(second).toMatchObject({ ok: true, addedCount: 0, duplicateCount: 2, conflictCount: 0 });
+    expect(JSON.parse(map.get(TARGET_KEY)!).records).toHaveLength(2);
+  });
+  it("多数（1,000 件）でもすべて追加し、件数が一致する", async () => {
+    const records = Array.from({ length: 1000 }, (_, i) => ({ worldCardId: String(100000 + i) }));
+    const map = installMemoryStorage({ [GUEST_KEY]: JSON.stringify({ records }) });
+    const r = await executeMigrationForKind("myTeam", GUEST_KEY, TARGET_KEY, "guest");
+    expect(r).toMatchObject({ ok: true, addedCount: 1000 });
+    expect(JSON.parse(map.get(TARGET_KEY)!).records).toHaveLength(1000);
+  });
+  it("壊れた JSON・不正な記録は無効として数え、コピーせず、ゲストのデータも変えない", async () => {
+    const broken = "{not json";
+    const map = installMemoryStorage({ [GUEST_KEY]: broken });
+    const r = await executeMigrationForKind("myTeam", GUEST_KEY, TARGET_KEY, "guest");
+    expect(r.addedCount).toBe(0);
+    expect(map.get(GUEST_KEY)).toBe(broken);
+    const mixed = JSON.stringify({ records: [{ worldCardId: "1" }, { nope: true }, null] });
+    const map2 = installMemoryStorage({ [GUEST_KEY]: mixed });
+    const r2 = await executeMigrationForKind("myTeam", GUEST_KEY, TARGET_KEY, "guest");
+    expect(r2).toMatchObject({ addedCount: 1 });
+    expect(r2.invalidCount).toBeGreaterThanOrEqual(1);
+    expect(map2.get(GUEST_KEY)).toBe(mixed);
+  });
+  it("書き込みの失敗（容量の上限）では何も変えない", async () => {
+    const map = installMemoryStorage({ [GUEST_KEY]: JSON.stringify({ records: [{ worldCardId: "1" }] }) });
+    const ls = (globalThis as unknown as { window: { localStorage: Storage } }).window.localStorage;
+    const orig = ls.setItem;
+    ls.setItem = (k: string, v: string) => {
+      if (k === TARGET_KEY) throw new Error("QuotaExceededError");
+      orig(k, v);
+    };
+    const r = await executeMigrationForKind("myTeam", GUEST_KEY, TARGET_KEY, "guest");
+    expect(r).toMatchObject({ ok: false, errorReason: "WRITE_FAILED" });
+    expect(map.has(TARGET_KEY)).toBe(false);
+  });
+});

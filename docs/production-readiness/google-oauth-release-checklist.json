@@ -1,0 +1,114 @@
+{
+  "schema": "google-oauth-release-checklist/v1",
+  "note": "Owner-recorded results for enabling Google OAuth. Status: pending | pass | fail | n/a. Evidence fields hold short non-personal notes only (no email address, user ID, client ID, secret, token or screenshot of them). Evaluated by scripts/validate-google-oauth-release.mjs (docs/production-readiness/google-oauth-release-gate.md).",
+  "preEnable": {
+    "googleConsentScreenConfigured": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "googleWebClientCreated": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "googleRedirectUriExact": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "supabaseGoogleProviderEnabled": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "supabaseRedirectUrlsExact": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "supabaseConfirmEmailOn": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "supabaseManualLinkingOff": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "secretNotInRepoOrChat": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "privacyPolicyGoogleReviewed": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    }
+  },
+  "postEnable": {
+    "prodNewGoogleLogin": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "prodCallbackSuccess": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "prodAccountRecordCreated": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "prodSessionRestore": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "prodLogoutAndRelogin": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "prodGuestCarryOver": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "prodPcBrowser": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "prodIphoneSafari": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "prodAndroidChrome": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "prodOauthCancel": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    },
+    "prodExistingEmailConflictRecorded": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null,
+      "observedLinking": null
+    },
+    "prodRlsIsolationAB": {
+      "status": "pending",
+      "evidence": "",
+      "checkedAt": null
+    }
+  }
+}

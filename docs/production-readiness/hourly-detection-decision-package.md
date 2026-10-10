@@ -74,13 +74,43 @@ D でも 600 分を超える間隔の通知が 10 月末までに週 2 回以上
    37643713008（actor・triggering actor とも `github-actions[bot]`）の完了の 15 秒後に Pipeline notify 37643986865（`workflow_run`）が起動した。
 4. ロールバック: 変数 `REFERENCE_DATA_DETECTION_WATCHDOG_DISABLED` = `true`（即時）、または watchdog の workflow を消す PR。Production の状態は何も変わらない。
 
-## 7. 2026-10-13 の確認（本人の操作は不要）
+## 7. 2026-10-13 の確認（本人の操作は不要・読み取りだけ）
 
-- 観測: `SINCE=2026-10-06T00:00:00Z UNTIL=2026-10-13T23:59:59Z REPORT_PATH=./docs/production-readiness/evidence/hourly-detection-observation-2026-10-13.json SKIP_SUMMARIES=1 node scripts/observe-hourly-detection.mjs`
-  （`SKIP_SUMMARIES=1` は artifact をワークスペースの外の一時フォルダへ落とさないため）。
-- GO（このまま継続）: watchdog の run が作られている・最大の間隔（検出の成功どうし）が 10-11 以降 600 分以下・失敗 0。
-- NO-GO（watchdog を止めて調べる）: watchdog が検出を 1 日 4 回以上起動している／watchdog の起動の直後に検出が失敗している（上流の 429 等）／
-  予期しない workflow の起動。→ 変数 `REFERENCE_DATA_DETECTION_WATCHDOG_DISABLED` = `true`。
+1. watchdog: `SINCE=2026-10-10T15:00:00Z UNTIL=2026-10-13T23:59:59Z REPORT_PATH=./docs/production-readiness/evidence/detection-watchdog-observation-2026-10-13.json node scripts/observe-detection-watchdog.mjs`
+   （判定は `scripts/lib/watchdog-observation.mjs`・テスト 4。`GO` / `REVIEW` / `NO_GO` / `INSUFFICIENT_DATA`。終了コード: NO_GO なら 1）
+2. 毎時の検出: `SINCE=2026-10-06T00:00:00Z UNTIL=2026-10-13T23:59:59Z REPORT_PATH=./docs/production-readiness/evidence/hourly-detection-observation-2026-10-13.json node scripts/observe-hourly-detection.mjs`
+   （要約の artifact は `data/work/tmp-observe-*`（Git の対象外）に展開する。2026-10-11 に OS の一時フォルダから変更。`SKIP_SUMMARIES=1` で artifact を読まない）
+3. 判定:
+   - **GO**（このまま継続）: watchdog の run が作られている・成功した検出どうしの最大の間隔が 600 分以下・watchdog と起動した検出の失敗 0。
+   - **REVIEW**: 間隔が 600 分を超えた → `hourly-detection.md` §7 の外部の確認・案 B/C を本人が検討（費用 0 の範囲で）。
+   - **NO_GO**（watchdog を止めて調べる）: 1 日（UTC）に 4 回以上の起動・watchdog が起動した検出の失敗（上流の 429 等）・watchdog の失敗・判定が読めない run
+     → リポジトリの変数 `REFERENCE_DATA_DETECTION_WATCHDOG_DISABLED` = `true`（本人・GitHub → Settings → Secrets and variables → Actions → Variables）。
+   - **INSUFFICIENT_DATA**: watchdog の run が無い → workflow が active か（`gh api repos/{owner}/{repo}/actions/workflows/380583324`）を確認。
+4. Evidence: 上の 2 つの JSON（個人情報なし）をコミット。結果を `hourly-detection.md` §7.2 に 1 行で追記。
+
+## 9. watchdog の監査（2026-10-11）
+
+| 観点 | 結果 |
+|---|---|
+| 起動 | `43 */3 * * *`（UTC の 0・3・…・21 時の 43 分）。GitHub の schedule の欠落の影響は受ける（watchdog 自身の欠落は 10-13 の観測で数える） |
+| 6 時間 30 分の判定 | `WATCHDOG_STALE_MS = 390 分`。最後の**成功**した検出の `createdAt` から（テスト 6） |
+| 最後の成功の特定 | `gh run list --workflow reference-data-update-detection.yml --limit 30`（新しい順）。30 件の中に成功が無い場合は「成功なし」→ 起動（直近が失敗・実行中なら起動しない）。毎時の枠と watchdog で 1 日 30 件を超えることはないため、ページ送りは不要 |
+| workflow の名前の変更 | ファイル名（`reference-data-update-detection.yml`）で参照（`name:` の変更に影響されない）。ファイル名を変えると `update-schedule.test.ts` の監査（起動先は検出の workflow だけ）が失敗して気づける |
+| GitHub API の障害・rate limit・5xx・権限の不足 | `gh run list` が失敗 → `set -euo pipefail` で job が失敗（起動しない）。GitHub の失敗の通知が本人へ届く。再試行しない（次の 3 時間後の枠で再判定） |
+| 手動の実行 | `workflow_dispatch`（confirm `watchdog`）。判定は schedule と同じ（新しい検出を起こすのは stale のときだけ） |
+| watchdog の重複 | `concurrency: reference-data-detection-watchdog`（cancel-in-progress なし） |
+| 検出の重複 | 検出が実行中・待機中なら起動しない。検出の側も `concurrency`。判定の直後に通常の検出が始まる競合はありうる（数秒の窓）→ 検出は順に 2 回走る（上流の約 445 request が 1 回増える・害は無い）。頻度は低い（watchdog は 43 分・検出は 17 分の枠） |
+| `cancelled`・`neutral`・`failure`・`timed_out` | 直近の検出がこれらなら起動しない（失敗の通知に任せる・無限の再起動を防ぐ） |
+| `skipped` | 検出の変数で止めている → 起動しない（watchdog の Gate も同じ変数を見る） |
+| 起動の後の Evidence | Step summary に理由・最後の成功・分。10-13 の観測の script がログから判定を集計 |
+| 誤起動の費用 | 0 円（Public のリポジトリ）。上流の負荷は 1 回あたり約 445 request（6 時間ごとの完全な走査の規則の範囲） |
+| main 以外・fork | schedule は既定のブランチ（main）だけで動く。fork では schedule・`workflow_dispatch` は本リポジトリの権限で動かない。起動は `--ref main` 固定 |
+| `workflow_dispatch` の入力 | `confirm` は `if` の式だけで比べ、shell に渡さない（注入なし）。他の外部の入力は無い |
+| 権限 | workflow 全体 `contents: read`・job だけ `actions: write`。Secrets・Environment なし（監査のテスト） |
+| Production への影響 | なし（起動するのは検出だけ。検出は Production に書かない） |
+| 緊急停止 | `REFERENCE_DATA_DETECTION_WATCHDOG_DISABLED` = `true`（即時）。全体は検出の変数。Rollback は workflow を消す PR |
+
+明確な不具合は見つからなかったため、稼働中の workflow は変更していない。
 
 ## 8. 再検討の条件（将来）
 

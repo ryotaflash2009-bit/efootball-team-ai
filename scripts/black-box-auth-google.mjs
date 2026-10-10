@@ -70,6 +70,7 @@ async function main() {
     const t1 = await text();
     record("[プレビュー] Google のボタン「Google で続ける」を出す", /Google で続ける/.test(t1), "");
     record("[プレビュー] パスワードの再設定の導線を出さない（パスワードでのログインを一般に提供しないため）", !(await ev(`!!document.querySelector('a[href="/auth/forgot-password"]')`)), "");
+    record("[プレビュー] 以前のアカウントでパスワードを忘れた人の代わりの導線（サポート）", await has('[data-testid="password-forgot-support"]'), "");
     record("[プレビュー] メール＋パスワードは以前のアカウント用と示す", /以前にメールアドレスで作成したアカウント/.test(t1), "");
     record("[プレビュー] ゲストのまま使える・自動では統合しない旨", /ゲストとしてすべての機能/.test(t1) && /自動では統合しません/.test(t1), "");
     await ev(`document.querySelector('[data-testid="google-sign-in-button"]').click()`);
@@ -141,6 +142,117 @@ async function main() {
     await waitForCondition(async () => /追加/.test(await text()), { timeoutMs: 5000 }).catch(() => {});
     record("[引き継ぎ] プレビューで追加の件数を表示", /追加/.test(await text()), "");
     record("[引き継ぎ] ゲストのデータは変わらない", (await ev(`localStorage.getItem(${JSON.stringify(GUEST_MY_TEAM)})`)) === guestBefore, "");
+    // ゲストのデータの引き継ぎの実行と競合: 1 回目は追加・同じ ID で内容が違う記録は「競合」でアカウントの側を上書きしない
+    {
+      await ev(`[...document.querySelectorAll("button")].find((b) => /新規追加分を移行する/.test(b.textContent))?.click()`);
+      await new Promise((r) => setTimeout(r, 400));
+      const ackBox = await ev(`(() => { const c = [...document.querySelectorAll('input[type="checkbox"]')].find((x) => /アカウントの領域へコピーします/.test(x.closest("label")?.textContent ?? "")); if (c && !c.checked) c.click(); return !!c; })()`);
+      await ev(`[...document.querySelectorAll("button")].filter((b) => b.textContent.trim() === "移行する").pop()?.click()`);
+      await waitForCondition(async () => ((await ev(`Object.keys(localStorage).filter((k) => k.startsWith("efootball-team-ai:local:account:") && k.endsWith(":my-team:v1")).length`)) ?? 0) > 0, { timeoutMs: 6000 }).catch(() => {});
+      const afterKeys = await ev(`Object.keys(localStorage).filter((k) => k.startsWith("efootball-team-ai:local:account:") && k.endsWith(":my-team:v1"))`);
+      record("[引き継ぎ] 実行するとアカウントの領域へ追加・ゲストのデータは残る", ackBox && (afterKeys ?? []).length === 1 && (await ev(`localStorage.getItem(${JSON.stringify(GUEST_MY_TEAM)})`)) === guestBefore, `keys=${(afterKeys ?? []).length}`);
+      if ((afterKeys ?? []).length === 1) {
+        // ページから得たキーをコードに埋め込まない（同じ条件で読み直す）
+        const ACCOUNT_MY_TEAM = `localStorage.getItem(Object.keys(localStorage).find((k) => k.startsWith("efootball-team-ai:local:account:") && k.endsWith(":my-team:v1")))`;
+        const accBefore = await ev(ACCOUNT_MY_TEAM);
+        await ev(`(() => { const g = JSON.parse(localStorage.getItem(${JSON.stringify(GUEST_MY_TEAM)})); g.records[0].note = "guest-edit"; g.records[0].updatedAt = "2026-10-11T01:00:00.000Z"; localStorage.setItem(${JSON.stringify(GUEST_MY_TEAM)}, JSON.stringify(g)); })()`);
+        await go(`${BASE}/account/local-data-migration?source=guest&__efbAuth=1&__efbUserId=efb-google-user-1`);
+        await waitForCondition(async () => /ゲストとして保存したデータ（この端末）/.test(await text()), { timeoutMs: 10000 }).catch(() => {});
+        await ev(`document.querySelector('input[name="local-data-migration-select-myTeam"]').click()`);
+        await ev(`[...document.querySelectorAll("button")].find((b) => /プレビュー/.test(b.textContent))?.click()`);
+        await waitForCondition(async () => /競合/.test(await text()), { timeoutMs: 5000 }).catch(() => {});
+        record("[引き継ぎ] 同じ ID で内容が違う記録は「競合」として数える", /競合/.test(await text()), "");
+        record("[引き継ぎ] 競合はアカウントの側を上書きしない", (await ev(ACCOUNT_MY_TEAM)) === accBefore, "");
+      }
+    }
+
+    // アプリ内ブラウザー（User-Agent を差し替え）
+    const UAS = {
+      iosLine: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Safari Line/14.9.0",
+      androidX: "Mozilla/5.0 (Linux; Android 14; Pixel 8 Build/AP2A.240705.005; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/126.0.6478.71 Mobile Safari/537.36 TwitterAndroid",
+      iosX: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Twitter for iPhone/10.50",
+      iosSafari: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
+    };
+    const DESKTOP_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
+    await viewport(390, 844, true);
+    for (const [name, ua] of Object.entries(UAS)) {
+      await client.send("Emulation.setUserAgentOverride", { userAgent: ua });
+      await go(`${BASE}/auth/sign-in?oauthPreview=1&next=%2Fsquads&authError=oauth_cancelled`);
+      await waitForCondition(() => has('[data-testid="google-sign-in-button"]'), { timeoutMs: 8000 }).catch(() => {});
+      await new Promise((r) => setTimeout(r, 300));
+      const notice = await has('[data-testid="in-app-browser-notice"]');
+      const ext = await ev(`document.querySelector('[data-testid="in-app-open-external"]')?.getAttribute("href") ?? null`);
+      const tn = await text();
+      const overflow = await ev("document.documentElement.scrollWidth - document.documentElement.clientWidth");
+      if (name === "iosSafari") {
+        record("[アプリ内] 通常の Safari では案内を出さない", !notice, "");
+        continue;
+      }
+      record(`[アプリ内 ${name}] 案内を出し、Google のボタンは残す（遮断しない）`, notice && (await has('[data-testid="google-sign-in-button"]')), "");
+      if (name === "iosLine") record("[アプリ内 iosLine] LINE は openExternalBrowser=1・認証のエラー等の値を含めない", ext === `${BASE}/auth/sign-in?next=%2Fsquads&openExternalBrowser=1`, String(ext));
+      if (name === "androidX") record("[アプリ内 androidX] Android は Chrome の intent・Android の手順", String(ext).startsWith("intent://") && String(ext).includes("package=com.android.chrome") && /⋮/.test(tn) && !/Safari で開く/.test(tn), String(ext).slice(0, 60));
+      if (name === "iosX") record("[アプリ内 iosX] iPhone では「Chrome で開く」を出さない・Safari の手順とコピー", ext === null && /Safari で開く/.test(tn) && (await has('[data-testid="in-app-copy-url"]')), "");
+      record(`[アプリ内 ${name}] 390px で横のはみ出しなし`, overflow <= 0, `overflow=${overflow}`);
+    }
+    await client.send("Emulation.setUserAgentOverride", { userAgent: DESKTOP_UA });
+    await viewport(1280, 900, false);
+
+    // Google の失敗の後は、通常のブラウザーでも開き直しの一般の案内
+    await go(`${BASE}/auth/sign-in?oauthPreview=1&authError=oauth_failed`);
+    await waitForCondition(() => has('[data-testid="google-sign-in-button"]'), { timeoutMs: 8000 }).catch(() => {});
+    await new Promise((r) => setTimeout(r, 300));
+    record("[失敗の後] 通常のブラウザーでも開き直しの案内を出す", await has('[data-testid="oauth-browser-hint"]'), "");
+
+    // 緊急停止（Supabase の Google の Provider を Disable）を模擬 → Supabase の画面へ移さず案内
+    await go(`${BASE}/auth/sign-in?oauthPreview=1`);
+    await waitForCondition(() => has('[data-testid="google-sign-in-button"]'), { timeoutMs: 8000 }).catch(() => {});
+    await ev(`window.__EFB_TEST_OAUTH_CALLS__ = []; window.__EFB_TEST_GOOGLE_PROVIDER__ = false; document.querySelector('[data-testid="google-sign-in-button"]').click()`);
+    await waitForCondition(async () => /一時的に停止しています/.test(await text()), { timeoutMs: 5000 }).catch(() => {});
+    record("[緊急停止] Provider が無効なら Google へ移らず「一時的に停止」の案内", /一時的に停止しています/.test(await text()) && (await ev("window.__EFB_TEST_OAUTH_CALLS__.length")) === 0, "");
+
+    // アカウントの削除: 既定（無効）は手動の案内・アカウントの画面から入れる
+    await go(`${BASE}/account?__efbAuth=1&__efbUserId=efb-delete-user`);
+    await waitForCondition(() => has('[data-testid="account-delete-entry"]'), { timeoutMs: 10000 }).catch(() => {});
+    record("[削除] アカウントの画面に削除の入口と、運営への連絡の案内", (await has('a[href="/account/delete"]')) && /運営への連絡で受け付けています/.test(await text()), "");
+    await go(`${BASE}/account/delete?__efbAuth=1&__efbUserId=efb-delete-user`);
+    await waitForCondition(() => has('[data-testid="account-deletion"]'), { timeoutMs: 10000 }).catch(() => {});
+    const td = await text();
+    record(
+      "[削除・無効] 削除されるもの・されないもの・再登録の扱い・手動の削除（サポート）の案内だけ（実行の欄なし）",
+      /削除されるもの/.test(td) && /削除されないもの/.test(td) && /新しい空のアカウント/.test(td) && (await has('[data-testid="account-deletion-manual"]')) && !(await has('[data-testid="account-deletion-form"]')) && (await has('a[href="/support"]')),
+      "",
+    );
+
+    // アカウントの削除: ローカルのプレビュー（テストダブル）
+    await go(`${BASE}/account/delete?deletionPreview=1&__efbAuth=1&__efbUserId=efb-delete-user`);
+    await waitForCondition(() => has('[data-testid="account-deletion-form"]'), { timeoutMs: 10000 }).catch(() => {});
+    const btnDisabled = () => ev(`[...document.querySelectorAll("button")].find((b) => /アカウントを完全に削除する|削除しています/.test(b.textContent))?.disabled ?? null`);
+    const clickDelete = (extra = "") => ev(`${extra}; [...document.querySelectorAll("button")].find((b) => /アカウントを完全に削除する/.test(b.textContent)).click()`);
+    const typePhrase = async (v) => {
+      await ev(`(() => { const i = document.querySelector('input[name="account-deletion-phrase"]'); i.focus(); i.select(); })()`);
+      await client.send("Input.insertText", { text: v });
+    };
+    record("[削除] 最初はボタンを押せない（1 クリックで消さない）", (await btnDisabled()) === true, "");
+    await ev(`document.querySelector('input[name="account-deletion-ack"]').click()`);
+    record("[削除] 確認のチェックだけでは押せない", (await btnDisabled()) === true, "");
+    await typePhrase("削除");
+    record("[削除] 確認の語が違えば押せない", (await btnDisabled()) === true, "");
+    await typePhrase("削除する");
+    record("[削除] チェックと確認の語がそろうと押せる", (await btnDisabled()) === false, "");
+    await clickDelete(`window.__EFB_TEST_DELETE_MODE__ = "reauth"`);
+    await waitForCondition(() => has('[data-testid="account-deletion-reauth"]'), { timeoutMs: 5000 }).catch(() => {});
+    record("[削除] 最近の認証が無ければ再認証を求める", (await has('[data-testid="account-deletion-reauth"]')) && /10 分以内/.test(await text()), "");
+    await clickDelete(`window.__EFB_TEST_DELETE_MODE__ = "unavailable"`);
+    await waitForCondition(async () => /削除を受け付けられません/.test(await text()), { timeoutMs: 5000 }).catch(() => {});
+    const tu = await text();
+    record("[削除] 関数が無い・障害は「何も削除されていません」と案内（生の文なし）", /何も削除されていません/.test(tu) && !/test double|Could not find/.test(tu), "");
+    await ev(`localStorage.setItem("efootball-team-ai:local:guest:favorites:v1", "[]")`);
+    await ev(`window.__EFB_TEST_DELETE_MODE__ = "success"; window.__EFB_TEST_RPC_CALLS__ = []; (() => { const b = [...document.querySelectorAll("button")].find((x) => /アカウントを完全に削除する/.test(x.textContent)); b.click(); b.click(); })()`);
+    await waitForCondition(() => has('[data-testid="account-deletion-done"]'), { timeoutMs: 8000 }).catch(() => {});
+    const calls = (await ev("window.__EFB_TEST_RPC_CALLS__ || []")) ?? [];
+    record("[削除] 成功: 完了を表示・関数は DELETE で 1 回だけ（二重の押下でも 1 回）", (await has('[data-testid="account-deletion-done"]')) && calls.length === 1 && calls[0].fn === "delete_my_account" && calls[0].args?.confirm === "DELETE", `calls=${calls.length}`);
+    record("[削除] 成功: この端末のゲストのデータは残す", (await ev(`localStorage.getItem("efootball-team-ai:local:guest:favorites:v1")`)) === "[]", "");
+
     record("ページ内で JS の例外が起きない", errors.length === 0, errors.slice(0, 2).join(" / "));
   } finally {
     await closeTab(browser.port, tab.id).catch(() => {});

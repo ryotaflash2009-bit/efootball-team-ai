@@ -66,3 +66,14 @@ export function oauthCallbackFailure(search: string): OAuthCallbackFailure | nul
 export function isGoogleFlow(search: string): boolean {
   return new URLSearchParams(search).get(OAUTH_FLOW_PARAM) === OAUTH_FLOW_GOOGLE;
 }
+
+export type GoogleProviderStatus = "enabled" | "disabled" | "unknown";
+
+/** Supabase の公開の設定（`GET /auth/v1/settings`）の応答から、Google の Provider が有効か。形が違えば unknown。 */
+export function googleProviderStatusFromSettings(json: unknown): GoogleProviderStatus {
+  if (typeof json !== "object" || json === null) return "unknown";
+  const external = (json as { external?: unknown }).external;
+  if (typeof external !== "object" || external === null) return "unknown";
+  const google = (external as { google?: unknown }).google;
+  return google === true ? "enabled" : google === false ? "disabled" : "unknown";
+}
