@@ -1,6 +1,6 @@
 # World データ UI 接続 ブラックボックステスト結果
 
-実行日時: 2026-10-10T21:05:49.250Z
+実行日時: 2026-10-10T21:11:54.380Z
 対象: http://localhost:3000（localhost のみ）  外部アクセス: 0 回
 
 | 結果 | 項目 | 詳細 |
@@ -74,6 +74,8 @@
 | PASS | 画面: 未取得項目を「追加調査中」表示 |  |
 | PASS | 画面: 未取得項目を 0/空で偽装しない（Tier: 追加調査中） |  |
 | PASS | 画面: 詳細に 26 能力値の内容が描画される（有効IDのみ） |  |
+| PASS | 画面: 詳細の国籍・リーグ・チームが選手一覧の絞り込みへのリンク | nationality,league,team,playingStyle,playingStyleDef |
+| PASS | 画面: 国籍のリンク先は絞り込まれた一覧（全件より少ない） | total=614 |
 | PASS | 画面: 不正 World ID の詳細はクラッシュせず not-found（詳細本文を描画しない） | HTTP 200 |
 | PASS | 画面: 存在しない World ID の詳細はクラッシュせず not-found | HTTP 200 |
 | PASS | 画像: eFHUB リンクなし World カードでも画像が表示される | Lionel Messi 200 241KB cache=MISS |

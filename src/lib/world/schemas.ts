@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { WorldListQuery, WorldSortKey } from "./types";
+import { AFFILIATION_MAX, AFFILIATION_RE, FILTER_TOKEN_MAX, FILTER_TOKEN_RE, NATIONALITY_MAX, NATIONALITY_RE } from "./filter-patterns";
 
 /**
  * 入力検証。SQL へ文字列を連結しないための最初の関門。
@@ -37,8 +38,8 @@ export function normalizeQuery(raw: string): string {
 const filterTokenSchema = z
   .string()
   .trim()
-  .max(40)
-  .regex(/^[A-Za-z0-9 .&\-]+$/)
+  .max(FILTER_TOKEN_MAX)
+  .regex(FILTER_TOKEN_RE)
   .nullable()
   .catch(null);
 
@@ -50,8 +51,8 @@ const filterTokenSchema = z
 const nationalitySchema = z
   .string()
   .trim()
-  .max(40)
-  .regex(/^[\p{L} .,'&\-]+$/u)
+  .max(NATIONALITY_MAX)
+  .regex(NATIONALITY_RE)
   .nullable()
   .catch(null);
 
@@ -62,8 +63,8 @@ const nationalitySchema = z
 const leagueSchema = z
   .string()
   .trim()
-  .max(60)
-  .regex(/^[\p{L}\p{N} .,'’&\-/()]+$/u)
+  .max(AFFILIATION_MAX)
+  .regex(AFFILIATION_RE)
   .nullable()
   .catch(null);
 
