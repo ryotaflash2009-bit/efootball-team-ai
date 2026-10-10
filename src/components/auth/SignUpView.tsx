@@ -16,6 +16,7 @@ import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { isSignupOpen, isSignupPreviewAllowed, resolveAuthRedirectOrigin } from "@/lib/supabase/account-availability";
 import { GoogleSignInButton, useGoogleOAuthAvailable } from "./GoogleSignInButton";
 import { InAppBrowserNotice } from "./InAppBrowserNotice";
+import { isGoogleOAuthLimitedTest } from "@/lib/supabase/oauth";
 import { isLocalDevHostname } from "@/lib/supabase/local-dev";
 
 type AuthKey = keyof Dictionary["auth"];
@@ -106,6 +107,11 @@ export function SignUpView() {
       <div className="flex flex-col gap-5" data-testid="signup-google">
         <PageHeader title={ta("googleSignUpTitle")} icon="shield" />
         <Surface padding="md" className="flex max-w-md flex-col gap-3">
+          {isGoogleOAuthLimitedTest() ? (
+            <p className="rounded-md border border-warning/50 bg-warning/10 p-2 text-xs text-text" role="note" data-testid="google-limited-test-notice">
+              {ta("googleLimitedTestNotice")}
+            </p>
+          ) : null}
           <p className="text-sm">{ta("googleSignUpBody")}</p>
           <InAppBrowserNotice />
           <GoogleSignInButton next="/account" onError={setErrorMessage} />

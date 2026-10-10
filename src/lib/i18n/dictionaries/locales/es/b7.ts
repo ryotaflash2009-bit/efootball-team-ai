@@ -15,6 +15,7 @@ const part: PartialDictionary = {
     googleRedirecting: "Abriendo Google…",
     googlePrimaryLead: "Inicia sesión o crea una cuenta con tu cuenta de Google. No necesitas contraseña.",
     googleGuestNotice: "Puedes usar todas las funciones como invitado sin iniciar sesión (los datos se guardan en este dispositivo). Tras iniciar sesión, eliges en la página de cuenta si traspasar tus datos de invitado (nada se combina automáticamente).",
+    googleLimitedTestNotice: "Prueba limitada: el inicio de sesión con Google es solo para verificación del operador y aún no se ofrece al público (solo pueden entrar las cuentas registradas para pruebas).",
     inAppTitle: "Puede que estés usando el navegador de otra app",
     inAppBody: "Google puede no permitir iniciar sesión desde el navegador de otra app. Abre esta página en Safari o Chrome y luego inicia sesión. Aquí puedes seguir como invitado.",
     inAppStepsIos: "iPhone: desde el botón «…» o compartir, elige «Abrir en Safari» (o «Abrir en el navegador»). Si no lo encuentras, copia la URL con el botón de abajo y pégala en Safari.",

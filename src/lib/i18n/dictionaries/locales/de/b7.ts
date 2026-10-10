@@ -15,6 +15,7 @@ const part: PartialDictionary = {
     googleRedirecting: "Google wird geöffnet …",
     googlePrimaryLead: "Mit deinem Google-Konto anmelden oder ein Konto erstellen. Kein Passwort nötig.",
     googleGuestNotice: "Du kannst alle Funktionen ohne Anmeldung als Gast nutzen (Daten bleiben auf diesem Gerät). Nach der Anmeldung entscheidest du auf der Kontoseite, ob Gastdaten übernommen werden (nichts wird automatisch zusammengeführt).",
+    googleLimitedTestNotice: "Eingeschränkter Test: Die Google-Anmeldung dient nur der Prüfung durch den Betreiber und ist noch nicht öffentlich (nur für Tests registrierte Konten können sich anmelden).",
     inAppTitle: "Möglicherweise nutzt du den Browser einer anderen App",
     inAppBody: "Google lässt die Anmeldung aus dem Browser einer anderen App eventuell nicht zu. Öffne die Seite in Safari oder Chrome und melde dich dort an. Hier kannst du als Gast weitermachen.",
     inAppStepsIos: "iPhone: Über „…“ oder Teilen „In Safari öffnen“ (oder „Im Browser öffnen“) wählen. Falls nicht vorhanden, URL unten kopieren und in Safari einfügen.",

@@ -15,6 +15,7 @@ const part: PartialDictionary = {
     googleRedirecting: "Ouverture de Google…",
     googlePrimaryLead: "Connectez-vous ou créez un compte avec votre compte Google. Aucun mot de passe nécessaire.",
     googleGuestNotice: "Vous pouvez utiliser toutes les fonctions en tant qu’invité sans vous connecter (les données restent sur cet appareil). Après connexion, vous choisissez sur la page du compte de reprendre ou non vos données d’invité (rien n’est fusionné automatiquement).",
+    googleLimitedTestNotice: "Test limité : la connexion avec Google sert uniquement aux vérifications de l’opérateur et n’est pas encore proposée au public (seuls les comptes enregistrés pour les tests peuvent se connecter).",
     inAppTitle: "Vous utilisez peut-être le navigateur intégré d’une autre app",
     inAppBody: "Google peut refuser la connexion depuis le navigateur intégré d’une app. Ouvrez cette page dans Safari ou Chrome, puis connectez-vous. Ici, vous pouvez continuer en tant qu’invité.",
     inAppStepsIos: "iPhone : via le bouton « … » ou Partager, choisissez « Ouvrir dans Safari » (ou « Ouvrir dans le navigateur »). Sinon, copiez l’URL avec le bouton ci-dessous et collez-la dans Safari.",

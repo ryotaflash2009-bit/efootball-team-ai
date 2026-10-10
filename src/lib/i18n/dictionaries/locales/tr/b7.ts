@@ -15,6 +15,7 @@ const part: PartialDictionary = {
     googleRedirecting: "Google açılıyor…",
     googlePrimaryLead: "Google hesabınla giriş yap veya hesap oluştur. Şifre gerekmez.",
     googleGuestNotice: "Giriş yapmadan tüm özellikleri misafir olarak kullanabilirsin (veriler bu cihazda saklanır). Girişten sonra misafir verilerini aktarıp aktarmayacağını hesap sayfasında seçersin (otomatik birleştirilmez).",
+    googleLimitedTestNotice: "Sınırlı test: Google ile giriş yalnızca operatör doğrulaması içindir ve henüz herkese açık değildir (yalnızca test için kayıtlı hesaplar giriş yapabilir).",
     inAppTitle: "Başka bir uygulamanın içindeki tarayıcıyı kullanıyor olabilirsin",
     inAppBody: "Google, başka bir uygulamanın içindeki tarayıcıdan girişe izin vermeyebilir. Bu sayfayı Safari veya Chrome’da açıp giriş yap. Burada misafir olarak devam edebilirsin.",
     inAppStepsIos: "iPhone: “…” veya paylaş düğmesinden “Safari’de aç” (ya da “Tarayıcıda aç”) seç. Bulamazsan aşağıdaki düğmeyle URL’yi kopyalayıp Safari’ye yapıştır.",

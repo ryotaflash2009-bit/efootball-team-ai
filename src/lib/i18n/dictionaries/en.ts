@@ -3677,6 +3677,7 @@ const en: Dictionary = {
     googleRedirecting: "Opening Google…",
     googlePrimaryLead: "Sign in or create an account with your Google account. No password needed.",
     googleGuestNotice: "You can use every feature as a guest without signing in (data is saved on this device). After signing in, you choose on the account page whether to carry over your guest data (nothing is merged automatically).",
+    googleLimitedTestNotice: "Limited test: Google sign-in is for operator verification only and is not offered to the public yet (only accounts registered for testing can sign in).",
     inAppTitle: "You may be using a browser inside another app",
     inAppBody: "Google may not allow sign-in from a browser inside another app. Open this page in Safari or Chrome, then sign in. You can keep using the site as a guest here.",
     inAppStepsIos: "iPhone: from the “…” or share button, choose “Open in Safari” (or “Open in browser”). If you can’t find it, copy the URL with the button below and paste it into Safari.",
