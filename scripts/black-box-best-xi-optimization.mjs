@@ -281,6 +281,46 @@ async function main() {
     }
 
     // ============================================================
+    // 1a-5. 監督の補正（F-070・2026-10-11）: 監督を選ぶ → 既定は順位に含めない（結果は同じ）→ 含めると確認済みの補正で選び直し・制約の文言が消える
+    // ============================================================
+    {
+      // 確認済みのブースターを持つ監督を API から探す
+      const list = await (await fetch(`${BASE}/api/managers?hasBooster=1&pageSize=100`)).json().catch(() => null);
+      let target = null;
+      for (const m of list?.managers ?? []) {
+        const d = await (await fetch(`${BASE}/api/managers/${m.internalManagerId}`)).json().catch(() => null);
+        const b = (d?.manager?.boosters ?? []).find((x) => x.statKey && x.confirmationStatus === "confirmed");
+        if (b) { target = { name: m.nameEn, id: m.internalManagerId }; break; }
+      }
+      if (!target) {
+        record("[監督] 準備: 確認済みのブースターを持つ監督が見つかる", false, "none");
+      } else {
+        await setMyTeam(client, FULL_XI);
+        await hardReloadAndSettle(client);
+        await waitForCondition(async () => (await bodyText(client)).includes("選出選手一覧"), { timeoutMs: 10000, intervalMs: 200 });
+        const picked = async () => evalJson(client, `[...new Set([...document.querySelectorAll('[data-world-card-id]')].map((e) => e.getAttribute('data-world-card-id')))].join(",")`);
+        const before = await picked();
+        record("[監督] 監督の欄があり、既定は監督なし（制約の文言に「監督」を含む）", (await evalJson(client, `!!document.querySelector('[data-testid="best-xi-manager"]')`)) === true && /監督/.test(await bodyText(client)), "");
+        await evalJson(client, `[...document.querySelectorAll('[data-testid="best-xi-manager"] button')].find((b) => /監督一覧から選択/.test(b.textContent))?.click()`);
+        await waitForCondition(async () => (await evalJson(client, `!!document.querySelector('input[type=search]')`)) === true, { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+        await evalJson(client, `(() => { const i = document.querySelector('input[type=search]'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set.call(i, ${JSON.stringify(target.name)}); i.dispatchEvent(new Event("input", { bubbles: true })); return true; })()`);
+        await waitForCondition(async () => (await evalJson(client, `[...document.querySelectorAll("button")].some((b) => b.textContent.trim() === "この監督を選択")`)) === true, { timeoutMs: 10000, intervalMs: 250 }).catch(() => {});
+        await evalJson(client, `[...document.querySelectorAll("button")].find((b) => b.textContent.trim() === "この監督を選択")?.click()`);
+        await waitForCondition(async () => (await evalJson(client, `!!document.querySelector('[data-testid="best-xi-manager-apply"]')`)) === true, { timeoutMs: 10000, intervalMs: 250 }).catch(() => {});
+        const note0 = await evalJson(client, `document.querySelector('[data-testid="best-xi-manager-note"]')?.textContent ?? ""`);
+        const after0 = await picked();
+        record("[監督] 監督を選んでも既定は順位に含めない（同じ結果・その旨を表示）", after0 === before && /順位は監督なしのまま/.test(note0), `${target.name}`);
+        await evalJson(client, `document.querySelector('[data-testid="best-xi-manager-apply"]').click()`);
+        await waitForCondition(async () => /監督の補正（確認済みの効果だけ/.test(await evalJson(client, `document.querySelector('[data-testid="best-xi-manager-note"]')?.textContent ?? ""`)), { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+        await new Promise((r) => setTimeout(r, 600));
+        const note1 = await evalJson(client, `document.querySelector('[data-testid="best-xi-manager-note"]')?.textContent ?? ""`);
+        const limits = await evalJson(client, `[...document.querySelectorAll("li")].map((li) => li.textContent).join("|")`);
+        record("[監督] 「順位に含める」で選び直し・含めた旨を表示・監督の制約の文言は出さない", /監督の補正（確認済みの効果だけ/.test(note1) && !/既定は監督なし/.test(limits ?? "") && ((await picked()) ?? "").split(",").length >= 11, "");
+        await navigateAndSettle(client, `${BASE}/best-xi`);
+      }
+    }
+
+    // ============================================================
     // 1a-2. 縛り（2026-10-11）: 先発11人 + バレージ → 国籍で縛ると、その国籍のカードだけが選ばれる・解除で 11 人に戻る
     // ============================================================
     {
