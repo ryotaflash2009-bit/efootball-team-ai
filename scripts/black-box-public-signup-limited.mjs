@@ -22,6 +22,9 @@ import { escapeMarkdownCell } from "../src/lib/testing/markdown-table.ts";
 const BASE = (process.env.BASE_URL ?? "http://localhost:3000").replace(/\/+$/, "");
 if (!/^(http:\/\/localhost:\d+|https:\/\/[a-z0-9.-]+)$/.test(BASE)) throw new Error("BASE_URL must be http://localhost:<port> or an https origin");
 const IS_LOCAL = BASE.startsWith("http://localhost");
+// Google ログインの入口のモード（src/lib/supabase/oauth.ts）。2026-10-11 に一般公開（enabled）: 新規登録は Google で行い、メールの登録は受け付けない。
+const OAUTH_MODE = (await import("node:fs")).readFileSync(path.join(path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."), "src", "lib", "supabase", "oauth.ts"), "utf8").match(/GOOGLE_OAUTH_MODE: GoogleOAuthMode = "(\w+)"/)?.[1] ?? "unknown";
+const OAUTH_PUBLIC = OAUTH_MODE === "enabled";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const REPORT = (() => {
   const custom = process.env.REPORT_PATH;
@@ -175,8 +178,17 @@ async function main() {
         await nav("/");
         await ev(`localStorage.setItem(${JSON.stringify(LOCALE_KEY)}, ${JSON.stringify(locale)})`);
 
-        await step(vp, locale, "/auth/sign-up", "limited notice, no form", async () => {
+        await step(vp, locale, "/auth/sign-up", OAUTH_PUBLIC ? "Google account creation, no email form" : "limited notice, no form", async () => {
           await nav("/auth/sign-up");
+          if (OAUTH_PUBLIC) {
+            // 一般公開: アカウントは Google で作る。メールとパスワードの登録フォームは出さない
+            if (!(await has("[data-testid=signup-google]"))) throw new Error("google sign-up missing");
+            if ((await count("input[type=password]")) !== 0) throw new Error("sign-up form shown");
+            if (!(await has("main a[href='/players']"))) throw new Error("no link to /players");
+            const robotsP = await ev("document.querySelector('meta[name=robots]')?.content ?? ''");
+            if (!/noindex/.test(robotsP)) throw new Error(`robots=${robotsP}`);
+            return { ok: true, detail: `google (${OAUTH_MODE}), noindex` };
+          }
           if (!(await has("[data-testid=signup-limited]"))) throw new Error("limited notice missing");
           if (!(await bodyText()).includes(T.limited)) throw new Error(`text missing: ${T.limited}`);
           if ((await count("input[type=password]")) !== 0) throw new Error("sign-up form shown");
@@ -201,6 +213,13 @@ async function main() {
           const h1 = await ev("(document.querySelector('main h1, h1')||{}).textContent||''");
           if (!h1.includes(T.signInTitle)) throw new Error(`heading=${h1}`);
           if (!(await ev("(() => { const e = document.querySelector('input[type=email]'); const p = document.querySelector('input[type=password]'); const b = document.querySelector('form button[type=submit]'); return !!e && !!p && !!b && !e.disabled && !p.disabled && !b.disabled; })()"))) throw new Error("sign-in inputs not usable");
+          if (OAUTH_PUBLIC) {
+            // 一般公開: Google のボタン・「限定テスト中」は出さない・パスワードを忘れた以前のアカウントはサポートへ
+            if (!(await has("[data-testid=google-sign-in-button]"))) throw new Error("no google button");
+            if ((await bodyText()).includes(T.limited)) throw new Error("limited-signup notice still shown");
+            if (!(await has("[data-testid=password-forgot-support]"))) throw new Error("no support link for forgotten password");
+            return { ok: true, detail: `form ready + google (${OAUTH_MODE})` };
+          }
           if (!(await bodyText()).includes(T.limited)) throw new Error("no limited-signup notice on sign-in");
           if (!(await has("a[href='/auth/forgot-password']"))) throw new Error("no reset link");
           return { ok: true, detail: "form ready" };
