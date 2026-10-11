@@ -39,6 +39,7 @@ export const SITEMAP_EXCLUDED_ROUTES: Readonly<Record<string, string>> = {
   "/account/delete": "アカウントの削除（ログインが必要・noindex）",
   "/account/local-data-migration": "アカウント",
   "/account/my-team-cloud": "アカウント",
+  "/account/builds-cloud": "アカウント",
   "/account/public-id-preview": "内部の確認の画面（本番は 404）",
   "/account/rls-test": "内部の確認の画面（本番は 404）",
   "/auth/confirm": "認証",

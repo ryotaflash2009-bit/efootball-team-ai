@@ -261,6 +261,51 @@ async function main() {
     await waitForCondition(async () => /ログイン中/.test(await text()), { timeoutMs: 10000 }).catch(() => {});
     record("[アカウント] メールのアカウントにはメールアドレスの変更の欄を従来どおり出す", /メールアドレスの変更/.test(await text()), "");
 
+    // 保存ビルドのクラウド保存（2026-10-11）: 既定は準備中（Supabase を呼ばない）・ローカルのプレビューで保存 → 端末から消す → 足りないものを追加 → 削除
+    {
+      const BC_USER = "efb-builds-cloud-user";
+      const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("efootball-team-ai:local-storage-scope:v1:" + BC_USER));
+      const scopeId = Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
+      const BUILDS_KEY = `efootball-team-ai:local:account:${scopeId}:progression-builds:v1`;
+      const mkB = (buildId) => ({ buildId, worldCardId: "89136409091415", buildName: `Cloud ${buildId}`, progressionAllocation: { shooting: 2 }, selectedPlayerBooster: null, calculatedStats: { finishing: 90 }, calculatedOvr: 90, calculationMode: "provisional", rulesVersion: "progression/2026-08-28.v2", createdAt: "2026-10-11T00:00:00.000Z", updatedAt: "2026-10-11T00:00:00.000Z", schemaVersion: 1 });
+      const setBuilds = (list) => ev(`localStorage.setItem(${JSON.stringify(BUILDS_KEY)}, ${JSON.stringify(JSON.stringify({ "89136409091415": list }))})`);
+      const localIds = async () => ev(`(JSON.parse(localStorage.getItem(${JSON.stringify(BUILDS_KEY)}) || "{}")["89136409091415"] || []).map((b) => b.buildId).sort().join(",")`);
+      await go(`${BASE}/account?__efbAuth=1&__efbUserId=${BC_USER}`);
+      await waitForCondition(() => has('[data-testid="account-builds-cloud-entry"]'), { timeoutMs: 10000 }).catch(() => {});
+      record("[ビルドのクラウド] アカウントの画面に入口がある", await has('a[href="/account/builds-cloud"]'), "");
+      await go(`${BASE}/account/builds-cloud?__efbAuth=1&__efbUserId=${BC_USER}`);
+      await waitForCondition(() => has('[data-testid="builds-cloud-unavailable"]'), { timeoutMs: 10000 }).catch(() => {});
+      record("[ビルドのクラウド] 既定（本番の表の作成前）は準備中の案内だけ・保存のボタンなし", (await has('[data-testid="builds-cloud-unavailable"]')) && !(await has('[data-testid="builds-cloud-save"]')), "");
+      await setBuilds([mkB("b_cloud1"), mkB("b_cloud2")]);
+      await go(`${BASE}/account/builds-cloud?__efbAuth=1&__efbUserId=${BC_USER}&buildsCloudPreview=1`);
+      await waitForCondition(async () => (await ev(`document.querySelector('[data-testid="builds-cloud-local-count"]')?.textContent`)) === "2", { timeoutMs: 10000 }).catch(() => {});
+      const calls0 = (await ev("window.__EFB_TEST_BC_UPSERT_CALLS__ || 0")) ?? 0;
+      record("[ビルドのクラウド] 画面を開いただけでは送信しない（端末の 2 件を表示）", calls0 === 0 && (await ev(`document.querySelector('[data-testid="builds-cloud-local-count"]')?.textContent`)) === "2", `calls=${calls0}`);
+      await ev(`document.querySelector('[data-testid="builds-cloud-save"]').click()`);
+      await waitForCondition(() => has('[data-testid="builds-cloud-confirm"]'), { timeoutMs: 5000 }).catch(() => {});
+      await ev(`document.querySelector('[data-testid="builds-cloud-confirm-yes"]').click()`);
+      await waitForCondition(async () => /クラウドへ保存しました/.test(await text()), { timeoutMs: 10000 }).catch(() => {});
+      record("[ビルドのクラウド] 確認の後に保存（2 件）・状態に件数", /クラウドへ保存しました/.test(await text()) && /2 件/.test((await ev(`document.querySelector('[data-testid="builds-cloud-status"]')?.textContent`)) ?? ""), "");
+      await setBuilds([mkB("b_cloud1")]); // 端末から 1 件消えた（別の端末を想定）
+      await go(`${BASE}/account/builds-cloud?__efbAuth=1&__efbUserId=${BC_USER}&buildsCloudPreview=1`);
+      await waitForCondition(() => has('[data-testid="builds-cloud-check"]'), { timeoutMs: 10000 }).catch(() => {});
+      await ev(`document.querySelector('[data-testid="builds-cloud-check"]').click()`);
+      await waitForCondition(() => has('[data-testid="builds-cloud-restore-plan"]'), { timeoutMs: 10000 }).catch(() => {});
+      const planText = (await ev(`document.querySelector('[data-testid="builds-cloud-restore-plan"]')?.textContent`)) ?? "";
+      record("[ビルドのクラウド] 確認すると、追加できる 1 件・すでにある 1 件と示す", /追加できるビルド 1 件/.test(planText) && /すでにあるもの 1 件/.test(planText), planText.slice(0, 80));
+      await ev(`document.querySelector('[data-testid="builds-cloud-restore"]').click()`);
+      await waitForCondition(async () => /1 件のビルドを端末に追加しました/.test(await text()), { timeoutMs: 10000 }).catch(() => {});
+      record("[ビルドのクラウド] 足りないビルドだけを端末に追加（既存は変えない）", (await localIds()) === "b_cloud1,b_cloud2" && /1 件のビルドを端末に追加しました/.test(await text()), await localIds());
+      await ev(`document.querySelector('[data-testid="builds-cloud-delete"]').click()`);
+      await waitForCondition(() => has('[data-testid="builds-cloud-confirm"]'), { timeoutMs: 5000 }).catch(() => {});
+      await ev(`document.querySelector('[data-testid="builds-cloud-confirm-yes"]').click()`);
+      await waitForCondition(async () => /クラウドデータを削除しました/.test(await text()), { timeoutMs: 10000 }).catch(() => {});
+      record("[ビルドのクラウド] 削除するとクラウドは無し・端末の保存ビルドは残る", /クラウドデータなし/.test((await ev(`document.querySelector('[data-testid="builds-cloud-status"]')?.textContent`)) ?? "") && (await localIds()) === "b_cloud1,b_cloud2", "");
+      await go(`${BASE}/account/builds-cloud?buildsCloudPreview=1`);
+      await waitForCondition(() => has('[data-testid="builds-cloud-signin"]'), { timeoutMs: 10000 }).catch(() => {});
+      record("[ビルドのクラウド] ログインしていなければログインの案内だけ", (await has('[data-testid="builds-cloud-signin"]')) && !(await has('[data-testid="builds-cloud-save"]')), "");
+    }
+
     // アカウントの削除: 既定（無効）は手動の案内・アカウントの画面から入れる
     await go(`${BASE}/account?__efbAuth=1&__efbUserId=efb-delete-user`);
     await waitForCondition(() => has('[data-testid="account-delete-entry"]'), { timeoutMs: 10000 }).catch(() => {});

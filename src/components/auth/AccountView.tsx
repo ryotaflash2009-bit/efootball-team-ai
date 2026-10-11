@@ -3,6 +3,7 @@
 import "@/lib/i18n/dictionaries/ja-ns/auth";
 import "@/lib/i18n/dictionaries/ja-ns/localDataMigration";
 import "@/lib/i18n/dictionaries/ja-ns/myTeamCloud";
+import "@/lib/i18n/dictionaries/ja-ns/buildsCloud";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useT } from "@/lib/i18n/LocaleContext";
@@ -117,6 +118,13 @@ export function AccountView() {
             <p className="text-xs font-semibold text-text-muted">{t("myTeamCloud", "devNoticeTitle")}</p>
             <Link href="/account/my-team-cloud" className="w-fit text-sm text-accent hover:underline">
               {t("myTeamCloud", "pageTitle")}
+            </Link>
+          </Surface>
+
+          <Surface tone="outline" padding="md" className="flex flex-col gap-1.5" data-testid="account-builds-cloud-entry">
+            <p className="text-xs font-semibold text-text-muted">{t("buildsCloud", "accountLinkHint")}</p>
+            <Link href="/account/builds-cloud" className="w-fit text-sm text-accent hover:underline">
+              {t("buildsCloud", "accountLinkLabel")}
             </Link>
           </Surface>
 
