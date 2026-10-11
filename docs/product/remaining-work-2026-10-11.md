@@ -34,3 +34,23 @@
 ## 見送ったもの
 
 - AI ベスト11 のフォーメーションの記憶: `project-baseline.md` の「localStorage キーの新規追加禁止」に当たるため実装しない。
+
+---
+
+## 続き（2026-10-11 午後・本人の指示「開発予定のものを僕なしでどんどん進めて」）
+
+- **Google ログインの一般公開**（#262）: 同意画面を本番環境へ（本人が「アプリを公開」）・サポートのメールを Google グループ `teamaixi-support@googlegroups.com` へ・
+  プライバシーポリシーを一般公開版へ。限定テスト 12/12（PC Chrome・Android 実機・iPhone・キャンセル・同じメールの統合・本番の A/B の RLS）。
+- **クラウド同期の続き（F-052）**: 保存ビルド（#263）・保存スカッド（#264）の手動のクラウド保存を実装。**本番の表は未作成**のため、
+  画面は「準備中」（`BUILDS_CLOUD_MODE` / `SQUADS_CLOUD_MODE` = disabled）。アカウントの削除の SQL の下書きにも 2 つの表を追加（#265）。
+- ブラックボックス: 全レールを main で実行（内部ページの前提のレールは内部ページを有効にしたビルドで合格）。`public-signup-limited` を一般公開の期待値に（#266）。
+
+### 本人の承認が必要なもの（Supabase の SQL Editor・それぞれ 1〜2 分）
+
+| 順 | SQL | 有効になる機能 | 手順 |
+|---|---|---|---|
+| 1 | `docs/production-readiness/sql/create-builds-cloud-schema.sql` | 保存ビルドのクラウド保存 | `builds-cloud-apply-package.md` §2 |
+| 2 | `docs/production-readiness/sql/create-squads-cloud-schema.sql` | 保存スカッドのクラウド保存 | `squads-cloud-apply-package.md` §2 |
+| 3 | `docs/production-readiness/sql/create-account-deletion.sql` | アカウント画面からの自分での削除 | `account-deletion-apply-package.md` |
+
+適用した後に「適用した」と伝えてもらえれば、Claude Code が有効化の PR と本番での A/B の確認（Android の実機）を行う。
