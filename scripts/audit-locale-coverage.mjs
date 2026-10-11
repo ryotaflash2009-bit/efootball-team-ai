@@ -36,7 +36,7 @@ const LEGAL = new Set(["about", "disclaimer", "privacy", "terms", "support"]);
 const LEGAL_ENGLISH_FALLBACK = new Set(["terms", "privacy", "disclaimer"]);
 const SHARE = new Set(["shareCard", "diagnosisShare", "titles", "yourBest", "growthProfile", "basePercentile"]);
 /** 内部・将来の機能（Production では表示しない画面）。coverage の不足を許容する。 */
-const INTERNAL = new Set(["publicIdPreview", "tierPackPreview", "releaseReadiness", "rlsTest", "myTeamCloud", "buildsCloud", "localDataMigration", "localPosts", "safetyMock"]);
+const INTERNAL = new Set(["publicIdPreview", "tierPackPreview", "releaseReadiness", "rlsTest", "myTeamCloud", "buildsCloud", "squadsCloud", "localDataMigration", "localPosts", "safetyMock"]);
 const isA11y = (k) => /aria|Aria|srOnly|altText|Alt$/.test(k);
 const isMeta = (k) => /^(pageTitle|pageDescription|pageDescriptionMeta|metaTitle|metaDescription|metaTitleTemplate)$/.test(k);
 const isState = (k) => /(error|Error|failed|Failed|empty|Empty|loading|Loading|retry|Retry|unavailable|Unavailable|notFound|NotFound|noResults|NoResults)/.test(k);

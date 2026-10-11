@@ -306,6 +306,50 @@ async function main() {
       record("[ビルドのクラウド] ログインしていなければログインの案内だけ", (await has('[data-testid="builds-cloud-signin"]')) && !(await has('[data-testid="builds-cloud-save"]')), "");
     }
 
+    // 保存スカッドのクラウド保存（2026-10-11）: 既定は準備中・プレビューで保存 → 端末から 1 件消す → 足りないものを追加 → 削除
+    {
+      const SC_USER = "efb-squads-cloud-user";
+      const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("efootball-team-ai:local-storage-scope:v1:" + SC_USER));
+      const scopeId = Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
+      const SQUADS_KEY = `efootball-team-ai:local:account:${scopeId}:squads:v1`;
+      const SLOTS = ["gk", "lb", "lcb", "rcb", "rb", "dmf", "lcmf", "rcmf", "lwf", "cf", "rwf"];
+      const mkS = (squadId, name) => ({ squadId, squadName: name, formationId: "4-3-3", managerId: null, slots: SLOTS.map((slotId) => ({ slotId, worldCardId: slotId === "cf" ? "89136409091415" : null, buildMode: "none", savedBuildId: null })), substitutes: [], captainSlotId: null, setPieces: { corners: null, freeKicks: null, penalties: null }, linkUp: { centerPieceSlotId: null, keyManSlotId: null }, rulesVersion: "progression/2026-08-28.v2", schemaVersion: 1, createdAt: "2026-10-11T00:00:00.000Z", updatedAt: "2026-10-11T00:00:00.000Z" });
+      const setSquads = (list) => ev(`localStorage.setItem(${JSON.stringify(SQUADS_KEY)}, ${JSON.stringify(JSON.stringify(list))})`);
+      const localIds = async () => ev(`(JSON.parse(localStorage.getItem(${JSON.stringify(SQUADS_KEY)}) || "[]")).map((s) => s.squadId).sort().join(",")`);
+      const statusText = async () => (await ev(`document.querySelector('[data-testid="squads-cloud-status"]')?.textContent`)) ?? "";
+      await go(`${BASE}/account?__efbAuth=1&__efbUserId=${SC_USER}`);
+      await waitForCondition(() => has('[data-testid="account-squads-cloud-entry"]'), { timeoutMs: 10000 }).catch(() => {});
+      record("[スカッドのクラウド] アカウントの画面に入口がある", await has('a[href="/account/squads-cloud"]'), "");
+      await go(`${BASE}/account/squads-cloud?__efbAuth=1&__efbUserId=${SC_USER}`);
+      await waitForCondition(() => has('[data-testid="squads-cloud-unavailable"]'), { timeoutMs: 10000 }).catch(() => {});
+      record("[スカッドのクラウド] 既定（本番の表の作成前）は準備中の案内だけ", (await has('[data-testid="squads-cloud-unavailable"]')) && !(await has('[data-testid="squads-cloud-save"]')), "");
+      await setSquads([mkS("sq_cloudtest00001", "Cloud A"), mkS("sq_cloudtest00002", "Cloud B")]);
+      await go(`${BASE}/account/squads-cloud?__efbAuth=1&__efbUserId=${SC_USER}&squadsCloudPreview=1`);
+      await waitForCondition(async () => (await ev(`document.querySelector('[data-testid="squads-cloud-local-count"]')?.textContent`)) === "2", { timeoutMs: 10000 }).catch(() => {});
+      const calls0 = (await ev("window.__EFB_TEST_SC_UPSERT_CALLS__ || 0")) ?? 0;
+      record("[スカッドのクラウド] 画面を開いただけでは送信しない（端末の 2 件）", calls0 === 0 && (await ev(`document.querySelector('[data-testid="squads-cloud-local-count"]')?.textContent`)) === "2", `calls=${calls0}`);
+      await ev(`document.querySelector('[data-testid="squads-cloud-save"]').click()`);
+      await waitForCondition(() => has('[data-testid="squads-cloud-confirm"]'), { timeoutMs: 5000 }).catch(() => {});
+      await ev(`document.querySelector('[data-testid="squads-cloud-confirm-yes"]').click()`);
+      await waitForCondition(async () => /クラウドへ保存しました/.test(await text()), { timeoutMs: 10000 }).catch(() => {});
+      record("[スカッドのクラウド] 確認の後に保存（2 件）", /クラウドへ保存しました/.test(await text()) && /2 件/.test(await statusText()), await statusText());
+      await setSquads([mkS("sq_cloudtest00001", "Cloud A")]);
+      await go(`${BASE}/account/squads-cloud?__efbAuth=1&__efbUserId=${SC_USER}&squadsCloudPreview=1`);
+      await waitForCondition(() => has('[data-testid="squads-cloud-check"]'), { timeoutMs: 10000 }).catch(() => {});
+      await ev(`document.querySelector('[data-testid="squads-cloud-check"]').click()`);
+      await waitForCondition(() => has('[data-testid="squads-cloud-restore-plan"]'), { timeoutMs: 10000 }).catch(() => {});
+      const planText = (await ev(`document.querySelector('[data-testid="squads-cloud-restore-plan"]')?.textContent`)) ?? "";
+      record("[スカッドのクラウド] 確認すると、追加できる 1 件・すでにある 1 件", /追加できるスカッド 1 件/.test(planText) && /すでにあるもの 1 件/.test(planText), planText.slice(0, 80));
+      await ev(`document.querySelector('[data-testid="squads-cloud-restore"]').click()`);
+      await waitForCondition(async () => /1 件のスカッドを端末に追加しました/.test(await text()), { timeoutMs: 10000 }).catch(() => {});
+      record("[スカッドのクラウド] 足りないスカッドだけを端末に追加", (await localIds()) === "sq_cloudtest00001,sq_cloudtest00002", await localIds());
+      await ev(`document.querySelector('[data-testid="squads-cloud-delete"]').click()`);
+      await waitForCondition(() => has('[data-testid="squads-cloud-confirm"]'), { timeoutMs: 5000 }).catch(() => {});
+      await ev(`document.querySelector('[data-testid="squads-cloud-confirm-yes"]').click()`);
+      await waitForCondition(async () => /クラウドデータを削除しました/.test(await text()), { timeoutMs: 10000 }).catch(() => {});
+      record("[スカッドのクラウド] 削除するとクラウドは無し・端末のスカッドは残る", /クラウドデータなし/.test(await statusText()) && (await localIds()) === "sq_cloudtest00001,sq_cloudtest00002", "");
+    }
+
     // アカウントの削除: 既定（無効）は手動の案内・アカウントの画面から入れる
     await go(`${BASE}/account?__efbAuth=1&__efbUserId=efb-delete-user`);
     await waitForCondition(() => has('[data-testid="account-delete-entry"]'), { timeoutMs: 10000 }).catch(() => {});

@@ -399,12 +399,67 @@ export async function installSupabaseAuthTestDouble(client) {
         };
       }
 
+      // saved_squads_snapshots（保存スカッドのクラウド保存・2026-10-11）の最小のインメモリの DB ダブル。my_team_snapshots と同じ形。
+      // 画面の移動でも消えないよう sessionStorage に持つ（同じタブの中だけ・テスト専用）
+      var SC_KEY = "__efb_test_squads_cloud_row__";
+      var scRow = (function () { try { return JSON.parse(sessionStorage.getItem(SC_KEY) || "null"); } catch (e) { return null; } })();
+      var scIdCounter = 0;
+      function scPersist() { try { if (scRow) sessionStorage.setItem(SC_KEY, JSON.stringify(scRow)); else sessionStorage.removeItem(SC_KEY); } catch (e) { /* noop */ } }
+      function scFromTable() {
+        return {
+          select: async function () {
+            if (!authenticated) return { data: [], error: null };
+            return { data: scRow ? [scRow] : [], error: null };
+          },
+          upsert: function (payload) {
+            return {
+              select: async function () {
+                window.__EFB_TEST_SC_UPSERT_CALLS__ = (window.__EFB_TEST_SC_UPSERT_CALLS__ || 0) + 1;
+                if (!authenticated) return { data: null, error: { status: 401, message: "test double: not authenticated" } };
+                if (payload && Object.prototype.hasOwnProperty.call(payload, "user_id")) return { data: null, error: { message: "test double: user_id must not be sent" } };
+                var now = new Date().toISOString();
+                scIdCounter += 1;
+                scRow = {
+                  id: scRow ? scRow.id : "efb-test-sc-row-" + scIdCounter,
+                  schema_version: payload.schema_version,
+                  squads_data: JSON.parse(JSON.stringify(payload.squads_data)),
+                  item_count: payload.item_count,
+                  payload_hash: payload.payload_hash,
+                  client_updated_at: payload.client_updated_at,
+                  updated_at: now,
+                };
+                scPersist();
+                return { data: [scRow], error: null };
+              },
+            };
+          },
+          delete: function () {
+            return {
+              eq: function (_col, id) {
+                return {
+                  select: async function () {
+                    if (!authenticated || !scRow || scRow.id !== id) return { data: [], error: null };
+                    var removedId = scRow.id;
+                    scRow = null;
+                    scPersist();
+                    return { data: [{ id: removedId }], error: null };
+                  },
+                };
+              },
+            };
+          },
+        };
+      }
+
       function rlsFrom(table) {
         if (table === "my_team_snapshots") {
           return mtFromTable();
         }
         if (table === "saved_builds_snapshots") {
           return bcFromTable();
+        }
+        if (table === "saved_squads_snapshots") {
+          return scFromTable();
         }
         if (table !== "rls_probe_records") {
           return {

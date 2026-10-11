@@ -120,7 +120,8 @@ const conditionalSquadSettingsSchema = z
   .optional()
   .catch(undefined);
 
-const squadSchema = z.object({
+/** スカッド 1 件の検証（読み込み・クラウド保存の境界で共有・2026-10-11 に export）。 */
+export const squadSchema = z.object({
   squadId: z.string().regex(SQUAD_ID_RE),
   squadName: z.string().min(1).max(SQUAD_NAME_MAX),
   formationId: z.string(),
@@ -281,6 +282,35 @@ function writeStore(store: Store): boolean {
   } catch {
     return false;
   }
+}
+
+export type ImportSquadsResult = { ok: true; saved: number } | { ok: false; code: "storage" | "invalid" | "conflict" | "limit" | "quota" };
+
+/**
+ * 端末に無いスカッドだけを一度に追加する（クラウド保存からの反映・2026-10-11）。`importBuilds` と同じ方針:
+ * 既存はそのまま・squadId の衝突は拒否・確認の開始の後に端末のスカッドが変われば `conflict`・上限（MAX_SQUADS）を超えるなら `limit`
+ * （一部だけ追加しない）・全体を検証してから 1 回だけ書き込む。
+ */
+export function importSquads(squads: readonly StoredSquad[], opts?: { expectedExistingSquadIds?: readonly string[] }): ImportSquadsResult {
+  if (!getStorage() || !getActiveSquadsStorageKey()) return { ok: false, code: "storage" };
+  if (squads.length === 0) return { ok: false, code: "invalid" };
+  const store = readStore();
+  const existing = new Set(store.map((s) => s.squadId));
+  if (opts?.expectedExistingSquadIds) {
+    const expected = new Set(opts.expectedExistingSquadIds);
+    if (expected.size !== existing.size || [...expected].some((id) => !existing.has(id))) return { ok: false, code: "conflict" };
+  }
+  const added: StoredSquad[] = [];
+  for (const raw of squads) {
+    const parsed = squadSchema.safeParse(raw);
+    if (!parsed.success) return { ok: false, code: "invalid" };
+    const sq = parsed.data as StoredSquad;
+    if (existing.has(sq.squadId) || added.some((a) => a.squadId === sq.squadId)) return { ok: false, code: "conflict" };
+    added.push(normalizeSquad(sq));
+  }
+  if (store.length + added.length > MAX_SQUADS) return { ok: false, code: "limit" };
+  if (!writeStore([...store, ...added])) return { ok: false, code: "quota" };
+  return { ok: true, saved: added.length };
 }
 
 export function isSquadStorageAvailable(): boolean {
