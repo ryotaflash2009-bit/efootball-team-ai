@@ -133,14 +133,14 @@
   },
   "publicRelease": {
     "googleConsentPublishedProduction": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "2026-10-11: Google Auth Platform (project teamaixi, owner's personal account) publishing status = production (owner pressed Publish). Branding: user support email = a Google Group owned by the owner (not the personal address); homepage, privacy and terms links on efootball-team-ai.vercel.app. Scopes: email, profile, openid only (no verification needed).",
+      "checkedAt": "2026-10-11"
     },
     "privacyPolicyGeneralAvailability": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "2026-10-11: privacy policy (ja/en) states Google sign-in incl. account creation is generally available and optional; alphaBody/authEmailUsage/intro updated (owner approved: 全部進めて).",
+      "checkedAt": "2026-10-11"
     }
   }
 }

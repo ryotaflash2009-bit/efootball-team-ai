@@ -1,14 +1,14 @@
 # Google OAuth の準備 ブラックボックステスト結果
 
-実行日時: 2026-10-11T01:41:46.095Z
+実行日時: 2026-10-11T09:17:32.295Z
 対象: http://localhost:3000（Production Build 上の隔離ヘッドレス Chrome・認証のテストダブル。実 Supabase・Google へは接続しない）
 
 | 結果 | 項目 | 詳細 |
 |---|---|---|
-| PASS | [既定・無効] Google のボタンを出さない |  |
-| PASS | [既定・無効] パスワードの再設定の導線は従来どおり |  |
+| PASS | [一般公開] 確認用の URL なしでも Google のボタンを出す | enabled |
+| PASS | [一般公開] 限定テストの案内・メールの新規登録の「限定テスト中」を出さない |  |
 | PASS | [プレビュー] Google のボタン「Google で続ける」を出す |  |
-| PASS | [プレビュー] 限定テスト中であることを画面に明示（一般公開中と誤解させない） |  |
+| PASS | [一般公開] 確認用の URL でも限定テストの案内は出さない |  |
 | PASS | [プレビュー] パスワードの再設定の導線を出さない（パスワードでのログインを一般に提供しないため） |  |
 | PASS | [プレビュー] 以前のアカウントでパスワードを忘れた人の代わりの導線（サポート） |  |
 | PASS | [プレビュー] メール＋パスワードは以前のアカウント用と示す |  |
@@ -17,14 +17,14 @@
 | PASS | [プレビュー] redirectTo は自サイトの /auth/callback?flow=google&next=%2Fsquads | http://localhost:3000/auth/callback?flow=google&next=%2Fsquads |
 | PASS | [プレビュー] 毎回アカウントを選ばせる（prompt=select_account） |  |
 | PASS | [プレビュー] 「戻る」で復元された画面では Google のボタンを押し直せる（移動中のまま止まらない） | before=true after=false |
-| PASS | [限定テスト] 確認用の URL を開いたタブでは「ログイン」の導線が ?oauthPreview=1 | ["/auth/sign-in?oauthPreview=1","/auth/sign-in?oauthPreview=1"] |
+| PASS | [一般公開] 「ログイン」の導線は通常の /auth/sign-in（確認用のクエリを付けない） | ["/auth/sign-in","/auth/sign-in"] |
 | PASS | [プレビュー] 開始の失敗は一般化した文で表示（生の文なし） |  |
 | PASS | [ja] Google の画面でキャンセル → ログイン画面に案内（生の文なし） |  |
 | PASS | [ja] Google の失敗 → ログイン画面に案内 |  |
 | PASS | [en] Google の画面でキャンセル → ログイン画面に案内（生の文なし） |  |
 | PASS | [en] Google の失敗 → ログイン画面に案内 |  |
 | PASS | [プレビュー] 新規登録は Google だけ（メールとパスワードの入力欄なし・確認メールなし） |  |
-| PASS | [既定・無効] 新規登録は従来どおり「限定テスト中」 |  |
+| PASS | [一般公開] 新規登録は確認用の URL なしでも Google で作成（パスワードの入力欄なし） |  |
 | PASS | [390px] Google のボタンを表示・横のはみ出しなし | overflow=0 |
 | PASS | [引き継ぎ] ログイン中のアカウントの画面にゲストのデータの件数と導線（自動ではコピーしない） |  |
 | PASS | [引き継ぎ] ?source=guest でゲストのデータを選んだ状態で開く |  |

@@ -130,12 +130,15 @@ export function SignInView() {
       </Surface>
 
       <div className="flex flex-col gap-1.5 text-sm text-text-dim">
-        <p>
-          {isSignupOpen() ? ta("signInNoAccountPrompt") : ta("signInNoAccountLimitedPrompt")}{" "}
-          <Link href="/auth/sign-up" className="text-accent hover:underline">
-            {isSignupOpen() ? ta("signInSignUpLink") : ta("signInLimitedLink")}
-          </Link>
-        </p>
+        {/* Google のボタンがあるときは Google でアカウントを作れるため、メールの新規登録の「限定テスト中」は出さない（2026-10-11 一般公開） */}
+        {google && !isSignupOpen() ? null : (
+          <p>
+            {isSignupOpen() ? ta("signInNoAccountPrompt") : ta("signInNoAccountLimitedPrompt")}{" "}
+            <Link href="/auth/sign-up" className="text-accent hover:underline">
+              {isSignupOpen() ? ta("signInSignUpLink") : ta("signInLimitedLink")}
+            </Link>
+          </p>
+        )}
         {google ? (
           // パスワードの再設定の導線は外す（パスワードでのログインを一般に提供しないため）。以前のアカウントの人はサポートへ。
           <p>

@@ -32,6 +32,9 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "..");
 const REPORT = path.join(ROOT, "docs", "black-box-tests", "supabase-auth.md");
 const BASE = process.env.BASE_URL ?? "http://localhost:3000";
+// Google ログインの入口のモード（src/lib/supabase/oauth.ts）。2026-10-11 に一般公開（enabled）: 新規登録とログインの画面は Google が中心になる。
+const OAUTH_MODE = (await fs.readFile(path.join(path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."), "src", "lib", "supabase", "oauth.ts"), "utf8")).match(/GOOGLE_OAUTH_MODE: GoogleOAuthMode = "(\w+)"/)?.[1] ?? "unknown";
+const OAUTH_PUBLIC = OAUTH_MODE === "enabled";
 
 const LOCALE_KEY = "efootball-team-ai:locale:v1";
 const MY_TEAM_KEY = "efootball-team-ai:my-team:v1";
@@ -203,13 +206,15 @@ async function main() {
     // ============================================================
     await navigateAndSettle(client, `${BASE}/auth/sign-up`);
     const limitedBody = await bodyText(client);
-    record("[限定テスト] 新規登録ページは限定テスト中の案内を表示する", !!(await evalJson(client, "!!document.querySelector('[data-testid=signup-limited]')")) && limitedBody.includes("限定テスト中"), "");
+    if (OAUTH_PUBLIC) record("[一般公開] 新規登録ページは Google でのアカウントの作成を案内する（メールの登録は受け付けない）", !!(await evalJson(client, "!!document.querySelector('[data-testid=signup-google]')")) && limitedBody.includes("Google"), OAUTH_MODE);
+    else record("[限定テスト] 新規登録ページは限定テスト中の案内を表示する", !!(await evalJson(client, "!!document.querySelector('[data-testid=signup-limited]')")) && limitedBody.includes("限定テスト中"), OAUTH_MODE);
     record("[限定テスト] 登録フォーム（パスワード入力）を表示しない", (await evalJson(client, "document.querySelectorAll('input[type=password]').length")) === 0, "");
-    record("[限定テスト] ログインせずに使える機能への導線がある", !!(await evalJson(client, "!!document.querySelector('[data-testid=signup-limited] a[href=\"/players\"]')")), "");
+    record("[新規登録] ログインせずに使える機能への導線がある", !!(await evalJson(client, OAUTH_PUBLIC ? "!!document.querySelector('main a[href=\"/players\"]')" : "!!document.querySelector('[data-testid=signup-limited] a[href=\"/players\"]')")), "");
     await navigateAndSettle(client, `${BASE}/auth/forgot-password`);
     record("[限定テスト] パスワード再設定にメール送信の限定テスト中の案内", !!(await evalJson(client, "!!document.querySelector('[data-testid=password-reset-limited]')")), "");
     await navigateAndSettle(client, `${BASE}/auth/sign-in`);
-    record("[限定テスト] ログイン画面は新規作成が限定テスト中と案内する（登録できると誤解させない）", (await bodyText(client)).includes("限定テスト中"), "");
+    if (OAUTH_PUBLIC) record("[一般公開] ログイン画面は Google のボタンを出し、「限定テスト中」とは案内しない", !!(await evalJson(client, "!!document.querySelector('[data-testid=google-sign-in-button]')")) && !(await bodyText(client)).includes("限定テスト中"), "");
+    else record("[限定テスト] ログイン画面は新規作成が限定テスト中と案内する（登録できると誤解させない）", (await bodyText(client)).includes("限定テスト中"), "");
     await navigateAndSettle(client, `${BASE}/auth/forgot-password`);
     record("[限定テスト] パスワード再設定にサポートへ個人情報を送らない案内", !!(await evalJson(client, "!!document.querySelector('[data-testid=support-privacy-notice]')")), "");
     // 本番のホスト名では ?signupPreview=1 が効かないことは account-availability.test.ts（isSignupPreviewAllowed）で保証する。
@@ -488,8 +493,14 @@ async function main() {
     await navigateAndSettle(client, `${BASE}/auth/sign-in`);
     const signInBody = await bodyText(client);
     record("[ログイン] タイトルが表示される", signInBody.includes("ログイン"), "");
-    record("[ログイン] 新規登録へのリンクがある", !!(await evalJson(client, `!!document.querySelector('a[href="/auth/sign-up"]')`)), "");
-    record("[ログイン] パスワードをお忘れの方へのリンクがある", !!(await evalJson(client, `!!document.querySelector('a[href="/auth/forgot-password"]')`)), "");
+    if (OAUTH_PUBLIC) {
+      // 一般公開: アカウントは Google で作る（ログイン画面のボタン）。以前のアカウントでパスワードを忘れた人はサポートへ
+      record("[ログイン] アカウントの作成は Google のボタン（新規登録のフォームへは誘導しない）", !!(await evalJson(client, `!!document.querySelector('[data-testid="google-sign-in-button"]')`)), "");
+      record("[ログイン] パスワードを忘れた以前のアカウントの人へサポートの導線がある", !!(await evalJson(client, `!!document.querySelector('[data-testid="password-forgot-support"]')`)), "");
+    } else {
+      record("[ログイン] 新規登録へのリンクがある", !!(await evalJson(client, `!!document.querySelector('a[href="/auth/sign-up"]')`)), "");
+      record("[ログイン] パスワードをお忘れの方へのリンクがある", !!(await evalJson(client, `!!document.querySelector('a[href="/auth/forgot-password"]')`)), "");
+    }
     record("[ログイン] パスワード入力欄がtype=passwordである(値を隠す)", (await evalJson(client, `document.querySelector('input[autocomplete="current-password"]').type`)) === "password", "");
 
     await navigateAndSettle(client, `${BASE}/auth/sign-in?authError=callback_failed`);

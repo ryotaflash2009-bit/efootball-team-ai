@@ -23,12 +23,12 @@ const passedPost = () => {
 };
 
 describe("Google OAuth の公開のゲート（2 段階）", () => {
-  it("今のリポジトリ（2026-10-11）: コードの確認はすべて合格・モードは limited・A は READY・限定テストの結果は GO（12/12・本番の実機）→ B は公開の 2 項目の待ちで BLOCKED", () => {
+  it("今のリポジトリ（2026-10-11）: コードの確認はすべて合格・モードは enabled（一般公開）・A は READY・限定テストの結果は GO・B は PUBLIC_GOOGLE_OAUTH_READY", () => {
     const code = realCode();
-    expect(code.entryMode).toBe("limited");
+    expect(code.entryMode).toBe("enabled");
     const r = evaluateOAuthReleaseGate({ checklist: realChecklist(), code });
     expect(r.codeFailures).toEqual([]);
-    expect(r).toMatchObject({ limitedVerdict: "LIMITED_OAUTH_TEST_READY", publicVerdict: "BLOCKED", postEnableVerdict: "GO", rollbackRequired: false });
+    expect(r).toMatchObject({ limitedVerdict: "LIMITED_OAUTH_TEST_READY", publicVerdict: "PUBLIC_GOOGLE_OAUTH_READY", postEnableVerdict: "GO", rollbackRequired: false });
   });
 
   it("CI の防御: コードを limited にするなら A、enabled にするなら B がそろっていること（設定の前のマージを止める）", () => {
@@ -42,8 +42,11 @@ describe("Google OAuth の公開のゲート（2 段階）", () => {
     for (const mode of ["limited", "enabled"]) {
       expect(evaluateOAuthReleaseGate({ checklist: empty, code: { ...code, entryMode: mode } })).toMatchObject({ postEnableVerdict: "NO_GO", rollbackRequired: true });
     }
-    // 今の記録で enabled にすると B が未達なので NO_GO
-    expect(evaluateOAuthReleaseGate({ checklist: realChecklist(), code: { ...code, entryMode: "enabled" } })).toMatchObject({ postEnableVerdict: "NO_GO", rollbackRequired: true });
+    // 今の記録（B 達成・2026-10-11）なら enabled で戻しは不要。公開の 2 項目が未達に戻れば NO_GO
+    expect(evaluateOAuthReleaseGate({ checklist: realChecklist(), code: { ...code, entryMode: "enabled" } })).toMatchObject({ publicVerdict: "PUBLIC_GOOGLE_OAUTH_READY", rollbackRequired: false });
+    const real = realChecklist() as { publicRelease: Record<string, unknown> };
+    const pubPending = { ...real, publicRelease: Object.fromEntries(Object.keys(real.publicRelease).map((k) => [k, { status: "pending", evidence: "", checkedAt: null }])) };
+    expect(evaluateOAuthReleaseGate({ checklist: pubPending, code: { ...code, entryMode: "enabled" } })).toMatchObject({ postEnableVerdict: "NO_GO", rollbackRequired: true });
   });
 
   it("A: 限定テストの 13 項目がすべて pass → LIMITED_OAUTH_TEST_READY（B はまだ BLOCKED）", () => {
