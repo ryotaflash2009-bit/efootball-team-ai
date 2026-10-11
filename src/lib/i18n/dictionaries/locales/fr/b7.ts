@@ -105,6 +105,7 @@ const part: PartialDictionary = {
     accountNoAutoUploadNoticeDesc: "La connexion n’envoie pas automatiquement les données locales déjà stockées sur cet appareil.",
     accountCrossDeviceNoticeDesc: "La synchronisation des données avec d’autres appareils ou navigateurs n’est pas encore prise en charge.",
     accountDeletionFutureNoticeDesc: "Pour l’instant, la suppression de compte se fait en contactant l’opérateur (voir les étapes dans « Supprimer le compte » ci-dessous).",
+    accountDeletionSelfNoticeDesc: "Vous pouvez supprimer votre compte vous-même via « Supprimer le compte » ci-dessous (une nouvelle connexion est demandée juste avant).",
     accountDeleteLink: "Supprimer le compte",
     deletionManualTitle: "Comment supprimer votre compte pour l’instant",
     deletionManualBody: "Pour l’instant, la suppression de compte se fait en contactant l’opérateur. Envoyez une demande intitulée « suppression de compte » via le contact de la page Assistance. Après avoir vérifié votre identité, l’opérateur supprime le compte manuellement et vous prévient une fois terminé (la suppression en libre-service est en préparation).",

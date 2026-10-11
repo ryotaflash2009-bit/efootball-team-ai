@@ -105,6 +105,7 @@ const part: PartialDictionary = {
     accountNoAutoUploadNoticeDesc: "Masuk tidak otomatis mengunggah data lokal yang sudah tersimpan di perangkat ini.",
     accountCrossDeviceNoticeDesc: "Sinkronisasi data antarperangkat atau antarbrowser belum didukung.",
     accountDeletionFutureNoticeDesc: "Saat ini penghapusan akun dilakukan dengan menghubungi pengelola (lihat langkahnya di “Hapus akun” di bawah).",
+    accountDeletionSelfNoticeDesc: "Kamu bisa menghapus akunmu sendiri dari “Hapus akun” di bawah (kamu akan diminta masuk lagi tepat sebelumnya).",
     accountDeleteLink: "Hapus akun",
     deletionManualTitle: "Cara menghapus akun untuk saat ini",
     deletionManualBody: "Saat ini penghapusan akun dilakukan dengan menghubungi pengelola. Kirim permintaan berjudul “penghapusan akun” melalui kontak di halaman Dukungan. Setelah memastikan itu kamu, pengelola menghapus akun secara manual dan memberi tahu saat selesai (penghapusan mandiri sedang disiapkan).",

@@ -11,11 +11,12 @@ import { isLocalDevHostname } from "@/lib/supabase/local-dev";
 import { buildScopedStorageKey } from "@/lib/local-storage-scope/keys";
 
 describe("アカウントの削除（画面の側）", () => {
-  it("既定は無効（Production に関数を適用・検証した後に PR で有効にする）・ローカルの ?deletionPreview=1 だけ流れを試せる", () => {
-    expect(ACCOUNT_DELETION_MODE).toBe("disabled");
-    expect(isAccountDeletionAvailable("efootball-team-ai.vercel.app", "?deletionPreview=1", isLocalDevHostname)).toBe(false);
-    expect(isAccountDeletionAvailable("localhost", "?deletionPreview=1", isLocalDevHostname)).toBe(true);
-    expect(isAccountDeletionAvailable("localhost", "", isLocalDevHostname)).toBe(false);
+  it("Production に関数を適用・検証した後に有効（2026-10-11）・無効のときはローカルの ?deletionPreview=1 だけ流れを試せる", () => {
+    expect(ACCOUNT_DELETION_MODE).toBe("enabled");
+    expect(isAccountDeletionAvailable("efootball-team-ai.vercel.app", "", isLocalDevHostname)).toBe(true);
+    expect(isAccountDeletionAvailable("efootball-team-ai.vercel.app", "?deletionPreview=1", isLocalDevHostname, "disabled")).toBe(false);
+    expect(isAccountDeletionAvailable("localhost", "?deletionPreview=1", isLocalDevHostname, "disabled")).toBe(true);
+    expect(isAccountDeletionAvailable("localhost", "", isLocalDevHostname, "disabled")).toBe(false);
     expect(isAccountDeletionAvailable("example.com", "", isLocalDevHostname, "enabled")).toBe(true);
   });
 

@@ -105,6 +105,7 @@ const part: PartialDictionary = {
     accountNoAutoUploadNoticeDesc: "登录不会自动上传此设备上已保存的本地数据。",
     accountCrossDeviceNoticeDesc: "暂不支持在其他设备或浏览器之间同步数据。",
     accountDeletionFutureNoticeDesc: "目前账号删除通过联系运营方受理（可在下方“删除账号”中查看步骤）。",
+    accountDeletionSelfNoticeDesc: "你可以在下方的“删除账号”中自行删除账号（删除前需要重新登录）。",
     accountDeleteLink: "删除账号",
     deletionManualTitle: "目前删除账号的方法",
     deletionManualBody: "目前账号删除通过联系运营方受理。请通过支持页面的联系方式提交“账号删除申请”。运营方确认是本人后手动删除，并在完成后通知您（自助删除功能正在准备中）。",

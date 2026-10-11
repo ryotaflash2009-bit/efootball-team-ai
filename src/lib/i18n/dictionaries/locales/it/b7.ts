@@ -105,6 +105,7 @@ const part: PartialDictionary = {
     accountNoAutoUploadNoticeDesc: "L’accesso non carica automaticamente i dati locali già salvati su questo dispositivo.",
     accountCrossDeviceNoticeDesc: "La sincronizzazione dei dati con altri dispositivi o browser non è ancora supportata.",
     accountDeletionFutureNoticeDesc: "Per ora l’eliminazione dell’account avviene contattando il gestore (vedi i passaggi in “Elimina account” qui sotto).",
+    accountDeletionSelfNoticeDesc: "Puoi eliminare il tuo account da «Elimina account» qui sotto (ti verrà chiesto di accedere di nuovo subito prima).",
     accountDeleteLink: "Elimina account",
     deletionManualTitle: "Come eliminare l’account per ora",
     deletionManualBody: "Per ora l’eliminazione dell’account avviene contattando il gestore. Invia una richiesta intitolata “eliminazione account” tramite il contatto della pagina Supporto. Dopo aver verificato la tua identità, il gestore elimina l’account manualmente e ti avvisa a operazione conclusa (l’eliminazione in autonomia è in preparazione).",

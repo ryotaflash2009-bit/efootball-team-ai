@@ -105,6 +105,7 @@ const auth: Dictionary["auth"] = {
   accountNoAutoUploadNoticeDesc: "ログインしても、この端末に保存されているローカルデータが自動的にアップロードされることはありません。",
   accountCrossDeviceNoticeDesc: "別の端末やブラウザーとのデータ同期には現時点で対応していません。",
   accountDeletionFutureNoticeDesc: "アカウントの削除は、現在は運営への連絡で受け付けています（下の「アカウントの削除」で手順を確認できます）。",
+  accountDeletionSelfNoticeDesc: "アカウントは、下の「アカウントの削除」からご自身で削除できます（直前にもう一度ログインが必要です）。",
   accountDeleteLink: "アカウントの削除",
   deletionManualTitle: "現在のアカウントの削除の方法",
   deletionManualBody: "アカウントの削除は、現在は運営への連絡で受け付けています。サポートのページの窓口から「アカウントの削除の希望」とご連絡ください。運営者がご本人であることを確認した後、手動で削除し、完了をお知らせします（画面からご自身で削除する機能は準備中です）。",

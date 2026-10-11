@@ -1,4 +1,4 @@
-# アカウントの削除: Production apply package（2026-10-11・未適用）
+# アカウントの削除: Production apply package（2026-10-11・**適用済み**）
 
 利用者自身によるアカウントの削除を Production で有効にするための一式。**Claude Code は Production に適用していない。**
 コードは `ACCOUNT_DELETION_MODE = "disabled"`（`src/lib/account/account-deletion.ts`）で、画面（`/account/delete`）は手動の削除の案内だけを出す。
@@ -151,3 +151,11 @@ Google のユーザーは Google の画面でもう一度ログイン（`prompt=
 | 今（暫定の運用） | 削除の依頼が来たら §0 の手順 |
 | 有効にするとき | §4-2 の件数の控え → SQL Editor で `create-account-deletion.sql` を貼り付けて実行 → `verify-account-deletion.sql` を実行して結果を Claude Code に渡す → §5-2 のテスト用のアカウントでの確認 → 合格なら Claude Code に有効化の PR を依頼 |
 | 年 1 回 | 監査の表の 1 年より古い行の削除 |
+
+## 10. 適用の記録（2026-10-11）
+
+本人の指示（「君が押して」）で Claude Code が Supabase の SQL Editor で実行した（貼り付けた SQL は main のファイルと SHA-256 で一致）。
+確認（読み取りだけ）: 関数 `delete_my_account(text)` は `security_definer = true`・`config = {search_path=""}`・所有者 `postgres`・
+実行の権限 authenticated = true / anon = false・監査の表は RLS 有効・ポリシー 0・anon / authenticated の select なし・監査の行 0・
+外部キー（`my_team_snapshots`・`rls_probe_records`・`saved_builds_snapshots`・`saved_squads_snapshots`）はすべて CASCADE・既存の件数は変化なし。
+コードの `ACCOUNT_DELETION_MODE` を `enabled` に変更（同じ日の PR）。暫定の運用（§0）は終了。§5-2 の本番の確認（再認証・A/B）は有効化の後に Android の実機で行う。

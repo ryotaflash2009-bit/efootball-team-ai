@@ -105,6 +105,7 @@ const part: PartialDictionary = {
     accountNoAutoUploadNoticeDesc: "Fazer login não envia automaticamente os dados locais já armazenados neste dispositivo.",
     accountCrossDeviceNoticeDesc: "A sincronização de dados com outros dispositivos ou navegadores ainda não é suportada.",
     accountDeletionFutureNoticeDesc: "No momento, a exclusão de conta é feita entrando em contato com o operador (veja os passos em “Excluir conta” abaixo).",
+    accountDeletionSelfNoticeDesc: "Você pode excluir sua conta em “Excluir conta” abaixo (será pedido que entre novamente logo antes).",
     accountDeleteLink: "Excluir conta",
     deletionManualTitle: "Como excluir sua conta por enquanto",
     deletionManualBody: "No momento, a exclusão de conta é feita entrando em contato com o operador. Envie um pedido com o título “exclusão de conta” pelo contato da página de Suporte. Após confirmar que é você, o operador exclui a conta manualmente e avisa quando terminar (a exclusão pelo próprio usuário está em preparação).",

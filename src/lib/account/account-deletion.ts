@@ -10,7 +10,7 @@ import { DATA_KINDS, type StorageScope } from "@/lib/local-storage-scope/types";
  * - 削除の対象の判定・他人のデータの保護はサーバーの関数が行う（auth.uid() だけ・引数で対象を受け取らない）。画面の確認は誤操作の防止。
  */
 export type AccountDeletionMode = "disabled" | "enabled";
-export const ACCOUNT_DELETION_MODE: AccountDeletionMode = "disabled";
+export const ACCOUNT_DELETION_MODE: AccountDeletionMode = "enabled";
 
 /** サーバーの確認の文字列（関数の引数）。画面で入力させる語とは別（言語に依存しない）。 */
 export const DELETE_CONFIRM_TOKEN = "DELETE";

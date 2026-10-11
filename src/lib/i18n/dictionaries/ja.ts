@@ -3740,6 +3740,7 @@ export interface Dictionary {
     accountNoAutoUploadNoticeDesc: string;
     accountCrossDeviceNoticeDesc: string;
     accountDeletionFutureNoticeDesc: string;
+    accountDeletionSelfNoticeDesc: string;
     accountDeleteLink: string;
     deletionManualTitle: string;
     deletionManualBody: string;

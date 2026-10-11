@@ -105,6 +105,7 @@ const part: PartialDictionary = {
     accountNoAutoUploadNoticeDesc: "Durch die Anmeldung werden die bereits auf diesem Gerät gespeicherten lokalen Daten nicht automatisch hochgeladen.",
     accountCrossDeviceNoticeDesc: "Die Synchronisierung von Daten über andere Geräte oder Browser wird noch nicht unterstützt.",
     accountDeletionFutureNoticeDesc: "Kontolöschungen laufen derzeit über eine Anfrage an den Betreiber (Schritte unten unter „Konto löschen“).",
+    accountDeletionSelfNoticeDesc: "Du kannst dein Konto unten unter „Konto löschen“ selbst löschen (direkt davor musst du dich erneut anmelden).",
     accountDeleteLink: "Konto löschen",
     deletionManualTitle: "So löschst du dein Konto derzeit",
     deletionManualBody: "Kontolöschungen laufen derzeit über eine Anfrage an den Betreiber. Sende über den Kontakt auf der Support-Seite eine Anfrage mit dem Betreff „Kontolöschung“. Nach Prüfung deiner Identität löscht der Betreiber das Konto manuell und gibt Bescheid (die Selbstlöschung ist in Vorbereitung).",

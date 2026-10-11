@@ -6,7 +6,7 @@
  * - ローカルの開発ホストでは `?squadsCloudPreview=1` で流れを確かめられる（black-box はテストダブルの DB で検証）。
  */
 export type SquadsCloudMode = "disabled" | "enabled";
-export const SQUADS_CLOUD_MODE: SquadsCloudMode = "disabled";
+export const SQUADS_CLOUD_MODE: SquadsCloudMode = "enabled";
 
 export function isSquadsCloudAvailable(
   hostname: string,

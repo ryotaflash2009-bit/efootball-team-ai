@@ -105,6 +105,7 @@ const part: PartialDictionary = {
     accountNoAutoUploadNoticeDesc: "登入不會自動上傳此裝置上已儲存的本機資料。",
     accountCrossDeviceNoticeDesc: "尚不支援在其他裝置或瀏覽器之間同步資料。",
     accountDeletionFutureNoticeDesc: "目前帳號刪除透過聯絡營運方受理（可在下方「刪除帳號」中查看步驟）。",
+    accountDeletionSelfNoticeDesc: "你可以在下方的「刪除帳號」中自行刪除帳號（刪除前需要重新登入）。",
     accountDeleteLink: "刪除帳號",
     deletionManualTitle: "目前刪除帳號的方法",
     deletionManualBody: "目前帳號刪除透過聯絡營運方受理。請透過支援頁面的聯絡方式提交「帳號刪除申請」。營運方確認是本人後手動刪除，並在完成後通知您（自助刪除功能正在準備中）。",

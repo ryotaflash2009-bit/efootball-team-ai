@@ -24,6 +24,11 @@ const LOCALE_KEY = "efootball-team-ai:locale:v1";
 // コードの入口のモード（src/lib/supabase/oauth.ts）。2026-10-11 に一般公開（enabled）。期待値はモードに合わせる。
 const OAUTH_MODE = (await fs.readFile(path.join(path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."), "src", "lib", "supabase", "oauth.ts"), "utf8")).match(/GOOGLE_OAUTH_MODE: GoogleOAuthMode = "(\w+)"/)?.[1] ?? "unknown";
 const PUBLIC = OAUTH_MODE === "enabled";
+// 機能の公開の状態（コードの値）。本番の表・関数の適用の後に有効（2026-10-11）。期待値はモードに合わせる。
+const readMode = async (rel, name) => (await fs.readFile(path.join(path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."), ...rel.split("/")), "utf8")).match(new RegExp(name + ': \\w+ = "(\\w+)"'))?.[1] ?? "unknown";
+const BUILDS_CLOUD_ON = (await readMode("src/lib/supabase/builds-cloud-mode.ts", "BUILDS_CLOUD_MODE")) === "enabled";
+const SQUADS_CLOUD_ON = (await readMode("src/lib/supabase/squads-cloud-mode.ts", "SQUADS_CLOUD_MODE")) === "enabled";
+const DELETION_ON = (await readMode("src/lib/account/account-deletion.ts", "ACCOUNT_DELETION_MODE")) === "enabled";
 const GUEST_MY_TEAM = "efootball-team-ai:local:guest:my-team:v1";
 
 const results = [];
@@ -274,8 +279,13 @@ async function main() {
       await waitForCondition(() => has('[data-testid="account-builds-cloud-entry"]'), { timeoutMs: 10000 }).catch(() => {});
       record("[ビルドのクラウド] アカウントの画面に入口がある", await has('a[href="/account/builds-cloud"]'), "");
       await go(`${BASE}/account/builds-cloud?__efbAuth=1&__efbUserId=${BC_USER}`);
-      await waitForCondition(() => has('[data-testid="builds-cloud-unavailable"]'), { timeoutMs: 10000 }).catch(() => {});
-      record("[ビルドのクラウド] 既定（本番の表の作成前）は準備中の案内だけ・保存のボタンなし", (await has('[data-testid="builds-cloud-unavailable"]')) && !(await has('[data-testid="builds-cloud-save"]')), "");
+      if (BUILDS_CLOUD_ON) {
+        await waitForCondition(() => has('[data-testid="builds-cloud-check"]'), { timeoutMs: 10000 }).catch(() => {});
+        record("[ビルドのクラウド] 有効（本番の表の作成後）: 確認のボタンを出し、準備中の案内は出さない", (await has('[data-testid="builds-cloud-check"]')) && !(await has('[data-testid="builds-cloud-unavailable"]')), "");
+      } else {
+        await waitForCondition(() => has('[data-testid="builds-cloud-unavailable"]'), { timeoutMs: 10000 }).catch(() => {});
+        record("[ビルドのクラウド] 既定（本番の表の作成前）は準備中の案内だけ・保存のボタンなし", (await has('[data-testid="builds-cloud-unavailable"]')) && !(await has('[data-testid="builds-cloud-save"]')), "");
+      }
       await setBuilds([mkB("b_cloud1"), mkB("b_cloud2")]);
       await go(`${BASE}/account/builds-cloud?__efbAuth=1&__efbUserId=${BC_USER}&buildsCloudPreview=1`);
       await waitForCondition(async () => (await ev(`document.querySelector('[data-testid="builds-cloud-local-count"]')?.textContent`)) === "2", { timeoutMs: 10000 }).catch(() => {});
@@ -321,8 +331,13 @@ async function main() {
       await waitForCondition(() => has('[data-testid="account-squads-cloud-entry"]'), { timeoutMs: 10000 }).catch(() => {});
       record("[スカッドのクラウド] アカウントの画面に入口がある", await has('a[href="/account/squads-cloud"]'), "");
       await go(`${BASE}/account/squads-cloud?__efbAuth=1&__efbUserId=${SC_USER}`);
-      await waitForCondition(() => has('[data-testid="squads-cloud-unavailable"]'), { timeoutMs: 10000 }).catch(() => {});
-      record("[スカッドのクラウド] 既定（本番の表の作成前）は準備中の案内だけ", (await has('[data-testid="squads-cloud-unavailable"]')) && !(await has('[data-testid="squads-cloud-save"]')), "");
+      if (SQUADS_CLOUD_ON) {
+        await waitForCondition(() => has('[data-testid="squads-cloud-check"]'), { timeoutMs: 10000 }).catch(() => {});
+        record("[スカッドのクラウド] 有効（本番の表の作成後）: 確認のボタンを出し、準備中の案内は出さない", (await has('[data-testid="squads-cloud-check"]')) && !(await has('[data-testid="squads-cloud-unavailable"]')), "");
+      } else {
+        await waitForCondition(() => has('[data-testid="squads-cloud-unavailable"]'), { timeoutMs: 10000 }).catch(() => {});
+        record("[スカッドのクラウド] 既定（本番の表の作成前）は準備中の案内だけ", (await has('[data-testid="squads-cloud-unavailable"]')) && !(await has('[data-testid="squads-cloud-save"]')), "");
+      }
       await setSquads([mkS("sq_cloudtest00001", "Cloud A"), mkS("sq_cloudtest00002", "Cloud B")]);
       await go(`${BASE}/account/squads-cloud?__efbAuth=1&__efbUserId=${SC_USER}&squadsCloudPreview=1`);
       await waitForCondition(async () => (await ev(`document.querySelector('[data-testid="squads-cloud-local-count"]')?.textContent`)) === "2", { timeoutMs: 10000 }).catch(() => {});
@@ -353,15 +368,21 @@ async function main() {
     // アカウントの削除: 既定（無効）は手動の案内・アカウントの画面から入れる
     await go(`${BASE}/account?__efbAuth=1&__efbUserId=efb-delete-user`);
     await waitForCondition(() => has('[data-testid="account-delete-entry"]'), { timeoutMs: 10000 }).catch(() => {});
-    record("[削除] アカウントの画面に削除の入口と、運営への連絡の案内", (await has('a[href="/account/delete"]')) && /運営への連絡で受け付けています/.test(await text()), "");
+    if (DELETION_ON) record("[削除] アカウントの画面に削除の入口と、自分で削除できる案内（運営への連絡の案内は出さない）", (await has('a[href="/account/delete"]')) && /ご自身で削除できます/.test(await text()) && !/運営への連絡で受け付けています/.test(await text()), "");
+    else record("[削除] アカウントの画面に削除の入口と、運営への連絡の案内", (await has('a[href="/account/delete"]')) && /運営への連絡で受け付けています/.test(await text()), "");
     await go(`${BASE}/account/delete?__efbAuth=1&__efbUserId=efb-delete-user`);
     await waitForCondition(() => has('[data-testid="account-deletion"]'), { timeoutMs: 10000 }).catch(() => {});
     const td = await text();
-    record(
-      "[削除・無効] 削除されるもの・されないもの・再登録の扱い・手動の削除（サポート）の案内だけ（実行の欄なし）",
-      /削除されるもの/.test(td) && /削除されないもの/.test(td) && /新しい空のアカウント/.test(td) && (await has('[data-testid="account-deletion-manual"]')) && !(await has('[data-testid="account-deletion-form"]')) && (await has('a[href="/support"]')),
-      "",
-    );
+    if (DELETION_ON) {
+      await waitForCondition(() => has('[data-testid="account-deletion-form"]'), { timeoutMs: 10000 }).catch(() => {});
+      record("[削除・有効] 削除されるもの・されないもの・再登録の扱いと、実行の欄（確認の語）を出す・手動の案内は出さない", /削除されるもの/.test(td) && /削除されないもの/.test(td) && /新しい空のアカウント/.test(td) && (await has('[data-testid="account-deletion-form"]')) && !(await has('[data-testid="account-deletion-manual"]')), "");
+    } else {
+      record(
+        "[削除・無効] 削除されるもの・されないもの・再登録の扱い・手動の削除（サポート）の案内だけ（実行の欄なし）",
+        /削除されるもの/.test(td) && /削除されないもの/.test(td) && /新しい空のアカウント/.test(td) && (await has('[data-testid="account-deletion-manual"]')) && !(await has('[data-testid="account-deletion-form"]')) && (await has('a[href="/support"]')),
+        "",
+      );
+    }
 
     // アカウントの削除: ローカルのプレビュー（テストダブル）
     await go(`${BASE}/account/delete?deletionPreview=1&__efbAuth=1&__efbUserId=efb-delete-user`);
