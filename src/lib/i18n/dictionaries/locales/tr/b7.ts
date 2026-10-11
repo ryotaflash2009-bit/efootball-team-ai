@@ -105,6 +105,7 @@ const part: PartialDictionary = {
     accountNoAutoUploadNoticeDesc: "Giriş yapmak, bu cihazda zaten saklanan yerel verileri otomatik olarak yüklemez.",
     accountCrossDeviceNoticeDesc: "Verilerin diğer cihazlar veya tarayıcılar arasında senkronizasyonu henüz desteklenmiyor.",
     accountDeletionFutureNoticeDesc: "Hesap silme şu an operatörle iletişime geçilerek yapılıyor (adımlar için aşağıdaki “Hesabı sil” bölümüne bak).",
+    accountDeletionSelfNoticeDesc: "Hesabını aşağıdaki “Hesabı sil” bölümünden kendin silebilirsin (hemen öncesinde yeniden giriş yapman istenir).",
     accountDeleteLink: "Hesabı sil",
     deletionManualTitle: "Şimdilik hesabını silme yolu",
     deletionManualBody: "Hesap silme şu an operatörle iletişime geçilerek yapılıyor. Destek sayfasındaki iletişim kanalından “hesap silme talebi” başlığıyla başvur. Kimliğini doğruladıktan sonra operatör hesabı elle siler ve bittiğinde haber verir (kendi kendine silme hazırlanıyor).",

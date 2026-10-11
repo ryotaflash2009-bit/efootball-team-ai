@@ -3357,6 +3357,7 @@
  "auth.accountNoAutoUploadNoticeDesc": "0f3dbe8c4a68",
  "auth.accountCrossDeviceNoticeDesc": "7caa05081f58",
  "auth.accountDeletionFutureNoticeDesc": "e39252db9f37",
+ "auth.accountDeletionSelfNoticeDesc": "2a4a173bf1ee",
  "auth.accountDeleteLink": "a2e20a335700",
  "auth.deletionManualTitle": "6d60cf342c4a",
  "auth.deletionManualBody": "0e0f1ee25f13",

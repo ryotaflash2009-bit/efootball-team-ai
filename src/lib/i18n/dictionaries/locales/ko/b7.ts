@@ -105,6 +105,7 @@ const part: PartialDictionary = {
     accountNoAutoUploadNoticeDesc: "로그인해도 이 기기에 이미 저장된 로컬 데이터가 자동으로 업로드되지 않습니다.",
     accountCrossDeviceNoticeDesc: "다른 기기나 브라우저와의 데이터 동기화는 아직 지원하지 않습니다.",
     accountDeletionFutureNoticeDesc: "현재 계정 삭제는 운영자에게 연락하는 방식으로 받고 있습니다(아래 ‘계정 삭제’에서 절차를 확인할 수 있습니다).",
+    accountDeletionSelfNoticeDesc: "아래 \"계정 삭제\"에서 직접 계정을 삭제할 수 있습니다(직전에 다시 로그인해야 합니다).",
     accountDeleteLink: "계정 삭제",
     deletionManualTitle: "현재 계정 삭제 방법",
     deletionManualBody: "현재 계정 삭제는 운영자에게 연락하는 방식으로 받고 있습니다. 지원 페이지의 문의 창구로 ‘계정 삭제 희망’이라고 연락해 주세요. 본인 확인 후 운영자가 직접 삭제하고 완료를 알려 드립니다(직접 삭제하는 기능은 준비 중입니다).",

@@ -6,7 +6,7 @@
  * - ローカルの開発ホストでは `?buildsCloudPreview=1` で流れを確かめられる（black-box はテストダブルの DB で検証）。
  */
 export type BuildsCloudMode = "disabled" | "enabled";
-export const BUILDS_CLOUD_MODE: BuildsCloudMode = "disabled";
+export const BUILDS_CLOUD_MODE: BuildsCloudMode = "enabled";
 
 export function isBuildsCloudAvailable(
   hostname: string,

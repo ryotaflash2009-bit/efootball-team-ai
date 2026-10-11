@@ -1,7 +1,7 @@
-# 保存ビルドのクラウド保存: Production apply package（2026-10-11・未適用）
+# 保存ビルドのクラウド保存: Production apply package（2026-10-11・**適用済み**）
 
 保存ビルド（My Builds）を利用者が手動でクラウドに保存し、別の端末で足りないビルドだけを追加して戻す機能（F-052 クラウド同期の第 2 段階）。
-**Claude Code は Production に適用していない。** コードは `BUILDS_CLOUD_MODE = "disabled"`（`src/lib/supabase/builds-cloud-mode.ts`）で、
+**2026-10-11 に Production へ適用済み（§5）。** コードは `BUILDS_CLOUD_MODE = "disabled"`（`src/lib/supabase/builds-cloud-mode.ts`）で、
 画面（`/account/builds-cloud`・アカウントの画面から入る）は準備中の案内だけを出し、Supabase を呼ばない。
 
 ## 1. 何が入るか
@@ -40,3 +40,10 @@ CI: `src/lib/account/builds-cloud-rls.postgres.test.ts`（PostgreSQL 16・A/B �
   読み戻しと再取得での一致・0 件／複数件を成功にしない）・公開の状態（本番のホストでは開かない）。
 - black-box（auth-google のテストダブルの DB）: 既定は準備中・画面を開いただけでは送らない・確認の後に保存・足りないビルドだけ追加（既存は変えない）・
   削除しても端末のビルドは残る・未ログインはログインの案内だけ。
+
+## 5. 適用の記録（2026-10-11）
+
+本人の指示（「君が押して」）で Claude Code が Supabase の SQL Editor（プロジェクト `efootball-team-ai-dev` = ref `kbauokzninaervjgwzdd`・本人の組織）で実行した。
+貼り付けた SQL は main のファイルと SHA-256 で一致を確認（改行の違いだけ）。適用の前の件数: `my_team_snapshots` 2・`rls_probe_records` 0・`auth.users` 3。
+適用の後の読み取りの確認: 表あり・ポリシー 4・RLS 有効・anon の select なし・既存の件数は変化なし・`auth.users` への外部キーは CASCADE。
+コードの公開の状態を `enabled` に変更（同じ日の PR）。

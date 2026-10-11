@@ -19,6 +19,7 @@ import { EmailChangeSection } from "@/components/auth/EmailChangeSection";
 import { detectAllGuestData } from "@/lib/local-storage-scope/legacy-detect";
 import { DATA_KINDS } from "@/lib/local-storage-scope/types";
 import { useSignInHref } from "@/components/auth/useSignInHref";
+import { ACCOUNT_DELETION_MODE } from "@/lib/account/account-deletion";
 
 type AuthKey = keyof Dictionary["auth"];
 
@@ -106,7 +107,7 @@ export function AccountView() {
             <p className="text-sm text-text-dim">{ta("accountLocalDataNoticeDesc")}</p>
             <p className="text-sm text-text-dim">{ta("accountNoAutoUploadNoticeDesc")}</p>
             <p className="text-sm text-text-dim">{ta("accountCrossDeviceNoticeDesc")}</p>
-            <p className="text-sm text-text-dim">{ta("accountDeletionFutureNoticeDesc")}</p>
+            <p className="text-sm text-text-dim">{ACCOUNT_DELETION_MODE === "enabled" ? ta("accountDeletionSelfNoticeDesc") : ta("accountDeletionFutureNoticeDesc")}</p>
           </Surface>
 
           <Surface tone="outline" padding="md" className="flex flex-col gap-1.5" data-testid="account-delete-entry">
