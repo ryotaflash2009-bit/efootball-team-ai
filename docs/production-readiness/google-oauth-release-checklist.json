@@ -126,9 +126,9 @@
       "observedLinking": "linked"
     },
     "prodRlsIsolationAB": {
-      "status": "pending",
-      "evidence": "2026-10-11: no second Google test account is available (the Family Checker account must not be used; Claude Code does not create production accounts or type passwords). RLS of public.my_team_snapshots verified on CI PostgreSQL 16 with the production SQL (create-my-team-cloud-schema.sql + the optimized policies): A/B cannot read, update, delete or insert each other's rows; anon has no access (src/lib/account/my-team-cloud-rls.postgres.test.ts). Production A/B still needs a second account.",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "2026-10-11 production, Android Chrome real device (operated by Claude Code via adb/DevTools; owner added the second account as a Google test user): A (owner's account, cloud snapshot 3 items, 2026-09-13) and B (second Google test account, new user). B: cloud page shows no data (A's 3 items invisible); B added 1 card and saved to cloud (1 item). A again: cloud still shows its own 3 items, not B's. Account-scoped local My Team also separated (A 0 / B 1). Also covered by CI PostgreSQL RLS test (src/lib/account/my-team-cloud-rls.postgres.test.ts).",
+      "checkedAt": "2026-10-11"
     }
   },
   "publicRelease": {
