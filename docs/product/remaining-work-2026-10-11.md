@@ -54,3 +54,6 @@
 | 3 | `docs/production-readiness/sql/create-account-deletion.sql` | アカウント画面からの自分での削除 | `account-deletion-apply-package.md` |
 
 適用した後に「適用した」と伝えてもらえれば、Claude Code が有効化の PR と本番での A/B の確認（Android の実機）を行う。
+
+本番の総合 black-box（2026-10-11 午後・ログアウトの状態・8 viewport・World 13,455・監督 69）: **576/576**・性能 14/14・セキュリティ 20/20。
+1 回目の実行の最初の照会（`/api/world/players?pageSize=4`）で一度だけ HTTP 500 が返った（直後の再照会はすべて 200・既知の一時的な照会の失敗と同じ型）。
