@@ -21,6 +21,9 @@ const ROOT = path.resolve(HERE, "..");
 const REPORT = path.join(ROOT, "docs", "black-box-tests", "auth-google.md");
 const BASE = process.env.BASE_URL ?? "http://localhost:3000";
 const LOCALE_KEY = "efootball-team-ai:locale:v1";
+// コードの入口のモード（src/lib/supabase/oauth.ts）。2026-10-11 に一般公開（enabled）。期待値はモードに合わせる。
+const OAUTH_MODE = (await fs.readFile(path.join(path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."), "src", "lib", "supabase", "oauth.ts"), "utf8")).match(/GOOGLE_OAUTH_MODE: GoogleOAuthMode = "(\w+)"/)?.[1] ?? "unknown";
+const PUBLIC = OAUTH_MODE === "enabled";
 const GUEST_MY_TEAM = "efootball-team-ai:local:guest:my-team:v1";
 
 const results = [];
@@ -61,15 +64,22 @@ async function main() {
     // 既定（無効）
     await go(`${BASE}/auth/sign-in`);
     await waitForCondition(async () => /ログイン/.test(await text()), { timeoutMs: 8000 }).catch(() => {});
-    record("[既定・無効] Google のボタンを出さない", !(await has('[data-testid="google-sign-in-button"]')), "");
-    record("[既定・無効] パスワードの再設定の導線は従来どおり", await ev(`!!document.querySelector('a[href="/auth/forgot-password"]')`), "");
+    if (PUBLIC) {
+      await waitForCondition(() => has('[data-testid="google-sign-in-button"]'), { timeoutMs: 8000 }).catch(() => {});
+      record("[一般公開] 確認用の URL なしでも Google のボタンを出す", await has('[data-testid="google-sign-in-button"]'), OAUTH_MODE);
+      record("[一般公開] 限定テストの案内・メールの新規登録の「限定テスト中」を出さない", !(await has('[data-testid="google-limited-test-notice"]')) && !/限定テスト中/.test(await text()), "");
+    } else {
+      record("[既定・無効] Google のボタンを出さない", !(await has('[data-testid="google-sign-in-button"]')), OAUTH_MODE);
+      record("[既定・無効] パスワードの再設定の導線は従来どおり", await ev(`!!document.querySelector('a[href="/auth/forgot-password"]')`), "");
+    }
 
     // ローカルのプレビュー
     await go(`${BASE}/auth/sign-in?oauthPreview=1&next=%2Fsquads`);
     await waitForCondition(() => has('[data-testid="google-sign-in-button"]'), { timeoutMs: 8000 }).catch(() => {});
     const t1 = await text();
     record("[プレビュー] Google のボタン「Google で続ける」を出す", /Google で続ける/.test(t1), "");
-    record("[プレビュー] 限定テスト中であることを画面に明示（一般公開中と誤解させない）", (await has('[data-testid="google-limited-test-notice"]')) && /限定テスト中/.test(t1), "");
+    if (PUBLIC) record("[一般公開] 確認用の URL でも限定テストの案内は出さない", !(await has('[data-testid="google-limited-test-notice"]')), "");
+    else record("[プレビュー] 限定テスト中であることを画面に明示（一般公開中と誤解させない）", (await has('[data-testid="google-limited-test-notice"]')) && /限定テスト中/.test(t1), "");
     record("[プレビュー] パスワードの再設定の導線を出さない（パスワードでのログインを一般に提供しないため）", !(await ev(`!!document.querySelector('a[href="/auth/forgot-password"]')`)), "");
     record("[プレビュー] 以前のアカウントでパスワードを忘れた人の代わりの導線（サポート）", await has('[data-testid="password-forgot-support"]'), "");
     record("[プレビュー] メール＋パスワードは以前のアカウント用と示す", /以前にメールアドレスで作成したアカウント/.test(t1), "");
@@ -96,7 +106,8 @@ async function main() {
     await go(`${BASE}/account`);
     await waitForCondition(async () => /ログインが必要/.test(await text()), { timeoutMs: 8000 }).catch(() => {});
     const signInLinks = await ev(`[...document.querySelectorAll('a')].filter((a) => a.textContent.trim() === "ログイン").map((a) => a.getAttribute("href"))`);
-    record("[限定テスト] 確認用の URL を開いたタブでは「ログイン」の導線が ?oauthPreview=1", (signInLinks ?? []).length > 0 && signInLinks.every((h) => h === "/auth/sign-in?oauthPreview=1"), JSON.stringify(signInLinks));
+    if (PUBLIC) record("[一般公開] 「ログイン」の導線は通常の /auth/sign-in（確認用のクエリを付けない）", (signInLinks ?? []).length > 0 && signInLinks.every((h) => h === "/auth/sign-in"), JSON.stringify(signInLinks));
+    else record("[限定テスト] 確認用の URL を開いたタブでは「ログイン」の導線が ?oauthPreview=1", (signInLinks ?? []).length > 0 && signInLinks.every((h) => h === "/auth/sign-in?oauthPreview=1"), JSON.stringify(signInLinks));
 
     // 失敗の表示（クライアント側）
     await go(`${BASE}/auth/sign-in?oauthPreview=1`);
@@ -127,8 +138,13 @@ async function main() {
     await waitForCondition(() => has('[data-testid="signup-google"]'), { timeoutMs: 8000 }).catch(() => {});
     record("[プレビュー] 新規登録は Google だけ（メールとパスワードの入力欄なし・確認メールなし）", (await has('[data-testid="signup-google"]')) && !(await has('input[type="password"]')) && /確認メールは届きません/.test(await text()), "");
     await go(`${BASE}/auth/sign-up`);
-    await waitForCondition(() => has('[data-testid="signup-limited"]'), { timeoutMs: 8000 }).catch(() => {});
-    record("[既定・無効] 新規登録は従来どおり「限定テスト中」", await has('[data-testid="signup-limited"]'), "");
+    if (PUBLIC) {
+      await waitForCondition(() => has('[data-testid="signup-google"]'), { timeoutMs: 8000 }).catch(() => {});
+      record("[一般公開] 新規登録は確認用の URL なしでも Google で作成（パスワードの入力欄なし）", (await has('[data-testid="signup-google"]')) && !(await has('input[type="password"]')), "");
+    } else {
+      await waitForCondition(() => has('[data-testid="signup-limited"]'), { timeoutMs: 8000 }).catch(() => {});
+      record("[既定・無効] 新規登録は従来どおり「限定テスト中」", await has('[data-testid="signup-limited"]'), "");
+    }
 
     // モバイル
     await viewport(390, 844, true);
