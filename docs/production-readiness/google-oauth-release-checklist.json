@@ -110,20 +110,20 @@
       "checkedAt": null
     },
     "prodAndroidChrome": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "Android 9 / Chrome 101 (Xperia SOV36, USB via adb by Claude Code): ?oauthPreview=1 shows the button, Google account chooser, callback, /account signed in.",
+      "checkedAt": "2026-10-11"
     },
     "prodOauthCancel": {
       "status": "pending",
-      "evidence": "",
+      "evidence": "2026-10-11 PC Chrome: Back from the Google account chooser returned to the sign-in page but the button stayed in the redirecting state (bfcache). Fixed (pageshow persisted resets it, auth-google rail 56/56); recheck on production after the deploy.",
       "checkedAt": null
     },
     "prodExistingEmailConflictRecorded": {
-      "status": "pending",
-      "evidence": "",
-      "checkedAt": null,
-      "observedLinking": null
+      "status": "pass",
+      "evidence": "Google login with the same address as the earlier email/password account (owner's personal account) signed into that account: /account shows the email-change section, which is hidden only for OAuth-only users (isOAuthOnly), so the user has both email and google providers.",
+      "checkedAt": "2026-10-11",
+      "observedLinking": "linked"
     },
     "prodRlsIsolationAB": {
       "status": "pending",

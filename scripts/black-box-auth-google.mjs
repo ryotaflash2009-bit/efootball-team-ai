@@ -85,6 +85,12 @@ async function main() {
       redirectTo,
     );
     record("[プレビュー] 毎回アカウントを選ばせる（prompt=select_account）", call?.options?.queryParams?.prompt === "select_account", "");
+    // Google の画面からブラウザーの「戻る」で帰ったとき（bfcache の復元）、ボタンが押せる状態に戻る（2026-10-11 本番の PC Chrome で発見）
+    const disabledBefore = await ev(`document.querySelector('[data-testid="google-sign-in-button"]').disabled`);
+    await ev(`window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true }))`);
+    await waitForCondition(async () => (await ev(`document.querySelector('[data-testid="google-sign-in-button"]').disabled`)) === false, { timeoutMs: 3000 }).catch(() => {});
+    const disabledAfter = await ev(`document.querySelector('[data-testid="google-sign-in-button"]').disabled`);
+    record("[プレビュー] 「戻る」で復元された画面では Google のボタンを押し直せる（移動中のまま止まらない）", disabledBefore === true && disabledAfter === false, `before=${disabledBefore} after=${disabledAfter}`);
 
     // 限定テストのタブでは、ログアウトの後などの「ログイン」の導線も確認用の URL（Google のボタンが消えない）
     await go(`${BASE}/account`);
