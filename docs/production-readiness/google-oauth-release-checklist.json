@@ -115,9 +115,9 @@
       "checkedAt": "2026-10-11"
     },
     "prodOauthCancel": {
-      "status": "pending",
-      "evidence": "2026-10-11 PC Chrome: Back from the Google account chooser returned to the sign-in page but the button stayed in the redirecting state (bfcache). Fixed (pageshow persisted resets it, auth-google rail 56/56); recheck on production after the deploy.",
-      "checkedAt": null
+      "status": "pass",
+      "evidence": "2026-10-11 after bd9ed08 (bfcache fix) on production: Android Chrome real device - Google account chooser, hardware Back returns to the sign-in page with the button enabled, tapping again reaches Google; no error, no session. Before the fix the button stayed in the redirecting state (PC Chrome).",
+      "checkedAt": "2026-10-11"
     },
     "prodExistingEmailConflictRecorded": {
       "status": "pass",
