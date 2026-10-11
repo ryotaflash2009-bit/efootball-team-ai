@@ -80,7 +80,7 @@
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | F-050 | 認証（Supabase Auth：登録・ログイン・再設定・メールのリンク確認・メール変更） | completed | 85% | Supabase | — | C | — | 不要 | Free | PR #5, #17, #86, #87, #88。新規登録は「限定テスト中」（標準 SMTP はメンバー宛てのみ）。/auth/confirm（押したときだけ検証）・エラー区分・メール変更は配信確認まで無効・Release Validator（`npm run validate:auth-email-release`）。ドメイン購入は本人がまとめ買いまで保留（`production-readiness/domain-purchase-queue.md`）。`evidence/auth-readiness-f071-f073-2026-09-27.json`（公開 114/114） | 本人: ドメインのまとめ買い → 手順書 A〜G → Validator が READY → 本人承認 → 新規登録の公開 |
 | F-051 | アカウント別データ分離（RLS・ローカル名前空間） | completed | 85% | F-050 | — | L/C | 要 | 不要 | Free | PR #9–#11, #17 | — |
-| F-052 | クラウド同期（My Team PoC → ビルド・スカッド） | partially_implemented | 45% | F-051 | — | C | 要 | 不要 | Free | My Team 手動保存の PoC。保存ビルドのクラウド保存（2026-10-11・SQL は未適用・`BUILDS_CLOUD_MODE=disabled`・`builds-cloud-apply-package.md`） | 本人: SQL の適用の承認 → 有効化。スカッドは次 |
+| F-052 | クラウド同期（My Team PoC → ビルド・スカッド） | partially_implemented | 60% | F-051 | — | C | 要 | 不要 | Free | My Team 手動保存の PoC。保存ビルド・保存スカッドのクラウド保存（2026-10-11・SQL は未適用・`BUILDS_CLOUD_MODE` / `SQUADS_CLOUD_MODE` = disabled・`builds-cloud-apply-package.md`・`squads-cloud-apply-package.md`） | 本人: 2 つの SQL の適用の承認 → 有効化 |
 | F-053 | 公開ユーザーID・公開プロフィール | implementation_ready（Production の適用は本人の承認待ち） | 60% | F-050, F-056 | — | C | 要 | 不要 | Free | 規則 `public-id.ts`・migration の提案と使い捨ての PostgreSQL の検証 10 件（PR #174・`public-id-production-proposal.md`） | **本人の判断**: 適用（Signup・ドメインの後） |
 | F-054 | 公開範囲（非公開/URL限定/友達限定/全体公開） | designed | 5% | F-053 | — | C | 要 | 不要 | Free | `docs/product/community-and-growth-design.md` §2（既定は非公開・noindex） | F-053 と同時 |
 | F-055 | 友達機能 | designed | 5% | F-053, F-056 | — | C | 要 | 不要 | Free | `docs/product/community-and-growth-design.md` §3 | F-053・F-056 の後 |
