@@ -23,12 +23,12 @@ const passedPost = () => {
 };
 
 describe("Google OAuth の公開のゲート（2 段階）", () => {
-  it("今のリポジトリ（2026-10-11）: コードの確認はすべて合格・モードは limited・A は READY・限定テストの結果は未着手 → B は BLOCKED", () => {
+  it("今のリポジトリ（2026-10-11）: コードの確認はすべて合格・モードは limited・A は READY・限定テストの結果は GO（12/12・本番の実機）→ B は公開の 2 項目の待ちで BLOCKED", () => {
     const code = realCode();
     expect(code.entryMode).toBe("limited");
     const r = evaluateOAuthReleaseGate({ checklist: realChecklist(), code });
     expect(r.codeFailures).toEqual([]);
-    expect(r).toMatchObject({ limitedVerdict: "LIMITED_OAUTH_TEST_READY", publicVerdict: "BLOCKED", postEnableVerdict: "PENDING", rollbackRequired: false });
+    expect(r).toMatchObject({ limitedVerdict: "LIMITED_OAUTH_TEST_READY", publicVerdict: "BLOCKED", postEnableVerdict: "GO", rollbackRequired: false });
   });
 
   it("CI の防御: コードを limited にするなら A、enabled にするなら B がそろっていること（設定の前のマージを止める）", () => {
