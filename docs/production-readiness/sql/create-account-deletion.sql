@@ -88,6 +88,15 @@ begin
     execute 'delete from public.rls_probe_records where user_id = $1' using uid;
     get diagnostics n = row_count; counts := counts || jsonb_build_object('rls_probe_records', n);
   end if;
+  -- 保存ビルド・保存スカッドのクラウド保存（2026-10-11 提案・create-builds-cloud-schema.sql / create-squads-cloud-schema.sql）
+  if to_regclass('public.saved_builds_snapshots') is not null then
+    execute 'delete from public.saved_builds_snapshots where user_id = $1' using uid;
+    get diagnostics n = row_count; counts := counts || jsonb_build_object('saved_builds_snapshots', n);
+  end if;
+  if to_regclass('public.saved_squads_snapshots') is not null then
+    execute 'delete from public.saved_squads_snapshots where user_id = $1' using uid;
+    get diagnostics n = row_count; counts := counts || jsonb_build_object('saved_squads_snapshots', n);
+  end if;
   if to_regclass('public.photo_posts') is not null then
     -- Storage の画像は SQL では消さない（Supabase は storage.objects の直接の削除を許さない）。画面の側で Storage API から先に消す（apply package §2）。
     execute 'delete from public.photo_posts where user_id = $1' using uid;

@@ -28,6 +28,7 @@
 | `auth.users` | 適用済み（Supabase） | `id` | 関数の最後に削除 | `auth.identities`・`auth.sessions`・`auth.refresh_tokens`・`auth.mfa_*` は Supabase の外部キーの cascade |
 | `public.my_team_snapshots` | 適用済み | `user_id`（`auth.users` を cascade で参照） | 関数で件数を数えて削除 | My Team のクラウドの保存 |
 | `public.rls_probe_records` | 適用済み | `user_id`（cascade） | 同上 | RLS の検証用（短い文字列だけ） |
+| `public.saved_builds_snapshots`・`public.saved_squads_snapshots` | 提案（2026-10-11・未適用） | `user_id`（cascade） | 適用されていれば関数で件数を数えて削除 | 保存ビルド・保存スカッドのクラウド保存（`builds-cloud-apply-package.md`・`squads-cloud-apply-package.md`） |
 | `public.public_profiles`・`public_id_history`・`user_blocks` | **提案・未適用** | `user_id`・`blocker_id`/`blocked_id` | 表があれば関数が削除（`to_regclass`） | 公開プロフィール（F-053） |
 | `public.photo_posts`・`photo_post_audit` | **提案・未適用** | `user_id`（監査は外部キーなし） | 表があれば関数が削除。監査も本人の分を消す | 写真付き投稿（F-084） |
 | Storage（写真の画像） | **提案・未適用**（バケットなし） | パスの先頭が user ID | SQL では消さない（Supabase は `storage.objects` の直接の削除を禁止）。導入時に、画面が関数の前に Storage API で本人のフォルダを消す手順を追加する | 今は対象なし |

@@ -205,4 +205,28 @@ describe("delete_my_account（提案の SQL・使い捨ての PostgreSQL）", ()
     const anon = (await admin.query("select has_function_privilege('anon', 'public.delete_my_account(text)', 'execute') as e")).rows[0].e;
     expect(anon).toBe(false);
   });
+  it("保存ビルド・保存スカッドのクラウド保存の表（2026-10-11 提案）があれば、本人の行だけを消して件数に含める", async () => {
+    const made: string[] = [];
+    for (const t of ["saved_builds_snapshots", "saved_squads_snapshots"]) {
+      if (!(await admin.query("select to_regclass($1) is not null as e", [`public.${t}`])).rows[0].e) {
+        await admin.query(`create table public.${t} (id bigint generated always as identity primary key, user_id uuid not null references auth.users (id) on delete cascade)`);
+        made.push(t);
+      }
+    }
+    try {
+      await seed();
+      for (const t of ["saved_builds_snapshots", "saved_squads_snapshots"]) {
+        await admin.query(`delete from public.${t} where user_id in ($1, $2)`, [A, B]);
+        await admin.query(`insert into public.${t} (user_id) values ($1), ($2)`, [A, B]);
+      }
+      const r = await del(A, now() - 30);
+      expect(r.rows[0].r).toMatchObject({ deleted: true, counts: { saved_builds_snapshots: 1, saved_squads_snapshots: 1 } });
+      expect(await countOf("public.saved_builds_snapshots", A)).toBe(0);
+      expect(await countOf("public.saved_squads_snapshots", A)).toBe(0);
+      expect(await countOf("public.saved_builds_snapshots", B)).toBe(1);
+      expect(await countOf("public.saved_squads_snapshots", B)).toBe(1);
+    } finally {
+      for (const t of made) await admin.query(`drop table if exists public.${t}`);
+    }
+  });
 });
