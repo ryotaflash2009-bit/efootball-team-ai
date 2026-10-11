@@ -33,6 +33,15 @@ export function useGoogleOAuthAvailable(): boolean {
 export function GoogleSignInButton({ next, onError }: { next: string | null; onError: (message: string) => void }) {
   const t = useT();
   const [pending, setPending] = useState(false);
+  // Google の画面からブラウザーの「戻る」で帰ると、bfcache が「移動しています…」のままの画面を復元し、
+  // 押し直せなくなっていた（2026-10-11 本番の PC Chrome で確認）。復元されたら押せる状態へ戻す。
+  useEffect(() => {
+    const onPageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) setPending(false);
+    };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
 
   async function handleClick() {
     if (pending) return; // 連打防止
