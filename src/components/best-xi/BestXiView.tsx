@@ -1,11 +1,16 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/bestXi";
+import "@/lib/i18n/dictionaries/ja-ns/manager";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { saveSquad } from "@/lib/squad/squad-storage";
 import { bestXiToSquad } from "@/lib/best-xi/to-squad";
+import type { ManagerContext } from "@/lib/progression/types";
+import type { ManagerDetail } from "@/lib/managers/types";
+import { ManagerPicker } from "@/components/managers/ManagerPicker";
+import { CurrentManagerCard } from "@/components/managers/CurrentManagerCard";
 import { useMyTeam } from "@/lib/user-cards/hooks";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
@@ -88,12 +93,22 @@ export function BestXiView() {
     reloadBuilds();
   }, [reloadBuilds]);
 
+  // 監督（F-070・2026-10-11）。既定は監督なし（従来と同じ結果）。「順位に含める」を選んだときだけ、確認済みの補正を候補の能力値に加えて選び直す。
+  const [manager, setManager] = useState<ManagerContext | null>(null);
+  const [managerDetail, setManagerDetail] = useState<ManagerDetail | null>(null);
+  const [managerPickerOpen, setManagerPickerOpen] = useState(false);
+  const [applyManager, setApplyManager] = useState(false);
+  const managerInRanking = applyManager && manager != null;
+  const managerReasons = useMemo(
+    () => (manager ? (managerDetail?.boosters ?? []).filter((b) => b.statKey && b.confirmationStatus === "confirmed").map((b) => ({ statKey: b.statKey!, statNameEn: b.statNameEn, delta: b.delta, managerName: manager.managerName ?? null })) : []),
+    [manager, managerDetail],
+  );
   // 縛り（国籍・リーグ・チーム・2026-10-11）。選ぶと、その条件に合う自分のカードだけで選び直す。
   const [affiliationFilter, setAffiliationFilter] = useState<BestXiAffiliationFilter | null>(null);
   const options = useMemo(() => affiliationOptions(ownedWorldCardIds, affiliations), [ownedWorldCardIds, affiliations]);
   const { candidates, unavailableCards } = useMemo(
-    () => applyAffiliationFilter(buildBestXiCandidates({ myTeam, progressionCards, buildsByWorldCardId }), affiliations, affiliationFilter),
-    [myTeam, progressionCards, buildsByWorldCardId, affiliations, affiliationFilter],
+    () => applyAffiliationFilter(buildBestXiCandidates({ myTeam, progressionCards, buildsByWorldCardId, manager: managerInRanking ? manager : null }), affiliations, affiliationFilter),
+    [myTeam, progressionCards, buildsByWorldCardId, affiliations, affiliationFilter, managerInRanking, manager],
   );
 
   const poolPlayerCount = useMemo(
@@ -274,6 +289,54 @@ export function BestXiView() {
             </div>
           </div>
 
+          <div className="flex flex-col gap-2 rounded-card border border-border bg-surface p-3 text-xs sm:p-4" data-testid="best-xi-manager">
+            <p className="font-semibold text-text-dim">{tb("managerHeading")}</p>
+            <CurrentManagerCard
+              manager={manager}
+              detail={managerDetail}
+              reasons={managerReasons}
+              onOpenPicker={() => setManagerPickerOpen(true)}
+              onClear={() => {
+                if (managerInRanking) pendingGenerateRef.current = true;
+                setManager(null);
+                setManagerDetail(null);
+              }}
+              onOpenDetailHref={manager?.internalManagerId ? `/managers/${manager.internalManagerId}` : undefined}
+              compact
+            />
+            {manager ? (
+              <>
+                <label className="inline-flex items-center gap-2 text-text">
+                  <input
+                    type="checkbox"
+                    checked={applyManager}
+                    disabled={cardsLoading}
+                    data-testid="best-xi-manager-apply"
+                    onChange={(e) => {
+                      pendingGenerateRef.current = true;
+                      setApplyManager(e.target.checked);
+                    }}
+                  />
+                  {tb("managerApplyToggle")}
+                </label>
+                <p className="text-2xs text-text-muted" data-testid="best-xi-manager-note">
+                  {managerInRanking ? tb("managerAppliedNote") : tb("managerNotAppliedNote")}
+                </p>
+              </>
+            ) : null}
+            <ManagerPicker
+              open={managerPickerOpen}
+              onClose={() => setManagerPickerOpen(false)}
+              currentManagerId={manager?.internalManagerId ?? null}
+              onSelect={(ctx, d) => {
+                if (applyManager) pendingGenerateRef.current = true;
+                setManager(ctx);
+                setManagerDetail(d);
+                setManagerPickerOpen(false);
+              }}
+            />
+          </div>
+
           {affiliationFilter ? (
             <p role="status" className="rounded border border-accent/40 bg-accent-soft px-3 py-2 text-xs text-text" data-testid="best-xi-affiliation-active">
               {fillTb("affiliationActiveTemplate", { kind: tb(`affiliationKind_${affiliationFilter.kind}`), value: affiliationFilter.value })}
@@ -391,7 +454,7 @@ export function BestXiView() {
               <div className="rounded-card border border-border bg-surface p-3 text-2xs text-text-muted sm:p-4">
                 <p className="font-semibold text-text-dim">{tb("limitationsHeading")}</p>
                 <ul className="mt-1 list-disc ps-4">
-                  {result.limitationCodes.filter((code) => !(bench && code === "noBenchSelection")).map((code) => (
+                  {result.limitationCodes.filter((code) => !(bench && code === "noBenchSelection") && !(managerInRanking && code === "noManagerSelection")).map((code) => (
                     <li key={code}>{t("bestXi", LIMITATION_LABEL_KEY[code] as keyof Dictionary["bestXi"])}</li>
                   ))}
                 </ul>

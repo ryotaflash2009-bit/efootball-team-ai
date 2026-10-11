@@ -1,7 +1,7 @@
 import { calculateBuild } from "@/lib/progression/engine";
 import { emptyAllocation } from "@/lib/progression/engine";
 import { resolveBuildRuleStatus } from "@/lib/progression/my-builds";
-import type { ProgressionCard, SavedBuild } from "@/lib/progression/types";
+import type { ManagerContext, ProgressionCard, SavedBuild } from "@/lib/progression/types";
 import type { MyTeamRecord } from "@/lib/user-cards/types";
 import type { BuildRuleKind } from "@/lib/progression/build-inventory";
 import type { BestXiCandidate, BestXiUnavailableCard } from "./types";
@@ -19,14 +19,17 @@ import { CURRENT_COST_RULE_ID, resolveCostRuleId } from "@/lib/progression/progr
  * - 選手ブースター試算(B2)は SavedBuild に配列として保存されていないため常に空配列で計算する
  *   (SavedBuild.selectedPlayerBooster は表示・重複検出専用の単一IDであり、計算への再投入経路が
  *   このプロジェクトに存在しない)。条件付き付属ブースター(Total Package等)は
- *   `conditionalBoosterSelections` をそのまま使う。監督補正は今回未対応のため常に null。
+ *   `conditionalBoosterSelections` をそのまま使う。監督補正（F-070・2026-10-11）は、利用者が監督を選び「順位に含める」を選んだときだけ
+ *   `manager` を渡す（既定は null＝従来と同じ結果）。適用されるのは確認済みの効果だけ（calculate-manager-booster.ts）。
  */
 export function buildBestXiCandidates(params: {
   myTeam: MyTeamRecord[];
   progressionCards: Map<string, ProgressionCard>;
   buildsByWorldCardId: Map<string, SavedBuild[]>;
+  manager?: ManagerContext | null;
 }): { candidates: BestXiCandidate[]; unavailableCards: BestXiUnavailableCard[] } {
   const { myTeam, progressionCards, buildsByWorldCardId } = params;
+  const manager = params.manager ?? null;
   const candidates: BestXiCandidate[] = [];
   const unavailableCards: BestXiUnavailableCard[] = [];
 
@@ -45,13 +48,13 @@ export function buildBestXiCandidates(params: {
     const builds = buildsByWorldCardId.get(rec.worldCardId) ?? [];
 
     if (builds.length === 0) {
-      candidates.push(makeCandidate({ card, build: null, ownershipStatus: rec.ownershipStatus }));
+      candidates.push(makeCandidate({ card, build: null, ownershipStatus: rec.ownershipStatus, manager }));
       continue;
     }
 
     let anyAvailable = false;
     for (const build of builds) {
-      const candidate = makeCandidate({ card, build, ownershipStatus: rec.ownershipStatus });
+      const candidate = makeCandidate({ card, build, ownershipStatus: rec.ownershipStatus, manager });
       candidates.push(candidate);
       if (candidate.abilityStatus === "available") anyAvailable = true;
     }
@@ -67,8 +70,9 @@ function makeCandidate(params: {
   card: ProgressionCard;
   build: SavedBuild | null;
   ownershipStatus: string;
+  manager: ManagerContext | null;
 }): BestXiCandidate {
-  const { card, build, ownershipStatus } = params;
+  const { card, build, ownershipStatus, manager } = params;
   const candidateKey = `${card.worldCardId}:${build?.buildId ?? "base"}`;
   const intendedPositions = build?.buildIntent?.intendedPositions ?? null;
 
@@ -84,7 +88,7 @@ function makeCandidate(params: {
       allocation: build ? build.progressionAllocation : emptyAllocation(),
       selectedPlayerBoosters: [],
       selectedConditionalBoosters: build?.conditionalBoosterSelections ?? [],
-      manager: null,
+      manager,
       costRuleId: build ? resolveCostRuleId(build.costRuleId) : CURRENT_COST_RULE_ID,
     });
     return {

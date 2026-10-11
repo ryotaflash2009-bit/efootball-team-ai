@@ -172,3 +172,25 @@ describe("buildBestXiCandidates", () => {
     expect(candidates[0].abilityStatus).toBe("available");
   });
 });
+
+describe("buildBestXiCandidates: 監督の補正（F-070・2026-10-11）", () => {
+  const mgr = (confirmed: boolean) => ({
+    internalManagerId: 1,
+    sourceManagerId: "m1",
+    managerName: "Test Manager",
+    boosterEffects: [{ statKey: "speed", statNameEn: "Speed", delta: 1, confirmationStatus: confirmed ? "confirmed" : "provisional" }],
+    tacticalProficiencies: null,
+    applicationCondition: null,
+    ruleVersion: "manager-booster/test",
+    confirmationStatus: confirmed ? "confirmed" : "provisional",
+  }) as never;
+  const speed = (c: { stats: { key: string; finalValue: number; managerBoosterDelta: number }[] | null }) => c.stats?.find((x) => x.key === "speed")?.finalValue;
+  const run = (manager: unknown) =>
+    buildBestXiCandidates({ myTeam: [myTeamRecord({ worldCardId: MESSI_BIGTIME.worldCardId })], progressionCards: progressionCardsMap(MESSI_BIGTIME), buildsByWorldCardId: new Map(), manager: manager as never }).candidates[0];
+  it("監督なし（既定）と未確認の効果は同じ結果・確認済みの効果だけ対象の能力が +1", () => {
+    const base = run(undefined);
+    expect(speed(run(null) as never)).toBe(speed(base as never));
+    expect(speed(run(mgr(false)) as never)).toBe(speed(base as never));
+    expect(speed(run(mgr(true)) as never)).toBe((speed(base as never) as number) + 1);
+  });
+});

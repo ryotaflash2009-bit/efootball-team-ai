@@ -3197,6 +3197,10 @@ export interface Dictionary {
     saveAsSquadNameTemplate: string;
     saveAsSquadHint: string;
     saveAsSquadFailed: string;
+    managerHeading: string;
+    managerApplyToggle: string;
+    managerAppliedNote: string;
+    managerNotAppliedNote: string;
     limitationSingleFormationOnly: string;
     limitationNoBenchSelection: string;
     benchHeadingTemplate: string;
