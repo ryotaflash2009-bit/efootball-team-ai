@@ -159,3 +159,12 @@ Google のユーザーは Google の画面でもう一度ログイン（`prompt=
 実行の権限 authenticated = true / anon = false・監査の表は RLS 有効・ポリシー 0・anon / authenticated の select なし・監査の行 0・
 外部キー（`my_team_snapshots`・`rls_probe_records`・`saved_builds_snapshots`・`saved_squads_snapshots`）はすべて CASCADE・既存の件数は変化なし。
 コードの `ACCOUNT_DELETION_MODE` を `enabled` に変更（同じ日の PR）。暫定の運用（§0）は終了。§5-2 の本番の確認（再認証・A/B）は有効化の後に Android の実機で行う。
+
+## 11. 本番での確認（2026-10-12・Android の実機・Claude Code）
+
+- 再認証: B でログインしてから 10 分 50 秒の後に削除 → 「もう一度ログインしてから 10 分以内に削除してください」（何も消えない）。
+- 再ログインの後（ログイン中のアカウントが B であることをアカウントの画面で確認してから）削除 → 「アカウントを削除しました」・ログアウト。
+- A は残る: A でログインでき、My Team のクラウドの 3 件もそのまま。
+- 読み取りの件数（SQL Editor）: `auth.users` 3 → 2・`my_team_snapshots` 2 → 1・`saved_builds_snapshots` 1 → 0・`saved_squads_snapshots` 1 → 0・
+  `account_deletion_audit` 1 行（`deleted_counts` = my_team 1・builds 1・squads 1・rls_probe 0、`providers` = {google}）。メール・user ID の平文なし。
+- §5 の検証と §7 の停止の条件のどれにも当たらない。
