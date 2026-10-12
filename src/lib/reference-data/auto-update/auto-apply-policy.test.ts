@@ -57,13 +57,19 @@ describe("自動 Apply の判定（検証済みの実績）", () => {
     expect(r).toMatchObject({ contractVersion: AUTO_APPLY_POLICY.version, dataset: "world", expectedAfterCount: 13372, bindingSha: SHA, backupRunId: "37118268591", dryRunRunId: "37118367153", evaluatedAt: NOW });
     expect(r.thresholdResults.every((t) => t.ok)).toBe(true);
     expect(r.allowedOperations.join(" ")).toMatch(/UPDATE world_player_cards \(card_rating, maximum_level, ovr_max, name_en/);
-    expect(r.blockedOperations).toEqual(expect.arrayContaining(["DELETE", "TRUNCATE", "UPDATE managers (existing rows)"]));
+    expect(r.blockedOperations).toEqual(expect.arrayContaining(["DELETE", "TRUNCATE", "UPDATE managers (boosters / tactical proficiencies)"]));
   });
 
   it("Managers 67 → 69（追加 2・更新 0）は ELIGIBLE", () => {
     const r = decide(managers());
     expect(r.decision).toBe("AUTO_APPLY_ELIGIBLE");
-    expect(r.allowedOperations).toEqual(["INSERT managers", "INSERT import_batches (1 audit row)"]);
+    expect(r.allowedOperations).toEqual(["INSERT managers", "UPDATE managers (link_up_plays, has_link_up_play, name_en, name_sort_key, released_at, source_url)", "INSERT import_batches (1 audit row)"]);
+  });
+
+  it("v3（2026-10-12）: 2026-10-11 の実例（追加 1・既存 1 人の link_up_plays の変更）は ELIGIBLE", () => {
+    const r = decide(managers((i) => { i.plan.added = 1; i.plan.changed = 1; i.plan.changedFields = ["link_up_plays"]; i.plan.beforeCount = 69; i.plan.afterCount = 70; i.plan.productionCounts = { ...i.plan.productionCounts, managers: 69 }; i.backup.rowCounts = { ...i.backup.rowCounts, managers: 69 }; }));
+    expect(r.reasonCodes).toEqual([]);
+    expect(r.decision).toBe("AUTO_APPLY_ELIGIBLE");
   });
 
   it("同じ入力からは常に同じ結果（決定的）", () => {
@@ -101,7 +107,9 @@ describe("自動 Apply の判定（拒否の fixture）", () => {
     ["update ratio over 50%", world((i) => { i.plan.changed = 7000; i.plan.cardRatingOnlyChanged = 6994; }), "MANUAL_APPLY_REQUIRED", "threshold_update_ratio"],
     ["structural over 10%", world((i) => { i.plan.structuralChanged = 1330; i.plan.cardRatingOnlyChanged = 4345; }), "MANUAL_APPLY_REQUIRED", "threshold_structural"],
     ["unknown manual review code", world((i) => { i.plan.manualReviewCodes.push("world_large_change"); }), "MANUAL_APPLY_REQUIRED", "manual_review:world_large_change"],
-    ["Managers UPDATE 1", managers((i) => { i.plan.changed = 1; }), "MANUAL_APPLY_REQUIRED", "managers_update"],
+    ["Managers UPDATE 6（v3 の上限 5 を超える）", managers((i) => { i.plan.changed = 6; i.plan.changedFields = ["link_up_plays"]; }), "MANUAL_APPLY_REQUIRED", "managers_update"],
+    ["Managers の計算の列（boosters）の変更", managers((i) => { i.plan.changed = 1; i.plan.changedFields = ["boosters"]; }), "MANUAL_APPLY_REQUIRED", "managers_changed_fields"],
+    ["Managers の戦術の適性の変更", managers((i) => { i.plan.changed = 1; i.plan.changedFields = ["possession_game"]; }), "MANUAL_APPLY_REQUIRED", "managers_changed_fields"],
     ["Managers added over 10", managers((i) => { i.plan.added = 11; i.plan.afterCount = 78; }), "MANUAL_APPLY_REQUIRED", "threshold_managers_added"],
     ["Managers removed 1", managers((i) => { i.plan.removed = 1; }), "AUTO_APPLY_BLOCKED", "removed_not_zero"],
   ];
@@ -147,7 +155,7 @@ describe("v2（2026-10-11）: 2026-10-09 の World の通常の大型更新（�
     const r = decide(oct09());
     expect(r.reasonCodes).toEqual([]);
     expect(r.decision).toBe("AUTO_APPLY_ELIGIBLE");
-    expect(r.contractVersion).toBe("auto-apply-policy/2026-10-11.v2");
+    expect(r.contractVersion).toBe("auto-apply-policy/2026-10-12.v3");
     expect(r.thresholdResults.find((t) => t.name === "world.structuralRatio")).toMatchObject({ ok: true, limit: 0.1 });
   });
   it("同じ更新でも、計算に効く列（stats・skills・playing_style・ovr_base）が混ざれば手動の経路", () => {

@@ -44,3 +44,13 @@ Evidence の JSON（`evidence/<world|managers>-auto-apply-<日付>-<run>.json`�
 - 古い・同じ checksum・件数の減少・形の不正な候補は使わない（`scripts/lib/applied-state-sync.mjs`・テスト）。
 - commit できるのは 2 種類のファイルだけ（それ以外が混ざれば失敗）。push は main の fast-forward だけ。
 - 停止: リポジトリの変数 `REFERENCE_DATA_APPLIED_STATE_SYNC_DISABLED` = `true`。
+
+## v3（2026-10-12）: Managers の表示の列の更新を自動に
+
+- 実例: 2026-10-11 16:08Z の Managers の更新（追加 1・既存 1 人の `link_up_plays` の変更）が v2 の「Managers は更新 0 件だけ自動」に当たり、
+  手動の承認待ち（apply 38154230610）のまま書き込みのロック（`reference-data-production-write`）を持った。次の World の Plan（38211899640）が
+  始まれず、Orchestrator（38211859381）が `run_timed_out` で止まった（データの書き込みなし）。
+- v3（`auto-apply-policy/2026-10-12.v3`）: Managers の**表示の列**（`link_up_plays`・`has_link_up_play`・`name_en`・`name_sort_key`・`released_at`・
+  `source_url`）だけの更新を 5 人まで自動にする。計算に効く列（`boosters`・`booster_confirmation`・`has_booster`・6 つの戦術の適性）は引き続き手動。
+  updater の列の権限（`create-reference-data-updater-role.sql`）の内側だけ。
+- 古い承認待ちは watchdog が 24 時間で取り消す（変更なし）。取り消しの後の次の検出から v3 で判定する。
