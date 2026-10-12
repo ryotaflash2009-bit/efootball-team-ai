@@ -89,7 +89,7 @@ const RUN = /^[0-9]{1,20}$/;
 const int0 = (v: unknown): v is number => Number.isInteger(v) && (v as number) >= 0;
 const isObj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && !Array.isArray(v);
 
-const BLOCKED_OPERATIONS = ["DELETE", "TRUNCATE", "ALTER", "DROP", "UPDATE managers (existing rows)", "write player_card_analysis", "write auth/user tables", "rollback", "restore"];
+const BLOCKED_OPERATIONS = ["DELETE", "TRUNCATE", "ALTER", "DROP", "UPDATE managers (boosters / tactical proficiencies)", "write player_card_analysis", "write auth/user tables", "rollback", "restore"];
 
 function invalid(input: unknown, reasons: string[]): AutoApplyPolicyResult {
   const ds = isObj(input) && (input.dataset === "world" || input.dataset === "managers") ? (input.dataset as Dataset) : null;
@@ -202,13 +202,14 @@ export function evaluateAutoApplyPolicy(input: AutoApplyPolicyInput): AutoApplyP
     const m = AUTO_APPLY_POLICY.managers;
     check("managers.added", plan.added, m.maxAdded, plan.added <= m.maxAdded, "manual", "threshold_managers_added");
     check("managers.updated", plan.changed, m.maxUpdated, plan.changed <= m.maxUpdated, "manual", "managers_update");
-    if (plan.changedFields.length > 0) manual.push("managers_changed_fields");
+    const unknownManagerFields = plan.changedFields.filter((f) => !(m.changedFieldAllowlist as readonly string[]).includes(f));
+    check("managers.unknownChangedFields", unknownManagerFields.length, 0, unknownManagerFields.length === 0, "manual", "managers_changed_fields");
     for (const c of plan.manualReviewCodes) if (!(m.allowedManualReviewCodes as readonly string[]).includes(c)) manual.push(`manual_review:${c}`);
   }
   if (plan.added + plan.changed === 0) blocked.push("no_changes");
 
   const decision: AutoApplyDecision = blocked.length ? "AUTO_APPLY_BLOCKED" : manual.length ? "MANUAL_APPLY_REQUIRED" : "AUTO_APPLY_ELIGIBLE";
-  const allowed = dataset === "world" ? [`INSERT ${cfgTarget}`, `UPDATE ${cfgTarget} (${AUTO_APPLY_POLICY.world.changedFieldAllowlist.join(", ")})`, "INSERT import_batches (1 audit row)"] : [`INSERT ${cfgTarget}`, "INSERT import_batches (1 audit row)"];
+  const allowed = dataset === "world" ? [`INSERT ${cfgTarget}`, `UPDATE ${cfgTarget} (${AUTO_APPLY_POLICY.world.changedFieldAllowlist.join(", ")})`, "INSERT import_batches (1 audit row)"] : [`INSERT ${cfgTarget}`, `UPDATE ${cfgTarget} (${AUTO_APPLY_POLICY.managers.changedFieldAllowlist.join(", ")})`, "INSERT import_batches (1 audit row)"];
   return {
     contractVersion: AUTO_APPLY_POLICY.version,
     dataset,

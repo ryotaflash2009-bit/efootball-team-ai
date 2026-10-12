@@ -10,11 +10,15 @@
  *   （名前・チーム・リーグ・地域・画像・掲載日・年齢）を自動にし、構造の変更の上限を件数から割合（10%）に変える。
  *   計算に効く列（stats・skills・registered_position・playing_style・ovr_base・card_type・preferred_foot・nationality 等）は
  *   引き続き手動の経路。削除・重複・不正・件数の減少・時刻の逆行・スキーマの差は v1 と同じく止める。
+ * - v3（2026-10-12）: Managers の通常の更新（2026-10-11: 追加 1・既存 1 人の link_up_plays の変更）が「更新 0 件だけ自動」に当たり、
+ *   承認待ちのまま書き込みのロックを持ち、次の World の Plan が始められずに止まった。v3 は Managers の**表示の列**（Link-Up の一覧・名前・
+ *   掲載日・出典の URL）の更新を 5 人まで自動にする。計算に効く列（boosters・booster_confirmation・has_booster・6 つの戦術の適性）は
+ *   引き続き手動の経路。
  * - Rollout: A（validator・mock・静的監査・使い捨て PostgreSQL）→ B（shadow: 手動承認のまま判定を記録）→ C（自動 Apply）。
  *   実際に自動で書き込むのは、Repository variable の kill switch がすべて "true" のときだけ（それ以外は手動承認の経路）。
  */
 export const AUTO_APPLY_POLICY = {
-  version: "auto-apply-policy/2026-10-11.v2",
+  version: "auto-apply-policy/2026-10-12.v3",
   rollout: "C",
   world: {
     targetTable: "world_player_cards",
@@ -45,9 +49,11 @@ export const AUTO_APPLY_POLICY = {
   },
   managers: {
     targetTable: "managers",
-    /** 追加だけを自動にする（既存行の更新は手動の経路）。 */
     maxAdded: 10,
-    maxUpdated: 0,
+    /** v3: 表示の列だけの更新を 5 人まで自動（v2 までは 0）。 */
+    maxUpdated: 5,
+    /** v3: 自動で書き換えてよい列（updater の列の権限の内側）。それ以外の列の変更は手動の経路。 */
+    changedFieldAllowlist: ["link_up_plays", "has_link_up_play", "name_en", "name_sort_key", "released_at", "source_url"],
     /** manager_change は Managers の変更すべてに付く。追加だけ・更新 0 の条件と合わせて許す。 */
     allowedManualReviewCodes: ["baseline_missing", "manager_change"],
   },
