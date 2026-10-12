@@ -49,3 +49,8 @@ CI: `src/lib/account/squads-cloud-rls.postgres.test.ts`（PostgreSQL 16・A/B �
 貼り付けた SQL は main のファイルと SHA-256 で一致を確認（改行の違いだけ）。適用の前の件数: `my_team_snapshots` 2・`rls_probe_records` 0・`auth.users` 3。
 適用の後の読み取りの確認: 表あり・ポリシー 4・RLS 有効・anon の select なし・既存の件数は変化なし・`auth.users` への外部キーは CASCADE。
 コードの公開の状態を `enabled` に変更（同じ日の PR）。
+
+## 6. 本番での確認（2026-10-12・Android の実機・Claude Code）
+
+本番（a138d14 の反映の後）: B（テスト用の Google アカウント）が保存ビルド 1 件・保存スカッド 1 件をクラウドへ保存 → A（本人）で確認すると、保存ビルド・保存スカッドとも「クラウドデータなし」（B のデータは見えない）。
+B の削除の後、両方の表の行は 0（B の行だけが消えた）。
