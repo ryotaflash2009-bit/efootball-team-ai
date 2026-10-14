@@ -17,6 +17,8 @@
 戻すとき: `rollback-community-stage1-schema.sql`（コミュニティの表・関数を消す・公開 ID は残す）→ 必要なら `rollback-public-profiles-schema.sql`。
 先に `COMMUNITY_MODE` を `"disabled"` に戻す。
 
+**2026-10-14 適用済み**: 事前の確認 → 実行（Success）→ 確認 SQL がすべて true・関数 28 個（`evidence/community-stage1-apply-2026-10-14.json`）→ `COMMUNITY_MODE = "enabled"`。
+
 ## 2. 通報の確認（運営者・SQL Editor）
 
 - 一覧（未解決・子どもの安全を先頭）: `select * from public.community_report_queue;`

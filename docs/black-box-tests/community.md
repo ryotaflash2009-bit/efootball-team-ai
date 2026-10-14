@@ -1,13 +1,13 @@
 # コミュニティ 第 1 段階 ブラックボックステスト結果
 
-実行日時: 2026-10-14T09:33:12.925Z
+実行日時: 2026-10-14T10:15:50.495Z
 対象: http://localhost:3000（Production Build 上の隔離ヘッドレス Chrome・認証と community_* の関数のテストダブル。実 Supabase へは接続しない）
-公開の状態: COMMUNITY_MODE = disabled
+公開の状態: COMMUNITY_MODE = enabled
 
 | 結果 | 項目 | 詳細 |
 |---|---|---|
 | PASS | アカウントの画面にコミュニティの入口がある |  |
-| PASS | 既定（本番の関数の適用前）は準備中の案内だけ・関数を呼ばない | disabled |
+| PASS | 有効: 準備中の案内を出さず、プロフィールの欄を出す | enabled |
 | PASS | ログインしていなければログインの案内だけ |  |
 | PASS | /u/<ID>: ログインしていなければ案内だけ（中身を取得しない） |  |
 | PASS | /u/<ID> は noindex・題名に ID を入れない | noindex, nofollow |
