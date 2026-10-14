@@ -4052,6 +4052,23 @@ export interface Dictionary {
     accountLinkHint: string;
     accountLinkLabel: string;
     incomingNoticeTemplate: string;
+    rivalsHeading: string;
+    rivalsBody: string;
+    rivalsOptInLabel: string;
+    rivalsOptedIn: string;
+    rivalsOptedOut: string;
+    rivalsColName: string;
+    rivalsColWeek: string;
+    rivalsColMonth: string;
+    rivalsEmpty: string;
+    rivalsGrowthNotice: string;
+    rivalAddButton: string;
+    rivalRemoveButton: string;
+    rivalAdded: string;
+    rivalRemoved: string;
+    errorRivalNotOptedIn: string;
+    errorRivalOtherNotOptedIn: string;
+    errorRivalLimit: string;
   };
   myTeamCloud: {
     pageTitle: string;

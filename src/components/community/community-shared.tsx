@@ -57,6 +57,12 @@ export function communityErrorKey(e: CommunityError): CommunityKey {
       return "errorRestricted";
     case "UNAVAILABLE":
       return "unavailableNotice";
+    case "NOT_OPTED_IN":
+      return "errorRivalNotOptedIn";
+    case "OTHER_NOT_OPTED_IN":
+      return "errorRivalOtherNotOptedIn";
+    case "RIVAL_LIMIT":
+      return "errorRivalLimit";
     default:
       return "errorGeneric";
   }

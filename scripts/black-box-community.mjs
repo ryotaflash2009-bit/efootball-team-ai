@@ -183,6 +183,31 @@ async function main() {
       record("比較: 共有 URL の準備（COMMUNITY_SHARE_URL_MINE・COMMUNITY_RIVAL_PAYLOAD）", false, "環境変数なし");
     }
 
+    // ライバル（F-062・オプトイン）: rival_one は友達（上の比較で承認済み）・ライバルの機能を使っている
+    await go(`${BASE}/u/rival_one${P}`);
+    await waitFor('[data-testid="user-profile-rival"]');
+    await click('[data-testid="user-profile-rival"]');
+    await waitText(/ライバルの機能を使う」をオンに/);
+    record("ライバル: 自分が使っていなければ、追加の前に設定を求める", /ライバルの機能を使う」をオンに/.test(await text()), "");
+    await go(`${BASE}/account/community${P}`);
+    await waitFor('[data-testid="community-rivals-optin"]');
+    await waitForCondition(async () => (await ev(`document.querySelector('[data-testid="community-rivals-optin"]')?.disabled`)) === false, { timeoutMs: 8000 }).catch(() => {});
+    await click('[data-testid="community-rivals-optin"]');
+    await waitFor('[data-testid="community-rivals-table"]');
+    record("ライバル: 使うにすると一覧（自分の行）が出る", /あなた/.test((await ev(`document.querySelector('[data-testid="community-rivals-table"]')?.innerText`)) ?? ""), "");
+    await go(`${BASE}/u/rival_one${P}`);
+    await waitFor('[data-testid="user-profile-rival"]');
+    await click('[data-testid="user-profile-rival"]');
+    await waitText(/ライバルに追加しました/);
+    record("ライバル: 友達をライバルに追加できる（ボタンが「外す」に変わる）", /ライバルから外す/.test((await ev(`document.querySelector('[data-testid="user-profile-rival"]')?.textContent`)) ?? ""), "");
+    await go(`${BASE}/account/community${P}`);
+    await waitFor('[data-testid="community-rival-remove-rival_one"]');
+    const rivalTable = (await ev(`document.querySelector('[data-testid="community-rivals-table"]')?.innerText`)) ?? "";
+    record("ライバル: 一覧に総合点と 1 週間・1 か月の伸びを並べる", /Rival One/.test(rivalTable) && /\+3/.test(rivalTable) && /-2/.test(rivalTable), rivalTable.split("\n").slice(0, 3).join(" / "));
+    await click('[data-testid="community-rivals-optin"]');
+    await waitText(/ライバルの機能をやめました/);
+    record("ライバル: やめると一覧が消える", !(await has('[data-testid="community-rivals-table"]')), "");
+
     // ミュート・通報・ブロック
     await go(`${BASE}/u/rival_one${P}`);
     await waitFor('[data-testid="user-profile-mute"]');

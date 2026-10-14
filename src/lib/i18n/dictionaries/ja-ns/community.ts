@@ -147,6 +147,23 @@ const community: Dictionary["community"] = {
   accountLinkHint: "公開プロフィール・友達・ブロック・通報",
   accountLinkLabel: "コミュニティの設定",
   incomingNoticeTemplate: "友達の申請が {count} 件届いています",
+  rivalsHeading: "ライバル",
+  rivalsBody: "ライバルの機能を使う友達どうしで、比較に使う診断の総合点と、1 週間・1 か月の伸びを並べます（{max} 人まで）。使うのをやめると一覧は空になり、相手の一覧からも外れます。",
+  rivalsOptInLabel: "ライバルの機能を使う",
+  rivalsOptedIn: "ライバルの機能を使うようにしました。",
+  rivalsOptedOut: "ライバルの機能をやめました（一覧は空になりました）。",
+  rivalsColName: "名前",
+  rivalsColWeek: "1 週間",
+  rivalsColMonth: "1 か月",
+  rivalsEmpty: "まだライバルはいません。友達のプロフィールから追加できます。",
+  rivalsGrowthNotice: "伸びは、比較に使う診断を保存したときの総合点の差です（同じ規則の版の点だけ・2 回以上の保存が必要）。",
+  rivalAddButton: "ライバルに追加",
+  rivalRemoveButton: "ライバルから外す",
+  rivalAdded: "ライバルに追加しました。",
+  rivalRemoved: "ライバルから外しました（相手には通知しません）。",
+  errorRivalNotOptedIn: "先に「ライバルの機能を使う」をオンにしてください（コミュニティの設定）。",
+  errorRivalOtherNotOptedIn: "この友達はライバルの機能を使っていません。",
+  errorRivalLimit: "ライバルは 5 人までです。",
 };
 
 registerJaNamespace("community", community);

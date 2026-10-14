@@ -27,6 +27,9 @@ import {
   respondFriend,
   unblock,
   unmute,
+  addRival,
+  removeRival,
+  listRivals,
   type CommunityReportReason,
   type ProfileView,
 } from "@/lib/community/community-client";
@@ -56,6 +59,7 @@ export function UserProfileView({ publicId }: { publicId: string }) {
   const [reportOpen, setReportOpen] = useState(false);
   const [reason, setReason] = useState<CommunityReportReason>("spam");
   const [note, setNote] = useState("");
+  const [isRival, setIsRival] = useState(false);
 
   const load = useCallback(async () => {
     if (!isPublicIdLike(id)) return setState("missing");
@@ -69,6 +73,10 @@ export function UserProfileView({ publicId }: { publicId: string }) {
     if (!r.data) return setState("missing");
     setView(r.data);
     setState("ready");
+    if (r.data.relation === "friends") {
+      const rv = await listRivals(supabase);
+      setIsRival(rv.ok && rv.data.some((x) => !x.isSelf && x.publicId === r.data!.publicId));
+    }
     if (r.data.relation === "friends" && r.data.hasComparison) {
       const [me, t] = await Promise.all([fetchMyProfile(supabase), fetchComparison(supabase, id)]);
       setTheirs(t.ok ? (t.data?.payload ?? null) : null);
@@ -186,6 +194,17 @@ export function UserProfileView({ publicId }: { publicId: string }) {
                 {view.relation === "friends" ? (
                   <Button size="sm" variant="secondary" onClick={() => act((s) => removeFriend(s, view.publicId), () => "friendRemoved")} disabled={busy} data-testid="user-profile-remove">
                     {tc("removeFriendButton")}
+                  </Button>
+                ) : null}
+                {view.relation === "friends" ? (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => act((s) => (isRival ? removeRival(s, view.publicId) : addRival(s, view.publicId)), () => (isRival ? "rivalRemoved" : "rivalAdded"))}
+                    disabled={busy}
+                    data-testid="user-profile-rival"
+                  >
+                    {tc(isRival ? "rivalRemoveButton" : "rivalAddButton")}
                   </Button>
                 ) : null}
               </div>

@@ -566,6 +566,9 @@ export async function installSupabaseAuthTestDouble(client) {
         mutes: {},
         reports: [],
         summaries: {},
+        // ライバル（第 2 段階）: 架空の相手は rival_one だけが使っている
+        rivalOpt: { rival_one: true },
+        rivals: [],
       };
       function cmPersist() { try { sessionStorage.setItem(CM_KEY, JSON.stringify(cm)); } catch (e) { /* noop */ } }
       function cmErr(code, message) { return { data: null, error: { code: code, message: message } }; }
@@ -674,6 +677,33 @@ export async function installSupabaseAuthTestDouble(client) {
             if (key !== "__me" && cm.rel[id] !== "friends") return cmOk([]);
             var sm = cm.summaries[key];
             return cmOk(sm ? [{ summary: sm, updated_at: new Date().toISOString() }] : []);
+          }
+          case "community_set_rival_opt_in":
+            cm.rivalOpt.__me = !!a.p_opted_in;
+            if (!a.p_opted_in) cm.rivals = [];
+            return cmOk(a.p_opted_in ? "opted_in" : "opted_out");
+          case "community_add_rival":
+            if (!cm.rivalOpt.__me) return cmErr("P0020", "not_opted_in");
+            if (cm.rel[id] !== "friends" || cm.blocks[id]) return cmErr("P0010", "not_found");
+            if (!cm.rivalOpt[id]) return cmErr("P0021", "other_not_opted_in");
+            if (cm.rivals.indexOf(id) >= 0) return cmOk("already");
+            if (cm.rivals.length >= 5) return cmErr("P0022", "rival_limit");
+            cm.rivals.push(id);
+            return cmOk("added");
+          case "community_remove_rival": {
+            var i = cm.rivals.indexOf(id);
+            if (i < 0) return cmOk("none");
+            cm.rivals.splice(i, 1);
+            return cmOk("removed");
+          }
+          case "community_list_rivals": {
+            if (!cm.me) return cmOk([]);
+            var ov = function (sm) { return sm && typeof sm.o[0] === "number" ? sm.o[0] : null; };
+            var out = [{ public_id: cm.me.public_id, display_name: cm.me.display_name, is_self: true, opted_in: !!cm.rivalOpt.__me, overall: ov(cm.summaries.__me), rules_version: null, summary_date: null, growth_week: null, growth_month: null }];
+            cm.rivals.filter(function (k) { return cm.rel[k] === "friends" && cm.rivalOpt[k] && !cm.blocks[k]; }).forEach(function (k) {
+              out.push({ public_id: k, display_name: cm.others[k].display_name, is_self: false, opted_in: true, overall: ov(cm.summaries[k]), rules_version: null, summary_date: null, growth_week: 3, growth_month: -2 });
+            });
+            return cmOk(out);
           }
         }
         return cmErr("PGRST202", "test double: unknown function");
