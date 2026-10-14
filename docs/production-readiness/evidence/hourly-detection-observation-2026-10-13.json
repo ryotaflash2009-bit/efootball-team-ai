@@ -1,0 +1,1156 @@
+{
+  "schema": "hourly-detection-observation/v1",
+  "generatedAt": "2026-10-14T08:49:31.902Z",
+  "cron": "17 * * * *",
+  "window": {
+    "since": "2026-10-06T00:00:00.000Z",
+    "until": "2026-10-13T23:59:59.000Z"
+  },
+  "expected": 192,
+  "actual": 33,
+  "extraRuns": 0,
+  "manualRuns": 4,
+  "missing": 159,
+  "missingRatio": 0.828,
+  "maxConsecutiveMissing": 8,
+  "maxGapMinutes": 565,
+  "maxGapEndsAt": "2026-10-12T15:16:46.000Z",
+  "lastSuccessfulDetection": "2026-10-13T23:16:34.000Z",
+  "delayMinutes": {
+    "median": 34,
+    "max": 60
+  },
+  "light": 11,
+  "fullScan": 17,
+  "noChange": 2,
+  "lightNoSignalChange": 10,
+  "changeDetected": 16,
+  "failure": 0,
+  "skip": 0,
+  "cancelled": 0,
+  "concurrencyOverlaps": 0,
+  "requests": 7683,
+  "downloadedBytes": 524292202,
+  "durationSeconds": {
+    "median": 1552,
+    "total": 31764
+  },
+  "gapNotices": 15,
+  "delayedDetections": 16,
+  "workflowState": "active",
+  "reconsider": {
+    "gapAtLeast6h": true,
+    "missingAboutHalfOrMore": true,
+    "delayedDetectionsTwiceOrMore": true,
+    "scheduleDisabled": false
+  },
+  "reconsiderExternalTrigger": true,
+  "slots": [
+    {
+      "slot": "2026-10-06T00:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T01:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T02:17:00.000Z",
+      "status": "ran",
+      "runId": 37406597404,
+      "createdAt": "2026-10-06T02:56:37Z",
+      "startedAt": "2026-10-06T02:56:37Z",
+      "delayMinutes": 40,
+      "durationSeconds": 35,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-06T03:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T04:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T05:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T06:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T07:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T08:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T09:17:00.000Z",
+      "status": "ran",
+      "runId": 37448295735,
+      "createdAt": "2026-10-06T10:13:02Z",
+      "startedAt": "2026-10-06T10:13:02Z",
+      "delayMinutes": 56,
+      "durationSeconds": 1559,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-06T10:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T11:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T12:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T13:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T14:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T15:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T16:17:00.000Z",
+      "status": "ran",
+      "runId": 37498533208,
+      "createdAt": "2026-10-06T16:47:57Z",
+      "startedAt": "2026-10-06T16:47:57Z",
+      "delayMinutes": 31,
+      "durationSeconds": 1573,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-06T17:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T18:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T19:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T20:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T21:17:00.000Z",
+      "status": "ran",
+      "runId": 37535103497,
+      "createdAt": "2026-10-06T21:36:43Z",
+      "startedAt": "2026-10-06T21:36:43Z",
+      "delayMinutes": 20,
+      "durationSeconds": 33,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-06T22:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-06T23:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T00:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T01:17:00.000Z",
+      "status": "ran",
+      "runId": 37557473749,
+      "createdAt": "2026-10-07T01:30:50Z",
+      "startedAt": "2026-10-07T01:30:50Z",
+      "delayMinutes": 14,
+      "durationSeconds": 1552,
+      "conclusion": "success"
+    },
+    {
+      "slot": "2026-10-07T02:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T03:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T04:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T05:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T06:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T07:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T08:17:00.000Z",
+      "status": "ran",
+      "runId": 37594873163,
+      "createdAt": "2026-10-07T08:36:18Z",
+      "startedAt": "2026-10-07T08:36:18Z",
+      "delayMinutes": 19,
+      "durationSeconds": 1549,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "change_detected",
+      "worldScan": "full_scan_due",
+      "requests": 448,
+      "bytes": 29352493
+    },
+    {
+      "slot": "2026-10-07T09:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T10:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T11:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T12:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T13:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T14:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T15:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T16:17:00.000Z",
+      "status": "ran",
+      "runId": 37651900415,
+      "createdAt": "2026-10-07T16:25:24Z",
+      "startedAt": "2026-10-07T16:25:24Z",
+      "delayMinutes": 8,
+      "durationSeconds": 39,
+      "conclusion": "success",
+      "mode": "light",
+      "outcome": "light_no_signal_change",
+      "worldScan": null,
+      "requests": 2,
+      "bytes": 104627
+    },
+    {
+      "slot": "2026-10-07T17:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T18:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T19:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T20:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T21:17:00.000Z",
+      "status": "ran",
+      "runId": 37693006106,
+      "createdAt": "2026-10-07T21:57:39Z",
+      "startedAt": "2026-10-07T21:57:39Z",
+      "delayMinutes": 41,
+      "durationSeconds": 1544,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "no_change",
+      "worldScan": "full_scan_due",
+      "requests": 448,
+      "bytes": 29352556
+    },
+    {
+      "slot": "2026-10-07T22:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-07T23:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T00:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T01:17:00.000Z",
+      "status": "ran",
+      "runId": 37715220665,
+      "createdAt": "2026-10-08T01:54:18Z",
+      "startedAt": "2026-10-08T01:54:18Z",
+      "delayMinutes": 37,
+      "durationSeconds": 24,
+      "conclusion": "success",
+      "mode": "light",
+      "outcome": "light_no_signal_change",
+      "worldScan": null,
+      "requests": 2,
+      "bytes": 104627
+    },
+    {
+      "slot": "2026-10-08T02:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T03:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T04:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T05:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T06:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T07:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T08:17:00.000Z",
+      "status": "ran",
+      "runId": 37753049243,
+      "createdAt": "2026-10-08T08:55:08Z",
+      "startedAt": "2026-10-08T08:55:08Z",
+      "delayMinutes": 38,
+      "durationSeconds": 1566,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "change_detected",
+      "worldScan": "world_signal_changed",
+      "requests": 451,
+      "bytes": 29532921
+    },
+    {
+      "slot": "2026-10-08T09:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T10:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T11:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T12:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T13:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T14:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T15:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T16:17:00.000Z",
+      "status": "ran",
+      "runId": 37808820674,
+      "createdAt": "2026-10-08T16:26:39Z",
+      "startedAt": "2026-10-08T16:26:39Z",
+      "delayMinutes": 10,
+      "durationSeconds": 1553,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "change_detected",
+      "worldScan": "full_scan_due",
+      "requests": 451,
+      "bytes": 29529678
+    },
+    {
+      "slot": "2026-10-08T17:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T18:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T19:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T20:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T21:17:00.000Z",
+      "status": "ran",
+      "runId": 37850987850,
+      "createdAt": "2026-10-08T22:03:20Z",
+      "startedAt": "2026-10-08T22:03:20Z",
+      "delayMinutes": 46,
+      "durationSeconds": 29,
+      "conclusion": "success",
+      "mode": "light",
+      "outcome": "light_no_signal_change",
+      "worldScan": null,
+      "requests": 2,
+      "bytes": 103888
+    },
+    {
+      "slot": "2026-10-08T22:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-08T23:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T00:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T01:17:00.000Z",
+      "status": "ran",
+      "runId": 37873007864,
+      "createdAt": "2026-10-09T02:06:47Z",
+      "startedAt": "2026-10-09T02:06:47Z",
+      "delayMinutes": 50,
+      "durationSeconds": 1557,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "change_detected",
+      "worldScan": "full_scan_due",
+      "requests": 451,
+      "bytes": 29529608
+    },
+    {
+      "slot": "2026-10-09T02:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T03:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T04:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T05:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T06:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T07:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T08:17:00.000Z",
+      "status": "ran",
+      "runId": 37908341902,
+      "createdAt": "2026-10-09T08:58:59Z",
+      "startedAt": "2026-10-09T08:58:59Z",
+      "delayMinutes": 42,
+      "durationSeconds": 1556,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "change_detected",
+      "worldScan": "full_scan_due",
+      "requests": 451,
+      "bytes": 29529713
+    },
+    {
+      "slot": "2026-10-09T09:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T10:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T11:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T12:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T13:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T14:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T15:17:00.000Z",
+      "status": "ran",
+      "runId": 37957076352,
+      "createdAt": "2026-10-09T16:09:41Z",
+      "startedAt": "2026-10-09T16:09:41Z",
+      "delayMinutes": 53,
+      "durationSeconds": 1577,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "change_detected",
+      "worldScan": "full_scan_due",
+      "requests": 451,
+      "bytes": 31427497
+    },
+    {
+      "slot": "2026-10-09T16:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T17:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T18:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T19:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T20:17:00.000Z",
+      "status": "ran",
+      "runId": 37989788547,
+      "createdAt": "2026-10-09T20:51:42Z",
+      "startedAt": "2026-10-09T20:51:42Z",
+      "delayMinutes": 35,
+      "durationSeconds": 31,
+      "conclusion": "success",
+      "mode": "light",
+      "outcome": "light_no_signal_change",
+      "worldScan": null,
+      "requests": 2,
+      "bytes": 108125
+    },
+    {
+      "slot": "2026-10-09T21:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T22:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-09T23:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T00:17:00.000Z",
+      "status": "ran",
+      "runId": 38010534554,
+      "createdAt": "2026-10-10T00:47:11Z",
+      "startedAt": "2026-10-10T00:47:11Z",
+      "delayMinutes": 30,
+      "durationSeconds": 1592,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "change_detected",
+      "worldScan": "full_scan_due",
+      "requests": 451,
+      "bytes": 31427501
+    },
+    {
+      "slot": "2026-10-10T01:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T02:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T03:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T04:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T05:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T06:17:00.000Z",
+      "status": "ran",
+      "runId": 38033055807,
+      "createdAt": "2026-10-10T07:02:52Z",
+      "startedAt": "2026-10-10T07:02:52Z",
+      "delayMinutes": 46,
+      "durationSeconds": 1542,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "change_detected",
+      "worldScan": "full_scan_due",
+      "requests": 451,
+      "bytes": 31427587
+    },
+    {
+      "slot": "2026-10-10T07:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T08:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T09:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T10:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T11:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T12:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T13:17:00.000Z",
+      "status": "ran",
+      "runId": 38056453535,
+      "createdAt": "2026-10-10T13:37:48Z",
+      "startedAt": "2026-10-10T13:37:48Z",
+      "delayMinutes": 21,
+      "durationSeconds": 1555,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "change_detected",
+      "worldScan": "full_scan_due",
+      "requests": 451,
+      "bytes": 31427504
+    },
+    {
+      "slot": "2026-10-10T14:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T15:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T16:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T17:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T18:17:00.000Z",
+      "status": "ran",
+      "runId": 38076202674,
+      "createdAt": "2026-10-10T18:32:38Z",
+      "startedAt": "2026-10-10T18:32:38Z",
+      "delayMinutes": 16,
+      "durationSeconds": 33,
+      "conclusion": "success",
+      "mode": "light",
+      "outcome": "light_no_signal_change",
+      "worldScan": null,
+      "requests": 2,
+      "bytes": 108124
+    },
+    {
+      "slot": "2026-10-10T19:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T20:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T21:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-10T22:17:00.000Z",
+      "status": "ran",
+      "runId": 38091594725,
+      "createdAt": "2026-10-10T22:29:13Z",
+      "startedAt": "2026-10-10T22:29:13Z",
+      "delayMinutes": 12,
+      "durationSeconds": 36,
+      "conclusion": "success",
+      "mode": "light",
+      "outcome": "light_no_signal_change",
+      "worldScan": null,
+      "requests": 2,
+      "bytes": 108124
+    },
+    {
+      "slot": "2026-10-10T23:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-11T00:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-11T01:17:00.000Z",
+      "status": "ran",
+      "runId": 38103180598,
+      "createdAt": "2026-10-11T01:50:30Z",
+      "startedAt": "2026-10-11T01:50:30Z",
+      "delayMinutes": 34,
+      "durationSeconds": 23,
+      "conclusion": "success",
+      "mode": "light",
+      "outcome": "light_no_signal_change",
+      "worldScan": null,
+      "requests": 2,
+      "bytes": 108124
+    },
+    {
+      "slot": "2026-10-11T02:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-11T03:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-11T04:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-11T05:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-11T06:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-11T07:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-11T08:17:00.000Z",
+      "status": "ran",
+      "runId": 38125966018,
+      "createdAt": "2026-10-11T08:45:58Z",
+      "startedAt": "2026-10-11T08:45:58Z",
+      "delayMinutes": 29,
+      "durationSeconds": 1581,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "no_change",
+      "worldScan": "full_scan_due",
+      "requests": 451,
+      "bytes": 31427599
+    },
+    {
+      "slot": "2026-10-11T09:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-11T10:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-11T11:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-11T12:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-11T13:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-11T14:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-11T15:17:00.000Z",
+      "status": "ran",
+      "runId": 38152051206,
+      "createdAt": "2026-10-11T15:37:29Z",
+      "startedAt": "2026-10-11T15:37:29Z",
+      "delayMinutes": 20,
+      "durationSeconds": 1585,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "change_detected",
+      "worldScan": "full_scan_due",
+      "requests": 451,
+      "bytes": 31428630
+    },
+    {
+      "slot": "2026-10-11T16:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-11T17:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-11T18:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-11T19:17:00.000Z",
+      "status": "ran",
+      "runId": 38171313220,
+      "createdAt": "2026-10-11T20:13:46Z",
+      "startedAt": "2026-10-11T20:13:46Z",
+      "delayMinutes": 57,
+      "durationSeconds": 29,
+      "conclusion": "success",
+      "mode": "light",
+      "outcome": "change_detected",
+      "worldScan": null,
+      "requests": 2,
+      "bytes": 109149
+    },
+    {
+      "slot": "2026-10-11T20:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-11T21:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-11T22:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-11T23:17:00.000Z",
+      "status": "ran",
+      "runId": 38185086305,
+      "createdAt": "2026-10-11T23:39:14Z",
+      "startedAt": "2026-10-11T23:39:14Z",
+      "delayMinutes": 22,
+      "durationSeconds": 1601,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "change_detected",
+      "worldScan": "full_scan_due",
+      "requests": 451,
+      "bytes": 31428342
+    },
+    {
+      "slot": "2026-10-12T00:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-12T01:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-12T02:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-12T03:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-12T04:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-12T05:17:00.000Z",
+      "status": "ran",
+      "runId": 38209803727,
+      "createdAt": "2026-10-12T05:51:40Z",
+      "startedAt": "2026-10-12T05:51:40Z",
+      "delayMinutes": 35,
+      "durationSeconds": 1586,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "change_detected",
+      "worldScan": "full_scan_due",
+      "requests": 451,
+      "bytes": 31472404
+    },
+    {
+      "slot": "2026-10-12T06:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-12T07:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-12T08:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-12T09:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-12T10:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-12T11:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-12T12:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-12T13:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-12T14:17:00.000Z",
+      "status": "ran",
+      "runId": 38269061425,
+      "createdAt": "2026-10-12T15:16:46Z",
+      "startedAt": "2026-10-12T15:16:46Z",
+      "delayMinutes": 60,
+      "durationSeconds": 1599,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "change_detected",
+      "worldScan": "full_scan_due",
+      "requests": 451,
+      "bytes": 31604977
+    },
+    {
+      "slot": "2026-10-12T15:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-12T16:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-12T17:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-12T18:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-12T19:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-12T20:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-12T21:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-12T22:17:00.000Z",
+      "status": "ran",
+      "runId": 38317054501,
+      "createdAt": "2026-10-12T22:30:32Z",
+      "startedAt": "2026-10-12T22:30:32Z",
+      "delayMinutes": 14,
+      "durationSeconds": 1562,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "change_detected",
+      "worldScan": "full_scan_due",
+      "requests": 451,
+      "bytes": 31604884
+    },
+    {
+      "slot": "2026-10-12T23:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-13T00:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-13T01:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-13T02:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-13T03:17:00.000Z",
+      "status": "ran",
+      "runId": 38342112678,
+      "createdAt": "2026-10-13T03:31:26Z",
+      "startedAt": "2026-10-13T03:31:26Z",
+      "delayMinutes": 14,
+      "durationSeconds": 31,
+      "conclusion": "success",
+      "mode": "light",
+      "outcome": "light_no_signal_change",
+      "worldScan": null,
+      "requests": 2,
+      "bytes": 109543
+    },
+    {
+      "slot": "2026-10-13T04:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-13T05:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-13T06:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-13T07:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-13T08:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-13T09:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-13T10:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-13T11:17:00.000Z",
+      "status": "ran",
+      "runId": 38392229313,
+      "createdAt": "2026-10-13T11:43:48Z",
+      "startedAt": "2026-10-13T11:43:48Z",
+      "delayMinutes": 27,
+      "durationSeconds": 34,
+      "conclusion": "success",
+      "mode": "light",
+      "outcome": "light_no_signal_change",
+      "worldScan": null,
+      "requests": 2,
+      "bytes": 109543
+    },
+    {
+      "slot": "2026-10-13T12:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-13T13:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-13T14:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-13T15:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-13T16:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-13T17:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-13T18:17:00.000Z",
+      "status": "ran",
+      "runId": 38453230605,
+      "createdAt": "2026-10-13T19:14:10Z",
+      "startedAt": "2026-10-13T19:14:10Z",
+      "delayMinutes": 57,
+      "durationSeconds": 1562,
+      "conclusion": "success",
+      "mode": "full",
+      "outcome": "change_detected",
+      "worldScan": "full_scan_due",
+      "requests": 451,
+      "bytes": 31604891
+    },
+    {
+      "slot": "2026-10-13T19:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-13T20:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-13T21:17:00.000Z",
+      "status": "missing"
+    },
+    {
+      "slot": "2026-10-13T22:17:00.000Z",
+      "status": "ran",
+      "runId": 38483234949,
+      "createdAt": "2026-10-13T23:16:34Z",
+      "startedAt": "2026-10-13T23:16:34Z",
+      "delayMinutes": 60,
+      "durationSeconds": 36,
+      "conclusion": "success",
+      "mode": "light",
+      "outcome": "light_no_signal_change",
+      "worldScan": null,
+      "requests": 2,
+      "bytes": 109543
+    },
+    {
+      "slot": "2026-10-13T23:17:00.000Z",
+      "status": "missing"
+    }
+  ]
+}

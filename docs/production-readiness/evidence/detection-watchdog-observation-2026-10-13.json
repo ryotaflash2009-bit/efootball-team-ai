@@ -1,0 +1,23 @@
+{
+  "schema": "detection-watchdog-observation/v1",
+  "generatedAt": "2026-10-14T08:48:27.812Z",
+  "window": {
+    "since": "2026-10-10T15:00:00Z",
+    "until": "2026-10-13T23:59:59Z"
+  },
+  "verdict": "GO",
+  "reasonsNoGo": [],
+  "watchdogRuns": 11,
+  "watchdogFailures": 0,
+  "reasons": {
+    "detection_in_progress": 2,
+    "fresh": 8,
+    "stale": 1
+  },
+  "dispatches": 1,
+  "dispatchedDetections": 1,
+  "dispatchedFailures": 0,
+  "detectionRuns": 17,
+  "detectionSuccesses": 17,
+  "maxGapMinutes": 565
+}

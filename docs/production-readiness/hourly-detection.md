@@ -136,6 +136,11 @@ Auto Apply Policy（版・World / Managers の閾値・変更列の allowlist・
 Backup 必須・Restore / Storage の検証・Dry run 必須・re-diff 0・checksum の一致・事後検証・halt Issue・Kill switch（3 変数）・
 手動の経路・Rollback / Restore は手動だけ・Environment・Secret。
 
+- **2026-10-13 の観測の締め（2026-10-14・判定 GO・継続）**: watchdog 11 回・失敗 0・起動 1（起動した検出も成功）。毎時の検出は 192 枠のうち 33 回（欠落 83%・
+  GitHub の schedule の欠落は変わらず）・失敗 0・成功した検出どうしの最大の間隔 565 分（600 分以下）。上流 7,683 request・524 MB／週・費用 0 円。
+  Evidence: `evidence/detection-watchdog-observation-2026-10-13.json`・`evidence/hourly-detection-observation-2026-10-13.json`。外部の cron（案 B/C）は
+  `hourly-detection-decision-package.md` §8 の条件（600 分を超える間隔が週 2 回以上）に当たらないため不要。
+
 ### 7.3 完全自動の残りの手作業をなくした（2026-10-11）
 
 - 判定 v2（`auto-apply-policy/2026-10-11.v2`）: 通常の大型更新（league・team・名前などの表示の列・構造の変更 10% まで）は自動の対象。
