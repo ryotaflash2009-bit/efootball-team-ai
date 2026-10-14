@@ -118,6 +118,12 @@ export function PrivacyView() {
         <p className="mt-1.5 text-sm text-text-dim">{tp("sharedUrlBody")}</p>
       </Surface>
 
+      <Surface padding="md" data-testid="privacy-community">
+        <p className="text-sm font-semibold text-text">{tp("communityHeading")}</p>
+        <p className="mt-1.5 text-sm text-text-dim">{tp("communityBody")}</p>
+        <p className="mt-1.5 text-sm text-text-dim">{tp("communityReports")}</p>
+      </Surface>
+
       <Surface tone="outline" padding="sm" className="text-sm text-text-dim">
         <p className="text-xs font-semibold text-text">{tp("supabaseUsageHeading")}</p>
         <p className="mt-1">{tp("supabaseUsageBody")}</p>

@@ -78,6 +78,7 @@ import auth from "./auth";
 import rlsTest from "./rlsTest";
 import myTeamCloud from "./myTeamCloud";
 import buildsCloud from "./buildsCloud";
+import community from "./community";
 import squadsCloud from "./squadsCloud";
 import localDataMigration from "./localDataMigration";
 import searchInput from "./searchInput";
@@ -177,6 +178,7 @@ export const JA_SPLIT_NAMESPACES = {
   rlsTest,
   myTeamCloud,
   buildsCloud,
+  community,
   squadsCloud,
   localDataMigration,
   searchInput,

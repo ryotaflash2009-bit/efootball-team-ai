@@ -41,6 +41,7 @@ export const SITEMAP_EXCLUDED_ROUTES: Readonly<Record<string, string>> = {
   "/account/my-team-cloud": "アカウント",
   "/account/builds-cloud": "アカウント",
   "/account/squads-cloud": "アカウント",
+  "/account/community": "アカウント（公開プロフィール・友達・安全の設定・ログインが必要）",
   "/account/public-id-preview": "内部の確認の画面（本番は 404）",
   "/account/rls-test": "内部の確認の画面（本番は 404）",
   "/auth/confirm": "認証",
@@ -61,5 +62,6 @@ export const SITEMAP_DYNAMIC_ROUTES: Readonly<Record<string, string>> = {
   "/players/world/[worldCardId]": "選手の詳細（載せる・2026-10-09 本人の正式決定。sitemap.ts が World の全カードの ID から作る）",
   "/managers/[managerId]": "監督の詳細（載せる・同上）",
   "/squads/[squadId]": "端末のスカッド（個人データ・noindex）",
+  "/u/[publicId]": "利用者の公開プロフィール（ログインが必要・載せない・noindex・2026-10-14）",
   "/players/guide/[slug]": "選手の解説（公開にした記事だけを載せる・player-guides）",
 };
