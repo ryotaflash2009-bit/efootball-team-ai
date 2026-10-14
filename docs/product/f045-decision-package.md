@@ -66,3 +66,11 @@
 - 戻し: `FACT_SUMMARY_FORMULAS`（`diagnosis-perspectives.ts`）を空にする（保存データの移行なし）。
 - 確認: `diagnosis-perspectives.test.ts`（29）・`scripts/black-box-diagnosis-facts.mjs`（12/12・390px・英語・例外なし）。
 - 点数化（B）・総合点への組み入れは、引き続き本人の判断。
+
+## 2026-10-14 正式な採用（本人の判断「全部まとめて完全自動で進めて」＝すべて推奨で可）
+
+- 採用: 6 観点の事実の集計（A）— 控えの厚み・左右バランス・役割の重複・フォーメーションとの相性・GK・空中戦（配置）。
+  規則の版 `squad-perspectives/2026-10-14.v1`（`ADOPTED_PERSPECTIVES_RULES_VERSION`）・`status: "adopted"`・`purpose: "fact-display"`。
+- 採用しない（比較のまま）: 監督との相性・空中戦（身長）と、重み・閾値を使う式（B・C）。版は `squad-perspectives/2026-10-02.provisional.v1` のまま。
+- 総合点・カテゴリの点数・順位・称号・共有カード・診断の履歴には入れない（変更なし・推奨どおり）。
+- 戻し: `FACT_SUMMARY_FORMULAS` から外すと、その観点は provisional に戻る（保存データの移行なし）。

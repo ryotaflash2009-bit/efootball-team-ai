@@ -16,7 +16,7 @@ const PROSE_SECTIONS: { headingKey: TermsKey; bodyKey: TermsKey }[] = [
   { headingKey: "section3Heading", bodyKey: "section3Body" },
 ];
 
-const PROSE_SECTIONS_AFTER_PROHIBITED: { headingKey: TermsKey; bodyKey: TermsKey }[] = [
+const PROSE_SECTIONS_AFTER_PROHIBITED: { headingKey: TermsKey; bodyKey: TermsKey; extraKey?: TermsKey }[] = [
   { headingKey: "section5Heading", bodyKey: "section5Body" },
   { headingKey: "section6Heading", bodyKey: "section6Body" },
   { headingKey: "section7Heading", bodyKey: "section7Body" },
@@ -26,6 +26,7 @@ const PROSE_SECTIONS_AFTER_PROHIBITED: { headingKey: TermsKey; bodyKey: TermsKey
   { headingKey: "section11Heading", bodyKey: "section11Body" },
   { headingKey: "section12Heading", bodyKey: "section12Body" },
   { headingKey: "section13Heading", bodyKey: "section13Body" },
+  { headingKey: "section14Heading", bodyKey: "section14Body", extraKey: "section14Moderation" },
 ];
 
 const PROHIBITED_ITEM_KEYS: TermsKey[] = [
@@ -76,6 +77,7 @@ export function TermsView() {
         <Surface key={s.headingKey} padding="md">
           <p className="text-sm font-semibold text-text">{tt(s.headingKey)}</p>
           <p className="mt-1.5 whitespace-pre-line text-sm leading-relaxed text-text-dim">{tt(s.bodyKey)}</p>
+          {s.extraKey ? <p className="mt-1.5 whitespace-pre-line text-sm leading-relaxed text-text-dim">{tt(s.extraKey)}</p> : null}
         </Surface>
       ))}
 

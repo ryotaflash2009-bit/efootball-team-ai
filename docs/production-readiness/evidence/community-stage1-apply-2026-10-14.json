@@ -1,0 +1,12 @@
+{
+  "schema": "community-stage1-apply-evidence/v1",
+  "appliedAt": "2026-10-14",
+  "project": "efootball-team-ai-dev (kbauokzninaervjgwzdd)",
+  "precheck": { "public_profiles": null, "user_blocks": null, "friendships": null, "authUsers": 2 },
+  "applied": ["create-public-profiles-schema.sql", "create-community-stage1-schema.sql"],
+  "appliedSqlSha256": "4fa92583422bf242bcb0d23e120073597fd4b0a7ece7dcf23d662a1e16ac419c",
+  "editorContentShaMatched": true,
+  "result": "Success. No rows returned",
+  "verify": { "tables_with_rls": true, "no_direct_table_access": true, "column_privileges_ok": true, "function_privileges_ok": true, "visibility_values_ok": true, "community_function_count": 28 },
+  "operator": "Claude Code (owner's explicit approval in chat, 2026-10-14)"
+}

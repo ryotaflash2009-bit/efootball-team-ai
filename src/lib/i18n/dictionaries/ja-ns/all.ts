@@ -78,6 +78,7 @@ import auth from "./auth";
 import rlsTest from "./rlsTest";
 import myTeamCloud from "./myTeamCloud";
 import buildsCloud from "./buildsCloud";
+import community from "./community";
 import squadsCloud from "./squadsCloud";
 import localDataMigration from "./localDataMigration";
 import searchInput from "./searchInput";
@@ -94,6 +95,7 @@ import progressionTab from "./progressionTab";
 import managerDetail from "./managerDetail";
 import squadCompareBoard from "./squadCompareBoard";
 import boosterList from "./boosterList";
+import tierList from "./tierList";
 import managerCompare from "./managerCompare";
 import gamePlan from "./gamePlan";
 
@@ -177,6 +179,7 @@ export const JA_SPLIT_NAMESPACES = {
   rlsTest,
   myTeamCloud,
   buildsCloud,
+  community,
   squadsCloud,
   localDataMigration,
   searchInput,
@@ -193,6 +196,7 @@ export const JA_SPLIT_NAMESPACES = {
   managerDetail,
   squadCompareBoard,
   boosterList,
+  tierList,
   managerCompare,
   gamePlan,
 };

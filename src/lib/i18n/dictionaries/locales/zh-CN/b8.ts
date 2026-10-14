@@ -586,6 +586,23 @@ const part: PartialDictionary = {
     backToList: "返回主教练列表",
     managerColumn: "主教练",
   },
+  tierList: {
+    pageTitle: "按位置的梯队",
+    heading: "按位置的梯队（最高 OVR 靠前）",
+    intro: "按登记位置，把最高 OVR（满级时）较高的卡分为 S、A、B、C。根据 TeamAIXI 自己的数据计算。",
+    rulesBody: "规则：在该位置的所有卡中，最高 OVR 排名前 1% 为 S、前 3% 为 A、前 6% 为 B、前 10% 为 C。最高 OVR 相同则梯队相同。不使用外部梯队或投票。",
+    notStrengthNotice: "仅按最高 OVR 排名，不代表游戏内强度、手感、球风或契合度的评价。",
+    sourceTemplate: "规则版本 {version} · 数据时间 {date}",
+    positionNavLabel: "位置",
+    populationTemplate: "在登记为 {position} 的 {count} 张卡中的排名。",
+    tooFewCards: "该位置的卡太少，未生成梯队。",
+    tierRangeS: "前 1%",
+    tierRangeA: "前 3%",
+    tierRangeB: "前 6%",
+    tierRangeC: "前 10%",
+    entryTemplate: "最高 OVR {ovr} · 第 {rank} 名（前 {pct}%）",
+    dataUnavailable: "无法加载球员数据，请稍后再试。",
+  },
 };
 
 export default part;

@@ -37,6 +37,7 @@ const NOINDEX_SEGMENTS: Readonly<Record<string, string>> = {
   "/account": "account",
   "/share": "share-link",
   "/community": "community",
+  "/u": "user-profile",
   "/my-team": "user-local",
   "/my-builds": "user-local",
   "/favorites": "user-local",

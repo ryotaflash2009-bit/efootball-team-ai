@@ -549,11 +549,142 @@ export async function installSupabaseAuthTestDouble(client) {
           },
         };
       }
+      // コミュニティ 第 1 段階（community_* の関数・2026-10-14）の最小のインメモリのダブル。サーバーの規則（公開範囲・ブロック・
+      // ミュート・申請・通報の重複・比較は友達だけ）の要点だけを真似る。相手は架空の 3 人（rival_one: 全体公開・friend_req: URL 限定で
+      // 自分へ申請済み・hidden_one: 友達だけ）。window.__EFB_COMMUNITY_RATE_LIMITED__ = true で上限の失敗を返す。sessionStorage に持つ。
+      var CM_KEY = "__efb_test_community_state__";
+      var CM_SUMMARY = null;
+      var cm = (function () { try { return JSON.parse(sessionStorage.getItem(CM_KEY) || "null"); } catch (e) { return null; } })() || {
+        me: null,
+        others: {
+          rival_one: { display_name: "Rival One", visibility: "public" },
+          friend_req: { display_name: "Friend Req", visibility: "link" },
+          hidden_one: { display_name: "Hidden One", visibility: "friends" },
+        },
+        rel: { friend_req: "pending_incoming" },
+        blocks: {},
+        mutes: {},
+        reports: [],
+        summaries: {},
+      };
+      function cmPersist() { try { sessionStorage.setItem(CM_KEY, JSON.stringify(cm)); } catch (e) { /* noop */ } }
+      function cmErr(code, message) { return { data: null, error: { code: code, message: message } }; }
+      function cmOk(data) { cmPersist(); return { data: data, error: null }; }
+      function cmId(v) { return String(v || "").trim().toLowerCase(); }
+      function cmVisible(id) {
+        var o = cm.others[id];
+        if (!o || cm.blocks[id]) return false;
+        if (o.visibility === "public" || o.visibility === "link") return true;
+        return o.visibility === "friends" && (cm.rel[id] === "friends" || cm.rel[id] === "pending_incoming");
+      }
+      function communityRpc(fn, a) {
+        if (!authenticated) return { data: null, error: { status: 401, message: "test double: not authenticated" } };
+        a = a || {};
+        var id = cmId(a.p_public_id);
+        switch (fn) {
+          case "community_my_profile":
+            return cmOk(cm.me ? [{ public_id: cm.me.public_id, display_name: cm.me.display_name, visibility: cm.me.visibility, public_id_changed_at: cm.me.changed_at, restricted: false }] : []);
+          case "community_save_my_profile": {
+            var pid = cmId(a.p_public_id);
+            if (!/^[a-z][a-z0-9_]{2,19}$/.test(pid)) return cmErr("23514", "check");
+            if (cm.others[pid]) return cmErr("23505", "duplicate");
+            if (["private", "link", "friends", "public"].indexOf(a.p_visibility) < 0) return cmErr("23514", "check");
+            var created = !cm.me;
+            if (cm.me && cm.me.public_id !== pid) return cmErr("P0002", "30 days");
+            cm.me = { public_id: pid, display_name: String(a.p_display_name || "").trim(), visibility: a.p_visibility, changed_at: cm.me ? cm.me.changed_at : new Date().toISOString() };
+            return cmOk(created ? "created" : "updated");
+          }
+          case "community_get_profile": {
+            if (cm.me && id === cm.me.public_id) return cmOk([{ public_id: id, display_name: cm.me.display_name, visibility: cm.me.visibility, relation: "self", blocked_by_me: false, muted_by_me: false, is_self: true, has_comparison: !!cm.summaries.__me }]);
+            if (cm.blocks[id] && cm.others[id]) return cmOk([{ public_id: id, display_name: null, visibility: null, relation: "blocked", blocked_by_me: true, muted_by_me: false, is_self: false, has_comparison: false }]);
+            if (!cmVisible(id)) return cmOk([]);
+            var r = cm.rel[id] || "none";
+            return cmOk([{ public_id: id, display_name: cm.others[id].display_name, visibility: null, relation: r, blocked_by_me: false, muted_by_me: !!cm.mutes[id], is_self: false, has_comparison: r === "friends" && !!cm.summaries[id] }]);
+          }
+          case "community_search": {
+            var q = cmId(a.q);
+            if (q.length < 3) return cmOk([]);
+            return cmOk(Object.keys(cm.others).filter(function (k) { return k.indexOf(q) === 0 && cm.others[k].visibility === "public" && !cm.blocks[k] && !cm.mutes[k]; }).map(function (k) { return { public_id: k, display_name: cm.others[k].display_name }; }));
+          }
+          case "community_request_friend":
+            if (!cm.me || cm.me.visibility === "private") return cmErr("P0013", "profile_required");
+            if (!cmVisible(id)) return cmErr("P0010", "not_found");
+            if (window.__EFB_COMMUNITY_RATE_LIMITED__) return cmErr("P0011", "rate_limited");
+            if (cm.rel[id] === "friends") return cmOk("already_friends");
+            if (cm.rel[id] === "pending_outgoing") return cmOk("already_requested");
+            if (cm.rel[id] === "pending_incoming") { cm.rel[id] = "friends"; return cmOk("accepted"); }
+            // 架空の相手 rival_one は申請を受けるとすぐ承認し、比較の要約を持つ（友達の比較の確認用）
+            if (id === "rival_one") { cm.rel[id] = "friends"; cm.summaries[id] = window.__EFB_COMMUNITY_RIVAL_SUMMARY__ || null; return cmOk("requested"); }
+            cm.rel[id] = "pending_outgoing";
+            return cmOk("requested");
+          case "community_respond_friend":
+            if (cm.rel[id] !== "pending_incoming") return cmOk("not_found");
+            if (a.p_accept) { cm.rel[id] = "friends"; return cmOk("accepted"); }
+            delete cm.rel[id];
+            return cmOk("rejected");
+          case "community_remove_friend":
+            if (cm.rel[id] === "friends" || cm.rel[id] === "pending_outgoing") { delete cm.rel[id]; return cmOk("removed"); }
+            return cmOk("none");
+          case "community_list_friends":
+            return cmOk(Object.keys(cm.rel).filter(function (k) { return cm.others[k] && !cm.blocks[k] && !(cm.rel[k] === "pending_incoming" && cm.mutes[k]); }).map(function (k) { return { public_id: k, display_name: cm.others[k].display_name, state: cm.rel[k], since: new Date().toISOString() }; }));
+          case "community_block":
+            if (!cm.others[id]) return cmErr("P0010", "not_found");
+            if (cm.blocks[id]) return cmOk("already_blocked");
+            cm.blocks[id] = new Date().toISOString();
+            delete cm.rel[id];
+            return cmOk("blocked");
+          case "community_unblock":
+            if (!cm.blocks[id]) return cmOk("none");
+            delete cm.blocks[id];
+            return cmOk("unblocked");
+          case "community_mute":
+            if (!cm.others[id]) return cmErr("P0010", "not_found");
+            cm.mutes[id] = new Date().toISOString();
+            return cmOk("muted");
+          case "community_unmute":
+            if (!cm.mutes[id]) return cmOk("none");
+            delete cm.mutes[id];
+            return cmOk("unmuted");
+          case "community_list_safety":
+            return cmOk(Object.keys(cm.blocks).map(function (k) { return { kind: "block", public_id: k, created_at: cm.blocks[k] }; }).concat(Object.keys(cm.mutes).map(function (k) { return { kind: "mute", public_id: k, created_at: cm.mutes[k] }; })));
+          case "community_report":
+            if (cm.me && id === cm.me.public_id) return cmErr("P0014", "self_report");
+            if (!cm.others[id]) return cmErr("P0010", "not_found");
+            if (cm.reports.some(function (r) { return r.target_public_id === id && r.status === "open"; })) return cmOk("duplicate");
+            cm.reports.unshift({ id: cm.reports.length + 1, target_public_id: id, reason: a.p_reason, status: "open", created_at: new Date().toISOString(), note: a.p_note });
+            return cmOk("reported");
+          case "community_list_my_reports":
+            return cmOk(cm.reports.map(function (r) { return { id: r.id, target_public_id: r.target_public_id, reason: r.reason, status: r.status, created_at: r.created_at }; }));
+          case "community_withdraw_report": {
+            var rep = cm.reports.filter(function (r) { return r.id === a.p_id && r.status === "open"; })[0];
+            if (!rep) return cmOk("none");
+            rep.status = "withdrawn";
+            return cmOk("withdrawn");
+          }
+          case "community_set_comparison":
+            if (!a.p_summary || a.p_summary.k !== "sd") return cmErr("22023", "invalid_summary");
+            cm.summaries.__me = a.p_summary;
+            return cmOk("saved");
+          case "community_clear_comparison":
+            if (!cm.summaries.__me) return cmOk("none");
+            delete cm.summaries.__me;
+            return cmOk("cleared");
+          case "community_get_comparison": {
+            var key = cm.me && id === cm.me.public_id ? "__me" : id;
+            if (key !== "__me" && cm.rel[id] !== "friends") return cmOk([]);
+            var sm = cm.summaries[key];
+            return cmOk(sm ? [{ summary: sm, updated_at: new Date().toISOString() }] : []);
+          }
+        }
+        return cmErr("PGRST202", "test double: unknown function");
+      }
+
       // アカウントの削除（delete_my_account・2026-10-11）。window.__EFB_TEST_DELETE_MODE__:
       // "success"（既定）| "reauth" | "billing" | "unavailable" | "hang"（応答しない）。呼び出しの引数を __EFB_TEST_RPC_CALLS__ に記録する。
       var deleted = false;
       async function rpc(fn, args) {
         (window.__EFB_TEST_RPC_CALLS__ = window.__EFB_TEST_RPC_CALLS__ || []).push({ fn: fn, args: args });
+        if (typeof fn === "string" && fn.indexOf("community_") === 0) return communityRpc(fn, args);
         if (fn !== "delete_my_account") return { data: null, error: { code: "PGRST202", message: "test double: unknown function" } };
         var mode = window.__EFB_TEST_DELETE_MODE__ || "success";
         if (mode === "hang") return new Promise(function () {});

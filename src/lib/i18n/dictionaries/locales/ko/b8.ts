@@ -586,6 +586,23 @@ const part: PartialDictionary = {
     backToList: "감독 목록으로 돌아가기",
     managerColumn: "감독",
   },
+  tierList: {
+    pageTitle: "포지션별 티어",
+    heading: "포지션별 티어 (최대 OVR 상위)",
+    intro: "등록 포지션별로 최대 OVR(최대 레벨 기준)이 높은 카드를 S·A·B·C로 나눕니다. TeamAIXI 자체 데이터로 계산합니다.",
+    rulesBody: "규칙: 해당 포지션의 전체 카드 중 최대 OVR 순위가 상위 1% 이내면 S, 3% 이내면 A, 6% 이내면 B, 10% 이내면 C입니다. 최대 OVR이 같으면 같은 티어입니다. 외부 티어·투표는 사용하지 않습니다.",
+    notStrengthNotice: "최대 OVR만으로 매긴 순위이며, 게임 내 강함·사용감·플레이 스타일·궁합을 평가한 것이 아닙니다.",
+    sourceTemplate: "규칙 버전 {version} · 데이터 기준 {date}",
+    positionNavLabel: "포지션",
+    populationTemplate: "{position}(으)로 등록된 카드 {count}장 중 순위입니다.",
+    tooFewCards: "이 포지션은 카드가 적어 티어를 만들지 않았습니다.",
+    tierRangeS: "상위 1% 이내",
+    tierRangeA: "상위 3% 이내",
+    tierRangeB: "상위 6% 이내",
+    tierRangeC: "상위 10% 이내",
+    entryTemplate: "최대 OVR {ovr} · {rank}위 (상위 {pct}%)",
+    dataUnavailable: "선수 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
+  },
 };
 
 export default part;

@@ -586,6 +586,23 @@ const part: PartialDictionary = {
     backToList: "Teknik direktörlere dön",
     managerColumn: "Teknik direktör",
   },
+  tierList: {
+    pageTitle: "Mevkiye göre tier",
+    heading: "Mevkiye göre tier (en yüksek maksimum OVR)",
+    intro: "Her kayıtlı mevki için en yüksek maksimum OVR'ye (maksimum seviyede) sahip kartlar S, A, B ve C olarak gruplanır. TeamAIXI'nin kendi verilerinden hesaplanır.",
+    rulesBody: "Kural: mevkideki tüm kartlar arasında maksimum OVR'ye göre ilk %1 S, ilk %3 A, ilk %6 B ve ilk %10 C'dir. Aynı maksimum OVR aynı tier'i alır. Harici tier listeleri veya oylar kullanılmaz.",
+    notStrengthNotice: "Yalnızca maksimum OVR'ye göre sıralar. Oyun içi güç, kullanım kolaylığı, oyun stili veya uyum değerlendirmesi değildir.",
+    sourceTemplate: "Kural sürümü {version} · veri tarihi {date}",
+    positionNavLabel: "Mevki",
+    populationTemplate: "{position} olarak kayıtlı {count} kart arasındaki sıralama.",
+    tooFewCards: "Bu mevkide tier listesi oluşturmak için çok az kart var.",
+    tierRangeS: "İlk %1",
+    tierRangeA: "İlk %3",
+    tierRangeB: "İlk %6",
+    tierRangeC: "İlk %10",
+    entryTemplate: "Maks. OVR {ovr} · {rank}. (ilk %{pct})",
+    dataUnavailable: "Oyuncu verileri yüklenemedi. Lütfen daha sonra tekrar deneyin.",
+  },
 };
 
 export default part;

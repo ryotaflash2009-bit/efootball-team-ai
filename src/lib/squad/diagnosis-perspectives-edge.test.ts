@@ -26,9 +26,9 @@ describe("F-045 端のケース・極端なスカッド", () => {
     const r = buildDiagnosisPerspectives({ players: [], managerTactics: null });
     expect(r).toHaveLength(8);
     for (const x of r) {
-      expect(x.status).toBe("provisional");
-      expect(x.purpose).toBe("comparison-only");
-      expect(x.rulesVersion).toBe(PERSPECTIVES_RULES_VERSION);
+      expect(["provisional", "adopted"]).toContain(x.status);
+      expect(x.purpose).toBe(x.status === "adopted" ? "fact-display" : "comparison-only");
+      expect(x.rulesVersion).toBe(x.status === "adopted" ? "squad-perspectives/2026-10-14.v1" : PERSPECTIVES_RULES_VERSION);
       for (const f of x.formulas) expect(finite(f.value), `${x.id}.${f.id}`).toBe(true);
     }
   });

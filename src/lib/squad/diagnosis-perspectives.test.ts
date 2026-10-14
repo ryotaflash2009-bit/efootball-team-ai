@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { buildDiagnosisPerspectives, perspectiveFactSummary, FACT_SUMMARY_FORMULAS, lineRoleOfPosition, provisionalHeightBonus, statMean, toPerspectiveInput, PERSPECTIVES_RULES_VERSION, type PerspectivePlayer } from "./diagnosis-perspectives";
+import { buildDiagnosisPerspectives, perspectiveFactSummary, FACT_SUMMARY_FORMULAS, lineRoleOfPosition, provisionalHeightBonus, statMean, toPerspectiveInput, PERSPECTIVES_RULES_VERSION,
+  ADOPTED_PERSPECTIVES_RULES_VERSION, type PerspectivePlayer } from "./diagnosis-perspectives";
 
 const stats = (v: number, gk = 40): Record<string, number> => ({
   offensiveAwareness: v, finishing: v, heading: v, setPieceTaking: v, curl: v,
@@ -34,10 +35,11 @@ const byId = (r: ReturnType<typeof buildDiagnosisPerspectives>, id: string) => r
 describe("F-045 診断の追加観点（暫定 / 比較検証用）", () => {
   const r = buildDiagnosisPerspectives({ players: [...XI, ...BENCH], managerTactics: { possessionGame: 88, quickCounter: 70, longBallCounter: null } });
 
-  it("8 観点を独立に返し、総合点を作らない。すべて暫定・比較検証用で規則の版を持つ", () => {
+  it("8 観点を独立に返し、総合点を作らない。採用した 6 観点は adopted・事実の表示（2026-10-14.v1）、残りは暫定・比較検証用", () => {
     expect(r.map((x) => x.id)).toEqual(["squadDepth", "sideBalance", "roleOverlap", "managerFit", "formationFit", "gkCategory", "aerialHeight", "aerialFootPosition"]);
     for (const x of r) {
-      expect(x).toMatchObject({ status: "provisional", purpose: "comparison-only", rulesVersion: PERSPECTIVES_RULES_VERSION });
+      const adopted = ["squadDepth", "sideBalance", "roleOverlap", "formationFit", "gkCategory", "aerialFootPosition"].includes(x.id);
+      expect(x).toMatchObject(adopted ? { status: "adopted", purpose: "fact-display", rulesVersion: ADOPTED_PERSPECTIVES_RULES_VERSION } : { status: "provisional", purpose: "comparison-only", rulesVersion: PERSPECTIVES_RULES_VERSION });
       expect(x.formulas.length).toBeGreaterThanOrEqual(2);
       expect(new Set(x.formulas.map((f) => f.id)).size).toBe(x.formulas.length);
     }
