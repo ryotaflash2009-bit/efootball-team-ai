@@ -146,6 +146,7 @@ const community: Dictionary["community"] = {
   errorGeneric: "処理できませんでした。時間をおいてもう一度お試しください。",
   accountLinkHint: "公開プロフィール・友達・ブロック・通報",
   accountLinkLabel: "コミュニティの設定",
+  incomingNoticeTemplate: "友達の申請が {count} 件届いています",
 };
 
 registerJaNamespace("community", community);

@@ -344,6 +344,7 @@ const part: PartialDictionary = {
     copied: "Copiado.",
     copyFailed: "No se pudo copiar. Selecciona el enlace y cópialo manualmente.",
     shareButton: "Compartir…",
+    useForFriendsLink: "Usar para comparar con amigos (requiere iniciar sesión)",
     shareFailed: "No se completó el envío.",
     closeButton: "Cerrar",
     createFailed: "No se pudo crear el enlace para compartir.",

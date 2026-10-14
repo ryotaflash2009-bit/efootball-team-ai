@@ -4,6 +4,7 @@ import "@/lib/i18n/dictionaries/ja-ns/diagnosisShare";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import type { SquadDiagnosisResult } from "@/lib/squad/squad-diagnosis";
 import { buildSharePayload, buildShareUrl } from "@/lib/squad/squad-diagnosis-share-url";
+import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { useT } from "@/lib/i18n/LocaleContext";
 
@@ -114,6 +115,9 @@ export function SquadDiagnosisShareUrlButton({
                 <Button type="button" size="sm" className="min-h-[44px]" onClick={copy}>
                   {s("copyButton")}
                 </Button>
+                <Link href={`/account/community${url.slice(url.indexOf("#"))}`} className="text-xs text-accent hover:underline" data-testid="share-use-for-friends">
+                  {s("useForFriendsLink")}
+                </Link>
                 {canShare ? (
                   <Button type="button" variant="secondary" size="sm" className="min-h-[44px]" onClick={share}>
                     {s("shareButton")}

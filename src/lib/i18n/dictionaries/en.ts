@@ -311,6 +311,7 @@ const en: Dictionary = {
     copied: "Copied.",
     copyFailed: "Could not copy. Select the link and copy it manually.",
     shareButton: "Share…",
+    useForFriendsLink: "Use for comparing with friends (sign-in required)",
     shareFailed: "Sharing did not complete.",
     closeButton: "Close",
     createFailed: "Could not create the share link.",
@@ -4113,6 +4114,7 @@ const en: Dictionary = {
     errorGeneric: "Something went wrong. Please try again later.",
     accountLinkHint: "Public profile, friends, blocking & reporting",
     accountLinkLabel: "Community settings",
+    incomingNoticeTemplate: "You have {count} friend request(s)",
   },
   myTeamCloud: {
     pageTitle: "My Team Cloud Save (Alpha Feature)",

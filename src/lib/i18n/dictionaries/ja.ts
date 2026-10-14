@@ -310,6 +310,7 @@ export interface Dictionary {
     copied: string;
     copyFailed: string;
     shareButton: string;
+    useForFriendsLink: string;
     shareFailed: string;
     closeButton: string;
     createFailed: string;
@@ -4050,6 +4051,7 @@ export interface Dictionary {
     errorGeneric: string;
     accountLinkHint: string;
     accountLinkLabel: string;
+    incomingNoticeTemplate: string;
   };
   myTeamCloud: {
     pageTitle: string;

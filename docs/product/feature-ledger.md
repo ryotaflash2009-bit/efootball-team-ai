@@ -80,12 +80,12 @@
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | F-050 | 認証（Supabase Auth：登録・ログイン・再設定・メールのリンク確認・メール変更） | completed | 85% | Supabase | — | C | — | 不要 | Free | PR #5, #17, #86, #87, #88。新規登録は「限定テスト中」（標準 SMTP はメンバー宛てのみ）。/auth/confirm（押したときだけ検証）・エラー区分・メール変更は配信確認まで無効・Release Validator（`npm run validate:auth-email-release`）。ドメイン購入は本人がまとめ買いまで保留（`production-readiness/domain-purchase-queue.md`）。`evidence/auth-readiness-f071-f073-2026-09-27.json`（公開 114/114） | 本人: ドメインのまとめ買い → 手順書 A〜G → Validator が READY → 本人承認 → 新規登録の公開 |
 | F-051 | アカウント別データ分離（RLS・ローカル名前空間） | completed | 85% | F-050 | — | L/C | 要 | 不要 | Free | PR #9–#11, #17 | — |
-| F-052 | クラウド同期（My Team PoC → ビルド・スカッド） | partially_implemented | 60% | F-051 | — | C | 要 | 不要 | Free | My Team 手動保存の PoC。保存ビルド・保存スカッドのクラウド保存（2026-10-11・SQL は未適用・`BUILDS_CLOUD_MODE` / `SQUADS_CLOUD_MODE` = disabled・`builds-cloud-apply-package.md`・`squads-cloud-apply-package.md`） | 本人: 2 つの SQL の適用の承認 → 有効化 |
+| F-052 | クラウド同期（My Team・ビルド・スカッド） | verified（手動の保存と追加の反映・自動の同期はしない） | 90% | F-051 | — | C | 要 | 不要 | Free | My Team・保存ビルド・保存スカッドのクラウド保存（本番の表を適用・`BUILDS_CLOUD_MODE` / `SQUADS_CLOUD_MODE` = enabled・2026-10-12 に本番で確認） | 自動の同期は将来の判断 |
 | F-053 | 公開ユーザーID・公開プロフィール | implemented（Production の SQL の実行と COMMUNITY_MODE の有効化を待つ） | 85% | F-050, F-056 | — | C | 要 | 不要 | Free | `/account/community`・`/u/<ID>`（ログインが必要・noindex）・`community_save_my_profile`・使い捨ての PostgreSQL 12 件・black-box 34/34（`community-stage1-apply-package.md`） | 適用 → 有効化 |
 | F-054 | 公開範囲（非公開/URL限定/友達限定/全体公開） | implemented（同上） | 85% | F-053 | — | C | 要 | 不要 | Free | private / link / friends / public（既定は非公開・検索は全体公開だけ・anon は読めない） | 同上 |
 | F-055 | 友達機能 | implemented（同上） | 85% | F-053, F-056 | — | C | 要 | 不要 | Free | 申請・承認・拒否・取り消し・解除・相互の申請は承認・1 日 20 件・300 人・非公開のプロフィールでは申請できない。通知はアプリ内の一覧だけ（メールはドメインの後） | 同上 |
 | F-056 | ブロック・ミュート・通報・安全機能 | implemented（同上） | 85% | F-050 | — | C | 要 | 不要 | Free | ブロック（双方向・関係を消す・相手から存在しないのと同じ）・ミュート・通報（8 理由・重複は 1 件・1 日 20 件・運営者の確認の列と制限・解決から 1 年で削除）・規約 14 条・プライバシーポリシー | 同上 |
-| F-057 | 削除・退会導線（アカウント削除予約・取消） | partially_implemented | 30% | F-050 | — | C | 要 | 不要 | Free | 現状は問い合わせ窓口経由。セルフ削除は deferred（`production-readiness/auth-deferred-items.md`：サーバー側の権限か本番の DB 関数が必要） | 本人: 方式（Edge Function / DB 関数）の承認 |
+| F-057 | 削除・退会導線 | verified（セルフ削除・2026-10-12 に本番で確認） | 95% | F-050 | — | C | 要 | 不要 | Free | `delete_my_account`（再認証・二重の実行は 1 回・削除の記録は仮名）・`ACCOUNT_DELETION_MODE` = enabled | — |
 | F-058 | データ管理（ブラウザー内データの確認・削除） | verified | 90% | — | — | L | 不要 | 不要 | Free | 総合black-box | 一括 export F-023b |
 
 ## 5. 成長・比較・個性（Phase 5〜6）
@@ -111,7 +111,7 @@
 | F-137 | タブの題名の表示言語への追従 | completed | 100% | F-007b | — | — | 不要 | 不要 | Free | PR #182（英語と RC の言語・日本語は変えない） | — |
 | F-138 | 総合 black-box の release gate（ログイン中のテストダブルを含む） | completed | 100% | F-051 | — | L | 不要 | 不要 | Free | PR #180（未ログインの総合 + アカウントの分離 164/164） | — |
 | F-139 | TeamAIXI v1.1 Release Validator | completed | 100% | — | — | — | 不要 | 不要 | Free | PR #175（2026-10-07: BLOCKED の理由は自動更新の Secret だけ） | 本人の確認 10 件 |
-| F-140 | コミュニティの安全の契約（運営者 1 人） | designed | 50% | F-084 | — | C | 要 | 不要 | Free | PR #176・`community-safety-operations.md`（本人の判断 5 件） | 表と RLS の提案 |
+| F-140 | コミュニティの安全の契約（運営者 1 人） | implemented（2026-10-14） | 90% | F-084 | — | C | 要 | 不要 | Free | 本人の判断 5 件は推奨のまま（2026-10-14）・通報の確認の列と対応の関数・保持期間・規約 14 条（`community-stage1-apply-package.md`） | 写真の段階 2 は別 |
 | F-141 | 友達・友達との比較・ライバル・AI コーチ・相手の分析・メタ分析の契約（モック） | designed | 30% | F-053 | — | C | 要 | 不要（規則の提供元） | Free | PR #177・`future-feature-contracts-2026-10-07.md` | 公開 ID・Auth の公開の後 |
 | F-142 | AI ベスト11 の控え（決定的な規則・最大 12 人） | completed | 100% | F-025 | — | — | 不要 | 不要 | Free | PR #187・`docs/product/best-xi-bench.md`（本番 black-box 30/30） | 監督補正（F-070）は判断パッケージのまま |
 | F-143 | 完全なゲームプラン（ローカル） | completed | 100% | F-033 | — | L | 不要 | 不要 | Free | PR #189・`docs/product/complete-game-plan.md`（本番 black-box 15/15・共有画像 2026-10-09） | ~~個別指示~~（NEW-43） |
@@ -157,7 +157,7 @@
 | F-105 | AI 生成系（ビルド生成・育成提案・監督診断・ブースター診断・試合後分析） | deferred（設計書 §21・§22） | 要 | LLM 従量 | F-100 と同じ条件（API 契約・費用上限・安全方針） |
 | F-110 | PWA・ネイティブアプリ | deferred（設計書 9-5 は PWA を将来とする。`decision-record.md` §4 は iPhone 向け React Native を候補） | 不要 | ストア費用 | 利用価値と収益性の確認後 |
 | F-120 | 課金・Pro 版 | deferred | — | 決済手数料 | 法務・特商法・税の確認後（本人判断） |
-| F-121 | 通知 | idea | 不要 | 0〜 | 友達・コミュニティの後 |
+| F-121 | 通知 | partially_implemented（アプリ内の最小・2026-10-14: アカウントの画面に届いた友達の申請の件数） | 不要 | 0〜 | メール・プッシュはドメインの後 |
 | F-122 | 管理画面（データ競合・同期管理） | idea（設計書 27章） | 不要 | 0 | 現状は GitHub Actions ＋ Evidence で代替 |
 | F-123 | 監視（Sentry 等） | idea（roadmap 段階14） | 不要 | 無料枠 | 本人のアカウント作成が必要 |
 | F-124 | 利用範囲の制限（参照データの自動更新が完成・検証されるまで本人だけで検証。他人・家族への試用、招待、新規登録、コミュニティ公開をしない） | **解除（2026-10-03 本人判断: `F124_RELEASED_FOR_LIMITED_INVITE_BETA`）**。招待制・信頼できる 3〜5 人・ログイン不要の既存機能だけ・無料・noindex 維持。新規登録の一般開放・コミュニティ・写真投稿の公開・告知・検索掲載・課金は引き続き禁止 | 不要 | 0 | 自動更新の完成（`automated-update-pipeline.md` の Level 2 の実運用確認）まで |

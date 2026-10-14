@@ -64,6 +64,10 @@ async function main() {
     await go(`${BASE}/account?${AUTH}`);
     await waitFor('[data-testid="account-community-entry"]');
     record("アカウントの画面にコミュニティの入口がある", await has('a[href="/account/community"]'), "");
+    if (MODE === "enabled") {
+      await waitFor('[data-testid="community-incoming-notice"]');
+      record("アカウントの画面: 届いた友達の申請の件数を知らせる（F-121）", /友達の申請が 1 件届いています/.test((await ev(`document.querySelector('[data-testid="community-incoming-notice"]')?.textContent`)) ?? ""), "");
+    }
     await go(`${BASE}/account/community?${AUTH}`);
     if (MODE === "enabled") {
       await waitFor('[data-testid="community-profile"]');
@@ -154,6 +158,11 @@ async function main() {
     if (shareUrl && rivalPayload) {
       await go(`${BASE}/account/community${P}`);
       await waitFor('[data-testid="community-share-input"]');
+      await go(`${BASE}/about`); // 別の画面から来る（診断の画面から移るのと同じ）
+      await go(`${BASE}/account/community${P}${shareUrl.slice(shareUrl.indexOf("#"))}`);
+      await waitFor('[data-testid="community-share-input"]');
+      await waitForCondition(async () => /#sd1\./.test((await ev(`document.querySelector('[data-testid="community-share-input"]')?.value`)) ?? ""), { timeoutMs: 5000 }).catch(() => {});
+      record("比較: 診断の共有から来たとき（#sd1…）は欄に入れておく（自動では保存しない）", /#sd1\./.test((await ev(`document.querySelector('[data-testid="community-share-input"]')?.value`)) ?? "") && !(await rpcCalls()).includes("community_set_comparison"), "");
       await setValue('[data-testid="community-share-input"]', "https://example.invalid/share/diagnosis#sd1.broken.00000000");
       await click('[data-testid="community-comparison-save"]');
       await waitText(/共有 URL を読み取れませんでした/);

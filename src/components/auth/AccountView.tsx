@@ -6,6 +6,7 @@ import "@/lib/i18n/dictionaries/ja-ns/myTeamCloud";
 import "@/lib/i18n/dictionaries/ja-ns/buildsCloud";
 import "@/lib/i18n/dictionaries/ja-ns/squadsCloud";
 import "@/lib/i18n/dictionaries/ja-ns/community";
+import { CommunityIncomingNotice } from "@/components/community/CommunityIncomingNotice";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useT } from "@/lib/i18n/LocaleContext";
@@ -137,6 +138,8 @@ export function AccountView() {
               {t("squadsCloud", "accountLinkLabel")}
             </Link>
           </Surface>
+
+          <CommunityIncomingNotice />
 
           <Surface tone="outline" padding="md" className="flex flex-col gap-1.5" data-testid="account-community-entry">
             <p className="text-xs font-semibold text-text-muted">{t("community", "accountLinkHint")}</p>

@@ -344,6 +344,7 @@ const part: PartialDictionary = {
     copied: "Tersalin.",
     copyFailed: "Gagal menyalin. Pilih tautan dan salin secara manual.",
     shareButton: "Bagikan…",
+    useForFriendsLink: "Gunakan untuk membandingkan dengan teman (perlu masuk)",
     shareFailed: "Berbagi tidak selesai.",
     closeButton: "Tutup",
     createFailed: "Gagal membuat tautan berbagi.",

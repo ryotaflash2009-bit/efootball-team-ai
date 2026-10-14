@@ -344,6 +344,7 @@ const part: PartialDictionary = {
     copied: "已複製。",
     copyFailed: "無法複製。請選取連結後手動複製。",
     shareButton: "分享…",
+    useForFriendsLink: "用於與好友比較（需要登入）",
     shareFailed: "分享未完成。",
     closeButton: "關閉",
     createFailed: "無法建立分享連結。",
