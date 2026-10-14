@@ -13,6 +13,12 @@ import { normalizePlayingStyle } from "@/lib/world/playing-style";
 import { X_LEFT_MAX, X_RIGHT_MIN } from "./role-inference";
 
 export const PERSPECTIVES_RULES_VERSION = "squad-perspectives/2026-10-02.provisional.v1";
+/**
+ * 正式に採用した観点の規則の版（2026-10-14・本人の判断「すべて推奨で可」・f045-decision-package.md）。
+ * 採用したのは 6 観点の事実の集計（A）だけ（FACT_SUMMARY_FORMULAS）。監督との相性・空中戦（身長）と、重み・閾値を使う式（B・C）は
+ * 比較のまま（PERSPECTIVES_RULES_VERSION）。総合点・カテゴリの点数・順位・称号・共有カード・診断の履歴には入れない（変更なし）。
+ */
+export const ADOPTED_PERSPECTIVES_RULES_VERSION = "squad-perspectives/2026-10-14.v1";
 
 export type PerspectiveId =
   | "squadDepth"
@@ -72,8 +78,9 @@ export interface PerspectiveCause {
 export interface PerspectiveResult {
   id: PerspectiveId;
   label: string;
-  status: "provisional";
-  purpose: "comparison-only";
+  /** adopted: 事実の集計（A）を正式に採用した観点。provisional: 比較のまま。 */
+  status: "provisional" | "adopted";
+  purpose: "comparison-only" | "fact-display";
   facts: string[];
   formulas: PerspectiveFormula[];
   causes: PerspectiveCause[];
@@ -123,7 +130,8 @@ function confidenceFrom(resolved: number, total: number): PerspectiveConfidence 
 }
 
 function result(id: PerspectiveId, label: string, r: Omit<PerspectiveResult, "id" | "label" | "status" | "purpose" | "rulesVersion">): PerspectiveResult {
-  return { id, label, status: "provisional", purpose: "comparison-only", rulesVersion: PERSPECTIVES_RULES_VERSION, ...r };
+  const adopted = id in FACT_SUMMARY_FORMULAS;
+  return { id, label, status: adopted ? "adopted" : "provisional", purpose: adopted ? "fact-display" : "comparison-only", rulesVersion: adopted ? ADOPTED_PERSPECTIVES_RULES_VERSION : PERSPECTIVES_RULES_VERSION, ...r };
 }
 
 const cause = (p: PerspectivePlayer, detail: string): PerspectiveCause => ({ key: p.key, name: p.name, position: p.position, detail });
