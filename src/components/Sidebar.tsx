@@ -25,6 +25,7 @@ const GROUPS: { titleKey: NavKey; items: NavItem[] }[] = [
       { href: "/compare", labelKey: "compare", icon: "compare", status: "ready" },
       { href: "/squads", labelKey: "squads", icon: "squad", status: "ready" },
       { href: "/best-xi", labelKey: "bestXi", icon: "trophy", status: "ready" },
+      { href: "/tier", labelKey: "tierLists", icon: "tier", status: "ready" },
     ],
   },
   {

@@ -586,6 +586,23 @@ const part: PartialDictionary = {
     backToList: "Volver a entrenadores",
     managerColumn: "Entrenador",
   },
+  tierList: {
+    pageTitle: "Tier por posición",
+    heading: "Tier por posición (OVR máximo más alto)",
+    intro: "Para cada posición registrada, las cartas con el OVR máximo más alto (en el nivel máximo) se agrupan en S, A, B y C. Calculado con los datos de TeamAIXI.",
+    rulesBody: "Regla: entre todas las cartas de la posición, el 1 % superior por OVR máximo es S, el 3 % es A, el 6 % es B y el 10 % es C. El mismo OVR máximo recibe el mismo tier. No se usan tiers ni votos externos.",
+    notStrengthNotice: "Solo ordena por OVR máximo. No evalúa la fuerza en el juego, la facilidad de uso, el estilo de juego ni la compatibilidad.",
+    sourceTemplate: "Versión de reglas {version} · datos a {date}",
+    positionNavLabel: "Posición",
+    populationTemplate: "Clasificación entre {count} cartas registradas como {position}.",
+    tooFewCards: "Hay muy pocas cartas en esta posición para crear un tier.",
+    tierRangeS: "1 % superior",
+    tierRangeA: "3 % superior",
+    tierRangeB: "6 % superior",
+    tierRangeC: "10 % superior",
+    entryTemplate: "OVR máx. {ovr} · n.º {rank} ({pct} % superior)",
+    dataUnavailable: "No se pudieron cargar los datos de jugadores. Inténtalo más tarde.",
+  },
 };
 
 export default part;

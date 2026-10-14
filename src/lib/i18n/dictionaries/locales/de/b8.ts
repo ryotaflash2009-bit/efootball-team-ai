@@ -586,6 +586,23 @@ const part: PartialDictionary = {
     backToList: "Zurück zu den Trainern",
     managerColumn: "Trainer",
   },
+  tierList: {
+    pageTitle: "Tier nach Position",
+    heading: "Tier nach Position (höchstes Max-OVR)",
+    intro: "Für jede registrierte Position werden die Karten mit dem höchsten Max-OVR (bei Maximalstufe) in S, A, B und C eingeteilt. Berechnet aus den Daten von TeamAIXI.",
+    rulesBody: "Regel: Unter allen Karten der Position sind die besten 1 % nach Max-OVR S, 3 % A, 6 % B und 10 % C. Gleiches Max-OVR ergibt dasselbe Tier. Keine externen Tier-Listen oder Abstimmungen.",
+    notStrengthNotice: "Nur das Max-OVR wird gereiht. Keine Bewertung von Stärke im Spiel, Spielbarkeit, Spielstil oder Kompatibilität.",
+    sourceTemplate: "Regelversion {version} · Datenstand {date}",
+    positionNavLabel: "Position",
+    populationTemplate: "Rang unter {count} als {position} registrierten Karten.",
+    tooFewCards: "Für diese Position gibt es zu wenige Karten für eine Tier-Liste.",
+    tierRangeS: "Beste 1 %",
+    tierRangeA: "Beste 3 %",
+    tierRangeB: "Beste 6 %",
+    tierRangeC: "Beste 10 %",
+    entryTemplate: "Max-OVR {ovr} · Platz {rank} (beste {pct} %)",
+    dataUnavailable: "Spielerdaten konnten nicht geladen werden. Bitte später erneut versuchen.",
+  },
 };
 
 export default part;

@@ -586,6 +586,23 @@ const part: PartialDictionary = {
     backToList: "Kembali ke daftar manajer",
     managerColumn: "Manajer",
   },
+  tierList: {
+    pageTitle: "Tier per posisi",
+    heading: "Tier per posisi (OVR maksimum teratas)",
+    intro: "Untuk tiap posisi terdaftar, kartu dengan OVR maksimum (pada level maksimum) tertinggi dikelompokkan ke S, A, B, dan C. Dihitung dari data TeamAIXI sendiri.",
+    rulesBody: "Aturan: di antara semua kartu posisi itu, 1% teratas menurut OVR maksimum adalah S, 3% A, 6% B, dan 10% C. OVR maksimum yang sama mendapat tier yang sama. Tidak memakai tier atau voting eksternal.",
+    notStrengthNotice: "Ini hanya peringkat OVR maksimum, bukan penilaian kekuatan dalam game, kemudahan pakai, gaya bermain, atau kecocokan.",
+    sourceTemplate: "Versi aturan {version} · data per {date}",
+    positionNavLabel: "Posisi",
+    populationTemplate: "Peringkat di antara {count} kartu yang terdaftar sebagai {position}.",
+    tooFewCards: "Kartu di posisi ini terlalu sedikit untuk membuat tier.",
+    tierRangeS: "1% teratas",
+    tierRangeA: "3% teratas",
+    tierRangeB: "6% teratas",
+    tierRangeC: "10% teratas",
+    entryTemplate: "OVR maks {ovr} · #{rank} ({pct}% teratas)",
+    dataUnavailable: "Data pemain tidak dapat dimuat. Coba lagi nanti.",
+  },
 };
 
 export default part;

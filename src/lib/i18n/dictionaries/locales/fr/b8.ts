@@ -586,6 +586,23 @@ const part: PartialDictionary = {
     backToList: "Retour aux entraîneurs",
     managerColumn: "Entraîneur",
   },
+  tierList: {
+    pageTitle: "Tier par poste",
+    heading: "Tier par poste (meilleur OVR max.)",
+    intro: "Pour chaque poste enregistré, les cartes ayant le meilleur OVR max. (au niveau max.) sont classées en S, A, B et C. Calculé à partir des données de TeamAIXI.",
+    rulesBody: "Règle : parmi toutes les cartes du poste, le top 1 % par OVR max. est S, le top 3 % A, le top 6 % B et le top 10 % C. Un OVR max. égal donne le même tier. Aucun tier ni vote externe n'est utilisé.",
+    notStrengthNotice: "Classement selon l'OVR max. uniquement. Ce n'est pas une évaluation de la force en jeu, de la prise en main, du style de jeu ni de la compatibilité.",
+    sourceTemplate: "Version des règles {version} · données au {date}",
+    positionNavLabel: "Poste",
+    populationTemplate: "Classement parmi {count} cartes enregistrées au poste {position}.",
+    tooFewCards: "Trop peu de cartes à ce poste pour établir un tier.",
+    tierRangeS: "Top 1 %",
+    tierRangeA: "Top 3 %",
+    tierRangeB: "Top 6 %",
+    tierRangeC: "Top 10 %",
+    entryTemplate: "OVR max. {ovr} · n° {rank} (top {pct} %)",
+    dataUnavailable: "Impossible de charger les données des joueurs. Réessayez plus tard.",
+  },
 };
 
 export default part;

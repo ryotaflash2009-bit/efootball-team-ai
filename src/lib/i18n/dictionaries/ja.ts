@@ -5183,6 +5183,23 @@ export interface Dictionary {
     entryLink: string;
     versionTemplate: string;
   };
+  tierList: {
+    pageTitle: string;
+    heading: string;
+    intro: string;
+    rulesBody: string;
+    notStrengthNotice: string;
+    sourceTemplate: string;
+    positionNavLabel: string;
+    populationTemplate: string;
+    tooFewCards: string;
+    tierRangeS: string;
+    tierRangeA: string;
+    tierRangeB: string;
+    tierRangeC: string;
+    entryTemplate: string;
+    dataUnavailable: string;
+  };
   gamePlan: {
     heading: string;
     intro: string;

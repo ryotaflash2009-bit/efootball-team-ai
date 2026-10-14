@@ -586,6 +586,23 @@ const part: PartialDictionary = {
     backToList: "返回總教練列表",
     managerColumn: "總教練",
   },
+  tierList: {
+    pageTitle: "依位置的梯隊",
+    heading: "依位置的梯隊（最高 OVR 前段）",
+    intro: "依登錄位置，把最高 OVR（滿級時）較高的卡分為 S、A、B、C。根據 TeamAIXI 自己的資料計算。",
+    rulesBody: "規則：在該位置的所有卡中，最高 OVR 排名前 1% 為 S、前 3% 為 A、前 6% 為 B、前 10% 為 C。最高 OVR 相同則梯隊相同。不使用外部梯隊或投票。",
+    notStrengthNotice: "僅按最高 OVR 排名，不代表遊戲內強度、手感、球風或契合度的評價。",
+    sourceTemplate: "規則版本 {version} · 資料時間 {date}",
+    positionNavLabel: "位置",
+    populationTemplate: "在登錄為 {position} 的 {count} 張卡中的排名。",
+    tooFewCards: "該位置的卡太少，未產生梯隊。",
+    tierRangeS: "前 1%",
+    tierRangeA: "前 3%",
+    tierRangeB: "前 6%",
+    tierRangeC: "前 10%",
+    entryTemplate: "最高 OVR {ovr} · 第 {rank} 名（前 {pct}%）",
+    dataUnavailable: "無法載入球員資料，請稍後再試。",
+  },
 };
 
 export default part;

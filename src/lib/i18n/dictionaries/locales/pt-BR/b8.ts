@@ -586,6 +586,23 @@ const part: PartialDictionary = {
     backToList: "Voltar aos técnicos",
     managerColumn: "Técnico",
   },
+  tierList: {
+    pageTitle: "Tier por posição",
+    heading: "Tier por posição (maior OVR máximo)",
+    intro: "Para cada posição registrada, as cartas com o maior OVR máximo (no nível máximo) são agrupadas em S, A, B e C. Calculado com os dados do TeamAIXI.",
+    rulesBody: "Regra: entre todas as cartas da posição, o top 1% pelo OVR máximo é S, top 3% é A, top 6% é B e top 10% é C. OVR máximo igual recebe o mesmo tier. Não usamos tiers ou votos externos.",
+    notStrengthNotice: "Ordena apenas pelo OVR máximo. Não avalia força no jogo, facilidade de uso, estilo de jogo ou compatibilidade.",
+    sourceTemplate: "Versão das regras {version} · dados de {date}",
+    positionNavLabel: "Posição",
+    populationTemplate: "Classificação entre {count} cartas registradas como {position}.",
+    tooFewCards: "Há poucas cartas nesta posição para montar um tier.",
+    tierRangeS: "Top 1%",
+    tierRangeA: "Top 3%",
+    tierRangeB: "Top 6%",
+    tierRangeC: "Top 10%",
+    entryTemplate: "OVR máx. {ovr} · #{rank} (top {pct}%)",
+    dataUnavailable: "Não foi possível carregar os dados dos jogadores. Tente novamente mais tarde.",
+  },
 };
 
 export default part;
