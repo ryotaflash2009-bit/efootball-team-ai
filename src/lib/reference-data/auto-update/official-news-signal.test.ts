@@ -62,10 +62,11 @@ describe("反映待ちのお知らせと更新日の検出の間隔（2026-10-15
     expect(hasPendingOfficialNews({ items: [{ ...items[0], dataRelated: false }], appliedLatestCardAt: "2026-10-08T17:00:00Z", now: "2026-10-15T06:00:00Z" })).toBe(false);
   });
 
-  it("watchdog の上限: 日本時間の木・金は 70 分・それ以外は 6 時間 30 分", async () => {
+  it("watchdog の上限: 日本時間の木・月は 70 分・それ以外は 6 時間 30 分", async () => {
     const { staleMsFor, WATCHDOG_STALE_MS, WATCHDOG_UPDATE_DAY_STALE_MS } = await import("../../../../scripts/lib/detection-watchdog.mjs");
     expect(staleMsFor("2026-10-15T03:00:00Z")).toBe(WATCHDOG_UPDATE_DAY_STALE_MS); // 木 12:00 JST
-    expect(staleMsFor("2026-10-16T14:00:00Z")).toBe(WATCHDOG_UPDATE_DAY_STALE_MS); // 金 23:00 JST
+    expect(staleMsFor("2026-10-19T14:00:00Z")).toBe(WATCHDOG_UPDATE_DAY_STALE_MS); // 月 23:00 JST
+    expect(staleMsFor("2026-10-16T03:00:00Z")).toBe(WATCHDOG_STALE_MS); // 金 12:00 JST
     expect(staleMsFor("2026-10-14T14:00:00Z")).toBe(WATCHDOG_STALE_MS); // 水 23:00 JST
     expect(staleMsFor("2026-10-16T15:30:00Z")).toBe(WATCHDOG_STALE_MS); // 土 00:30 JST
     expect(staleMsFor("bad")).toBe(WATCHDOG_STALE_MS);
