@@ -210,11 +210,11 @@ export const REPEAT_NOTIFICATION_WINDOW_MS = 6 * 60 * 60 * 1000;
  * @param {string} now
  */
 export function shouldThrottleNotification(n, last, now) {
-  if (!n || !["failed", "attention_required", "unknown", "schedule_gap", "source_stale"].includes(n.kind)) return false;
+  if (!n || !["failed", "attention_required", "unknown", "schedule_gap", "source_stale", "official_ahead"].includes(n.kind)) return false;
   if (!last || typeof last.body !== "string" || typeof last.createdAt !== "string") return false;
   const age = Date.parse(now) - Date.parse(last.createdAt);
   // 取得元が古いままの知らせは 1 日に 1 回まで（同じ状態が続く間、毎回の検出で繰り返さない）
-  const windowMs = n.kind === "source_stale" ? SOURCE_STALE_REPEAT_WINDOW_MS : REPEAT_NOTIFICATION_WINDOW_MS;
+  const windowMs = n.kind === "source_stale" || n.kind === "official_ahead" ? SOURCE_STALE_REPEAT_WINDOW_MS : REPEAT_NOTIFICATION_WINDOW_MS;
   return last.body.startsWith(`**${n.title}**`) && Number.isFinite(age) && age >= 0 && age < windowMs;
 }
 
