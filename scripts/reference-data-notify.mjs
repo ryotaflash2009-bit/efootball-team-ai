@@ -8,7 +8,7 @@
  */
 import { readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
-import { buildDetectionNotification, buildScheduleGapNotice, shouldThrottleNotification, NOTIFY_LABEL } from "./lib/reference-data-notify.mjs";
+import { buildDetectionNotification, buildScheduleGapNotice, buildSourceFreshnessNotice, shouldThrottleNotification, NOTIFY_LABEL } from "./lib/reference-data-notify.mjs";
 
 const [summaryPath, conclusion, runId, runUrl] = process.argv.slice(2);
 let summary = null;
@@ -21,7 +21,9 @@ const gh = (args) => execFileSync("gh", args, { encoding: "utf8" }).trim();
 const now = new Date().toISOString();
 // 毎時の検出: 定期実行の間隔（GitHub の schedule の遅れ・欠落）を確認する。値は run の開始時刻だけ（非秘密）。
 const gap = buildScheduleGapNotice(process.env.PREV_DETECTION_RUN_AT, process.env.THIS_DETECTION_RUN_AT, process.env.DETECTION_EVENT ?? "");
-const notices = [buildDetectionNotification(summary, { conclusion, runId, runUrl }), gap].filter((x) => x.notify);
+// 取得元の鮮度（2026-10-15）: World の全件の確認の要約にある最も新しいカードの日時が 7 日より古ければ知らせる（1 日に 1 回まで）
+const freshness = buildSourceFreshnessNotice(summary, now);
+const notices = [buildDetectionNotification(summary, { conclusion, runId, runUrl }), gap, freshness].filter((x) => x.notify);
 if (notices.length === 0) {
   console.log("no notification");
   process.exit(0);

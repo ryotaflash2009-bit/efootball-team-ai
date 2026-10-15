@@ -64,7 +64,7 @@ export default async function HomePage() {
   const temporaryError = handling === "temporary";
   // 従来は最初の失敗までに得た値だけを表示していた。照会順で失敗より前の結果だけを使う。
   if (settled.usable(0) && metaR.status === "fulfilled") {
-    world = { totalCount: metaR.value.totalCount, source: metaR.value.source, syncFinishedAt: metaR.value.syncFinishedAt };
+    world = { totalCount: metaR.value.totalCount, source: metaR.value.source, syncFinishedAt: metaR.value.syncFinishedAt, latestCardUpdatedAt: metaR.value.latestCardUpdatedAt ?? null };
   }
   if (settled.usable(1) && topR.status === "fulfilled") topOvr = topR.value.players.map(toMiniCardData);
   if (settled.usable(2) && recentR.status === "fulfilled") recent = recentR.value.players.map(toMiniCardData);

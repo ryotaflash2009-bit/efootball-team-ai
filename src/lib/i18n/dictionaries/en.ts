@@ -64,6 +64,7 @@ const en: Dictionary = {
     efhubIndexLabel: "eFHUB Index",
     managersLabel: "Managers",
     syncedAtLabel: "World data imported",
+    sourceLatestCardLabel: "Newest card in source",
     worldUnavailableTitle: "World data isn't set up yet",
     temporaryErrorNotice: "Some data couldn't be loaded right now. Please wait a moment and reload.",
     temporaryErrorReload: "Reload",

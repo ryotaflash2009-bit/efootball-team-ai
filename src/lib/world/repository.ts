@@ -291,6 +291,7 @@ function getSourceMetaSqlite(): WorldSourceMeta {
       totalCount: Number(total?.n ?? 0),
       syncFinishedAt: run?.finished_at ?? null,
       syncStatus: state.world_initial_status ?? run?.status ?? null,
+      latestCardUpdatedAt: (db.prepare("SELECT MAX(appearance_updated_at) AS m FROM world_player_cards").get() as { m: string | null } | undefined)?.m ?? null,
     };
   } catch {
     throw new WorldQueryError();

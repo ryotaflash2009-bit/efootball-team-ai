@@ -129,6 +129,7 @@ const part: PartialDictionary = {
     efhubIndexLabel: "eFHUB-Index",
     managersLabel: "Trainer",
     syncedAtLabel: "World-Daten importiert",
+    sourceLatestCardLabel: "Neueste Karte in der Quelle",
     worldUnavailableTitle: "World-Daten sind noch nicht eingerichtet",
     temporaryErrorNotice: "Einige Daten konnten gerade nicht geladen werden. Bitte warte kurz und lade neu.",
     temporaryErrorReload: "Neu laden",

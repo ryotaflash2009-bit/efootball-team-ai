@@ -132,6 +132,7 @@ const es: PartialDictionary = {
     efhubIndexLabel: "Índice de eFHUB",
     managersLabel: "Entrenadores",
     syncedAtLabel: "Datos de World importados",
+    sourceLatestCardLabel: "Carta más reciente en la fuente",
     worldUnavailableTitle: "Los datos de World aún no están configurados",
     temporaryErrorNotice: "No se pudieron cargar algunos datos. Espera un momento y recarga.",
     temporaryErrorReload: "Recargar",

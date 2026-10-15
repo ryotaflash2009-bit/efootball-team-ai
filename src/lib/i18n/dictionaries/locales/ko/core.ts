@@ -129,6 +129,7 @@ const part: PartialDictionary = {
     efhubIndexLabel: "eFHUB 인덱스",
     managersLabel: "감독",
     syncedAtLabel: "World 데이터 가져온 시각",
+    sourceLatestCardLabel: "출처의 최신 카드",
     worldUnavailableTitle: "World 데이터가 아직 설정되지 않았습니다",
     temporaryErrorNotice: "일부 데이터를 지금 불러오지 못했습니다. 잠시 후 새로고침해 주세요.",
     temporaryErrorReload: "새로고침",

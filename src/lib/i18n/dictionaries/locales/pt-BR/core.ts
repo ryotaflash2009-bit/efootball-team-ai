@@ -132,6 +132,7 @@ const ptBR: PartialDictionary = {
     efhubIndexLabel: "Índice do eFHUB",
     managersLabel: "Técnicos",
     syncedAtLabel: "Dados do World importados",
+    sourceLatestCardLabel: "Carta mais recente na fonte",
     worldUnavailableTitle: "Os dados do World ainda não foram configurados",
     temporaryErrorNotice: "Alguns dados não puderam ser carregados agora. Aguarde um momento e recarregue.",
     temporaryErrorReload: "Recarregar",

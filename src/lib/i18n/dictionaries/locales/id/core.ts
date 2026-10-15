@@ -129,6 +129,7 @@ const part: PartialDictionary = {
     efhubIndexLabel: "Indeks eFHUB",
     managersLabel: "Manajer",
     syncedAtLabel: "Data World diimpor",
+    sourceLatestCardLabel: "Kartu terbaru di sumber",
     worldUnavailableTitle: "Data World belum diatur",
     temporaryErrorNotice: "Sebagian data tidak dapat dimuat saat ini. Tunggu sebentar lalu muat ulang.",
     temporaryErrorReload: "Muat ulang",
