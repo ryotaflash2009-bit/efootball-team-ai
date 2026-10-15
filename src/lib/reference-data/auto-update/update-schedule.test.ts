@@ -25,6 +25,11 @@ describe("定期実行の判定(fail-closed)", () => {
     expect(SCHEDULE_POLICY.scheduleTriggerPresent).toBe(true);
   });
 
+  it("手動の再試行: 'detect-force' でも起動できる（それ以外の語は不可）", () => {
+    expect(decideDetectionTrigger({ eventName: "workflow_dispatch", confirm: "detect-force" })).toEqual({ run: true });
+    expect(decideDetectionTrigger({ eventName: "workflow_dispatch", confirm: "force" })).toEqual({ run: false, reason: "confirmation_missing" });
+  });
+
   it("起動元: scheduleは確認入力なしで可、手動は確認入力'detect'が必須、その他のeventは不可", () => {
     expect(decideDetectionTrigger({ eventName: "schedule", confirm: undefined })).toEqual({ run: true });
     expect(decideDetectionTrigger({ eventName: "schedule", confirm: "" })).toEqual({ run: true });
@@ -91,7 +96,7 @@ describe("検出workflowの静的監査", () => {
 
   it("scheduleとmanualは同じ安全Gateを通る(変数'true'が必須。scheduleは確認入力不要、manualは'detect'必須)。CLIも同じ判定をする", () => {
     const gates = [...body.matchAll(/^\s+if: (.+)$/gm)].map((m) => m[1].trim()).filter((x) => x.includes("vars."));
-    expect(gates).toEqual([`\${{ vars.${DETECTION_ENABLE_VARIABLE} == 'true' && (github.event_name == 'schedule' || inputs.confirm == 'detect') }}`]);
+    expect(gates).toEqual([`\${{ vars.${DETECTION_ENABLE_VARIABLE} == 'true' && (github.event_name == 'schedule' || inputs.confirm == 'detect' || inputs.confirm == 'detect-force') }}`]);
     const confirmBlock = body.slice(body.indexOf("      confirm:"), body.indexOf("permissions:"));
     expect(confirmBlock).toContain("'detect'");
     expect(confirmBlock).toContain("required: true");

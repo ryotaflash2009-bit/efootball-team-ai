@@ -155,3 +155,16 @@ describe("同時実行: 前の検出・重い Pipeline を途中で取り消さ�
     }
   });
 });
+
+describe("手動の再試行（confirm detect-force・2026-10-15）", () => {
+  it("24 時間以内に報告済みの同じ候補でも repeatCandidate にしない（状態の記録は同じ）", () => {
+    const T = "2026-10-15T12:00:00.000Z";
+    const later = "2026-10-15T13:00:00.000Z";
+    const summary = { ok: true, world: { decision: "update_available", sourceChecksum12: "883fa722992f" }, managers: { decision: "no_change" } };
+    const first = applyRepeatMarking(summary, null, T);
+    const normal = applyRepeatMarking(summary, JSON.stringify(first.stateJson), later);
+    expect((normal.summary.world as { repeatCandidate: boolean }).repeatCandidate).toBe(true);
+    const forced = applyRepeatMarking(summary, JSON.stringify(first.stateJson), later, { forceRetry: true });
+    expect((forced.summary.world as { repeatCandidate: boolean }).repeatCandidate).toBe(false);
+  });
+});

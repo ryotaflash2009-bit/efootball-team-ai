@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { APPLIED_STATE_FILE, parseAppliedState, runDetection, runManagersDetection, type DatasetDetection, type DetectionResult } from "./update-detection";
 import { decideWorldScan, fetchWorldLightSignal, markRepeatCandidate, nextWorldLightState, parseCandidateState, type WorldLightSignal, type WorldScanDecision } from "./update-detection-light";
-import { decideDetectionRun, decideDetectionTrigger } from "./update-schedule";
+import { decideDetectionRun, decideDetectionTrigger, DETECTION_FORCE_CONFIRM_WORD } from "./update-schedule";
 import { WORLD_LIMITS } from "./stage4-world";
 import { DETECTION_APPROVAL_TOKEN, createUpstreamHttpTransport, type UpstreamRequestLogEntry } from "./upstream-http-transport";
 import { WORLD_STAT_KEYS } from "./source-world";
@@ -173,7 +173,7 @@ function writeState(p: string | undefined, state: unknown): void {
  * update_available の dataset に、24 時間以内に同じ checksum を報告済みなら repeatCandidate: true を付ける（Orchestrator はその dataset を処理しない）。
  * 状態（candidates）は summary と同じ cache に保存する。読めない・無い場合は repeat なし（Pipeline へ渡す側に倒す）。
  */
-export function applyRepeatMarking(summary: Record<string, unknown>, stateText: string | null, now: string): { summary: Record<string, unknown>; stateJson: unknown } {
+export function applyRepeatMarking(summary: Record<string, unknown>, stateText: string | null, now: string, opts: { forceRetry?: boolean } = {}): { summary: Record<string, unknown>; stateJson: unknown } {
   let state = parseCandidateState(stateText);
   const out: Record<string, unknown> = { ...summary };
   for (const ds of ["world", "managers"] as const) {
@@ -181,7 +181,8 @@ export function applyRepeatMarking(summary: Record<string, unknown>, stateText: 
     if (!d || d.decision !== "update_available" || typeof d.sourceChecksum12 !== "string") continue;
     const r = markRepeatCandidate({ state, dataset: ds, checksum12: d.sourceChecksum12, now });
     state = r.state;
-    out[ds] = { ...d, repeatCandidate: r.repeat };
+    // 手動の再試行（confirm "detect-force"）は repeat にしない（状態の記録は同じ）
+    out[ds] = { ...d, repeatCandidate: opts.forceRetry ? false : r.repeat };
   }
   return { summary: out, stateJson: state };
 }
@@ -201,6 +202,7 @@ export async function main(env: Readonly<Record<string, string | undefined>> = p
     return 1;
   }
   const trigger = env.GITHUB_ACTIONS === "true" ? (env.GITHUB_EVENT_NAME ?? "") : "local";
+  const forceRetry = trigger === "workflow_dispatch" && env.REFERENCE_DATA_DETECTION_CONFIRM === DETECTION_FORCE_CONFIRM_WORD;
   if (env.GITHUB_ACTIONS === "true") {
     const t = decideDetectionTrigger({ eventName: env.GITHUB_EVENT_NAME, confirm: env.REFERENCE_DATA_DETECTION_CONFIRM });
     if (!t.run) {
@@ -239,6 +241,7 @@ export async function main(env: Readonly<Record<string, string | undefined>> = p
       buildLightDetectionSummary({ trigger, fetchedAt, managers, world: { signal: light.signal, decision: scan, lastFullAt }, log: transport.log }),
       readText(candidatesPath),
       fetchedAt,
+      { forceRetry },
     );
     const lightSummary = marked.summary;
     writeState(candidatesPath, marked.stateJson);
@@ -262,6 +265,7 @@ export async function main(env: Readonly<Record<string, string | undefined>> = p
     buildDetectionSummary({ trigger, fetchedAt, result, log: transport.log, worldScanReason: light.ok && scan ? scan.reason : "world_signal_unavailable" }),
     readText(candidatesPath),
     fetchedAt,
+    { forceRetry },
   );
   const summary = markedFull.summary;
   writeState(candidatesPath, markedFull.stateJson);

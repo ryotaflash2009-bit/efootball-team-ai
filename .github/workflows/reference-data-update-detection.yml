@@ -31,7 +31,7 @@ on:
   workflow_dispatch:
     inputs:
       confirm:
-        description: "Type 'detect' to run a manual detection (upstream only; no Production, no Backup, no apply)."
+        description: "Type 'detect' to run a manual detection (upstream only; no Production, no Backup, no apply). 'detect-force' also retries a candidate already reported within 24 hours."
         required: true
         type: string
 
@@ -46,7 +46,7 @@ jobs:
   detect:
     # Runs only when the owner enabled the variable AND (a scheduled run, once a schedule is approved, or a manual
     # run confirmed with exactly "detect"). Otherwise the job is skipped and no request is sent.
-    if: ${{ vars.REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED == 'true' && (github.event_name == 'schedule' || inputs.confirm == 'detect') }}
+    if: ${{ vars.REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED == 'true' && (github.event_name == 'schedule' || inputs.confirm == 'detect' || inputs.confirm == 'detect-force') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
