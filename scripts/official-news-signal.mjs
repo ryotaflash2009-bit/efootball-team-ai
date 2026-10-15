@@ -9,7 +9,8 @@
  */
 import { readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
-import { OFFICIAL_NEWS_URL, parseOfficialNews, buildOfficialAheadNotice } from "./lib/official-news-signal.mjs";
+import { OFFICIAL_NEWS_URL, parseOfficialNews, buildOfficialAheadNotice, hasPendingOfficialNews } from "./lib/official-news-signal.mjs";
+import { decideWatchdogDispatch } from "./lib/detection-watchdog.mjs";
 import { shouldThrottleNotification, NOTIFY_LABEL } from "./lib/reference-data-notify.mjs";
 
 const dryRun = process.argv.includes("--dry-run");
@@ -31,9 +32,23 @@ try {
 const items = parseOfficialNews(html);
 const notice = buildOfficialAheadNotice({ items, appliedLatestCardAt, now });
 console.log(JSON.stringify({ parsed: items ? items.length : null, dataRelated: items ? items.filter((x) => x.dataRelated).length : null, appliedLatestCardAt, decision: notice.notify ? "notify" : notice.reason, latestId: notice.latestId ?? null }));
+const gh = (args) => execFileSync("gh", args, { encoding: "utf8" }).trim();
+
+// 反映待ちの新しいお知らせ（直近 48 時間）があれば、前回の成功から 60 分を超えているときだけ検出を起動する（取得元が追いつき次第すぐ反映）。
+const pending = hasPendingOfficialNews({ items, appliedLatestCardAt, now });
+console.log(JSON.stringify({ pendingOfficialNews: pending }));
+if (pending && !dryRun && process.env.DETECTION_ENABLED === "true") {
+  const runs = JSON.parse(gh(["run", "list", "--workflow", "reference-data-update-detection.yml", "--limit", "30", "--json", "databaseId,event,createdAt,status,conclusion"])).map((r) => ({ id: r.databaseId, event: r.event, createdAt: r.createdAt, status: r.status, conclusion: r.conclusion }));
+  const d = decideWatchdogDispatch({ now, runs, enabled: true, staleMs: 60 * 60 * 1000 });
+  console.log(JSON.stringify({ dispatchDecision: d.reason }));
+  if (d.dispatch) {
+    gh(["workflow", "run", "reference-data-update-detection.yml", "--ref", "main", "-f", "confirm=detect"]);
+    console.log("dispatched detection");
+  }
+}
+
 if (!notice.notify || dryRun) process.exit(0);
 
-const gh = (args) => execFileSync("gh", args, { encoding: "utf8" }).trim();
 gh(["label", "create", NOTIFY_LABEL, "--color", "0E8A16", "--description", "Reference data update detection", "--force"]);
 const open = JSON.parse(gh(["issue", "list", "--label", NOTIFY_LABEL, "--state", "open", "--json", "number", "--limit", "1"]));
 if (open.length > 0) {

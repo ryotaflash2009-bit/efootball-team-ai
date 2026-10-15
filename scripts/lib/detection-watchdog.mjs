@@ -10,6 +10,19 @@
 export const WATCHDOG_STALE_MS = 6 * 60 * 60 * 1000 + 30 * 60 * 1000;
 
 /**
+ * ゲームの更新日（2026-10-15・本人の指示「とにかく最新にしておきたい」）: eFootball の新しいデータは日本時間の木曜に出ることが多く、
+ * 取得元はその後に追いつく。木曜・金曜（日本時間）は検出の間隔の上限を 70 分にし、取得元の更新に早く気づく（それ以外は 6 時間 30 分）。
+ */
+export const WATCHDOG_UPDATE_DAY_STALE_MS = 70 * 60 * 1000;
+/** @param {string} now ISO */
+export function staleMsFor(now) {
+  const t = Date.parse(now);
+  if (!Number.isFinite(t)) return WATCHDOG_STALE_MS;
+  const jstDay = new Date(t + 9 * 60 * 60 * 1000).getUTCDay(); // 0=日 … 4=木 5=金
+  return jstDay === 4 || jstDay === 5 ? WATCHDOG_UPDATE_DAY_STALE_MS : WATCHDOG_STALE_MS;
+}
+
+/**
  * @typedef {{ id: number, event: string, createdAt: string, status: string, conclusion: string | null }} DetectionRun
  * @param {{ now: string, runs: DetectionRun[], enabled: boolean, staleMs?: number }} p
  *   runs: 検出の workflow の run の一覧（`gh run list --workflow reference-data-update-detection.yml` 相当・順不同）

@@ -94,3 +94,19 @@ export function buildOfficialAheadNotice({ items, appliedLatestCardAt, now }) {
     latestId: latest.id,
   };
 }
+
+/** 反映待ちのお知らせとみなす期間（掲載から 48 時間）。この間は検出を早めに起動する。 */
+export const OFFICIAL_PENDING_WINDOW_MS = 48 * 60 * 60 * 1000;
+
+/**
+ * まだ TeamAIXI に反映されていない、直近 48 時間のデータに関わるお知らせがあるか（2026-10-15・「とにかく最新に」）。
+ * あれば検出を早めに起動する（取得元が追いついた時点ですぐ反映するため）。
+ * @param {{ items: { id: number; at: string; dataRelated: boolean }[] | null; appliedLatestCardAt: string | null | undefined; now: string }} input
+ */
+export function hasPendingOfficialNews({ items, appliedLatestCardAt, now }) {
+  if (!items) return false;
+  const applied = Date.parse(String(appliedLatestCardAt ?? ""));
+  const n = Date.parse(now);
+  if (!Number.isFinite(applied) || !Number.isFinite(n)) return false;
+  return items.some((x) => x.dataRelated && Date.parse(x.at) > applied && n - Date.parse(x.at) >= 0 && n - Date.parse(x.at) <= OFFICIAL_PENDING_WINDOW_MS);
+}

@@ -127,7 +127,9 @@ describe("リポジトリ内の全workflow: scheduleは検出workflow・検出�
     expect(body).toMatch(/- cron: "29 \*\/6 \* \* \*"/);
     expect(body).not.toMatch(/secrets\./);
     expect(body).not.toMatch(/^\s*environment\s*:/m);
-    expect(body).toMatch(/permissions:\s*\n\s+contents: read\s*\n\s+issues: write\s*\n/);
+    expect(body).toMatch(/permissions:\s*\n\s+contents: read\s*\n\s+issues: write\s*\n\s+actions: write/);
+    // 検出の起動は、検出そのものと同じ変数が "true" のときだけ
+    expect(body).toMatch(/DETECTION_ENABLED: \$\{\{ vars\.REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED \}\}/);
     expect(body.match(/^\s+run: .*/gm)).toEqual(["        run: node scripts/official-news-signal.mjs"]);
   });
 

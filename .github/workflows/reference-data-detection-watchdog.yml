@@ -13,6 +13,7 @@ name: Reference data detection watchdog
 on:
   schedule:
     - cron: "43 */3 * * *"   # 3 時間ごとの 43 分（検出の 17 分と重ならない）
+    - cron: "43 * * * 3,4,5"  # 2026-10-15: 日本時間の木・金（UTC の水〜金）は毎時。間隔の上限は staleMsFor が日本時間の曜日で決める
   workflow_dispatch:
     inputs:
       confirm:
@@ -85,9 +86,10 @@ jobs:
             --json databaseId,event,createdAt,status,conclusion > runs.json
           node --input-type=module -e '
             import { readFileSync, appendFileSync } from "node:fs";
-            import { decideWatchdogDispatch } from "./scripts/lib/detection-watchdog.mjs";
+            import { decideWatchdogDispatch, staleMsFor } from "./scripts/lib/detection-watchdog.mjs";
             const runs = JSON.parse(readFileSync("runs.json", "utf8")).map((r) => ({ id: r.databaseId, event: r.event, createdAt: r.createdAt, status: r.status, conclusion: r.conclusion }));
-            const d = decideWatchdogDispatch({ now: new Date().toISOString(), runs, enabled: true });
+            const now = new Date().toISOString();
+            const d = decideWatchdogDispatch({ now, runs, enabled: true, staleMs: staleMsFor(now) });
             console.log(JSON.stringify(d));
             appendFileSync(process.env.GITHUB_OUTPUT ?? "/dev/null", `dispatch=${d.dispatch}\n`);
             appendFileSync(process.env.GITHUB_STEP_SUMMARY ?? "/dev/null", `watchdog: ${d.reason} (last success ${d.lastSuccessAt ?? "none"}, ${d.ageMinutes ?? "?"} min)\n`);

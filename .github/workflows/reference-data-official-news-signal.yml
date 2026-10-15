@@ -3,7 +3,8 @@ name: Reference data official news signal
 # 公式のお知らせを「新しいデータが出た合図」として使う（2026-10-15・本人の承認）。
 # - 6 時間に 1 回、eFootball 公式のお知らせの一覧へ GET 1 回（20 秒で打ち切り）。データに関わるお知らせから 3 日たっても
 #   TeamAIXI に反映済みの最も新しいカード（applied-state）がそれより古ければ、参照データの通知の Issue にコメントする（1 日に 1 回まで）。
-# - Secret・Environment・Production には触れない。GITHUB_TOKEN（issues: write）だけ。自動では何も適用しない。
+# - Secret・Environment・Production には触れない。GITHUB_TOKEN（issues: write・actions: write）だけ。自動では何も適用しない。
+# - 2026-10-15: 反映待ちの新しいお知らせ（48 時間以内）があれば、前回の検出の成功から 60 分を超えているときだけ検出を 1 回起動する。
 # - 判断の記録: docs/production-readiness/official-news-signal.md
 
 on:
@@ -14,6 +15,7 @@ on:
 permissions:
   contents: read
   issues: write
+  actions: write   # 反映待ちの新しいお知らせがあるとき、検出の workflow を 1 回起動する（watchdog と同じ方法・Secrets なし）
 
 concurrency:
   group: reference-data-official-news-signal
@@ -36,4 +38,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
+          DETECTION_ENABLED: ${{ vars.REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED }}
         run: node scripts/official-news-signal.mjs
