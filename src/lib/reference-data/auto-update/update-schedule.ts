@@ -48,6 +48,11 @@ export function decideDetectionRun(input: { stage: string; enableVariable: strin
 }
 
 export const DETECTION_CONFIRM_WORD = "detect";
+/**
+ * 手動の再試行（2026-10-15）: 24 時間以内に報告済みの同じ候補（repeatCandidate）でも Pipeline へ渡す。承認待ちを取り消した後に
+ * 方針を直して同じ更新をやり直すときに使う。watchdog・公式のお知らせの起動は "detect"（重複の防止はそのまま）。
+ */
+export const DETECTION_FORCE_CONFIRM_WORD = "detect-force";
 
 export type DetectionTriggerDecision = { readonly run: false; readonly reason: "trigger_not_allowed" | "confirmation_missing" } | { readonly run: true };
 
@@ -57,6 +62,6 @@ export type DetectionTriggerDecision = { readonly run: false; readonly reason: "
  */
 export function decideDetectionTrigger(input: { eventName: string | undefined; confirm: string | undefined }): DetectionTriggerDecision {
   if (input.eventName === "schedule") return { run: true };
-  if (input.eventName === "workflow_dispatch") return input.confirm === DETECTION_CONFIRM_WORD ? { run: true } : { run: false, reason: "confirmation_missing" };
+  if (input.eventName === "workflow_dispatch") return input.confirm === DETECTION_CONFIRM_WORD || input.confirm === DETECTION_FORCE_CONFIRM_WORD ? { run: true } : { run: false, reason: "confirmation_missing" };
   return { run: false, reason: "trigger_not_allowed" };
 }
