@@ -29,11 +29,13 @@ export async function generateMetadata({ params }: { params: Promise<{ worldCard
     if (!p) return {};
     const name = p.nameJa ?? p.nameEn ?? parsed.data;
     const pos = p.registeredPosition ? `（${p.registeredPosition}）` : "";
-    return pageMetadata({
+    const meta = pageMetadata({
       path: `/players/world/${parsed.data}`,
       title: `${name}${pos}の能力値・育成計算 | TeamAIXI`,
       description: `イーフト（eFootball™）の${name}${pos}の能力値・スキル・育成ポイントの配分を確認し、チーム診断にも使えます。`,
     });
+    // 暫定のカード（正式なデータの前）は検索に出さない（2026-10-15）
+    return p.provisional ? { ...meta, robots: { index: false, follow: true } } : meta;
   } catch {
     return {};
   }

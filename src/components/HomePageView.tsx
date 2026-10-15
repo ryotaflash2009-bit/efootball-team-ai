@@ -1,5 +1,6 @@
 "use client";
 
+import { ProvisionalCardsLink } from "@/components/world/ProvisionalCardsLink";
 import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
 import Link from "next/link";
 import { WorldCardImage } from "@/components/world/WorldCardImage";
@@ -84,6 +85,7 @@ export function HomePageView({
   topOvr,
   recent,
   temporaryError = false,
+  provisionalCount = 0,
 }: {
   world: HomePageWorldSummary | null;
   efhubTotal: number | null;
@@ -92,6 +94,8 @@ export function HomePageView({
   recent: HomeMiniCardData[];
   /** 一時的な照会の失敗で、一部（または全部）を読み込めなかった。 */
   temporaryError?: boolean;
+  /** 新しいカード（暫定）の枚数（2026-10-15）。 */
+  provisionalCount?: number;
 }) {
   const t = useT();
   const { locale, displayLocale } = useLocale();
@@ -223,6 +227,9 @@ export function HomePageView({
         {/* データ指標 */}
         <section>
           <SectionHeader title={th("dataStatusHeading")} as="h2" hint={world ? world.source : undefined} />
+          <div className="mb-3">
+            <ProvisionalCardsLink count={provisionalCount} />
+          </div>
           {world ? (
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
               {stats.map((s) => {

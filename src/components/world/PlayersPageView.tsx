@@ -1,5 +1,6 @@
 "use client";
 
+import { ProvisionalCardsLink } from "@/components/world/ProvisionalCardsLink";
 import "@/lib/i18n/dictionaries/ja-ns/playersPage";
 import "@/lib/i18n/dictionaries/ja-ns/searchInput";
 import { Suspense } from "react";
@@ -70,12 +71,15 @@ export function PlayersPageView({
   sourceMeta,
   hasFilters,
   searchParams,
+  provisionalCount = 0,
 }: {
   result: Omit<WorldListResult, "players"> & { players: WorldPlayerCardData[] };
   facets: WorldFacets;
   sourceMeta: WorldSourceMeta | null;
   hasFilters: boolean;
   searchParams: SP;
+  /** 新しいカード（暫定）の枚数（2026-10-15）。 */
+  provisionalCount?: number;
 }) {
   const t = useT();
   const { locale, displayLocale } = useLocale();
@@ -88,6 +92,7 @@ export function PlayersPageView({
 
   return (
     <div className="flex flex-col gap-5">
+      <ProvisionalCardsLink count={provisionalCount} />
       <PageHeader
         title={t("playersPage", "title")}
         icon="players"

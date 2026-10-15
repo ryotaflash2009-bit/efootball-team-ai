@@ -65,6 +65,8 @@ export function noindexReasonForPath(pathname: string, draftGuideSlugs: Readonly
   if (parts[0] === "players" && parts.length >= 2) {
     if (parts[1] === "guide") return parts.length === 3 && !draftGuideSlugs.has(parts[2]) ? null : "draft-guide";
     if (parts[1] === "world") return parts.length === 3 ? null : "non-canonical";
+    // 新しいカード（暫定）の一覧（2026-10-15）。各カードの詳細は暫定の間は noindex（詳細の画面の metadata）。
+    if (parts[1] === "new" && parts.length === 2) return null;
     return "legacy-player-page";
   }
   return null;

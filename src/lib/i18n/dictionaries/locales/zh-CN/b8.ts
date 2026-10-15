@@ -603,6 +603,19 @@ const part: PartialDictionary = {
     entryTemplate: "最高 OVR {ovr} · 第 {rank} 名（前 {pct}%）",
     dataUnavailable: "无法加载球员数据，请稍后再试。",
   },
+  provisionalCards: {
+    badge: "暂定",
+    badgeTitle: "新卡（正式数据反映前的暂定数值）",
+    noticeTitle: "新卡（暂定数据）",
+    noticeBody: "该卡尚未收录在主要数据来源中，因此先用其他数据库的数值显示。能力值、技能和基础 OVR 以已验证的方法导入，但日文名、图片、加成和部分新技能可能缺失。正式数据到达后会自动替换。",
+    maxLevelUnknown: "最高等级仍在确认中，暂时无法使用培养计算。",
+    maxLevelFromUsers: "最高等级来自来源网站用户的投稿（正式数据到达后会替换）。",
+    sourceLabel: "数据来源：",
+    newCardsPageTitle: "新卡（暂定）",
+    newCardsIntro: "尚未收录在主要数据来源中的新卡。正式数据到达后会移到普通球员列表。",
+    newCardsEmpty: "目前没有暂定的卡（全部为正式数据）。",
+    newCardsLinkTemplate: "查看 {count} 张新卡（暂定）",
+  },
 };
 
 export default part;

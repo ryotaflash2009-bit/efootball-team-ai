@@ -13,6 +13,8 @@ export type WorldSortKey =
   | "updated_desc";
 
 /** 一覧・カード表示に使う要約情報 */
+import type { ProvisionalInfo } from "@/lib/reference-data/provisional/provisional-cards";
+
 export interface WorldPlayerListItem {
   worldCardId: string;
   nameEn: string | null;
@@ -43,6 +45,8 @@ export interface WorldPlayerListItem {
   hasEfhubLink: boolean;
   /** 高信頼リンク先の eFHUB カード ID（数字文字列）。なければ null */
   efhubCardId: string | null;
+  /** 暫定のカード（eFootball World にまだ無く PES Master から補ったもの・2026-10-15）。正式なカードでは無い（undefined）。 */
+  provisional?: ProvisionalInfo;
 }
 
 /** 能力値 1 項目 */

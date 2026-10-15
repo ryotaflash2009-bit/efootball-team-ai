@@ -12,6 +12,7 @@ import type {
 } from "./types";
 import { WORLD_CARD_ID_RE } from "./schemas";
 import { getWorldDataSource } from "@/lib/reference-data/runtime/data-source";
+import { getProvisionalRow, listProvisionalRows, provisionalInfoOf } from "@/lib/reference-data/provisional/provisional-cards";
 import {
   listPlayersFromSupabase,
   getPlayerByWorldIdFromSupabase,
@@ -21,6 +22,7 @@ import {
   getSourceMetaFromSupabase,
   _resetFacetCacheForSupabase,
   listAllWorldCardIdsFromSupabase,
+  supabaseRowToDetail,
 } from "@/lib/reference-data/runtime/world-source";
 
 type Row = Record<string, unknown>;
@@ -102,8 +104,20 @@ function buildAppliedFilters(q: WorldListQuery): Record<string, string | number 
 
 /** 詳細: world_card_id 1 件（見つからなければ null） */
 export async function getPlayerByWorldId(worldCardId: string): Promise<WorldPlayerDetail | null> {
-  if (getWorldDataSource() === "supabase") return getPlayerByWorldIdFromSupabase(worldCardId);
-  return getPlayerByWorldIdSqlite(worldCardId);
+  const found = getWorldDataSource() === "supabase" ? await getPlayerByWorldIdFromSupabase(worldCardId) : getPlayerByWorldIdSqlite(worldCardId);
+  // World に無ければ暫定のカード（PES Master から補ったもの・2026-10-15）。World にあれば常に World を優先する。
+  return found ?? provisionalDetail(worldCardId);
+}
+
+/** 暫定のカード → 詳細。無ければ null。 */
+export function provisionalDetail(worldCardId: string): WorldPlayerDetail | null {
+  const row = getProvisionalRow(worldCardId);
+  return row ? { ...supabaseRowToDetail(row), provisional: provisionalInfoOf(row) } : null;
+}
+
+/** 暫定のカードの一覧（新しく見つかった順・2026-10-15）。 */
+export function listProvisionalPlayers(): WorldPlayerListItem[] {
+  return listProvisionalRows().map((row) => ({ ...rowToListItem(row), provisional: provisionalInfoOf(row) }));
 }
 
 function getPlayerByWorldIdSqlite(worldCardId: string): WorldPlayerDetail | null {
@@ -177,8 +191,16 @@ function getPlayerByWorldIdSqlite(worldCardId: string): WorldPlayerDetail | null
  * 見つからなかった ID は結果に含まれない。入力上限あり（DoS 回避）。順序は入力順を尊重。
  */
 export async function getPlayersByWorldIds(ids: string[]): Promise<WorldPlayerListItem[]> {
-  if (getWorldDataSource() === "supabase") return getPlayersByWorldIdsFromSupabase(ids);
-  return getPlayersByWorldIdsSqlite(ids);
+  const found = getWorldDataSource() === "supabase" ? await getPlayersByWorldIdsFromSupabase(ids) : getPlayersByWorldIdsSqlite(ids);
+  // World に無い ID は暫定のカードで補う（並びは World の結果の後・2026-10-15）
+  const have = new Set(found.map((p) => p.worldCardId));
+  const extra: WorldPlayerListItem[] = [];
+  for (const id of new Set(ids)) {
+    if (have.has(id)) continue;
+    const row = getProvisionalRow(id);
+    if (row) extra.push({ ...rowToListItem(row), provisional: provisionalInfoOf(row) });
+  }
+  return extra.length ? [...found, ...extra] : found;
 }
 
 function getPlayersByWorldIdsSqlite(ids: string[]): WorldPlayerListItem[] {

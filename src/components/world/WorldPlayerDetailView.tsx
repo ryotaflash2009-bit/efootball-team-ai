@@ -7,6 +7,7 @@ import { WorldStatGrid } from "@/components/world/WorldStatGrid";
 import { WorldBasePercentilePanel } from "@/components/world/WorldBasePercentilePanel";
 import { PlayerTitles } from "@/components/titles/PlayerTitles";
 import { WorldPlayerHero, type SafeWorldPlayerDetail } from "@/components/world/WorldPlayerHero";
+import { ProvisionalCardNotice } from "@/components/world/ProvisionalCardNotice";
 import { SamePlayerOtherCards } from "@/components/world/SamePlayerOtherCards";
 import Link from "next/link";
 import { playersFilterHref } from "@/lib/world/filter-patterns";
@@ -224,6 +225,7 @@ export function WorldPlayerDetailView({
     <PageContainer width="full">
       <div className="flex flex-col gap-4">
         <WorldPlayerHero player={player} imageSources={heroImageSources} />
+        {player.provisional ? <ProvisionalCardNotice info={player.provisional} /> : null}
         <Tabs
           ariaLabel={tp("tabsAriaLabel")}
           sticky

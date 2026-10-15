@@ -603,6 +603,19 @@ const part: PartialDictionary = {
     entryTemplate: "OVR maks {ovr} · #{rank} ({pct}% teratas)",
     dataUnavailable: "Data pemain tidak dapat dimuat. Coba lagi nanti.",
   },
+  provisionalCards: {
+    badge: "Sementara",
+    badgeTitle: "Kartu baru (nilai sementara sebelum data resmi masuk)",
+    noticeTitle: "Kartu baru (data sementara)",
+    noticeBody: "Kartu ini belum ada di sumber utama kami, jadi ditampilkan lebih dulu memakai database lain. Atribut, skill, dan OVR dasar diambil dengan metode yang sudah diverifikasi, tetapi nama Jepang, gambar, booster, dan beberapa skill baru bisa belum ada. Kartu ini diganti otomatis saat data resmi masuk.",
+    maxLevelUnknown: "Level maksimum masih dikonfirmasi, jadi perhitungan progres belum tersedia.",
+    maxLevelFromUsers: "Level maksimum berasal dari kiriman pengguna di situs sumber (diganti saat data resmi masuk).",
+    sourceLabel: "Sumber data:",
+    newCardsPageTitle: "Kartu baru (sementara)",
+    newCardsIntro: "Kartu baru yang belum ada di sumber utama kami. Kartu pindah ke daftar pemain biasa saat data resmi masuk.",
+    newCardsEmpty: "Saat ini tidak ada kartu sementara (semua data resmi).",
+    newCardsLinkTemplate: "Lihat {count} kartu baru (sementara)",
+  },
 };
 
 export default part;
