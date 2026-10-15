@@ -18,7 +18,7 @@
  *   実際に自動で書き込むのは、Repository variable の kill switch がすべて "true" のときだけ（それ以外は手動承認の経路）。
  */
 export const AUTO_APPLY_POLICY = {
-  version: "auto-apply-policy/2026-10-12.v3",
+  version: "auto-apply-policy/2026-10-15.v4",
   rollout: "C",
   world: {
     targetTable: "world_player_cards",
@@ -39,6 +39,9 @@ export const AUTO_APPLY_POLICY = {
       "team",
       "league",
       "region",
+      // v4（2026-10-15）: World の通常の更新（追加 62・更新 5,844）が国籍の変更 3 枚だけで手動の承認待ちになった。
+      // 国籍は表示と絞り込みの列で、計算に使わない（チーム・リーグ・地域と同じ扱い）。
+      "nationality",
       "image_url",
       "mobile_image_url",
       "appearance_updated_at",
