@@ -54,3 +54,11 @@ Evidence の JSON（`evidence/<world|managers>-auto-apply-<日付>-<run>.json`�
   `source_url`）だけの更新を 5 人まで自動にする。計算に効く列（`boosters`・`booster_confirmation`・`has_booster`・6 つの戦術の適性）は引き続き手動。
   updater の列の権限（`create-reference-data-updater-role.sql`）の内側だけ。
 - 古い承認待ちは watchdog が 24 時間で取り消す（変更なし）。取り消しの後の次の検出から v3 で判定する。
+
+## v4（2026-10-15）
+
+- World の通常の更新（追加 62・更新 5,844・うち構造の変更 3・orchestrator run 38730110408・dry run verified）が、国籍（`nationality`）の変更 3 枚だけで
+  `unknown_changed_field` になり、手動の承認待ちで止まった（本人の指示「なんとしてでも最新の情報に」）。
+- 国籍は表示と絞り込みの列で、計算に使わない（チーム・リーグ・地域と同じ扱い）。`world.changedFieldAllowlist` に `nationality` を足した。
+- それ以外の条件（追加 2%・更新 50%・構造の変更 10%・削除 0・重複 0・schema drift 0・Backup・dry run の検証）は変えない。
+- 承認待ちのまま止まっていた Apply（run 38734019692）は取り消し（書き込みなし）、v4 で検出からやり直す。

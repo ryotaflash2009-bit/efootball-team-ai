@@ -102,7 +102,7 @@ describe("自動 Apply の判定（拒否の fixture）", () => {
     ["post-verifier not ready", world((i) => { i.readiness.postVerifier = false; }), "AUTO_APPLY_BLOCKED", "postVerifier_not_ready"],
     ["unknown changed field (stats)", world((i) => { i.plan.changedFields.push("stats"); }), "MANUAL_APPLY_REQUIRED", "unknown_changed_field"],
     ["unknown changed field (registered_position)", world((i) => { i.plan.changedFields.push("registered_position"); }), "MANUAL_APPLY_REQUIRED", "unknown_changed_field"],
-    ["unknown changed field (nationality)", world((i) => { i.plan.changedFields.push("nationality"); }), "MANUAL_APPLY_REQUIRED", "unknown_changed_field"],
+    ["unknown changed field (preferred_foot)", world((i) => { i.plan.changedFields.push("preferred_foot"); }), "MANUAL_APPLY_REQUIRED", "unknown_changed_field"],
     ["add ratio over 2%", world((i) => { i.plan.added = 300; i.plan.afterCount = 13597; }), "MANUAL_APPLY_REQUIRED", "threshold_add_ratio"],
     ["update ratio over 50%", world((i) => { i.plan.changed = 7000; i.plan.cardRatingOnlyChanged = 6994; }), "MANUAL_APPLY_REQUIRED", "threshold_update_ratio"],
     ["structural over 10%", world((i) => { i.plan.structuralChanged = 1330; i.plan.cardRatingOnlyChanged = 4345; }), "MANUAL_APPLY_REQUIRED", "threshold_structural"],
@@ -151,11 +151,21 @@ describe("v2（2026-10-11）: 2026-10-09 の World の通常の大型更新（�
       i.plan.productionCounts = { world_player_cards: 13372, managers: 69, import_batches: 14 };
       i.backup.rowCounts = { world_player_cards: 13372, managers: 69, player_card_analysis: 19, import_batches: 14 };
     });
+  it("v4（2026-10-15）: 2026-10-15 の実例（追加 62・更新 5,844・国籍と地域の変更を含む）は ELIGIBLE", () => {
+    const r = decide(world((i) => {
+      i.plan.added = 62;
+      i.plan.changed = 5844;
+      i.plan.changedFields = ["card_rating", "name_en", "name_sort_key", "nationality", "region"];
+      i.plan.afterCount = i.plan.beforeCount + 62;
+    }));
+    expect(r.reasonCodes).not.toContain("unknown_changed_field");
+  });
+
   it("v2 では AUTO_APPLY_ELIGIBLE（v1 では threshold_structural・unknown_changed_field で手動だった）", () => {
     const r = decide(oct09());
     expect(r.reasonCodes).toEqual([]);
     expect(r.decision).toBe("AUTO_APPLY_ELIGIBLE");
-    expect(r.contractVersion).toBe("auto-apply-policy/2026-10-12.v3");
+    expect(r.contractVersion).toBe("auto-apply-policy/2026-10-15.v4");
     expect(r.thresholdResults.find((t) => t.name === "world.structuralRatio")).toMatchObject({ ok: true, limit: 0.1 });
   });
   it("同じ更新でも、計算に効く列（stats・skills・playing_style・ovr_base）が混ざれば手動の経路", () => {
