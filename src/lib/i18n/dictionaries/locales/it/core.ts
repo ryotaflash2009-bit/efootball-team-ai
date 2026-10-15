@@ -98,8 +98,7 @@ const part: PartialDictionary = {
     squadCompleteness: "Completezza della rosa",
   },
   homePage: {
-    alphaNoticeBanner:
-      "TeamAIXI v1.0 è uno strumento gratuito e non ufficiale di analisi della rosa per eFootball™ che funziona senza accesso. Non è un servizio ufficiale di KONAMI o di eFootball™. Le funzioni dell’account arriveranno con un prossimo aggiornamento.",
+    alphaNoticeBanner: "TeamAIXI è uno strumento gratuito e non ufficiale di analisi delle rose di eFootball™ che funziona senza accesso. Non è un servizio ufficiale di KONAMI o eFootball™. Accedendo (con un account Google, facoltativo) puoi usare anche il salvataggio nel cloud e la community.",
     alphaNoticeDetailsLinkLabel: "Informazioni su TeamAIXI",
     heroBadge: "Strumento non ufficiale di analisi della rosa per eFootball™",
     quickStartHeading: "Cosa puoi fare con TeamAIXI",

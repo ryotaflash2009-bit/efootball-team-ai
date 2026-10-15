@@ -98,8 +98,7 @@ const part: PartialDictionary = {
     squadCompleteness: "Kelengkapan susunan skuad",
   },
   homePage: {
-    alphaNoticeBanner:
-      "TeamAIXI v1.0 adalah alat analisis skuad tidak resmi dan gratis untuk eFootball™ yang bisa digunakan tanpa login. Ini bukan layanan resmi KONAMI atau eFootball™. Fitur akun direncanakan untuk pembaruan mendatang.",
+    alphaNoticeBanner: "TeamAIXI adalah alat analisis skuad eFootball™ tidak resmi yang gratis dan bisa dipakai tanpa masuk. Ini bukan layanan resmi KONAMI atau eFootball™. Dengan masuk (akun Google, opsional) kamu juga bisa memakai penyimpanan cloud dan komunitas.",
     alphaNoticeDetailsLinkLabel: "Tentang TeamAIXI",
     heroBadge: "Alat analisis skuad tidak resmi untuk eFootball™",
     quickStartHeading: "Yang bisa Anda lakukan dengan TeamAIXI",

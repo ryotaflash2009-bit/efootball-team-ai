@@ -98,8 +98,7 @@ const part: PartialDictionary = {
     squadCompleteness: "스쿼드 배치 완성도",
   },
   homePage: {
-    alphaNoticeBanner:
-      "TeamAIXI v1.0은 로그인 없이 쓸 수 있는 무료 eFootball™ 비공식 스쿼드 분석 도구입니다. KONAMI 또는 eFootball™의 공식 서비스가 아닙니다. 계정 기능은 향후 업데이트에서 제공될 예정입니다.",
+    alphaNoticeBanner: "TeamAIXI는 로그인 없이 무료로 쓸 수 있는 eFootball™ 비공식 스쿼드 분석 도구입니다. KONAMI 및 eFootball™의 공식 서비스가 아닙니다. 로그인(Google 계정, 선택)하면 클라우드 저장과 커뮤니티도 사용할 수 있습니다.",
     alphaNoticeDetailsLinkLabel: "TeamAIXI 소개",
     heroBadge: "eFootball™ 비공식 스쿼드 분석 도구",
     quickStartHeading: "TeamAIXI로 할 수 있는 일",

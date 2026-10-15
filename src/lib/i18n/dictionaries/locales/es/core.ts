@@ -101,8 +101,7 @@ const es: PartialDictionary = {
     squadCompleteness: "Completitud de la plantilla",
   },
   homePage: {
-    alphaNoticeBanner:
-      "TeamAIXI v1.0 es una herramienta gratuita y no oficial de análisis de plantillas para eFootball™ que funciona sin iniciar sesión. No es un servicio oficial de KONAMI ni de eFootball™. Las funciones de cuenta llegarán en una próxima actualización.",
+    alphaNoticeBanner: "TeamAIXI es una herramienta gratuita y no oficial de análisis de plantillas de eFootball™ que funciona sin iniciar sesión. No es un servicio oficial de KONAMI ni de eFootball™. Al iniciar sesión (con una cuenta de Google, opcional) también puedes usar el guardado en la nube y la comunidad.",
     alphaNoticeDetailsLinkLabel: "Acerca de TeamAIXI",
     heroBadge: "Herramienta no oficial de análisis de plantillas para eFootball™",
     quickStartHeading: "Qué puedes hacer con TeamAIXI",

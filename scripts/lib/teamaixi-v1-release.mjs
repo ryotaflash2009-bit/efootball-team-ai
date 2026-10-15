@@ -29,8 +29,9 @@ export function checkRepo(files) {
   for (const phrase of ["公式サービスではなく", "公認・提携・運営を受けていません", "各権利者に帰属", "誤りや遅延"]) if (!ja.includes(phrase)) problems.push(`unofficial_notice_missing:ja:${phrase}`);
   for (const phrase of ["not an official KONAMI or eFootball™ service", "endorsed by, affiliated with or operated by KONAMI", "respective owners", "errors or delays"]) if (!en.includes(phrase)) problems.push(`unofficial_notice_missing:en:${phrase}`);
   for (const forbidden of [/KONAMI AI/i, /Official Team AI/i, /Official database/i]) if (forbidden.test(ja) || forbidden.test(en)) problems.push(`forbidden_claim:${forbidden.source}`);
-  if (!/TeamAIXI v1\.0はログイン不要で利用できます。アカウント機能は今後のアップデートで提供予定です/.test(ja)) problems.push("account_notice_missing:ja");
-  if (!/TeamAIXI v1\.0 can be used without signing in\. Account features are planned for a future update/.test(en)) problems.push("account_notice_missing:en");
+  // 2026-10-15: Google の一般公開の後の表記（メールとパスワードの新規登録は受け付けない・アカウントは Google で作る・ログインは任意）
+  if (!/メールアドレスとパスワードでの新規登録は受け付けていません。ログインの画面の「Google でログイン」から、アカウントを作成できます（任意）/.test(ja)) problems.push("account_notice_missing:ja");
+  if (!/New sign-ups with an email address and password are not accepted\. You can create an account \(optional\) with \\?"Sign in with Google\\?"/.test(en)) problems.push("account_notice_missing:en");
   if (!has("accountAvailability") || !/ACCOUNT_SIGNUP_MODE: AccountSignupMode = "limited"/.test(files.accountAvailability)) problems.push("signup_not_limited");
   if (!has("sidebar") || /status: "soon"\s*\}/.test(files.sidebar)) problems.push("unreleased_nav_items_present");
   if (!has("internalPages") || !HIDDEN_ROUTES.slice(0, 5).every((r) => files.internalPages.includes(`"${r}"`))) problems.push("internal_pages_list_incomplete");

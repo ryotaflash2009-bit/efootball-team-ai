@@ -29,10 +29,12 @@ export const AVAILABLE_FEATURE_KEYS: AboutKey[] = [
   "availableJsonBackup",
   "availableAccountAuth",
   "availableReferenceDataSupabase",
+  "availableCloudSave",
+  "availableCommunity",
+  "availableTier",
 ];
 
 export const BETA_FEATURE_KEYS: AboutKey[] = [
-  "betaBestXiDedupLimit",
   "betaBestXiSubPositionLimit",
   "betaBestXiPoolScopeLimit",
   "betaMyTeamCloudSave",
