@@ -49,8 +49,8 @@ const VIEWPORTS = [
 ];
 const LOCALE_KEY = "efootball-team-ai:locale:v1";
 const TEXT = {
-  ja: { limited: "限定テスト中", signInTitle: "ログイン" },
-  en: { limited: "limited testing", signInTitle: "Sign in" },
+  ja: { limited: "限定テスト中", signupLimited: "アカウントは Google アカウントで作成できます", signInTitle: "ログイン" },
+  en: { limited: "limited testing", signupLimited: "Create an account with your Google account", signInTitle: "Sign in" },
 };
 const LEAK_RE = /sb_secret_|service_role|postgres(ql)?:\/\/|SUPABASE_[A-Z_]+|supabase\.co|AuthApiError|AuthRetryableFetchError|otp_expired|over_email_send_rate_limit|stack trace|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
 const HYDRATION_RE = /hydrat|Minified React error #(418|423|425)|did not match/i;
@@ -190,7 +190,7 @@ async function main() {
             return { ok: true, detail: `google (${OAUTH_MODE}), noindex` };
           }
           if (!(await has("[data-testid=signup-limited]"))) throw new Error("limited notice missing");
-          if (!(await bodyText()).includes(T.limited)) throw new Error(`text missing: ${T.limited}`);
+          if (!(await bodyText()).includes(T.signupLimited)) throw new Error(`text missing: ${T.signupLimited}`);
           if ((await count("input[type=password]")) !== 0) throw new Error("sign-up form shown");
           if (!(await has("[data-testid=signup-limited] a[href='/players']"))) throw new Error("no link to /players");
           if (!(await has("a[href='/auth/sign-in']"))) throw new Error("no link to sign-in");

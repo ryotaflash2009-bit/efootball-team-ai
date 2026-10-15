@@ -98,8 +98,7 @@ const part: PartialDictionary = {
     squadCompleteness: "Kadro yerleşim bütünlüğü",
   },
   homePage: {
-    alphaNoticeBanner:
-      "TeamAIXI v1.0, giriş yapmadan kullanılabilen ücretsiz ve resmi olmayan bir eFootball™ kadro analiz aracıdır. KONAMI'nin veya eFootball™'un resmi bir hizmeti değildir. Hesap özellikleri gelecekteki bir güncellemede planlanmaktadır.",
+    alphaNoticeBanner: "TeamAIXI, giriş yapmadan kullanılabilen ücretsiz ve resmî olmayan bir eFootball™ kadro analiz aracıdır. KONAMI'nin veya eFootball™'un resmî hizmeti değildir. Giriş yaparsan (Google hesabıyla, isteğe bağlı) bulut kaydı ve topluluğu da kullanabilirsin.",
     alphaNoticeDetailsLinkLabel: "TeamAIXI hakkında",
     heroBadge: "eFootball™ için resmi olmayan kadro analiz aracı",
     quickStartHeading: "TeamAIXI ile neler yapabilirsiniz",

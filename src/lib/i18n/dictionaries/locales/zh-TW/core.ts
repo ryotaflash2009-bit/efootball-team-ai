@@ -98,8 +98,7 @@ const part: PartialDictionary = {
     squadCompleteness: "陣容配置完整度",
   },
   homePage: {
-    alphaNoticeBanner:
-      "TeamAIXI v1.0 是免費、免登入即可使用的非官方 eFootball™ 陣容分析工具。本工具並非 KONAMI 或 eFootball™ 的官方服務。帳戶功能預計在未來的更新中提供。",
+    alphaNoticeBanner: "TeamAIXI 是免費、無需登入即可使用的非官方 eFootball™ 陣容分析工具，並非 KONAMI 或 eFootball™ 的官方服務。登入（Google 帳號，可選）後還可以使用雲端儲存和社群。",
     alphaNoticeDetailsLinkLabel: "關於 TeamAIXI",
     heroBadge: "非官方 eFootball™ 陣容分析工具",
     quickStartHeading: "TeamAIXI 能做什麼",

@@ -98,8 +98,7 @@ const part: PartialDictionary = {
     squadCompleteness: "Vollständigkeit der Kaderbesetzung",
   },
   homePage: {
-    alphaNoticeBanner:
-      "TeamAIXI v1.0 ist ein kostenloses, inoffizielles Kader-Analysetool für eFootball™, das ohne Anmeldung funktioniert. Es ist kein offizieller Dienst von KONAMI oder eFootball™. Kontofunktionen sind für ein späteres Update geplant.",
+    alphaNoticeBanner: "TeamAIXI ist ein kostenloses, inoffizielles Kader-Analysetool für eFootball™, das ohne Anmeldung funktioniert. Es ist kein offizieller Dienst von KONAMI oder eFootball™. Mit Anmeldung (Google-Konto, optional) kannst du zusätzlich die Cloud-Speicherung und die Community nutzen.",
     alphaNoticeDetailsLinkLabel: "Über TeamAIXI",
     heroBadge: "Inoffizielles Kader-Analysetool für eFootball™",
     quickStartHeading: "Das kannst du mit TeamAIXI tun",

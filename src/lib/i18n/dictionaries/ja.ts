@@ -3267,9 +3267,11 @@ export interface Dictionary {
     availableJsonBackup: string;
     availableAccountAuth: string;
     availableReferenceDataSupabase: string;
+    availableCloudSave: string;
+    availableCommunity: string;
+    availableTier: string;
     betaHeading: string;
     betaBestXiIntro: string;
-    betaBestXiDedupLimit: string;
     betaBestXiSubPositionLimit: string;
     betaBestXiPoolScopeLimit: string;
     betaMyTeamCloudSave: string;
@@ -5354,7 +5356,7 @@ const ja: JaCoreDictionary = {
     iconAriaLabel: "エラー",
   },
   homePage: {
-    alphaNoticeBanner: "TeamAIXI v1.0 は無料・ログイン不要で利用できる、非公式の eFootball™ スカッド分析ツールです。KONAMI および eFootball™ の公式サービスではありません。アカウント機能は今後のアップデートで提供予定です。",
+    alphaNoticeBanner: "TeamAIXI は無料・ログイン不要で利用できる、非公式の eFootball™ スカッド分析ツールです。KONAMI および eFootball™ の公式サービスではありません。ログイン（Google アカウント・任意）すると、クラウド保存とコミュニティも使えます。",
     alphaNoticeDetailsLinkLabel: "TeamAIXI について",
     heroBadge: "非公式の eFootball™ スカッド分析ツール",
     quickStartHeading: "TeamAIXI でできること",
