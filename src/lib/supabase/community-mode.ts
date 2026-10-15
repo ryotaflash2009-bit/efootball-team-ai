@@ -21,10 +21,10 @@ export function isCommunityAvailable(
 
 /**
  * ライバル（F-062・第 2 段階の SQL `create-community-stage2-rivals.sql`）の公開の状態（2026-10-15）。
- * 本番に第 2 段階を適用・確認（verify-community-stage2.sql）するまで "disabled"。無効の間はライバルの欄・ボタンを出さず、関数を呼ばない。
+ * 2026-10-15 に本人が本番へ第 2 段階を適用し、確認（verify-community-stage2.sql）がすべて true・関数 35 個で "enabled" にした。無効の間はライバルの欄・ボタンを出さず、関数を呼ばない。
  * ローカルの開発ホストでは `?communityPreview=1` のときだけ出す（black-box はテストダブルで検証）。
  */
-export const RIVALS_MODE: CommunityMode = "disabled";
+export const RIVALS_MODE: CommunityMode = "enabled";
 
 export function isRivalsAvailable(hostname: string, search: string, isLocalDevHostname: (h: string) => boolean, mode: CommunityMode = RIVALS_MODE): boolean {
   if (mode === "enabled") return true;

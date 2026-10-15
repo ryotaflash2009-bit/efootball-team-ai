@@ -41,11 +41,11 @@
   ミュート・通報の重複 / 自分 / 上限・運営者の制限と解除・保持期間・退会での削除・戻しと再適用。
 - black-box（`scripts/black-box-community.mjs`・テストダブル・34/34）。
 
-## 5. 第 2 段階（ライバル・F-062・2026-10-15・未適用）
+## 5. 第 2 段階（ライバル・F-062・2026-10-15・適用済み）
 
 1. `docs/production-readiness/sql/create-community-stage2-rivals.sql` を実行する（LF・SHA-256 `22c21b3382b7b50c3dc047ec0dfa0382042f7a1f9e748b33c835b9daaa3bb33a`・第 1 段階の後）。
 2. `verify-community-stage2.sql` を実行し、4 つの列がすべて `true`・`community_function_count = 35` を確かめる。
 3. `src/lib/supabase/community-mode.ts` の `RIVALS_MODE` を `"enabled"` にする PR を出す（それまでライバルの欄・ボタンは本番に出ない）。
 
 戻すとき: `RIVALS_MODE = "disabled"` → `rollback-community-stage2-rivals.sql`（第 1 段階を戻す前に必ずこちらを先に戻す）。
-2026-10-15: Claude Code による本番への適用は自動の安全確認で止められたため、本人の実行を待つ。
+**2026-10-15 適用済み**: 本人が実行（Success）→ 確認 SQL がすべて true・関数 35 個（`evidence/community-stage2-apply-2026-10-15.json`）→ `RIVALS_MODE = "enabled"`。

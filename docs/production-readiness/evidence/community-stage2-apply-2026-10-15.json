@@ -1,0 +1,10 @@
+{
+  "schema": "community-stage2-apply-evidence/v1",
+  "appliedAt": "2026-10-15",
+  "project": "efootball-team-ai-dev (kbauokzninaervjgwzdd)",
+  "applied": ["create-community-stage2-rivals.sql"],
+  "appliedSqlSha256": "22c21b3382b7b50c3dc047ec0dfa0382042f7a1f9e748b33c835b9daaa3bb33a",
+  "operator": "owner (Run pressed by the owner; Claude Code was blocked by the auto-mode safety check)",
+  "result": "Success (reported by the owner)",
+  "verify": { "tables_with_rls": true, "no_direct_table_access": true, "function_privileges_ok": true, "friendship_trigger_ok": true, "community_function_count": 35 }
+}
