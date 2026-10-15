@@ -63,6 +63,7 @@ export interface Dictionary {
     efhubIndexLabel: string;
     managersLabel: string;
     syncedAtLabel: string;
+    sourceLatestCardLabel: string;
     worldUnavailableTitle: string;
     temporaryErrorNotice: string;
     temporaryErrorReload: string;
@@ -5387,6 +5388,7 @@ const ja: JaCoreDictionary = {
     efhubIndexLabel: "eFHUB 索引",
     managersLabel: "監督",
     syncedAtLabel: "World 取り込み日時",
+    sourceLatestCardLabel: "取得元の最新カード",
     worldUnavailableTitle: "World データがまだ用意されていません",
     temporaryErrorNotice: "一部のデータを一時的に読み込めませんでした。少し待ってから再読み込みしてください。",
     temporaryErrorReload: "再読み込み",

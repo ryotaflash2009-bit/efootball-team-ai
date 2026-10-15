@@ -129,6 +129,7 @@ const part: PartialDictionary = {
     efhubIndexLabel: "eFHUB dizini",
     managersLabel: "Teknik direktörler",
     syncedAtLabel: "World verileri içe aktarıldı",
+    sourceLatestCardLabel: "Kaynaktaki en yeni kart",
     worldUnavailableTitle: "World verileri henüz ayarlanmadı",
     temporaryErrorNotice: "Bazı veriler şu anda yüklenemedi. Lütfen biraz bekleyip sayfayı yenileyin.",
     temporaryErrorReload: "Yenile",

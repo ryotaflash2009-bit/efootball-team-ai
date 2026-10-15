@@ -151,3 +151,12 @@ Backup 必須・Restore / Storage の検証・Dry run 必須・re-diff 0・check
   記録を main へ commit（bb2d335）。ただし Evidence に契約の項目（candidate・diff・apply・sourceTimestamps）が無く main のテストが失敗した
   → #246 で修正。GITHUB_TOKEN の push は CI を起動しないため、同期は push の前に契約のテスト（update-detection・applied-state-sync・percentiles）を
   通し、失敗したら push せずに job を失敗にする（本人に失敗の通知）。
+
+## 取得元の鮮度の知らせ（2026-10-15）
+
+本人の指摘（「13 日から更新が止まっていた」）を受けて追加。検出が動いていても、取得元（upstream）が新しいカードを載せていなければ反映するものが無い。
+
+- World の全件の確認（full scan）の要約の `world.timestamps.max`（取得元の最も新しいカードの更新日時）が **7 日** より古ければ、
+  通知の Issue（ラベル `reference-data-update`）に「参照データの取得元が更新されていません」とコメントする（1 日に 1 回まで・自動では何もしない）。
+- 画面: ホームに「取得元の最新カード」（`appearance_updated_at` の最大）を、取り込み日時と分けて表示する（12 言語）。
+- 2026-10-15 時点: 取得元の最新カードは 2026-10-08T17:01Z（13,455 枚・チェックサム b0b65ecf11bd は 10/13 に反映したものと同じ）。

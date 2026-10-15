@@ -210,10 +210,50 @@ export const REPEAT_NOTIFICATION_WINDOW_MS = 6 * 60 * 60 * 1000;
  * @param {string} now
  */
 export function shouldThrottleNotification(n, last, now) {
-  if (!n || !["failed", "attention_required", "unknown", "schedule_gap"].includes(n.kind)) return false;
+  if (!n || !["failed", "attention_required", "unknown", "schedule_gap", "source_stale"].includes(n.kind)) return false;
   if (!last || typeof last.body !== "string" || typeof last.createdAt !== "string") return false;
   const age = Date.parse(now) - Date.parse(last.createdAt);
-  return last.body.startsWith(`**${n.title}**`) && Number.isFinite(age) && age >= 0 && age < REPEAT_NOTIFICATION_WINDOW_MS;
+  // 取得元が古いままの知らせは 1 日に 1 回まで（同じ状態が続く間、毎回の検出で繰り返さない）
+  const windowMs = n.kind === "source_stale" ? SOURCE_STALE_REPEAT_WINDOW_MS : REPEAT_NOTIFICATION_WINDOW_MS;
+  return last.body.startsWith(`**${n.title}**`) && Number.isFinite(age) && age >= 0 && age < windowMs;
+}
+
+/**
+ * 取得元の鮮度（2026-10-15・本人の指摘「13 日から更新が止まっていた」）。
+ * 検出は動いていても、取得元（upstream）が新しいカードを載せていなければ反映するものが無い。World の全件の確認（full scan）の
+ * 要約にある「取得元の最も新しいカードの更新日時」（world.timestamps.max）が SOURCE_STALE_THRESHOLD_MS より古ければ知らせる。
+ * 自動では何もしない（取得元を変える・手で足すのは本人の判断）。
+ */
+export const SOURCE_STALE_THRESHOLD_MS = 7 * 24 * 60 * 60 * 1000;
+export const SOURCE_STALE_REPEAT_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * @param {any} summary 検出の要約（非秘密）
+ * @param {string} now ISO
+ */
+export function buildSourceFreshnessNotice(summary, now) {
+  const max = summary?.world?.timestamps?.max;
+  if (typeof max !== "string") return { notify: false, reason: "no_full_scan" };
+  const t = Date.parse(max);
+  const n = Date.parse(now);
+  if (!Number.isFinite(t) || !Number.isFinite(n)) return { notify: false, reason: "invalid_time" };
+  const age = n - t;
+  if (age <= SOURCE_STALE_THRESHOLD_MS) return { notify: false, reason: "fresh" };
+  const days = Math.floor(age / 86_400_000);
+  return {
+    notify: true,
+    kind: "source_stale",
+    title: "参照データの取得元が更新されていません / Upstream data has not changed",
+    body: [
+      `取得元にある最も新しいカードの更新日時は ${max.slice(0, 10)}（${days} 日前）です（基準: ${SOURCE_STALE_THRESHOLD_MS / 86_400_000} 日）。`,
+      "検出は動いていますが、取得元に新しいカードが載っていないため、TeamAIXI へ反映できるものがありません。",
+      "",
+      "次: ゲーム内で新しいカードが出ているなら、取得元の更新を待つか、別の取得元を検討する（本人の判断）。自動では何も適用しません。",
+      "",
+      "この通知は自動作成です（非秘密の情報だけ・1 日に 1 回まで）。",
+    ].join("\n"),
+    days,
+  };
 }
 
 /**

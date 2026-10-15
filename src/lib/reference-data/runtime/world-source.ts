@@ -380,9 +380,11 @@ export async function getSourceMetaFromSupabase(client?: ReferenceDataClient): P
   // 既知の制約: world_sync_state/world_sync_runs相当は未移行のため、syncFinishedAt/syncStatusは
   // 各行が持つdataset_version/fetched_atの最新値から代替する(推測ではなく実データの範囲で分かる情報のみ使う)。
   // 件数と最新fetched_atは独立した照会なので並列に行う(エラーの判定順は従来どおり件数 → 最新)。
-  const [countRes, latestRes] = await Promise.all([
+  const [countRes, latestRes, latestCardRes] = await Promise.all([
     c.from("world_player_cards").select("world_card_id", { count: "exact", head: true }),
     c.from("world_player_cards").select("fetched_at").order("fetched_at", { ascending: false }).limit(1).maybeSingle(),
+    // 取得元の最も新しいカードの更新日時（2026-10-15）。取れなくても件数と時点は返す（表示は「—」）。
+    Promise.resolve(c.from("world_player_cards").select("appearance_updated_at").not("appearance_updated_at", "is", null).order("appearance_updated_at", { ascending: false }).limit(1).maybeSingle()).catch(() => ({ data: null, error: null })),
   ]);
   const { count, error, status } = countRes;
   if (error) throw normalizeQueryError(error, { operation: "world.sourceMeta", status });
@@ -395,6 +397,10 @@ export async function getSourceMetaFromSupabase(client?: ReferenceDataClient): P
     totalCount: count ?? 0,
     syncFinishedAt: latest && typeof (latest as Row).fetched_at === "string" ? ((latest as Row).fetched_at as string) : null,
     syncStatus: null,
+    latestCardUpdatedAt:
+      latestCardRes && !latestCardRes.error && latestCardRes.data && typeof (latestCardRes.data as Row).appearance_updated_at === "string"
+        ? ((latestCardRes.data as Row).appearance_updated_at as string)
+        : null,
   };
 }
 

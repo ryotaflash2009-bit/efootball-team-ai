@@ -19,6 +19,8 @@ export interface HomePageWorldSummary {
   totalCount: number;
   source: string;
   syncFinishedAt: string | null;
+  /** 取得元の最も新しいカードの更新日時（2026-10-15）。取り込みの日時と分けて示す。 */
+  latestCardUpdatedAt?: string | null;
 }
 
 /**
@@ -107,6 +109,12 @@ export function HomePageView({
       label: th("syncedAtLabel"),
       value: world?.syncFinishedAt ? formatDateTime(new Date(world.syncFinishedAt), displayLocale) : "—",
       icon: "refresh" as IconName,
+      href: null,
+    },
+    {
+      label: th("sourceLatestCardLabel"),
+      value: world?.latestCardUpdatedAt ? formatDateTime(new Date(world.latestCardUpdatedAt), displayLocale) : "—",
+      icon: "info" as IconName,
       href: null,
     },
   ];
@@ -216,7 +224,7 @@ export function HomePageView({
         <section>
           <SectionHeader title={th("dataStatusHeading")} as="h2" hint={world ? world.source : undefined} />
           {world ? (
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
               {stats.map((s) => {
                 const body = (
                   <Surface tone="raised" padding="sm" className="h-full" interactive={!!s.href}>

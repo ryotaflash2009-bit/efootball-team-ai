@@ -154,4 +154,6 @@ export interface WorldSourceMeta {
   totalCount: number;
   syncFinishedAt: string | null;
   syncStatus: string | null;
+  /** 取得元の最も新しいカードの更新日時（appearance_updated_at の最大・2026-10-15）。取得元が古いままかを利用者に示す。 */
+  latestCardUpdatedAt?: string | null;
 }

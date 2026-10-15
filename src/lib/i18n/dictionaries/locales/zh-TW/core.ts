@@ -129,6 +129,7 @@ const part: PartialDictionary = {
     efhubIndexLabel: "eFHUB 索引",
     managersLabel: "總教練",
     syncedAtLabel: "World 資料匯入時間",
+    sourceLatestCardLabel: "資料來源中最新的卡",
     worldUnavailableTitle: "World 資料尚未設定",
     temporaryErrorNotice: "部分資料暫時無法載入。請稍候再重新整理。",
     temporaryErrorReload: "重新整理",
