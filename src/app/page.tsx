@@ -1,4 +1,5 @@
 import { loadPlayers } from "@/lib/players";
+import { listProvisionalPlayers } from "@/lib/world/repository";
 import { cachedGetManagerCount, cachedGetSourceMeta, cachedListPlayers } from "@/lib/reference-data/runtime/cached-queries";
 import { getSourceMeta, listPlayers } from "@/lib/world/repository";
 import { getManagerCount } from "@/lib/managers/repository";
@@ -80,6 +81,7 @@ export default async function HomePage() {
         topOvr={topOvr}
         recent={recent}
         temporaryError={temporaryError}
+        provisionalCount={listProvisionalPlayers().length}
       />
     </>
   );

@@ -96,6 +96,7 @@ import managerDetail from "./managerDetail";
 import squadCompareBoard from "./squadCompareBoard";
 import boosterList from "./boosterList";
 import tierList from "./tierList";
+import provisionalCards from "./provisionalCards";
 import managerCompare from "./managerCompare";
 import gamePlan from "./gamePlan";
 
@@ -197,6 +198,7 @@ export const JA_SPLIT_NAMESPACES = {
   squadCompareBoard,
   boosterList,
   tierList,
+  provisionalCards,
   managerCompare,
   gamePlan,
 };

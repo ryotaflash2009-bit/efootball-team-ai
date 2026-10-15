@@ -1,5 +1,6 @@
 "use client";
 
+import { ProvisionalBadge } from "@/components/world/ProvisionalCardNotice";
 import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
 import "@/lib/i18n/dictionaries/ja-ns/worldPlayerCard";
 import Link from "next/link";
@@ -24,6 +25,8 @@ export interface WorldPlayerCardData {
   cardType: string | null;
   hasEfhubLink: boolean;
   imageSources: string[];
+  /** 暫定のカード（2026-10-15）。 */
+  provisional?: boolean;
 }
 
 /**
@@ -61,6 +64,7 @@ export function WorldPlayerCard({ player, imagePriority = false }: { player: Wor
         </div>
 
         <div className="p-2">
+          {player.provisional ? <ProvisionalBadge /> : null}
           <p className="truncate text-sm font-semibold text-text" title={name}>
             {name}
           </p>

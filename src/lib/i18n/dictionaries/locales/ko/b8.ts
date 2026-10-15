@@ -603,6 +603,19 @@ const part: PartialDictionary = {
     entryTemplate: "최대 OVR {ovr} · {rank}위 (상위 {pct}%)",
     dataUnavailable: "선수 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
   },
+  provisionalCards: {
+    badge: "임시",
+    badgeTitle: "새 카드(정식 데이터 반영 전의 임시 값)",
+    noticeTitle: "새 카드(임시 데이터)",
+    noticeBody: "주요 데이터 출처에 아직 없어서 다른 데이터베이스의 값으로 먼저 표시합니다. 능력치·스킬·기본 OVR은 검증된 방법으로 가져오지만 일본어 이름·이미지·부스터·일부 새 스킬은 빠질 수 있습니다. 정식 데이터가 들어오면 자동으로 바뀝니다.",
+    maxLevelUnknown: "최대 레벨을 확인 중이라 육성 계산은 아직 사용할 수 없습니다.",
+    maxLevelFromUsers: "최대 레벨은 출처 사이트 이용자가 제보한 값입니다(정식 데이터가 들어오면 바뀝니다).",
+    sourceLabel: "데이터 출처:",
+    newCardsPageTitle: "새 카드(임시)",
+    newCardsIntro: "주요 데이터 출처에 아직 없는 새 카드입니다. 정식 데이터가 들어오면 일반 선수 목록으로 옮겨집니다.",
+    newCardsEmpty: "지금은 임시 카드가 없습니다(모두 정식 데이터입니다).",
+    newCardsLinkTemplate: "새 카드(임시) {count}장 보기",
+  },
 };
 
 export default part;

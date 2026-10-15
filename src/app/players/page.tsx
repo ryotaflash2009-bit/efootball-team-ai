@@ -1,4 +1,5 @@
 import { parseWorldListQuery } from "@/lib/world/schemas";
+import { listProvisionalPlayers } from "@/lib/world/repository";
 import { cachedGetFacets, cachedGetSourceMeta, cachedListPlayers } from "@/lib/reference-data/runtime/cached-queries";
 import { listPlayers, getFacets, getSourceMeta } from "@/lib/world/repository";
 import { WorldDataUnavailableError } from "@/lib/world/db";
@@ -141,6 +142,7 @@ export default async function PlayersPage({ searchParams }: { searchParams: Prom
         sourceMeta={sourceMeta}
         hasFilters={hasFilters}
         searchParams={sp}
+        provisionalCount={listProvisionalPlayers().length}
       />
     </PageContainer>
   );

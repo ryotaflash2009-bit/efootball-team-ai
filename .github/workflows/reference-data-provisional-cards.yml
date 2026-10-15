@@ -1,0 +1,84 @@
+name: Reference data provisional cards
+
+# 暫定のカードの同期（2026-10-15・本人の指示「なんとしてでも最新の情報に」）。
+# - PES Master の注目カードのうち、eFootball World（主の取得元）にまだ無いカードを
+#   src/lib/reference-data/provisional/data/provisional-cards.json に入れて main へ commit する（Vercel が本番に反映）。World に載ったものは外す。
+# - 外部へのアクセス: PES Master（robots.txt で全ページ許可・自動の取得を禁じる規約なし）を 1 枚ごとに 2 秒あけて読む・1 回 80 枚まで。
+#   既にあるかの確認は TeamAIXI の公開 API（読み取り）。Secrets・Environment・Production の DB への接続は無い。
+# - 6 時間ごと。日本時間の木・月は毎時（更新の多い日）。
+# - main を動かすため、Orchestrator・Production apply・Backup が実行中・待機中なら何もしない（Apply の binding した SHA を変えない）。
+# - push の前に暫定のカードの契約のテストを通す。書くのは上の JSON だけ（それ以外の変更があれば失敗にする）。
+# - 停止: リポジトリの変数 REFERENCE_DATA_PROVISIONAL_CARDS_DISABLED を "true"。検出の変数が "true" でなければ動かない。
+
+on:
+  schedule:
+    - cron: "37 */6 * * *"     # 6 時間ごとの 37 分
+    - cron: "37 * * * 0,1,3,4" # 日本時間の木・月（UTC の水・木・日・月）は毎時
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: reference-data-provisional-cards
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: ${{ vars.REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED == 'true' && vars.REFERENCE_DATA_PROVISIONAL_CARDS_DISABLED != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Skip while a pipeline run is active
+        id: busy
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          busy=0
+          for wf in reference-data-update-orchestrator.yml reference-data-production-apply.yml reference-data-production-backup.yml; do
+            n=$(gh run list --repo "$REPO" --workflow "$wf" --limit 10 --json status --jq '[.[] | select(.status != "completed")] | length')
+            if [ "$n" != "0" ]; then busy=1; echo "active runs in $wf: $n" >> "$GITHUB_STEP_SUMMARY"; fi
+          done
+          echo "busy=$busy" >> "$GITHUB_OUTPUT"
+
+      - name: Sync provisional cards
+        if: steps.busy.outputs.busy == '0'
+        id: sync
+        run: |
+          set -euo pipefail
+          node scripts/provisional-cards-sync.mjs | tee sync.log
+          if git diff --quiet -- src/lib/reference-data/provisional/data/provisional-cards.json; then echo "changed=0" >> "$GITHUB_OUTPUT"; else echo "changed=1" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Check the data against the repository contract before pushing
+        if: steps.busy.outputs.busy == '0' && steps.sync.outputs.changed == '1'
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          npx vitest run src/lib/reference-data/provisional
+
+      - name: Commit to main
+        if: steps.busy.outputs.busy == '0' && steps.sync.outputs.changed == '1'
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/lib/reference-data/provisional/data/provisional-cards.json
+          git diff --cached --name-only | grep -vE '^src/lib/reference-data/provisional/data/provisional-cards\.json$' && { echo "::error::unexpected file in the sync commit"; exit 1; } || true
+          git commit -m "chore(reference-data): provisional cards from PES Master"
+          git pull --rebase origin main
+          git push origin HEAD:main

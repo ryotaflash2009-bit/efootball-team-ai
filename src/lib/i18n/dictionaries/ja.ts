@@ -5222,6 +5222,19 @@ export interface Dictionary {
     entryTemplate: string;
     dataUnavailable: string;
   };
+  provisionalCards: {
+    badge: string;
+    badgeTitle: string;
+    noticeTitle: string;
+    noticeBody: string;
+    maxLevelUnknown: string;
+    maxLevelFromUsers: string;
+    sourceLabel: string;
+    newCardsPageTitle: string;
+    newCardsIntro: string;
+    newCardsEmpty: string;
+    newCardsLinkTemplate: string;
+  };
   gamePlan: {
     heading: string;
     intro: string;

@@ -120,6 +120,8 @@ describe("検出workflowの静的監査", () => {
 const WATCHDOG_WORKFLOW_FILE = "reference-data-detection-watchdog.yml";
 /** 公式のお知らせの合図（2026-10-15・本人の承認）。読み取りと Issue へのコメントだけ（Secret・Environment・Production なし）。 */
 const OFFICIAL_NEWS_WORKFLOW_FILE = "reference-data-official-news-signal.yml";
+/** 暫定のカードの同期（2026-10-15・本人の承認）。PES Master と公開 API を読み、JSON を main へ commit するだけ（Secret・Environment・Production なし）。 */
+const PROVISIONAL_WORKFLOW_FILE = "reference-data-provisional-cards.yml";
 
 describe("リポジトリ内の全workflow: scheduleは検出workflow・検出のwatchdog・公式のお知らせの合図だけ", () => {
   it("公式のお知らせの合図: 6 時間ごと・Secrets/Environment なし・権限は contents: read と issues: write だけ・実行するのは合図の script だけ", () => {
@@ -133,11 +135,21 @@ describe("リポジトリ内の全workflow: scheduleは検出workflow・検出�
     expect(body.match(/^\s+run: .*/gm)).toEqual(["        run: node scripts/official-news-signal.mjs"]);
   });
 
+  it("暫定のカードの同期: Secrets/Environment なし・検出の変数と停止の変数の Gate・書くのは暫定のカードの JSON だけ・push の前にテスト", () => {
+    const body = code(readWf(PROVISIONAL_WORKFLOW_FILE));
+    expect(body).not.toMatch(/secrets\./);
+    expect(body).not.toMatch(/^\s*environment\s*:/m);
+    expect(body).toMatch(/vars\.REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED == 'true' && vars\.REFERENCE_DATA_PROVISIONAL_CARDS_DISABLED != 'true'/);
+    expect(body).toMatch(/git add src\/lib\/reference-data\/provisional\/data\/provisional-cards\.json\n/);
+    expect(body).toMatch(/npx vitest run src\/lib\/reference-data\/provisional/);
+    expect(body).toMatch(/reference-data-production-apply\.yml/); // 実行中の Apply があれば何もしない
+  });
+
   it("検出workflow・watchdog・公式のお知らせの合図以外は`schedule:`トリガーを持たない(Backup・apply・rollbackは特に禁止)", () => {
     const files = readdirSync(WORKFLOWS).filter((f) => /\.ya?ml$/.test(f));
     expect(files.length).toBeGreaterThanOrEqual(3);
     for (const f of files) {
-      if (f === DETECTION_WORKFLOW_FILE || f === WATCHDOG_WORKFLOW_FILE || f === OFFICIAL_NEWS_WORKFLOW_FILE) expect(code(readWf(f)).match(/^\s*schedule\s*:/gm), f).toHaveLength(1);
+      if (f === DETECTION_WORKFLOW_FILE || f === WATCHDOG_WORKFLOW_FILE || f === OFFICIAL_NEWS_WORKFLOW_FILE || f === PROVISIONAL_WORKFLOW_FILE) expect(code(readWf(f)).match(/^\s*schedule\s*:/gm), f).toHaveLength(1);
       else expect(code(readWf(f)), f).not.toMatch(/^\s*schedule\s*:/m);
     }
   });

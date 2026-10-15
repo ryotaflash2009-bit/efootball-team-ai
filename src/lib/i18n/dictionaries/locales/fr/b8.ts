@@ -603,6 +603,19 @@ const part: PartialDictionary = {
     entryTemplate: "OVR max. {ovr} · n° {rank} (top {pct} %)",
     dataUnavailable: "Impossible de charger les données des joueurs. Réessayez plus tard.",
   },
+  provisionalCards: {
+    badge: "Provisoire",
+    badgeTitle: "Nouvelle carte (valeurs provisoires avant les données officielles)",
+    noticeTitle: "Nouvelle carte (données provisoires)",
+    noticeBody: "Cette carte n'est pas encore dans notre source principale ; elle est donc affichée en avance à partir d'une autre base de données. Les caractéristiques, compétences et l'OVR de base sont importées avec une méthode vérifiée, mais le nom japonais, l'image, les boosters et certaines nouvelles compétences peuvent manquer. Elle est remplacée automatiquement à l'arrivée des données officielles.",
+    maxLevelUnknown: "Le niveau max. est en cours de confirmation ; les calculs de progression ne sont pas encore disponibles.",
+    maxLevelFromUsers: "Le niveau max. provient de contributions d'utilisateurs sur la source (remplacé à l'arrivée des données officielles).",
+    sourceLabel: "Source des données :",
+    newCardsPageTitle: "Nouvelles cartes (provisoires)",
+    newCardsIntro: "Nouvelles cartes pas encore présentes dans notre source principale. Elles passent dans la liste normale à l'arrivée des données officielles.",
+    newCardsEmpty: "Aucune carte provisoire pour le moment (tout est officiel).",
+    newCardsLinkTemplate: "Voir {count} nouvelles cartes (provisoires)",
+  },
 };
 
 export default part;

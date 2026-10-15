@@ -603,6 +603,19 @@ const part: PartialDictionary = {
     entryTemplate: "Maks. OVR {ovr} · {rank}. (ilk %{pct})",
     dataUnavailable: "Oyuncu verileri yüklenemedi. Lütfen daha sonra tekrar deneyin.",
   },
+  provisionalCards: {
+    badge: "Geçici",
+    badgeTitle: "Yeni kart (resmî veriler gelmeden önceki geçici değerler)",
+    noticeTitle: "Yeni kart (geçici veriler)",
+    noticeBody: "Bu kart henüz ana kaynağımızda yok, bu yüzden başka bir veritabanıyla erken gösteriliyor. Özellikler, yetenekler ve temel OVR doğrulanmış bir yöntemle alınır; ancak Japonca ad, görsel, güçlendirmeler ve bazı yeni yetenekler eksik olabilir. Resmî veriler geldiğinde otomatik olarak değiştirilir.",
+    maxLevelUnknown: "Maksimum seviye henüz doğrulanıyor, bu yüzden gelişim hesaplamaları henüz kullanılamaz.",
+    maxLevelFromUsers: "Maksimum seviye, kaynak sitedeki kullanıcı gönderimlerinden gelir (resmî veriler gelince değiştirilir).",
+    sourceLabel: "Veri kaynağı:",
+    newCardsPageTitle: "Yeni kartlar (geçici)",
+    newCardsIntro: "Henüz ana kaynağımızda olmayan yeni kartlar. Resmî veriler geldiğinde normal oyuncu listesine taşınırlar.",
+    newCardsEmpty: "Şu anda geçici kart yok (hepsi resmî veriler).",
+    newCardsLinkTemplate: "{count} yeni kartı gör (geçici)",
+  },
 };
 
 export default part;

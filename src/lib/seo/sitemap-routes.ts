@@ -12,6 +12,7 @@ export interface SitemapRoute {
 export const SITEMAP_ROUTES: readonly SitemapRoute[] = [
   { path: "/", changeFrequency: "weekly", priority: 1 },
   { path: "/players", changeFrequency: "daily", priority: 0.9 },
+  { path: "/players/new", changeFrequency: "daily", priority: 0.6 },
   { path: "/managers", changeFrequency: "weekly", priority: 0.8 },
   { path: "/compare", changeFrequency: "weekly", priority: 0.7 },
   { path: "/squads", changeFrequency: "weekly", priority: 0.8 },

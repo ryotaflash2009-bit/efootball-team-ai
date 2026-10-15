@@ -225,7 +225,11 @@ export async function getPlayerByWorldIdFromSupabase(worldCardId: string, client
   const { data, error, status } = await c.from("world_player_cards").select("*").eq("world_card_id", worldCardId).maybeSingle();
   if (error) throw normalizeQueryError(error, { operation: "world.detail", status });
   if (!data) return null;
-  const row = data as Row;
+  return supabaseRowToDetail(data as Row);
+}
+
+/** world_player_cards の形の行 → 詳細（暫定のカードも同じ形の行で作る・2026-10-15）。 */
+export function supabaseRowToDetail(row: Row): WorldPlayerDetail {
   const base = rowToListItem(row);
 
   const statsObj = (row.stats && typeof row.stats === "object" ? (row.stats as Record<string, unknown>) : {}) as Record<string, number>;

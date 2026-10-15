@@ -4295,5 +4295,16 @@
  "tierList.entryTemplate": "5b81c38d4987",
  "tierList.dataUnavailable": "b15f96e904bd",
  "diagnosisShare.useForFriendsLink": "8a92c03361aa",
- "homePage.sourceLatestCardLabel": "ed4c118e639b"
+ "homePage.sourceLatestCardLabel": "ed4c118e639b",
+ "provisionalCards.badge": "9b46c2e6d68c",
+ "provisionalCards.badgeTitle": "ea83e0b2c01b",
+ "provisionalCards.noticeTitle": "2e8477808958",
+ "provisionalCards.noticeBody": "1b9e92f087ac",
+ "provisionalCards.maxLevelUnknown": "42c48e923435",
+ "provisionalCards.maxLevelFromUsers": "3446bc50f701",
+ "provisionalCards.sourceLabel": "41b27fa840e7",
+ "provisionalCards.newCardsPageTitle": "2dca16e27389",
+ "provisionalCards.newCardsIntro": "b48efb84ca45",
+ "provisionalCards.newCardsEmpty": "774d786d59cf",
+ "provisionalCards.newCardsLinkTemplate": "d9c407d321cb"
 }
