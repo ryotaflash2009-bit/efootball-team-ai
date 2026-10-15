@@ -20,6 +20,7 @@ const diagnosisShare: Dictionary["diagnosisShare"] = {
   copied: "コピーしました。",
   copyFailed: "コピーできませんでした。URLを選択して手動でコピーしてください。",
   shareButton: "共有…",
+  useForFriendsLink: "友達との比較に使う（ログインが必要）",
   shareFailed: "共有を完了できませんでした。",
   closeButton: "閉じる",
   createFailed: "共有URLを作成できませんでした。",

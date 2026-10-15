@@ -344,6 +344,7 @@ const part: PartialDictionary = {
     copied: "Kopyalandı.",
     copyFailed: "Kopyalanamadı. Bağlantıyı seçip elle kopyalayın.",
     shareButton: "Paylaş…",
+    useForFriendsLink: "Arkadaşlarla karşılaştırmak için kullan (giriş gerekli)",
     shareFailed: "Paylaşım tamamlanmadı.",
     closeButton: "Kapat",
     createFailed: "Paylaşım bağlantısı oluşturulamadı.",

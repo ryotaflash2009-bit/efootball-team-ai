@@ -31,6 +31,9 @@ export type CommunityError =
   | "ID_CHANGE_TOO_SOON"
   | "INVALID_INPUT"
   | "RESTRICTED"
+  | "NOT_OPTED_IN"
+  | "OTHER_NOT_OPTED_IN"
+  | "RIVAL_LIMIT"
   | "UNAVAILABLE"
   | "TIMEOUT"
   | "NETWORK"
@@ -96,6 +99,12 @@ export function classifyCommunityError(error: { code?: string | null; message?: 
       return "SELF";
     case "P0016":
       return "RESTRICTED";
+    case "P0020":
+      return "NOT_OPTED_IN";
+    case "P0021":
+      return "OTHER_NOT_OPTED_IN";
+    case "P0022":
+      return "RIVAL_LIMIT";
     case "P0001":
       return "ID_RESERVED";
     case "P0002":
@@ -264,4 +273,48 @@ export function parseShareInput(input: string): SquadDiagnosisSharePayloadV1 | n
 /** /u/<公開 ID> の経路の値として正しい形か（画面で問い合わせる前の確認・詳しい規則はサーバー）。 */
 export function isPublicIdLike(v: string): boolean {
   return /^[a-z][a-z0-9_]{2,19}$/.test(v);
+}
+
+// ---------------------------------------------------------------------------
+// F-062 ライバル（オプトイン・5 人まで・第 2 段階の SQL）
+// ---------------------------------------------------------------------------
+export const MAX_RIVALS = 5;
+export interface RivalRow {
+  publicId: string;
+  displayName: string;
+  isSelf: boolean;
+  optedIn: boolean;
+  overall: number | null;
+  rulesVersion: string | null;
+  summaryDate: string | null;
+  growthWeek: number | null;
+  growthMonth: number | null;
+}
+const num = (v: unknown): number | null => (typeof v === "number" && Number.isFinite(v) ? v : null);
+const strOrNull = (v: unknown): string | null => (typeof v === "string" ? v : null);
+
+export function setRivalOptIn(supabase: SupabaseClient, optedIn: boolean) {
+  return rpc(supabase, "community_set_rival_opt_in", { p_opted_in: optedIn }, (d) => (d === "opted_in" || d === "opted_out" ? d : null));
+}
+export function addRival(supabase: SupabaseClient, publicId: string) {
+  return rpc(supabase, "community_add_rival", { p_public_id: publicId }, (d) => (d === "added" || d === "already" ? d : null));
+}
+export function removeRival(supabase: SupabaseClient, publicId: string) {
+  return rpc(supabase, "community_remove_rival", { p_public_id: publicId }, text);
+}
+/** 先頭が自分（isSelf）。続いてライバル。 */
+export function listRivals(supabase: SupabaseClient): Promise<CommunityResult<RivalRow[]>> {
+  return rpc(supabase, "community_list_rivals", undefined, (data) =>
+    rows(data).map((r) => ({
+      publicId: str(r.public_id),
+      displayName: str(r.display_name),
+      isSelf: r.is_self === true,
+      optedIn: r.opted_in === true,
+      overall: num(r.overall),
+      rulesVersion: strOrNull(r.rules_version),
+      summaryDate: strOrNull(r.summary_date),
+      growthWeek: num(r.growth_week),
+      growthMonth: num(r.growth_month),
+    })),
+  );
 }

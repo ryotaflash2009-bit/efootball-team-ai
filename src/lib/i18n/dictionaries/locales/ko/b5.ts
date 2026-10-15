@@ -344,6 +344,7 @@ const part: PartialDictionary = {
     copied: "복사했습니다.",
     copyFailed: "복사하지 못했습니다. 링크를 선택하여 직접 복사하세요.",
     shareButton: "공유…",
+    useForFriendsLink: "친구와 비교에 사용 (로그인 필요)",
     shareFailed: "공유가 완료되지 않았습니다.",
     closeButton: "닫기",
     createFailed: "공유 링크를 만들지 못했습니다.",

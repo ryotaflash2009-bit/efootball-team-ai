@@ -310,6 +310,7 @@ export interface Dictionary {
     copied: string;
     copyFailed: string;
     shareButton: string;
+    useForFriendsLink: string;
     shareFailed: string;
     closeButton: string;
     createFailed: string;
@@ -4050,6 +4051,24 @@ export interface Dictionary {
     errorGeneric: string;
     accountLinkHint: string;
     accountLinkLabel: string;
+    incomingNoticeTemplate: string;
+    rivalsHeading: string;
+    rivalsBody: string;
+    rivalsOptInLabel: string;
+    rivalsOptedIn: string;
+    rivalsOptedOut: string;
+    rivalsColName: string;
+    rivalsColWeek: string;
+    rivalsColMonth: string;
+    rivalsEmpty: string;
+    rivalsGrowthNotice: string;
+    rivalAddButton: string;
+    rivalRemoveButton: string;
+    rivalAdded: string;
+    rivalRemoved: string;
+    errorRivalNotOptedIn: string;
+    errorRivalOtherNotOptedIn: string;
+    errorRivalLimit: string;
   };
   myTeamCloud: {
     pageTitle: string;

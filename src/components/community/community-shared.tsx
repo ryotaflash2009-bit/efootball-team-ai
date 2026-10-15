@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useT } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { isLocalDevHostname } from "@/lib/supabase/local-dev";
-import { isCommunityAvailable } from "@/lib/supabase/community-mode";
+import { isCommunityAvailable, isRivalsAvailable } from "@/lib/supabase/community-mode";
 import type { CommunityError } from "@/lib/community/community-client";
 
 export type CommunityKey = keyof Dictionary["community"];
@@ -20,6 +20,15 @@ export function useCommunityAvailable(): boolean {
   const [available, setAvailable] = useState(false);
   useEffect(() => {
     setAvailable(isCommunityAvailable(window.location.hostname, window.location.search, isLocalDevHostname));
+  }, []);
+  return available;
+}
+
+/** ライバル（第 2 段階）の公開の状態。 */
+export function useRivalsAvailable(): boolean {
+  const [available, setAvailable] = useState(false);
+  useEffect(() => {
+    setAvailable(isRivalsAvailable(window.location.hostname, window.location.search, isLocalDevHostname));
   }, []);
   return available;
 }
@@ -57,6 +66,12 @@ export function communityErrorKey(e: CommunityError): CommunityKey {
       return "errorRestricted";
     case "UNAVAILABLE":
       return "unavailableNotice";
+    case "NOT_OPTED_IN":
+      return "errorRivalNotOptedIn";
+    case "OTHER_NOT_OPTED_IN":
+      return "errorRivalOtherNotOptedIn";
+    case "RIVAL_LIMIT":
+      return "errorRivalLimit";
     default:
       return "errorGeneric";
   }

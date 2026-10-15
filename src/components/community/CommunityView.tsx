@@ -36,6 +36,7 @@ import {
   type SafetyEntry,
 } from "@/lib/community/community-client";
 import type { SquadDiagnosisSharePayloadV1 } from "@/lib/squad/squad-diagnosis-share-url";
+import { RivalsSection } from "./RivalsSection";
 import { communityClient, communityErrorKey, MessageLine, useCommunityAvailable, useCommunityT, type CommunityKey, type Message } from "./community-shared";
 
 const VISIBILITY_KEY: Record<ProfileVisibility, CommunityKey> = {
@@ -274,6 +275,9 @@ export function CommunityView() {
               {tc("comparisonHowTo")}
             </Link>
           </Surface>
+
+          {/* ライバル（F-062・オプトイン） */}
+          <RivalsSection hasProfile={profile != null} />
 
           {/* 友達（F-055） */}
           <Surface padding="md" className="flex flex-col gap-3 text-sm" data-testid="community-friends">

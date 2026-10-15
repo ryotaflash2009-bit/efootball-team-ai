@@ -64,6 +64,10 @@ async function main() {
     await go(`${BASE}/account?${AUTH}`);
     await waitFor('[data-testid="account-community-entry"]');
     record("アカウントの画面にコミュニティの入口がある", await has('a[href="/account/community"]'), "");
+    if (MODE === "enabled") {
+      await waitFor('[data-testid="community-incoming-notice"]');
+      record("アカウントの画面: 届いた友達の申請の件数を知らせる（F-121）", /友達の申請が 1 件届いています/.test((await ev(`document.querySelector('[data-testid="community-incoming-notice"]')?.textContent`)) ?? ""), "");
+    }
     await go(`${BASE}/account/community?${AUTH}`);
     if (MODE === "enabled") {
       await waitFor('[data-testid="community-profile"]');
@@ -154,6 +158,11 @@ async function main() {
     if (shareUrl && rivalPayload) {
       await go(`${BASE}/account/community${P}`);
       await waitFor('[data-testid="community-share-input"]');
+      await go(`${BASE}/about`); // 別の画面から来る（診断の画面から移るのと同じ）
+      await go(`${BASE}/account/community${P}${shareUrl.slice(shareUrl.indexOf("#"))}`);
+      await waitFor('[data-testid="community-share-input"]');
+      await waitForCondition(async () => /#sd1\./.test((await ev(`document.querySelector('[data-testid="community-share-input"]')?.value`)) ?? ""), { timeoutMs: 5000 }).catch(() => {});
+      record("比較: 診断の共有から来たとき（#sd1…）は欄に入れておく（自動では保存しない）", /#sd1\./.test((await ev(`document.querySelector('[data-testid="community-share-input"]')?.value`)) ?? "") && !(await rpcCalls()).includes("community_set_comparison"), "");
       await setValue('[data-testid="community-share-input"]', "https://example.invalid/share/diagnosis#sd1.broken.00000000");
       await click('[data-testid="community-comparison-save"]');
       await waitText(/共有 URL を読み取れませんでした/);
@@ -173,6 +182,37 @@ async function main() {
     } else {
       record("比較: 共有 URL の準備（COMMUNITY_SHARE_URL_MINE・COMMUNITY_RIVAL_PAYLOAD）", false, "環境変数なし");
     }
+
+    const RIVALS_MODE = (await fs.readFile(path.join(ROOT, "src", "lib", "supabase", "community-mode.ts"), "utf8")).match(/RIVALS_MODE: CommunityMode = "(\w+)"/)?.[1];
+    if (MODE === "enabled" && RIVALS_MODE !== "enabled") {
+      await go(`${BASE}/account/community?${AUTH}`);
+      await waitFor('[data-testid="community-friends"]');
+      record("ライバル: 第 2 段階の適用前は本番の画面に出さない（関数を呼ばない）", !(await has('[data-testid="community-rivals"]')) && !(await rpcCalls()).includes("community_list_rivals"), RIVALS_MODE);
+    }
+    // ライバル（F-062・オプトイン）: rival_one は友達（上の比較で承認済み）・ライバルの機能を使っている
+    await go(`${BASE}/u/rival_one${P}`);
+    await waitFor('[data-testid="user-profile-rival"]');
+    await click('[data-testid="user-profile-rival"]');
+    await waitText(/ライバルの機能を使う」をオンに/);
+    record("ライバル: 自分が使っていなければ、追加の前に設定を求める", /ライバルの機能を使う」をオンに/.test(await text()), "");
+    await go(`${BASE}/account/community${P}`);
+    await waitFor('[data-testid="community-rivals-optin"]');
+    await waitForCondition(async () => (await ev(`document.querySelector('[data-testid="community-rivals-optin"]')?.disabled`)) === false, { timeoutMs: 8000 }).catch(() => {});
+    await click('[data-testid="community-rivals-optin"]');
+    await waitFor('[data-testid="community-rivals-table"]');
+    record("ライバル: 使うにすると一覧（自分の行）が出る", /あなた/.test((await ev(`document.querySelector('[data-testid="community-rivals-table"]')?.innerText`)) ?? ""), "");
+    await go(`${BASE}/u/rival_one${P}`);
+    await waitFor('[data-testid="user-profile-rival"]');
+    await click('[data-testid="user-profile-rival"]');
+    await waitText(/ライバルに追加しました/);
+    record("ライバル: 友達をライバルに追加できる（ボタンが「外す」に変わる）", /ライバルから外す/.test((await ev(`document.querySelector('[data-testid="user-profile-rival"]')?.textContent`)) ?? ""), "");
+    await go(`${BASE}/account/community${P}`);
+    await waitFor('[data-testid="community-rival-remove-rival_one"]');
+    const rivalTable = (await ev(`document.querySelector('[data-testid="community-rivals-table"]')?.innerText`)) ?? "";
+    record("ライバル: 一覧に総合点と 1 週間・1 か月の伸びを並べる", /Rival One/.test(rivalTable) && /\+3/.test(rivalTable) && /-2/.test(rivalTable), rivalTable.split("\n").slice(0, 3).join(" / "));
+    await click('[data-testid="community-rivals-optin"]');
+    await waitText(/ライバルの機能をやめました/);
+    record("ライバル: やめると一覧が消える", !(await has('[data-testid="community-rivals-table"]')), "");
 
     // ミュート・通報・ブロック
     await go(`${BASE}/u/rival_one${P}`);
