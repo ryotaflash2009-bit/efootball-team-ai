@@ -33,7 +33,7 @@ import {
   type CommunityReportReason,
   type ProfileView,
 } from "@/lib/community/community-client";
-import { communityClient, communityErrorKey, MessageLine, useCommunityAvailable, useCommunityT, type CommunityKey, type Message } from "./community-shared";
+import { communityClient, communityErrorKey, MessageLine, useCommunityAvailable, useCommunityT, useRivalsAvailable, type CommunityKey, type Message } from "./community-shared";
 
 type Summary = SquadDiagnosisSharePayloadV1;
 
@@ -47,6 +47,7 @@ export function UserProfileView({ publicId }: { publicId: string }) {
   const signInHref = useSignInHref();
   const session = useSupabaseSession();
   const available = useCommunityAvailable();
+  const rivalsAvailable = useRivalsAvailable();
   const id = publicId.toLowerCase();
 
   const [state, setState] = useState<"loading" | "ready" | "missing">("loading");
@@ -73,7 +74,7 @@ export function UserProfileView({ publicId }: { publicId: string }) {
     if (!r.data) return setState("missing");
     setView(r.data);
     setState("ready");
-    if (r.data.relation === "friends") {
+    if (r.data.relation === "friends" && rivalsAvailable) {
       const rv = await listRivals(supabase);
       setIsRival(rv.ok && rv.data.some((x) => !x.isSelf && x.publicId === r.data!.publicId));
     }
@@ -87,7 +88,7 @@ export function UserProfileView({ publicId }: { publicId: string }) {
     } else {
       setTheirs(null);
     }
-  }, [id, tc]);
+  }, [id, tc, rivalsAvailable]);
 
   useEffect(() => {
     if (session.status === "authenticated" && available) void load();
@@ -196,7 +197,7 @@ export function UserProfileView({ publicId }: { publicId: string }) {
                     {tc("removeFriendButton")}
                   </Button>
                 ) : null}
-                {view.relation === "friends" ? (
+                {view.relation === "friends" && rivalsAvailable ? (
                   <Button
                     size="sm"
                     variant="secondary"

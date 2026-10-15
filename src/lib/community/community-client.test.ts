@@ -11,7 +11,7 @@ import {
   report,
   setComparison,
 } from "./community-client";
-import { COMMUNITY_MODE, isCommunityAvailable } from "@/lib/supabase/community-mode";
+import { COMMUNITY_MODE, RIVALS_MODE, isCommunityAvailable, isRivalsAvailable } from "@/lib/supabase/community-mode";
 import { isLocalDevHostname } from "@/lib/supabase/local-dev";
 import { buildShareUrl, type SquadDiagnosisSharePayloadV1 } from "@/lib/squad/squad-diagnosis-share-url";
 import { SQUAD_DIAGNOSIS_RULES_VERSION, ABILITY_CATEGORIES, DIAGNOSIS_TIER_THRESHOLDS } from "@/lib/squad/squad-diagnosis";
@@ -40,6 +40,15 @@ describe("コミュニティの公開の状態", () => {
     expect(isCommunityAvailable("localhost", "", isLocalDevHostname, "disabled")).toBe(false);
     expect(isCommunityAvailable("localhost", "?communityPreview=1", isLocalDevHostname, "disabled")).toBe(true);
     expect(isCommunityAvailable("efootball-team-ai.vercel.app", "", isLocalDevHostname, "enabled")).toBe(true);
+  });
+});
+
+describe("ライバルの公開の状態（第 2 段階の SQL の適用まで無効）", () => {
+  it("無効の間は本番では出さない・ローカルの ?communityPreview=1 だけ", () => {
+    expect(["disabled", "enabled"]).toContain(RIVALS_MODE);
+    expect(isRivalsAvailable("efootball-team-ai.vercel.app", "?communityPreview=1", isLocalDevHostname, "disabled")).toBe(false);
+    expect(isRivalsAvailable("localhost", "?communityPreview=1", isLocalDevHostname, "disabled")).toBe(true);
+    expect(isRivalsAvailable("efootball-team-ai.vercel.app", "", isLocalDevHostname, "enabled")).toBe(true);
   });
 });
 

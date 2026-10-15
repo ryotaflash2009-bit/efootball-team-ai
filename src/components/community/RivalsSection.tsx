@@ -7,7 +7,7 @@ import { fillMessage } from "@/lib/i18n/message-format";
 import { Surface } from "@/components/ui/Surface";
 import { Button } from "@/components/ui/Button";
 import { listRivals, removeRival, setRivalOptIn, MAX_RIVALS, type RivalRow } from "@/lib/community/community-client";
-import { communityClient, communityErrorKey, MessageLine, useCommunityT, type Message } from "./community-shared";
+import { communityClient, communityErrorKey, MessageLine, useCommunityT, useRivalsAvailable, type Message } from "./community-shared";
 
 const signed = (n: number | null) => (n == null ? "—" : n > 0 ? `+${n}` : String(n));
 
@@ -17,6 +17,7 @@ const signed = (n: number | null) => (n == null ? "—" : n > 0 ? `+${n}` : Stri
  */
 export function RivalsSection({ hasProfile }: { hasProfile: boolean }) {
   const tc = useCommunityT();
+  const available = useRivalsAvailable();
   const [rows, setRows] = useState<RivalRow[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<Message>(null);
@@ -30,8 +31,8 @@ export function RivalsSection({ hasProfile }: { hasProfile: boolean }) {
   }, [tc]);
 
   useEffect(() => {
-    if (hasProfile) void load();
-  }, [hasProfile, load]);
+    if (hasProfile && available) void load();
+  }, [hasProfile, available, load]);
 
   async function run(fn: (s: NonNullable<Awaited<ReturnType<typeof communityClient>>>) => Promise<{ ok: true; data: unknown } | { ok: false; error: Parameters<typeof communityErrorKey>[0] }>, okText: string) {
     if (busy) return;
@@ -52,6 +53,7 @@ export function RivalsSection({ hasProfile }: { hasProfile: boolean }) {
   const rivals = rows?.filter((r) => !r.isSelf) ?? [];
   const optedIn = self?.optedIn ?? false;
 
+  if (!available) return null;
   return (
     <Surface padding="md" className="flex flex-col gap-2 text-sm" data-testid="community-rivals">
       <h2 className="font-semibold">{tc("rivalsHeading")}</h2>

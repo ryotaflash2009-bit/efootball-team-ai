@@ -18,3 +18,16 @@ export function isCommunityAvailable(
   if (!isLocalDevHostname(hostname)) return false;
   return new URLSearchParams(search).get("communityPreview") === "1";
 }
+
+/**
+ * ライバル（F-062・第 2 段階の SQL `create-community-stage2-rivals.sql`）の公開の状態（2026-10-15）。
+ * 本番に第 2 段階を適用・確認（verify-community-stage2.sql）するまで "disabled"。無効の間はライバルの欄・ボタンを出さず、関数を呼ばない。
+ * ローカルの開発ホストでは `?communityPreview=1` のときだけ出す（black-box はテストダブルで検証）。
+ */
+export const RIVALS_MODE: CommunityMode = "disabled";
+
+export function isRivalsAvailable(hostname: string, search: string, isLocalDevHostname: (h: string) => boolean, mode: CommunityMode = RIVALS_MODE): boolean {
+  if (mode === "enabled") return true;
+  if (!isLocalDevHostname(hostname)) return false;
+  return new URLSearchParams(search).get("communityPreview") === "1";
+}

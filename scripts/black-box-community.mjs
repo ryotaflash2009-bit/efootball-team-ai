@@ -183,6 +183,12 @@ async function main() {
       record("比較: 共有 URL の準備（COMMUNITY_SHARE_URL_MINE・COMMUNITY_RIVAL_PAYLOAD）", false, "環境変数なし");
     }
 
+    const RIVALS_MODE = (await fs.readFile(path.join(ROOT, "src", "lib", "supabase", "community-mode.ts"), "utf8")).match(/RIVALS_MODE: CommunityMode = "(\w+)"/)?.[1];
+    if (MODE === "enabled" && RIVALS_MODE !== "enabled") {
+      await go(`${BASE}/account/community?${AUTH}`);
+      await waitFor('[data-testid="community-friends"]');
+      record("ライバル: 第 2 段階の適用前は本番の画面に出さない（関数を呼ばない）", !(await has('[data-testid="community-rivals"]')) && !(await rpcCalls()).includes("community_list_rivals"), RIVALS_MODE);
+    }
     // ライバル（F-062・オプトイン）: rival_one は友達（上の比較で承認済み）・ライバルの機能を使っている
     await go(`${BASE}/u/rival_one${P}`);
     await waitFor('[data-testid="user-profile-rival"]');
