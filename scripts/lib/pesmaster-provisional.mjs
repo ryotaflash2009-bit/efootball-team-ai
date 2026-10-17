@@ -118,7 +118,8 @@ export function nameSortKey(name) {
 /**
  * PES Master の選手 → World の行の形（暫定）。必須の値（ID・名前・ポジション・カードの種類・能力値 26）が揃わなければ null（入れない）。
  * @param {any} pm
- * @param {{ fetchedAt: string; league?: string | null; region?: string | null }} ctx  league・region はアプリの既存のカードから引いた値
+ * @param {{ fetchedAt: string; league?: string | null; region?: string | null; nationality?: string | null; nameJa?: string | null }} ctx
+ *   league・region・nationality・nameJa はアプリの既存のカード（同じ人物の別のカード・同じチーム・学んだ表記の対応）から引いた値
  */
 export function mapPesMasterPlayer(pm, ctx) {
   if (!pm || typeof pm !== "object") return { ok: false, reason: "no_player" };
@@ -155,10 +156,10 @@ export function mapPesMasterPlayer(pm, ctx) {
     row: {
       world_card_id: id,
       name_en: name,
-      name_ja: null,
+      name_ja: ctx.nameJa ?? null,
       card_type: cardType,
       registered_position: position,
-      nationality: text(pm.nat_name),
+      nationality: ctx.nationality ?? text(pm.nat_name),
       region: ctx.region ?? null,
       league: ctx.league ?? null,
       team: text(pm.team_name),
@@ -188,6 +189,9 @@ export function mapPesMasterPlayer(pm, ctx) {
       appearance_updated_at: null,
       fetched_at: ctx.fetchedAt,
       max_level_source: maxLevel ? "pesmaster_user_submitted" : null,
+      // 表記の対応を学ぶための PES Master の元の値（正式なデータに置き換わったときに比べる）
+      pm_nat_name: text(pm.nat_name),
+      pm_league_name: text(pm.league_name),
     },
   };
 }
@@ -223,4 +227,25 @@ export function idsToFetch({ featuredIds, previous, worldIds, now, maxPerRun = 8
     else if (prev.maximum_level == null && n - Date.parse(prev.fetched_at) >= 24 * 60 * 60 * 1000) out.push(id);
   }
   return out.slice(0, maxPerRun);
+}
+
+/** 人物のキー（アプリの personKeyOf と同じ: World のカード ID の下位 20 ビット）。 */
+export function personKey(id) {
+  return /^\d{1,20}$/.test(String(id)) ? (BigInt(id) & 0xfffffn).toString() : null;
+}
+
+/** PES Master と World の表記の違い（確認済み）。同期のたびに学んだ対応を足す。 */
+export const SEED_ALIASES = { nationality: { Turkey: "Türkiye", "Czech Republic": "Czechia" }, league: {} };
+
+/**
+ * 正式なデータに置き換わったカードから、表記の対応を学ぶ（PES Master の元の値 → World の値）。
+ * @param {{ aliases: { nationality: Record<string,string>; league: Record<string,string> }; graduated: { row: any; official: any }[] }} p
+ */
+export function learnAliases({ aliases, graduated }) {
+  const next = { nationality: { ...SEED_ALIASES.nationality, ...(aliases?.nationality ?? {}) }, league: { ...SEED_ALIASES.league, ...(aliases?.league ?? {}) } };
+  for (const { row, official } of graduated ?? []) {
+    if (row?.pm_nat_name && typeof official?.nationality === "string" && official.nationality && row.pm_nat_name !== official.nationality) next.nationality[row.pm_nat_name] = official.nationality;
+    if (row?.pm_league_name && typeof official?.league === "string" && official.league && row.pm_league_name !== official.league) next.league[row.pm_league_name] = official.league;
+  }
+  return next;
 }

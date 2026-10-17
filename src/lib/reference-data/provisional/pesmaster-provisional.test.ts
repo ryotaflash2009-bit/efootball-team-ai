@@ -7,8 +7,12 @@ import {
   nextProvisionalCards,
   idsToFetch,
   nameSortKey,
+  personKey,
+  learnAliases,
+  SEED_ALIASES,
   PROVISIONAL_SOURCE,
 } from "../../../../scripts/lib/pesmaster-provisional.mjs";
+import { personKeyOf } from "@/lib/world/person-identity";
 import { validProvisionalRows, PROVISIONAL_SCHEMA, getProvisionalRow, listProvisionalRows } from "./provisional-cards";
 import { computeNameSortKey } from "../name-sort-key";
 
@@ -83,6 +87,35 @@ describe("PES Master → 暫定のカード（2026-10-15・両方にあるカー
       { world_card_id: "3", maximum_level: 30, fetched_at: "2026-10-01T00:00:00Z" },
     ];
     expect(idsToFetch({ featuredIds: ["4", "2", "5"], previous: prev, worldIds: new Set(["5"]), now: NOW })).toEqual(["4", "1"]);
+  });
+});
+
+describe("精度の改善（2026-10-16・正式なデータに置き換わった 57 枚との比較から）", () => {
+  it("人物のキーはアプリの personKeyOf と同じ（下位 20 ビット）", () => {
+    for (const id of ["89138556575063", "105864501411930", "88045755828950"]) expect(personKey(id)).toBe(personKeyOf(id));
+    expect(personKey("x")).toBeNull();
+  });
+
+  it("同じ人物の別のカードから引いた日本語名・国籍を使う（無ければ PES Master の値）", () => {
+    const r = mapPesMasterPlayer(FX[0].pm, { fetchedAt: NOW, nameJa: "リオネル メッシ", nationality: "Argentina" });
+    expect(r.ok && r.row).toMatchObject({ name_ja: "リオネル メッシ", nationality: "Argentina", pm_nat_name: "Argentina" });
+    const r2 = mapPesMasterPlayer(FX[0].pm, { fetchedAt: NOW });
+    expect(r2.ok && r2.row).toMatchObject({ name_ja: null, nationality: FX[0].pm.nat_name });
+  });
+
+  it("表記の対応: 確認済みの初期値（Turkey→Türkiye・Czech Republic→Czechia）＋正式なデータに置き換わったカードから学ぶ", () => {
+    expect(SEED_ALIASES.nationality).toMatchObject({ Turkey: "Türkiye", "Czech Republic": "Czechia" });
+    const next = learnAliases({
+      aliases: { nationality: { Korea: "Korea Republic" }, league: {} },
+      graduated: [
+        { row: { pm_nat_name: "Ivory Coast", pm_league_name: "Lega Italia" }, official: { nationality: "Côte d'Ivoire", league: "Italian League" } },
+        { row: { pm_nat_name: "Argentina", pm_league_name: "Premier League" }, official: { nationality: "Argentina", league: "Premier League" } },
+        { row: { pm_nat_name: null }, official: { nationality: "Brazil" } },
+      ],
+    });
+    expect(next.nationality).toMatchObject({ Turkey: "Türkiye", Korea: "Korea Republic", "Ivory Coast": "Côte d'Ivoire" });
+    expect(next.nationality).not.toHaveProperty("Argentina");
+    expect(next.league).toEqual({ "Lega Italia": "Italian League" });
   });
 });
 
