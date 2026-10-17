@@ -9,6 +9,7 @@ const worldFilters: Dictionary["worldFilters"] = {
   sortOvrBaseAsc: "基礎OVR 低い順",
   sortName: "名前順（英語）",
   sortUpdatedDesc: "更新が新しい順",
+  sortAddedDesc: "追加が新しい順",
   filterLabelQ: "検索",
   filterLabelPosition: "ポジション",
   filterLabelCardType: "カードタイプ",

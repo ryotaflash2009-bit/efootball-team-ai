@@ -2853,6 +2853,7 @@ export interface Dictionary {
     sortOvrBaseAsc: string;
     sortName: string;
     sortUpdatedDesc: string;
+    sortAddedDesc: string;
     filterLabelQ: string;
     filterLabelPosition: string;
     filterLabelCardType: string;

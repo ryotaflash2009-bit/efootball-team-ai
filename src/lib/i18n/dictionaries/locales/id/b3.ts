@@ -386,6 +386,7 @@ const part: PartialDictionary = {
     sortOvrBaseAsc: "OVR dasar (rendah ke tinggi)",
     sortName: "Menurut nama (Inggris)",
     sortUpdatedDesc: "Terakhir diperbarui",
+    sortAddedDesc: "Baru ditambahkan",
     filterLabelQ: "Cari",
     filterLabelPosition: "Posisi",
     filterLabelCardType: "Jenis kartu",

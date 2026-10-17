@@ -66,6 +66,8 @@ const ORDER: Record<WorldSortKey, { field: string; ascending: boolean }[]> = {
   // それまでは"name"ソートを指定するとPostgRESTがエラーを返す(sqlite経路は既定のまま無変更)。
   name: [{ field: "name_sort_key", ascending: true }, { field: "world_card_id", ascending: true }],
   updated_desc: [{ field: "appearance_updated_at", ascending: false }, { field: "world_card_id", ascending: true }],
+  // 2026-10-17: TeamAIXI に追加された順（自動更新で追加された行は created_at が追加の日時）
+  added_desc: [{ field: "created_at", ascending: false }, { field: "world_card_id", ascending: true }],
 };
 
 /**

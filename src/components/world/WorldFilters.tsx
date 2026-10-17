@@ -19,6 +19,7 @@ function useSortOptions(): { value: WorldSortKey; label: string }[] {
     { value: "ovr_base_asc", label: key("sortOvrBaseAsc") },
     { value: "name", label: key("sortName") },
     { value: "updated_desc", label: key("sortUpdatedDesc") },
+    { value: "added_desc", label: key("sortAddedDesc") },
   ];
 }
 

@@ -10,7 +10,9 @@ export type WorldSortKey =
   | "ovr_base_desc"
   | "ovr_base_asc"
   | "name"
-  | "updated_desc";
+  | "updated_desc"
+  /** TeamAIXI に追加された日時の新しい順（created_at・2026-10-17）。 */
+  | "added_desc";
 
 /** 一覧・カード表示に使う要約情報 */
 import type { ProvisionalInfo } from "@/lib/reference-data/provisional/provisional-cards";

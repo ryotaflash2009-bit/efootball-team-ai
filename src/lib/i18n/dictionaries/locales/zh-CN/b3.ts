@@ -386,6 +386,7 @@ const part: PartialDictionary = {
     sortOvrBaseAsc: "基础 OVR（从低到高）",
     sortName: "按名称（英文）",
     sortUpdatedDesc: "最近更新",
+    sortAddedDesc: "按添加时间（新→旧）",
     filterLabelQ: "搜索",
     filterLabelPosition: "位置",
     filterLabelCardType: "卡片类型",

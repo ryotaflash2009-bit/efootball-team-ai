@@ -2913,6 +2913,7 @@ const en: Dictionary = {
     sortOvrBaseAsc: "Base OVR (low to high)",
     sortName: "By name (English)",
     sortUpdatedDesc: "Recently updated",
+    sortAddedDesc: "Newest added",
     filterLabelQ: "Search",
     filterLabelPosition: "Position",
     filterLabelCardType: "Card type",
