@@ -20,7 +20,8 @@ export const metadata = pageMetadata({
 });
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+// 5 分ごとに作り直す（2026-10-18: 初回の表示を速くする。データの照会も 5 分のキャッシュ・/players/new と同じ）
+export const revalidate = 300;
 
 /** クライアントへは生の CDN URL（imageUrlCandidate 等）を渡さず、解決済み imageSources だけ渡す。 */
 function toMiniCardData(p: WorldPlayerListItem): HomeMiniCardData {
@@ -64,6 +65,9 @@ export default async function HomePage() {
   const handling = classifyHomeFailure(settled.failure ? settled.failure.reason : undefined);
   if (handling === "throw") throw settled.failure!.reason;
   const temporaryError = handling === "temporary";
+  // 5 分ごとの作り直し（ISR）で一時的な照会の失敗が起きたときは投げる＝前の正しいページを出し続ける（2026-10-18）。
+  // ビルドの時（前のページが無い）は従来どおり、得られた値だけで表示する。
+  if (temporaryError && process.env.NEXT_PHASE !== "phase-production-build") throw settled.failure!.reason;
   // 従来は最初の失敗までに得た値だけを表示していた。照会順で失敗より前の結果だけを使う。
   if (settled.usable(0) && metaR.status === "fulfilled") {
     world = { totalCount: metaR.value.totalCount, source: metaR.value.source, syncFinishedAt: metaR.value.syncFinishedAt, latestCardUpdatedAt: metaR.value.latestCardUpdatedAt ?? null };
