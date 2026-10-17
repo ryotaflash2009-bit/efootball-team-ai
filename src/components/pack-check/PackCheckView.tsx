@@ -14,6 +14,7 @@ import { useMyTeam } from "@/lib/user-cards/hooks";
 import { useResolvedCards } from "@/lib/user-cards/use-resolved-cards";
 import { packCheck, type PackCardVerdict } from "@/lib/new-cards/pack-check";
 import type { ImpactCard } from "@/lib/new-cards/team-impact";
+import { fetchNewCardsOnce } from "@/lib/new-cards/fetch-new-cards";
 import type { WorldPlayerListItem } from "@/lib/world/types";
 
 const MAX_CARDS = 30;
@@ -97,10 +98,7 @@ export function PackCheckView() {
   const [newCards, setNewCards] = useState<ImpactCard[] | null>(null);
   const loadNewCards = () => {
     if (newCards) return;
-    fetch("/api/world/new-cards")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((j: { cards?: ImpactCard[] } | null) => setNewCards(Array.isArray(j?.cards) ? j.cards : []))
-      .catch(() => setNewCards([]));
+    void fetchNewCardsOnce().then(setNewCards);
   };
 
   const name = (c: ImpactCard) => resolvePlayerDisplayName(c, locale);
