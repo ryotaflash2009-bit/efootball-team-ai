@@ -5235,6 +5235,7 @@ export interface Dictionary {
     tierRangeB: string;
     tierRangeC: string;
     entryTemplate: string;
+    showMoreTemplate: string;
     dataUnavailable: string;
   };
   provisionalCards: {

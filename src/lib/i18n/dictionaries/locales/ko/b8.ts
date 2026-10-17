@@ -601,6 +601,7 @@ const part: PartialDictionary = {
     tierRangeB: "상위 6% 이내",
     tierRangeC: "상위 10% 이내",
     entryTemplate: "최대 OVR {ovr} · {rank}위 (상위 {pct}%)",
+    showMoreTemplate: "나머지 {count}건 보기",
     dataUnavailable: "선수 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
   },
   provisionalCards: {

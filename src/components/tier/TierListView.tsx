@@ -2,6 +2,7 @@
 
 import "@/lib/i18n/dictionaries/ja-ns/tierList";
 import Link from "next/link";
+import { useState } from "react";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import { fillMessage } from "@/lib/i18n/message-format";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
@@ -82,29 +83,7 @@ export function TierListView({
         TIERS.map((tier) => {
           const list = entries.filter((e) => e.tier === tier);
           if (list.length === 0) return null;
-          return (
-            <Surface key={tier} padding="md" className="flex flex-col gap-2" data-testid={`tier-${tier}`}>
-              <h2 className="flex items-center gap-2 text-sm font-semibold">
-                <Badge tone={TIER_TONE[tier]} size="sm">
-                  {tier}
-                </Badge>
-                <span className="text-text-dim">{tt(`tierRange${tier}` as Parameters<typeof t<"tierList">>[1])}</span>
-              </h2>
-              <ol className="grid gap-1 sm:grid-cols-2">
-                {list.map((e) => (
-                  <li key={e.worldCardId} className="flex items-baseline justify-between gap-2 border-b border-border/60 py-1 text-xs">
-                    <Link href={`/players/world/${e.worldCardId}`} className="min-w-0 truncate text-accent hover:underline">
-                      {resolvePlayerDisplayName(e, locale)}
-                      {e.cardType ? <span className="ms-1 text-text-muted">· {e.cardType}</span> : null}
-                    </Link>
-                    <span className="shrink-0 tabular-nums text-text-dim">
-                      {fillMessage(tt("entryTemplate"), { ovr: String(e.ovrMax ?? "—"), rank: String(e.rank), pct: String(e.topPercent) })}
-                    </span>
-                  </li>
-                ))}
-              </ol>
-            </Surface>
-          );
+          return <TierBlock key={tier} tier={tier} list={list} />;
         })
       )}
     </div>
@@ -120,5 +99,44 @@ export function TierListUnavailableView() {
         {t("tierList", "dataUnavailable")}
       </Surface>
     </div>
+  );
+}
+
+/** 1 つの区分で最初に見せる行数（残りは「残り N 件を表示」・2026-10-18 画面の整理）。リンクは検索エンジンのため HTML に残し、見た目だけ隠す。 */
+const TIER_INITIAL = 20;
+
+function TierBlock({ tier, list }: { tier: OwnTierRank; list: TierListEntryView[] }) {
+  const t = useT();
+  const { locale } = useLocale();
+  const tt = (k: Parameters<typeof t<"tierList">>[1]) => t("tierList", k);
+  const [all, setAll] = useState(false);
+  const hidden = all ? 0 : Math.max(0, list.length - TIER_INITIAL);
+  return (
+    <Surface padding="md" className="flex flex-col gap-2" data-testid={`tier-${tier}`}>
+      <h2 className="flex items-center gap-2 text-sm font-semibold">
+        <Badge tone={TIER_TONE[tier]} size="sm">
+          {tier}
+        </Badge>
+        <span className="text-text-dim">{tt(`tierRange${tier}` as Parameters<typeof t<"tierList">>[1])}</span>
+      </h2>
+      <ol className="grid gap-1 sm:grid-cols-2">
+        {list.map((e, i) => (
+          <li key={e.worldCardId} className={`flex items-baseline justify-between gap-2 border-b border-border/60 py-1 text-xs ${!all && i >= TIER_INITIAL ? "hidden" : ""}`}>
+            <Link href={`/players/world/${e.worldCardId}`} className="min-w-0 truncate text-accent hover:underline">
+              {resolvePlayerDisplayName(e, locale)}
+              {e.cardType ? <span className="ms-1 text-text-muted">· {e.cardType}</span> : null}
+            </Link>
+            <span className="shrink-0 tabular-nums text-text-dim">
+              {fillMessage(tt("entryTemplate"), { ovr: String(e.ovrMax ?? "—"), rank: String(e.rank), pct: String(e.topPercent) })}
+            </span>
+          </li>
+        ))}
+      </ol>
+      {hidden > 0 ? (
+        <button type="button" className="w-fit rounded-md border border-border px-3 py-1.5 text-xs text-text-dim hover:bg-surface-2" onClick={() => setAll(true)} data-testid="tier-show-more">
+          {fillMessage(tt("showMoreTemplate"), { count: String(hidden) })}
+        </button>
+      ) : null}
+    </Surface>
   );
 }

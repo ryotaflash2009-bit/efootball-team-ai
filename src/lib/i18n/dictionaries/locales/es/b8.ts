@@ -601,6 +601,7 @@ const part: PartialDictionary = {
     tierRangeB: "6 % superior",
     tierRangeC: "10 % superior",
     entryTemplate: "OVR máx. {ovr} · n.º {rank} ({pct} % superior)",
+    showMoreTemplate: "Mostrar {count} más",
     dataUnavailable: "No se pudieron cargar los datos de jugadores. Inténtalo más tarde.",
   },
   provisionalCards: {

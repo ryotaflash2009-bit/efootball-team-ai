@@ -601,6 +601,7 @@ const part: PartialDictionary = {
     tierRangeB: "前 6%",
     tierRangeC: "前 10%",
     entryTemplate: "最高 OVR {ovr} · 第 {rank} 名（前 {pct}%）",
+    showMoreTemplate: "顯示其餘 {count} 筆",
     dataUnavailable: "無法載入球員資料，請稍後再試。",
   },
   provisionalCards: {
