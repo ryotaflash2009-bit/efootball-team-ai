@@ -83,7 +83,7 @@ async function main() {
     await browser.close();
   }
   const failed = results.filter((r) => !r.pass);
-  const L = ["# 新しいカードの画面 ブラックボックステスト結果", "", `実行日時: ${new Date().toISOString()}`, `対象: ${BASE}`, "", "| 結果 | 項目 | 詳細 |", "|---|---|---|", ...results.map((r) => `| ${r.pass ? "PASS" : "FAIL"} | ${r.name} | ${(r.detail || "").replace(/\|/g, "\\|")} |`), "", `## 判定: ${failed.length === 0 ? "全項目 PASS" : failed.length + " 件 FAIL"}`, ""];
+  const L = ["# 新しいカードの画面 ブラックボックステスト結果", "", `実行日時: ${new Date().toISOString()}`, `対象: ${BASE}`, "", "| 結果 | 項目 | 詳細 |", "|---|---|---|", ...results.map((r) => `| ${r.pass ? "PASS" : "FAIL"} | ${r.name} | ${(r.detail || "").replace(/\\/g, "\\\\").replace(/\|/g, "\\|")} |`), "", `## 判定: ${failed.length === 0 ? "全項目 PASS" : failed.length + " 件 FAIL"}`, ""];
   await fs.mkdir(path.dirname(REPORT), { recursive: true });
   await fs.writeFile(REPORT, L.join("\n") + "\n", "utf8");
   console.log(`\n[black-box-new-cards] ${results.length - failed.length}/${results.length} PASS`);
