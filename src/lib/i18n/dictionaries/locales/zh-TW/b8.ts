@@ -668,6 +668,9 @@ const part: PartialDictionary = {
     noTeam: "你的 My Team 中還沒有標記為擁有的卡，因此全部顯示為你沒有的位置。在 My Team 中登錄後即可比較。",
     openMyTeam: "開啟 My Team",
     loading: "載入中…",
+    fitHeading: "與你的 My Team 比較",
+    fitAlreadyOwned: "這張卡在你的 My Team 中標記為擁有。",
+    fitOpenPackCheck: "在卡包診斷中與其他卡一起查看",
   },
 };
 

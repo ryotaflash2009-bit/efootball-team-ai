@@ -668,6 +668,9 @@ const part: PartialDictionary = {
     noTeam: "Il tuo My Team non ha ancora carte segnate come possedute, quindi tutte appaiono come nuovo ruolo. Aggiungi le tue carte a My Team per confrontarle.",
     openMyTeam: "Apri My Team",
     loading: "Caricamento…",
+    fitHeading: "Confrontata con il tuo My Team",
+    fitAlreadyOwned: "Questa carta è segnata come posseduta nel tuo My Team.",
+    fitOpenPackCheck: "Vedi con altre carte in Analisi pack",
   },
 };
 

@@ -30,6 +30,9 @@ const packCheck: Dictionary["packCheck"] = {
   noTeam: "My Team に「所持」のカードがまだありません。すべて「持っていないポジション」として出ます。My Team に登録すると、持っているカードと比べられます。",
   openMyTeam: "My Team を開く",
   loading: "読み込み中…",
+  fitHeading: "あなたの My Team と比べる",
+  fitAlreadyOwned: "このカードは My Team で「所持」になっています。",
+  fitOpenPackCheck: "パック診断で他のカードと一緒に見る",
 };
 
 registerJaNamespace("packCheck", packCheck);

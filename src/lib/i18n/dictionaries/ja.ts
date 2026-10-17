@@ -5293,6 +5293,9 @@ export interface Dictionary {
     noTeam: string;
     openMyTeam: string;
     loading: string;
+    fitHeading: string;
+    fitAlreadyOwned: string;
+    fitOpenPackCheck: string;
   };
   gamePlan: {
     heading: string;
