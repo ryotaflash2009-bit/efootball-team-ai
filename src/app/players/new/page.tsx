@@ -6,6 +6,7 @@ import { resolveCardImageSources } from "@/lib/world/image";
 import { ProvisionalCardsView } from "@/components/world/ProvisionalCardsView";
 import type { WorldPlayerCardData } from "@/components/world/WorldPlayerCard";
 import type { WorldPlayerListItem } from "@/lib/world/types";
+import { addedBatches } from "@/lib/new-cards/added-batches";
 
 // 新しいカード（2026-10-15 暫定・2026-10-17 最近追加された正式なカード）。暫定はリポジトリの JSON、正式は World の created_at。
 export const metadata = pageMetadata({
@@ -18,6 +19,8 @@ export const runtime = "nodejs";
 export const revalidate = 300;
 
 const RECENT_DAYS = 7;
+/** パック診断に渡せる枚数（`PackCheckView` の上限と同じ）。 */
+const PACK_CHECK_LIMIT = 30;
 
 /** クライアントへは生の CDN URL を渡さず、解決済みの画像だけを渡す（選手一覧と同じ）。 */
 function toCardData(p: WorldPlayerListItem): WorldPlayerCardData {
@@ -49,7 +52,7 @@ export default async function NewCardsPage() {
   const recent = await cachedListRecentlyAddedPlayers(RECENT_DAYS, 200).catch(() => []);
   return (
     <PageContainer width="full">
-      <ProvisionalCardsView cards={listProvisionalPlayers().map(toCardData)} recent={recent.map(toCardData)} recentDays={RECENT_DAYS} />
+      <ProvisionalCardsView cards={listProvisionalPlayers().map(toCardData)} recent={recent.map(toCardData)} recentDays={RECENT_DAYS} batches={addedBatches(recent, PACK_CHECK_LIMIT)} packCheckLimit={PACK_CHECK_LIMIT} />
     </PageContainer>
   );
 }
