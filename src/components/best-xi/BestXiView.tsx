@@ -30,6 +30,7 @@ import {
 } from "@/lib/best-xi/affiliation-filter";
 import { selectBestXi } from "@/lib/best-xi/select";
 import { selectBestXiBench, type BestXiBenchResult } from "@/lib/best-xi/bench";
+import { BestXiNewCardsPanel } from "@/components/best-xi/BestXiNewCardsPanel";
 import {
   EXCLUSION_REASON_LABEL_KEY,
   LIMITATION_LABEL_KEY,
@@ -412,6 +413,18 @@ export function BestXiView() {
               ) : null}
 
               {bench ? <BestXiBench bench={bench} displayName={displayName} tb={tb} fillTb={fillTb} /> : null}
+
+              <BestXiNewCardsPanel
+                result={result}
+                candidates={candidates}
+                unavailableCards={unavailableCards}
+                ownedIds={ownedWorldCardIds}
+                manager={managerInRanking ? manager : null}
+                affiliationActive={affiliationFilter != null}
+                displayName={displayName}
+                tb={tb}
+                fillTb={fillTb}
+              />
 
               {/* 結果をスカッドとして保存（2026-10-11）: 先発・控え・ビルドを新しいスカッドへ写し、スカッドの画面へ移る */}
               <div className="flex flex-col gap-2 rounded-card border border-border bg-surface p-3 text-xs sm:flex-row sm:items-center sm:justify-between sm:p-4">

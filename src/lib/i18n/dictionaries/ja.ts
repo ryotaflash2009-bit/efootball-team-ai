@@ -3205,6 +3205,15 @@ export interface Dictionary {
     saveAsSquadNameTemplate: string;
     saveAsSquadHint: string;
     saveAsSquadFailed: string;
+    newCardsHeading: string;
+    newCardsIntro: string;
+    newCardsButton: string;
+    newCardsLoading: string;
+    newCardsNoChange: string;
+    newCardsNone: string;
+    newCardsChangeTemplate: string;
+    newCardsEmptyBefore: string;
+    newCardsAffiliationNote: string;
     managerHeading: string;
     managerApplyToggle: string;
     managerAppliedNote: string;
