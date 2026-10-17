@@ -386,6 +386,7 @@ const part: PartialDictionary = {
     sortOvrBaseAsc: "기본 OVR(낮은 순)",
     sortName: "이름순(영문)",
     sortUpdatedDesc: "최근 업데이트순",
+    sortAddedDesc: "최근 추가순",
     filterLabelQ: "검색",
     filterLabelPosition: "포지션",
     filterLabelCardType: "카드 유형",

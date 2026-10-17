@@ -386,6 +386,7 @@ const part: PartialDictionary = {
     sortOvrBaseAsc: "OVR de base (croissant)",
     sortName: "Par nom (anglais)",
     sortUpdatedDesc: "Mises à jour récentes",
+    sortAddedDesc: "Ajoutées récemment",
     filterLabelQ: "Recherche",
     filterLabelPosition: "Poste",
     filterLabelCardType: "Type de carte",

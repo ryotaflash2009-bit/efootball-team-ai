@@ -386,6 +386,7 @@ const part: PartialDictionary = {
     sortOvrBaseAsc: "Temel OVR (düşükten yükseğe)",
     sortName: "Ada göre (İngilizce)",
     sortUpdatedDesc: "En son güncellenen",
+    sortAddedDesc: "En yeni eklenenler",
     filterLabelQ: "Ara",
     filterLabelPosition: "Mevki",
     filterLabelCardType: "Kart türü",

@@ -386,6 +386,7 @@ const part: PartialDictionary = {
     sortOvrBaseAsc: "基礎 OVR（由低到高）",
     sortName: "依名稱（英文）",
     sortUpdatedDesc: "最近更新",
+    sortAddedDesc: "依新增時間（新→舊）",
     filterLabelQ: "搜尋",
     filterLabelPosition: "位置",
     filterLabelCardType: "球員卡類型",

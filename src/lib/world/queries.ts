@@ -103,6 +103,8 @@ const ORDER_BY: Record<WorldSortKey, string> = {
   ovr_base_asc: "c.ovr_base ASC, c.ovr_max ASC, c.world_card_id ASC",
   name: "c.name_en COLLATE NOCASE ASC, c.world_card_id ASC",
   updated_desc: "c.appearance_updated_at DESC, c.world_card_id ASC",
+  // SQLite（切り戻し用）には created_at が無いため取得の日時で代える
+  added_desc: "c.fetched_at DESC, c.world_card_id ASC",
 };
 
 export function orderByClause(sort: WorldSortKey): string {

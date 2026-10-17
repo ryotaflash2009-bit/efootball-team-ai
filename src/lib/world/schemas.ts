@@ -19,6 +19,7 @@ export const WORLD_SORT_KEYS: readonly WorldSortKey[] = [
   "ovr_base_asc",
   "name",
   "updated_desc",
+  "added_desc",
 ] as const;
 
 /** World カード ID: 数字のみ 1〜20 桁（保存値は 14〜15 桁） */
