@@ -5234,6 +5234,10 @@ export interface Dictionary {
     newCardsIntro: string;
     newCardsEmpty: string;
     newCardsLinkTemplate: string;
+    provisionalHeading: string;
+    recentHeadingTemplate: string;
+    recentIntro: string;
+    recentEmpty: string;
   };
   gamePlan: {
     heading: string;

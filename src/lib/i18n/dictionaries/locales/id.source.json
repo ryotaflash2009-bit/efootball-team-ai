@@ -4303,8 +4303,12 @@
  "provisionalCards.maxLevelUnknown": "42c48e923435",
  "provisionalCards.maxLevelFromUsers": "3446bc50f701",
  "provisionalCards.sourceLabel": "41b27fa840e7",
- "provisionalCards.newCardsPageTitle": "2dca16e27389",
- "provisionalCards.newCardsIntro": "b48efb84ca45",
+ "provisionalCards.newCardsPageTitle": "3448c00f4c8f",
+ "provisionalCards.newCardsIntro": "ba3b0f78e0d4",
  "provisionalCards.newCardsEmpty": "774d786d59cf",
- "provisionalCards.newCardsLinkTemplate": "d9c407d321cb"
+ "provisionalCards.newCardsLinkTemplate": "902116d4f853",
+ "provisionalCards.provisionalHeading": "8e7d6427bbf4",
+ "provisionalCards.recentHeadingTemplate": "f1908c28139c",
+ "provisionalCards.recentIntro": "7f006be2d199",
+ "provisionalCards.recentEmpty": "88a587e106be"
 }

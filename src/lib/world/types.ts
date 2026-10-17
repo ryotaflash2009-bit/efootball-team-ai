@@ -47,6 +47,8 @@ export interface WorldPlayerListItem {
   efhubCardId: string | null;
   /** 暫定のカード（eFootball World にまだ無く PES Master から補ったもの・2026-10-15）。正式なカードでは無い（undefined）。 */
   provisional?: ProvisionalInfo;
+  /** TeamAIXI に追加された日時（created_at・最近追加されたカードの一覧だけで使う・2026-10-17）。 */
+  addedAt?: string | null;
 }
 
 /** 能力値 1 項目 */

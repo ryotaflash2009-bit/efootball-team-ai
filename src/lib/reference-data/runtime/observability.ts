@@ -16,6 +16,7 @@ export type ReferenceDataOperation =
   | "world.list"
   | "world.detail"
   | "world.byIds"
+  | "world.recentlyAdded"
   | "world.image"
   | "world.facets"
   | "world.sourceMeta"

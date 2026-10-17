@@ -611,10 +611,14 @@ const part: PartialDictionary = {
     maxLevelUnknown: "최대 레벨을 확인 중이라 육성 계산은 아직 사용할 수 없습니다.",
     maxLevelFromUsers: "최대 레벨은 출처 사이트 이용자가 제보한 값입니다(정식 데이터가 들어오면 바뀝니다).",
     sourceLabel: "데이터 출처:",
-    newCardsPageTitle: "새 카드(임시)",
-    newCardsIntro: "주요 데이터 출처에 아직 없는 새 카드입니다. 정식 데이터가 들어오면 일반 선수 목록으로 옮겨집니다.",
+    newCardsPageTitle: "새 카드",
+    newCardsIntro: "최근 추가된 카드와 주요 데이터 출처에 아직 없는 새 카드(임시)입니다. 임시 카드는 정식 데이터가 들어오면 자동으로 바뀝니다.",
     newCardsEmpty: "지금은 임시 카드가 없습니다(모두 정식 데이터입니다).",
-    newCardsLinkTemplate: "새 카드(임시) {count}장 보기",
+    newCardsLinkTemplate: "새 카드 {count}장 보기",
+    provisionalHeading: "정식 데이터 반영 전(임시)",
+    recentHeadingTemplate: "최근 추가된 카드(최근 {days}일, {count}장)",
+    recentIntro: "정식 데이터로 TeamAIXI에 추가된 새 카드입니다(최신순).",
+    recentEmpty: "최근 추가된 정식 카드가 없습니다.",
   },
 };
 

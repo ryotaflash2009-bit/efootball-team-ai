@@ -611,10 +611,14 @@ const part: PartialDictionary = {
     maxLevelUnknown: "最高等級仍在確認中，暫時無法使用培養計算。",
     maxLevelFromUsers: "最高等級來自來源網站使用者的投稿（正式資料到達後會替換）。",
     sourceLabel: "資料來源：",
-    newCardsPageTitle: "新卡（暫定）",
-    newCardsIntro: "尚未收錄在主要資料來源中的新卡。正式資料到達後會移到一般球員列表。",
+    newCardsPageTitle: "新卡",
+    newCardsIntro: "最近新增的卡，以及尚未收錄在主要資料來源中的新卡（暫定）。暫定的卡在正式資料到達後會自動替換。",
     newCardsEmpty: "目前沒有暫定的卡（全部為正式資料）。",
-    newCardsLinkTemplate: "查看 {count} 張新卡（暫定）",
+    newCardsLinkTemplate: "查看 {count} 張新卡",
+    provisionalHeading: "正式資料反映前（暫定）",
+    recentHeadingTemplate: "最近新增的卡（最近 {days} 天，{count} 張）",
+    recentIntro: "作為正式資料新增到 TeamAIXI 的新卡（依新增時間由新到舊）。",
+    recentEmpty: "最近沒有新增正式的卡。",
   },
 };
 

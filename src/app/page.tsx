@@ -1,4 +1,5 @@
 import { loadPlayers } from "@/lib/players";
+import { cachedListRecentlyAddedPlayers } from "@/lib/reference-data/runtime/cached-queries";
 import { listProvisionalPlayers } from "@/lib/world/repository";
 import { cachedGetManagerCount, cachedGetSourceMeta, cachedListPlayers } from "@/lib/reference-data/runtime/cached-queries";
 import { getSourceMeta, listPlayers } from "@/lib/world/repository";
@@ -81,7 +82,7 @@ export default async function HomePage() {
         topOvr={topOvr}
         recent={recent}
         temporaryError={temporaryError}
-        provisionalCount={listProvisionalPlayers().length}
+        provisionalCount={listProvisionalPlayers().length + (await cachedListRecentlyAddedPlayers(7, 200).catch(() => [])).length}
       />
     </>
   );
