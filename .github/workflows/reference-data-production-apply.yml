@@ -105,7 +105,7 @@ jobs:
     # main only: a run dispatched from any other branch is skipped before either Environment is entered,
     # so Production credentials are never exposed to unreviewed branch code.
     if: ${{ github.ref == 'refs/heads/main' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # Automatic Apply (owner decision 2026-10-03): only mode=apply with the confirmation "auto-apply-<dataset>-to-production",
     # dispatched by the orchestrator (github-actions[bot]), runs in the reviewer-less automatic Environment. Every other
     # apply/verify/preflight keeps the reviewer-gated manual Environment.

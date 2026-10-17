@@ -109,7 +109,7 @@ jobs:
     # main only (manual and automation): a run dispatched from any other branch is skipped before the
     # Environment is entered, so its secrets are never exposed to unreviewed branch code.
     if: ${{ github.ref == 'refs/heads/main' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: ${{ inputs.execution == 'automation' && 'reference-data-automation' || 'production-backup-approval' }}
     timeout-minutes: 15
     # Isolated, ephemeral PostgreSQL for restore verification ONLY (see the header

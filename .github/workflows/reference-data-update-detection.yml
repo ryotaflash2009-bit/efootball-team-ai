@@ -47,7 +47,7 @@ jobs:
     # Runs only when the owner enabled the variable AND (a scheduled run, once a schedule is approved, or a manual
     # run confirmed with exactly "detect"). Otherwise the job is skipped and no request is sent.
     if: ${{ vars.REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED == 'true' && (github.event_name == 'schedule' || inputs.confirm == 'detect' || inputs.confirm == 'detect-force') }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - name: Checkout
