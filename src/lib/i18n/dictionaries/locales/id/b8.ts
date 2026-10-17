@@ -619,6 +619,7 @@ const part: PartialDictionary = {
     recentHeadingTemplate: "Kartu yang baru ditambahkan ({days} hari terakhir, {count})",
     recentIntro: "Kartu baru yang ditambahkan ke TeamAIXI sebagai data resmi (terbaru lebih dulu).",
     recentEmpty: "Tidak ada kartu resmi yang ditambahkan baru-baru ini.",
+    homeUpgradeTemplate: "{count} kartu baru lebih kuat dari My Team-mu → Lihat",
     showAllTemplate: "Tampilkan semua ({count})",
     showLess: "Tampilkan lebih sedikit",
     showMoreCardsTemplate: "Tampilkan {count} lagi",

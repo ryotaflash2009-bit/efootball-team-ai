@@ -619,6 +619,7 @@ const part: PartialDictionary = {
     recentHeadingTemplate: "최근 추가된 카드(최근 {days}일, {count}장)",
     recentIntro: "정식 데이터로 TeamAIXI에 추가된 새 카드입니다(최신순).",
     recentEmpty: "최근 추가된 정식 카드가 없습니다.",
+    homeUpgradeTemplate: "새 카드 중 {count}장이 내 My Team보다 강합니다 → 보기",
     showAllTemplate: "모두 보기 ({count}건)",
     showLess: "접기",
     showMoreCardsTemplate: "나머지 {count}장 보기",

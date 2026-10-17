@@ -142,6 +142,19 @@ async function main() {
       record("AI ベスト11: 同じカードを 2 つの枠に入れない", new Set(bxLinks).size === bxLinks.length, `${bxLinks.length} links`);
     }
 
+    // トップ: 新しいカードのうち My Team より強い枚数（My Team は弱い CF だけ）
+    if (weak) {
+      await ev(`localStorage.setItem(${JSON.stringify(MY_TEAM_KEY)}, ${JSON.stringify(JSON.stringify({ storageVersion: "my-team-storage/2026-08-30.v1", updatedAt: NOW, records: [myTeamRecord(weak)] }))})`);
+      await go(`${BASE}/`);
+      await waitFor('[data-testid="home-new-cards-upgrade"]', 15000);
+      const up = (await ev(`document.querySelector('[data-testid="home-new-cards-upgrade"]')?.innerText ?? ""`)) || "";
+      record("トップ: My Team より強い新しいカードの枚数とリンク", recentCf.length === 0 ? true : /\d+ 枚が、あなたの My Team より強い/.test(up), up);
+      await ev(`localStorage.removeItem(${JSON.stringify(MY_TEAM_KEY)})`);
+      await go(`${BASE}/`);
+      await new Promise((r) => setTimeout(r, 1500));
+      record("トップ: My Team が空なら出さない", !(await has('[data-testid="home-new-cards-upgrade"]')), "");
+    }
+
     // サイドメニューの「新しいカード」の件数（前回見たあとに追加された枚数）
     const SEEN_KEY = "efootball-team-ai:new-cards-seen:v1";
     await ev(`localStorage.removeItem(${JSON.stringify(SEEN_KEY)})`);

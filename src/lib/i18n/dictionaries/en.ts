@@ -5316,6 +5316,7 @@ const en: Dictionary = {
     recentHeadingTemplate: "Recently added cards (last {days} days, {count})",
     recentIntro: "New cards added to TeamAIXI as official data (newest first).",
     recentEmpty: "No official cards were added recently.",
+    homeUpgradeTemplate: "{count} new cards are stronger than your My Team → View",
     showAllTemplate: "Show all ({count})",
     showLess: "Show less",
     showMoreCardsTemplate: "Show {count} more",

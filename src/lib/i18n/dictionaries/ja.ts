@@ -5253,6 +5253,7 @@ export interface Dictionary {
     recentHeadingTemplate: string;
     recentIntro: string;
     recentEmpty: string;
+    homeUpgradeTemplate: string;
     showAllTemplate: string;
     showLess: string;
     showMoreCardsTemplate: string;

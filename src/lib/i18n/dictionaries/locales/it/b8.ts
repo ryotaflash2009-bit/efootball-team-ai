@@ -619,6 +619,7 @@ const part: PartialDictionary = {
     recentHeadingTemplate: "Carte aggiunte di recente (ultimi {days} giorni, {count})",
     recentIntro: "Nuove carte aggiunte a TeamAIXI come dati ufficiali (le più recenti prima).",
     recentEmpty: "Nessuna carta ufficiale aggiunta di recente.",
+    homeUpgradeTemplate: "{count} nuove carte sono più forti del tuo My Team → Vedi",
     showAllTemplate: "Mostra tutto ({count})",
     showLess: "Mostra meno",
     showMoreCardsTemplate: "Mostra altre {count}",

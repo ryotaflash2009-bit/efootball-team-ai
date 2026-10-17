@@ -4376,5 +4376,6 @@
  "bestXi.newCardsNone": "b4d952ff26cc",
  "bestXi.newCardsChangeTemplate": "8811d4aa6109",
  "bestXi.newCardsEmptyBefore": "2e1cfa82b035",
- "bestXi.newCardsAffiliationNote": "2e5490255070"
+ "bestXi.newCardsAffiliationNote": "2e5490255070",
+ "provisionalCards.homeUpgradeTemplate": "07c864a6b60c"
 }
