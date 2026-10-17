@@ -619,6 +619,7 @@ const part: PartialDictionary = {
     recentHeadingTemplate: "最近新增的卡（最近 {days} 天，{count} 張）",
     recentIntro: "作為正式資料新增到 TeamAIXI 的新卡（依新增時間由新到舊）。",
     recentEmpty: "最近沒有新增正式的卡。",
+    homeUpgradeTemplate: "新卡中有 {count} 張比你的 My Team 更強 → 查看",
     showAllTemplate: "全部顯示（{count} 筆）",
     showLess: "收合",
     showMoreCardsTemplate: "顯示其餘 {count} 張",

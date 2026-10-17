@@ -18,6 +18,7 @@ const provisionalCards: Dictionary["provisionalCards"] = {
   recentHeadingTemplate: "最近追加されたカード（直近 {days} 日・{count} 枚）",
   recentIntro: "正式なデータとして TeamAIXI に追加された新しいカードです（追加された順）。",
   recentEmpty: "直近に追加された正式なカードはありません。",
+  homeUpgradeTemplate: "新しいカードのうち {count} 枚が、あなたの My Team より強いです → 見る",
   showAllTemplate: "すべて表示（{count} 件）",
   showLess: "少なく表示",
   showMoreCardsTemplate: "残り {count} 枚を表示",

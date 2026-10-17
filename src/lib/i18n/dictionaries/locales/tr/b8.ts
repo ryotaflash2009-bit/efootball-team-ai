@@ -619,6 +619,7 @@ const part: PartialDictionary = {
     recentHeadingTemplate: "Yakın zamanda eklenen kartlar (son {days} gün, {count})",
     recentIntro: "Resmî veri olarak TeamAIXI'ye eklenen yeni kartlar (en yeniler önce).",
     recentEmpty: "Yakın zamanda resmî kart eklenmedi.",
+    homeUpgradeTemplate: "{count} yeni kart My Team'inden daha güçlü → Gör",
     showAllTemplate: "Tümünü göster ({count})",
     showLess: "Daha az göster",
     showMoreCardsTemplate: "{count} tane daha göster",

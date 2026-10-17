@@ -1,6 +1,7 @@
 "use client";
 
 import { ProvisionalCardsLink } from "@/components/world/ProvisionalCardsLink";
+import { HomeNewCardsUpgrade } from "@/components/world/HomeNewCardsUpgrade";
 import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
 import Link from "next/link";
 import { WorldCardImage } from "@/components/world/WorldCardImage";
@@ -227,8 +228,9 @@ export function HomePageView({
         {/* データ指標 */}
         <section>
           <SectionHeader title={th("dataStatusHeading")} as="h2" hint={world ? world.source : undefined} />
-          <div className="mb-3">
+          <div className="mb-3 flex flex-wrap gap-2">
             <ProvisionalCardsLink count={provisionalCount} />
+            <HomeNewCardsUpgrade />
           </div>
           {world ? (
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
