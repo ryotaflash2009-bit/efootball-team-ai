@@ -16,6 +16,6 @@ describe("追加された日ごとのまとまり（2026-10-17）", () => {
 
   it("OVR の高い順に最大 limit 枚（基本の OVR で代わり）・日付の無いものは除く", () => {
     const r = addedBatches([c("a", "2026-10-16T01:00:00Z", null, 80), c("b", "2026-10-16T01:00:00Z", 104), c("c", "2026-10-16T01:00:00Z", 90), c("x", null, 120)], 2);
-    expect(r).toEqual([{ date: "2026-10-16", count: 3, ids: ["b", "c"], truncated: true }]);
+    expect(r).toEqual([{ date: "2026-10-16", count: 3, ids: ["b", "c"], allIds: ["b", "c", "a"], truncated: true }]);
   });
 });

@@ -5244,8 +5244,9 @@ export interface Dictionary {
     recentHeadingTemplate: string;
     recentIntro: string;
     recentEmpty: string;
-    batchesHeading: string;
-    batchesIntro: string;
+    showAllTemplate: string;
+    showLess: string;
+    showMoreCardsTemplate: string;
     batchRowTemplate: string;
     batchOpenPackCheck: string;
     batchTruncatedTemplate: string;

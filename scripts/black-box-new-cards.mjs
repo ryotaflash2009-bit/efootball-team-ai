@@ -58,6 +58,15 @@ async function main() {
     const heading = (await ev(`document.querySelector('[data-testid="recently-added"]')?.innerText ?? ""`)) || "";
     const recentCount = (await ev(`document.querySelectorAll('[data-testid="recently-added-grid"] a[href^="/players/world/"]').length`)) ?? 0;
     record("最近追加されたカードの一覧（直近 7 日・枚数の表示）", /最近追加されたカード（直近 7 日・\d+ 枚）/.test(heading) && recentCount > 0, `${recentCount} cards`);
+    // 日ごとの見出しの下にその日のカード（最初は 12 枚まで・残りはボタン）
+    const days = (await ev(`[...document.querySelectorAll('[data-testid="added-day"]')].map((d) => ({ shown: d.querySelectorAll('[data-testid="recently-added-grid"] > li').length, more: !!d.querySelector('[data-testid="added-day-more"]'), n: Number((/（(\\d+) 枚）/.exec(d.innerText) || [])[1] || 0) }))`)) ?? [];
+    record("日ごとに見出しとカード（最初は 12 枚まで・残りはボタン）", days.length > 0 && days.every((d) => d.shown <= 12 && (d.n <= 12 || d.more)), JSON.stringify(days));
+    if (days[0]?.more) {
+      await ev(`document.querySelector('[data-testid="added-day-more"]').click()`);
+      await new Promise((r) => setTimeout(r, 500));
+      const after = await ev(`document.querySelector('[data-testid="added-day"] [data-testid="recently-added-grid"]').children.length`);
+      record("「残りを表示」でその日のカードがすべて出る", after === days[0].n, `${after}/${days[0].n}`);
+    }
     // 追加された日ごと → パック診断
     const batch = await ev(`(() => { const a = document.querySelector('[data-testid="added-batch-pack-check"]'); if (!a) return null; const m = /（(\\d+) 枚）/.exec(a.parentElement.innerText); return { href: a.getAttribute("href"), count: m ? Number(m[1]) : null }; })()`);
     if (recentCount > 0) {
@@ -82,6 +91,10 @@ async function main() {
     await ev(`localStorage.setItem(${JSON.stringify(MY_TEAM_KEY)}, ${JSON.stringify(JSON.stringify({ storageVersion: "my-team-storage/2026-08-30.v1", updatedAt: NOW, records: weak ? [myTeamRecord(weak)] : [] }))})`);
     await go(`${BASE}/players/new`);
     await waitFor('[data-testid="new-cards-impact-list"]', 15000);
+    const initialRows = await ev(`document.querySelectorAll('[data-testid="new-cards-impact-list"] li').length`);
+    record("比較は最初は 5 行まで（すべて表示のボタン）", initialRows <= 5 && (initialRows < 5 || (await has('[data-testid="new-cards-impact-toggle"]'))), `rows=${initialRows}`);
+    if (await has('[data-testid="new-cards-impact-toggle"]')) await ev(`document.querySelector('[data-testid="new-cards-impact-toggle"]').click()`);
+    await new Promise((r) => setTimeout(r, 300));
     const rows = (await ev(`[...document.querySelectorAll('[data-testid="new-cards-impact-list"] li')].map((li) => li.innerText.replace(/\\s+/g, " "))`)) ?? [];
     const cfRows = rows.filter((r) => /^CF /.test(r));
     record("所持の弱い CF より強い新しい CF が比較に出る（+差・あなたのカード名）", recentCf.length === 0 ? true : cfRows.length > 0 && cfRows.every((r) => /より \+\d+/.test(r)), `${cfRows.length} CF rows / ${rows.length} rows; e.g. ${rows[0] ?? "-"}`);
@@ -97,6 +110,10 @@ async function main() {
       record("スカッド: 新しいカードの一覧の要求は 1 回まで（サイドメニューと共有）", before <= 1, `requests=${before}`);
       await ev(`document.querySelector('[data-testid="squad-new-cards-sentinel"]').scrollIntoView()`);
       await waitFor('[data-testid="squad-new-cards-list"]', 15000);
+      const sInitial = await ev(`document.querySelectorAll('[data-testid="squad-new-cards-list"] li').length`);
+      record("スカッド: 提案は最初は 5 行まで（すべて表示のボタン）", sInitial <= 5, `rows=${sInitial}`);
+      if (await has('[data-testid="squad-new-cards-toggle"]')) await ev(`document.querySelector('[data-testid="squad-new-cards-toggle"]').click()`);
+      await new Promise((r) => setTimeout(r, 300));
       const srows = (await ev(`[...document.querySelectorAll('[data-testid="squad-new-cards-list"] li')].map((li) => li.innerText.replace(/\\s+/g, " "))`)) ?? [];
       const cfRow = srows.find((r) => /^CF /.test(r));
       record("スカッド: 弱い CF の枠に「今の選手より +差」の新しいカード", recentCf.length === 0 ? true : !!cfRow && /より \+\d+/.test(cfRow), cfRow ?? `${srows.length} rows`);
