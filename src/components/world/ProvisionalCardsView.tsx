@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Surface } from "@/components/ui/Surface";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { WorldPlayerCard, type WorldPlayerCardData } from "@/components/world/WorldPlayerCard";
+import { NewCardsTeamImpact } from "@/components/world/NewCardsTeamImpact";
 
 const GRID = "grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7";
 
@@ -18,6 +19,8 @@ export function ProvisionalCardsView({ cards, recent, recentDays }: { cards: Wor
   return (
     <div className="flex flex-col gap-5" data-testid="provisional-cards">
       <PageHeader title={tp("newCardsPageTitle")} icon="players" description={tp("newCardsIntro")} />
+
+      <NewCardsTeamImpact newCards={[...recent, ...cards]} />
 
       <section className="flex flex-col gap-3" data-testid="recently-added">
         <SectionHeader title={tp("recentHeadingTemplate").replace("{days}", String(recentDays)).replace("{count}", String(recent.length))} as="h2" />

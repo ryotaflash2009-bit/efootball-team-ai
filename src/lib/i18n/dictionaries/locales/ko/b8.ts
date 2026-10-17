@@ -619,6 +619,15 @@ const part: PartialDictionary = {
     recentHeadingTemplate: "최근 추가된 카드(최근 {days}일, {count}장)",
     recentIntro: "정식 데이터로 TeamAIXI에 추가된 새 카드입니다(최신순).",
     recentEmpty: "최근 추가된 정식 카드가 없습니다.",
+    impactHeading: "내 My Team보다 강한 새 카드",
+    impactIntro: "같은 포지션에서 보유한 카드의 최고 OVR과 비교합니다(이 기기의 My Team에서 '보유'인 카드만, 전송하지 않음).",
+    impactRowTemplate: "{basis} {newOvr} (내 {ownedName} {ownedOvr}보다 +{delta})",
+    impactNewPositionTemplate: "{basis} {newOvr} (이 포지션의 카드가 아직 없습니다)",
+    impactBasisMax: "최대 OVR",
+    impactBasisBase: "기본 OVR",
+    impactNone: "현재 새 카드 중 같은 포지션의 내 최고 카드를 넘는 카드는 없습니다.",
+    impactNoTeam: "My Team에 '보유' 카드를 등록하면 내 팀보다 강한 새 카드가 여기에 표시됩니다.",
+    impactOpenMyTeam: "My Team 열기",
   },
 };
 

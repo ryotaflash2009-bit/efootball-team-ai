@@ -619,6 +619,15 @@ const part: PartialDictionary = {
     recentHeadingTemplate: "Yakın zamanda eklenen kartlar (son {days} gün, {count})",
     recentIntro: "Resmî veri olarak TeamAIXI'ye eklenen yeni kartlar (en yeniler önce).",
     recentEmpty: "Yakın zamanda resmî kart eklenmedi.",
+    impactHeading: "My Team'inden daha güçlü yeni kartlar",
+    impactIntro: "Aynı mevkide sahip olduğun kartların en yüksek OVR'siyle karşılaştırılır (yalnızca bu cihazdaki My Team'de sahip olunan olarak işaretli kartlar; hiçbir şey gönderilmez).",
+    impactRowTemplate: "{basis} {newOvr} ({ownedName} {ownedOvr} kartından +{delta})",
+    impactNewPositionTemplate: "{basis} {newOvr} (bu mevkide henüz kartın yok)",
+    impactBasisMax: "Maks. OVR",
+    impactBasisBase: "Temel OVR",
+    impactNone: "Yeni kartların hiçbiri aynı mevkideki en iyi kartını geçmiyor.",
+    impactNoTeam: "Takımını güçlendirecek yeni kartları görmek için My Team'e sahip olunan olarak işaretli kartlar ekle.",
+    impactOpenMyTeam: "My Team'i aç",
   },
 };
 
