@@ -125,6 +125,23 @@ async function main() {
       await ev(`localStorage.removeItem(${JSON.stringify(SQUADS_KEY)})`);
     } else record("スカッド: 弱い CF のカードを取得", false, "no CF card");
 
+    // AI ベスト11: 新しいカードを入れたら（My Team は弱い CF だけ → CF の入れ替えと空き枠に新しいカード）
+    if (weak) {
+      await ev(`localStorage.setItem(${JSON.stringify(MY_TEAM_KEY)}, ${JSON.stringify(JSON.stringify({ storageVersion: "my-team-storage/2026-08-30.v1", updatedAt: NOW, records: [myTeamRecord(weak)] }))})`);
+      await go(`${BASE}/best-xi`);
+      await waitFor('[data-testid="best-xi-new-cards-run"]', 20000);
+      const reqBefore = await ev(`performance.getEntriesByType("resource").filter((e) => e.name.includes("/api/world/players/")).length`);
+      await ev(`document.querySelector('[data-testid="best-xi-new-cards-run"]').click()`);
+      await waitFor('[data-testid="best-xi-new-cards-list"], [data-testid="best-xi-new-cards-no-change"], [data-testid="best-xi-new-cards-none"]', 30000);
+      const bxRows = (await ev(`[...document.querySelectorAll('[data-testid="best-xi-new-cards-list"] li')].map((li) => li.innerText.replace(/\\s+/g, " "))`)) ?? [];
+      const reqAfter = await ev(`performance.getEntriesByType("resource").filter((e) => e.name.includes("/api/world/players/")).length`);
+      const cfRow = bxRows.find((r) => /^CF /.test(r));
+      record("AI ベスト11: 新しいカードを入れると先発が変わる枠が出る（CF は今の選手から入れ替え）", bxRows.length > 0 && (!recentCf.length || (!!cfRow && cfRow.includes("→"))), cfRow ?? `${bxRows.length} rows`);
+      record("AI ベスト11: 新しいカードの詳細の取得は枠のポジションごとに 3 枚まで", reqAfter - reqBefore <= 9 * 3, `requests=${reqAfter - reqBefore}`);
+      const bxLinks = (await ev(`[...document.querySelectorAll('[data-testid="best-xi-new-cards-list"] a')].map((a) => a.getAttribute("href"))`)) ?? [];
+      record("AI ベスト11: 同じカードを 2 つの枠に入れない", new Set(bxLinks).size === bxLinks.length, `${bxLinks.length} links`);
+    }
+
     // サイドメニューの「新しいカード」の件数（前回見たあとに追加された枚数）
     const SEEN_KEY = "efootball-team-ai:new-cards-seen:v1";
     await ev(`localStorage.removeItem(${JSON.stringify(SEEN_KEY)})`);

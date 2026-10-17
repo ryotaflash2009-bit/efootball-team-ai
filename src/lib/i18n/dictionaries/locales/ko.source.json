@@ -4367,5 +4367,14 @@
  "packCheck.fitOpenPackCheck": "f1bbd49d66c7",
  "provisionalCards.showAllTemplate": "7bcbe5470e19",
  "provisionalCards.showLess": "94ea9b1d33a0",
- "provisionalCards.showMoreCardsTemplate": "e372f20a5288"
+ "provisionalCards.showMoreCardsTemplate": "e372f20a5288",
+ "bestXi.newCardsHeading": "573742955d50",
+ "bestXi.newCardsIntro": "fc6be79a1748",
+ "bestXi.newCardsButton": "b95ea657dac7",
+ "bestXi.newCardsLoading": "86d92ecfa51e",
+ "bestXi.newCardsNoChange": "62e8d8b407a1",
+ "bestXi.newCardsNone": "b4d952ff26cc",
+ "bestXi.newCardsChangeTemplate": "8811d4aa6109",
+ "bestXi.newCardsEmptyBefore": "2e1cfa82b035",
+ "bestXi.newCardsAffiliationNote": "2e5490255070"
 }
