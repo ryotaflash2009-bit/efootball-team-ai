@@ -5238,6 +5238,15 @@ export interface Dictionary {
     recentHeadingTemplate: string;
     recentIntro: string;
     recentEmpty: string;
+    impactHeading: string;
+    impactIntro: string;
+    impactRowTemplate: string;
+    impactNewPositionTemplate: string;
+    impactBasisMax: string;
+    impactBasisBase: string;
+    impactNone: string;
+    impactNoTeam: string;
+    impactOpenMyTeam: string;
   };
   gamePlan: {
     heading: string;

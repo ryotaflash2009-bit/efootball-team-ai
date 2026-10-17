@@ -4310,5 +4310,14 @@
  "provisionalCards.provisionalHeading": "8e7d6427bbf4",
  "provisionalCards.recentHeadingTemplate": "f1908c28139c",
  "provisionalCards.recentIntro": "7f006be2d199",
- "provisionalCards.recentEmpty": "88a587e106be"
+ "provisionalCards.recentEmpty": "88a587e106be",
+ "provisionalCards.impactHeading": "41e4157d250b",
+ "provisionalCards.impactIntro": "327d7ca0eaca",
+ "provisionalCards.impactRowTemplate": "5a9a5a8f0e7e",
+ "provisionalCards.impactNewPositionTemplate": "ebe97f44f2e9",
+ "provisionalCards.impactBasisMax": "aee9cbbd78df",
+ "provisionalCards.impactBasisBase": "475b3a06ac78",
+ "provisionalCards.impactNone": "3e8701edd9fb",
+ "provisionalCards.impactNoTeam": "54548150abea",
+ "provisionalCards.impactOpenMyTeam": "072a572b8847"
 }

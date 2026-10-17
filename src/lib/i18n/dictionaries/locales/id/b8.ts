@@ -619,6 +619,15 @@ const part: PartialDictionary = {
     recentHeadingTemplate: "Kartu yang baru ditambahkan ({days} hari terakhir, {count})",
     recentIntro: "Kartu baru yang ditambahkan ke TeamAIXI sebagai data resmi (terbaru lebih dulu).",
     recentEmpty: "Tidak ada kartu resmi yang ditambahkan baru-baru ini.",
+    impactHeading: "Kartu baru yang lebih kuat dari My Team-mu",
+    impactIntro: "Dibandingkan dengan OVR tertinggi kartu yang kamu miliki di posisi yang sama (hanya kartu bertanda dimiliki di My Team perangkat ini; tidak ada yang dikirim).",
+    impactRowTemplate: "{basis} {newOvr} (+{delta} dari {ownedName} milikmu {ownedOvr})",
+    impactNewPositionTemplate: "{basis} {newOvr} (kamu belum punya kartu di posisi ini)",
+    impactBasisMax: "OVR maks",
+    impactBasisBase: "OVR dasar",
+    impactNone: "Tidak ada kartu baru yang mengalahkan kartu terbaikmu di posisi yang sama.",
+    impactNoTeam: "Tambahkan kartu bertanda dimiliki ke My Team untuk melihat kartu baru yang akan memperkuat timmu.",
+    impactOpenMyTeam: "Buka My Team",
   },
 };
 

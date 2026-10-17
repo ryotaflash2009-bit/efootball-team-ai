@@ -18,6 +18,15 @@ const provisionalCards: Dictionary["provisionalCards"] = {
   recentHeadingTemplate: "最近追加されたカード（直近 {days} 日・{count} 枚）",
   recentIntro: "正式なデータとして TeamAIXI に追加された新しいカードです（追加された順）。",
   recentEmpty: "直近に追加された正式なカードはありません。",
+  impactHeading: "あなたの My Team より強い新しいカード",
+  impactIntro: "同じポジションで持っているカードの最高の OVR と比べています（この端末の My Team の「所持」だけ・送信しません）。",
+  impactRowTemplate: "{basis} {newOvr}（あなたの {ownedName} {ownedOvr} より +{delta}）",
+  impactNewPositionTemplate: "{basis} {newOvr}（このポジションのカードをまだ持っていません）",
+  impactBasisMax: "最大 OVR",
+  impactBasisBase: "基本 OVR",
+  impactNone: "いまの新しいカードには、あなたの My Team の同じポジションの最高を上回るものはありません。",
+  impactNoTeam: "My Team に「所持」のカードを登録すると、あなたのチームより強い新しいカードがここに出ます。",
+  impactOpenMyTeam: "My Team を開く",
 };
 
 registerJaNamespace("provisionalCards", provisionalCards);

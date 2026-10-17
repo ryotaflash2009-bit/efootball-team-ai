@@ -619,6 +619,15 @@ const part: PartialDictionary = {
     recentHeadingTemplate: "最近添加的卡（最近 {days} 天，{count} 张）",
     recentIntro: "作为正式数据添加到 TeamAIXI 的新卡（按添加时间从新到旧）。",
     recentEmpty: "最近没有添加正式的卡。",
+    impactHeading: "比你的 My Team 更强的新卡",
+    impactIntro: "与你在同一位置拥有的卡中的最高 OVR 比较（仅限本设备 My Team 中标记为拥有的卡，不会发送）。",
+    impactRowTemplate: "{basis} {newOvr}（比你的 {ownedName} {ownedOvr} 高 {delta}）",
+    impactNewPositionTemplate: "{basis} {newOvr}（你还没有这个位置的卡）",
+    impactBasisMax: "最高 OVR",
+    impactBasisBase: "基础 OVR",
+    impactNone: "目前的新卡中，没有超过你同一位置最强卡的卡。",
+    impactNoTeam: "在 My Team 中登记标记为拥有的卡后，这里会显示比你的队伍更强的新卡。",
+    impactOpenMyTeam: "打开 My Team",
   },
 };
 

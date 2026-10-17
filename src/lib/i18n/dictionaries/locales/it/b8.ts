@@ -619,6 +619,15 @@ const part: PartialDictionary = {
     recentHeadingTemplate: "Carte aggiunte di recente (ultimi {days} giorni, {count})",
     recentIntro: "Nuove carte aggiunte a TeamAIXI come dati ufficiali (le più recenti prima).",
     recentEmpty: "Nessuna carta ufficiale aggiunta di recente.",
+    impactHeading: "Nuove carte più forti del tuo My Team",
+    impactIntro: "Confrontato con il miglior OVR tra le carte che possiedi nello stesso ruolo (solo quelle segnate come possedute nel My Team di questo dispositivo; non viene inviato nulla).",
+    impactRowTemplate: "{basis} {newOvr} (+{delta} rispetto al tuo {ownedName} {ownedOvr})",
+    impactNewPositionTemplate: "{basis} {newOvr} (non possiedi ancora carte in questo ruolo)",
+    impactBasisMax: "OVR max",
+    impactBasisBase: "OVR base",
+    impactNone: "Nessuna delle nuove carte supera la tua carta migliore nello stesso ruolo.",
+    impactNoTeam: "Aggiungi a My Team le carte segnate come possedute per vedere quali nuove carte rafforzerebbero la tua squadra.",
+    impactOpenMyTeam: "Apri My Team",
   },
 };
 
