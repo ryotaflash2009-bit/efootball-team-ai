@@ -5297,6 +5297,7 @@ const en: Dictionary = {
     tierRangeB: "Top 6%",
     tierRangeC: "Top 10%",
     entryTemplate: "Max OVR {ovr} · #{rank} (top {pct}%)",
+    showMoreTemplate: "Show {count} more",
     dataUnavailable: "Player data couldn't be loaded. Please try again later.",
   },
   provisionalCards: {

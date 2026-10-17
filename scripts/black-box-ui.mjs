@@ -64,6 +64,12 @@ async function main() {
   record("共通: サイドバーの全メニュー項目（v1.0）", ["ホーム", "プレイヤー", "マネージャー", "選手比較", "スカッド", "AIベスト11", "お気に入り", "My Team", "My Builds", "診断履歴"].every((l) => pages.home.text.includes(l)), "");
   // TeamAIXI v1.0（2026-10-04）: 未公開の機能（ティアリスト・パック・コミュニティ）は「準備中」の表示も含めてナビに出さない。
   record("共通: 未公開の機能はナビに出さない（ティアリスト/パック/コミュニティ・準備中なし）", !/href="\/(tier-lists|packs|community)"/.test(pages.home.body) && !/準備中/.test(pages.home.text), "");
+  // ティアリスト（2026-10-18 画面の整理）: 区分ごとに最初の 20 行だけ見せ、残りは「残り N 件を表示」。リンクは HTML に残す（検索エンジン向け）
+  const tierPage = await get("/tier");
+  const tierA = (/data-testid="tier-A"[\s\S]*?<\/ol>/.exec(tierPage.body) || [""])[0];
+  const tierRows = (tierA.match(/<li /g) || []).length;
+  const tierHidden = (tierA.match(/<li class="[^"]*\bhidden"/g) || []).length;
+  record("ティアリスト: 区分の行はすべて HTML にあり、21 行目からは隠して「残りを表示」", tierPage.status === 200 && (tierRows <= 20 ? tierHidden === 0 : tierHidden === tierRows - 20 && /data-testid="tier-show-more"/.test(tierPage.body)), `A rows=${tierRows} hidden=${tierHidden}`);
   record("共通: 現在位置を aria-current=page で示す", /aria-current="page"/.test(pages.players.body), "");
   record("共通: モバイルメニューボタン（aria-label=メニューを開く）", /aria-label="メニューを開く"/.test(pages.home.body), "");
   record("共通: サイドバー折りたたみボタン", /サイドバーを折りたたむ|サイドバーを開く/.test(pages.home.body), "");

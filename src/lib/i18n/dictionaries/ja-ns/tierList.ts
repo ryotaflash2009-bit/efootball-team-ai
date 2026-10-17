@@ -17,6 +17,7 @@ const tierList: Dictionary["tierList"] = {
   tierRangeB: "上位 6% 以内",
   tierRangeC: "上位 10% 以内",
   entryTemplate: "最大 OVR {ovr}・{rank} 位（上位 {pct}%）",
+  showMoreTemplate: "残り {count} 件を表示",
   dataUnavailable: "選手データを読み込めませんでした。時間をおいてもう一度お試しください。",
 };
 

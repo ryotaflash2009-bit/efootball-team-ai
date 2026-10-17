@@ -601,6 +601,7 @@ const part: PartialDictionary = {
     tierRangeB: "6% teratas",
     tierRangeC: "10% teratas",
     entryTemplate: "OVR maks {ovr} · #{rank} ({pct}% teratas)",
+    showMoreTemplate: "Tampilkan {count} lagi",
     dataUnavailable: "Data pemain tidak dapat dimuat. Coba lagi nanti.",
   },
   provisionalCards: {
