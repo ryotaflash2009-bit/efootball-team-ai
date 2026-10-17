@@ -9,6 +9,7 @@ import { Surface } from "@/components/ui/Surface";
 import { ProvisionalBadge } from "@/components/world/ProvisionalCardNotice";
 import { squadNewCardSuggestions, type SquadSlotForSuggestion } from "@/lib/new-cards/squad-suggestions";
 import type { ImpactCard } from "@/lib/new-cards/team-impact";
+import { fetchNewCardsOnce } from "@/lib/new-cards/fetch-new-cards";
 
 type NewCard = ImpactCard & { provisional?: boolean };
 
@@ -23,14 +24,9 @@ export function SquadNewCardsPanel({ slots, inSquad }: { slots: SquadSlotForSugg
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/world/new-cards")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((j: { cards?: NewCard[] } | null) => {
-        if (!cancelled) setNewCards(Array.isArray(j?.cards) ? j.cards : []);
-      })
-      .catch(() => {
-        if (!cancelled) setNewCards([]);
-      });
+    void fetchNewCardsOnce().then((cards) => {
+      if (!cancelled) setNewCards(cards);
+    });
     return () => {
       cancelled = true;
     };
