@@ -28,7 +28,7 @@ concurrency:
 jobs:
   build-and-test:
     name: Typecheck, test, and build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - name: Checkout
@@ -92,7 +92,7 @@ jobs:
     # 隔離検証。定期実行(schedule)ではない。実Supabase・実Productionへは一切接続しない。
     # GitHub Secretsは使用せず、ここに書かれている資格情報はこのジョブ専用の使い捨て値。
     name: Reference data PostgreSQL validation
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     services:
       postgres:

@@ -31,7 +31,7 @@ concurrency:
 jobs:
   watchdog:
     if: ${{ vars.REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED == 'true' && vars.REFERENCE_DATA_DETECTION_WATCHDOG_DISABLED != 'true' && (github.event_name == 'schedule' || inputs.confirm == 'watchdog') }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
       contents: read

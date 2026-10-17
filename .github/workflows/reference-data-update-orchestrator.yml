@@ -50,7 +50,7 @@ jobs:
       ${{ vars.REFERENCE_DATA_AUTO_UPDATE_PIPELINE_ENABLED == 'true' && github.ref == 'refs/heads/main' &&
       ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main') ||
       (github.event_name == 'workflow_dispatch' && inputs.confirm == 'orchestrate')) }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # World plan ~25 min + Backup ~10 min + Dry run ~20 min + waits.
     # 最悪の待ち時間 = plan 75 + backup 30 + dry run 30 + apply 待機 10 + 自動 Apply 45 + 公開サイトの確認 5 + run の検出 5×4 = 215 分。
     # これより短いと、段階の途中で job ごと打ち切られ「stopped」を残せないため 240 分にする（テストで確認）。
