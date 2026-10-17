@@ -304,6 +304,7 @@ details > summary.inline-flex::-webkit-details-marker {
 details > summary.flex::before,
 details > summary.inline-flex::before {
   content: "▸";
+  content: "▸" / ""; /* 読み上げでは読まない（対応しないブラウザーは上の行） */
   flex: none;
   margin-inline-end: 0.375rem;
   font-size: 0.75em;
@@ -312,4 +313,5 @@ details > summary.inline-flex::before {
 details[open] > summary.flex::before,
 details[open] > summary.inline-flex::before {
   content: "▾";
+  content: "▾" / "";
 }
