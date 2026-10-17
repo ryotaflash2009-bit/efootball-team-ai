@@ -6,6 +6,7 @@
  * - 最近追加された正式なカードの一覧が出る（直近 7 日・枚数の表示）。
  * - My Team が空なら「My Team に登録すると…」の案内。
  * - My Team に弱いカード（CF）を「所持」で入れると、それより強い新しいカード（CF）が比較の一覧に出る。
+ * - スカッドの画面: 弱い CF を CF の枠に入れると、その枠に「今の選手より +差」の新しいカード、空いている枠に「空いている枠」の提案が出る。
  * - 390px で横のはみ出しなし・JS の例外なし。
  */
 import { promises as fs } from "node:fs";
@@ -17,6 +18,9 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const REPORT = path.join(ROOT, "docs", "black-box-tests", "new-cards.md");
 const BASE = process.env.BASE_URL ?? "http://localhost:3000";
 const MY_TEAM_KEY = "efootball-team-ai:local:guest:my-team:v1";
+const SQUADS_KEY = "efootball-team-ai:local:guest:squads:v1";
+const SLOTS = [["gk", 50, 92], ["lb", 15, 72], ["lcb", 38, 77], ["rcb", 62, 77], ["rb", 85, 72], ["dmf", 50, 58], ["lcmf", 33, 44], ["rcmf", 67, 44], ["lwf", 16, 22], ["cf", 50, 15], ["rwf", 84, 22]];
+const squadFixture = (squadId, cfCard) => ({ squadId, squadName: squadId, formationId: "4-3-3", managerId: null, slots: SLOTS.map(([slotId, x, y]) => ({ slotId, worldCardId: slotId === "cf" ? cfCard : null, buildMode: "none", savedBuildId: null, x, y, roleOverride: null })), substitutes: [], captainSlotId: null, setPieces: { corners: null, freeKicks: null, penalties: null }, linkUp: { centerPieceSlotId: null, keyManSlotId: null }, coordinateVersion: "squad-positioning/2026-08-30.v1", rulesVersion: "progression/2026-08-28.v2", schemaVersion: 1, createdAt: NOW, updatedAt: NOW });
 const NOW = "2026-10-17T00:00:00.000Z";
 const results = [];
 const record = (name, pass, detail = "") => {
@@ -71,6 +75,22 @@ async function main() {
     const cfRows = rows.filter((r) => /^CF /.test(r));
     record("所持の弱い CF より強い新しい CF が比較に出る（+差・あなたのカード名）", recentCf.length === 0 ? true : cfRows.length > 0 && cfRows.every((r) => /より \+\d+/.test(r)), `${cfRows.length} CF rows / ${rows.length} rows; e.g. ${rows[0] ?? "-"}`);
     record("持っていないポジションは「まだ持っていません」と出る", rows.some((r) => /まだ持っていません/.test(r)), "");
+
+    // スカッドの画面の提案
+    if (weak) {
+      await ev(`localStorage.setItem(${JSON.stringify(SQUADS_KEY)}, ${JSON.stringify(JSON.stringify([squadFixture("sq_bbnewcards01", weak)]))})`);
+      await go(`${BASE}/squads/sq_bbnewcards01`);
+      await waitFor('[data-testid="squad-new-cards-list"]', 15000);
+      const srows = (await ev(`[...document.querySelectorAll('[data-testid="squad-new-cards-list"] li')].map((li) => li.innerText.replace(/\\s+/g, " "))`)) ?? [];
+      const cfRow = srows.find((r) => /^CF /.test(r));
+      record("スカッド: 弱い CF の枠に「今の選手より +差」の新しいカード", recentCf.length === 0 ? true : !!cfRow && /より \+\d+/.test(cfRow), cfRow ?? `${srows.length} rows`);
+      record("スカッド: 空いている枠に提案が出る（空いている枠を先に）", srows.length > 0 && /空いている枠/.test(srows[0]), srows[0] ?? "-");
+      const linkOk = await ev(`[...document.querySelectorAll('[data-testid="squad-new-cards-list"] a')].every((a) => /^\\/players\\/world\\/\\d+$/.test(a.getAttribute("href")))`);
+      record("スカッド: 提案のリンクがカードの詳細へ", !!linkOk, "");
+      const hrefs = (await ev(`[...document.querySelectorAll('[data-testid="squad-new-cards-list"] a')].map((a) => a.getAttribute("href"))`)) ?? [];
+      record("スカッド: 同じカードを 2 つの枠に出さない", hrefs.length > 0 && new Set(hrefs).size === hrefs.length, `${hrefs.length} links`);
+      await ev(`localStorage.removeItem(${JSON.stringify(SQUADS_KEY)})`);
+    } else record("スカッド: 弱い CF のカードを取得", false, "no CF card");
 
     await client.send("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
     await go(`${BASE}/players/new`);

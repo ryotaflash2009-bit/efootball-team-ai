@@ -18,6 +18,7 @@ import { toProgressionCard } from "@/lib/progression/from-world";
 import { worldDetailToSquadDisplay } from "@/lib/squad/from-world";
 import { squadAffiliationSummary } from "@/lib/squad/affiliation-summary";
 import { SquadAffiliationPanel } from "@/components/squad/SquadAffiliationPanel";
+import { SquadNewCardsPanel } from "@/components/squad/SquadNewCardsPanel";
 import { buildSquad } from "@/lib/squad/build-squad";
 import { diagnoseSquad, buildSquadDiagnosisInput } from "@/lib/squad/squad-diagnosis";
 import { buildTacticalPlacementInputs } from "@/lib/squad/squad-tactical-review";
@@ -1161,6 +1162,24 @@ export function SquadEditor({
     [placements],
   );
 
+  // このスカッドを強くする新しいカード（2026-10-17）の入力: 先発の枠のポジション・今の選手・スカッド内の全カード
+  const newCardSlots = useMemo(() => {
+    if (!squad) return [];
+    const posBySlot = new Map(getFormation(squad.formationId).slots.map((s) => [s.slotId, s.position]));
+    // 読み込み中・失敗のカードの枠は「空き」と誤って扱わないよう除く
+    return squad.slots.flatMap((sl) => {
+      const c = sl.worldCardId ? cards[sl.worldCardId] : undefined;
+      if (sl.worldCardId && (!c || c === "loading" || c === "error")) return [];
+      const d = c && c !== "loading" && c !== "error" ? c.display : null;
+      return [{
+        slotId: sl.slotId,
+        position: posBySlot.get(sl.slotId) ?? "",
+        current: d && sl.worldCardId ? { worldCardId: sl.worldCardId, nameJa: d.nameJa ?? null, nameEn: d.nameEn ?? null, registeredPosition: d.registeredPosition ?? null, ovrBase: d.ovrBase ?? null, ovrMax: d.ovrMax ?? null } : null,
+      }];
+    });
+  }, [squad, cards]);
+  const newCardInSquad = useMemo(() => new Set([...(squad?.slots.map((s) => s.worldCardId) ?? []), ...(squad?.substitutes.map((s) => s.worldCardId) ?? [])].filter((x): x is string => !!x)), [squad]);
+
   // ビルド使用状況サマリー（現在の 1 スカッドのみ・表示専用）用の行
   const buildUsageRows = useMemo<SquadBuildUsageRowInput[]>(() => {
     if (!squad) return [];
@@ -2111,6 +2130,7 @@ export function SquadEditor({
             )}
           />
         ) : null}
+        {squad ? <SquadNewCardsPanel slots={newCardSlots} inSquad={newCardInSquad} /> : null}
         {squad ? <GamePlanPanel squad={squad} starterOptions={starterOptions} benchOptions={benchOptions} /> : null}
       </div>
 

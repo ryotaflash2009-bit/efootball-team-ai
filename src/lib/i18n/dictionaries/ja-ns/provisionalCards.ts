@@ -27,6 +27,12 @@ const provisionalCards: Dictionary["provisionalCards"] = {
   impactNone: "いまの新しいカードには、あなたの My Team の同じポジションの最高を上回るものはありません。",
   impactNoTeam: "My Team に「所持」のカードを登録すると、あなたのチームより強い新しいカードがここに出ます。",
   impactOpenMyTeam: "My Team を開く",
+  squadSuggestHeading: "このスカッドを強くする新しいカード",
+  squadSuggestIntro: "最近追加されたカード・暫定のカードのうち、枠のポジションと同じ登録ポジションで、今の選手より OVR が高いものです（空いている枠は最も高いもの）。",
+  squadSuggestRowTemplate: "{basis} {newOvr}（今の {currentName} {currentOvr} より +{delta}）",
+  squadSuggestEmptySlotTemplate: "{basis} {newOvr}（空いている枠）",
+  squadSuggestNone: "いまの新しいカードには、このスカッドの選手を上回るものはありません。",
+  squadSuggestSeeAll: "新しいカードをすべて見る",
 };
 
 registerJaNamespace("provisionalCards", provisionalCards);

@@ -4320,5 +4320,11 @@
  "provisionalCards.impactNone": "3e8701edd9fb",
  "provisionalCards.impactNoTeam": "54548150abea",
  "provisionalCards.impactOpenMyTeam": "072a572b8847",
- "worldFilters.sortAddedDesc": "f6b2aec4571c"
+ "worldFilters.sortAddedDesc": "f6b2aec4571c",
+ "provisionalCards.squadSuggestHeading": "bebd7a2155e2",
+ "provisionalCards.squadSuggestIntro": "e691ed4638ec",
+ "provisionalCards.squadSuggestRowTemplate": "5ffb4d026cb8",
+ "provisionalCards.squadSuggestEmptySlotTemplate": "f5ef9f45849d",
+ "provisionalCards.squadSuggestNone": "f21e91d1f209",
+ "provisionalCards.squadSuggestSeeAll": "d500b4af1f57"
 }

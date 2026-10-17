@@ -628,6 +628,12 @@ const part: PartialDictionary = {
     impactNone: "Ninguna de las cartas nuevas supera a tu mejor carta en la misma posición.",
     impactNoTeam: "Añade cartas marcadas como tuyas a My Team para ver qué cartas nuevas reforzarían tu equipo.",
     impactOpenMyTeam: "Abrir My Team",
+    squadSuggestHeading: "Cartas nuevas que reforzarían esta plantilla",
+    squadSuggestIntro: "Cartas añadidas recientemente y provisionales cuya posición registrada coincide con el hueco y cuyo OVR supera al jugador actual (en huecos vacíos, el OVR más alto).",
+    squadSuggestRowTemplate: "{basis} {newOvr} (+{delta} sobre el actual {currentName} {currentOvr})",
+    squadSuggestEmptySlotTemplate: "{basis} {newOvr} (hueco vacío)",
+    squadSuggestNone: "Ninguna de las cartas nuevas supera a los jugadores de esta plantilla.",
+    squadSuggestSeeAll: "Ver todas las cartas nuevas",
   },
 };
 

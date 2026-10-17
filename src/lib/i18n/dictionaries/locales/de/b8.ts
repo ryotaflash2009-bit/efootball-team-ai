@@ -628,6 +628,12 @@ const part: PartialDictionary = {
     impactNone: "Keine der neuen Karten übertrifft deine beste Karte auf derselben Position.",
     impactNoTeam: "Füge My Team als „besessen“ markierte Karten hinzu, um zu sehen, welche neuen Karten dein Team stärken würden.",
     impactOpenMyTeam: "My Team öffnen",
+    squadSuggestHeading: "Neue Karten, die diesen Kader stärken würden",
+    squadSuggestIntro: "Kürzlich hinzugefügte und vorläufige Karten, deren registrierte Position zum Platz passt und deren OVR den aktuellen Spieler übertrifft (bei leeren Plätzen das höchste OVR).",
+    squadSuggestRowTemplate: "{basis} {newOvr} (+{delta} gegenüber {currentName} {currentOvr})",
+    squadSuggestEmptySlotTemplate: "{basis} {newOvr} (leerer Platz)",
+    squadSuggestNone: "Keine der neuen Karten übertrifft die Spieler dieses Kaders.",
+    squadSuggestSeeAll: "Alle neuen Karten ansehen",
   },
 };
 
