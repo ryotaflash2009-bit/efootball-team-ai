@@ -1,7 +1,7 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/provisionalCards";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
@@ -22,18 +22,39 @@ export function SquadNewCardsPanel({ slots, inSquad }: { slots: SquadSlotForSugg
   const tp = (k: Parameters<typeof t<"provisionalCards">>[1]) => t("provisionalCards", k);
   const [newCards, setNewCards] = useState<NewCard[] | null>(null);
 
+  // 欄が画面に近づいたときだけ読む（編集を開くだけでは要求しない・2026-10-17）
+  const sentinel = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     let cancelled = false;
-    void fetchNewCardsOnce().then((cards) => {
-      if (!cancelled) setNewCards(cards);
-    });
+    const load = () =>
+      void fetchNewCardsOnce().then((cards) => {
+        if (!cancelled) setNewCards(cards);
+      });
+    const el = sentinel.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      load();
+      return () => {
+        cancelled = true;
+      };
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          io.disconnect();
+          load();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    io.observe(el);
     return () => {
       cancelled = true;
+      io.disconnect();
     };
   }, []);
 
   const suggestions = useMemo(() => (newCards ? squadNewCardSuggestions(slots, newCards, inSquad) : []), [slots, newCards, inSquad]);
-  if (!newCards || newCards.length === 0) return null;
+  if (!newCards || newCards.length === 0) return <div ref={sentinel} aria-hidden="true" data-testid="squad-new-cards-sentinel" />;
   const name = (c: ImpactCard) => resolvePlayerDisplayName(c, locale);
   const basis = (b: "max" | "base") => tp(b === "max" ? "impactBasisMax" : "impactBasisBase");
 

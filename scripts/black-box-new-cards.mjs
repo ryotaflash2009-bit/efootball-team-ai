@@ -80,6 +80,11 @@ async function main() {
     if (weak) {
       await ev(`localStorage.setItem(${JSON.stringify(SQUADS_KEY)}, ${JSON.stringify(JSON.stringify([squadFixture("sq_bbnewcards01", weak)]))})`);
       await go(`${BASE}/squads/sq_bbnewcards01`);
+      // 提案の欄は画面に近づいたときだけ読む: 開いただけでは要求しないことを確かめてから、欄までスクロールする
+      await waitFor('[data-testid="squad-new-cards-sentinel"]', 15000);
+      const before = await ev(`performance.getEntriesByType("resource").filter((e) => e.name.includes("/api/world/new-cards")).length`);
+      record("スカッド: 欄が画面の外なら新しいカードを読まない", before === 0, `requests=${before}`);
+      await ev(`document.querySelector('[data-testid="squad-new-cards-sentinel"]').scrollIntoView()`);
       await waitFor('[data-testid="squad-new-cards-list"]', 15000);
       const srows = (await ev(`[...document.querySelectorAll('[data-testid="squad-new-cards-list"] li')].map((li) => li.innerText.replace(/\\s+/g, " "))`)) ?? [];
       const cfRow = srows.find((r) => /^CF /.test(r));
