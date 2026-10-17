@@ -47,6 +47,7 @@ const ptBR: PartialDictionary = {
     diagnosisHistory: "Histórico de diagnósticos",
     bestXi: "AI Best XI",
     tierLists: "Tier list",
+    packCheck: "Análise de packs",
     packs: "Pacotes",
     community: "Comunidade",
     comingSoon: "Em breve",

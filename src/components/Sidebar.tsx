@@ -26,6 +26,7 @@ const GROUPS: { titleKey: NavKey; items: NavItem[] }[] = [
       { href: "/squads", labelKey: "squads", icon: "squad", status: "ready" },
       { href: "/best-xi", labelKey: "bestXi", icon: "trophy", status: "ready" },
       { href: "/tier", labelKey: "tierLists", icon: "tier", status: "ready" },
+      { href: "/pack-check", labelKey: "packCheck", icon: "pack", status: "ready" },
     ],
   },
   {

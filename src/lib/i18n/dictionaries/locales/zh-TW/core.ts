@@ -44,6 +44,7 @@ const part: PartialDictionary = {
     diagnosisHistory: "診斷紀錄",
     bestXi: "AI Best XI",
     tierLists: "強度排行",
+    packCheck: "卡包診斷",
     packs: "卡包",
     community: "社群",
     comingSoon: "即將推出",

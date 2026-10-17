@@ -124,6 +124,7 @@ export interface Dictionary {
     diagnosisHistory: string;
     bestXi: string;
     tierLists: string;
+    packCheck: string;
     packs: string;
     community: string;
     comingSoon: string;
@@ -5255,6 +5256,35 @@ export interface Dictionary {
     squadSuggestNone: string;
     squadSuggestSeeAll: string;
   };
+  packCheck: {
+    heading: string;
+    intro: string;
+    privacyNote: string;
+    searchLabel: string;
+    searchPlaceholder: string;
+    searchNoResults: string;
+    searchError: string;
+    addButton: string;
+    removeButton: string;
+    clearButton: string;
+    addNewCards: string;
+    limitTemplate: string;
+    emptyPack: string;
+    summaryTemplate: string;
+    bestDeltaTemplate: string;
+    verdictUpgrade: string;
+    verdictNewPosition: string;
+    verdictNoUpgrade: string;
+    verdictAlreadyOwned: string;
+    verdictUnknown: string;
+    rowUpgradeTemplate: string;
+    rowNoUpgradeTemplate: string;
+    rowNewPositionTemplate: string;
+    samePlayerTemplate: string;
+    noTeam: string;
+    openMyTeam: string;
+    loading: string;
+  };
   gamePlan: {
     heading: string;
     intro: string;
@@ -5465,6 +5495,7 @@ const ja: JaCoreDictionary = {
     diagnosisHistory: "診断履歴",
     bestXi: "AIベスト11",
     tierLists: "ティアリスト",
+    packCheck: "パック診断",
     packs: "パック",
     community: "コミュニティ",
     comingSoon: "準備中",

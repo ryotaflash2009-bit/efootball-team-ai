@@ -44,6 +44,7 @@ const part: PartialDictionary = {
     diagnosisHistory: "Analiz Geçmişi",
     bestXi: "AI Best XI",
     tierLists: "Tier listesi",
+    packCheck: "Paket analizi",
     packs: "Paketler",
     community: "Topluluk",
     comingSoon: "Yakında",
