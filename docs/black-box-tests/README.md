@@ -16,8 +16,8 @@
 | ✅ 合格 | best-xi-optimization | 42/42 | 16 | 2026-10-17 18:05 | [best-xi-optimization.md](./best-xi-optimization.md) |
 | ✅ 合格 | boosters | 54/54 | 3 | 2026-10-17 10:00 | [boosters.md](./boosters.md) |
 | ✅ 合格 | community | 41/41 | 21 | 2026-10-17 10:00 | [community.md](./community.md) |
-| ✅ 合格 | compare | 74/74 | 3 | 2026-10-17 10:02 | [compare.md](./compare.md) |
-| ✅ 合格 | compare-ability-editor | 168/168 | 90 | 2026-10-17 17:39 | — |
+| ✅ 合格 | compare | 74/74 | 3 | 2026-10-17 18:48 | [compare.md](./compare.md) |
+| ✅ 合格 | compare-ability-editor | 168/168 | 91 | 2026-10-17 18:47 | — |
 | ✅ 合格 | cost-rule | 11/11 | 3 | 2026-10-17 10:02 | — |
 | ✅ 合格 | diagnosis-facts | 16/16 | 4 | 2026-10-17 10:03 | — |
 | ✅ 合格 | favorites | 32/32 | 1 | 2026-10-17 18:06 | — |
@@ -26,8 +26,8 @@
 | ✅ 合格 | hydration-seeded | 95/95 | 248 | 2026-10-17 18:32 | — |
 | ✅ 合格 | local-backup | 28/28 | 43 | 2026-10-17 10:07 | [local-backup.md](./local-backup.md) |
 | ✅ 合格 | local-posts（社内向けページ） | 32/32 | 80 | 2026-10-17 10:27 | [local-posts.md](./local-posts.md) |
-| ✅ 合格 | manager-compare | 16/16 | 9 | 2026-10-17 10:03 | — |
-| ✅ 合格 | manager-picker | 35/35 | 7 | 2026-10-17 10:08 | [manager-picker.md](./manager-picker.md) |
+| ✅ 合格 | manager-compare | 16/16 | 9 | 2026-10-17 18:48 | — |
+| ✅ 合格 | manager-picker | 35/35 | 6 | 2026-10-17 18:48 | [manager-picker.md](./manager-picker.md) |
 | ✅ 合格 | managers | 43/43 | 2 | 2026-10-17 10:08 | [managers.md](./managers.md) |
 | ✅ 合格 | my-builds | 100/100 | 1 | 2026-10-17 18:28 | [my-builds.md](./my-builds.md) |
 | ✅ 合格 | my-team-cloud | 98/98 | 16 | 2026-10-17 17:41 | [my-team-cloud.md](./my-team-cloud.md) |

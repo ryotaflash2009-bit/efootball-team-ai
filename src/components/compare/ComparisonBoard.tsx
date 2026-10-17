@@ -254,13 +254,16 @@ export function ComparisonBoard({ initialInputs }: { initialInputs: ComparisonPl
             <Icon name="managers" size={13} />
             {tcb("chooseFromManagerListButton")}
           </button>
-          <button
-            type="button"
-            onClick={() => applySharedManager(null)}
-            className="rounded-md border border-border px-2 py-1 text-xs text-danger hover:opacity-80"
-          >
-            {tcb("clearAllManagersButton")}
-          </button>
+          {/* 監督を選んでいる選手がいるときだけ（2026-10-18: 誰にも選んでいないのに赤い解除のボタンが出ていた） */}
+          {players.some((p) => p.manager) ? (
+            <button
+              type="button"
+              onClick={() => applySharedManager(null)}
+              className="rounded-md border border-border px-2 py-1 text-xs text-danger hover:opacity-80"
+            >
+              {tcb("clearAllManagersButton")}
+            </button>
+          ) : null}
           <span className="text-2xs text-text-muted">{tcb("perPlayerManagerNote")}</span>
         </div>
       </Surface>
