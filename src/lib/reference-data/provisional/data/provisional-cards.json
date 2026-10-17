@@ -1,6 +1,13 @@
 {
  "schema": "provisional-world-cards/v1",
  "source": "pesmaster.com",
- "updatedAt": "2026-10-15T15:45:47.156Z",
+ "updatedAt": "2026-10-17T05:15:04.111Z",
+ "aliases": {
+  "nationality": {
+   "Turkey": "Türkiye",
+   "Czech Republic": "Czechia"
+  },
+  "league": {}
+ },
  "cards": []
 }
