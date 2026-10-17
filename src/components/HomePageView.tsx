@@ -125,8 +125,10 @@ export function HomePageView({
 
   const quickLinks: { href: string; label: string; icon: IconName; desc: string }[] = [
     { href: "/players", label: th("findPlayersLabel"), icon: "players", desc: fillH(th("findPlayersDescTemplate"), { count: worldCountText }) },
+    { href: "/players/new", label: th("newCardsLabel"), icon: "sparkles", desc: th("newCardsDesc") },
     { href: "/compare", label: th("comparePlayersLabel"), icon: "compare", desc: th("comparePlayersDesc") },
     { href: "/squads", label: th("buildSquadLabel"), icon: "squad", desc: th("buildSquadDesc") },
+    { href: "/pack-check", label: th("packCheckLabel"), icon: "pack", desc: th("packCheckDesc") },
     {
       href: "/managers",
       label: th("exploreManagersLabel"),
@@ -136,8 +138,6 @@ export function HomePageView({
   ];
 
   const developmentFeatures = [
-    th("featureTierList"),
-    th("featurePackDiagnosis"),
     th("featureAiCoach"),
     th("featureCommunity"),
   ];

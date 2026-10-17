@@ -126,8 +126,6 @@
  "homePage.exploreManagersDescTemplate": "bb36fbc6be3f",
  "homePage.inDevelopmentHeading": "6e9771930f63",
  "homePage.inDevelopmentHint": "4f7d64017689",
- "homePage.featureTierList": "5da22a5b976a",
- "homePage.featurePackDiagnosis": "6e275e6aed22",
  "homePage.featureAiCoach": "bcf601845250",
  "homePage.featureCommunity": "bb501d7877eb",
  "homePage.designDocNote": "9d36d2205836",
@@ -4354,5 +4352,9 @@
  "packCheck.noTeam": "0ece0bfccbbd",
  "packCheck.openMyTeam": "072a572b8847",
  "packCheck.loading": "ba3bbbe10d8b",
- "nav.packCheck": "f3831819a8cd"
+ "nav.packCheck": "f3831819a8cd",
+ "homePage.newCardsLabel": "3448c00f4c8f",
+ "homePage.newCardsDesc": "b9ea93670410",
+ "homePage.packCheckLabel": "f3831819a8cd",
+ "homePage.packCheckDesc": "7145dfbb5365"
 }

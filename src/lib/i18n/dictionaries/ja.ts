@@ -81,10 +81,12 @@ export interface Dictionary {
     buildSquadDesc: string;
     exploreManagersLabel: string;
     exploreManagersDescTemplate: string;
+    newCardsLabel: string;
+    newCardsDesc: string;
+    packCheckLabel: string;
+    packCheckDesc: string;
     inDevelopmentHeading: string;
     inDevelopmentHint: string;
-    featureTierList: string;
-    featurePackDiagnosis: string;
     featureAiCoach: string;
     featureCommunity: string;
     designDocNote: string;
@@ -5469,10 +5471,12 @@ const ja: JaCoreDictionary = {
     buildSquadDesc: "フォーメーション・育成・監督・Link-Up 条件を確認",
     exploreManagersLabel: "監督を調べる",
     exploreManagersDescTemplate: "{count} 人の戦術適性・ブースター・Link-Up Play",
+    newCardsLabel: "新しいカード",
+    newCardsDesc: "最近追加されたカードと暫定のカード・あなたの My Team より強いもの",
+    packCheckLabel: "パック診断",
+    packCheckDesc: "パックのカードを選んで、あなたの My Team の強化になるかを確かめる",
     inDevelopmentHeading: "開発中の機能",
     inDevelopmentHint: "順次追加予定",
-    featureTierList: "ティアリスト",
-    featurePackDiagnosis: "パック（ガチャ）診断",
     featureAiCoach: "AI コーチ分析",
     featureCommunity: "コミュニティ",
     designDocNote:
