@@ -1,0 +1,27 @@
+import { NextResponse } from "next/server";
+import { cachedListRecentlyAddedPlayers } from "@/lib/reference-data/runtime/cached-queries";
+import { listProvisionalPlayers } from "@/lib/world/repository";
+
+export const runtime = "nodejs";
+
+/**
+ * 新しいカードの要約（2026-10-17）: 最近 7 日に追加された正式なカード＋暫定のカード。スカッドの提案などブラウザーの計算に使う。
+ * 返すのは表示と比較に要る項目だけ（画像の URL は返さない）。
+ */
+export async function GET() {
+  const recent = await cachedListRecentlyAddedPlayers(7, 200).catch(() => []);
+  const pick = (p: { worldCardId: string; nameJa: string | null; nameEn: string | null; registeredPosition: string | null; ovrBase: number | null; ovrMax: number | null; cardType: string | null }, provisional: boolean) => ({
+    worldCardId: p.worldCardId,
+    nameJa: p.nameJa,
+    nameEn: p.nameEn,
+    registeredPosition: p.registeredPosition,
+    ovrBase: p.ovrBase,
+    ovrMax: p.ovrMax,
+    cardType: p.cardType,
+    provisional,
+  });
+  const cards = [...recent.map((p) => pick(p, false)), ...listProvisionalPlayers().map((p) => pick(p, true))];
+  const res = NextResponse.json({ cards, days: 7 });
+  if (process.env.NODE_ENV === "production") res.headers.set("Cache-Control", "public, max-age=300, stale-while-revalidate=900");
+  return res;
+}

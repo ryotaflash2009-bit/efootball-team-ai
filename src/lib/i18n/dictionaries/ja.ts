@@ -5248,6 +5248,12 @@ export interface Dictionary {
     impactNone: string;
     impactNoTeam: string;
     impactOpenMyTeam: string;
+    squadSuggestHeading: string;
+    squadSuggestIntro: string;
+    squadSuggestRowTemplate: string;
+    squadSuggestEmptySlotTemplate: string;
+    squadSuggestNone: string;
+    squadSuggestSeeAll: string;
   };
   gamePlan: {
     heading: string;

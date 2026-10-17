@@ -628,6 +628,12 @@ const part: PartialDictionary = {
     impactNone: "Tidak ada kartu baru yang mengalahkan kartu terbaikmu di posisi yang sama.",
     impactNoTeam: "Tambahkan kartu bertanda dimiliki ke My Team untuk melihat kartu baru yang akan memperkuat timmu.",
     impactOpenMyTeam: "Buka My Team",
+    squadSuggestHeading: "Kartu baru yang akan memperkuat skuad ini",
+    squadSuggestIntro: "Kartu yang baru ditambahkan dan kartu sementara yang posisi terdaftarnya sama dengan slot dan OVR-nya lebih tinggi dari pemain sekarang (slot kosong: OVR tertinggi).",
+    squadSuggestRowTemplate: "{basis} {newOvr} (+{delta} dari {currentName} {currentOvr} saat ini)",
+    squadSuggestEmptySlotTemplate: "{basis} {newOvr} (slot kosong)",
+    squadSuggestNone: "Tidak ada kartu baru yang mengalahkan pemain di skuad ini.",
+    squadSuggestSeeAll: "Lihat semua kartu baru",
   },
 };
 

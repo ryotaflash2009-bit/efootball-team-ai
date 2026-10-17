@@ -628,6 +628,12 @@ const part: PartialDictionary = {
     impactNone: "Yeni kartların hiçbiri aynı mevkideki en iyi kartını geçmiyor.",
     impactNoTeam: "Takımını güçlendirecek yeni kartları görmek için My Team'e sahip olunan olarak işaretli kartlar ekle.",
     impactOpenMyTeam: "My Team'i aç",
+    squadSuggestHeading: "Bu kadroyu güçlendirecek yeni kartlar",
+    squadSuggestIntro: "Yakın zamanda eklenen ve geçici kartlardan, kayıtlı mevkisi yuvayla aynı olan ve OVR'si mevcut oyuncudan yüksek olanlar (boş yuvalarda en yüksek OVR).",
+    squadSuggestRowTemplate: "{basis} {newOvr} (mevcut {currentName} {currentOvr} kartından +{delta})",
+    squadSuggestEmptySlotTemplate: "{basis} {newOvr} (boş yuva)",
+    squadSuggestNone: "Yeni kartların hiçbiri bu kadrodaki oyuncuları geçmiyor.",
+    squadSuggestSeeAll: "Tüm yeni kartları gör",
   },
 };
 

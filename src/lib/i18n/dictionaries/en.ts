@@ -5311,6 +5311,12 @@ const en: Dictionary = {
     impactNone: "None of the current new cards beats your best card at the same position.",
     impactNoTeam: "Add cards marked as owned to My Team to see which new cards would strengthen your team.",
     impactOpenMyTeam: "Open My Team",
+    squadSuggestHeading: "New cards that would strengthen this squad",
+    squadSuggestIntro: "Recently added and provisional cards whose registered position matches the slot and whose OVR beats the current player (for empty slots, the highest OVR).",
+    squadSuggestRowTemplate: "{basis} {newOvr} (+{delta} over current {currentName} {currentOvr})",
+    squadSuggestEmptySlotTemplate: "{basis} {newOvr} (empty slot)",
+    squadSuggestNone: "None of the current new cards beats the players in this squad.",
+    squadSuggestSeeAll: "See all new cards",
   },
   gamePlan: {
     heading: "Game plan",

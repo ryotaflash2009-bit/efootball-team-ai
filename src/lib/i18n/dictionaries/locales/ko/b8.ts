@@ -628,6 +628,12 @@ const part: PartialDictionary = {
     impactNone: "현재 새 카드 중 같은 포지션의 내 최고 카드를 넘는 카드는 없습니다.",
     impactNoTeam: "My Team에 '보유' 카드를 등록하면 내 팀보다 강한 새 카드가 여기에 표시됩니다.",
     impactOpenMyTeam: "My Team 열기",
+    squadSuggestHeading: "이 스쿼드를 강화할 새 카드",
+    squadSuggestIntro: "최근 추가된 카드와 임시 카드 중 슬롯 포지션과 등록 포지션이 같고 현재 선수보다 OVR이 높은 카드입니다(빈 슬롯은 가장 높은 카드).",
+    squadSuggestRowTemplate: "{basis} {newOvr} (현재 {currentName} {currentOvr}보다 +{delta})",
+    squadSuggestEmptySlotTemplate: "{basis} {newOvr} (빈 슬롯)",
+    squadSuggestNone: "현재 새 카드 중 이 스쿼드 선수를 넘는 카드는 없습니다.",
+    squadSuggestSeeAll: "새 카드 모두 보기",
   },
 };
 

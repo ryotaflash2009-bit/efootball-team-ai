@@ -628,6 +628,12 @@ const part: PartialDictionary = {
     impactNone: "目前的新卡中，没有超过你同一位置最强卡的卡。",
     impactNoTeam: "在 My Team 中登记标记为拥有的卡后，这里会显示比你的队伍更强的新卡。",
     impactOpenMyTeam: "打开 My Team",
+    squadSuggestHeading: "能加强这个阵容的新卡",
+    squadSuggestIntro: "最近添加的卡和暂定卡中，登记位置与该位置相同且 OVR 高于当前球员的卡（空位则为 OVR 最高的卡）。",
+    squadSuggestRowTemplate: "{basis} {newOvr}（比当前的 {currentName} {currentOvr} 高 {delta}）",
+    squadSuggestEmptySlotTemplate: "{basis} {newOvr}（空位）",
+    squadSuggestNone: "目前的新卡中，没有超过这个阵容球员的卡。",
+    squadSuggestSeeAll: "查看全部新卡",
   },
 };
 
