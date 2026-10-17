@@ -611,10 +611,14 @@ const part: PartialDictionary = {
     maxLevelUnknown: "El nivel máximo aún se está confirmando, así que el cálculo de progresión no está disponible todavía.",
     maxLevelFromUsers: "El nivel máximo proviene de envíos de usuarios en la fuente (se sustituye cuando llegan los datos oficiales).",
     sourceLabel: "Fuente de datos:",
-    newCardsPageTitle: "Cartas nuevas (provisionales)",
-    newCardsIntro: "Cartas nuevas que aún no están en nuestra fuente principal. Pasan a la lista normal cuando llegan los datos oficiales.",
+    newCardsPageTitle: "Cartas nuevas",
+    newCardsIntro: "Cartas añadidas recientemente y cartas nuevas que aún no están en nuestra fuente principal (provisionales). Las provisionales se sustituyen automáticamente cuando llegan los datos oficiales.",
     newCardsEmpty: "Ahora no hay cartas provisionales (todo son datos oficiales).",
-    newCardsLinkTemplate: "Ver {count} cartas nuevas (provisionales)",
+    newCardsLinkTemplate: "Ver {count} cartas nuevas",
+    provisionalHeading: "Antes de los datos oficiales (provisional)",
+    recentHeadingTemplate: "Cartas añadidas recientemente (últimos {days} días, {count})",
+    recentIntro: "Cartas nuevas añadidas a TeamAIXI como datos oficiales (las más recientes primero).",
+    recentEmpty: "No se añadieron cartas oficiales recientemente.",
   },
 };
 

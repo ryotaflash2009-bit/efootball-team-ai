@@ -1,6 +1,6 @@
 import { parseWorldListQuery } from "@/lib/world/schemas";
 import { listProvisionalPlayers } from "@/lib/world/repository";
-import { cachedGetFacets, cachedGetSourceMeta, cachedListPlayers } from "@/lib/reference-data/runtime/cached-queries";
+import { cachedGetFacets, cachedGetSourceMeta, cachedListPlayers, cachedListRecentlyAddedPlayers } from "@/lib/reference-data/runtime/cached-queries";
 import { listPlayers, getFacets, getSourceMeta } from "@/lib/world/repository";
 import { WorldDataUnavailableError } from "@/lib/world/db";
 import type { WorldFacets, WorldPlayerListItem } from "@/lib/world/types";
@@ -142,7 +142,7 @@ export default async function PlayersPage({ searchParams }: { searchParams: Prom
         sourceMeta={sourceMeta}
         hasFilters={hasFilters}
         searchParams={sp}
-        provisionalCount={listProvisionalPlayers().length}
+        provisionalCount={listProvisionalPlayers().length + (await cachedListRecentlyAddedPlayers(7, 200).catch(() => [])).length}
       />
     </PageContainer>
   );

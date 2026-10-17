@@ -611,10 +611,14 @@ const part: PartialDictionary = {
     maxLevelUnknown: "Maksimum seviye henüz doğrulanıyor, bu yüzden gelişim hesaplamaları henüz kullanılamaz.",
     maxLevelFromUsers: "Maksimum seviye, kaynak sitedeki kullanıcı gönderimlerinden gelir (resmî veriler gelince değiştirilir).",
     sourceLabel: "Veri kaynağı:",
-    newCardsPageTitle: "Yeni kartlar (geçici)",
-    newCardsIntro: "Henüz ana kaynağımızda olmayan yeni kartlar. Resmî veriler geldiğinde normal oyuncu listesine taşınırlar.",
+    newCardsPageTitle: "Yeni kartlar",
+    newCardsIntro: "Yakın zamanda eklenen kartlar ve henüz ana kaynağımızda olmayan yeni kartlar (geçici). Geçici kartlar resmî veriler geldiğinde otomatik olarak değiştirilir.",
     newCardsEmpty: "Şu anda geçici kart yok (hepsi resmî veriler).",
-    newCardsLinkTemplate: "{count} yeni kartı gör (geçici)",
+    newCardsLinkTemplate: "{count} yeni kartı gör",
+    provisionalHeading: "Resmî verilerden önce (geçici)",
+    recentHeadingTemplate: "Yakın zamanda eklenen kartlar (son {days} gün, {count})",
+    recentIntro: "Resmî veri olarak TeamAIXI'ye eklenen yeni kartlar (en yeniler önce).",
+    recentEmpty: "Yakın zamanda resmî kart eklenmedi.",
   },
 };
 

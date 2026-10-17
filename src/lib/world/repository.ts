@@ -23,6 +23,7 @@ import {
   _resetFacetCacheForSupabase,
   listAllWorldCardIdsFromSupabase,
   supabaseRowToDetail,
+  listRecentlyAddedFromSupabase,
 } from "@/lib/reference-data/runtime/world-source";
 
 type Row = Record<string, unknown>;
@@ -113,6 +114,12 @@ export async function getPlayerByWorldId(worldCardId: string): Promise<WorldPlay
 export function provisionalDetail(worldCardId: string): WorldPlayerDetail | null {
   const row = getProvisionalRow(worldCardId);
   return row ? { ...supabaseRowToDetail(row), provisional: provisionalInfoOf(row) } : null;
+}
+
+/** 最近追加された World のカード（直近 days 日・新しい順・2026-10-17）。SQLite の経路（切り戻し用）では空。 */
+export async function listRecentlyAddedPlayers(days = 7, limit = 200): Promise<WorldPlayerListItem[]> {
+  if (getWorldDataSource() !== "supabase") return [];
+  return listRecentlyAddedFromSupabase(new Date(Date.now() - days * 86_400_000).toISOString(), limit);
 }
 
 /** 暫定のカードの一覧（新しく見つかった順・2026-10-15）。 */

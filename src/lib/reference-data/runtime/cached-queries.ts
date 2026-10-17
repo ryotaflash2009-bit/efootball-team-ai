@@ -1,5 +1,5 @@
 import { unstable_cache } from "next/cache";
-import { listPlayers, getFacets, getSourceMeta, getPlayerByWorldId } from "@/lib/world/repository";
+import { listPlayers, getFacets, getSourceMeta, getPlayerByWorldId, listRecentlyAddedPlayers } from "@/lib/world/repository";
 import { getEfhubAnalysisDetail } from "@/lib/world/analysis-repository";
 import { listManagers, getManagerById, getManagerCount, getManagersLatestFetchedAt } from "@/lib/managers/repository";
 
@@ -25,3 +25,4 @@ export const cachedListManagers = unstable_cache(listManagers, ["reference:listM
 export const cachedGetManagerById = unstable_cache(getManagerById, ["reference:getManagerById:v1"], opts);
 export const cachedGetManagerCount = unstable_cache(getManagerCount, ["reference:getManagerCount:v1"], opts);
 export const cachedGetManagersLatestFetchedAt = unstable_cache(getManagersLatestFetchedAt, ["reference:getManagersLatestFetchedAt:v1"], opts);
+export const cachedListRecentlyAddedPlayers = unstable_cache(listRecentlyAddedPlayers, ["reference:listRecentlyAddedPlayers:v1"], opts);

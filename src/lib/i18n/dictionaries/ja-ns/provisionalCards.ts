@@ -10,10 +10,14 @@ const provisionalCards: Dictionary["provisionalCards"] = {
   maxLevelUnknown: "最大レベルは確認中のため、育成の計算はまだ使えません。",
   maxLevelFromUsers: "最大レベルは取得元の利用者の投稿による値です（正式なデータが届くと置き換わります）。",
   sourceLabel: "データの取得元:",
-  newCardsPageTitle: "新しいカード（暫定）",
-  newCardsIntro: "主の取得元にまだ載っていない新しいカードです。正式なデータが届くと通常の選手一覧へ移ります。",
+  newCardsPageTitle: "新しいカード",
+  newCardsIntro: "最近追加されたカードと、主の取得元にまだ載っていない新しいカード（暫定）です。暫定のカードは正式なデータが届くと自動で置き換わります。",
   newCardsEmpty: "いまは暫定のカードはありません（すべて正式なデータです）。",
-  newCardsLinkTemplate: "新しいカード（暫定）{count} 枚を見る",
+  newCardsLinkTemplate: "新しいカード {count} 枚を見る",
+  provisionalHeading: "正式なデータの反映前（暫定）",
+  recentHeadingTemplate: "最近追加されたカード（直近 {days} 日・{count} 枚）",
+  recentIntro: "正式なデータとして TeamAIXI に追加された新しいカードです（追加された順）。",
+  recentEmpty: "直近に追加された正式なカードはありません。",
 };
 
 registerJaNamespace("provisionalCards", provisionalCards);

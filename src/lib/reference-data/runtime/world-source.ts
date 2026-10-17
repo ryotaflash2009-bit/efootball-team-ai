@@ -248,6 +248,23 @@ export function supabaseRowToDetail(row: Row): WorldPlayerDetail {
   };
 }
 
+/**
+ * 最近 TeamAIXI に追加された World のカード（created_at が since 以降・新しい順・2026-10-17）。
+ * 最初の一括の取り込みより後に自動更新で追加された行だけが該当する。
+ */
+export async function listRecentlyAddedFromSupabase(sinceIso: string, limit: number, client?: ReferenceDataClient): Promise<WorldPlayerListItem[]> {
+  const c = await getClient("world.recentlyAdded", client);
+  const { data, error, status } = await c
+    .from("world_player_cards")
+    .select("*")
+    .gte("created_at", sinceIso)
+    .order("created_at", { ascending: false })
+    .order("world_card_id", { ascending: true })
+    .limit(Math.max(1, Math.min(limit, 200)));
+  if (error) throw normalizeQueryError(error, { operation: "world.recentlyAdded", status });
+  return ((data ?? []) as Row[]).map((r) => ({ ...rowToListItem(r), addedAt: r.created_at == null ? null : String(r.created_at) }));
+}
+
 export async function getPlayersByWorldIdsFromSupabase(ids: string[], client?: ReferenceDataClient): Promise<WorldPlayerListItem[]> {
   const clean = Array.from(new Set(ids.filter((id) => WORLD_CARD_ID_RE.test(id)))).slice(0, 500);
   if (clean.length === 0) return [];

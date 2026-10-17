@@ -611,10 +611,14 @@ const part: PartialDictionary = {
     maxLevelUnknown: "最高等级仍在确认中，暂时无法使用培养计算。",
     maxLevelFromUsers: "最高等级来自来源网站用户的投稿（正式数据到达后会替换）。",
     sourceLabel: "数据来源：",
-    newCardsPageTitle: "新卡（暂定）",
-    newCardsIntro: "尚未收录在主要数据来源中的新卡。正式数据到达后会移到普通球员列表。",
+    newCardsPageTitle: "新卡",
+    newCardsIntro: "最近添加的卡，以及尚未收录在主要数据来源中的新卡（暂定）。暂定的卡在正式数据到达后会自动替换。",
     newCardsEmpty: "目前没有暂定的卡（全部为正式数据）。",
-    newCardsLinkTemplate: "查看 {count} 张新卡（暂定）",
+    newCardsLinkTemplate: "查看 {count} 张新卡",
+    provisionalHeading: "正式数据反映前（暂定）",
+    recentHeadingTemplate: "最近添加的卡（最近 {days} 天，{count} 张）",
+    recentIntro: "作为正式数据添加到 TeamAIXI 的新卡（按添加时间从新到旧）。",
+    recentEmpty: "最近没有添加正式的卡。",
   },
 };
 

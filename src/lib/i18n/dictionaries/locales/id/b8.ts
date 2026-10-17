@@ -611,10 +611,14 @@ const part: PartialDictionary = {
     maxLevelUnknown: "Level maksimum masih dikonfirmasi, jadi perhitungan progres belum tersedia.",
     maxLevelFromUsers: "Level maksimum berasal dari kiriman pengguna di situs sumber (diganti saat data resmi masuk).",
     sourceLabel: "Sumber data:",
-    newCardsPageTitle: "Kartu baru (sementara)",
-    newCardsIntro: "Kartu baru yang belum ada di sumber utama kami. Kartu pindah ke daftar pemain biasa saat data resmi masuk.",
+    newCardsPageTitle: "Kartu baru",
+    newCardsIntro: "Kartu yang baru ditambahkan dan kartu baru yang belum ada di sumber utama kami (sementara). Kartu sementara diganti otomatis saat data resmi masuk.",
     newCardsEmpty: "Saat ini tidak ada kartu sementara (semua data resmi).",
-    newCardsLinkTemplate: "Lihat {count} kartu baru (sementara)",
+    newCardsLinkTemplate: "Lihat {count} kartu baru",
+    provisionalHeading: "Sebelum data resmi (sementara)",
+    recentHeadingTemplate: "Kartu yang baru ditambahkan ({days} hari terakhir, {count})",
+    recentIntro: "Kartu baru yang ditambahkan ke TeamAIXI sebagai data resmi (terbaru lebih dulu).",
+    recentEmpty: "Tidak ada kartu resmi yang ditambahkan baru-baru ini.",
   },
 };
 
