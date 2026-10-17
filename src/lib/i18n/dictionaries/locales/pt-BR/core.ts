@@ -161,8 +161,7 @@ const ptBR: PartialDictionary = {
     inDevelopmentHint: "Em breve",
     featureAiCoach: "Análise de treinador com IA",
     featureCommunity: "Comunidade",
-    designDocNote:
-      "Consulte docs/efootball-team-ai-design.md para detalhes do design. Apenas dados reais importados são exibidos — sem números de usuários ou avaliações fictícias.",
+    designDocNote: "Só são mostrados dados reais já importados — sem números de usuários ou avaliações fictícios.",
   },
 };
 

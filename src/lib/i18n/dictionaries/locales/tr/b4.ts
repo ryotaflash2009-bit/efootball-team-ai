@@ -539,7 +539,7 @@ const part: PartialDictionary = {
     fetchedAtLabel: "Alınma zamanı",
     noSourceInfo: "Kaynak bilgisi yok.",
     futureHeading: "Gelecek sürüm için planlananlar",
-    futureDescription: "Özellikler (hücum/savunma/fizik), yetenekler, oyun tarzları, mevkiye özel genel değer, gelişim, güçlendiriciler, kademeler ve oyuncu karşılaştırma. Bunlar eFHUB'ın oyuncu başına verileri daha ayrıntılı araştırıldıktan sonra uygulanacak (docs/efootball-team-ai-design.md içindeki Aşama 1-2).",
+    futureDescription: "Özellikler (hücum/savunma/fizik), yetenekler, oyun tarzları, mevkiye özel genel değer, gelişim, güçlendiriciler, kademeler ve oyuncu karşılaştırma. Bunlar eFHUB'ın oyuncu başına verileri daha ayrıntılı araştırıldıktan sonra uygulanacak.",
     imageProxyNote: "Oyuncu görselleri efimg.com'dan kendi proxy'miz (/api/player-image/[id]) üzerinden alınır.",
   },
   diagnosisPerspectives: {

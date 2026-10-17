@@ -539,7 +539,7 @@ const part: PartialDictionary = {
     fetchedAtLabel: "Diambil pada",
     noSourceInfo: "Tidak ada informasi sumber.",
     futureHeading: "Direncanakan untuk Versi Mendatang",
-    futureDescription: "Atribut (serangan/pertahanan/fisik), skill, gaya bermain, nilai keseluruhan per posisi, progresi, booster, tier, dan perbandingan pemain. Fitur ini akan diimplementasikan setelah riset lebih lanjut tentang data per pemain eFHUB (Fase 1-2 dari docs/efootball-team-ai-design.md).",
+    futureDescription: "Atribut (serangan/pertahanan/fisik), skill, gaya bermain, nilai keseluruhan per posisi, progresi, booster, tier, dan perbandingan pemain. Fitur ini akan diimplementasikan setelah riset lebih lanjut tentang data per pemain eFHUB.",
     imageProxyNote: "Gambar pemain diambil dari efimg.com melalui proxy kami sendiri (/api/player-image/[id]).",
   },
   diagnosisPerspectives: {

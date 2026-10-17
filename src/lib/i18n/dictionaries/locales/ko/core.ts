@@ -158,8 +158,7 @@ const part: PartialDictionary = {
     inDevelopmentHint: "출시 예정",
     featureAiCoach: "AI 코치 분석",
     featureCommunity: "커뮤니티",
-    designDocNote:
-      "설계 세부 사항은 docs/efootball-team-ai-design.md를 참고하세요. 실제로 가져온 데이터만 표시하며, 가상의 사용자 수나 평점은 없습니다.",
+    designDocNote: "가져온 실제 데이터만 표시하며, 가상의 이용자 수·평가는 표시하지 않습니다.",
   },
 };
 

@@ -539,7 +539,7 @@ const part: PartialDictionary = {
     fetchedAtLabel: "Abgerufen am",
     noSourceInfo: "Keine Quellenangaben verfügbar.",
     futureHeading: "Für eine künftige Version geplant",
-    futureDescription: "Attribute (Angriff/Abwehr/Physis), Fähigkeiten, Spielstile, positionsspezifische Gesamtwertung, Entwicklung, Booster, Tiers und Spielervergleich. Diese werden nach weiterer Recherche zu den spielerbezogenen Daten von eFHUB umgesetzt (Phase 1–2 in docs/efootball-team-ai-design.md).",
+    futureDescription: "Attribute (Angriff/Abwehr/Physis), Fähigkeiten, Spielstile, positionsspezifische Gesamtwertung, Entwicklung, Booster, Tiers und Spielervergleich. Diese werden nach weiterer Recherche zu den spielerbezogenen Daten von eFHUB umgesetzt.",
     imageProxyNote: "Spielerbilder werden über unseren eigenen Proxy (/api/player-image/[id]) von efimg.com abgerufen.",
   },
   diagnosisPerspectives: {

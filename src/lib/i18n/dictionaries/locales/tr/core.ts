@@ -158,8 +158,7 @@ const part: PartialDictionary = {
     inDevelopmentHint: "Yakında",
     featureAiCoach: "Yapay zekâ koç analizi",
     featureCommunity: "Topluluk",
-    designDocNote:
-      "Tasarım ayrıntıları için docs/efootball-team-ai-design.md dosyasına bakın. Yalnızca içe aktarılmış gerçek veriler gösterilir; uydurma kullanıcı sayıları veya puanlar yoktur.",
+    designDocNote: "Yalnızca içe aktarılmış gerçek veriler gösterilir; uydurma kullanıcı sayısı veya puan yoktur.",
   },
 };
 

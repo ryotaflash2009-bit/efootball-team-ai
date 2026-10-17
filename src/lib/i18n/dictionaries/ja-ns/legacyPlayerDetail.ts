@@ -16,7 +16,7 @@ const legacyPlayerDetail: Dictionary["legacyPlayerDetail"] = {
   noSourceInfo: "取得元情報がありません。",
   futureHeading: "今後のバージョンで実装予定",
   futureDescription:
-    "能力値（攻撃/守備/身体能力）、スキル、プレースタイル、ポジション別総合値、育成、ブースター、Tier、選手比較。これらは eFHUB の個別選手データを追加調査したうえで実装します（docs/efootball-team-ai-design.md の Phase 1〜2）。",
+    "能力値（攻撃/守備/身体能力）、スキル、プレースタイル、ポジション別総合値、育成、ブースター、Tier、選手比較。これらは eFHUB の個別選手データを追加調査したうえで実装します。",
   imageProxyNote: "選手画像は efimg.com から自前プロキシ（/api/player-image/[id]）経由で取得しています。",
   };
 

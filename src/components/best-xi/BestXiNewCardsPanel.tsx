@@ -38,7 +38,9 @@ export function BestXiNewCardsPanel({
   tb: (key: string) => string;
   fillTb: (key: string, vars: Record<string, string>) => string;
 }) {
-  const [ids, setIds] = useState<string[] | null>(null);
+  // 選んだ新しいカードは、そのときのフォーメーションの枠に合わせたもの。フォーメーションが変わったら選び直す（ボタンに戻す）
+  const [picked, setPicked] = useState<{ formationId: string; ids: string[] } | null>(null);
+  const ids = picked && picked.formationId === result.formationId ? picked.ids : null;
   const [requesting, setRequesting] = useState(false);
   const { cards, loading } = useBestXiProgressionCards(ids ?? []);
 
@@ -46,7 +48,7 @@ export function BestXiNewCardsPanel({
   const start = () => {
     setRequesting(true);
     void fetchNewCardsOnce().then((newCards) => {
-      setIds(pickNewCardIdsForFormation({ newCards, slotPositions, ownedIds: new Set(ownedIds) }));
+      setPicked({ formationId: result.formationId, ids: pickNewCardIdsForFormation({ newCards, slotPositions, ownedIds: new Set(ownedIds) }) });
       setRequesting(false);
     });
   };

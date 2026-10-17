@@ -158,8 +158,7 @@ const part: PartialDictionary = {
     inDevelopmentHint: "Prossimamente",
     featureAiCoach: "Analisi del coach con IA",
     featureCommunity: "Community",
-    designDocNote:
-      "Consulta docs/efootball-team-ai-design.md per i dettagli del design. Vengono mostrati solo dati reali importati: nessun numero di utenti o valutazione inventati.",
+    designDocNote: "Vengono mostrati solo dati reali importati: nessun numero di utenti o valutazione fittizi.",
   },
 };
 
