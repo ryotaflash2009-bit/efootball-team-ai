@@ -668,6 +668,9 @@ const part: PartialDictionary = {
     noTeam: "My Team에 '보유' 카드가 아직 없어 모두 '없는 포지션'으로 표시됩니다. My Team에 등록하면 보유 카드와 비교할 수 있습니다.",
     openMyTeam: "My Team 열기",
     loading: "불러오는 중…",
+    fitHeading: "내 My Team과 비교",
+    fitAlreadyOwned: "이 카드는 My Team에서 '보유'로 되어 있습니다.",
+    fitOpenPackCheck: "팩 진단에서 다른 카드와 함께 보기",
   },
 };
 

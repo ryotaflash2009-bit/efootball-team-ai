@@ -668,6 +668,9 @@ const part: PartialDictionary = {
     noTeam: "My Team-mu belum punya kartu bertanda dimiliki, jadi semua kartu tampil sebagai posisi baru. Tambahkan kartumu ke My Team untuk membandingkan.",
     openMyTeam: "Buka My Team",
     loading: "Memuat…",
+    fitHeading: "Dibandingkan dengan My Team-mu",
+    fitAlreadyOwned: "Kartu ini bertanda dimiliki di My Team-mu.",
+    fitOpenPackCheck: "Lihat bersama kartu lain di Cek pack",
   },
 };
 

@@ -668,6 +668,9 @@ const part: PartialDictionary = {
     noTeam: "My Team'inde henüz sahip olunan olarak işaretli kart yok, bu yüzden tüm kartlar yeni mevki olarak görünür. Karşılaştırmak için kartlarını My Team'e ekle.",
     openMyTeam: "My Team'i aç",
     loading: "Yükleniyor…",
+    fitHeading: "My Team'inle karşılaştırma",
+    fitAlreadyOwned: "Bu kart My Team'inde sahip olunan olarak işaretli.",
+    fitOpenPackCheck: "Paket analizinde diğer kartlarla birlikte gör",
   },
 };
 

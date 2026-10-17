@@ -668,6 +668,9 @@ const part: PartialDictionary = {
     noTeam: "Votre My Team n'a encore aucune carte marquée comme possédée : toutes apparaissent comme nouveau poste. Ajoutez vos cartes à My Team pour les comparer.",
     openMyTeam: "Ouvrir My Team",
     loading: "Chargement…",
+    fitHeading: "Comparée à votre My Team",
+    fitAlreadyOwned: "Cette carte est marquée comme possédée dans votre My Team.",
+    fitOpenPackCheck: "Voir avec d'autres cartes dans Analyse de packs",
   },
 };
 

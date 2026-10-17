@@ -4363,5 +4363,8 @@
  "provisionalCards.batchOpenPackCheck": "b5a994d6e3ec",
  "provisionalCards.batchTruncatedTemplate": "a6ee0507e1e2",
  "nav.newCards": "3448c00f4c8f",
- "nav.newCardsBadgeAriaTemplate": "c575a4ac92c0"
+ "nav.newCardsBadgeAriaTemplate": "c575a4ac92c0",
+ "packCheck.fitHeading": "ab3d4582f2ed",
+ "packCheck.fitAlreadyOwned": "760ad7a404de",
+ "packCheck.fitOpenPackCheck": "f1bbd49d66c7"
 }

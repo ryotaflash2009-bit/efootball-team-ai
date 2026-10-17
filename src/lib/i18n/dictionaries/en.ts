@@ -5356,6 +5356,9 @@ const en: Dictionary = {
     noTeam: "Your My Team has no cards marked as owned yet, so every card shows as a new position. Add your cards to My Team to compare with them.",
     openMyTeam: "Open My Team",
     loading: "Loading…",
+    fitHeading: "Compared with your My Team",
+    fitAlreadyOwned: "This card is marked as owned in your My Team.",
+    fitOpenPackCheck: "Check with other cards in Pack check",
   },
   gamePlan: {
     heading: "Game plan",

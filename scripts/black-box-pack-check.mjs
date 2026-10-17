@@ -84,6 +84,23 @@ async function main() {
     const upgrades = Object.values(verdicts).filter((v) => v === "upgrade").length;
     record("まとめの件数が一覧と合う", summary.includes(`4 枚のうち、強化 ${upgrades} 枚`) && summary.includes("所持済み 1 枚"), summary.replace(/\s+/g, " "));
 
+    // 選手の詳細: My Team と比べる（所持は弱い CF と Roberto Carlos のまま）
+    const fitOf = async (id) => {
+      await go(`${BASE}/players/world/${id}`);
+      await waitFor('[data-testid="my-team-fit"]', 15000);
+      return ev(`document.querySelector('[data-testid="my-team-fit"]')?.dataset.verdict ?? null`);
+    };
+    record("選手の詳細: 強い CF は「強化」", (await fitOf(strongCf)) === "upgrade", "");
+    record("選手の詳細: 所持している CF は「所持済み」", (await fitOf(weakCf)) === "already_owned", "");
+    const fitLink = await ev(`document.querySelector('[data-testid="my-team-fit-pack-check"]')?.getAttribute("href") ?? null`);
+    await fitOf(strongCf);
+    const fitLink2 = await ev(`document.querySelector('[data-testid="my-team-fit-pack-check"]')?.getAttribute("href") ?? null`);
+    record("選手の詳細: パック診断へのリンク（所持済みには出さない）", fitLink === null && fitLink2 === `/pack-check?ids=${strongCf}`, String(fitLink2));
+    await ev(`localStorage.removeItem(${JSON.stringify(MY_TEAM_KEY)})`);
+    await go(`${BASE}/players/world/${strongCf}`);
+    await new Promise((r) => setTimeout(r, 1500));
+    record("選手の詳細: My Team が空なら比較の欄を出さない", !(await has('[data-testid="my-team-fit"]')), "");
+
     // 最近追加されたカードから追加
     await go(`${BASE}/pack-check`);
     await ev(`(() => { const d = document.querySelector('[data-testid="pack-check-new-cards"]'); d.open = true; })()`);

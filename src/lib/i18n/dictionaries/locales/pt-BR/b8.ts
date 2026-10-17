@@ -668,6 +668,9 @@ const part: PartialDictionary = {
     noTeam: "Seu My Team ainda não tem cartas marcadas como suas, então todas aparecem como posição nova. Adicione suas cartas ao My Team para comparar.",
     openMyTeam: "Abrir My Team",
     loading: "Carregando…",
+    fitHeading: "Comparado com seu My Team",
+    fitAlreadyOwned: "Esta carta está marcada como sua no seu My Team.",
+    fitOpenPackCheck: "Ver com outras cartas na Análise de packs",
   },
 };
 

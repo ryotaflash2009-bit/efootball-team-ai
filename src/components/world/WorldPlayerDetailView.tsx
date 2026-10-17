@@ -9,6 +9,7 @@ import { PlayerTitles } from "@/components/titles/PlayerTitles";
 import { WorldPlayerHero, type SafeWorldPlayerDetail } from "@/components/world/WorldPlayerHero";
 import { ProvisionalCardNotice } from "@/components/world/ProvisionalCardNotice";
 import { SamePlayerOtherCards } from "@/components/world/SamePlayerOtherCards";
+import { MyTeamFitPanel } from "@/components/world/MyTeamFitPanel";
 import Link from "next/link";
 import { playersFilterHref } from "@/lib/world/filter-patterns";
 import dynamic from "next/dynamic";
@@ -226,6 +227,7 @@ export function WorldPlayerDetailView({
       <div className="flex flex-col gap-4">
         <WorldPlayerHero player={player} imageSources={heroImageSources} />
         {player.provisional ? <ProvisionalCardNotice info={player.provisional} /> : null}
+        <MyTeamFitPanel card={{ worldCardId: player.worldCardId, nameJa: player.nameJa, nameEn: player.nameEn, registeredPosition: player.registeredPosition ?? null, ovrBase: player.ovrBase ?? null, ovrMax: player.ovrMax ?? null }} />
         <Tabs
           ariaLabel={tp("tabsAriaLabel")}
           sticky

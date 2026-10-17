@@ -668,6 +668,9 @@ const part: PartialDictionary = {
     noTeam: "Dein My Team hat noch keine als „besessen“ markierten Karten, daher erscheint jede als neue Position. Füge deine Karten zu My Team hinzu, um zu vergleichen.",
     openMyTeam: "My Team öffnen",
     loading: "Wird geladen…",
+    fitHeading: "Verglichen mit deinem My Team",
+    fitAlreadyOwned: "Diese Karte ist in deinem My Team als „besessen“ markiert.",
+    fitOpenPackCheck: "Mit anderen Karten im Pack-Check ansehen",
   },
 };
 
