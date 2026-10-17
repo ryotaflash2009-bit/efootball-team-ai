@@ -37,6 +37,8 @@ const ptBR: PartialDictionary = {
     groupCommunity: "Comunidade",
     home: "Início",
     players: "Jogadores",
+    newCards: "Cartas novas",
+    newCardsBadgeAriaTemplate: "{count} cartas novas desde sua última visita",
     managers: "Técnicos",
     compare: "Comparar",
     squads: "Elencos",

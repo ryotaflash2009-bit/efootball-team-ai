@@ -118,6 +118,8 @@ const en: Dictionary = {
     groupCommunity: "Community",
     home: "Home",
     players: "Players",
+    newCards: "New cards",
+    newCardsBadgeAriaTemplate: "{count} new cards since your last visit",
     managers: "Managers",
     compare: "Compare",
     squads: "Squads",

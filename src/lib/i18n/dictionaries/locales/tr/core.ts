@@ -34,6 +34,8 @@ const part: PartialDictionary = {
     groupCommunity: "Topluluk",
     home: "Ana sayfa",
     players: "Oyuncular",
+    newCards: "Yeni kartlar",
+    newCardsBadgeAriaTemplate: "Son ziyaretinden bu yana {count} yeni kart",
     managers: "Teknik direktörler",
     compare: "Karşılaştır",
     squads: "Kadrolar",

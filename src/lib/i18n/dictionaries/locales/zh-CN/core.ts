@@ -34,6 +34,8 @@ const part: PartialDictionary = {
     groupCommunity: "社区",
     home: "首页",
     players: "球员",
+    newCards: "新卡",
+    newCardsBadgeAriaTemplate: "自上次查看以来新增 {count} 张卡",
     managers: "主教练",
     compare: "对比",
     squads: "阵容",

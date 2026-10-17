@@ -139,6 +139,7 @@ v1.0 のリリースの証跡は `docs/production-readiness/evidence/2026-10-05-
 | `efootball-team-ai:squad-templates:v1` | スカッドテンプレート |
 | `efb:compare-ids:v1` | 比較カート（sessionStorage） |
 | `efb:squad-editor-prefs:v1` | スカッド編集の表示設定（スナップ/ガイド/グリッド） |
+| `efootball-team-ai:new-cards-seen:v1` | サイドメニューの新しいカードの件数（JSON: 最後に見た時刻・最近の新しいカードの追加時刻の 5 分のキャッシュ）。**2026-10-17 本人の承認で追加**（`src/lib/new-cards/seen.ts`） |
 
 ## ポジション別 OVR
 

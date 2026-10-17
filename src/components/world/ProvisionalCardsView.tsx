@@ -2,6 +2,8 @@
 
 import "@/lib/i18n/dictionaries/ja-ns/provisionalCards";
 import Link from "next/link";
+import { useEffect } from "react";
+import { markNewCardsSeen } from "@/lib/new-cards/seen";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import { formatDate } from "@/lib/i18n/format";
 import { fillMessage } from "@/lib/i18n/message-format";
@@ -31,6 +33,8 @@ export function ProvisionalCardsView({
 }) {
   const t = useT();
   const { displayLocale } = useLocale();
+  // このページを開いたら「見た」にする（サイドメニューの件数を 0 に戻す）
+  useEffect(() => markNewCardsSeen(), []);
   const tp = (k: Parameters<typeof t<"provisionalCards">>[1]) => t("provisionalCards", k);
   usePageTitle(tp("newCardsPageTitle"));
   return (

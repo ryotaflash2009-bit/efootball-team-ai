@@ -1,6 +1,6 @@
 import type { ImpactCard } from "./team-impact";
 
-export type NewCardForClient = ImpactCard & { provisional?: boolean };
+export type NewCardForClient = ImpactCard & { provisional?: boolean; addedAt?: string | null };
 
 const TTL_MS = 5 * 60 * 1000;
 let cached: { at: number; promise: Promise<NewCardForClient[]> } | null = null;

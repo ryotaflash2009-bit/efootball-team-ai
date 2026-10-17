@@ -94,7 +94,7 @@ async function main() {
       // 提案の欄は画面に近づいたときだけ読む: 開いただけでは要求しないことを確かめてから、欄までスクロールする
       await waitFor('[data-testid="squad-new-cards-sentinel"]', 15000);
       const before = await ev(`performance.getEntriesByType("resource").filter((e) => e.name.includes("/api/world/new-cards")).length`);
-      record("スカッド: 欄が画面の外なら新しいカードを読まない", before === 0, `requests=${before}`);
+      record("スカッド: 新しいカードの一覧の要求は 1 回まで（サイドメニューと共有）", before <= 1, `requests=${before}`);
       await ev(`document.querySelector('[data-testid="squad-new-cards-sentinel"]').scrollIntoView()`);
       await waitFor('[data-testid="squad-new-cards-list"]', 15000);
       const srows = (await ev(`[...document.querySelectorAll('[data-testid="squad-new-cards-list"] li')].map((li) => li.innerText.replace(/\\s+/g, " "))`)) ?? [];
@@ -107,6 +107,22 @@ async function main() {
       record("スカッド: 同じカードを 2 つの枠に出さない", hrefs.length > 0 && new Set(hrefs).size === hrefs.length, `${hrefs.length} links`);
       await ev(`localStorage.removeItem(${JSON.stringify(SQUADS_KEY)})`);
     } else record("スカッド: 弱い CF のカードを取得", false, "no CF card");
+
+    // サイドメニューの「新しいカード」の件数（前回見たあとに追加された枚数）
+    const SEEN_KEY = "efootball-team-ai:new-cards-seen:v1";
+    await ev(`localStorage.removeItem(${JSON.stringify(SEEN_KEY)})`);
+    await go(`${BASE}/`);
+    await waitFor('[data-testid="nav-new-cards-badge"]', 15000);
+    const badge1 = (await ev(`document.querySelector('[data-testid="nav-new-cards-badge"]')?.textContent ?? ""`)) || "";
+    record("未訪問ならサイドメニューに新しいカードの件数が出る", /^(\d+|99\+)$/.test(badge1) && badge1 !== "0", `badge=${badge1}`);
+    await go(`${BASE}/players/new`);
+    const seen = await ev(`localStorage.getItem(${JSON.stringify(SEEN_KEY)})`);
+    const activeNav = await ev(`[...document.querySelectorAll('nav a[aria-current="page"]')].map((a) => a.getAttribute("href"))`);
+    record("新しいカードを開くと「見た」になり、メニューは「新しいカード」だけが現在のページ", !!seen && !(await has('[data-testid="nav-new-cards-badge"]')) && activeNav.every((h) => h === "/players/new"), `seen=${seen} active=${JSON.stringify(activeNav)}`);
+    await go(`${BASE}/`);
+    await new Promise((r) => setTimeout(r, 1500));
+    record("見たあとは件数が消える（その後の追加が無い限り）", !(await has('[data-testid="nav-new-cards-badge"]')), "");
+    await ev(`localStorage.removeItem(${JSON.stringify(SEEN_KEY)})`);
 
     await client.send("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
     await go(`${BASE}/players/new`);
