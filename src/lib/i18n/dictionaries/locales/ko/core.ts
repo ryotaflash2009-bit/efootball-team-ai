@@ -34,6 +34,8 @@ const part: PartialDictionary = {
     groupCommunity: "커뮤니티",
     home: "홈",
     players: "선수",
+    newCards: "새 카드",
+    newCardsBadgeAriaTemplate: "지난 방문 이후 새 카드 {count}장",
     managers: "감독",
     compare: "비교",
     squads: "스쿼드",

@@ -34,6 +34,8 @@ const part: PartialDictionary = {
     groupCommunity: "Community",
     home: "Home",
     players: "Giocatori",
+    newCards: "Nuove carte",
+    newCardsBadgeAriaTemplate: "{count} nuove carte dalla tua ultima visita",
     managers: "Allenatori",
     compare: "Confronta",
     squads: "Rose",

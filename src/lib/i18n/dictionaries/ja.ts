@@ -116,6 +116,8 @@ export interface Dictionary {
     groupCommunity: string;
     home: string;
     players: string;
+    newCards: string;
+    newCardsBadgeAriaTemplate: string;
     managers: string;
     compare: string;
     squads: string;
@@ -5494,6 +5496,8 @@ const ja: JaCoreDictionary = {
     groupCommunity: "コミュニティ",
     home: "ホーム",
     players: "プレイヤー",
+    newCards: "新しいカード",
+    newCardsBadgeAriaTemplate: "前回から追加された新しいカード {count} 枚",
     managers: "マネージャー",
     compare: "選手比較",
     squads: "スカッド",

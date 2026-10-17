@@ -10,7 +10,7 @@ export const runtime = "nodejs";
  */
 export async function GET() {
   const recent = await cachedListRecentlyAddedPlayers(7, 200).catch(() => []);
-  const pick = (p: { worldCardId: string; nameJa: string | null; nameEn: string | null; registeredPosition: string | null; ovrBase: number | null; ovrMax: number | null; cardType: string | null }, provisional: boolean) => ({
+  const pick = (p: { worldCardId: string; nameJa: string | null; nameEn: string | null; registeredPosition: string | null; ovrBase: number | null; ovrMax: number | null; cardType: string | null; addedAt?: string | null; provisional?: { firstSeenAt: string | null } }, provisional: boolean) => ({
     worldCardId: p.worldCardId,
     nameJa: p.nameJa,
     nameEn: p.nameEn,
@@ -19,6 +19,8 @@ export async function GET() {
     ovrMax: p.ovrMax,
     cardType: p.cardType,
     provisional,
+    // 追加された時刻（正式: World の created_at・暫定: 初めて見つけた時刻）。サイドメニューの「前回から追加」の件数に使う
+    addedAt: provisional ? (p.provisional?.firstSeenAt ?? null) : (p.addedAt ?? null),
   });
   const cards = [...recent.map((p) => pick(p, false)), ...listProvisionalPlayers().map((p) => pick(p, true))];
   const res = NextResponse.json({ cards, days: 7 });

@@ -1,9 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { useT } from "@/lib/i18n/LocaleContext";
+import { fillMessage } from "@/lib/i18n/message-format";
+import { fetchNewCardsOnce } from "@/lib/new-cards/fetch-new-cards";
+import { addedTimesOf, cacheNewCardTimes, freshCachedTimes, readNewCardsSeenState, unseenNewCardCount } from "@/lib/new-cards/seen";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 
 type NavKey = keyof Dictionary["nav"];
@@ -21,6 +25,7 @@ const GROUPS: { titleKey: NavKey; items: NavItem[] }[] = [
     items: [
       { href: "/", labelKey: "home", icon: "home", status: "ready" },
       { href: "/players", labelKey: "players", icon: "players", status: "ready" },
+      { href: "/players/new", labelKey: "newCards", icon: "sparkles", status: "ready" },
       { href: "/managers", labelKey: "managers", icon: "managers", status: "ready" },
       { href: "/compare", labelKey: "compare", icon: "compare", status: "ready" },
       { href: "/squads", labelKey: "squads", icon: "squad", status: "ready" },
@@ -47,6 +52,44 @@ function isActive(pathname: string, href: string): boolean {
   return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 }
 
+const NEW_CARDS_HREF = "/players/new";
+const READY_HREFS = GROUPS.flatMap((g) => g.items.filter((i) => i.status === "ready").map((i) => i.href));
+
+/** 最も具体的に一致する項目だけを「現在のページ」にする（/players/new では「選手」ではなく「新しいカード」）。 */
+function activeHrefOf(pathname: string): string | null {
+  let best: string | null = null;
+  for (const h of READY_HREFS) if (isActive(pathname, h) && (!best || h.length > best.length)) best = h;
+  return best;
+}
+
+/** 前回「新しいカード」を見たあとに追加されたカードの枚数（2026-10-17）。表示はブラウザーの中だけ（hydration の後）。 */
+function useUnseenNewCards(pathname: string): number {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (isActive(pathname, NEW_CARDS_HREF)) {
+      setCount(0);
+      return;
+    }
+    // 5 分以内に取った一覧があれば API を呼ばない（ページの読み込みごとに要求しない）
+    const state = readNewCardsSeenState();
+    const cached = freshCachedTimes(state);
+    if (cached) {
+      setCount(unseenNewCardCount(cached, state.seenAt));
+      return;
+    }
+    let cancelled = false;
+    void fetchNewCardsOnce().then((cards) => {
+      const times = addedTimesOf(cards);
+      cacheNewCardTimes(times);
+      if (!cancelled) setCount(unseenNewCardCount(times, readNewCardsSeenState().seenAt));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [pathname]);
+  return count;
+}
+
 export function SidebarNav({
   onNavigate,
   collapsed = false,
@@ -56,6 +99,8 @@ export function SidebarNav({
 }) {
   const pathname = usePathname();
   const t = useT();
+  const activeHref = activeHrefOf(pathname);
+  const unseen = useUnseenNewCards(pathname);
 
   return (
     <nav className="flex flex-col gap-5 py-4" aria-label={t("nav", "ariaSidebar")}>
@@ -71,7 +116,8 @@ export function SidebarNav({
           <ul className="flex flex-col gap-0.5 px-2">
             {group.items.map((item) => {
               const label = t("nav", item.labelKey);
-              const active = item.status === "ready" && isActive(pathname, item.href);
+              const active = item.status === "ready" && item.href === activeHref;
+              const badge = item.href === NEW_CARDS_HREF && unseen > 0 ? (unseen > 99 ? "99+" : String(unseen)) : null;
               if (item.status === "soon") {
                 return (
                   <li key={item.href}>
@@ -113,6 +159,19 @@ export function SidebarNav({
                     ) : null}
                     <Icon name={item.icon} size={18} className="shrink-0" />
                     {!collapsed ? <span>{label}</span> : null}
+                    {badge ? (
+                      <span
+                        className={
+                          collapsed
+                            ? "absolute end-1.5 top-1 h-2 w-2 rounded-full bg-accent"
+                            : "ms-auto rounded-full bg-accent px-1.5 py-0.5 text-2xs font-bold leading-none text-accent-ink tabular-nums"
+                        }
+                        aria-label={fillMessage(t("nav", "newCardsBadgeAriaTemplate"), { count: String(unseen) })}
+                        data-testid="nav-new-cards-badge"
+                      >
+                        {collapsed ? null : badge}
+                      </span>
+                    ) : null}
                   </Link>
                 </li>
               );

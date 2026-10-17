@@ -37,6 +37,8 @@ const es: PartialDictionary = {
     groupCommunity: "Comunidad",
     home: "Inicio",
     players: "Jugadores",
+    newCards: "Cartas nuevas",
+    newCardsBadgeAriaTemplate: "{count} cartas nuevas desde tu última visita",
     managers: "Entrenadores",
     compare: "Comparar",
     squads: "Plantillas",
