@@ -158,8 +158,7 @@ const part: PartialDictionary = {
     inDevelopmentHint: "Demnächst",
     featureAiCoach: "KI-Trainer-Analyse",
     featureCommunity: "Community",
-    designDocNote:
-      "Details zum Design findest du in docs/efootball-team-ai-design.md. Es werden nur tatsächlich importierte Daten angezeigt – keine erfundenen Nutzerzahlen oder Bewertungen.",
+    designDocNote: "Es werden nur importierte echte Daten angezeigt – keine erfundenen Nutzerzahlen oder Bewertungen.",
   },
 };
 

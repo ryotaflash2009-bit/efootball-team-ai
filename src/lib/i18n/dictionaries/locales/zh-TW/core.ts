@@ -158,7 +158,7 @@ const part: PartialDictionary = {
     inDevelopmentHint: "即將推出",
     featureAiCoach: "AI 教練分析",
     featureCommunity: "社群",
-    designDocNote: "設計細節請參閱 docs/efootball-team-ai-design.md。僅顯示已匯入的真實資料——沒有虛構的使用者數或評分。",
+    designDocNote: "僅顯示已匯入的真實資料，不顯示虛構的使用者數或評分。",
   },
 };
 

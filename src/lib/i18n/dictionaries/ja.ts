@@ -5500,8 +5500,7 @@ const ja: JaCoreDictionary = {
     inDevelopmentHint: "順次追加予定",
     featureAiCoach: "AI コーチ分析",
     featureCommunity: "コミュニティ",
-    designDocNote:
-      "設計の詳細は docs/efootball-team-ai-design.md を参照。表示は取り込み済みの実データのみで、架空の利用者数・評価は表示しません。",
+    designDocNote: "表示は取り込み済みの実データだけで、架空の利用者数・評価は表示しません。",
   },
   nav: {
     groupMain: "メイン",

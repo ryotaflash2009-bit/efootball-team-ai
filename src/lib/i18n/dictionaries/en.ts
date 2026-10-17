@@ -90,8 +90,7 @@ const en: Dictionary = {
     inDevelopmentHint: "Coming soon",
     featureAiCoach: "AI Coach Analysis",
     featureCommunity: "Community",
-    designDocNote:
-      "See docs/efootball-team-ai-design.md for design details. Only ingested real data is shown — no fictional user counts or ratings.",
+    designDocNote: "Only ingested real data is shown — no fictional user counts or ratings.",
   },
   managersPage: {
     metaTemplate: "{count} managers",
@@ -2908,7 +2907,7 @@ const en: Dictionary = {
     noSourceInfo: "No source information available.",
     futureHeading: "Planned for a Future Version",
     futureDescription:
-      "Abilities (attack/defense/physical), skills, playing styles, position-specific overall, progression, boosters, tiers, and player compare. These will be implemented after further research into eFHUB's per-player data (Phase 1-2 of docs/efootball-team-ai-design.md).",
+      "Abilities (attack/defense/physical), skills, playing styles, position-specific overall, progression, boosters, tiers, and player compare. These will be implemented after further research into eFHUB's per-player data.",
     imageProxyNote: "Player images are fetched from efimg.com via our own proxy (/api/player-image/[id]).",
   },
   worldFilters: {

@@ -158,8 +158,7 @@ const part: PartialDictionary = {
     inDevelopmentHint: "Segera hadir",
     featureAiCoach: "Analisis pelatih AI",
     featureCommunity: "Komunitas",
-    designDocNote:
-      "Lihat docs/efootball-team-ai-design.md untuk detail desain. Hanya data nyata yang diimpor yang ditampilkan — tanpa jumlah pengguna atau rating fiktif.",
+    designDocNote: "Hanya data nyata yang sudah diimpor yang ditampilkan — tanpa jumlah pengguna atau penilaian fiktif.",
   },
 };
 

@@ -539,7 +539,7 @@ const part: PartialDictionary = {
     fetchedAtLabel: "获取时间",
     noSourceInfo: "没有来源信息。",
     futureHeading: "计划在未来版本中提供",
-    futureDescription: "能力值（进攻/防守/身体）、技能、球员风格、各位置综合能力值、培养、加成、等级和球员对比。将在进一步研究 eFHUB 的单个球员数据后实现（docs/efootball-team-ai-design.md 的 Phase 1-2）。",
+    futureDescription: "能力值（进攻/防守/身体）、技能、球员风格、各位置综合能力值、培养、加成、等级和球员对比。将在进一步研究 eFHUB 的单个球员数据后实现。",
     imageProxyNote: "球员图片通过我们自己的代理（/api/player-image/[id]）从 efimg.com 获取。",
   },
   diagnosisPerspectives: {
