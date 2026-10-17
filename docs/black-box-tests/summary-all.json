@@ -192,8 +192,8 @@
       "status": "pass",
       "passed": 95,
       "total": 95,
-      "seconds": 249,
-      "ranAt": "2026-10-17T18:06:54.012Z",
+      "seconds": 248,
+      "ranAt": "2026-10-17T18:32:22.270Z",
       "line": "95/95 PASS",
       "fails": [],
       "report": null
@@ -247,8 +247,8 @@
       "status": "pass",
       "passed": 100,
       "total": 100,
-      "seconds": 0,
-      "ranAt": "2026-10-17T18:06:08.999Z",
+      "seconds": 1,
+      "ranAt": "2026-10-17T18:28:31.310Z",
       "line": "[black-box-my-builds] 100/100 PASS",
       "fails": [],
       "report": "my-builds.md"
@@ -270,7 +270,7 @@
       "passed": 25,
       "total": 25,
       "seconds": 18,
-      "ranAt": "2026-10-17T18:04:53.993Z",
+      "ranAt": "2026-10-17T18:28:32.106Z",
       "line": "[black-box-new-cards] 25/25 PASS",
       "fails": [],
       "report": "new-cards.md"
@@ -379,8 +379,8 @@
       "status": "pass",
       "passed": 6,
       "total": 6,
-      "seconds": 3,
-      "ranAt": "2026-10-17T18:06:14.588Z",
+      "seconds": 2,
+      "ranAt": "2026-10-17T18:28:49.712Z",
       "line": "6/6 PASS",
       "fails": [],
       "report": null
@@ -468,7 +468,7 @@
       "passed": 71,
       "total": 71,
       "seconds": 1,
-      "ranAt": "2026-10-17T18:06:18.057Z",
+      "ranAt": "2026-10-17T18:28:51.851Z",
       "line": "[black-box-ui] 71/71 PASS",
       "fails": [],
       "report": "ui.md"
@@ -489,8 +489,8 @@
       "status": "pass",
       "passed": 93,
       "total": 93,
-      "seconds": 12,
-      "ranAt": "2026-10-17T18:06:18.814Z",
+      "seconds": 13,
+      "ranAt": "2026-10-17T18:28:52.522Z",
       "line": "[black-box-world-ui] 93/93 PASS",
       "fails": [],
       "report": "world-ui.md"
@@ -500,12 +500,12 @@
       "status": "pass",
       "passed": 2,
       "total": 2,
-      "seconds": 593,
-      "ranAt": "2026-10-17T12:05:05.147Z",
+      "seconds": 581,
+      "ranAt": "2026-10-17T18:15:55.570Z",
       "line": "[black-box-release-gate] PASS (2/2 rails)",
       "fails": [],
       "report": null
     }
   },
-  "updatedAt": "2026-10-17T18:11:02.693Z"
+  "updatedAt": "2026-10-17T18:36:30.504Z"
 }
