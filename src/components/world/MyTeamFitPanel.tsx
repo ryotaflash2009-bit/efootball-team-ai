@@ -4,12 +4,11 @@ import "@/lib/i18n/dictionaries/ja-ns/packCheck";
 import "@/lib/i18n/dictionaries/ja-ns/provisionalCards";
 import { useMemo } from "react";
 import Link from "next/link";
+import { useOwnedCards } from "@/lib/new-cards/use-owned-cards";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { fillMessage } from "@/lib/i18n/message-format";
 import { Surface } from "@/components/ui/Surface";
-import { useMyTeam } from "@/lib/user-cards/hooks";
-import { useResolvedCards } from "@/lib/user-cards/use-resolved-cards";
 import { packCheck } from "@/lib/new-cards/pack-check";
 import type { ImpactCard } from "@/lib/new-cards/team-impact";
 
@@ -21,10 +20,7 @@ export function MyTeamFitPanel({ card }: { card: ImpactCard }) {
   const t = useT();
   const { locale } = useLocale();
   const tp = (k: Parameters<typeof t<"packCheck">>[1]) => t("packCheck", k);
-  const { myTeam, scopeStatus } = useMyTeam();
-  const ownedIds = useMemo(() => myTeam.filter((r) => r.ownershipStatus === "owned" && !r.deletedAt).map((r) => r.worldCardId), [myTeam]);
-  const { cards } = useResolvedCards(ownedIds);
-  const owned = useMemo(() => ownedIds.map((id) => cards.get(id)).filter((c): c is NonNullable<typeof c> => c != null), [ownedIds, cards]);
+  const { ownedIds, owned, scopeStatus } = useOwnedCards();
   const result = useMemo(() => packCheck([card], owned).results[0] ?? null, [card, owned]);
 
   if (scopeStatus === "loading" || ownedIds.length === 0 || owned.length === 0 || !result) return null;

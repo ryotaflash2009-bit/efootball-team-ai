@@ -9,7 +9,7 @@ export const runtime = "nodejs";
  * 返すのは表示と比較に要る項目だけ（画像の URL は返さない）。
  */
 export async function GET() {
-  const recent = await cachedListRecentlyAddedPlayers(7, 200).catch(() => []);
+  const recent = await cachedListRecentlyAddedPlayers(7, 500).catch(() => []);
   const pick = (p: { worldCardId: string; nameJa: string | null; nameEn: string | null; registeredPosition: string | null; ovrBase: number | null; ovrMax: number | null; cardType: string | null; addedAt?: string | null; provisional?: { firstSeenAt: string | null } }, provisional: boolean) => ({
     worldCardId: p.worldCardId,
     nameJa: p.nameJa,

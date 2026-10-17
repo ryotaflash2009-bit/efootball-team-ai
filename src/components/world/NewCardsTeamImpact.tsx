@@ -3,13 +3,12 @@
 import "@/lib/i18n/dictionaries/ja-ns/provisionalCards";
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useOwnedCards } from "@/lib/new-cards/use-owned-cards";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { fillMessage } from "@/lib/i18n/message-format";
 import { Surface } from "@/components/ui/Surface";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { useMyTeam } from "@/lib/user-cards/hooks";
-import { useResolvedCards } from "@/lib/user-cards/use-resolved-cards";
 import { newCardTeamImpact, type ImpactCard } from "@/lib/new-cards/team-impact";
 
 const SHOW = 12;
@@ -24,10 +23,7 @@ export function NewCardsTeamImpact({ newCards }: { newCards: ImpactCard[] }) {
   const t = useT();
   const { locale } = useLocale();
   const tp = (k: Parameters<typeof t<"provisionalCards">>[1]) => t("provisionalCards", k);
-  const { myTeam, scopeStatus } = useMyTeam();
-  const ownedIds = useMemo(() => myTeam.filter((r) => r.ownershipStatus === "owned" && !r.deletedAt).map((r) => r.worldCardId), [myTeam]);
-  const { cards } = useResolvedCards(ownedIds);
-  const owned = useMemo(() => ownedIds.map((id) => cards.get(id)).filter((c): c is NonNullable<typeof c> => c != null), [ownedIds, cards]);
+  const { ownedIds, owned, scopeStatus } = useOwnedCards();
   const impacts = useMemo(() => newCardTeamImpact(newCards, owned), [newCards, owned]);
   const rows = useMemo(() => [...impacts.filter((x) => x.delta != null).slice(0, SHOW), ...impacts.filter((x) => x.delta == null).slice(0, SHOW_NEW_POSITIONS)], [impacts]);
   const [all, setAll] = useState(false);

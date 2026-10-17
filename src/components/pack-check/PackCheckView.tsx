@@ -4,13 +4,14 @@ import "@/lib/i18n/dictionaries/ja-ns/packCheck";
 import "@/lib/i18n/dictionaries/ja-ns/provisionalCards";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useOwnedCards } from "@/lib/new-cards/use-owned-cards";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { fillMessage } from "@/lib/i18n/message-format";
+import { usePageTitle } from "@/lib/i18n/use-page-title";
 import { Surface } from "@/components/ui/Surface";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { useMyTeam } from "@/lib/user-cards/hooks";
 import { useResolvedCards } from "@/lib/user-cards/use-resolved-cards";
 import { packCheck, type PackCardVerdict } from "@/lib/new-cards/pack-check";
 import type { ImpactCard } from "@/lib/new-cards/team-impact";
@@ -43,29 +44,35 @@ export function PackCheckView() {
   const t = useT();
   const { locale } = useLocale();
   const tp = useCallback((k: Parameters<typeof t<"packCheck">>[1]) => t("packCheck", k), [t]);
+  usePageTitle(t("nav", "packCheck"));
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const ids = useMemo(() => parseIds(searchParams.get("ids")), [searchParams]);
 
+  // URL の更新は非同期のため、続けて押したときに前の操作を失わないよう、最新の一覧を ref に持つ（2026-10-18）
+  const latestIds = useRef(ids);
+  useEffect(() => {
+    latestIds.current = ids;
+  }, [ids]);
   const setIds = useCallback(
     (next: string[]) => {
-      const qs = next.length ? `?ids=${next.slice(0, MAX_CARDS).join(",")}` : "";
+      const list = next.slice(0, MAX_CARDS);
+      latestIds.current = list;
+      const qs = list.length ? `?ids=${list.join(",")}` : "";
       router.replace(`${pathname}${qs}`, { scroll: false });
     },
     [router, pathname],
   );
   const add = (id: string) => {
-    if (!ids.includes(id) && ids.length < MAX_CARDS) setIds([...ids, id]);
+    const cur = latestIds.current;
+    if (!cur.includes(id) && cur.length < MAX_CARDS) setIds([...cur, id]);
   };
-  const remove = (id: string) => setIds(ids.filter((x) => x !== id));
+  const remove = (id: string) => setIds(latestIds.current.filter((x) => x !== id));
 
   // パックのカード・所持のカード
   const { cards: packCards, loading: packLoading } = useResolvedCards(ids);
-  const { myTeam, scopeStatus } = useMyTeam();
-  const ownedIds = useMemo(() => myTeam.filter((r) => r.ownershipStatus === "owned" && !r.deletedAt).map((r) => r.worldCardId), [myTeam]);
-  const { cards: ownedCards } = useResolvedCards(ownedIds);
-  const owned = useMemo(() => ownedIds.map((id) => ownedCards.get(id)).filter((c): c is NonNullable<typeof c> => c != null), [ownedIds, ownedCards]);
+  const { ownedIds, owned, scopeStatus } = useOwnedCards();
   const pack = useMemo(() => ids.map((id) => packCards.get(id)).filter((c): c is NonNullable<typeof c> => c != null), [ids, packCards]);
   const { results, summary } = useMemo(() => packCheck(pack, owned), [pack, owned]);
 
@@ -76,6 +83,7 @@ export function PackCheckView() {
   useEffect(() => {
     const query = q.trim();
     if (query.length < MIN_QUERY_LEN) {
+      reqId.current += 1; // 読み込み中の古い検索の結果を捨てる
       setSearch({ kind: "idle" });
       return;
     }
@@ -97,7 +105,7 @@ export function PackCheckView() {
   // 最近追加されたカード・暫定のカード（開いたときだけ読む）
   const [newCards, setNewCards] = useState<ImpactCard[] | null>(null);
   const loadNewCards = () => {
-    if (newCards) return;
+    if (newCards && newCards.length > 0) return; // 空（取得の失敗を含む）なら開き直したときに読み直す
     void fetchNewCardsOnce().then(setNewCards);
   };
 

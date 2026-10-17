@@ -136,7 +136,8 @@ async function main() {
       const bxRows = (await ev(`[...document.querySelectorAll('[data-testid="best-xi-new-cards-list"] li')].map((li) => li.innerText.replace(/\\s+/g, " "))`)) ?? [];
       const reqAfter = await ev(`performance.getEntriesByType("resource").filter((e) => e.name.includes("/api/world/players/")).length`);
       const cfRow = bxRows.find((r) => /^CF /.test(r));
-      record("AI ベスト11: 新しいカードを入れると先発が変わる枠が出る（CF は今の選手から入れ替え）", bxRows.length > 0 && (!recentCf.length || (!!cfRow && cfRow.includes("→"))), cfRow ?? `${bxRows.length} rows`);
+      const leaving = (await ev(`document.querySelector('[data-testid="best-xi-new-cards-leaving"]')?.innerText ?? ""`)) || "";
+      record("AI ベスト11: 先発に入る新しいカード（CF を含む）と、先発から外れる選手（今の CF）", bxRows.length > 0 && (!recentCf.length || (!!cfRow && /先発から外れる: .+/.test(leaving))), `${cfRow ?? `${bxRows.length} rows`} / ${leaving}`);
       record("AI ベスト11: 新しいカードの詳細の取得は枠のポジションごとに 3 枚まで", reqAfter - reqBefore <= 9 * 3, `requests=${reqAfter - reqBefore}`);
       const bxLinks = (await ev(`[...document.querySelectorAll('[data-testid="best-xi-new-cards-list"] a')].map((a) => a.getAttribute("href"))`)) ?? [];
       record("AI ベスト11: 同じカードを 2 つの枠に入れない", new Set(bxLinks).size === bxLinks.length, `${bxLinks.length} links`);

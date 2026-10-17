@@ -17,7 +17,7 @@
       "passed": 164,
       "total": 164,
       "seconds": 23,
-      "ranAt": "2026-10-17T09:56:32.295Z",
+      "ranAt": "2026-10-17T18:06:31.384Z",
       "line": "[black-box-account-scoped-storage] 164/164 PASS",
       "fails": [],
       "report": "account-scoped-storage.md"
@@ -61,7 +61,7 @@
       "passed": 42,
       "total": 42,
       "seconds": 16,
-      "ranAt": "2026-10-17T17:39:06.785Z",
+      "ranAt": "2026-10-17T18:05:51.443Z",
       "line": "[black-box-best-xi-optimization] 42/42 PASS",
       "fails": [],
       "report": "best-xi-optimization.md"
@@ -72,7 +72,7 @@
       "passed": 27,
       "total": 27,
       "seconds": 0,
-      "ranAt": "2026-10-17T10:30:27.235Z",
+      "ranAt": "2026-10-17T18:06:07.755Z",
       "line": "[black-box-best-xi] 27/27 PASS",
       "fails": [],
       "report": "best-xi.md"
@@ -149,7 +149,7 @@
       "passed": 32,
       "total": 32,
       "seconds": 1,
-      "ranAt": "2026-10-17T10:03:04.342Z",
+      "ranAt": "2026-10-17T18:06:08.120Z",
       "line": "[black-box-favorites] 32/32 PASS",
       "fails": [],
       "report": null
@@ -192,8 +192,8 @@
       "status": "pass",
       "passed": 95,
       "total": 95,
-      "seconds": 250,
-      "ranAt": "2026-10-17T12:16:17.797Z",
+      "seconds": 249,
+      "ranAt": "2026-10-17T18:06:54.012Z",
       "line": "95/95 PASS",
       "fails": [],
       "report": null
@@ -247,8 +247,8 @@
       "status": "pass",
       "passed": 100,
       "total": 100,
-      "seconds": 1,
-      "ranAt": "2026-10-17T17:41:00.261Z",
+      "seconds": 0,
+      "ranAt": "2026-10-17T18:06:08.999Z",
       "line": "[black-box-my-builds] 100/100 PASS",
       "fails": [],
       "report": "my-builds.md"
@@ -269,8 +269,8 @@
       "status": "pass",
       "passed": 25,
       "total": 25,
-      "seconds": 20,
-      "ranAt": "2026-10-17T12:20:32.627Z",
+      "seconds": 18,
+      "ranAt": "2026-10-17T18:04:53.993Z",
       "line": "[black-box-new-cards] 25/25 PASS",
       "fails": [],
       "report": "new-cards.md"
@@ -278,11 +278,11 @@
     "pack-check": {
       "name": "pack-check",
       "status": "pass",
-      "passed": 14,
-      "total": 14,
+      "passed": 15,
+      "total": 15,
       "seconds": 14,
-      "ranAt": "2026-10-17T10:08:51.326Z",
-      "line": "[black-box-pack-check] 14/14 PASS",
+      "ranAt": "2026-10-17T18:05:33.648Z",
+      "line": "[black-box-pack-check] 15/15 PASS",
       "fails": [],
       "report": "pack-check.md"
     },
@@ -358,7 +358,7 @@
       "passed": 9,
       "total": 9,
       "seconds": 5,
-      "ranAt": "2026-10-17T10:16:44.784Z",
+      "ranAt": "2026-10-17T18:06:09.446Z",
       "line": "[black-box-same-player] 9/9 PASS",
       "fails": [],
       "report": "same-player.md"
@@ -380,7 +380,7 @@
       "passed": 6,
       "total": 6,
       "seconds": 3,
-      "ranAt": "2026-10-17T17:41:17.194Z",
+      "ranAt": "2026-10-17T18:06:14.588Z",
       "line": "6/6 PASS",
       "fails": [],
       "report": null
@@ -435,7 +435,7 @@
       "passed": 51,
       "total": 51,
       "seconds": 1,
-      "ranAt": "2026-10-17T17:41:19.917Z",
+      "ranAt": "2026-10-17T18:06:17.192Z",
       "line": "[black-box-squads] 51/51 PASS",
       "fails": [],
       "report": "squads.md"
@@ -465,11 +465,11 @@
     "ui": {
       "name": "ui",
       "status": "pass",
-      "passed": 70,
-      "total": 70,
+      "passed": 71,
+      "total": 71,
       "seconds": 1,
-      "ranAt": "2026-10-17T17:41:21.331Z",
-      "line": "[black-box-ui] 70/70 PASS",
+      "ranAt": "2026-10-17T18:06:18.057Z",
+      "line": "[black-box-ui] 71/71 PASS",
       "fails": [],
       "report": "ui.md"
     },
@@ -489,8 +489,8 @@
       "status": "pass",
       "passed": 93,
       "total": 93,
-      "seconds": 14,
-      "ranAt": "2026-10-17T17:41:22.274Z",
+      "seconds": 12,
+      "ranAt": "2026-10-17T18:06:18.814Z",
       "line": "[black-box-world-ui] 93/93 PASS",
       "fails": [],
       "report": "world-ui.md"
@@ -507,5 +507,5 @@
       "report": null
     }
   },
-  "updatedAt": "2026-10-17T17:41:36.442Z"
+  "updatedAt": "2026-10-17T18:11:02.693Z"
 }

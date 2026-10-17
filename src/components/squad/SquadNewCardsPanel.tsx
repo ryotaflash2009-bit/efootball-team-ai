@@ -81,13 +81,14 @@ export function SquadNewCardsPanel({ slots, inSquad }: { slots: SquadSlotForSugg
               {(s.suggestion as NewCard).provisional ? <ProvisionalBadge /> : null}
               <span className="text-xs text-text-dim">
                 {s.delta == null
-                  ? tp("squadSuggestEmptySlotTemplate").replace("{basis}", basis(s.basis)).replace("{newOvr}", String(s.newOvr))
-                  : tp("squadSuggestRowTemplate")
-                      .replace("{basis}", basis(s.basis))
-                      .replace("{newOvr}", String(s.newOvr))
-                      .replace("{currentName}", s.current ? name(s.current) : "—")
-                      .replace("{currentOvr}", String(s.currentOvr))
-                      .replace("{delta}", String(s.delta))}
+                  ? fillMessage(tp("squadSuggestEmptySlotTemplate"), { basis: basis(s.basis), newOvr: String(s.newOvr) })
+                  : fillMessage(tp("squadSuggestRowTemplate"), {
+                      basis: basis(s.basis),
+                      newOvr: String(s.newOvr),
+                      currentName: s.current ? name(s.current) : "—",
+                      currentOvr: String(s.currentOvr),
+                      delta: String(s.delta),
+                    })}
               </span>
             </li>
           ))}

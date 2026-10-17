@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { packCheck } from "./pack-check";
+import { newCardTeamImpact } from "./team-impact";
 import type { ImpactCard } from "./team-impact";
 
 const P = (person: number, v: number) => String(v * 1048576 + person);
@@ -39,5 +40,19 @@ describe("パックの診断（F-092 の自前の版・2026-10-17）", () => {
   it("所持が空なら全部「持っていないポジション」・ポジションか OVR が無いものは unknown", () => {
     const { results } = packCheck([c(P(7, 1), "LB", 80, 96), c(P(8, 1), null, 80, 96)], []);
     expect(results.map((r) => r.verdict)).toEqual(["new_position", "unknown"]);
+  });
+
+  it("所持の最も強いカードはそれぞれの強さ（最大、無ければ基本）で選ぶ・新しいカードの一覧と同じ判定（2026-10-18）", () => {
+    const card = c(P(20, 1), "CB", 80, 100);
+    const owned = [c(P(21, 1), "CB", 88, 98), c(P(22, 1), "CB", 85, null)];
+    const r = packCheck([card], owned).results[0];
+    expect([r.verdict, r.bestOwned?.worldCardId, r.basis, r.delta]).toEqual(["upgrade", P(21, 1), "max", 2]);
+    const impact = newCardTeamImpact([card], owned)[0];
+    expect([impact.bestOwned?.worldCardId, impact.delta]).toEqual([P(21, 1), 2]);
+  });
+
+  it("持っていないポジションの OVR は最大 OVR（無ければ基本）", () => {
+    const r = packCheck([c(P(30, 1), "GK", 80, 99)], []).results[0];
+    expect([r.verdict, r.newOvr, r.basis]).toEqual(["new_position", 99, "max"]);
   });
 });

@@ -33,33 +33,34 @@ export function pickNewCardIdsForFormation(params: {
   return out;
 }
 
-export interface BestXiNewCardChange {
+export interface BestXiNewCardEntry {
   slotId: string;
   position: string;
-  before: BestXiSelectedSlot | null;
   after: BestXiSelectedSlot;
 }
 
-/** 新しいカードを足して選び直し、先発に新しいカードが入る枠を返す（枠の順）。 */
+/**
+ * 新しいカードを足して選び直す（2026-10-18: 比べる前の先発もいまの候補から選び直す＝古い結果と比べない）。
+ * 枠の入れ替え（最適化で他の選手が別の枠へ動く）があるため、枠ごとの「前→後」ではなく、
+ * 先発に入る新しいカード（その枠）と、先発から外れる選手を分けて返す。
+ */
 export function bestXiWithNewCards(params: {
   formationId: string;
-  baseResult: BestXiSelectionResult;
   baseCandidates: readonly BestXiCandidate[];
   newCandidates: readonly BestXiCandidate[];
   unavailableCards: readonly BestXiUnavailableCard[];
-}): { result: BestXiSelectionResult; changes: BestXiNewCardChange[] } {
+  generatedAt: string;
+}): { before: BestXiSelectionResult; result: BestXiSelectionResult; entering: BestXiNewCardEntry[]; leaving: BestXiCandidate[] } {
   const newIds = new Set(params.newCandidates.map((c) => c.worldCardId));
+  const before = selectBestXi({ formationId: params.formationId, candidates: [...params.baseCandidates], unavailableCards: [...params.unavailableCards], generatedAt: params.generatedAt });
   const result = selectBestXi({
     formationId: params.formationId,
     candidates: [...params.baseCandidates, ...params.newCandidates],
     unavailableCards: [...params.unavailableCards],
-    generatedAt: params.baseResult.generatedAt,
+    generatedAt: params.generatedAt,
   });
-  const beforeBySlot = new Map(params.baseResult.slots.map((s) => [s.slotId, s]));
-  const changes: BestXiNewCardChange[] = [];
-  for (const s of result.slots) {
-    if (!newIds.has(s.candidate.worldCardId)) continue;
-    changes.push({ slotId: s.slotId, position: s.position, before: beforeBySlot.get(s.slotId) ?? null, after: s });
-  }
-  return { result, changes };
+  const entering = result.slots.filter((s) => newIds.has(s.candidate.worldCardId)).map((s) => ({ slotId: s.slotId, position: s.position, after: s }));
+  const afterIds = new Set(result.slots.map((s) => s.candidate.worldCardId));
+  const leaving = before.slots.filter((s) => !afterIds.has(s.candidate.worldCardId)).map((s) => s.candidate);
+  return { before, result, entering, leaving };
 }

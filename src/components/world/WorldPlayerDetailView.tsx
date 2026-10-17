@@ -11,6 +11,7 @@ import { ProvisionalCardNotice } from "@/components/world/ProvisionalCardNotice"
 import { SamePlayerOtherCards } from "@/components/world/SamePlayerOtherCards";
 import { MyTeamFitPanel } from "@/components/world/MyTeamFitPanel";
 import Link from "next/link";
+import { useMemo } from "react";
 import { playersFilterHref } from "@/lib/world/filter-patterns";
 import dynamic from "next/dynamic";
 import { LoadingState } from "@/components/ui/LoadingState";
@@ -222,12 +223,18 @@ export function WorldPlayerDetailView({
     </div>
   );
 
+  // 比べるカード（毎回のレンダーで新しい物を作らない・2026-10-18）
+  const fitCard = useMemo(
+    () => ({ worldCardId: player.worldCardId, nameJa: player.nameJa, nameEn: player.nameEn, registeredPosition: player.registeredPosition ?? null, ovrBase: player.ovrBase ?? null, ovrMax: player.ovrMax ?? null }),
+    [player.worldCardId, player.nameJa, player.nameEn, player.registeredPosition, player.ovrBase, player.ovrMax],
+  );
+
   return (
     <PageContainer width="full">
       <div className="flex flex-col gap-4">
         <WorldPlayerHero player={player} imageSources={heroImageSources} />
         {player.provisional ? <ProvisionalCardNotice info={player.provisional} /> : null}
-        <MyTeamFitPanel card={{ worldCardId: player.worldCardId, nameJa: player.nameJa, nameEn: player.nameEn, registeredPosition: player.registeredPosition ?? null, ovrBase: player.ovrBase ?? null, ovrMax: player.ovrMax ?? null }} />
+        <MyTeamFitPanel card={fitCard} />
         <Tabs
           ariaLabel={tp("tabsAriaLabel")}
           sticky

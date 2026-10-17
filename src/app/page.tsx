@@ -82,7 +82,7 @@ export default async function HomePage() {
         topOvr={topOvr}
         recent={recent}
         temporaryError={temporaryError}
-        provisionalCount={listProvisionalPlayers().length + (await cachedListRecentlyAddedPlayers(7, 200).catch(() => [])).length}
+        provisionalCount={listProvisionalPlayers().length + (await cachedListRecentlyAddedPlayers(7, 500).catch(() => [])).length}
       />
     </>
   );
