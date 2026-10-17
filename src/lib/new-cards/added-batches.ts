@@ -15,6 +15,8 @@ export interface AddedBatch {
   count: number;
   /** パック診断へ渡すカード（OVR の高い順に最大 limit 枚）。 */
   ids: string[];
+  /** その日のすべてのカード（OVR の高い順・表示用）。 */
+  allIds: string[];
   truncated: boolean;
 }
 
@@ -40,6 +42,7 @@ export function addedBatches(cards: readonly AddedBatchInput[], limit = 30): Add
     .sort((a, b) => (a[0] < b[0] ? 1 : a[0] > b[0] ? -1 : 0))
     .map(([date, list]) => {
       const sorted = [...list].sort((a, b) => ovr(b) - ovr(a) || a.worldCardId.localeCompare(b.worldCardId));
-      return { date, count: list.length, ids: sorted.slice(0, limit).map((c) => c.worldCardId), truncated: list.length > limit };
+      const allIds = sorted.map((c) => c.worldCardId);
+      return { date, count: list.length, ids: allIds.slice(0, limit), allIds, truncated: list.length > limit };
     });
 }

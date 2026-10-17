@@ -4357,8 +4357,6 @@
  "homePage.newCardsDesc": "b9ea93670410",
  "homePage.packCheckLabel": "f3831819a8cd",
  "homePage.packCheckDesc": "7145dfbb5365",
- "provisionalCards.batchesHeading": "218fc8a7329b",
- "provisionalCards.batchesIntro": "4e5e71b0171a",
  "provisionalCards.batchRowTemplate": "21a5b6cd7346",
  "provisionalCards.batchOpenPackCheck": "b5a994d6e3ec",
  "provisionalCards.batchTruncatedTemplate": "a6ee0507e1e2",
@@ -4366,5 +4364,8 @@
  "nav.newCardsBadgeAriaTemplate": "c575a4ac92c0",
  "packCheck.fitHeading": "ab3d4582f2ed",
  "packCheck.fitAlreadyOwned": "760ad7a404de",
- "packCheck.fitOpenPackCheck": "f1bbd49d66c7"
+ "packCheck.fitOpenPackCheck": "f1bbd49d66c7",
+ "provisionalCards.showAllTemplate": "7bcbe5470e19",
+ "provisionalCards.showLess": "94ea9b1d33a0",
+ "provisionalCards.showMoreCardsTemplate": "e372f20a5288"
 }

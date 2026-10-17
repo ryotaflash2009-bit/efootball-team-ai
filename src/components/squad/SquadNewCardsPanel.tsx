@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
+import { fillMessage } from "@/lib/i18n/message-format";
 import { Surface } from "@/components/ui/Surface";
 import { ProvisionalBadge } from "@/components/world/ProvisionalCardNotice";
 import { squadNewCardSuggestions, type SquadSlotForSuggestion } from "@/lib/new-cards/squad-suggestions";
@@ -12,6 +13,8 @@ import type { ImpactCard } from "@/lib/new-cards/team-impact";
 import { fetchNewCardsOnce } from "@/lib/new-cards/fetch-new-cards";
 
 type NewCard = ImpactCard & { provisional?: boolean };
+/** 最初に出す行数（残りは「すべて表示」・2026-10-17 画面の整理）。 */
+const INITIAL_ROWS = 5;
 
 /**
  * このスカッドを強くする新しいカード（2026-10-17）。/api/world/new-cards（最近 7 日の追加＋暫定）を 1 回読み、ブラウザーの中で比べる。
@@ -21,6 +24,7 @@ export function SquadNewCardsPanel({ slots, inSquad }: { slots: SquadSlotForSugg
   const { locale } = useLocale();
   const tp = (k: Parameters<typeof t<"provisionalCards">>[1]) => t("provisionalCards", k);
   const [newCards, setNewCards] = useState<NewCard[] | null>(null);
+  const [all, setAll] = useState(false);
 
   // 欄が画面に近づいたときだけ読む（編集を開くだけでは要求しない・2026-10-17）
   const sentinel = useRef<HTMLDivElement | null>(null);
@@ -68,7 +72,7 @@ export function SquadNewCardsPanel({ slots, inSquad }: { slots: SquadSlotForSugg
         </p>
       ) : (
         <ul className="flex flex-col divide-y divide-border" data-testid="squad-new-cards-list">
-          {suggestions.map((s) => (
+          {(all ? suggestions : suggestions.slice(0, INITIAL_ROWS)).map((s) => (
             <li key={s.slotId} className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 py-1.5">
               <span className="w-10 shrink-0 text-xs font-bold text-text-dim">{s.position}</span>
               <Link href={`/players/world/${s.suggestion.worldCardId}`} className="font-semibold text-accent hover:underline">
@@ -89,6 +93,11 @@ export function SquadNewCardsPanel({ slots, inSquad }: { slots: SquadSlotForSugg
           ))}
         </ul>
       )}
+      {suggestions.length > INITIAL_ROWS ? (
+        <button type="button" className="w-fit rounded-md border border-border px-3 py-1.5 text-xs text-text-dim hover:bg-surface-2" onClick={() => setAll((v) => !v)} data-testid="squad-new-cards-toggle">
+          {all ? tp("showLess") : fillMessage(tp("showAllTemplate"), { count: String(suggestions.length) })}
+        </button>
+      ) : null}
       <Link href="/players/new" className="w-fit text-xs text-accent hover:underline">
         {tp("squadSuggestSeeAll")}
       </Link>

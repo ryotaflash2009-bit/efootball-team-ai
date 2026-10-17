@@ -1,10 +1,11 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/provisionalCards";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
+import { fillMessage } from "@/lib/i18n/message-format";
 import { Surface } from "@/components/ui/Surface";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { useMyTeam } from "@/lib/user-cards/hooks";
@@ -13,6 +14,8 @@ import { newCardTeamImpact, type ImpactCard } from "@/lib/new-cards/team-impact"
 
 const SHOW = 12;
 const SHOW_NEW_POSITIONS = 6;
+/** 最初に出す行数（残りは「すべて表示」・2026-10-17 画面の整理）。 */
+const INITIAL_ROWS = 5;
 
 /**
  * 新しいカードのうち、あなたの My Team（所持）の同じポジションの最高を上回るもの（2026-10-17）。ブラウザーの中だけで計算する。
@@ -26,6 +29,8 @@ export function NewCardsTeamImpact({ newCards }: { newCards: ImpactCard[] }) {
   const { cards } = useResolvedCards(ownedIds);
   const owned = useMemo(() => ownedIds.map((id) => cards.get(id)).filter((c): c is NonNullable<typeof c> => c != null), [ownedIds, cards]);
   const impacts = useMemo(() => newCardTeamImpact(newCards, owned), [newCards, owned]);
+  const rows = useMemo(() => [...impacts.filter((x) => x.delta != null).slice(0, SHOW), ...impacts.filter((x) => x.delta == null).slice(0, SHOW_NEW_POSITIONS)], [impacts]);
+  const [all, setAll] = useState(false);
 
   if (scopeStatus === "loading" || newCards.length === 0) return null;
   const name = (c: ImpactCard) => resolvePlayerDisplayName(c, locale);
@@ -50,7 +55,7 @@ export function NewCardsTeamImpact({ newCards }: { newCards: ImpactCard[] }) {
             </Surface>
           ) : (
             <ul className="flex flex-col divide-y divide-border rounded-card border border-border bg-surface text-sm" data-testid="new-cards-impact-list">
-              {[...impacts.filter((x) => x.delta != null).slice(0, SHOW), ...impacts.filter((x) => x.delta == null).slice(0, SHOW_NEW_POSITIONS)].map((x) => (
+              {(all ? rows : rows.slice(0, INITIAL_ROWS)).map((x) => (
                 <li key={x.card.worldCardId} className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 px-3 py-2">
                   <span className="w-10 shrink-0 text-xs font-bold text-text-dim">{x.position}</span>
                   <Link href={`/players/world/${x.card.worldCardId}`} className="font-semibold text-accent hover:underline">
@@ -70,6 +75,11 @@ export function NewCardsTeamImpact({ newCards }: { newCards: ImpactCard[] }) {
               ))}
             </ul>
           )}
+          {rows.length > INITIAL_ROWS ? (
+            <button type="button" className="w-fit rounded-md border border-border px-3 py-1.5 text-xs text-text-dim hover:bg-surface-2" onClick={() => setAll((v) => !v)} data-testid="new-cards-impact-toggle">
+              {all ? tp("showLess") : fillMessage(tp("showAllTemplate"), { count: String(rows.length) })}
+            </button>
+          ) : null}
         </>
       )}
     </section>

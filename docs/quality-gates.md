@@ -77,6 +77,11 @@ build 失敗が環境由来の一時エラーと**明確に判断できる場合
 
 `scripts/black-box-*.mjs`。`npm run build` → `npm run start -- -p 3000` の後に `node scripts/black-box-<rail>.mjs`。
 
+**まとめて実行（2026-10-17）**: `node scripts/black-box-all.mjs`（全部）/ `node scripts/black-box-all.mjs squads new-cards`（名前の一部で絞る）。
+1 本ずつ順番に実行し、結果を **`docs/black-box-tests/README.md`**（失敗を先頭・各報告へのリンク）にまとめる。社内向けページが必要な rail
+（public-preparation・final-alpha-readiness-copy・local-posts・rls-test・support-contact）は、社内向けページが無効のビルドでは
+「対象外」と記録する（失敗ではない。`NEXT_PUBLIC_EFTA_INTERNAL_PAGES=enabled` でビルドして実行する）。
+
 | レール | スクリプト |
 |---|---|
 | my-builds | `black-box-my-builds.mjs`（My Builds ＋ My Team 連携 ＋ **保存ビルド棚卸し `/build-inventory`** の SSR 検証を統合） |
