@@ -19,6 +19,8 @@ export const runtime = "nodejs";
 export const revalidate = 300;
 
 const RECENT_DAYS = 7;
+/** 7 日に追加されるカードの上限の目安（日ごとの枚数が途中で切れないよう多めに・2026-10-18）。 */
+const RECENT_LIMIT = 500;
 /** パック診断に渡せる枚数（`PackCheckView` の上限と同じ）。 */
 const PACK_CHECK_LIMIT = 30;
 
@@ -49,10 +51,16 @@ function toCardData(p: WorldPlayerListItem): WorldPlayerCardData {
 
 export default async function NewCardsPage() {
   // 最近追加されたカードは取れなくても暫定の一覧は出す（一時的な照会の失敗で画面全体を壊さない）
-  const recent = await cachedListRecentlyAddedPlayers(RECENT_DAYS, 200).catch(() => []);
+  const recent = await cachedListRecentlyAddedPlayers(RECENT_DAYS, RECENT_LIMIT).catch(() => []);
+  const provisional = listProvisionalPlayers();
+  // 「見た」の時刻は、このページに出ている最も新しいカードの追加時刻（端末の時計・キャッシュの遅れに左右されない・2026-10-18）
+  const latestAddedAt = [...recent.map((p) => p.addedAt ?? null), ...provisional.map((p) => p.provisional?.firstSeenAt ?? null)]
+    .filter((v): v is string => typeof v === "string" && Number.isFinite(Date.parse(v)))
+    .sort()
+    .at(-1) ?? null;
   return (
     <PageContainer width="full">
-      <ProvisionalCardsView cards={listProvisionalPlayers().map(toCardData)} recent={recent.map(toCardData)} recentDays={RECENT_DAYS} batches={addedBatches(recent, PACK_CHECK_LIMIT)} packCheckLimit={PACK_CHECK_LIMIT} />
+      <ProvisionalCardsView latestAddedAt={latestAddedAt} cards={provisional.map(toCardData)} recent={recent.map(toCardData)} recentDays={RECENT_DAYS} batches={addedBatches(recent, PACK_CHECK_LIMIT)} packCheckLimit={PACK_CHECK_LIMIT} />
     </PageContainer>
   );
 }

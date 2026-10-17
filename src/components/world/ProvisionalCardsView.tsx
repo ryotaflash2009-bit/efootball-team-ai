@@ -26,17 +26,22 @@ export function ProvisionalCardsView({
   recentDays,
   batches = [],
   packCheckLimit = 30,
+  latestAddedAt = null,
 }: {
   cards: WorldPlayerCardData[];
   recent: WorldPlayerCardData[];
   recentDays: number;
   batches?: AddedBatch[];
   packCheckLimit?: number;
+  /** このページに出ている最も新しいカードの追加時刻（「見た」の時刻にする）。 */
+  latestAddedAt?: string | null;
 }) {
   const t = useT();
   const { displayLocale } = useLocale();
   // このページを開いたら「見た」にする（サイドメニューの件数を 0 に戻す）
-  useEffect(() => markNewCardsSeen(), []);
+  useEffect(() => {
+    if (latestAddedAt) markNewCardsSeen(new Date(latestAddedAt));
+  }, [latestAddedAt]);
   const tp = (k: Parameters<typeof t<"provisionalCards">>[1]) => t("provisionalCards", k);
   usePageTitle(tp("newCardsPageTitle"));
   // 日ごとに並べる（日付の無いものは最後に「その他」として 1 つ）

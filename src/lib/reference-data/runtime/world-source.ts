@@ -262,7 +262,7 @@ export async function listRecentlyAddedFromSupabase(sinceIso: string, limit: num
     .gte("created_at", sinceIso)
     .order("created_at", { ascending: false })
     .order("world_card_id", { ascending: true })
-    .limit(Math.max(1, Math.min(limit, 200)));
+    .limit(Math.max(1, Math.min(limit, 500)));
   if (error) throw normalizeQueryError(error, { operation: "world.recentlyAdded", status });
   return ((data ?? []) as Row[]).map((r) => ({ ...rowToListItem(r), addedAt: r.created_at == null ? null : String(r.created_at) }));
 }

@@ -66,6 +66,11 @@ async function main() {
     await waitFor('[data-testid="pack-check-list"] li');
     const url1 = await ev("location.search");
     record("検索して追加すると URL の ids と結果の一覧に入る", /^\?ids=\d+$/.test(url1) && (await has('[data-testid="pack-check-list"] li')), url1);
+    // 続けて 2 枚を素早く追加しても、どちらも残る（URL の更新を待たない）
+    await ev(`(() => { const b = [...document.querySelectorAll('[data-testid="pack-check-search-results"] [data-testid="pack-check-add"]')].filter((x) => !x.disabled); b[0]?.click(); b[1]?.click(); })()`);
+    await waitForCondition(async () => ((await ev("location.search")) || "").split(",").length >= 3, { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+    const url2 = await ev("location.search");
+    record("続けて素早く 2 枚を追加しても両方が残る", (url2 || "").replace("?ids=", "").split(",").length === 3, url2);
 
     // 所持と比べる
     const weakCf = await top("sort=ovr_max_asc&position=CF");

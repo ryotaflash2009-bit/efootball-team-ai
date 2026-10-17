@@ -142,7 +142,7 @@ export default async function PlayersPage({ searchParams }: { searchParams: Prom
         sourceMeta={sourceMeta}
         hasFilters={hasFilters}
         searchParams={sp}
-        provisionalCount={listProvisionalPlayers().length + (await cachedListRecentlyAddedPlayers(7, 200).catch(() => [])).length}
+        provisionalCount={listProvisionalPlayers().length + (await cachedListRecentlyAddedPlayers(7, 500).catch(() => [])).length}
       />
     </PageContainer>
   );

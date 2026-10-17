@@ -72,8 +72,8 @@ export function BestXiNewCardsPanel({
       syncStatus: "local_only",
     }) as MyTeamRecord);
     const { candidates: newCandidates } = buildBestXiCandidates({ myTeam: records, progressionCards: cards, buildsByWorldCardId: new Map(), manager });
-    return bestXiWithNewCards({ formationId: result.formationId, baseResult: result, baseCandidates: candidates, newCandidates, unavailableCards }).changes;
-  }, [ids, loading, cards, manager, result, candidates, unavailableCards]);
+    return bestXiWithNewCards({ formationId: result.formationId, baseCandidates: candidates, newCandidates, unavailableCards, generatedAt: result.generatedAt });
+  }, [ids, loading, cards, manager, result.formationId, result.generatedAt, candidates, unavailableCards]);
 
   return (
     <section className="flex flex-col gap-2 rounded-card border border-border bg-surface p-3 text-xs sm:p-4" data-testid="best-xi-new-cards">
@@ -91,24 +91,28 @@ export function BestXiNewCardsPanel({
         </p>
       ) : changes == null ? (
         <p className="text-text-muted">{tb("newCardsLoading")}</p>
-      ) : changes.length === 0 ? (
+      ) : changes.entering.length === 0 ? (
         <p className="text-text-muted" data-testid="best-xi-new-cards-no-change">
           {tb("newCardsNoChange")}
         </p>
       ) : (
-        <ul className="flex flex-col divide-y divide-border" data-testid="best-xi-new-cards-list">
-          {changes.map((c) => (
-            <li key={c.slotId} className="flex flex-wrap items-baseline gap-x-2 py-1.5">
-              <span className="w-10 shrink-0 font-bold text-text-dim">{c.position}</span>
-              <span>
-                {fillTb("newCardsChangeTemplate", { before: c.before ? displayName(c.before.candidate) : tb("newCardsEmptyBefore"), after: "" }).replace(/\s*$/, "")}{" "}
+        <>
+          <ul className="flex flex-col divide-y divide-border" data-testid="best-xi-new-cards-list">
+            {changes.entering.map((c) => (
+              <li key={c.slotId} className="flex flex-wrap items-baseline gap-x-2 py-1.5">
+                <span className="w-10 shrink-0 font-bold text-text-dim">{c.position}</span>
                 <Link href={`/players/world/${c.after.candidate.worldCardId}`} className="font-semibold text-accent hover:underline">
                   {displayName(c.after.candidate)}
                 </Link>
-              </span>
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+          {changes.leaving.length > 0 ? (
+            <p className="text-text-dim" data-testid="best-xi-new-cards-leaving">
+              {fillTb("newCardsLeavingTemplate", { names: changes.leaving.map((c) => displayName(c)).join("、") })}
+            </p>
+          ) : null}
+        </>
       )}
       {requesting ? <p className="text-text-muted">{tb("newCardsLoading")}</p> : null}
     </section>

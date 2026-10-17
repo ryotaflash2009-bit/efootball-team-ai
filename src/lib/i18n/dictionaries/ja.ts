@@ -3211,8 +3211,7 @@ export interface Dictionary {
     newCardsLoading: string;
     newCardsNoChange: string;
     newCardsNone: string;
-    newCardsChangeTemplate: string;
-    newCardsEmptyBefore: string;
+    newCardsLeavingTemplate: string;
     newCardsAffiliationNote: string;
     managerHeading: string;
     managerApplyToggle: string;

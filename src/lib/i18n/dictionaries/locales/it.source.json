@@ -4374,9 +4374,8 @@
  "bestXi.newCardsLoading": "86d92ecfa51e",
  "bestXi.newCardsNoChange": "62e8d8b407a1",
  "bestXi.newCardsNone": "b4d952ff26cc",
- "bestXi.newCardsChangeTemplate": "8811d4aa6109",
- "bestXi.newCardsEmptyBefore": "2e1cfa82b035",
  "bestXi.newCardsAffiliationNote": "2e5490255070",
  "provisionalCards.homeUpgradeTemplate": "07c864a6b60c",
- "tierList.showMoreTemplate": "e372f20a5288"
+ "tierList.showMoreTemplate": "e372f20a5288",
+ "bestXi.newCardsLeavingTemplate": "70a13b3e427c"
 }
