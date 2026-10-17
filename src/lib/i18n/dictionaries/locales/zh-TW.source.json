@@ -4356,5 +4356,10 @@
  "homePage.newCardsLabel": "3448c00f4c8f",
  "homePage.newCardsDesc": "b9ea93670410",
  "homePage.packCheckLabel": "f3831819a8cd",
- "homePage.packCheckDesc": "7145dfbb5365"
+ "homePage.packCheckDesc": "7145dfbb5365",
+ "provisionalCards.batchesHeading": "218fc8a7329b",
+ "provisionalCards.batchesIntro": "4e5e71b0171a",
+ "provisionalCards.batchRowTemplate": "21a5b6cd7346",
+ "provisionalCards.batchOpenPackCheck": "b5a994d6e3ec",
+ "provisionalCards.batchTruncatedTemplate": "a6ee0507e1e2"
 }

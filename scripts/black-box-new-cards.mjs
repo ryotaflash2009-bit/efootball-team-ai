@@ -58,6 +58,17 @@ async function main() {
     const heading = (await ev(`document.querySelector('[data-testid="recently-added"]')?.innerText ?? ""`)) || "";
     const recentCount = (await ev(`document.querySelectorAll('[data-testid="recently-added-grid"] a[href^="/players/world/"]').length`)) ?? 0;
     record("最近追加されたカードの一覧（直近 7 日・枚数の表示）", /最近追加されたカード（直近 7 日・\d+ 枚）/.test(heading) && recentCount > 0, `${recentCount} cards`);
+    // 追加された日ごと → パック診断
+    const batch = await ev(`(() => { const a = document.querySelector('[data-testid="added-batch-pack-check"]'); if (!a) return null; const m = /（(\\d+) 枚）/.exec(a.parentElement.innerText); return { href: a.getAttribute("href"), count: m ? Number(m[1]) : null }; })()`);
+    if (recentCount > 0) {
+      const ids = batch?.href ? new URL(batch.href, BASE).searchParams.get("ids").split(",") : [];
+      record("追加された日ごとのまとまりとパック診断へのリンク", !!batch && ids.length === Math.min(batch.count ?? -1, 30), `${batch?.count} cards → ${ids.length} ids`);
+      await go(`${BASE}${batch.href}`);
+      await waitForCondition(async () => (await ev(`document.querySelectorAll('[data-testid="pack-check-list"] li').length`)) === ids.length, { timeoutMs: 15000, intervalMs: 200 }).catch(() => {});
+      const shown = await ev(`document.querySelectorAll('[data-testid="pack-check-list"] li').length`);
+      record("リンク先のパック診断にその日のカードが出る", shown === ids.length, `${shown}/${ids.length}`);
+      await go(`${BASE}/players/new`);
+    }
     await waitFor('[data-testid="new-cards-impact-no-team"]');
     record("My Team が空なら登録の案内", await has('[data-testid="new-cards-impact-no-team"]'), "");
 

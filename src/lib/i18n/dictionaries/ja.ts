@@ -5242,6 +5242,11 @@ export interface Dictionary {
     recentHeadingTemplate: string;
     recentIntro: string;
     recentEmpty: string;
+    batchesHeading: string;
+    batchesIntro: string;
+    batchRowTemplate: string;
+    batchOpenPackCheck: string;
+    batchTruncatedTemplate: string;
     impactHeading: string;
     impactIntro: string;
     impactRowTemplate: string;
