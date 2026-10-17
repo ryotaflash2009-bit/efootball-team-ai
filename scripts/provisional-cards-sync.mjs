@@ -19,6 +19,8 @@ import {
   mapPesMasterPlayer,
   nextProvisionalCards,
   idsToFetch,
+  personKey,
+  learnAliases,
 } from "./lib/pesmaster-provisional.mjs";
 
 const FILE = "src/lib/reference-data/provisional/data/provisional-cards.json";
@@ -53,16 +55,39 @@ if (featuredIds.length === 0) {
 // 2. TeamAIXI に既にある ID（World）
 const candidates = [...new Set([...featuredIds, ...previous.map((r) => r.world_card_id)])];
 const worldIds = new Set();
+const officialById = new Map();
 for (let i = 0; i < candidates.length; i += 100) {
   const j = await getJson(`${site}/api/world/players/by-ids?ids=${candidates.slice(i, i + 100).join(",")}`);
   // by-ids は暫定のカードも返すため、World の行（provisional でない）だけを数える
-  for (const p of j.players ?? []) if (!p.provisional) worldIds.add(p.worldCardId);
+  for (const p of j.players ?? []) {
+    if (p.provisional) continue;
+    worldIds.add(p.worldCardId);
+    officialById.set(p.worldCardId, p);
+  }
+}
+
+// 2b. 正式なデータに置き換わったカードから、表記の対応（国籍・リーグ）を学ぶ
+const aliases = learnAliases({
+  aliases: previousFile.aliases,
+  graduated: previous.filter((r) => officialById.has(r.world_card_id)).map((r) => ({ row: r, official: officialById.get(r.world_card_id) })),
+});
+
+/** 同じ人物の別のカード（World）: 日本語名・国籍・地域は人物ごとに同じ（人物のキー＝カード ID の下位 20 ビット・食い違い 0 件）。 */
+async function samePersonCard(id, nameEn) {
+  if (!nameEn) return null;
+  try {
+    const j = await getJson(`${site}/api/world/players?pageSize=100&q=${encodeURIComponent(nameEn)}`);
+    return (j.players ?? []).find((p) => !p.provisional && p.worldCardId !== id && personKey(p.worldCardId) === personKey(id)) ?? null;
+  } catch {
+    return null;
+  }
 }
 
 // 3. 取り直しが要るカードを PES Master から読む
 const toFetch = idsToFetch({ featuredIds, previous, worldIds, now });
 const leagueByTeam = new Map();
 const regionByNat = new Map();
+const leagueByName = new Map();
 async function lookup(map, key, param, field) {
   if (!key) return null;
   if (map.has(key)) return map.get(key);
@@ -83,8 +108,18 @@ for (const id of toFetch) {
   try {
     const pm = extractPesMasterPlayer(await getText(`${PESMASTER_ORIGIN}/x/efootball-2022/player/${id}/`));
     const team = typeof pm?.team_name === "string" ? pm.team_name : null;
-    const nat = typeof pm?.nat_name === "string" ? pm.nat_name : null;
-    const r = mapPesMasterPlayer(pm, { fetchedAt: now, league: await lookup(leagueByTeam, team, "team", "league"), region: await lookup(regionByNat, nat, "nationality", "region") });
+    const pmNat = typeof pm?.nat_name === "string" ? pm.nat_name : null;
+    const pmLeague = typeof pm?.league_name === "string" ? pm.league_name : null;
+    const same = await samePersonCard(id, typeof pm?.name === "string" ? pm.name : null);
+    const nat = same?.nationality ?? (pmNat ? (aliases.nationality[pmNat] ?? pmNat) : null);
+    const league = (await lookup(leagueByTeam, team, "team", "league")) ?? (pmLeague ? (aliases.league[pmLeague] ?? (await lookup(leagueByName, pmLeague, "league", "league"))) : null);
+    const r = mapPesMasterPlayer(pm, {
+      fetchedAt: now,
+      league,
+      region: same?.region ?? (await lookup(regionByNat, nat, "nationality", "region")),
+      nationality: nat,
+      nameJa: same?.nameJa ?? null,
+    });
     if (r.ok) fetched.push(r.row);
     else rejected.push({ id, reason: r.reason });
   } catch (e) {
@@ -96,7 +131,7 @@ for (const id of toFetch) {
 // 4. 次の一覧
 const cards = nextProvisionalCards({ previous, fetched, worldIds, now });
 const strip = (list) => JSON.stringify(list.map(({ fetched_at, ...r }) => r));
-const changed = strip(cards) !== strip(previous) || fetched.length > 0;
+const changed = strip(cards) !== strip(previous) || fetched.length > 0 || JSON.stringify(aliases) !== JSON.stringify(previousFile.aliases ?? null);
 const summary = {
   status: "ok",
   featured: featuredIds.length,
@@ -106,11 +141,13 @@ const summary = {
   provisional: cards.length,
   removedBecauseInWorld: previous.filter((r) => worldIds.has(r.world_card_id)).length,
   withMaxLevel: cards.filter((r) => r.maximum_level != null).length,
+  withNameJa: cards.filter((r) => r.name_ja).length,
+  learnedAliases: Object.keys(aliases.nationality).length + Object.keys(aliases.league).length,
   changed,
 };
 console.log(JSON.stringify(summary));
 if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, `provisional cards: ${JSON.stringify(summary)}\n`);
 if (!dryRun && changed) {
-  writeFileSync(FILE, JSON.stringify({ schema: PROVISIONAL_SCHEMA, source: PROVISIONAL_SOURCE, updatedAt: now, cards }, null, 1) + "\n");
+  writeFileSync(FILE, JSON.stringify({ schema: PROVISIONAL_SCHEMA, source: PROVISIONAL_SOURCE, updatedAt: now, aliases, cards }, null, 1) + "\n");
   console.log(`wrote ${FILE}`);
 }
