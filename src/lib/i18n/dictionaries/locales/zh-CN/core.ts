@@ -44,6 +44,7 @@ const part: PartialDictionary = {
     diagnosisHistory: "诊断记录",
     bestXi: "AI Best XI",
     tierLists: "强度榜",
+    packCheck: "卡包诊断",
     packs: "卡包",
     community: "社区",
     comingSoon: "即将推出",

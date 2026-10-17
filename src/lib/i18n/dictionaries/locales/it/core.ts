@@ -44,6 +44,7 @@ const part: PartialDictionary = {
     diagnosisHistory: "Cronologia diagnosi",
     bestXi: "AI Best XI",
     tierLists: "Tier list",
+    packCheck: "Analisi pack",
     packs: "Pacchetti",
     community: "Community",
     comingSoon: "Prossimamente",

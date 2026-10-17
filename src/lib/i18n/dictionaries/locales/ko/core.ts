@@ -44,6 +44,7 @@ const part: PartialDictionary = {
     diagnosisHistory: "진단 기록",
     bestXi: "AI Best XI",
     tierLists: "티어 리스트",
+    packCheck: "팩 진단",
     packs: "팩",
     community: "커뮤니티",
     comingSoon: "출시 예정",
