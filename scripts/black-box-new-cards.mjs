@@ -158,6 +158,13 @@ async function main() {
       record("トップ: My Team が空なら出さない", !(await has('[data-testid="home-new-cards-upgrade"]')), "");
     }
 
+    // 選手の一覧: 最近 7 日に追加されたカードに「NEW」の印（追加の新しい順で先頭のカード）
+    await go(`${BASE}/players?sort=added_desc`);
+    const firstNew = await ev(`!!document.querySelector('a[href^="/players/world/"] [data-testid="card-new-badge"]')`);
+    await go(`${BASE}/players?sort=ovr_max_asc`);
+    const oldCount = await ev(`document.querySelectorAll('[data-testid="card-new-badge"]').length`);
+    record("選手の一覧: 新しいカードに NEW の印（古いカードには出ない）", recentCount === 0 ? true : firstNew === true && oldCount === 0, `first=${firstNew} oldPage=${oldCount}`);
+
     // サイドメニューの「新しいカード」の件数（前回見たあとに追加された枚数）
     const SEEN_KEY = "efootball-team-ai:new-cards-seen:v1";
     await ev(`localStorage.removeItem(${JSON.stringify(SEEN_KEY)})`);

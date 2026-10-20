@@ -27,6 +27,8 @@ export interface WorldPlayerCardData {
   imageSources: string[];
   /** 暫定のカード（2026-10-15）。 */
   provisional?: boolean;
+  /** 最近 7 日に追加されたカード（サーバーで判定・2026-10-20）。 */
+  isNew?: boolean;
 }
 
 /**
@@ -51,6 +53,11 @@ export function WorldPlayerCard({ player, imagePriority = false }: { player: Wor
             <span className="text-lg font-black text-accent tabular-nums">{ovr ?? "–"}</span>
             <span className="text-[9px] font-semibold text-text-dim">MAX</span>
           </span>
+          {player.isNew ? (
+            <span className="absolute start-1 top-9 rounded bg-accent px-1.5 py-0.5 text-[9px] font-black leading-none text-accent-ink" data-testid="card-new-badge">
+              NEW
+            </span>
+          ) : null}
           {player.registeredPosition ? (
             <span className="absolute end-1 top-10 rounded bg-black/75 px-1.5 py-0.5 text-2xs font-bold text-text">
               {player.registeredPosition}

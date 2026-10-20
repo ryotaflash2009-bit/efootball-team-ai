@@ -25,6 +25,12 @@ type SP = Record<string, string | string[] | undefined>;
 const pick = (sp: SP, key: string): string | null => (typeof sp[key] === "string" ? (sp[key] as string) : null);
 
 /** クライアントへは生の CDN URL（imageUrlCandidate 等）を渡さず、解決済み imageSources だけ渡す。 */
+/** 最近 7 日に追加されたカード（「NEW」の印・2026-10-20）。 */
+function isRecentlyAdded(addedAt: string | null | undefined, now = Date.now()): boolean {
+  const t = addedAt ? Date.parse(addedAt) : Number.NaN;
+  return Number.isFinite(t) && now - t >= 0 && now - t < 7 * 86_400_000;
+}
+
 function toCardData(p: WorldPlayerListItem): WorldPlayerCardData {
   return {
     worldCardId: p.worldCardId,
@@ -36,6 +42,7 @@ function toCardData(p: WorldPlayerListItem): WorldPlayerCardData {
     registeredPosition: p.registeredPosition,
     cardType: p.cardType,
     hasEfhubLink: p.hasEfhubLink,
+    isNew: isRecentlyAdded(p.addedAt),
     imageSources: resolveCardImageSources({
       worldCardId: p.worldCardId,
       efhubCardId: p.efhubCardId,

@@ -16,7 +16,7 @@ import { listManagers, getManagerById, getManagerCount, getManagersLatestFetched
 export const REFERENCE_CACHE_SECONDS = 300;
 const opts = { revalidate: REFERENCE_CACHE_SECONDS, tags: ["reference-data"] };
 
-export const cachedListPlayers = unstable_cache(listPlayers, ["reference:listPlayers:v1"], opts);
+export const cachedListPlayers = unstable_cache(listPlayers, ["reference:listPlayers:v2"], opts);
 export const cachedGetFacets = unstable_cache(getFacets, ["reference:getFacets:v3"], opts);
 export const cachedGetSourceMeta = unstable_cache(getSourceMeta, ["reference:getSourceMeta:v1"], opts);
 export const cachedGetPlayerByWorldId = unstable_cache(getPlayerByWorldId, ["reference:getPlayerByWorldId:v1"], opts);

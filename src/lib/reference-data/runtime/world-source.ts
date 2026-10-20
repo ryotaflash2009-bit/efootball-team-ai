@@ -206,7 +206,8 @@ export async function listPlayersFromSupabase(q: WorldListQuery, client?: Refere
   if (error) throw await normalizeSearchQueryFailure(error, { operation: "world.list", status }, q.query, probe);
 
   const rows = (data ?? []) as Row[];
-  const players = rows.map((r) => rowToListItem(r));
+  // 追加された時刻（「NEW」の印・2026-10-20）
+  const players = rows.map((r) => ({ ...rowToListItem(r), addedAt: r.created_at == null ? null : String(r.created_at) }));
 
   return {
     players,
