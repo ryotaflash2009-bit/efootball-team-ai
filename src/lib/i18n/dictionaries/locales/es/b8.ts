@@ -674,6 +674,7 @@ const part: PartialDictionary = {
     fitHeading: "Comparado con tu My Team",
     fitAlreadyOwned: "Esta carta está marcada como tuya en tu My Team.",
     fitOpenPackCheck: "Ver con otras cartas en Análisis de packs",
+    compareAbilities: "Comparar habilidades",
   },
 };
 

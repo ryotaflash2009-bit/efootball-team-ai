@@ -1,6 +1,7 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/provisionalCards";
+import "@/lib/i18n/dictionaries/ja-ns/packCheck";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useOwnedCards } from "@/lib/new-cards/use-owned-cards";
@@ -67,6 +68,11 @@ export function NewCardsTeamImpact({ newCards }: { newCards: ImpactCard[] }) {
                           .replace("{ownedOvr}", String(x.ownedOvr))
                           .replace("{delta}", String(x.delta))}
                   </span>
+                  {x.bestOwned ? (
+                    <Link href={`/compare?ids=${x.card.worldCardId},${x.bestOwned.worldCardId}`} className="text-xs text-accent hover:underline" data-testid="compare-with-owned">
+                      {t("packCheck", "compareAbilities")}
+                    </Link>
+                  ) : null}
                 </li>
               ))}
             </ul>

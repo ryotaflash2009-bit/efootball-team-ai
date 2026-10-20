@@ -674,6 +674,7 @@ const part: PartialDictionary = {
     fitHeading: "Verglichen mit deinem My Team",
     fitAlreadyOwned: "Diese Karte ist in deinem My Team als „besessen“ markiert.",
     fitOpenPackCheck: "Mit anderen Karten im Pack-Check ansehen",
+    compareAbilities: "Fähigkeiten vergleichen",
   },
 };
 

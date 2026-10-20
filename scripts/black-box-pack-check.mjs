@@ -81,6 +81,8 @@ async function main() {
     await waitForCondition(async () => (await ev(`document.querySelectorAll('[data-testid="pack-check-list"] li').length`)) === 4, { timeoutMs: 15000, intervalMs: 200 }).catch(() => {});
     const verdicts = (await ev(`Object.fromEntries([...document.querySelectorAll('[data-testid="pack-check-list"] li')].map((li) => [li.querySelector("a").getAttribute("href").split("/").pop(), li.dataset.verdict]))`)) ?? {};
     record("強い CF は「強化」", verdicts[strongCf] === "upgrade", JSON.stringify(verdicts));
+    const cmp = await ev(`[...document.querySelectorAll('[data-testid="pack-check-list"] li')].find((li) => li.dataset.verdict === "upgrade")?.querySelector('[data-testid="compare-with-owned"]')?.getAttribute("href") ?? null`);
+    record("強化の行に「能力を比べる」（新しいカード,所持の最も強いカード）", cmp === `/compare?ids=${strongCf},${weakCf}`, String(cmp));
     record("所持している CF そのものは「所持済み」", verdicts[weakCf] === "already_owned", "");
     record("GK を持っていなければ「持っていないポジション」", verdicts[gk] === "new_position", "");
     const rcText = (await ev(`[...document.querySelectorAll('[data-testid="pack-check-list"] li')].find((li) => li.querySelector("a").getAttribute("href").endsWith(${JSON.stringify(RC_B)}))?.innerText ?? ""`)) || "";

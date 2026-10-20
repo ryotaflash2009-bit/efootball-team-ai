@@ -5369,6 +5369,7 @@ const en: Dictionary = {
     fitHeading: "Compared with your My Team",
     fitAlreadyOwned: "This card is marked as owned in your My Team.",
     fitOpenPackCheck: "Check with other cards in Pack check",
+    compareAbilities: "Compare abilities",
   },
   gamePlan: {
     heading: "Game plan",

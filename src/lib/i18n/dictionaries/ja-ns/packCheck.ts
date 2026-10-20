@@ -33,6 +33,7 @@ const packCheck: Dictionary["packCheck"] = {
   fitHeading: "あなたの My Team と比べる",
   fitAlreadyOwned: "このカードは My Team で「所持」になっています。",
   fitOpenPackCheck: "パック診断で他のカードと一緒に見る",
+  compareAbilities: "能力を比べる",
 };
 
 registerJaNamespace("packCheck", packCheck);

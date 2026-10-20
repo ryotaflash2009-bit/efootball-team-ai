@@ -56,6 +56,11 @@ export function MyTeamFitPanel({ card }: { card: ImpactCard }) {
       {result.samePlayerOwned && result.verdict !== "already_owned" ? (
         <p className="text-xs text-text-muted">{fillMessage(tp("samePlayerTemplate"), { name: name(result.samePlayerOwned) })}</p>
       ) : null}
+      {result.bestOwned && result.verdict !== "already_owned" ? (
+        <Link href={`/compare?ids=${card.worldCardId},${result.bestOwned.worldCardId}`} className="w-fit text-xs text-accent hover:underline" data-testid="compare-with-owned">
+          {tp("compareAbilities")}
+        </Link>
+      ) : null}
       {result.verdict !== "already_owned" ? (
         <Link href={`/pack-check?ids=${card.worldCardId}`} className="w-fit text-xs text-accent hover:underline" data-testid="my-team-fit-pack-check">
           {tp("fitOpenPackCheck")}
