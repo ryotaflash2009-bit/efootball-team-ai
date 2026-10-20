@@ -674,6 +674,7 @@ const part: PartialDictionary = {
     fitHeading: "Dibandingkan dengan My Team-mu",
     fitAlreadyOwned: "Kartu ini bertanda dimiliki di My Team-mu.",
     fitOpenPackCheck: "Lihat bersama kartu lain di Cek pack",
+    compareAbilities: "Bandingkan kemampuan",
   },
 };
 

@@ -674,6 +674,7 @@ const part: PartialDictionary = {
     fitHeading: "My Team'inle karşılaştırma",
     fitAlreadyOwned: "Bu kart My Team'inde sahip olunan olarak işaretli.",
     fitOpenPackCheck: "Paket analizinde diğer kartlarla birlikte gör",
+    compareAbilities: "Yetenekleri karşılaştır",
   },
 };
 

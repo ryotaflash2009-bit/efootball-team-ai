@@ -674,6 +674,7 @@ const part: PartialDictionary = {
     fitHeading: "與你的 My Team 比較",
     fitAlreadyOwned: "這張卡在你的 My Team 中標記為擁有。",
     fitOpenPackCheck: "在卡包診斷中與其他卡一起查看",
+    compareAbilities: "比較能力",
   },
 };
 

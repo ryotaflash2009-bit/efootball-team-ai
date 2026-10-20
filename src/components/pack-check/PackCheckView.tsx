@@ -237,6 +237,11 @@ export function PackCheckView() {
                   {r.samePlayerOwned && r.verdict !== "already_owned" ? (
                     <span className="text-xs text-text-muted">{fillMessage(tp("samePlayerTemplate"), { name: name(r.samePlayerOwned) })}</span>
                   ) : null}
+                  {r.bestOwned && r.verdict !== "already_owned" ? (
+                    <Link href={`/compare?ids=${r.card.worldCardId},${r.bestOwned.worldCardId}`} className="w-fit text-xs text-accent hover:underline" data-testid="compare-with-owned">
+                      {tp("compareAbilities")}
+                    </Link>
+                  ) : null}
                 </li>
               ))}
             </ul>

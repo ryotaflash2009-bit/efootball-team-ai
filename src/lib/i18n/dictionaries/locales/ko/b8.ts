@@ -674,6 +674,7 @@ const part: PartialDictionary = {
     fitHeading: "내 My Team과 비교",
     fitAlreadyOwned: "이 카드는 My Team에서 '보유'로 되어 있습니다.",
     fitOpenPackCheck: "팩 진단에서 다른 카드와 함께 보기",
+    compareAbilities: "능력 비교",
   },
 };
 

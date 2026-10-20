@@ -118,9 +118,11 @@ async function main() {
       const cfRow = srows.find((r) => /^CF /.test(r));
       record("スカッド: 弱い CF の枠に「今の選手より +差」の新しいカード", recentCf.length === 0 ? true : !!cfRow && /より \+\d+/.test(cfRow), cfRow ?? `${srows.length} rows`);
       record("スカッド: 空いている枠に提案が出る（空いている枠を先に）", srows.length > 0 && /空いている枠/.test(srows[0]), srows[0] ?? "-");
-      const linkOk = await ev(`[...document.querySelectorAll('[data-testid="squad-new-cards-list"] a')].every((a) => /^\\/players\\/world\\/\\d+$/.test(a.getAttribute("href")))`);
+      const linkOk = await ev(`[...document.querySelectorAll('[data-testid="squad-new-cards-list"] a:not([data-testid="compare-with-owned"])')].every((a) => /^\\/players\\/world\\/\\d+$/.test(a.getAttribute("href")))`);
       record("スカッド: 提案のリンクがカードの詳細へ", !!linkOk, "");
-      const hrefs = (await ev(`[...document.querySelectorAll('[data-testid="squad-new-cards-list"] a')].map((a) => a.getAttribute("href"))`)) ?? [];
+      const hrefs = (await ev(`[...document.querySelectorAll('[data-testid="squad-new-cards-list"] a:not([data-testid="compare-with-owned"])')].map((a) => a.getAttribute("href"))`)) ?? [];
+      const cmpHref = await ev(`[...document.querySelectorAll('[data-testid="squad-new-cards-list"] li')].find((li) => /^CF/.test(li.innerText))?.querySelector('[data-testid="compare-with-owned"]')?.getAttribute("href") ?? null`);
+      record("スカッド: 今の選手と能力を比べるリンク（新しいカード,今の選手）", recentCf.length === 0 ? true : cmpHref === `/compare?ids=${(cmpHref || "").split("=")[1]?.split(",")[0]},${weak}`, String(cmpHref));
       record("スカッド: 同じカードを 2 つの枠に出さない", hrefs.length > 0 && new Set(hrefs).size === hrefs.length, `${hrefs.length} links`);
       await ev(`localStorage.removeItem(${JSON.stringify(SQUADS_KEY)})`);
     } else record("スカッド: 弱い CF のカードを取得", false, "no CF card");

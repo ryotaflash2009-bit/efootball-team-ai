@@ -1,6 +1,7 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/provisionalCards";
+import "@/lib/i18n/dictionaries/ja-ns/packCheck";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
@@ -90,6 +91,11 @@ export function SquadNewCardsPanel({ slots, inSquad }: { slots: SquadSlotForSugg
                       delta: String(s.delta),
                     })}
               </span>
+              {s.current ? (
+                <Link href={`/compare?ids=${s.suggestion.worldCardId},${s.current.worldCardId}`} className="text-xs text-accent hover:underline" data-testid="compare-with-owned">
+                  {t("packCheck", "compareAbilities")}
+                </Link>
+              ) : null}
             </li>
           ))}
         </ul>

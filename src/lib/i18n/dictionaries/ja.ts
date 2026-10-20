@@ -5307,6 +5307,7 @@ export interface Dictionary {
     fitHeading: string;
     fitAlreadyOwned: string;
     fitOpenPackCheck: string;
+    compareAbilities: string;
   };
   gamePlan: {
     heading: string;
