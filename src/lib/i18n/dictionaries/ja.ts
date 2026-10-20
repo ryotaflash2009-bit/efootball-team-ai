@@ -3253,6 +3253,7 @@ export interface Dictionary {
     disclaimerLink: string;
     dataManagementLink: string;
     supportLink: string;
+    glossaryLink: string;
     releaseReadinessLink: string;
     unofficialNotice: string;
     draftBadge: string;
@@ -5309,6 +5310,36 @@ export interface Dictionary {
     fitOpenPackCheck: string;
     compareAbilities: string;
   };
+  glossary: {
+    pageTitle: string;
+    heading: string;
+    intro: string;
+    tocLabel: string;
+    ovrBaseTerm: string;
+    ovrBaseBody: string;
+    ovrMaxTerm: string;
+    ovrMaxBody: string;
+    levelCapTerm: string;
+    levelCapBody: string;
+    positionTerm: string;
+    positionBody: string;
+    suitabilityTerm: string;
+    suitabilityBody: string;
+    styleTerm: string;
+    styleBody: string;
+    boosterTerm: string;
+    boosterBody: string;
+    managerBoostTerm: string;
+    managerBoostBody: string;
+    linkUpTerm: string;
+    linkUpBody: string;
+    provisionalTerm: string;
+    provisionalBody: string;
+    samePlayerTerm: string;
+    samePlayerBody: string;
+    tierTerm: string;
+    tierBody: string;
+  };
   gamePlan: {
     heading: string;
     intro: string;
@@ -5571,6 +5602,7 @@ const ja: JaCoreDictionary = {
     disclaimerLink: "免責事項",
     dataManagementLink: "データ管理",
     supportLink: "問い合わせ",
+    glossaryLink: "用語集",
     releaseReadinessLink: "公開準備状況",
     unofficialNotice: "TeamAIXI は非公式の eFootball™ スカッド分析ツールです。KONAMI および eFootball™ の公式サービスではなく、KONAMI による公認・提携・運営を受けていません。商標・製品名は各権利者に帰属します。データ・分析・診断には誤りや遅延の可能性があり、ゲーム内の最終判断を保証しません。",
     draftBadge: "v1.0・無料・ログイン不要",

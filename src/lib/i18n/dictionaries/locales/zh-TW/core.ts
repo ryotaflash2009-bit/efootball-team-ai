@@ -84,6 +84,7 @@ const part: PartialDictionary = {
     disclaimerLink: "免責聲明",
     dataManagementLink: "資料管理",
     supportLink: "支援",
+    glossaryLink: "術語表",
     releaseReadinessLink: "發布準備",
     unofficialNotice:
       "TeamAIXI 是非官方的 eFootball™ 陣容分析工具。本工具並非 KONAMI 或 eFootball™ 的官方服務，亦未獲 KONAMI 認可、與其無關聯，且不由其營運。商標與產品名稱歸各自所有者所有。資料、分析與診斷可能有錯誤或延遲，不保證遊戲內的決策結果。",

@@ -84,6 +84,7 @@ const part: PartialDictionary = {
     disclaimerLink: "Sorumluluk reddi",
     dataManagementLink: "Veri yönetimi",
     supportLink: "Destek",
+    glossaryLink: "Sözlük",
     releaseReadinessLink: "Yayın hazırlığı",
     unofficialNotice:
       "TeamAIXI, eFootball™ için resmi olmayan bir kadro analiz aracıdır. KONAMI'nin veya eFootball™'un resmi bir hizmeti değildir; KONAMI tarafından onaylanmamış, KONAMI ile bağlantılı değildir ve KONAMI tarafından işletilmez. Ticari markalar ve ürün adları ilgili sahiplerine aittir. Veriler, analizler ve değerlendirmeler hata veya gecikme içerebilir ve oyun içi kararlar için garanti vermez.",

@@ -84,6 +84,7 @@ const part: PartialDictionary = {
     disclaimerLink: "면책 조항",
     dataManagementLink: "데이터 관리",
     supportLink: "지원",
+    glossaryLink: "용어집",
     releaseReadinessLink: "출시 준비 상태",
     unofficialNotice:
       "TeamAIXI는 eFootball™용 비공식 스쿼드 분석 도구입니다. KONAMI 또는 eFootball™의 공식 서비스가 아니며, KONAMI가 보증·제휴·운영하지 않습니다. 상표와 제품명은 각 소유자에게 있습니다. 데이터·분석·진단에는 오류나 지연이 있을 수 있으며 게임 내 결정을 보장하지 않습니다.",

@@ -4,8 +4,9 @@ import Link from "next/link";
 import { useT } from "@/lib/i18n/LocaleContext";
 import { areInternalPagesVisible, isInternalPagePath } from "@/lib/public-info/internal-pages";
 
-const LINKS: { href: string; labelKey: "aboutLink" | "termsLink" | "privacyLink" | "disclaimerLink" | "dataManagementLink" | "supportLink" | "releaseReadinessLink" }[] = [
+const LINKS: { href: string; labelKey: "aboutLink" | "glossaryLink" | "termsLink" | "privacyLink" | "disclaimerLink" | "dataManagementLink" | "supportLink" | "releaseReadinessLink" }[] = [
   { href: "/about", labelKey: "aboutLink" },
+  { href: "/glossary", labelKey: "glossaryLink" },
   { href: "/terms", labelKey: "termsLink" },
   { href: "/privacy", labelKey: "privacyLink" },
   { href: "/disclaimer", labelKey: "disclaimerLink" },

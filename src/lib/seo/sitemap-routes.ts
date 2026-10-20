@@ -21,6 +21,7 @@ export const SITEMAP_ROUTES: readonly SitemapRoute[] = [
   { path: "/best-xi", changeFrequency: "weekly", priority: 0.7 },
   { path: "/tier", changeFrequency: "weekly", priority: 0.6 },
   { path: "/pack-check", changeFrequency: "monthly", priority: 0.5 },
+  { path: "/glossary", changeFrequency: "monthly", priority: 0.4 },
   { path: "/boosters", changeFrequency: "weekly", priority: 0.6 },
   { path: "/managers/compare", changeFrequency: "monthly", priority: 0.5 },
   { path: "/about", changeFrequency: "monthly", priority: 0.5 },

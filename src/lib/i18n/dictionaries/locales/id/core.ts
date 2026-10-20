@@ -84,6 +84,7 @@ const part: PartialDictionary = {
     disclaimerLink: "Penafian",
     dataManagementLink: "Pengelolaan data",
     supportLink: "Dukungan",
+    glossaryLink: "Glosarium",
     releaseReadinessLink: "Kesiapan rilis",
     unofficialNotice:
       "TeamAIXI adalah alat analisis skuad tidak resmi untuk eFootball™. Ini bukan layanan resmi KONAMI atau eFootball™, serta tidak didukung, tidak berafiliasi dengan, dan tidak dioperasikan oleh KONAMI. Merek dagang dan nama produk adalah milik pemiliknya masing-masing. Data, analisis, dan diagnosis dapat mengandung kesalahan atau keterlambatan dan tidak menjamin keputusan di dalam game.",

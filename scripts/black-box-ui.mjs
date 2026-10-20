@@ -70,6 +70,10 @@ async function main() {
   const tierRows = (tierA.match(/<li /g) || []).length;
   const tierHidden = (tierA.match(/<li class="[^"]*\bhidden"/g) || []).length;
   record("ティアリスト: 区分の行はすべて HTML にあり、21 行目からは隠して「残りを表示」", tierPage.status === 200 && (tierRows <= 20 ? tierHidden === 0 : tierHidden === tierRows - 20 && /data-testid="tier-show-more"/.test(tierPage.body)), `A rows=${tierRows} hidden=${tierHidden}`);
+  // 用語集（F-104・2026-10-20）
+  const gl = await get("/glossary");
+  const glTerms = (gl.body.match(/data-testid="glossary-term"/g) || []).length;
+  record("用語集: /glossary に 12 の用語・フッターからのリンク", gl.status === 200 && glTerms === 12 && /href="\/glossary"/.test(pages.home.body), `terms=${glTerms}`);
   record("共通: 現在位置を aria-current=page で示す", /aria-current="page"/.test(pages.players.body), "");
   record("共通: モバイルメニューボタン（aria-label=メニューを開く）", /aria-label="メニューを開く"/.test(pages.home.body), "");
   record("共通: サイドバー折りたたみボタン", /サイドバーを折りたたむ|サイドバーを開く/.test(pages.home.body), "");
