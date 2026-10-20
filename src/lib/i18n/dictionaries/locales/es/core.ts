@@ -87,6 +87,7 @@ const es: PartialDictionary = {
     disclaimerLink: "Aviso legal",
     dataManagementLink: "Gestión de datos",
     supportLink: "Soporte",
+    glossaryLink: "Glosario",
     releaseReadinessLink: "Preparación del lanzamiento",
     unofficialNotice:
       "TeamAIXI es una herramienta no oficial de análisis de plantillas para eFootball™. No es un servicio oficial de KONAMI ni de eFootball™, y KONAMI no lo respalda, no está afiliado a él ni lo opera. Las marcas y los nombres de productos pertenecen a sus respectivos propietarios. Los datos, análisis y diagnósticos pueden contener errores o retrasos y no garantizan decisiones dentro del juego.",

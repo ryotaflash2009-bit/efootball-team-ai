@@ -84,6 +84,7 @@ const part: PartialDictionary = {
     disclaimerLink: "Avertissement",
     dataManagementLink: "Gestion des données",
     supportLink: "Assistance",
+    glossaryLink: "Glossaire",
     releaseReadinessLink: "Préparation de la sortie",
     unofficialNotice:
       "TeamAIXI est un outil non officiel d’analyse d’effectif pour eFootball™. Ce n’est pas un service officiel de KONAMI ou d’eFootball™, et il n’est ni approuvé, ni affilié, ni exploité par KONAMI. Les marques et noms de produits appartiennent à leurs propriétaires respectifs. Les données, analyses et diagnostics peuvent contenir des erreurs ou des retards et ne garantissent pas les décisions en jeu.",

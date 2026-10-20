@@ -98,6 +98,7 @@ import boosterList from "./boosterList";
 import tierList from "./tierList";
 import provisionalCards from "./provisionalCards";
 import packCheck from "./packCheck";
+import glossary from "./glossary";
 import managerCompare from "./managerCompare";
 import gamePlan from "./gamePlan";
 
@@ -201,6 +202,7 @@ export const JA_SPLIT_NAMESPACES = {
   tierList,
   provisionalCards,
   packCheck,
+  glossary,
   managerCompare,
   gamePlan,
 };

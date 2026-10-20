@@ -562,6 +562,7 @@ async function main() {
     ["/players/new", null],
     ["/pack-check", null],
     ["/tier", null],
+    ["/glossary", null],
     ["/favorites", null],
     ["/my-team", null],
     ["/my-builds", null],
