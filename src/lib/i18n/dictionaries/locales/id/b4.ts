@@ -132,7 +132,7 @@ const part: PartialDictionary = {
     stateOnlyB: "Hanya B",
     stateNeither: "Tidak keduanya",
     managerTitleTemplate: "Manajer ({state})",
-    boosterDeltaTemplate: "Total managerBoosterDelta {n}",
+    boosterDeltaTemplate: "Total bonus manajer {n}",
     confirmedTemplate: "Terkonfirmasi: {list}",
     noConfirmedManagerBoosters: "Tidak ada booster manajer yang terkonfirmasi",
     noManagerImage: "Gambar manajer tidak ditampilkan.",

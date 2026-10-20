@@ -110,7 +110,7 @@ async function main() {
   record("育成: 確認済みB2の追加ブースター欄は実験モード不要でSSRに出る（2026-09-05 B2標準統合）", b.includes("の追加ブースター（B2）を指定"), "");
   record("育成: 実験モードの切替に警告がある", b.includes("ゲーム内の正式値ではありません"), "");
   record("育成: 監督補正セクション（監督を選択 / 監督なし）", b.includes("監督を選択") || b.includes("監督なし"), "");
-  record("育成: 監督なし時 managerBoosterDelta=0 を明示", b.includes("managerBoosterDelta = 0"), "");
+  record("育成: 監督なし時 監督の補正 = 0 を明示", b.includes("監督の補正 = 0"), "");
   record("育成: 能力値比較の「監督」列は選択した監督の効果と説明", b.includes("選択した監督のブースター効果"), "");
   record("育成: ビルド保存 UI", b.includes("ビルド保存") && b.includes("ビルド名"), "");
   record("育成: 確認済み規則リストに「レベルアップあたりの育成ポイント」", b.includes("レベルアップあたりの育成ポイント"), "");

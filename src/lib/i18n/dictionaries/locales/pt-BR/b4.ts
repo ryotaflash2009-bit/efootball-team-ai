@@ -132,7 +132,7 @@ const part: PartialDictionary = {
     stateOnlyB: "Só B",
     stateNeither: "Nenhum",
     managerTitleTemplate: "Técnico ({state})",
-    boosterDeltaTemplate: "managerBoosterDelta total {n}",
+    boosterDeltaTemplate: "bônus do técnico total {n}",
     confirmedTemplate: "Confirmado: {list}",
     noConfirmedManagerBoosters: "Nenhum booster de técnico confirmado",
     noManagerImage: "Imagens de técnicos não são exibidas.",

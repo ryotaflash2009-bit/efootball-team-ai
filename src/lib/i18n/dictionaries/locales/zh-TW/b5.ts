@@ -466,7 +466,7 @@ const part: PartialDictionary = {
     confirmedBoostersAppliedPrefix: "已確認的加成已套用至 ",
     confirmedBoostersAppliedSuffix: " 名球員",
     selectManagerTitle: "選擇陣容總教練",
-    none: "未選擇總教練（managerBoosterDelta = 0）",
+    none: "未選擇總教練（總教練加成 = 0）",
     noneDescription: "選擇總教練後，已確認的加成會套用到相關能力值。",
     selectFromList: "從總教練列表選擇",
     change: "變更",

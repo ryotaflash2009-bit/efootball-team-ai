@@ -132,7 +132,7 @@ const part: PartialDictionary = {
     stateOnlyB: "Yalnızca B",
     stateNeither: "Hiçbiri",
     managerTitleTemplate: "Teknik direktör ({state})",
-    boosterDeltaTemplate: "managerBoosterDelta toplamı {n}",
+    boosterDeltaTemplate: "Teknik direktör bonusu toplamı {n}",
     confirmedTemplate: "Doğrulanmış: {list}",
     noConfirmedManagerBoosters: "Doğrulanmış teknik direktör güçlendiricisi yok",
     noManagerImage: "Teknik direktör görselleri gösterilmez.",

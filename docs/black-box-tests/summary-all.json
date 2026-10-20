@@ -5,8 +5,8 @@
       "status": "pass",
       "passed": 522,
       "total": 522,
-      "seconds": 173,
-      "ranAt": "2026-10-17T10:09:06.835Z",
+      "seconds": 177,
+      "ranAt": "2026-10-20T08:30:45.496Z",
       "line": "522/522 PASS",
       "fails": [],
       "report": null
@@ -16,8 +16,8 @@
       "status": "pass",
       "passed": 164,
       "total": 164,
-      "seconds": 23,
-      "ranAt": "2026-10-17T18:06:31.384Z",
+      "seconds": 24,
+      "ranAt": "2026-10-20T08:34:25.041Z",
       "line": "[black-box-account-scoped-storage] 164/164 PASS",
       "fails": [],
       "report": "account-scoped-storage.md"
@@ -27,8 +27,8 @@
       "status": "pass",
       "passed": 34,
       "total": 34,
-      "seconds": 6,
-      "ranAt": "2026-10-17T09:56:54.930Z",
+      "seconds": 7,
+      "ranAt": "2026-10-20T08:34:48.864Z",
       "line": "34/34 PASS",
       "fails": [],
       "report": "alpha-copy-fixes.md"
@@ -38,8 +38,8 @@
       "status": "pass",
       "passed": 71,
       "total": 71,
-      "seconds": 26,
-      "ranAt": "2026-10-17T09:57:01.131Z",
+      "seconds": 27,
+      "ranAt": "2026-10-20T08:34:55.627Z",
       "line": "[black-box-auth-google] 71/71 PASS",
       "fails": [],
       "report": "auth-google.md"
@@ -49,8 +49,8 @@
       "status": "pass",
       "passed": 115,
       "total": 115,
-      "seconds": 150,
-      "ranAt": "2026-10-17T09:57:27.902Z",
+      "seconds": 123,
+      "ranAt": "2026-10-20T08:35:22.554Z",
       "line": "[black-box-base-percentile] 115/115 PASS  レポート: docs\\black-box-tests\\base-percentile.md",
       "fails": [],
       "report": "base-percentile.md"
@@ -60,8 +60,8 @@
       "status": "pass",
       "passed": 42,
       "total": 42,
-      "seconds": 16,
-      "ranAt": "2026-10-17T18:05:51.443Z",
+      "seconds": 20,
+      "ranAt": "2026-10-20T08:37:25.303Z",
       "line": "[black-box-best-xi-optimization] 42/42 PASS",
       "fails": [],
       "report": "best-xi-optimization.md"
@@ -72,7 +72,7 @@
       "passed": 27,
       "total": 27,
       "seconds": 0,
-      "ranAt": "2026-10-17T18:06:07.755Z",
+      "ranAt": "2026-10-20T08:37:44.812Z",
       "line": "[black-box-best-xi] 27/27 PASS",
       "fails": [],
       "report": "best-xi.md"
@@ -82,8 +82,8 @@
       "status": "pass",
       "passed": 54,
       "total": 54,
-      "seconds": 3,
-      "ranAt": "2026-10-17T10:00:52.961Z",
+      "seconds": 1,
+      "ranAt": "2026-10-20T08:37:45.139Z",
       "line": "[black-box-boosters] 54/54 PASS",
       "fails": [],
       "report": "boosters.md"
@@ -93,8 +93,8 @@
       "status": "pass",
       "passed": 41,
       "total": 41,
-      "seconds": 21,
-      "ranAt": "2026-10-17T10:00:55.615Z",
+      "seconds": 15,
+      "ranAt": "2026-10-20T08:37:46.418Z",
       "line": "[black-box-community] 41/41 PASS",
       "fails": [],
       "report": "community.md"
@@ -105,7 +105,7 @@
       "passed": 168,
       "total": 168,
       "seconds": 91,
-      "ranAt": "2026-10-17T18:47:12.544Z",
+      "ranAt": "2026-10-20T08:38:02.245Z",
       "line": "168/168 PASS",
       "fails": [],
       "report": null
@@ -116,7 +116,7 @@
       "passed": 74,
       "total": 74,
       "seconds": 3,
-      "ranAt": "2026-10-17T18:48:43.858Z",
+      "ranAt": "2026-10-20T08:39:32.990Z",
       "line": "[black-box-compare] 74/74 PASS",
       "fails": [],
       "report": "compare.md"
@@ -126,8 +126,8 @@
       "status": "pass",
       "passed": 11,
       "total": 11,
-      "seconds": 3,
-      "ranAt": "2026-10-17T10:02:57.210Z",
+      "seconds": 4,
+      "ranAt": "2026-10-20T09:03:51.989Z",
       "line": "[black-box-cost-rule] 11/11 PASS",
       "fails": [],
       "report": null
@@ -137,8 +137,8 @@
       "status": "pass",
       "passed": 16,
       "total": 16,
-      "seconds": 4,
-      "ranAt": "2026-10-17T10:03:00.108Z",
+      "seconds": 5,
+      "ranAt": "2026-10-20T08:39:46.174Z",
       "line": "16/16 PASS",
       "fails": [],
       "report": null
@@ -148,8 +148,8 @@
       "status": "pass",
       "passed": 32,
       "total": 32,
-      "seconds": 1,
-      "ranAt": "2026-10-17T18:06:08.120Z",
+      "seconds": 2,
+      "ranAt": "2026-10-20T08:39:51.455Z",
       "line": "[black-box-favorites] 32/32 PASS",
       "fails": [],
       "report": null
@@ -160,7 +160,7 @@
       "passed": 37,
       "total": 37,
       "seconds": 5,
-      "ranAt": "2026-10-17T10:27:32.115Z",
+      "ranAt": "2026-10-20T09:00:56.510Z",
       "line": "37/37 PASS",
       "fails": [],
       "report": "final-alpha-readiness-copy.md"
@@ -170,8 +170,8 @@
       "status": "pass",
       "passed": 16,
       "total": 16,
-      "seconds": 9,
-      "ranAt": "2026-10-17T18:48:46.974Z",
+      "seconds": 10,
+      "ranAt": "2026-10-20T08:40:46.522Z",
       "line": "[manager-compare] 16/16 PASS (ids=65,1,56)",
       "fails": [],
       "report": null
@@ -181,8 +181,8 @@
       "status": "pass",
       "passed": 18,
       "total": 18,
-      "seconds": 7,
-      "ranAt": "2026-10-17T17:40:53.468Z",
+      "seconds": 8,
+      "ranAt": "2026-10-20T08:39:52.968Z",
       "line": "[black-box-game-plan] 18/18 PASS",
       "fails": [],
       "report": null
@@ -193,7 +193,7 @@
       "passed": 95,
       "total": 95,
       "seconds": 248,
-      "ranAt": "2026-10-17T18:32:22.270Z",
+      "ranAt": "2026-10-20T08:41:45.862Z",
       "line": "95/95 PASS",
       "fails": [],
       "report": null
@@ -203,8 +203,8 @@
       "status": "pass",
       "passed": 28,
       "total": 28,
-      "seconds": 43,
-      "ranAt": "2026-10-17T10:07:28.909Z",
+      "seconds": 46,
+      "ranAt": "2026-10-20T08:40:00.916Z",
       "line": "[black-box-local-backup] 28/28 PASS",
       "fails": [],
       "report": "local-backup.md"
@@ -215,7 +215,7 @@
       "passed": 32,
       "total": 32,
       "seconds": 80,
-      "ranAt": "2026-10-17T10:27:37.322Z",
+      "ranAt": "2026-10-20T09:01:01.848Z",
       "line": "[black-box-local-posts] 32/32 PASS",
       "fails": [],
       "report": "local-posts.md"
@@ -225,8 +225,8 @@
       "status": "pass",
       "passed": 35,
       "total": 35,
-      "seconds": 6,
-      "ranAt": "2026-10-17T18:48:55.842Z",
+      "seconds": 7,
+      "ranAt": "2026-10-20T08:33:51.436Z",
       "line": "[black-box-manager-picker] 35/35 PASS",
       "fails": [],
       "report": "manager-picker.md"
@@ -236,8 +236,8 @@
       "status": "pass",
       "passed": 43,
       "total": 43,
-      "seconds": 2,
-      "ranAt": "2026-10-17T10:08:18.291Z",
+      "seconds": 3,
+      "ranAt": "2026-10-20T08:33:58.449Z",
       "line": "[black-box-managers] 43/43 PASS",
       "fails": [],
       "report": "managers.md"
@@ -247,8 +247,8 @@
       "status": "pass",
       "passed": 100,
       "total": 100,
-      "seconds": 4,
-      "ranAt": "2026-10-17T18:53:46.931Z",
+      "seconds": 1,
+      "ranAt": "2026-10-20T08:34:01.113Z",
       "line": "[black-box-my-builds] 100/100 PASS",
       "fails": [],
       "report": "my-builds.md"
@@ -258,8 +258,8 @@
       "status": "pass",
       "passed": 98,
       "total": 98,
-      "seconds": 16,
-      "ranAt": "2026-10-17T17:41:01.113Z",
+      "seconds": 17,
+      "ranAt": "2026-10-20T08:40:56.031Z",
       "line": "[black-box-my-team-cloud] 98/98 PASS",
       "fails": [],
       "report": "my-team-cloud.md"
@@ -269,8 +269,8 @@
       "status": "pass",
       "passed": 25,
       "total": 25,
-      "seconds": 18,
-      "ranAt": "2026-10-17T18:28:32.106Z",
+      "seconds": 19,
+      "ranAt": "2026-10-20T08:41:12.775Z",
       "line": "[black-box-new-cards] 25/25 PASS",
       "fails": [],
       "report": "new-cards.md"
@@ -280,8 +280,8 @@
       "status": "pass",
       "passed": 15,
       "total": 15,
-      "seconds": 14,
-      "ranAt": "2026-10-17T18:05:33.648Z",
+      "seconds": 13,
+      "ranAt": "2026-10-20T08:41:31.485Z",
       "line": "[black-box-pack-check] 15/15 PASS",
       "fails": [],
       "report": "pack-check.md"
@@ -292,7 +292,7 @@
       "passed": 23,
       "total": 23,
       "seconds": 0,
-      "ranAt": "2026-10-17T10:09:05.106Z",
+      "ranAt": "2026-10-20T08:41:44.620Z",
       "line": "[black-box] 23/23 PASS",
       "fails": [],
       "report": null
@@ -303,7 +303,7 @@
       "passed": 17,
       "total": 17,
       "seconds": 0,
-      "ranAt": "2026-10-17T10:09:05.502Z",
+      "ranAt": "2026-10-20T08:41:44.938Z",
       "line": "[black-box-c] 17/17 PASS",
       "fails": [],
       "report": null
@@ -313,8 +313,8 @@
       "status": "pass",
       "passed": 99,
       "total": 99,
-      "seconds": 2,
-      "ranAt": "2026-10-17T10:12:00.035Z",
+      "seconds": 3,
+      "ranAt": "2026-10-20T08:34:01.788Z",
       "line": "[black-box-progression] 99/99 PASS",
       "fails": [],
       "report": "progression.md"
@@ -325,7 +325,7 @@
       "passed": 117,
       "total": 117,
       "seconds": 12,
-      "ranAt": "2026-10-17T10:28:57.399Z",
+      "ranAt": "2026-10-20T09:02:22.156Z",
       "line": "[black-box-public-preparation] 117/117 PASS",
       "fails": [],
       "report": "public-preparation.md"
@@ -335,8 +335,8 @@
       "status": "pass",
       "passed": 117,
       "total": 117,
-      "seconds": 105,
-      "ranAt": "2026-10-17T10:12:02.122Z",
+      "seconds": 106,
+      "ranAt": "2026-10-20T08:45:54.017Z",
       "line": "[black-box-public-signup-limited] 117/117 PASS  レポート: docs\\black-box-tests\\public-signup-limited.md",
       "fails": [],
       "report": "public-signup-limited.md"
@@ -347,7 +347,7 @@
       "passed": 71,
       "total": 71,
       "seconds": 13,
-      "ranAt": "2026-10-17T10:29:09.326Z",
+      "ranAt": "2026-10-20T09:02:34.462Z",
       "line": "[black-box-rls-test] 71/71 PASS",
       "fails": [],
       "report": "rls-test.md"
@@ -357,8 +357,8 @@
       "status": "pass",
       "passed": 9,
       "total": 9,
-      "seconds": 5,
-      "ranAt": "2026-10-17T18:06:09.446Z",
+      "seconds": 6,
+      "ranAt": "2026-10-20T08:47:39.680Z",
       "line": "[black-box-same-player] 9/9 PASS",
       "fails": [],
       "report": "same-player.md"
@@ -368,8 +368,8 @@
       "status": "pass",
       "passed": 11,
       "total": 11,
-      "seconds": 7,
-      "ranAt": "2026-10-17T10:14:12.620Z",
+      "seconds": 8,
+      "ranAt": "2026-10-20T08:47:45.674Z",
       "line": "11/11 PASS",
       "fails": [],
       "report": null
@@ -379,8 +379,8 @@
       "status": "pass",
       "passed": 6,
       "total": 6,
-      "seconds": 2,
-      "ranAt": "2026-10-17T18:53:50.557Z",
+      "seconds": 3,
+      "ranAt": "2026-10-20T08:34:04.632Z",
       "line": "6/6 PASS",
       "fails": [],
       "report": null
@@ -390,8 +390,8 @@
       "status": "pass",
       "passed": 24,
       "total": 24,
-      "seconds": 64,
-      "ranAt": "2026-10-17T10:14:22.890Z",
+      "seconds": 62,
+      "ranAt": "2026-10-20T08:47:53.425Z",
       "line": "[black-box-share-card] 24/24 PASS",
       "fails": [],
       "report": "share-card.md"
@@ -401,8 +401,8 @@
       "status": "pass",
       "passed": 5,
       "total": 5,
-      "seconds": 2,
-      "ranAt": "2026-10-17T10:15:26.585Z",
+      "seconds": 1,
+      "ranAt": "2026-10-20T08:48:55.455Z",
       "line": "[black-box-squad-list-banner] 5/5 PASS",
       "fails": [],
       "report": "squad-list-banner.md"
@@ -412,8 +412,8 @@
       "status": "pass",
       "passed": 23,
       "total": 23,
-      "seconds": 10,
-      "ranAt": "2026-10-17T10:15:28.616Z",
+      "seconds": 9,
+      "ranAt": "2026-10-20T08:48:56.921Z",
       "line": "[black-box-squad-placement-assist] 23/23 PASS",
       "fails": [],
       "report": "squad-placement-assist.md"
@@ -424,7 +424,7 @@
       "passed": 12,
       "total": 12,
       "seconds": 0,
-      "ranAt": "2026-10-17T10:15:38.228Z",
+      "ranAt": "2026-10-20T08:49:05.928Z",
       "line": "[black-box-squad-use] 12/12 PASS",
       "fails": [],
       "report": "squad-use.md"
@@ -435,7 +435,7 @@
       "passed": 51,
       "total": 51,
       "seconds": 1,
-      "ranAt": "2026-10-17T18:06:17.192Z",
+      "ranAt": "2026-10-20T08:49:06.157Z",
       "line": "[black-box-squads] 51/51 PASS",
       "fails": [],
       "report": "squads.md"
@@ -446,7 +446,7 @@
       "passed": 173,
       "total": 173,
       "seconds": 36,
-      "ranAt": "2026-10-17T10:15:44.389Z",
+      "ranAt": "2026-10-20T08:49:07.445Z",
       "line": "[black-box-supabase-auth] 173/173 PASS",
       "fails": [],
       "report": "supabase-auth.md"
@@ -457,7 +457,7 @@
       "passed": 39,
       "total": 39,
       "seconds": 4,
-      "ranAt": "2026-10-17T10:29:22.188Z",
+      "ranAt": "2026-10-20T09:02:47.491Z",
       "line": "[black-box-support-contact] 39/39 PASS",
       "fails": [],
       "report": "support-contact.md"
@@ -468,7 +468,7 @@
       "passed": 71,
       "total": 71,
       "seconds": 1,
-      "ranAt": "2026-10-17T18:53:52.380Z",
+      "ranAt": "2026-10-20T08:34:07.413Z",
       "line": "[black-box-ui] 71/71 PASS",
       "fails": [],
       "report": "ui.md"
@@ -479,7 +479,7 @@
       "passed": 35,
       "total": 35,
       "seconds": 3,
-      "ranAt": "2026-10-17T10:16:21.288Z",
+      "ranAt": "2026-10-20T08:49:43.897Z",
       "line": "[black-box-world] 35/35 PASS",
       "fails": [],
       "report": null
@@ -489,8 +489,8 @@
       "status": "pass",
       "passed": 93,
       "total": 93,
-      "seconds": 12,
-      "ranAt": "2026-10-17T18:53:53.223Z",
+      "seconds": 13,
+      "ranAt": "2026-10-20T08:34:08.336Z",
       "line": "[black-box-world-ui] 93/93 PASS",
       "fails": [],
       "report": "world-ui.md"
@@ -500,12 +500,12 @@
       "status": "pass",
       "passed": 2,
       "total": 2,
-      "seconds": 581,
-      "ranAt": "2026-10-17T18:15:55.570Z",
+      "seconds": 600,
+      "ranAt": "2026-10-20T08:49:58.438Z",
       "line": "[black-box-release-gate] PASS (2/2 rails)",
       "fails": [],
       "report": null
     }
   },
-  "updatedAt": "2026-10-17T18:54:05.431Z"
+  "updatedAt": "2026-10-20T09:03:55.842Z"
 }

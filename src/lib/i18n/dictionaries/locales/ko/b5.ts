@@ -466,7 +466,7 @@ const part: PartialDictionary = {
     confirmedBoostersAppliedPrefix: "확인된 부스터 적용: ",
     confirmedBoostersAppliedSuffix: "명",
     selectManagerTitle: "스쿼드 감독 선택",
-    none: "감독 미선택(managerBoosterDelta = 0)",
+    none: "감독 미선택(감독 보정 = 0)",
     noneDescription: "감독을 선택하면 확인된 부스터가 해당 능력치에 적용됩니다.",
     selectFromList: "감독 목록에서 선택",
     change: "변경",

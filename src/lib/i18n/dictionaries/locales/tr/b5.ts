@@ -466,7 +466,7 @@ const part: PartialDictionary = {
     confirmedBoostersAppliedPrefix: "Doğrulanmış güçlendirici uygulanan: ",
     confirmedBoostersAppliedSuffix: " oyuncu",
     selectManagerTitle: "Kadro Teknik Direktörünü Seç",
-    none: "Teknik direktör seçilmedi (managerBoosterDelta = 0)",
+    none: "Teknik direktör seçilmedi (teknik direktör bonusu = 0)",
     noneDescription: "Bir teknik direktör seçildiğinde, doğrulanmış güçlendiriciler ilgili özelliklere uygulanır.",
     selectFromList: "Teknik direktör listesinden seç",
     change: "Değiştir",

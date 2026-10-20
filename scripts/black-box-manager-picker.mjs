@@ -109,7 +109,7 @@ async function main() {
   // 5. 育成画面：選択中監督の要約カード（監督なし初期状態）
   const messiWorld = (await json(`/api/world/players?q=${encodeURIComponent("メッシ")}&pageSize=1&sort=ovr_max_desc`)).data.players[0].worldCardId;
   const prog = await get(`/players/world/${messiWorld}`);
-  record("育成: 「監督なし（managerBoosterDelta = 0）」を初期表示", prog.body.includes("監督なし（managerBoosterDelta = 0）"), "");
+  record("育成: 「監督なし（監督の補正 = 0）」を初期表示", prog.body.includes("監督なし（監督の補正 = 0）"), "");
   record("育成: 「監督一覧から選択」ボタン（検索ボックスではなく一覧が主操作）", prog.body.includes("監督一覧から選択"), "");
   record("育成: 監督なし要約カードは「監督を選ぶと確認済みブースターが対象能力へ適用」と案内", prog.body.includes("監督を選ぶと") && prog.body.includes("確認済みブースター"), "");
   record("育成: 監督補正は独立レイヤー（managerBoosterDelta）として能力値比較に列がある", prog.body.includes("選択した監督のブースター効果"), "");

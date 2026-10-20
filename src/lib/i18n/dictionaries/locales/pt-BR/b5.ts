@@ -466,7 +466,7 @@ const part: PartialDictionary = {
     confirmedBoostersAppliedPrefix: "Booster confirmado aplicado a ",
     confirmedBoostersAppliedSuffix: " jogador(es)",
     selectManagerTitle: "Selecionar técnico do elenco",
-    none: "Nenhum técnico selecionado (managerBoosterDelta = 0)",
+    none: "Nenhum técnico selecionado (bônus do técnico = 0)",
     noneDescription: "Ao selecionar um técnico, os boosters confirmados são aplicados aos atributos afetados.",
     selectFromList: "Escolher da lista de técnicos",
     change: "Trocar",

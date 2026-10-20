@@ -132,7 +132,7 @@ const squadCompareBoard: Dictionary["squadCompareBoard"] = {
   stateOnlyB: "Bのみ",
   stateNeither: "両方なし",
   managerTitleTemplate: "監督（{state}）",
-  boosterDeltaTemplate: "managerBoosterDelta 合計 {n}",
+  boosterDeltaTemplate: "監督の補正 合計 {n}",
   confirmedTemplate: "確認済み: {list}",
   noConfirmedManagerBoosters: "確認済み監督ブースターなし",
   noManagerImage: "監督画像は表示しません。",

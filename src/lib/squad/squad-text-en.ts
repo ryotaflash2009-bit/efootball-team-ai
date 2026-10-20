@@ -16,7 +16,7 @@ const FIXED_EN: Record<string, string> = {
   "カテゴリ平均・チーム評価は単純計算です（eFootball の公式チームパワー・カテゴリ重みとは異なります）。":
     "Category averages and team ratings are simple calculations (they differ from eFootball's official team strength and category weights).",
   "監督ブースターの適用順序（育成前 / 育成後）は未確認です。": "Whether manager boosters apply before or after progression is unconfirmed.",
-  "監督は未選択（managerBoosterDelta = 0）。": "No manager selected (managerBoosterDelta = 0).",
+  "監督は未選択（監督の補正 = 0）。": "No manager selected (manager boost = 0).",
   // position.ts
   "適性未確認": "Suitability unconfirmed",
   "登録ポジションのデータがありません。": "No registered position data.",
