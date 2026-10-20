@@ -1,5 +1,6 @@
 "use client";
 
+import { GlossaryLink } from "@/components/public-info/GlossaryLink";
 import "@/lib/i18n/dictionaries/ja-ns/provisionalCards";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -62,6 +63,7 @@ export function ProvisionalCardsView({
   return (
     <div className="flex flex-col gap-5" data-testid="provisional-cards">
       <PageHeader title={tp("newCardsPageTitle")} icon="players" description={tp("newCardsIntro")} />
+      <GlossaryLink anchor="provisional-card" />
 
       <NewCardsTeamImpact newCards={[...recent, ...cards]} />
 

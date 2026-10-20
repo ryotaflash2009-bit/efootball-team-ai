@@ -681,6 +681,7 @@ const part: PartialDictionary = {
     heading: "Glossário (como é usado no TeamAIXI)",
     intro: "Explica os termos que aparecem no TeamAIXI como este site os usa. Não é uma descrição oficial das regras do jogo.",
     tocLabel: "Termos",
+    linkLabel: "O que significam estes termos",
     ovrBaseTerm: "OVR base",
     ovrBaseBody: "A avaliação geral da carta ao obtê-la (antes do treino), como informada pela fonte (eFootball World).",
     ovrMaxTerm: "OVR máx.",
