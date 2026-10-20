@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 import { JA_CORE_NAMESPACES } from "./dictionaries/ja";
@@ -6,6 +6,9 @@ import { JA_SPLIT_NAMESPACES } from "./dictionaries/ja-ns/all";
 import jaFull from "./dictionaries/ja-full";
 import en from "./dictionaries/en";
 import { jaSplitNamespace } from "./dictionaries/ja-registry";
+
+// 重いテスト（全ファイルを読む・巨大な入力）。混んだ PC では既定の 5 秒を超えることがあるため、このファイルだけ延ばす（2026-10-20）
+vi.setConfig({ testTimeout: 30_000 });
 
 /**
  * 日本語の辞書の分割（2026-10-04）の守り。核（ja.ts）以外の名前空間を使うファイルは、必ず ja-ns/<名前空間> を import する。

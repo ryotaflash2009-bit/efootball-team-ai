@@ -10,6 +10,7 @@ import { HomePageView, type HomeMiniCardData, type HomePageWorldSummary } from "
 import { settledInOrder } from "@/lib/settled-in-order";
 import { classifyHomeFailure } from "@/lib/home-failure";
 import { pageMetadata } from "@/lib/seo/page-metadata";
+import { NEW_CARD_DAYS, RECENT_LIMIT } from "@/lib/new-cards/constants";
 import { JsonLdScript } from "@/components/seo/JsonLdScript";
 import { websiteJsonLd } from "@/lib/seo/structured-data";
 
@@ -65,9 +66,10 @@ export default async function HomePage() {
   const handling = classifyHomeFailure(settled.failure ? settled.failure.reason : undefined);
   if (handling === "throw") throw settled.failure!.reason;
   const temporaryError = handling === "temporary";
-  // 5 分ごとの作り直し（ISR）で一時的な照会の失敗が起きたときは投げる＝前の正しいページを出し続ける（2026-10-18）。
-  // ビルドの時（前のページが無い）は従来どおり、得られた値だけで表示する。
-  if (temporaryError && process.env.NEXT_PHASE !== "phase-production-build") throw settled.failure!.reason;
+  // 本番の 5 分ごとの作り直し（ISR）で照会が失敗したら（一時的・データなしのどちらも）投げる＝前の正しいページを出し続ける（2026-10-18/20）。
+  // ビルドの時（前のページが無い）と開発（next dev）は従来どおり、得られた値だけで表示する（「一時的に読み込めなかった」の表示）。
+  const isIsrRefresh = process.env.NODE_ENV === "production" && process.env.NEXT_PHASE !== "phase-production-build";
+  if (isIsrRefresh && handling !== "none") throw settled.failure!.reason;
   // 従来は最初の失敗までに得た値だけを表示していた。照会順で失敗より前の結果だけを使う。
   if (settled.usable(0) && metaR.status === "fulfilled") {
     world = { totalCount: metaR.value.totalCount, source: metaR.value.source, syncFinishedAt: metaR.value.syncFinishedAt, latestCardUpdatedAt: metaR.value.latestCardUpdatedAt ?? null };
@@ -75,6 +77,16 @@ export default async function HomePage() {
   if (settled.usable(1) && topR.status === "fulfilled") topOvr = topR.value.players.map(toMiniCardData);
   if (settled.usable(2) && recentR.status === "fulfilled") recent = recentR.value.players.map(toMiniCardData);
   if (settled.usable(3) && managersR.status === "fulfilled") managerCount = managersR.value;
+
+  // 新しいカードの枚数。作り直しの時に取れなければ投げる（少ない枚数のページを 5 分出し続けない）
+  let recentlyAdded: unknown[];
+  try {
+    recentlyAdded = await cachedListRecentlyAddedPlayers(NEW_CARD_DAYS, RECENT_LIMIT);
+  } catch (err) {
+    if (isIsrRefresh) throw err;
+    recentlyAdded = [];
+  }
+  const provisionalCount = listProvisionalPlayers().length + recentlyAdded.length;
 
   return (
     <>
@@ -86,7 +98,7 @@ export default async function HomePage() {
         topOvr={topOvr}
         recent={recent}
         temporaryError={temporaryError}
-        provisionalCount={listProvisionalPlayers().length + (await cachedListRecentlyAddedPlayers(7, 500).catch(() => [])).length}
+        provisionalCount={provisionalCount}
       />
     </>
   );

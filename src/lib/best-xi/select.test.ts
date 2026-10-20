@@ -1,10 +1,13 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { calculateBuild, emptyAllocation } from "@/lib/progression/engine";
 import { MESSI_BIGTIME } from "@/lib/progression/fixtures";
 import type { ProgressionCard, StatBreakdown } from "@/lib/progression/types";
 import type { BestXiCandidate } from "./types";
 import { selectBestXi } from "./select";
 import { computeRankTuple } from "./rank";
+
+// 重いテスト（全ファイルを読む・巨大な入力）。混んだ PC では既定の 5 秒を超えることがあるため、このファイルだけ延ばす（2026-10-20）
+vi.setConfig({ testTimeout: 30_000 });
 
 const NOW = "2026-09-10T00:00:00.000Z";
 

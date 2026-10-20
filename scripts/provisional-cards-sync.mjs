@@ -31,7 +31,7 @@ const site = argv.includes("--site") ? argv[argv.indexOf("--site") + 1] : "https
 const now = new Date().toISOString();
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-/** 一時的な失敗（5xx・通信の失敗）は 2 回まで待って読み直す（2026-10-18: 本番 API の一時的な 500 で同期全体が失敗した）。4xx は読み直さない。 */
+/** 一時的な失敗（429・5xx・通信の失敗）は 2 回まで待って読み直す（2026-10-18: 本番 API の一時的な 500 で同期全体が失敗した）。4xx は読み直さない。 */
 async function fetchWithRetry(url, init) {
   let lastError;
   for (let attempt = 0; attempt < 3; attempt += 1) {
@@ -40,7 +40,7 @@ async function fetchWithRetry(url, init) {
       const res = await fetch(url, { ...init, signal: AbortSignal.timeout(25_000) });
       if (res.ok) return res;
       lastError = new Error(`http_${res.status}`);
-      if (res.status < 500) break;
+      if (res.status < 500 && res.status !== 429) break; // 429（混雑）と 5xx だけ読み直す
     } catch (e) {
       lastError = e;
     }

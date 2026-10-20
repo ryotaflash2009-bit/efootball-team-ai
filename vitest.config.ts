@@ -12,9 +12,6 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    // 全ファイルを読む・大きな入力の決定性などの重いテストは、他の作業で混んだ PC では既定の 5 秒を超えることがある（2026-10-20）。
-    // 確かめる内容は変えず、待つ時間だけ延ばす。
-    testTimeout: 20_000,
     include: ["src/**/*.test.ts"],
     // 英語の辞書は本番では後から読み込む（translate.ts）。テストでは最初から登録しておく。
     setupFiles: ["./src/test-setup/register-dictionaries.ts"],
