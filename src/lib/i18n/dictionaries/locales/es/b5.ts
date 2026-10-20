@@ -466,7 +466,7 @@ const part: PartialDictionary = {
     confirmedBoostersAppliedPrefix: "Potenciador confirmado aplicado a ",
     confirmedBoostersAppliedSuffix: " jugador(es)",
     selectManagerTitle: "Elegir entrenador de la plantilla",
-    none: "Ningún entrenador seleccionado (managerBoosterDelta = 0)",
+    none: "Ningún entrenador seleccionado (bonificación del entrenador = 0)",
     noneDescription: "Al elegir un entrenador se aplican los potenciadores confirmados a los atributos afectados.",
     selectFromList: "Elegir de la lista de entrenadores",
     change: "Cambiar",

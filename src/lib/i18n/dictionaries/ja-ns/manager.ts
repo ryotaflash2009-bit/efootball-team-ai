@@ -7,7 +7,7 @@ const manager: Dictionary["manager"] = {
   confirmedBoostersAppliedPrefix: "確認済みブースターを ",
   confirmedBoostersAppliedSuffix: " 人へ適用中",
   selectManagerTitle: "スカッドの監督を選択",
-  none: "監督なし（managerBoosterDelta = 0）",
+  none: "監督なし（監督の補正 = 0）",
   noneDescription: "監督を選ぶと、確認済みブースターが対象能力へ適用されます。",
   selectFromList: "監督一覧から選択",
   change: "変更",

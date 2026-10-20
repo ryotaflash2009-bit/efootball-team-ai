@@ -132,7 +132,7 @@ const part: PartialDictionary = {
     stateOnlyB: "B만",
     stateNeither: "둘 다 없음",
     managerTitleTemplate: "감독 ({state})",
-    boosterDeltaTemplate: "managerBoosterDelta 합계 {n}",
+    boosterDeltaTemplate: "감독 보정 합계 {n}",
     confirmedTemplate: "확인됨: {list}",
     noConfirmedManagerBoosters: "확인된 감독 부스터 없음",
     noManagerImage: "감독 이미지는 표시하지 않습니다.",

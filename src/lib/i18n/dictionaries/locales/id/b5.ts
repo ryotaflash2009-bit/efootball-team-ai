@@ -466,7 +466,7 @@ const part: PartialDictionary = {
     confirmedBoostersAppliedPrefix: "Booster terkonfirmasi diterapkan ke ",
     confirmedBoostersAppliedSuffix: " pemain",
     selectManagerTitle: "Pilih Manajer Skuad",
-    none: "Belum ada manajer dipilih (managerBoosterDelta = 0)",
+    none: "Belum ada manajer dipilih (bonus manajer = 0)",
     noneDescription: "Memilih manajer akan menerapkan booster terkonfirmasi ke atribut yang terpengaruh.",
     selectFromList: "Pilih dari daftar manajer",
     change: "Ganti",

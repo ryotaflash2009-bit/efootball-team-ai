@@ -466,7 +466,7 @@ const part: PartialDictionary = {
     confirmedBoostersAppliedPrefix: "已确认加成已应用于 ",
     confirmedBoostersAppliedSuffix: " 名球员",
     selectManagerTitle: "选择阵容主教练",
-    none: "未选择主教练（managerBoosterDelta = 0）",
+    none: "未选择主教练（主教练加成 = 0）",
     noneDescription: "选择主教练后，已确认的加成会应用于相应能力值。",
     selectFromList: "从主教练列表中选择",
     change: "更改",

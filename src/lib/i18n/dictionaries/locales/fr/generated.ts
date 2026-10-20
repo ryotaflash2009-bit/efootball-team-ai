@@ -237,7 +237,7 @@ const catalog: GeneratedCatalog = {
       "このスカッドは旧い規則バージョンで保存されています。現行規則で再計算して表示しています。": "Cet effectif a été enregistré avec une ancienne version des règles. Il est recalculé et affiché avec les règles actuelles.",
       "カテゴリ平均・チーム評価は単純計算です（eFootball の公式チームパワー・カテゴリ重みとは異なります）。": "Les moyennes par catégorie et les notes d’équipe sont des calculs simples (elles diffèrent de la force d’équipe et des pondérations de catégorie officielles d’eFootball).",
       "監督ブースターの適用順序（育成前 / 育成後）は未確認です。": "On ne sait pas encore si les boosters d’entraîneur s’appliquent avant ou après la progression.",
-      "監督は未選択（managerBoosterDelta = 0）。": "Aucun entraîneur sélectionné (managerBoosterDelta = 0).",
+      "監督は未選択（監督の補正 = 0）。": "Aucun entraîneur sélectionné (bonus de l'entraîneur = 0).",
       "適性未確認": "Aptitude non confirmée",
       "登録ポジションのデータがありません。": "Aucune donnée de poste enregistré.",
       "登録ポジションと一致": "Correspond au poste enregistré",

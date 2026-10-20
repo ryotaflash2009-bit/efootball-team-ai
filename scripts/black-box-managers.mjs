@@ -123,7 +123,7 @@ async function main() {
   const messiWorld = (await json(`/api/world/players?q=${encodeURIComponent("メッシ")}&pageSize=1&sort=ovr_max_desc`)).data.players[0].worldCardId;
   const pd = await get(`/players/world/${messiWorld}`);
   record("育成タブ: 監督補正セクション（監督を選択）がある", pd.body.includes("監督を選択") || pd.body.includes("監督なし"), "");
-  record("育成タブ: 監督なし時 managerBoosterDelta=0 の注記", pd.body.includes("managerBoosterDelta = 0") || pd.body.includes("監督なし"), "");
+  record("育成タブ: 監督なし時 監督の補正 = 0 の注記", pd.body.includes("監督の補正 = 0") || pd.body.includes("監督なし"), "");
   // 監督詳細 API + World 詳細 API から、補正の期待値を検算（クライアント計算の再現）
   const worldDetail = (await json(`/api/world/players/${messiWorld}`)).data.player;
   const baseDA = worldDetail.stats.find((s) => s.key === "defensiveAwareness")?.value ?? null;

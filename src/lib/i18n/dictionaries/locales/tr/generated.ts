@@ -237,7 +237,7 @@ const catalog: GeneratedCatalog = {
       "このスカッドは旧い規則バージョンで保存されています。現行規則で再計算して表示しています。": "Bu kadro eski bir kural sürümüyle kaydedildi. Mevcut kurallarla yeniden hesaplanıp gösteriliyor.",
       "カテゴリ平均・チーム評価は単純計算です（eFootball の公式チームパワー・カテゴリ重みとは異なります）。": "Kategori ortalamaları ve takım değerlendirmeleri basit hesaplamalardır (eFootball'un resmî takım gücünden ve kategori ağırlıklarından farklıdır).",
       "監督ブースターの適用順序（育成前 / 育成後）は未確認です。": "Teknik direktör güçlendiricilerinin gelişimden önce mi sonra mı uygulandığı doğrulanmadı.",
-      "監督は未選択（managerBoosterDelta = 0）。": "Teknik direktör seçilmedi (managerBoosterDelta = 0).",
+      "監督は未選択（監督の補正 = 0）。": "Teknik direktör seçilmedi (teknik direktör bonusu = 0).",
       "適性未確認": "Uygunluk doğrulanmadı",
       "登録ポジションのデータがありません。": "Kayıtlı mevki verisi yok.",
       "登録ポジションと一致": "Kayıtlı mevkiyle eşleşiyor",

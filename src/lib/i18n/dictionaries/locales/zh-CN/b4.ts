@@ -132,7 +132,7 @@ const part: PartialDictionary = {
     stateOnlyB: "仅 B",
     stateNeither: "均无",
     managerTitleTemplate: "主教练（{state}）",
-    boosterDeltaTemplate: "managerBoosterDelta 合计 {n}",
+    boosterDeltaTemplate: "主教练加成 合计 {n}",
     confirmedTemplate: "已确认：{list}",
     noConfirmedManagerBoosters: "没有已确认的主教练加成",
     noManagerImage: "不显示主教练图片。",

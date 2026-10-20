@@ -198,7 +198,7 @@ export function buildSquad(input: BuildSquadInput): SquadComputed {
       context: manager,
       applied: !!manager && manager.confirmationStatus === "confirmed",
       note: !manager
-        ? "監督は未選択（managerBoosterDelta = 0）。"
+        ? "監督は未選択（監督の補正 = 0）。"
         : manager.confirmationStatus === "confirmed"
           ? `監督「${manager.managerName ?? "?"}」の確認済みブースターを全選手へ適用しています。`
           : `監督「${manager.managerName ?? "?"}」のブースター効果は未確認のため適用していません（表示のみ）。`,
