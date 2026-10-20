@@ -681,6 +681,7 @@ const part: PartialDictionary = {
     heading: "용어집 (TeamAIXI에서의 의미)",
     intro: "TeamAIXI 화면에 나오는 용어를 이 사이트의 사용 방식에 맞춰 설명합니다. 게임 사양의 공식 설명이 아닙니다.",
     tocLabel: "용어 목록",
+    linkLabel: "용어 설명",
     ovrBaseTerm: "기본 OVR",
     ovrBaseBody: "카드를 얻었을 때(육성 전)의 종합치입니다. 출처(eFootball World)의 값을 그대로 표시합니다.",
     ovrMaxTerm: "최대 OVR",

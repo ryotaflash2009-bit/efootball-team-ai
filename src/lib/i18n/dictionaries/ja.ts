@@ -5315,6 +5315,7 @@ export interface Dictionary {
     heading: string;
     intro: string;
     tocLabel: string;
+    linkLabel: string;
     ovrBaseTerm: string;
     ovrBaseBody: string;
     ovrMaxTerm: string;

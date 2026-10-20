@@ -681,6 +681,7 @@ const part: PartialDictionary = {
     heading: "Sözlük (TeamAIXI'deki anlamıyla)",
     intro: "TeamAIXI'de görünen terimleri bu sitenin kullandığı anlamıyla açıklar. Oyun kurallarının resmi açıklaması değildir.",
     tocLabel: "Terimler",
+    linkLabel: "Bu terimlerin anlamı",
     ovrBaseTerm: "Temel OVR",
     ovrBaseBody: "Kartı aldığındaki (antrenmandan önceki) genel puanı; kaynağın (eFootball World) verdiği değer gösterilir.",
     ovrMaxTerm: "Maks. OVR",

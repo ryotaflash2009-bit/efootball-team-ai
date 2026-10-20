@@ -1,5 +1,6 @@
 "use client";
 
+import { GlossaryLink } from "@/components/public-info/GlossaryLink";
 import "@/lib/i18n/dictionaries/ja-ns/tierList";
 import Link from "next/link";
 import { useState } from "react";
@@ -53,6 +54,7 @@ export function TierListView({
       <Surface tone="outline" padding="md" className="flex flex-col gap-1 text-xs text-text-dim" data-testid="tier-rules">
         <p>{tt("rulesBody")}</p>
         <p className="font-semibold text-text">{tt("notStrengthNotice")}</p>
+        <GlossaryLink anchor="tier" />
         <p className="text-2xs text-text-muted">
           {fillMessage(tt("sourceTemplate"), { version: OWN_TIER_RULES_VERSION, date: syncFinishedAt ? syncFinishedAt.slice(0, 10) : "—" })}
         </p>

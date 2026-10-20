@@ -681,6 +681,7 @@ const part: PartialDictionary = {
     heading: "Glosarium (sebagaimana dipakai di TeamAIXI)",
     intro: "Menjelaskan istilah yang muncul di TeamAIXI sesuai cara situs ini memakainya. Ini bukan penjelasan resmi aturan game.",
     tocLabel: "Daftar istilah",
+    linkLabel: "Arti istilah ini",
     ovrBaseTerm: "OVR dasar",
     ovrBaseBody: "Nilai keseluruhan kartu saat didapat (sebelum latihan), ditampilkan sesuai sumber (eFootball World).",
     ovrMaxTerm: "OVR maks",

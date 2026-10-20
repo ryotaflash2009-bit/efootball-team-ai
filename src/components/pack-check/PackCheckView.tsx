@@ -1,5 +1,6 @@
 "use client";
 
+import { GlossaryLink } from "@/components/public-info/GlossaryLink";
 import "@/lib/i18n/dictionaries/ja-ns/packCheck";
 import "@/lib/i18n/dictionaries/ja-ns/provisionalCards";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -145,6 +146,7 @@ export function PackCheckView() {
     <div className="flex flex-col gap-4" data-testid="pack-check">
       <PageHeader title={tp("heading")} icon="pack" description={tp("intro")} />
       <p className="text-xs text-text-muted">{tp("privacyNote")}</p>
+      <GlossaryLink anchor="ovr-max" />
 
       <Surface padding="md" className="flex flex-col gap-2 text-sm">
         <label htmlFor="pack-check-q" className="font-semibold">

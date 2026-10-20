@@ -7,6 +7,7 @@ const glossary: Dictionary["glossary"] = {
   heading: "用語集（TeamAIXI での意味）",
   intro: "TeamAIXI の画面に出てくる言葉を、このサイトでの使い方に沿って説明します。ゲーム内の仕様の公式な説明ではありません。",
   tocLabel: "用語の一覧",
+  linkLabel: "用語の説明",
   ovrBaseTerm: "基礎 OVR",
   ovrBaseBody: "カードを手に入れたとき（育成の前）の総合値です。取得元（eFootball World）の値をそのまま表示します。",
   ovrMaxTerm: "最大 OVR",

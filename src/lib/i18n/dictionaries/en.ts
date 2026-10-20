@@ -5377,6 +5377,7 @@ const en: Dictionary = {
     heading: "Glossary (as used in TeamAIXI)",
     intro: "Explains the terms that appear in TeamAIXI as this site uses them. This is not an official description of the game's rules.",
     tocLabel: "Terms",
+    linkLabel: "What these terms mean",
     ovrBaseTerm: "Base OVR",
     ovrBaseBody: "The card's overall rating when you get it (before training), shown as given by the source (eFootball World).",
     ovrMaxTerm: "Max OVR",

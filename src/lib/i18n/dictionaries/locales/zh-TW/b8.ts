@@ -681,6 +681,7 @@ const part: PartialDictionary = {
     heading: "術語表（TeamAIXI 中的意思）",
     intro: "依本站的用法說明 TeamAIXI 畫面中出現的術語。並非遊戲規則的官方說明。",
     tocLabel: "術語一覽",
+    linkLabel: "術語說明",
     ovrBaseTerm: "基礎 OVR",
     ovrBaseBody: "取得卡時（培養前）的綜合值，依來源（eFootball World）的數值顯示。",
     ovrMaxTerm: "最高 OVR",
