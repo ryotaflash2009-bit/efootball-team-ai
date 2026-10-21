@@ -507,6 +507,7 @@ const part: PartialDictionary = {
     baseOvrLabel: "基礎 OVR",
     maxOvrFactLabel: "最高 OVR",
     maxLevelLabel: "最高等級",
+    addedLabel: "加入 TeamAIXI",
     preferredFootLabel: "慣用腳",
     heightWeightTemplate: "身高／體重",
     teamLabel: "球隊",

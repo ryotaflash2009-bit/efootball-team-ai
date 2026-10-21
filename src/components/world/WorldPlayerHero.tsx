@@ -1,6 +1,7 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
+import { formatDate } from "@/lib/i18n/format";
 import "@/lib/i18n/dictionaries/ja-ns/worldPlayerHero";
 import Link from "next/link";
 import type { WorldPlayerDetail } from "@/lib/world/types";
@@ -20,7 +21,7 @@ export type SafeWorldPlayerDetail = Omit<WorldPlayerDetail, "imageUrlCandidate" 
 /** 選手詳細のヒーロー。画像 + 主要情報 + 操作を常時表示。imageSources は呼び出し側で解決済みのものを渡す。 */
 export function WorldPlayerHero({ player, imageSources: sources }: { player: SafeWorldPlayerDetail; imageSources: string[] }) {
   const t = useT();
-  const { locale } = useLocale();
+  const { locale, displayLocale } = useLocale();
   const th = (k: keyof Dictionary["worldPlayerHero"]) => t("worldPlayerHero", k);
   const name = resolvePlayerDisplayName(player, locale, t("squadBuildPanel", "cardFallbackNameTemplate").replace("{id}", player.worldCardId));
 
@@ -28,6 +29,7 @@ export function WorldPlayerHero({ player, imageSources: sources }: { player: Saf
     { label: th("baseOvrLabel"), value: `${player.ovrBase ?? "–"}` },
     { label: th("maxOvrFactLabel"), value: `${player.ovrMax ?? "–"}` },
     { label: th("maxLevelLabel"), value: `${player.maximumLevel ?? "–"}` },
+    { label: th("addedLabel"), value: player.addedAt ? formatDate(new Date(player.addedAt), displayLocale) : "—" },
     { label: th("preferredFootLabel"), value: player.preferredFoot ?? "—" },
     { label: th("heightWeightTemplate"), value: `${player.height ?? "–"}cm / ${player.weight ?? "–"}kg` },
     { label: th("teamLabel"), value: player.team ?? "—" },
@@ -64,6 +66,11 @@ export function WorldPlayerHero({ player, imageSources: sources }: { player: Saf
           <p className="text-sm text-text-dim">{player.nameEn || th("noEnglishName")}</p>
 
           <div className="mt-2.5 flex flex-wrap gap-1.5">
+            {player.isNew ? (
+              <span data-testid="detail-new-badge" className="contents">
+                <Badge tone="accent">NEW</Badge>
+              </span>
+            ) : null}
             {player.registeredPosition ? <Badge tone="neutral">{player.registeredPosition}</Badge> : null}
             {player.cardType ? <Badge tone="outline">{player.cardType}</Badge> : null}
             {player.playingStyle ? <Badge tone="accent">{player.playingStyle}</Badge> : null}

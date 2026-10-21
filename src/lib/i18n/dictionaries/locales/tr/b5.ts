@@ -507,6 +507,7 @@ const part: PartialDictionary = {
     baseOvrLabel: "Temel OVR",
     maxOvrFactLabel: "Maks. OVR",
     maxLevelLabel: "Maksimum seviye",
+    addedLabel: "TeamAIXI'ye eklendi",
     preferredFootLabel: "Tercih edilen ayak",
     heightWeightTemplate: "Boy / Kilo",
     teamLabel: "Takım",

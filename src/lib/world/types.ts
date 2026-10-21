@@ -93,6 +93,8 @@ export interface WorldAppearance {
 
 /** 選手詳細 */
 export interface WorldPlayerDetail extends WorldPlayerListItem {
+  /** 最近 7 日に追加されたカード（サーバーで判定・2026-10-21）。 */
+  isNew?: boolean;
   stats: WorldStatValue[];
   playerSkills: string[];
   aiStyles: string[];

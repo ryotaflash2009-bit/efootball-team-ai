@@ -161,6 +161,13 @@ async function main() {
     // 選手の一覧: 最近 7 日に追加されたカードに「NEW」の印（追加の新しい順で先頭のカード）
     await go(`${BASE}/players?sort=added_desc`);
     const firstNew = await ev(`!!document.querySelector('a[href^="/players/world/"] [data-testid="card-new-badge"]')`);
+    const firstHref = await ev(`document.querySelector('a[href^="/players/world/"]')?.getAttribute("href") ?? null`);
+    if (firstHref) {
+      await go(`${BASE}${firstHref}`);
+      const detailNew = await has('[data-testid="detail-new-badge"]');
+      const addedText = (await ev(`document.body.innerText`)) || "";
+      record("選手の詳細: 新しいカードに NEW と「TeamAIXI に追加」の日付", recentCount === 0 ? true : detailNew && /TeamAIXI に追加\s*\d{4}年\d{1,2}月\d{1,2}日/.test(addedText), firstHref);
+    }
     await go(`${BASE}/players?sort=ovr_max_asc`);
     const oldCount = await ev(`document.querySelectorAll('[data-testid="card-new-badge"]').length`);
     record("選手の一覧: 新しいカードに NEW の印（古いカードには出ない）", recentCount === 0 ? true : firstNew === true && oldCount === 0, `first=${firstNew} oldPage=${oldCount}`);
