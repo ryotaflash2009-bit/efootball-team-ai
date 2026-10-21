@@ -2782,6 +2782,7 @@ export interface Dictionary {
     baseOvrLabel: string;
     maxOvrFactLabel: string;
     maxLevelLabel: string;
+    addedLabel: string;
     preferredFootLabel: string;
     heightWeightTemplate: string;
     teamLabel: string;

@@ -240,6 +240,8 @@ export function supabaseRowToDetail(row: Row): WorldPlayerDetail {
 
   return {
     ...base,
+    // 追加された時刻（詳細の「TeamAIXI に追加」と NEW・2026-10-21）。暫定のカードは初めて見つけた時刻
+    addedAt: row.created_at != null ? String(row.created_at) : row.first_seen_at != null ? String(row.first_seen_at) : null,
     stats: rowsToStats(statsRows),
     playerSkills: Array.isArray(row.skills) ? (row.skills as string[]) : [],
     aiStyles: normalizeAiStyles(row.ai_styles),

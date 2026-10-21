@@ -192,8 +192,8 @@
       "status": "pass",
       "passed": 95,
       "total": 95,
-      "seconds": 247,
-      "ranAt": "2026-10-20T11:33:51.814Z",
+      "seconds": 248,
+      "ranAt": "2026-10-21T14:59:46.411Z",
       "line": "95/95 PASS",
       "fails": [],
       "report": null
@@ -267,11 +267,11 @@
     "new-cards": {
       "name": "new-cards",
       "status": "pass",
-      "passed": 27,
-      "total": 27,
-      "seconds": 20,
-      "ranAt": "2026-10-20T11:48:59.654Z",
-      "line": "[black-box-new-cards] 27/27 PASS",
+      "passed": 28,
+      "total": 28,
+      "seconds": 21,
+      "ranAt": "2026-10-21T15:03:54.799Z",
+      "line": "[black-box-new-cards] 28/28 PASS",
       "fails": [],
       "report": "new-cards.md"
     },
@@ -358,7 +358,7 @@
       "passed": 9,
       "total": 9,
       "seconds": 5,
-      "ranAt": "2026-10-20T10:55:40.212Z",
+      "ranAt": "2026-10-21T14:58:36.646Z",
       "line": "[black-box-same-player] 9/9 PASS",
       "fails": [],
       "report": "same-player.md"
@@ -489,8 +489,8 @@
       "status": "pass",
       "passed": 93,
       "total": 93,
-      "seconds": 13,
-      "ranAt": "2026-10-20T11:49:35.402Z",
+      "seconds": 11,
+      "ranAt": "2026-10-21T14:58:41.815Z",
       "line": "[black-box-world-ui] 93/93 PASS",
       "fails": [],
       "report": "world-ui.md"
@@ -507,5 +507,5 @@
       "report": null
     }
   },
-  "updatedAt": "2026-10-20T11:49:48.221Z"
+  "updatedAt": "2026-10-21T15:04:15.335Z"
 }

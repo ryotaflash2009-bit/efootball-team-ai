@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { isRecentlyAdded } from "@/lib/new-cards/constants";
 import { cachedGetEfhubAnalysisDetail, cachedGetPlayerByWorldId } from "@/lib/reference-data/runtime/cached-queries";
 import { getPlayerByWorldId } from "@/lib/world/repository";
 import { WorldDataUnavailableError } from "@/lib/world/db";
@@ -88,7 +89,8 @@ export default async function WorldPlayerDetailPage({
   const analysisDetail: Awaited<ReturnType<typeof getEfhubAnalysisDetail>> = await analysisPromise;
   const playerAnalysis = buildPlayerAnalysis(player, analysisDetail);
   // クライアントへは生の CDN URL（imageUrlCandidate 等）を渡さず、解決済み imageSources だけ渡す。
-  const { imageUrlCandidate: _imageUrlCandidate, mobileImageUrlCandidate: _mobileImageUrlCandidate, ...safePlayer } = player;
+  const { imageUrlCandidate: _imageUrlCandidate, mobileImageUrlCandidate: _mobileImageUrlCandidate, ...rest } = player;
+  const safePlayer = { ...rest, isNew: isRecentlyAdded(player.addedAt) };
 
   const crumbName = safePlayer.nameJa ?? safePlayer.nameEn ?? safePlayer.worldCardId;
   return (

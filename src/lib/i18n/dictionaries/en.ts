@@ -2840,6 +2840,7 @@ const en: Dictionary = {
     baseOvrLabel: "Base OVR",
     maxOvrFactLabel: "Max OVR",
     maxLevelLabel: "Max level",
+    addedLabel: "Added to TeamAIXI",
     preferredFootLabel: "Preferred foot",
     heightWeightTemplate: "Height / Weight",
     teamLabel: "Team",
