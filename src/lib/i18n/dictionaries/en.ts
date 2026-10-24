@@ -2976,6 +2976,7 @@ const en: Dictionary = {
     noEnglishName: "(No English name)",
     baseOvrLabel: "Base {value}",
     levelCapLabel: "Lv cap {value}",
+    ownedBadge: "Owned",
   },
   worldPagination: {
     ariaLabel: "Pagination",

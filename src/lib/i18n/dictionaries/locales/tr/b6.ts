@@ -472,6 +472,7 @@ const part: PartialDictionary = {
     noEnglishName: "(İngilizce ad yok)",
     baseOvrLabel: "Temel {value}",
     levelCapLabel: "Lv sınırı {value}",
+    ownedBadge: "Sende var",
   },
 };
 

@@ -9,6 +9,7 @@ import { CompareAddButton } from "@/components/compare/CompareAddButton";
 import { FavoriteButton } from "@/components/user-cards/FavoriteButton";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
+import { useMyTeam } from "@/lib/user-cards/hooks";
 
 /**
  * クライアントへは生の CDN URL（imageUrlCandidate 等）を渡さず、解決済み imageSources だけ渡す
@@ -64,6 +65,7 @@ export function WorldPlayerCard({ player, imagePriority = false }: { player: Wor
               {player.registeredPosition}
             </span>
           ) : null}
+          <OwnedBadge worldCardId={player.worldCardId} />
           {player.cardType ? (
             <span className="absolute bottom-1 start-1 rounded bg-black/75 px-1.5 py-0.5 text-[9px] font-bold uppercase text-text-dim">
               {player.cardType}
@@ -91,5 +93,20 @@ export function WorldPlayerCard({ player, imagePriority = false }: { player: Wor
         <CompareAddButton worldCardId={player.worldCardId} variant="card" />
       </div>
     </div>
+  );
+}
+
+/**
+ * My Team で「所持」のカードに「所持済み」の印（2026-10-25）。サーバーの描画・hydration の最初は My Team が空なので出ない（#418 を起こさない）。
+ */
+function OwnedBadge({ worldCardId }: { worldCardId: string }) {
+  const t = useT();
+  const { getByWorldId } = useMyTeam();
+  const rec = getByWorldId(worldCardId);
+  if (!rec || rec.ownershipStatus !== "owned" || rec.deletedAt) return null;
+  return (
+    <span className="absolute bottom-1 end-1 rounded bg-success/90 px-1.5 py-0.5 text-[9px] font-bold leading-none text-black" data-testid="card-owned-badge">
+      {t("worldPlayerCard", "ownedBadge")}
+    </span>
   );
 }

@@ -472,6 +472,7 @@ const part: PartialDictionary = {
     noEnglishName: "(Nessun nome inglese)",
     baseOvrLabel: "Base {value}",
     levelCapLabel: "Liv. max {value}",
+    ownedBadge: "Posseduta",
   },
 };
 
