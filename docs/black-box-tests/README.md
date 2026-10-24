@@ -29,7 +29,7 @@
 | ✅ 合格 | manager-compare | 16/16 | 9 | 2026-10-20 10:52 | — |
 | ✅ 合格 | manager-picker | 35/35 | 6 | 2026-10-20 10:52 | [manager-picker.md](./manager-picker.md) |
 | ✅ 合格 | managers | 43/43 | 3 | 2026-10-20 10:52 | [managers.md](./managers.md) |
-| ✅ 合格 | my-builds | 100/100 | 1 | 2026-10-24 10:05 | [my-builds.md](./my-builds.md) |
+| ✅ 合格 | my-builds | 100/100 | 1 | 2026-10-24 10:15 | [my-builds.md](./my-builds.md) |
 | ✅ 合格 | my-team-cloud | 98/98 | 16 | 2026-10-20 10:53 | [my-team-cloud.md](./my-team-cloud.md) |
 | ✅ 合格 | new-cards | 25/25 | 18 | 2026-10-24 09:53 | [new-cards.md](./new-cards.md) |
 | ✅ 合格 | pack-check | 16/16 | 13 | 2026-10-20 11:49 | [pack-check.md](./pack-check.md) |
@@ -42,7 +42,7 @@
 | ✅ 合格 | rls-test（社内向けページ） | 71/71 | 12 | 2026-10-20 11:10 | [rls-test.md](./rls-test.md) |
 | ✅ 合格 | same-player | 9/9 | 5 | 2026-10-21 14:58 | [same-player.md](./same-player.md) |
 | ✅ 合格 | saved-filters | 11/11 | 7 | 2026-10-20 10:55 | — |
-| ✅ 合格 | share-build-link | 6/6 | 2 | 2026-10-24 10:05 | — |
+| ✅ 合格 | share-build-link | 6/6 | 2 | 2026-10-24 10:15 | — |
 | ✅ 合格 | share-card | 24/24 | 62 | 2026-10-20 10:55 | [share-card.md](./share-card.md) |
 | ✅ 合格 | squad-list-banner | 5/5 | 1 | 2026-10-20 10:56 | [squad-list-banner.md](./squad-list-banner.md) |
 | ✅ 合格 | squad-placement-assist | 23/23 | 9 | 2026-10-20 10:56 | [squad-placement-assist.md](./squad-placement-assist.md) |
@@ -50,7 +50,7 @@
 | ✅ 合格 | squads | 51/51 | 1 | 2026-10-20 10:57 | [squads.md](./squads.md) |
 | ✅ 合格 | supabase-auth | 173/173 | 36 | 2026-10-20 10:57 | [supabase-auth.md](./supabase-auth.md) |
 | ✅ 合格 | support-contact（社内向けページ） | 39/39 | 4 | 2026-10-20 11:10 | [support-contact.md](./support-contact.md) |
-| ✅ 合格 | ui | 73/73 | 1 | 2026-10-24 10:05 | [ui.md](./ui.md) |
+| ✅ 合格 | ui | 73/73 | 1 | 2026-10-24 10:15 | [ui.md](./ui.md) |
 | ✅ 合格 | world-sync | 35/35 | 3 | 2026-10-20 10:57 | — |
-| ✅ 合格 | world-ui | 93/93 | 11 | 2026-10-24 10:05 | [world-ui.md](./world-ui.md) |
+| ✅ 合格 | world-ui | 93/93 | 11 | 2026-10-24 10:15 | [world-ui.md](./world-ui.md) |
 
