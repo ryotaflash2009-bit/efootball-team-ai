@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { POSITION_ORDER } from "@/lib/tier/own-tier";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { isCanonicalHost, noindexReasonForPath, xRobotsTagFor } from "@/lib/public-info/search-indexing";
@@ -84,6 +85,6 @@ describe("sitemap（公開中）", () => {
       throw new Error("down");
     });
     expect(r.status).toBe(200);
-    expect(r.urlCount).toBe(SITEMAP_ROUTES.length + PLAYER_GUIDES.filter((g) => g.published).length);
+    expect(r.urlCount).toBe(SITEMAP_ROUTES.length + POSITION_ORDER.length + PLAYER_GUIDES.filter((g) => g.published).length);
   });
 });

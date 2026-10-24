@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { POSITION_ORDER } from "@/lib/tier/own-tier";
 import { globSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { buildRobotsTxt, isSearchIndexingEnabled, robotsMetadataFor, SEARCH_INDEXING_ALLOWED, SITE_ROBOTS_METADATA } from "@/lib/public-info/search-indexing";
@@ -68,7 +69,7 @@ describe("sitemap", () => {
   });
   it("公開の画面と公開した記事だけ（下書きの記事・個人データの画面は載せない）", () => {
     const urls = sitemapEntries("https://example.test").map((e) => e.url);
-    expect(urls.length).toBe(SITEMAP_ROUTES.length + publishedPlayerGuides().length);
+    expect(urls.length).toBe(SITEMAP_ROUTES.length + POSITION_ORDER.length + publishedPlayerGuides().length);
     expect(urls.some((u) => /\/my-team|\/account|\/auth|\/share\//.test(u))).toBe(false);
     for (const g of PLAYER_GUIDES.filter((x) => !x.published)) expect(urls.some((u) => u.endsWith(`/players/guide/${g.slug}`))).toBe(false);
   });

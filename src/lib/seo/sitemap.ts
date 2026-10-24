@@ -1,4 +1,5 @@
 import { SEARCH_INDEXING_ALLOWED, SITE_URL } from "@/lib/public-info/search-indexing";
+import { POSITION_ORDER } from "@/lib/tier/own-tier";
 import { SITEMAP_ROUTES } from "./sitemap-routes";
 import { publishedPlayerGuides } from "./player-guides";
 
@@ -28,7 +29,8 @@ export function sitemapEntries(siteUrl: string = SITE_URL, ids: SitemapDynamicId
   // ID は数字だけ（共有のリンク・利用者の ID・クエリは入れない）。重複は除く。
   const players = [...new Set(ids.worldCardIds)].filter((id) => WORLD_ID_RE.test(id)).map((id) => ({ url: `${siteUrl}/players/world/${id}`, changeFrequency: "weekly", priority: 0.5 }));
   const managers = [...new Set(ids.managerIds)].filter((id) => MANAGER_ID_SAFE_RE.test(id)).map((id) => ({ url: `${siteUrl}/managers/${id}`, changeFrequency: "weekly", priority: 0.5 }));
-  return [...pages, ...guides, ...managers, ...players];
+  const tiers = POSITION_ORDER.map((p) => ({ url: `${siteUrl}/tier/${p}`, changeFrequency: "weekly", priority: 0.6 }));
+  return [...pages, ...tiers, ...guides, ...managers, ...players];
 }
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");

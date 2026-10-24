@@ -61,7 +61,7 @@ export function buildOwnTier<T extends OwnTierInput>(cards: readonly T[], popula
 }
 
 /** ポジションの表示の順（GK から前へ）。知らないポジションは後ろに名前の順。 */
-const POSITION_ORDER = ["GK", "CB", "LB", "RB", "DMF", "CMF", "LMF", "RMF", "AMF", "LWF", "RWF", "SS", "CF"];
+export const POSITION_ORDER = ["GK", "CB", "LB", "RB", "DMF", "CMF", "LMF", "RMF", "AMF", "LWF", "RWF", "SS", "CF"];
 export function sortPositions(positions: readonly string[]): string[] {
   return [...new Set(positions.filter((p) => /^[A-Z]{2,3}$/.test(p)))].sort((a, b) => {
     const ia = POSITION_ORDER.indexOf(a);

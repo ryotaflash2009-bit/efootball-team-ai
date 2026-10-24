@@ -19,7 +19,6 @@ export const SITEMAP_ROUTES: readonly SitemapRoute[] = [
   { path: "/squads/templates", changeFrequency: "monthly", priority: 0.5 },
   { path: "/squads/compare", changeFrequency: "monthly", priority: 0.5 },
   { path: "/best-xi", changeFrequency: "weekly", priority: 0.7 },
-  { path: "/tier", changeFrequency: "weekly", priority: 0.6 },
   { path: "/pack-check", changeFrequency: "monthly", priority: 0.5 },
   { path: "/glossary", changeFrequency: "monthly", priority: 0.4 },
   { path: "/boosters", changeFrequency: "weekly", priority: 0.6 },
@@ -58,6 +57,7 @@ export const SITEMAP_EXCLUDED_ROUTES: Readonly<Record<string, string>> = {
   "/community/local-posts": "内部の確認の画面（本番は 404）",
   "/release-readiness": "内部の確認の画面（本番は 404）",
   "/tier-pack-preview": "内部の確認の画面（本番は 404）",
+  "/tier": "/tier/CF などへの転送だけ（2026-10-24）",
 };
 
 /** 動的な画面（[id] など）の扱い。 */
@@ -68,4 +68,5 @@ export const SITEMAP_DYNAMIC_ROUTES: Readonly<Record<string, string>> = {
   "/squads/[squadId]": "端末のスカッド（個人データ・noindex）",
   "/u/[publicId]": "利用者の公開プロフィール（ログインが必要・載せない・noindex・2026-10-14）",
   "/players/guide/[slug]": "選手の解説（公開にした記事だけを載せる・player-guides）",
+  "/tier/[position]": "ポジションごとの Tier（載せる・sitemap.ts が POSITION_ORDER から作る・2026-10-24）",
 };

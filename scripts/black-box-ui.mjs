@@ -65,7 +65,7 @@ async function main() {
   // TeamAIXI v1.0（2026-10-04）: 未公開の機能（ティアリスト・パック・コミュニティ）は「準備中」の表示も含めてナビに出さない。
   record("共通: 未公開の機能はナビに出さない（ティアリスト/パック/コミュニティ・準備中なし）", !/href="\/(tier-lists|packs|community)"/.test(pages.home.body) && !/準備中/.test(pages.home.text), "");
   // ティアリスト（2026-10-18 画面の整理）: 区分ごとに最初の 20 行だけ見せ、残りは「残り N 件を表示」。リンクは HTML に残す（検索エンジン向け）
-  const tierPage = await get("/tier");
+  const tierPage = await get("/tier/CF");
   const tierA = (/data-testid="tier-A"[\s\S]*?<\/ol>/.exec(tierPage.body) || [""])[0];
   const tierRows = (tierA.match(/<li /g) || []).length;
   const tierHidden = (tierA.match(/<li class="[^"]*\bhidden"/g) || []).length;

@@ -561,7 +561,7 @@ async function main() {
     // 2026-10-18: 新しいカード・パック診断・ティアリスト（2026-10-14〜17 に公開）も全 viewport で確かめる
     ["/players/new", null],
     ["/pack-check", null],
-    ["/tier", null],
+    ["/tier/CF", null],
     ["/glossary", null],
     ["/favorites", null],
     ["/my-team", null],
