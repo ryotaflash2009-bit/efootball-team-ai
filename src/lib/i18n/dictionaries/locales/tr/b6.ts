@@ -379,6 +379,8 @@ const part: PartialDictionary = {
     needTwoPlayersTitle: "Karşılaştırmak için 2 veya daha fazla oyuncu seçin",
     needTwoPlayersDescriptionTemplate: "Oyuncu eklemek için yukarıdaki boş bir slotu kullanın (en fazla {max}). Aynı oyuncunun farklı kartları da karşılaştırılabilir.",
     browseHighOvrButton: "Yüksek OVR'li kartlara göz at",
+    similarSuggestHeading: "Benzer kart ekle",
+    similarSuggestHint: "Aynı mevki ve oyun tarzı, maks. OVR ±3. Karşılaştırmaya eklemek için dokun.",
   },
   comparePlayerIdentityCard: {
     cardImageAltTemplate: "Kart görseli: {name} {cardType}",

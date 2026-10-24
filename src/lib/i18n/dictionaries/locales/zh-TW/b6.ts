@@ -379,6 +379,8 @@ const part: PartialDictionary = {
     needTwoPlayersTitle: "請選擇 2 名以上的球員進行比較",
     needTwoPlayersDescriptionTemplate: "使用上方的空欄位新增球員（最多 {max} 名）。同一球員的不同卡片也可以比較。",
     browseHighOvrButton: "瀏覽高 OVR 卡片",
+    similarSuggestHeading: "加入相似的卡",
+    similarSuggestHint: "同一位置、同一打法風格，最大 OVR 相差 ±3 的卡。點擊即可加入比較。",
   },
   comparePlayerIdentityCard: {
     cardImageAltTemplate: "{name} {cardType} 卡片圖片",

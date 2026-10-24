@@ -379,6 +379,8 @@ const part: PartialDictionary = {
     needTwoPlayersTitle: "Wähle mindestens 2 Spieler zum Vergleichen",
     needTwoPlayersDescriptionTemplate: "Füge über einen leeren Slot oben einen Spieler hinzu (bis zu {max}). Auch verschiedene Karten desselben Spielers lassen sich vergleichen.",
     browseHighOvrButton: "Karten mit hoher OVR ansehen",
+    similarSuggestHeading: "Ähnliche Karte hinzufügen",
+    similarSuggestHint: "Gleiche Position und Spielstil, max. OVR ±3. Tippen, um sie zum Vergleich hinzuzufügen.",
   },
   comparePlayerIdentityCard: {
     cardImageAltTemplate: "Kartenbild {name} {cardType}",

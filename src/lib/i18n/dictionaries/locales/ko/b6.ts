@@ -379,6 +379,8 @@ const part: PartialDictionary = {
     needTwoPlayersTitle: "비교할 선수를 2명 이상 선택하세요",
     needTwoPlayersDescriptionTemplate: "위의 빈 슬롯에서 선수를 추가하세요(최대 {max}명). 같은 선수의 다른 카드도 비교할 수 있습니다.",
     browseHighOvrButton: "높은 OVR 카드 보기",
+    similarSuggestHeading: "비슷한 카드 추가",
+    similarSuggestHint: "같은 포지션, 같은 플레이 스타일이며 최대 OVR이 ±3인 카드입니다. 누르면 비교에 추가합니다.",
   },
   comparePlayerIdentityCard: {
     cardImageAltTemplate: "{name} {cardType} 카드 이미지",

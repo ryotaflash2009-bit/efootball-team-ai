@@ -379,6 +379,8 @@ const part: PartialDictionary = {
     needTwoPlayersTitle: "Pilih 2 pemain atau lebih untuk dibandingkan",
     needTwoPlayersDescriptionTemplate: "Gunakan slot kosong di atas untuk menambah pemain (maks. {max}). Kartu lain dari pemain yang sama juga dapat dibandingkan.",
     browseHighOvrButton: "Jelajahi kartu OVR tinggi",
+    similarSuggestHeading: "Tambah kartu serupa",
+    similarSuggestHint: "Posisi dan gaya bermain sama, OVR maks ±3. Ketuk untuk menambahkannya ke perbandingan.",
   },
   comparePlayerIdentityCard: {
     cardImageAltTemplate: "Gambar kartu {cardType} {name}",
