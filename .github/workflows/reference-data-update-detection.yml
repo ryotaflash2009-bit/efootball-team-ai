@@ -88,7 +88,7 @@ jobs:
           restore-keys: |
             reference-data-detection-state-
 
-      # After HTTP 429 from upstream, wait 6 hours before asking again (no upstream request while waiting; the run fails
+      # After HTTP 429 from upstream, wait 55 minutes before asking again (hourly scheduled runs still ask every hour; owner 2026-10-25) (no upstream request while waiting; the run fails
       # so the staleness watchdog still sees it). A manual detect-force skips the wait (2026-10-24).
       - name: Upstream cooldown after HTTP 429
         env:

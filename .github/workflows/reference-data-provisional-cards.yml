@@ -12,8 +12,7 @@ name: Reference data provisional cards
 
 on:
   schedule:
-    - cron: "37 */6 * * *"     # 6 時間ごとの 37 分
-    - cron: "37 * * * 0,1,3,4" # 日本時間の木・月（UTC の水・木・日・月）は毎時
+    - cron: "37 * * * *"       # 毎時 37 分（2026-10-25: World の取り込みが止まっている間、新しいカードの主な取得元のため毎日毎時）
   workflow_dispatch:
 
 permissions:

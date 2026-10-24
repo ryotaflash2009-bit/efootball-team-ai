@@ -6,7 +6,8 @@
  *   node scripts/detection-cooldown.mjs clear  <state.json>              … 検出が成功したら待つ時間を消す（取得元が戻ったらすぐ毎時に戻す）
  *
  * - 2026-10-20 から上流がサイト全体に機械判定（Vercel Security Checkpoint）をかけ、毎時の検出がすべて 429 になった。
- *   拒否されている間に毎時たずね続けない（相手への負担・制限が長引くのを避ける）。6 時間に 1 回だけ試す。
+ *   2026-10-25 本人の指示「自動更新の頻度は落とすな」: 待つ時間は 55 分（毎時の定期の検出は毎回たずねる）。
+ *   同じ 1 時間の中で重なった実行（watchdog・手動の再実行）だけを上流へ行かせない。
  * - 待つ時間の中の run は「失敗」で終える（成功にすると、検出の遅れの見張りが止まっていることに気づけない）。
  * - 本人が手で `detect-force` を選んだときは待たない。
  * - 上流へは一切アクセスしない（このスクリプトはファイルを読み書きするだけ）。
@@ -15,7 +16,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const COOLDOWN_MS = 6 * 60 * 60 * 1000;
+export const COOLDOWN_MS = 55 * 60 * 1000;
 
 /** 待つ時間の中か（壊れた値・未設定は「待たない」）。 */
 export function inCooldown(state, now = Date.now(), confirm = "") {
