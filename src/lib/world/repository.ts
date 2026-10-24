@@ -39,8 +39,22 @@ type Row = Record<string, unknown>;
  */
 
 /** 一覧: 検索 + フィルタ + 並べ替え + サーバー側ページネーション */
+/**
+ * Supabase の読み取りが一時的に失敗したら（WorldQueryError）、少し待って 1 回だけ読み直す（2026-10-24）。
+ * 混んだときの一時的な失敗で画面・API が失敗するのを減らす。読み取りだけ（書き込みには使わない）。データが無い（WorldDataUnavailableError）は読み直さない。
+ */
+export async function readWithRetry<T>(fn: () => Promise<T>, waitMs = 300): Promise<T> {
+  try {
+    return await fn();
+  } catch (err) {
+    if (!(err instanceof WorldQueryError)) throw err;
+    await new Promise((r) => setTimeout(r, waitMs));
+    return fn();
+  }
+}
+
 export async function listPlayers(q: WorldListQuery): Promise<WorldListResult> {
-  if (getWorldDataSource() === "supabase") return listPlayersFromSupabase(q);
+  if (getWorldDataSource() === "supabase") return readWithRetry(() => listPlayersFromSupabase(q));
   return listPlayersSqlite(q);
 }
 
@@ -105,7 +119,7 @@ function buildAppliedFilters(q: WorldListQuery): Record<string, string | number 
 
 /** 詳細: world_card_id 1 件（見つからなければ null） */
 export async function getPlayerByWorldId(worldCardId: string): Promise<WorldPlayerDetail | null> {
-  const found = getWorldDataSource() === "supabase" ? await getPlayerByWorldIdFromSupabase(worldCardId) : getPlayerByWorldIdSqlite(worldCardId);
+  const found = getWorldDataSource() === "supabase" ? await readWithRetry(() => getPlayerByWorldIdFromSupabase(worldCardId)) : getPlayerByWorldIdSqlite(worldCardId);
   // World に無ければ暫定のカード（PES Master から補ったもの・2026-10-15）。World にあれば常に World を優先する。
   return found ?? provisionalDetail(worldCardId);
 }
@@ -119,7 +133,7 @@ export function provisionalDetail(worldCardId: string): WorldPlayerDetail | null
 /** 最近追加された World のカード（直近 days 日・新しい順・2026-10-17）。SQLite の経路（切り戻し用）では空。 */
 export async function listRecentlyAddedPlayers(days = 7, limit = 200): Promise<WorldPlayerListItem[]> {
   if (getWorldDataSource() !== "supabase") return [];
-  return listRecentlyAddedFromSupabase(new Date(Date.now() - days * 86_400_000).toISOString(), limit);
+  return readWithRetry(() => listRecentlyAddedFromSupabase(new Date(Date.now() - days * 86_400_000).toISOString(), limit));
 }
 
 /** 暫定のカードの一覧（新しく見つかった順・2026-10-15）。 */
@@ -198,7 +212,7 @@ function getPlayerByWorldIdSqlite(worldCardId: string): WorldPlayerDetail | null
  * 見つからなかった ID は結果に含まれない。入力上限あり（DoS 回避）。順序は入力順を尊重。
  */
 export async function getPlayersByWorldIds(ids: string[]): Promise<WorldPlayerListItem[]> {
-  const found = getWorldDataSource() === "supabase" ? await getPlayersByWorldIdsFromSupabase(ids) : getPlayersByWorldIdsSqlite(ids);
+  const found = getWorldDataSource() === "supabase" ? await readWithRetry(() => getPlayersByWorldIdsFromSupabase(ids)) : getPlayersByWorldIdsSqlite(ids);
   // World に無い ID は暫定のカードで補う（並びは World の結果の後・2026-10-15）
   const have = new Set(found.map((p) => p.worldCardId));
   const extra: WorldPlayerListItem[] = [];
@@ -271,7 +285,7 @@ function dedupeStrings(arr: string[]): string[] {
 let facetCache: WorldFacets | null = null;
 
 export async function getFacets(): Promise<WorldFacets> {
-  if (getWorldDataSource() === "supabase") return getFacetsFromSupabase();
+  if (getWorldDataSource() === "supabase") return readWithRetry(() => getFacetsFromSupabase());
   return getFacetsSqlite();
 }
 
@@ -300,7 +314,7 @@ function getFacetsSqlite(): WorldFacets {
 // ---- データソースのメタ情報 ----
 
 export async function getSourceMeta(): Promise<WorldSourceMeta> {
-  if (getWorldDataSource() === "supabase") return getSourceMetaFromSupabase();
+  if (getWorldDataSource() === "supabase") return readWithRetry(() => getSourceMetaFromSupabase());
   return getSourceMetaSqlite();
 }
 
