@@ -348,6 +348,7 @@ const part: PartialDictionary = {
     similarCardsHeading: "Kartu serupa",
     similarCardsHint: "Posisi dan gaya bermain sama, OVR maks ±3 (kartu lain dari pemain yang sama tidak termasuk). Berguna untuk mencari alternatif.",
     similarCardsMore: "Lihat semua di daftar pemain",
+    similarCardsCompare: "Bandingkan",
     notYetHint: "Item yang tidak termasuk dalam API players/search",
     notYetZeroNote: "Tidak ditampilkan jika nilainya 0 atau kosong.",
     notYetBadgeSuffix: ": sedang diselidiki",

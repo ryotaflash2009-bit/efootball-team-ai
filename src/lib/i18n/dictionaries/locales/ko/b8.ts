@@ -348,6 +348,7 @@ const part: PartialDictionary = {
     similarCardsHeading: "비슷한 카드",
     similarCardsHint: "같은 포지션, 같은 플레이 스타일이며 최대 OVR이 ±3인 카드입니다(같은 선수의 다른 카드는 제외). 대체 선수를 찾을 때 사용하세요.",
     similarCardsMore: "같은 조건으로 선수 목록 보기",
+    similarCardsCompare: "비교",
     notYetHint: "players/search API에 포함되지 않은 항목",
     notYetZeroNote: "값이 0이거나 비어 있으면 표시하지 않습니다.",
     notYetBadgeSuffix: ": 조사 중",

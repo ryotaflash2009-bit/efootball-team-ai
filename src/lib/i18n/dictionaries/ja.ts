@@ -2828,6 +2828,7 @@ export interface Dictionary {
     similarCardsHeading: string;
     similarCardsHint: string;
     similarCardsMore: string;
+    similarCardsCompare: string;
     notYetHint: string;
     notYetZeroNote: string;
     notYetBadgeSuffix: string;

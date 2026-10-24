@@ -2886,6 +2886,7 @@ const en: Dictionary = {
     similarCardsHeading: "Similar cards",
     similarCardsHint: "Same position and playing style, max OVR within ±3 (other cards of the same player excluded). Handy for finding an alternative.",
     similarCardsMore: "See all in the player list",
+    similarCardsCompare: "Compare",
     notYetHint: "Items not included in the players/search API",
     notYetZeroNote: "Not shown when the value is 0 or empty.",
     notYetBadgeSuffix: ": under investigation",

@@ -43,6 +43,7 @@ const playerDetailPage: Dictionary["playerDetailPage"] = {
   similarCardsHeading: "似ているカード",
   similarCardsHint: "同じポジション・同じプレースタイルで、最大 OVR が ±3 のカードです（同じ選手の別のカードは除く）。代わりの選手を探すときに。",
   similarCardsMore: "同じ条件で選手の一覧を見る",
+  similarCardsCompare: "比べる",
   notYetHint: "players/search API に含まれない項目",
   notYetZeroNote: "0 や空文字では表示しません。",
   notYetBadgeSuffix: ": 追加調査中",

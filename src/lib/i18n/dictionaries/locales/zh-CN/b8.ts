@@ -348,6 +348,7 @@ const part: PartialDictionary = {
     similarCardsHeading: "相似的卡",
     similarCardsHint: "同一位置、同一打法风格，最大 OVR 相差 ±3 的卡（不含同一球员的其他卡）。可用于寻找替代球员。",
     similarCardsMore: "在球员列表中查看全部",
+    similarCardsCompare: "比较",
     notYetHint: "players/search API 中不包含的项目",
     notYetZeroNote: "数值为 0 或为空时不显示。",
     notYetBadgeSuffix: "：调查中",

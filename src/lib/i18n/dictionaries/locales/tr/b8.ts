@@ -348,6 +348,7 @@ const part: PartialDictionary = {
     similarCardsHeading: "Benzer kartlar",
     similarCardsHint: "Aynı mevki ve oyun tarzı, maks. OVR ±3 (aynı oyuncunun diğer kartları hariç). Alternatif bulmak için kullanışlı.",
     similarCardsMore: "Tümünü oyuncu listesinde gör",
+    similarCardsCompare: "Karşılaştır",
     notYetHint: "players/search API'sinde bulunmayan öğeler",
     notYetZeroNote: "Değer 0 veya boş olduğunda gösterilmez.",
     notYetBadgeSuffix: ": araştırılıyor",
