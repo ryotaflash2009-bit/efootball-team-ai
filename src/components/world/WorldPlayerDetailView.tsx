@@ -9,6 +9,7 @@ import { PlayerTitles } from "@/components/titles/PlayerTitles";
 import { WorldPlayerHero, type SafeWorldPlayerDetail } from "@/components/world/WorldPlayerHero";
 import { ProvisionalCardNotice } from "@/components/world/ProvisionalCardNotice";
 import { SamePlayerOtherCards } from "@/components/world/SamePlayerOtherCards";
+import { SimilarCards } from "@/components/world/SimilarCards";
 import { MyTeamFitPanel } from "@/components/world/MyTeamFitPanel";
 import Link from "next/link";
 import { useMemo } from "react";
@@ -208,6 +209,7 @@ export function WorldPlayerDetailView({
       ) : null}
 
       <SamePlayerOtherCards worldCardId={player.worldCardId} nameEn={player.nameEn} />
+      <SimilarCards worldCardId={player.worldCardId} registeredPosition={player.registeredPosition} playingStyle={player.playingStyle} ovrMax={player.ovrMax} />
 
       <Surface tone="outline">
         <SectionHeader title={tp("notYetHeading")} as="h2" hint={tp("notYetHint")} />

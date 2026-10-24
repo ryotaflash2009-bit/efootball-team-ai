@@ -4418,5 +4418,8 @@
  "myTeam.positionCountTemplate": "4352b4e898ff",
  "myTeam.positionNone": "adb85cf22bfc",
  "myTeam.positionFind": "46a9904252a9",
- "myTeam.positionUpgradesTemplate": "32368b87c29b"
+ "myTeam.positionUpgradesTemplate": "32368b87c29b",
+ "playerDetailPage.similarCardsHeading": "9aca8c14c4a3",
+ "playerDetailPage.similarCardsHint": "38b9475bd552",
+ "playerDetailPage.similarCardsMore": "7ac7c175f7a5"
 }
