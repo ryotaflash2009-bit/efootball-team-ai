@@ -51,7 +51,8 @@ export function WorldPlayerCard({ player, imagePriority = false }: { player: Wor
           <WorldCardImage sources={imageSources} alt={name} size="card" priority={imagePriority} />
           <span className="absolute start-1 top-1 flex items-baseline gap-1 rounded bg-black/75 px-1.5 py-0.5 leading-none">
             <span className="text-lg font-black text-accent tabular-nums">{ovr ?? "–"}</span>
-            <span className="text-[9px] font-semibold text-text-dim">MAX</span>
+            {/* 最大 OVR が無い（暫定のカードなど）ときは基本の OVR なので「BASE」と出す（2026-10-25） */}
+            <span className="text-[9px] font-semibold text-text-dim">{player.ovrMax != null ? "MAX" : "BASE"}</span>
           </span>
           {player.isNew ? (
             <span className="absolute start-1 top-9 rounded bg-accent px-1.5 py-0.5 text-[9px] font-black leading-none text-accent-ink" data-testid="card-new-badge">
