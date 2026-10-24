@@ -1,4 +1,5 @@
 import { cachedGetFacets, cachedGetSourceMeta, cachedListPlayers } from "@/lib/reference-data/runtime/cached-queries";
+import { isRecentlyAdded } from "@/lib/new-cards/constants";
 import { WorldDataUnavailableError } from "@/lib/world/db";
 import { buildOwnTier, sortPositions, pagesNeeded, OWN_TIER_PAGE_SIZE } from "@/lib/tier/own-tier";
 import { TierListView, TierListUnavailableView, type TierListEntryView } from "@/components/tier/TierListView";
@@ -31,7 +32,7 @@ export async function TierContent({ position }: { position: string }) {
 
   const tier = buildOwnTier(players, population);
   const entries: TierListEntryView[] = tier.ok
-    ? tier.entries.map((e) => ({ worldCardId: e.card.worldCardId, nameJa: e.card.nameJa, nameEn: e.card.nameEn, cardType: e.card.cardType, ovrMax: e.card.ovrMax, tier: e.tier, rank: e.rank, topPercent: e.topPercent }))
+    ? tier.entries.map((e) => ({ worldCardId: e.card.worldCardId, nameJa: e.card.nameJa, nameEn: e.card.nameEn, cardType: e.card.cardType, ovrMax: e.card.ovrMax, tier: e.tier, rank: e.rank, topPercent: e.topPercent, isNew: isRecentlyAdded(e.card.addedAt) }))
     : [];
   return <TierListView positions={positions} position={position} population={population} entries={entries} unavailableReason={tier.ok ? null : tier.reason} syncFinishedAt={syncFinishedAt} />;
 }

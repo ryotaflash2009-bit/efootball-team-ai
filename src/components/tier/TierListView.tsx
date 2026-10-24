@@ -22,6 +22,8 @@ export interface TierListEntryView {
   tier: OwnTierRank;
   rank: number;
   topPercent: number;
+  /** 最近 7 日に追加されたカード（サーバーで判定・2026-10-24）。 */
+  isNew?: boolean;
 }
 
 const TIERS: OwnTierRank[] = ["S", "A", "B", "C"];
@@ -127,6 +129,11 @@ function TierBlock({ tier, list }: { tier: OwnTierRank; list: TierListEntryView[
             <Link href={`/players/world/${e.worldCardId}`} className="min-w-0 truncate text-accent hover:underline">
               {resolvePlayerDisplayName(e, locale)}
               {e.cardType ? <span className="ms-1 text-text-muted">· {e.cardType}</span> : null}
+              {e.isNew ? (
+                <span className="ms-1 rounded bg-accent px-1 text-[9px] font-black text-accent-ink" data-testid="tier-new-badge">
+                  NEW
+                </span>
+              ) : null}
             </Link>
             <span className="shrink-0 tabular-nums text-text-dim">
               {fillMessage(tt("entryTemplate"), { ovr: String(e.ovrMax ?? "—"), rank: String(e.rank), pct: String(e.topPercent) })}
