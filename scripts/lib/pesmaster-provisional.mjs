@@ -90,13 +90,14 @@ export function extractPesMasterPlayer(html) {
 
 /** 注目カードのページから、カードの ID（14〜20 桁）を出てきた順に取り出す。 */
 /**
- * 注目カードのページにある「前の週」の日付（?date=YYYY-MM-DD・2026-10-24）。いちばん新しいものを返す（無ければ null）。
+ * 注目カードのページにある「前の週」の日付（?date=YYYY-MM-DD・2026-10-24）。ページには今週の日付へのリンクも含まれるため、
+ * 2 番目に新しい日付を返す（日付が 1 つしか無ければ null）。
  * EPIC など一部のカードは前の週の注目カードに先に載り、World には次の週に入るため、前の週のページも読む。
  */
 export function parsePreviousFeaturedDate(html) {
   if (typeof html !== "string") return null;
   const dates = [...new Set([...html.matchAll(/\/player\/featured\/\?date=(\d{4}-\d{2}-\d{2})/g)].map((m) => m[1]))].sort();
-  return dates.at(-1) ?? null;
+  return dates.length >= 2 ? (dates.at(-2) ?? null) : null;
 }
 
 export function parseFeaturedIds(html) {
