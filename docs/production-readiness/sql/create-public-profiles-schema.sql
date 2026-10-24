@@ -45,7 +45,7 @@ create table if not exists public.user_blocks (
   constraint user_blocks_not_self check (blocker_id <> blocked_id)
 );
 
-create or replace function public.public_id_reserved_words() returns text[] language sql immutable as $$
+create or replace function public.public_id_reserved_words() returns text[] language sql immutable set search_path = '' as $$
   select array[
     'about','account','admin','api','app','auth','best_xi','billing','blog','community','compare','contact',
     'dashboard','data','delete','diagnosis','disclaimer','favorites','help','home','login','logout','managers',
