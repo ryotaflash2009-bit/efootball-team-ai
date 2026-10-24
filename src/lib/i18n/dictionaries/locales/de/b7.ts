@@ -358,6 +358,12 @@ const part: PartialDictionary = {
     scopeLoadingMessage: "Dein Konto wird geprüft…",
     legacyNoticeTemplate: "In diesem Browser sind {count} Einträge von Mein Team gespeichert, die aus der Zeit vor der Kontotrennung stammen. Diese Daten wurden nicht gelöscht. Um sie mit deinem aktuellen Konto zu nutzen, öffne die Seite zur Migration lokaler Daten.",
     migrationLinkLabel: "Migration lokaler Daten öffnen",
+    positionSummaryHeading: "Nach Position",
+    positionSummaryIntro: "Besessene Karten nach registrierter Position gezählt, mit deiner stärksten Karte und wie viele neue Karten eine Verbesserung wären.",
+    positionCountTemplate: "Karten: {count}",
+    positionNone: "Noch keine",
+    positionFind: "Diese Position suchen",
+    positionUpgradesTemplate: "Verbesserungen durch neue Karten: {count}",
   },
   squadTemplatesBoard: {
     pageTitle: "Kadervorlagen",

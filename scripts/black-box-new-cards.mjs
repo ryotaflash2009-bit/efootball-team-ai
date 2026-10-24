@@ -154,6 +154,11 @@ async function main() {
       await waitFor('[data-testid="home-new-cards-upgrade"]', 15000);
       const up = (await ev(`document.querySelector('[data-testid="home-new-cards-upgrade"]')?.innerText ?? ""`)) || "";
       record("トップ: My Team より強い新しいカードの枚数とリンク", recentCf.length === 0 ? true : /\d+ 枚が、あなたの My Team より強い/.test(up), up);
+      // My Team: ポジション別のまとめ（13 ポジション・CF は 1 枚・持っていないポジションには探すリンク・2026-10-25）
+      await go(`${BASE}/my-team`);
+      await waitFor('[data-testid="my-team-position-summary"]', 15000);
+      const ps = await ev(`(() => { const lis = [...document.querySelectorAll('[data-testid="my-team-position-summary"] li')]; const cf = lis.find((li) => li.dataset.position === "CF"); const gk = lis.find((li) => li.dataset.position === "GK"); return { n: lis.length, cf: cf?.dataset.count, cfText: cf?.innerText.replace(/\\s+/g, " ") ?? "", gkFind: gk?.querySelector('a[href^="/players?"]')?.getAttribute("href") ?? null }; })()`);
+      record("My Team: ポジション別のまとめ（13 行・CF 1 枚と最高のカード・空きは探すリンク）", ps?.n === 13 && ps.cf === "1" && /最高|\d/.test(ps.cfText) && ps.gkFind === "/players?position=GK&sort=ovr_max_desc", `${ps?.n} rows / ${ps?.cfText} / ${ps?.gkFind}`);
       await ev(`localStorage.removeItem(${JSON.stringify(MY_TEAM_KEY)})`);
       await go(`${BASE}/`);
       await new Promise((r) => setTimeout(r, 1500));

@@ -358,6 +358,12 @@ const part: PartialDictionary = {
     scopeLoadingMessage: "Vérification de votre compte…",
     legacyNoticeTemplate: "Éléments de Mon équipe enregistrés dans ce navigateur avant la séparation des comptes : {count}. Ces données n’ont pas été supprimées. Pour les utiliser avec votre compte actuel, ouvrez l’écran de migration des données locales.",
     migrationLinkLabel: "Ouvrir l’écran de migration des données locales",
+    positionSummaryHeading: "Par poste",
+    positionSummaryIntro: "Cartes possédées comptées par poste enregistré, avec votre carte la plus forte et le nombre de nouvelles cartes qui seraient une amélioration.",
+    positionCountTemplate: "Cartes : {count}",
+    positionNone: "Aucune pour l'instant",
+    positionFind: "Chercher ce poste",
+    positionUpgradesTemplate: "Améliorations par nouvelles cartes : {count}",
   },
   squadTemplatesBoard: {
     pageTitle: "Modèles d’effectif",

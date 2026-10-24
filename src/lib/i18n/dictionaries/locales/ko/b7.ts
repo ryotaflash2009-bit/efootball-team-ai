@@ -358,6 +358,12 @@ const part: PartialDictionary = {
     scopeLoadingMessage: "계정 확인 중…",
     legacyNoticeTemplate: "계정 분리 이전에 이 브라우저에 저장된 내 팀 항목이 {count}개 있습니다. 이 데이터는 삭제되지 않았습니다. 현재 계정에서 사용하려면 로컬 데이터 이전 화면을 여세요.",
     migrationLinkLabel: "로컬 데이터 이전 화면 열기",
+    positionSummaryHeading: "포지션별 요약",
+    positionSummaryIntro: "'보유' 카드를 등록 포지션별로 세고, 가장 강한 카드와 새 카드로 강화할 수 있는 장수를 표시합니다.",
+    positionCountTemplate: "{count}장",
+    positionNone: "아직 없음",
+    positionFind: "이 포지션 찾기",
+    positionUpgradesTemplate: "새 카드로 강화 {count}",
   },
   squadTemplatesBoard: {
     pageTitle: "스쿼드 템플릿",

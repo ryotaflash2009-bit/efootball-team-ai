@@ -358,6 +358,12 @@ const part: PartialDictionary = {
     scopeLoadingMessage: "Hesabınız kontrol ediliyor…",
     legacyNoticeTemplate: "Hesap ayrımından önce bu tarayıcıya kaydedilmiş Takımım öğesi sayısı: {count}. Bu veriler silinmedi. Mevcut hesabınızla kullanmak için yerel veri taşıma ekranını açın.",
     migrationLinkLabel: "Yerel veri taşıma ekranını aç",
+    positionSummaryHeading: "Mevkiye göre",
+    positionSummaryIntro: "Sahip olunan kartlar kayıtlı mevkiye göre sayılır; en güçlü kartın ve kaç yeni kartın güçlendirme olacağı gösterilir.",
+    positionCountTemplate: "Kart: {count}",
+    positionNone: "Henüz yok",
+    positionFind: "Bu mevkiyi bul",
+    positionUpgradesTemplate: "Yeni kartla güçlendirme: {count}",
   },
   squadTemplatesBoard: {
     pageTitle: "Kadro şablonları",

@@ -45,6 +45,12 @@ const myTeam: Dictionary["myTeam"] = {
   scopeLoadingMessage: "アカウント情報を確認しています…",
   legacyNoticeTemplate: "アカウント分離前に、このブラウザーへ保存されたMy Teamが{count}件あります。データは削除されていません。現在のアカウントで使用するには、ローカルデータ移行画面を開いてください。",
   migrationLinkLabel: "ローカルデータ移行画面を開く",
+  positionSummaryHeading: "ポジション別のまとめ",
+  positionSummaryIntro: "「所持」のカードを登録ポジションごとに数え、最も強いカードと、新しいカードで強くできる枚数を出しています。",
+  positionCountTemplate: "{count} 枚",
+  positionNone: "まだありません",
+  positionFind: "このポジションを探す",
+  positionUpgradesTemplate: "新しいカードで強化 {count}",
   };
 
 registerJaNamespace("myTeam", myTeam);

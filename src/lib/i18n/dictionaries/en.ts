@@ -3164,6 +3164,12 @@ const en: Dictionary = {
     scopeLoadingMessage: "Checking your account…",
     legacyNoticeTemplate: "There are {count} My Team item(s) saved to this browser from before account separation. This data has not been deleted. To use it under your current account, open the local data migration screen.",
     migrationLinkLabel: "Open local data migration screen",
+    positionSummaryHeading: "By position",
+    positionSummaryIntro: "Owned cards counted by registered position, with your strongest card and how many new cards would be an upgrade.",
+    positionCountTemplate: "Cards: {count}",
+    positionNone: "None yet",
+    positionFind: "Find this position",
+    positionUpgradesTemplate: "New-card upgrades: {count}",
   },
   bench: {
     modeNone: "No progression",

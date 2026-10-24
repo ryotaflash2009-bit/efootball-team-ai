@@ -358,6 +358,12 @@ const part: PartialDictionary = {
     scopeLoadingMessage: "Verifica dell’account…",
     legacyNoticeTemplate: "Elementi de La mia squadra salvati in questo browser prima della separazione degli account: {count}. Questi dati non sono stati eliminati. Per usarli con l’account attuale, apri la schermata di migrazione dei dati locali.",
     migrationLinkLabel: "Apri la schermata di migrazione dei dati locali",
+    positionSummaryHeading: "Per ruolo",
+    positionSummaryIntro: "Carte possedute contate per ruolo registrato, con la tua carta più forte e quante nuove carte sarebbero un miglioramento.",
+    positionCountTemplate: "Carte: {count}",
+    positionNone: "Ancora nessuna",
+    positionFind: "Cerca questo ruolo",
+    positionUpgradesTemplate: "Miglioramenti con nuove carte: {count}",
   },
   squadTemplatesBoard: {
     pageTitle: "Modelli di rosa",
