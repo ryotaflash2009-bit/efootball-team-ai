@@ -29,6 +29,7 @@ import { Icon } from "@/components/ui/Icon";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { YourBestPanel } from "@/components/titles/YourBestPanel";
+import { MyTeamPositionSummary } from "@/components/user-cards/MyTeamPositionSummary";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { fillMessage } from "@/lib/i18n/message-format";
@@ -200,6 +201,7 @@ export function MyTeamView() {
       </Surface>
 
       <YourBestPanel ids={ids} nameOf={(id) => resolvePlayerDisplayName(cards.get(id) ?? {}, locale, cardFallbackName(id))} />
+      <MyTeamPositionSummary />
 
       <UserCardFilters
         state={filter}

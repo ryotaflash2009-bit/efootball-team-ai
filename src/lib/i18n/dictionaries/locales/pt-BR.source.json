@@ -4412,5 +4412,11 @@
  "worldPlayerHero.addedLabel": "f462e3956889",
  "provisionalCards.staleNoticeTemplate": "7d3d5bdfefe1",
  "provisionalCards.searchHeadingTemplate": "509e33ea206e",
- "provisionalCards.searchNote": "04c55ea7ab03"
+ "provisionalCards.searchNote": "04c55ea7ab03",
+ "myTeam.positionSummaryHeading": "252d7af35a86",
+ "myTeam.positionSummaryIntro": "2b5b95d174a1",
+ "myTeam.positionCountTemplate": "4352b4e898ff",
+ "myTeam.positionNone": "adb85cf22bfc",
+ "myTeam.positionFind": "46a9904252a9",
+ "myTeam.positionUpgradesTemplate": "32368b87c29b"
 }

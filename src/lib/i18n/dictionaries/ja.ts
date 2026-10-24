@@ -3101,6 +3101,12 @@ export interface Dictionary {
     scopeLoadingMessage: string;
     legacyNoticeTemplate: string;
     migrationLinkLabel: string;
+    positionSummaryHeading: string;
+    positionSummaryIntro: string;
+    positionCountTemplate: string;
+    positionNone: string;
+    positionFind: string;
+    positionUpgradesTemplate: string;
   };
   bench: {
     modeNone: string;

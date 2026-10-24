@@ -358,6 +358,12 @@ const part: PartialDictionary = {
     scopeLoadingMessage: "正在確認您的帳號…",
     legacyNoticeTemplate: "此瀏覽器中有 {count} 筆帳號分離前儲存的我的球隊資料。這些資料並未刪除。若要在目前的帳號下使用，請開啟本機資料移轉畫面。",
     migrationLinkLabel: "開啟本機資料移轉畫面",
+    positionSummaryHeading: "依位置彙整",
+    positionSummaryIntro: "依登錄位置統計擁有的卡，顯示最強的卡以及能用新卡強化的數量。",
+    positionCountTemplate: "{count} 張",
+    positionNone: "還沒有",
+    positionFind: "搜尋此位置",
+    positionUpgradesTemplate: "可用新卡強化 {count}",
   },
   squadTemplatesBoard: {
     pageTitle: "陣容範本",

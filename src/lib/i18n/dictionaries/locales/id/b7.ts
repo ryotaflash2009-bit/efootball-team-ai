@@ -358,6 +358,12 @@ const part: PartialDictionary = {
     scopeLoadingMessage: "Memeriksa akun Anda…",
     legacyNoticeTemplate: "Ada {count} item Tim Saya yang tersimpan di browser ini dari sebelum pemisahan akun. Data ini belum dihapus. Untuk menggunakannya di akun Anda saat ini, buka layar migrasi data lokal.",
     migrationLinkLabel: "Buka layar migrasi data lokal",
+    positionSummaryHeading: "Per posisi",
+    positionSummaryIntro: "Kartu yang dimiliki dihitung per posisi terdaftar, dengan kartu terkuatmu dan berapa kartu baru yang akan jadi peningkatan.",
+    positionCountTemplate: "Kartu: {count}",
+    positionNone: "Belum ada",
+    positionFind: "Cari posisi ini",
+    positionUpgradesTemplate: "Peningkatan dari kartu baru: {count}",
   },
   squadTemplatesBoard: {
     pageTitle: "Template skuad",

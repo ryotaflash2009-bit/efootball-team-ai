@@ -358,6 +358,12 @@ const part: PartialDictionary = {
     scopeLoadingMessage: "Verificando sua conta…",
     legacyNoticeTemplate: "Há {count} item(ns) do Meu time salvos neste navegador antes da separação por conta. Esses dados não foram excluídos. Para usá-los com sua conta atual, abra a tela de migração de dados locais.",
     migrationLinkLabel: "Abrir tela de migração de dados locais",
+    positionSummaryHeading: "Por posição",
+    positionSummaryIntro: "Cartas suas contadas por posição registrada, com sua carta mais forte e quantas cartas novas seriam uma melhoria.",
+    positionCountTemplate: "Cartas: {count}",
+    positionNone: "Nenhuma ainda",
+    positionFind: "Buscar esta posição",
+    positionUpgradesTemplate: "Melhorias com cartas novas: {count}",
   },
   squadTemplatesBoard: {
     pageTitle: "Modelos de elenco",

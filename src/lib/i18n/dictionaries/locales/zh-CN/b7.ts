@@ -358,6 +358,12 @@ const part: PartialDictionary = {
     scopeLoadingMessage: "正在检查你的账户…",
     legacyNoticeTemplate: "此浏览器中有 {count} 条在账户分离之前保存的我的球队记录。这些数据没有被删除。如需在当前账户下使用，请打开本地数据迁移页面。",
     migrationLinkLabel: "打开本地数据迁移页面",
+    positionSummaryHeading: "按位置汇总",
+    positionSummaryIntro: "按登记位置统计拥有的卡，显示最强的卡以及能用新卡强化的数量。",
+    positionCountTemplate: "{count} 张",
+    positionNone: "还没有",
+    positionFind: "查找此位置",
+    positionUpgradesTemplate: "可用新卡强化 {count}",
   },
   squadTemplatesBoard: {
     pageTitle: "阵容模板",
