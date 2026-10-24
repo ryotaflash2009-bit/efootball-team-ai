@@ -1,8 +1,8 @@
 import { PageContainer } from "@/components/ui/PageContainer";
-import { NEW_CARD_DAYS, RECENT_LIMIT } from "@/lib/new-cards/constants";
+import { NEW_CARD_DAYS, RECENT_LIMIT, officialStaleDays } from "@/lib/new-cards/constants";
 import { pageMetadata } from "@/lib/seo/page-metadata";
 import { listProvisionalPlayers } from "@/lib/world/repository";
-import { cachedListRecentlyAddedPlayers } from "@/lib/reference-data/runtime/cached-queries";
+import { cachedGetSourceMeta, cachedListRecentlyAddedPlayers } from "@/lib/reference-data/runtime/cached-queries";
 import { resolveCardImageSources } from "@/lib/world/image";
 import { ProvisionalCardsView } from "@/components/world/ProvisionalCardsView";
 import type { WorldPlayerCardData } from "@/components/world/WorldPlayerCard";
@@ -51,6 +51,11 @@ export default async function NewCardsPage() {
   // 最近追加されたカードは取れなくても暫定の一覧は出す（一時的な照会の失敗で画面全体を壊さない）
   const recent = await cachedListRecentlyAddedPlayers(NEW_CARD_DAYS, RECENT_LIMIT).catch(() => []);
   const provisional = listProvisionalPlayers();
+  // 正式なデータの最後の取り込み（7 日より前なら案内を出す・2026-10-24: 取得元の機械判定で取り込みが止まった）
+  const lastImportAt = await cachedGetSourceMeta()
+    .then((m) => m.syncFinishedAt ?? null)
+    .catch(() => null);
+  const staleDays = officialStaleDays(lastImportAt);
   // 「見た」の時刻は、このページに出ている最も新しいカードの追加時刻（端末の時計・キャッシュの遅れに左右されない・2026-10-18）
   const latestAddedAt = [...recent.map((p) => p.addedAt ?? null), ...provisional.map((p) => p.provisional?.firstSeenAt ?? null)]
     .filter((v): v is string => typeof v === "string" && Number.isFinite(Date.parse(v)))
@@ -58,7 +63,7 @@ export default async function NewCardsPage() {
     .at(-1) ?? null;
   return (
     <PageContainer width="full">
-      <ProvisionalCardsView latestAddedAt={latestAddedAt} cards={provisional.map(toCardData)} recent={recent.map(toCardData)} recentDays={NEW_CARD_DAYS} batches={addedBatches(recent, PACK_CHECK_LIMIT)} packCheckLimit={PACK_CHECK_LIMIT} />
+      <ProvisionalCardsView lastImportAt={lastImportAt} staleDays={staleDays} latestAddedAt={latestAddedAt} cards={provisional.map(toCardData)} recent={recent.map(toCardData)} recentDays={NEW_CARD_DAYS} batches={addedBatches(recent, PACK_CHECK_LIMIT)} packCheckLimit={PACK_CHECK_LIMIT} />
     </PageContainer>
   );
 }

@@ -620,6 +620,7 @@ const part: PartialDictionary = {
     recentHeadingTemplate: "Kartu yang baru ditambahkan ({days} hari terakhir, {count})",
     recentIntro: "Kartu baru yang ditambahkan ke TeamAIXI sebagai data resmi (terbaru lebih dulu).",
     recentEmpty: "Tidak ada kartu resmi yang ditambahkan baru-baru ini.",
+    staleNoticeTemplate: "Data resmi (eFootball World) belum diimpor selama {days} hari (impor terakhir: {date}). Kartu baru sejak itu ditampilkan sebagai kartu sementara (data sementara dari informasi publik lain).",
     homeUpgradeTemplate: "{count} kartu baru lebih kuat dari My Team-mu → Lihat",
     showAllTemplate: "Tampilkan semua ({count})",
     showLess: "Tampilkan lebih sedikit",

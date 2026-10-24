@@ -620,6 +620,7 @@ const part: PartialDictionary = {
     recentHeadingTemplate: "최근 추가된 카드(최근 {days}일, {count}장)",
     recentIntro: "정식 데이터로 TeamAIXI에 추가된 새 카드입니다(최신순).",
     recentEmpty: "최근 추가된 정식 카드가 없습니다.",
+    staleNoticeTemplate: "정식 데이터(eFootball World)의 가져오기가 {days}일째 멈춰 있습니다(마지막 가져오기: {date}). 그동안의 새 카드는 임시 카드(다른 공개 정보로 만든 임시 데이터)로 표시합니다.",
     homeUpgradeTemplate: "새 카드 중 {count}장이 내 My Team보다 강합니다 → 보기",
     showAllTemplate: "모두 보기 ({count}건)",
     showLess: "접기",

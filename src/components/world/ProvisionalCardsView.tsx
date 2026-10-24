@@ -28,6 +28,8 @@ export function ProvisionalCardsView({
   batches = [],
   packCheckLimit = 30,
   latestAddedAt = null,
+  lastImportAt = null,
+  staleDays = null,
 }: {
   cards: WorldPlayerCardData[];
   recent: WorldPlayerCardData[];
@@ -36,6 +38,10 @@ export function ProvisionalCardsView({
   packCheckLimit?: number;
   /** このページに出ている最も新しいカードの追加時刻（「見た」の時刻にする）。 */
   latestAddedAt?: string | null;
+  /** 正式なデータの最後の取り込みの時刻（7 日より前なら案内を出す）。 */
+  lastImportAt?: string | null;
+  /** 正式なデータの取り込みが止まっている日数（7 日より長いときだけ・サーバーで数える）。 */
+  staleDays?: number | null;
 }) {
   const t = useT();
   const { displayLocale } = useLocale();
@@ -64,6 +70,11 @@ export function ProvisionalCardsView({
     <div className="flex flex-col gap-5" data-testid="provisional-cards">
       <PageHeader title={tp("newCardsPageTitle")} icon="players" description={tp("newCardsIntro")} />
       <GlossaryLink anchor="provisional-card" />
+      {staleDays != null ? (
+        <Surface tone="outline" padding="sm" className="border-warning/50 text-xs text-text-dim" data-testid="official-data-stale">
+          {fillMessage(tp("staleNoticeTemplate"), { days: String(staleDays), date: formatDate(new Date(lastImportAt as string), displayLocale) })}
+        </Surface>
+      ) : null}
 
       <NewCardsTeamImpact newCards={[...recent, ...cards]} />
 

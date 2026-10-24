@@ -620,6 +620,7 @@ const part: PartialDictionary = {
     recentHeadingTemplate: "Cartas añadidas recientemente (últimos {days} días, {count})",
     recentIntro: "Cartas nuevas añadidas a TeamAIXI como datos oficiales (las más recientes primero).",
     recentEmpty: "No se añadieron cartas oficiales recientemente.",
+    staleNoticeTemplate: "Los datos oficiales (eFootball World) no se importan desde hace {days} días (última importación: {date}). Las cartas nuevas desde entonces se muestran como cartas provisionales (datos temporales creados con otra información pública).",
     homeUpgradeTemplate: "{count} cartas nuevas superan a tu My Team → Ver",
     showAllTemplate: "Mostrar todo ({count})",
     showLess: "Mostrar menos",
