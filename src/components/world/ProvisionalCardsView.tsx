@@ -66,6 +66,46 @@ export function ProvisionalCardsView({
     // tp は辞書の参照（locale で変わる）
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recent, batches, displayLocale, t]);
+  const recentSection = (
+    <section className="flex flex-col gap-3" data-testid="recently-added">
+      <SectionHeader title={tp("recentHeadingTemplate").replace("{days}", String(recentDays)).replace("{count}", String(recent.length))} as="h2" />
+      <p className="text-xs text-text-dim">{tp("recentIntro")}</p>
+      {recent.length === 0 ? (
+        <Surface padding="md" className="text-sm text-text-dim" data-testid="recently-added-empty">
+          {tp("recentEmpty")}
+        </Surface>
+      ) : (
+        dayGroups.map((g) => <DayGroup key={g.key} group={g} packCheckLimit={packCheckLimit} />)
+      )}
+    </section>
+  );
+  const provisionalSection = (
+    <section className="flex flex-col gap-3">
+      <SectionHeader title={tp("provisionalHeading")} as="h2" />
+      {cards.length === 0 ? (
+        <p className="text-xs text-text-muted" data-testid="provisional-cards-empty">
+          {tp("newCardsEmpty")}
+        </p>
+      ) : (
+        <>
+          <Surface tone="outline" padding="sm" className="text-xs text-text-dim">
+            <p>{tp("noticeBody")}</p>
+            <p className="mt-1">{tp("maxLevelUnknown")}</p>
+          </Surface>
+          <ul className={GRID} data-testid="provisional-cards-grid">
+            {cards.map((c) => (
+              <li key={c.worldCardId}>
+                <WorldPlayerCard player={c} />
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </section>
+  );
+  // 正式なデータの追加が無い間（取得元の停止など）は、暫定のカードを先に出す（2026-10-24）
+  const provisionalFirst = recent.length === 0 && cards.length > 0;
+
   return (
     <div className="flex flex-col gap-5" data-testid="provisional-cards">
       <PageHeader title={tp("newCardsPageTitle")} icon="players" description={tp("newCardsIntro")} />
@@ -78,40 +118,9 @@ export function ProvisionalCardsView({
 
       <NewCardsTeamImpact newCards={[...recent, ...cards]} />
 
-      <section className="flex flex-col gap-3" data-testid="recently-added">
-        <SectionHeader title={tp("recentHeadingTemplate").replace("{days}", String(recentDays)).replace("{count}", String(recent.length))} as="h2" />
-        <p className="text-xs text-text-dim">{tp("recentIntro")}</p>
-        {recent.length === 0 ? (
-          <Surface padding="md" className="text-sm text-text-dim" data-testid="recently-added-empty">
-            {tp("recentEmpty")}
-          </Surface>
-        ) : (
-          dayGroups.map((g) => <DayGroup key={g.key} group={g} packCheckLimit={packCheckLimit} />)
-        )}
-      </section>
+      {provisionalFirst ? provisionalSection : recentSection}
 
-      <section className="flex flex-col gap-3">
-        <SectionHeader title={tp("provisionalHeading")} as="h2" />
-        {cards.length === 0 ? (
-          <p className="text-xs text-text-muted" data-testid="provisional-cards-empty">
-            {tp("newCardsEmpty")}
-          </p>
-        ) : (
-          <>
-            <Surface tone="outline" padding="sm" className="text-xs text-text-dim">
-              <p>{tp("noticeBody")}</p>
-              <p className="mt-1">{tp("maxLevelUnknown")}</p>
-            </Surface>
-            <ul className={GRID} data-testid="provisional-cards-grid">
-              {cards.map((c) => (
-                <li key={c.worldCardId}>
-                  <WorldPlayerCard player={c} />
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-      </section>
+      {provisionalFirst ? recentSection : provisionalSection}
     </div>
   );
 }
