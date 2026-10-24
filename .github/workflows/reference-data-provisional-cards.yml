@@ -5,7 +5,7 @@ name: Reference data provisional cards
 #   src/lib/reference-data/provisional/data/provisional-cards.json に入れて main へ commit する（Vercel が本番に反映）。World に載ったものは外す。
 # - 外部へのアクセス: PES Master（robots.txt で全ページ許可・自動の取得を禁じる規約なし）を 1 枚ごとに 2 秒あけて読む・1 回 80 枚まで。
 #   既にあるかの確認は TeamAIXI の公開 API（読み取り）。Secrets・Environment・Production の DB への接続は無い。
-# - 6 時間ごと。日本時間の木・月は毎時（更新の多い日）。
+# - 毎時 2 回（7 分・37 分・2026-10-25）。GitHub の schedule の遅れ・欠落は watchdog も補う（2 時間を超えたら起動）。
 # - main を動かすため、Orchestrator・Production apply・Backup が実行中・待機中なら何もしない（Apply の binding した SHA を変えない）。
 # - push の前に暫定のカードの契約のテストを通す。書くのは上の JSON だけ（それ以外の変更があれば失敗にする）。
 # - 停止: リポジトリの変数 REFERENCE_DATA_PROVISIONAL_CARDS_DISABLED を "true"。検出の変数が "true" でなければ動かない。
@@ -13,6 +13,7 @@ name: Reference data provisional cards
 on:
   schedule:
     - cron: "37 * * * *"       # 毎時 37 分（2026-10-25: World の取り込みが止まっている間、新しいカードの主な取得元のため毎日毎時）
+    - cron: "7 * * * *"        # 毎時 7 分（2026-10-25: GitHub の schedule が 4〜5 時間に 1 回しか起きていないため、起動の機会を増やす。重なっても concurrency で順番に・PES Master は 1 回 2 ページ）
   workflow_dispatch:
 
 permissions:

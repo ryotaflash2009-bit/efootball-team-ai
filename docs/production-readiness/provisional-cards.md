@@ -28,7 +28,7 @@
 
 - データ: `src/lib/reference-data/provisional/data/provisional-cards.json`（`reference_data.world_player_cards` と同じ形の行）。
   **DB には書かない**（World の自動更新の計画・差分・checksum・権限に一切触れない。DB に入れると「上流に無い行」として World の自動の反映がすべて止まるため）。
-- 同期: `.github/workflows/reference-data-provisional-cards.yml`（6 時間ごと・日本時間の木・月は毎時）→ `scripts/provisional-cards-sync.mjs`。
+- 同期: `.github/workflows/reference-data-provisional-cards.yml`（毎時 2 回・7 分と 37 分・2026-10-25。GitHub の schedule の欠落は detection watchdog が 2 時間を超えたら起動して補う）→ `scripts/provisional-cards-sync.mjs`。
   PES Master の注目カードのページ → World に無い ID だけカードのページを読む（2 秒あけ・1 回 80 枚まで・最大レベルが不明なものは 24 時間ごとに取り直す）→
   JSON を main へ commit（Vercel が本番に反映）。World に載った ID は外す。Apply の実行中は何もしない。push の前に契約のテスト。Secrets なし。
 - アプリ: World に無い ID は暫定のカードで補う（詳細・by-ids）。World にあれば常に World を優先。一覧（/players）は World だけで、
