@@ -620,6 +620,8 @@ const part: PartialDictionary = {
     recentHeadingTemplate: "Cartes ajoutées récemment ({days} derniers jours, {count})",
     recentIntro: "Nouvelles cartes ajoutées à TeamAIXI en tant que données officielles (les plus récentes d'abord).",
     recentEmpty: "Aucune carte officielle ajoutée récemment.",
+    searchHeadingTemplate: "Cartes pas encore dans les données officielles (provisoires, {count})",
+    searchNote: "Cartes provisoires correspondant à votre recherche (données temporaires issues d'autres informations publiques). Elles rejoignent la liste normale ci-dessous à l'arrivée des données officielles.",
     staleNoticeTemplate: "Les données officielles (eFootball World) ne sont plus importées depuis {days} jours (dernière importation : {date}). Les nouvelles cartes depuis sont affichées comme cartes provisoires (données temporaires issues d'autres informations publiques).",
     homeUpgradeTemplate: "{count} nouvelles cartes dépassent votre My Team → Voir",
     showAllTemplate: "Tout afficher ({count})",

@@ -620,6 +620,8 @@ const part: PartialDictionary = {
     recentHeadingTemplate: "最近添加的卡（最近 {days} 天，{count} 张）",
     recentIntro: "作为正式数据添加到 TeamAIXI 的新卡（按添加时间从新到旧）。",
     recentEmpty: "最近没有添加正式的卡。",
+    searchHeadingTemplate: "尚未加入正式数据的卡（暂定，{count} 张）",
+    searchNote: "与搜索相符的暂定卡（根据其他公开信息制作的临时数据）。正式数据到达后会进入下方的普通列表。",
     staleNoticeTemplate: "正式数据（eFootball World）已有 {days} 天未导入（最后导入：{date}）。在此期间的新卡以暂定卡（根据其他公开信息制作的临时数据）显示。",
     homeUpgradeTemplate: "新卡中有 {count} 张比你的 My Team 更强 → 查看",
     showAllTemplate: "全部显示（{count} 条）",

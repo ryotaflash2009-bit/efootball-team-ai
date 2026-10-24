@@ -93,8 +93,10 @@ export function PackCheckView() {
       setSearch({ kind: "loading" });
       fetch(`/api/world/players?q=${encodeURIComponent(query)}&pageSize=20`)
         .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
-        .then((j: { players?: WorldPlayerListItem[] }) => {
-          if (id === reqId.current) setSearch({ kind: "results", players: Array.isArray(j.players) ? j.players : [] });
+        .then((j: { players?: WorldPlayerListItem[]; provisionalMatches?: WorldPlayerListItem[] }) => {
+          // 暫定のカード（正式なデータの反映前）も検索から追加できる（2026-10-24）
+          const players = [...(Array.isArray(j.provisionalMatches) ? j.provisionalMatches : []), ...(Array.isArray(j.players) ? j.players : [])];
+          if (id === reqId.current) setSearch({ kind: "results", players });
         })
         .catch(() => {
           if (id === reqId.current) setSearch({ kind: "error" });

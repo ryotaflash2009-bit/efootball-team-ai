@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n/dictionaries/ja-ns/provisionalCards";
 import { ProvisionalCardsLink } from "@/components/world/ProvisionalCardsLink";
 import "@/lib/i18n/dictionaries/ja-ns/playersPage";
 import "@/lib/i18n/dictionaries/ja-ns/searchInput";
@@ -72,6 +73,7 @@ export function PlayersPageView({
   hasFilters,
   searchParams,
   provisionalCount = 0,
+  provisionalMatches = [],
 }: {
   result: Omit<WorldListResult, "players"> & { players: WorldPlayerCardData[] };
   facets: WorldFacets;
@@ -80,6 +82,8 @@ export function PlayersPageView({
   searchParams: SP;
   /** 新しいカード（暫定）の枚数（2026-10-15）。 */
   provisionalCount?: number;
+  /** 検索に合う暫定のカード（2026-10-24・World の取り込みが止まっている間も新しいカードを見つけられるように）。 */
+  provisionalMatches?: WorldPlayerCardData[];
 }) {
   const t = useT();
   const { locale, displayLocale } = useLocale();
@@ -93,6 +97,19 @@ export function PlayersPageView({
   return (
     <div className="flex flex-col gap-5">
       <ProvisionalCardsLink count={provisionalCount} />
+      {provisionalMatches.length > 0 ? (
+        <section className="flex flex-col gap-2" data-testid="provisional-search-results">
+          <h2 className="text-sm font-semibold">{t("provisionalCards", "searchHeadingTemplate").replace("{count}", String(provisionalMatches.length))}</h2>
+          <p className="text-xs text-text-dim">{t("provisionalCards", "searchNote")}</p>
+          <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
+            {provisionalMatches.map((p) => (
+              <li key={p.worldCardId}>
+                <WorldPlayerCard player={p} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
       <PageHeader
         title={t("playersPage", "title")}
         icon="players"

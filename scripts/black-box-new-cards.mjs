@@ -174,6 +174,16 @@ async function main() {
     const oldCount = await ev(`document.querySelectorAll('[data-testid="card-new-badge"]').length`);
     record("選手の一覧: 新しいカードに NEW の印（古いカードには出ない）", recentCount === 0 ? true : firstNew === true && oldCount === 0, `first=${firstNew} oldPage=${oldCount}`);
 
+    // 選手の検索: 暫定のカードも検索で見つかる（2026-10-24）
+    const prov = await ev(`(async () => ((await (await fetch("/api/world/new-cards")).json()).cards || []).find((c) => c.provisional && c.nameEn) ?? null)()`);
+    if (prov) {
+      const word = prov.nameEn.split(" ").slice(-1)[0];
+      const api = await ev(`(async () => (await (await fetch("/api/world/players?pageSize=1&query=" + encodeURIComponent(${JSON.stringify(word)}))).json()).provisionalMatches?.map((p) => p.worldCardId) ?? [])()`);
+      await go(`${BASE}/players?q=${encodeURIComponent(word)}`);
+      const shown = await ev(`[...document.querySelectorAll('[data-testid="provisional-search-results"] a[href^="/players/world/"]')].map((a) => a.getAttribute("href").split("/").pop())`);
+      record("選手の検索: 暫定のカードも見つかる（API と一覧の画面）", api.includes(prov.worldCardId) && (shown ?? []).includes(prov.worldCardId), `${word} → api ${api.length} / page ${(shown ?? []).length}`);
+    } else record("選手の検索: 暫定のカードも見つかる（API と一覧の画面）", true, "no provisional cards");
+
     // サイドメニューの「新しいカード」の件数（前回見たあとに追加された枚数）
     const SEEN_KEY = "efootball-team-ai:new-cards-seen:v1";
     await ev(`localStorage.removeItem(${JSON.stringify(SEEN_KEY)})`);

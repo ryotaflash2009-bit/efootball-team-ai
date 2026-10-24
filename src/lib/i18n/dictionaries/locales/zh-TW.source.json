@@ -4410,5 +4410,7 @@
  "footer.glossaryLink": "4c4e436f9a45",
  "glossary.linkLabel": "a82b1d9f159c",
  "worldPlayerHero.addedLabel": "f462e3956889",
- "provisionalCards.staleNoticeTemplate": "7d3d5bdfefe1"
+ "provisionalCards.staleNoticeTemplate": "7d3d5bdfefe1",
+ "provisionalCards.searchHeadingTemplate": "509e33ea206e",
+ "provisionalCards.searchNote": "04c55ea7ab03"
 }
