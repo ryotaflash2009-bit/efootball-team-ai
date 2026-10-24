@@ -137,9 +137,11 @@ describe("アプリが読む暫定のカードの JSON", () => {
     for (const r of rows) expect(getProvisionalRow(String(r.world_card_id))).toBe(r);
   });
 
-  it("前の週の注目カードの日付（いちばん新しい ?date=・2026-10-24）", () => {
+  it("前の週の注目カードの日付（2 番目に新しい ?date=・2026-10-24）", () => {
     const html = '<a href="/efootball-2022/player/featured/">x</a><a href="/efootball-2022/player/featured/?date=2026-10-08">a</a><a href="/efootball-2022/player/featured/?date=2026-10-15">b</a>';
-    expect(parsePreviousFeaturedDate(html)).toBe("2026-10-15");
+    // ページには今週（いちばん新しい日付）へのリンクもあるため、2 番目に新しい日付が前の週
+    expect(parsePreviousFeaturedDate(html)).toBe("2026-10-08");
+    expect(parsePreviousFeaturedDate('<a href="/efootball-2022/player/featured/?date=2026-10-22">x</a>')).toBeNull();
     expect(parsePreviousFeaturedDate("<p>none</p>")).toBeNull();
   });
 });
