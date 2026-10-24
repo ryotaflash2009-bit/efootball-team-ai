@@ -3,6 +3,7 @@ import fixture from "./__fixtures__/pesmaster-calibration.json";
 import {
   extractPesMasterPlayer,
   parseFeaturedIds,
+  parsePreviousFeaturedDate,
   mapPesMasterPlayer,
   nextProvisionalCards,
   idsToFetch,
@@ -134,5 +135,11 @@ describe("アプリが読む暫定のカードの JSON", () => {
   it("同梱の JSON はすべて検証を通り、ID で引ける", () => {
     const rows = listProvisionalRows();
     for (const r of rows) expect(getProvisionalRow(String(r.world_card_id))).toBe(r);
+  });
+
+  it("前の週の注目カードの日付（いちばん新しい ?date=・2026-10-24）", () => {
+    const html = '<a href="/efootball-2022/player/featured/">x</a><a href="/efootball-2022/player/featured/?date=2026-10-08">a</a><a href="/efootball-2022/player/featured/?date=2026-10-15">b</a>';
+    expect(parsePreviousFeaturedDate(html)).toBe("2026-10-15");
+    expect(parsePreviousFeaturedDate("<p>none</p>")).toBeNull();
   });
 });
