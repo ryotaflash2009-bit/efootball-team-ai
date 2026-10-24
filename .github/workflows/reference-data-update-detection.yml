@@ -105,6 +105,10 @@ jobs:
           REFERENCE_DATA_DETECTION_CANDIDATES_PATH: .detection-state/candidates.json
         run: node scripts/run-update-detection-entry.mjs
 
+      - name: Clear the upstream cooldown (detection succeeded)
+        if: success()
+        run: node scripts/detection-cooldown.mjs clear .detection-state/world-cooldown.json
+
       - name: Record the upstream cooldown (HTTP 429)
         if: failure()
         run: node scripts/detection-cooldown.mjs record .detection-state/world-cooldown.json "${{ runner.temp }}/reference-data-detection-summary.json"

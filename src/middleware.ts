@@ -3,6 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 import { getSupabaseEnv } from "@/lib/supabase/env";
 import { areInternalPagesVisible, isInternalPagePath } from "@/lib/public-info/internal-pages";
 import { xRobotsTagFor } from "@/lib/public-info/search-indexing";
+import { tierRedirectTarget } from "@/lib/tier/tier-redirect";
 
 /** 存在しないpath。ここへrewriteするとアプリ共通のnot-found画面がHTTP 404で返る。 */
 const HIDDEN_INTERNAL_PAGE_REWRITE = "/__internal-page-not-available";
@@ -29,6 +30,10 @@ function withIndexingHeader(request: NextRequest, response: NextResponse): NextR
 }
 
 async function handle(request: NextRequest): Promise<NextResponse> {
+  // ティアリスト: /tier・?position=・小文字の /tier/xx を /tier/XX へ（308・2026-10-24）
+  const tierTarget = tierRedirectTarget(request.nextUrl.pathname, request.nextUrl.searchParams.get("position"));
+  if (tierTarget) return NextResponse.redirect(new URL(tierTarget, request.url), 308);
+
   // 開発者向け内部ページは、表示不可の環境ではレンダリング前に404にする(fail-closed)。
   // ページ側のnotFound()だけでは、loading.tsxによるstreaming開始後でHTTP statusが200のままになるため。
   if (isInternalPagePath(request.nextUrl.pathname.replace(/\/+$/, "") || "/") && !areInternalPagesVisible()) {

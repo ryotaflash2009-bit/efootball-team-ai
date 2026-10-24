@@ -55,7 +55,8 @@ export default async function NewCardsPage() {
   const lastImportAt = await cachedGetSourceMeta()
     .then((m) => m.syncFinishedAt ?? null)
     .catch(() => null);
-  const staleDays = officialStaleDays(lastImportAt);
+  const newestProvisionalAt = provisional.map((p) => p.provisional?.firstSeenAt ?? null).filter((v): v is string => typeof v === "string").sort().at(-1) ?? null;
+  const staleDays = officialStaleDays(lastImportAt, newestProvisionalAt);
   // 「見た」の時刻は、このページに出ている最も新しいカードの追加時刻（端末の時計・キャッシュの遅れに左右されない・2026-10-18）
   const latestAddedAt = [...recent.map((p) => p.addedAt ?? null), ...provisional.map((p) => p.provisional?.firstSeenAt ?? null)]
     .filter((v): v is string => typeof v === "string" && Number.isFinite(Date.parse(v)))
