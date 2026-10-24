@@ -5317,6 +5317,8 @@ const en: Dictionary = {
     recentHeadingTemplate: "Recently added cards (last {days} days, {count})",
     recentIntro: "New cards added to TeamAIXI as official data (newest first).",
     recentEmpty: "No official cards were added recently.",
+    searchHeadingTemplate: "Cards not yet in the official data (provisional, {count})",
+    searchNote: "Provisional cards matching your search (temporary data built from other public information). They move into the regular list below when official data arrives.",
     staleNoticeTemplate: "Official data (eFootball World) has not been imported for {days} days (last import: {date}). New cards since then are shown as provisional cards (temporary data built from other public information).",
     homeUpgradeTemplate: "New cards stronger than your My Team: {count} → View",
     showAllTemplate: "Show all ({count})",

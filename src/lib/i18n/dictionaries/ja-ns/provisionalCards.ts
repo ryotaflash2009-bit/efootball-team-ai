@@ -18,6 +18,8 @@ const provisionalCards: Dictionary["provisionalCards"] = {
   recentHeadingTemplate: "最近追加されたカード（直近 {days} 日・{count} 枚）",
   recentIntro: "正式なデータとして TeamAIXI に追加された新しいカードです（追加された順）。",
   recentEmpty: "直近に追加された正式なカードはありません。",
+  searchHeadingTemplate: "正式なデータの反映前のカード（暫定・{count} 枚）",
+  searchNote: "検索に合う暫定のカードです（ほかの公開情報から作った仮のデータ）。正式なデータが届くと、下の通常の一覧に入ります。",
   staleNoticeTemplate: "正式なデータ（eFootball World）の取り込みが {days} 日止まっています（最後の取り込み: {date}）。その間の新しいカードは、暫定のカード（ほかの公開情報から作った仮のデータ）で表示しています。",
   homeUpgradeTemplate: "新しいカードのうち {count} 枚が、あなたの My Team より強いです → 見る",
   showAllTemplate: "すべて表示（{count} 件）",

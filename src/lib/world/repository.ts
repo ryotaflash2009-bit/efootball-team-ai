@@ -1,4 +1,5 @@
 import { getDb, WorldQueryError } from "./db";
+import { accentInsensitivePattern, kanaInsensitivePattern, normalizeSearchQuery } from "@/lib/reference-data/runtime/search-normalize";
 import { buildWhere, orderByClause, CARD_COLUMNS, CARD_FROM } from "./queries";
 import { rowToListItem, rowsToStats, rowToAppearance } from "./mappers";
 import type {
@@ -355,4 +356,27 @@ export async function listAllWorldCardIds(): Promise<string[]> {
   } catch {
     throw new WorldQueryError();
   }
+}
+
+/**
+ * 暫定のカードの検索（2026-10-24: World の取り込みが止まっている間も、選手の検索で新しいカードを見つけられるように）。
+ * 正式な検索と同じ規則（英語名・日本語名の部分一致・アクセントやかなの違いを問わない・World ID の完全一致）。最大 limit 枚。
+ */
+export function searchProvisionalPlayers(query: string, limit = 20, rows: readonly WorldPlayerListItem[] = listProvisionalPlayers()): WorldPlayerListItem[] {
+  const q = normalizeSearchQuery(query ?? "");
+  if (q.length < 2) return [];
+  const lower = q.toLowerCase();
+  const accent = accentInsensitivePattern(q);
+  const kana = kanaInsensitivePattern(q);
+  const accentRe = accent ? new RegExp(accent, "i") : null;
+  const kanaRe = kana ? new RegExp(kana, "i") : null;
+  const out: WorldPlayerListItem[] = [];
+  for (const p of rows) {
+    const en = (p.nameEn ?? "").toLowerCase();
+    const ja = p.nameJa ?? "";
+    const hit = p.worldCardId === q || en.includes(lower) || ja.toLowerCase().includes(lower) || (accentRe?.test(p.nameEn ?? "") ?? false) || (kanaRe?.test(ja) ?? false);
+    if (hit) out.push(p);
+    if (out.length >= limit) break;
+  }
+  return out;
 }

@@ -1,6 +1,6 @@
 import { parseWorldListQuery } from "@/lib/world/schemas";
 import { NEW_CARD_DAYS, RECENT_LIMIT, isRecentlyAdded } from "@/lib/new-cards/constants";
-import { listProvisionalPlayers } from "@/lib/world/repository";
+import { listProvisionalPlayers, searchProvisionalPlayers } from "@/lib/world/repository";
 import { cachedGetFacets, cachedGetSourceMeta, cachedListPlayers, cachedListRecentlyAddedPlayers } from "@/lib/reference-data/runtime/cached-queries";
 import { listPlayers, getFacets, getSourceMeta } from "@/lib/world/repository";
 import { WorldDataUnavailableError } from "@/lib/world/db";
@@ -38,13 +38,16 @@ function toCardData(p: WorldPlayerListItem): WorldPlayerCardData {
     cardType: p.cardType,
     hasEfhubLink: p.hasEfhubLink,
     isNew: isRecentlyAdded(p.addedAt),
-    imageSources: resolveCardImageSources({
-      worldCardId: p.worldCardId,
-      efhubCardId: p.efhubCardId,
-      hasEfhubLink: p.hasEfhubLink,
-      hasWorldImage: p.imageUrlCandidate != null,
-      hasWorldMobileImage: p.mobileImageUrlCandidate != null,
-    }),
+    provisional: p.provisional ? true : undefined,
+    imageSources: p.provisional
+      ? []
+      : resolveCardImageSources({
+          worldCardId: p.worldCardId,
+          efhubCardId: p.efhubCardId,
+          hasEfhubLink: p.hasEfhubLink,
+          hasWorldImage: p.imageUrlCandidate != null,
+          hasWorldMobileImage: p.mobileImageUrlCandidate != null,
+        }),
   };
 }
 
@@ -144,6 +147,7 @@ export default async function PlayersPage({ searchParams }: { searchParams: Prom
         sourceMeta={sourceMeta}
         hasFilters={hasFilters}
         searchParams={sp}
+        provisionalMatches={query.query ? searchProvisionalPlayers(query.query).map(toCardData) : []}
         provisionalCount={listProvisionalPlayers().length + (await cachedListRecentlyAddedPlayers(NEW_CARD_DAYS, RECENT_LIMIT).catch(() => [])).length}
       />
     </PageContainer>

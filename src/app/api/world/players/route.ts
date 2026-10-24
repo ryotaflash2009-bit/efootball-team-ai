@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { parseWorldListQuery } from "@/lib/world/schemas";
-import { listPlayers, getSourceMeta, getFacets } from "@/lib/world/repository";
+import { listPlayers, getSourceMeta, getFacets, searchProvisionalPlayers } from "@/lib/world/repository";
 import { WorldDataUnavailableError, WorldQueryError } from "@/lib/world/db";
 import { SEARCH_INPUT_REJECTED_STATUS, SearchInputRejectedError, assertSearchInput, searchInputRejectedBody } from "@/lib/search/search-input";
 
@@ -58,6 +58,8 @@ export async function GET(request: Request) {
       source: meta.source,
       updatedAt: meta.syncFinishedAt,
     };
+    // 検索に合う暫定のカード（2026-10-24・正式な一覧とは別に返す。件数・ページには数えない）
+    if (q.query) body.provisionalMatches = searchProvisionalPlayers(q.query);
     if (searchParams.get("facets") === "1") {
       body.facets = await getFacets();
     }
