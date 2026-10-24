@@ -651,7 +651,8 @@ const part: PartialDictionary = {
     squadSuggestSeeAll: "Tüm yeni kartları gör",
     positionFilterLabel: "Mevkiye göre filtrele",
     positionFilterAll: "Tümü",
-    positionFilterEmpty: "Bu mevki için yeni kart yok.",
+    unownedOnlyLabel: "Yalnızca henüz sahip olmadığın kartlar (My Team'de \"sahip\" olanlar hariç)",
+    filterEmpty: "Bu filtrelere uyan yeni kart yok.",
   },
   packCheck: {
     heading: "Paket analizi (My Team'inle karşılaştırma)",

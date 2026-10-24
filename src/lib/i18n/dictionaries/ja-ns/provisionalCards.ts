@@ -45,7 +45,8 @@ const provisionalCards: Dictionary["provisionalCards"] = {
   squadSuggestSeeAll: "新しいカードをすべて見る",
   positionFilterLabel: "ポジションで絞る",
   positionFilterAll: "すべて",
-  positionFilterEmpty: "このポジションの新しいカードはありません。",
+  unownedOnlyLabel: "まだ持っていないカードだけ（My Team の「所持」を除く）",
+  filterEmpty: "条件に合う新しいカードはありません。",
 };
 
 registerJaNamespace("provisionalCards", provisionalCards);

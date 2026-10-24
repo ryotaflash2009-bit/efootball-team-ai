@@ -651,7 +651,8 @@ const part: PartialDictionary = {
     squadSuggestSeeAll: "Vedi tutte le nuove carte",
     positionFilterLabel: "Filtra per ruolo",
     positionFilterAll: "Tutte",
-    positionFilterEmpty: "Nessuna nuova carta per questo ruolo.",
+    unownedOnlyLabel: "Solo carte che non hai ancora (escluse quelle \"possedute\" in My Team)",
+    filterEmpty: "Nessuna nuova carta corrisponde a questi filtri.",
   },
   packCheck: {
     heading: "Analisi pack (confrontata con il tuo My Team)",

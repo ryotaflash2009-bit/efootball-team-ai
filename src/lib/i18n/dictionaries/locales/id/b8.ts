@@ -651,7 +651,8 @@ const part: PartialDictionary = {
     squadSuggestSeeAll: "Lihat semua kartu baru",
     positionFilterLabel: "Saring berdasarkan posisi",
     positionFilterAll: "Semua",
-    positionFilterEmpty: "Tidak ada kartu baru untuk posisi ini.",
+    unownedOnlyLabel: "Hanya kartu yang belum kamu miliki (tanpa \"dimiliki\" di My Team)",
+    filterEmpty: "Tidak ada kartu baru yang cocok dengan filter ini.",
   },
   packCheck: {
     heading: "Cek pack (dibandingkan dengan My Team-mu)",

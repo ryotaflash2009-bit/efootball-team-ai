@@ -5355,7 +5355,8 @@ const en: Dictionary = {
     squadSuggestSeeAll: "See all new cards",
     positionFilterLabel: "Filter by position",
     positionFilterAll: "All",
-    positionFilterEmpty: "No new cards for this position.",
+    unownedOnlyLabel: "Only cards you don't own yet (excludes My Team \"owned\")",
+    filterEmpty: "No new cards match these filters.",
   },
   packCheck: {
     heading: "Pack check (compared with your My Team)",

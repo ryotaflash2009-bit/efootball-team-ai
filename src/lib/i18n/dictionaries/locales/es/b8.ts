@@ -651,7 +651,8 @@ const part: PartialDictionary = {
     squadSuggestSeeAll: "Ver todas las cartas nuevas",
     positionFilterLabel: "Filtrar por posición",
     positionFilterAll: "Todas",
-    positionFilterEmpty: "No hay cartas nuevas para esta posición.",
+    unownedOnlyLabel: "Solo cartas que aún no tienes (excluye las \"tuyas\" de My Team)",
+    filterEmpty: "Ninguna carta nueva coincide con estos filtros.",
   },
   packCheck: {
     heading: "Análisis de packs (comparado con tu My Team)",
