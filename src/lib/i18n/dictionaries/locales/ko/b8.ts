@@ -648,6 +648,9 @@ const part: PartialDictionary = {
     squadSuggestEmptySlotTemplate: "{basis} {newOvr} (빈 슬롯)",
     squadSuggestNone: "현재 새 카드 중 이 스쿼드 선수를 넘는 카드는 없습니다.",
     squadSuggestSeeAll: "새 카드 모두 보기",
+    positionFilterLabel: "포지션으로 필터",
+    positionFilterAll: "전체",
+    positionFilterEmpty: "이 포지션의 새 카드는 없습니다.",
   },
   packCheck: {
     heading: "팩 진단 (내 My Team과 비교)",

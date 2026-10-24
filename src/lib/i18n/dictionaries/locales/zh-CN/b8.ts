@@ -648,6 +648,9 @@ const part: PartialDictionary = {
     squadSuggestEmptySlotTemplate: "{basis} {newOvr}（空位）",
     squadSuggestNone: "目前的新卡中，没有超过这个阵容球员的卡。",
     squadSuggestSeeAll: "查看全部新卡",
+    positionFilterLabel: "按位置筛选",
+    positionFilterAll: "全部",
+    positionFilterEmpty: "此位置没有新卡。",
   },
   packCheck: {
     heading: "卡包诊断（与你的 My Team 比较）",
