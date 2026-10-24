@@ -128,8 +128,8 @@ export function mapPesMasterPlayer(pm, ctx) {
   const name = text(pm.name);
   if (!name) return { ok: false, reason: "no_name" };
   if (pm.fake) return { ok: false, reason: "fake" };
+  // 知らない組（2026-10-22 の「3/1」など）はカードを外さず、種類だけ「未確認（null）」にする（推測しない・2026-10-24）
   const cardType = CARD_TYPE_MAP[`${pm.card_type}/${pm.card_type_2}`] ?? null;
-  if (!cardType) return { ok: false, reason: `unknown_card_type:${pm.card_type}/${pm.card_type_2}` };
   const position = POSITION_MAP[pm.position] ?? null;
   if (!position) return { ok: false, reason: `unknown_position:${pm.position}` };
   const stats = {};

@@ -1,0 +1,72 @@
+/**
+ * 上流（eFootball World）が HTTP 429 を返したあとの「待つ時間」（2026-10-24）。
+ *
+ *   node scripts/detection-cooldown.mjs check  <state.json> [confirm]   … 待つ時間の中なら上流へ行かずに失敗（exit 1）
+ *   node scripts/detection-cooldown.mjs record <state.json> <summary.json> … 検出の結果に http_429 があれば待つ時間を記録
+ *
+ * - 2026-10-20 から上流がサイト全体に機械判定（Vercel Security Checkpoint）をかけ、毎時の検出がすべて 429 になった。
+ *   拒否されている間に毎時たずね続けない（相手への負担・制限が長引くのを避ける）。6 時間に 1 回だけ試す。
+ * - 待つ時間の中の run は「失敗」で終える（成功にすると、検出の遅れの見張りが止まっていることに気づけない）。
+ * - 本人が手で `detect-force` を選んだときは待たない。
+ * - 上流へは一切アクセスしない（このスクリプトはファイルを読み書きするだけ）。
+ */
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+export const COOLDOWN_MS = 6 * 60 * 60 * 1000;
+
+/** 待つ時間の中か（壊れた値・未設定は「待たない」）。 */
+export function inCooldown(state, now = Date.now(), confirm = "") {
+  if (confirm === "detect-force") return false;
+  const until = state && typeof state.until === "string" ? Date.parse(state.until) : Number.NaN;
+  return Number.isFinite(until) && now < until;
+}
+
+/** 検出の結果の要約に http_429 があるか。 */
+export function summaryHas429(summary) {
+  return JSON.stringify(summary ?? {}).includes("http_429");
+}
+
+export function nextCooldown(now = Date.now()) {
+  return { until: new Date(now + COOLDOWN_MS).toISOString(), reason: "http_429", recordedAt: new Date(now).toISOString() };
+}
+
+function readJson(p) {
+  try {
+    return existsSync(p) ? JSON.parse(readFileSync(p, "utf8")) : null;
+  } catch {
+    return null;
+  }
+}
+
+function main(argv) {
+  const [cmd, statePath, third] = argv;
+  if (cmd === "check") {
+    const state = readJson(statePath);
+    if (inCooldown(state, Date.now(), third ?? "")) {
+      console.log(`::error::upstream returned HTTP 429; waiting until ${state.until} before asking again (no upstream request in this run)`);
+      return 1;
+    }
+    console.log("cooldown: none");
+    return 0;
+  }
+  if (cmd === "record") {
+    const summary = readJson(third);
+    if (!summaryHas429(summary)) {
+      console.log("cooldown: not recorded (no http_429)");
+      return 0;
+    }
+    const next = nextCooldown();
+    mkdirSync(path.dirname(statePath), { recursive: true });
+    writeFileSync(statePath, JSON.stringify(next) + "\n", "utf8");
+    console.log(`cooldown: recorded until ${next.until}`);
+    return 0;
+  }
+  console.error("usage: detection-cooldown.mjs check <state> [confirm] | record <state> <summary>");
+  return 2;
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  process.exitCode = main(process.argv.slice(2));
+}

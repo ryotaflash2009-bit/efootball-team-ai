@@ -88,6 +88,13 @@ jobs:
           restore-keys: |
             reference-data-detection-state-
 
+      # After HTTP 429 from upstream, wait 6 hours before asking again (no upstream request while waiting; the run fails
+      # so the staleness watchdog still sees it). A manual detect-force skips the wait (2026-10-24).
+      - name: Upstream cooldown after HTTP 429
+        env:
+          REFERENCE_DATA_DETECTION_CONFIRM: ${{ inputs.confirm }}
+        run: node scripts/detection-cooldown.mjs check .detection-state/world-cooldown.json "$REFERENCE_DATA_DETECTION_CONFIRM"
+
       - name: Detect upstream changes (no Secrets, no Production)
         env:
           REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED: ${{ vars.REFERENCE_DATA_AUTO_UPDATE_DETECTION_ENABLED }}
@@ -97,6 +104,10 @@ jobs:
           REFERENCE_DATA_DETECTION_STATE_PATH: .detection-state/world-light-state.json
           REFERENCE_DATA_DETECTION_CANDIDATES_PATH: .detection-state/candidates.json
         run: node scripts/run-update-detection-entry.mjs
+
+      - name: Record the upstream cooldown (HTTP 429)
+        if: failure()
+        run: node scripts/detection-cooldown.mjs record .detection-state/world-cooldown.json "${{ runner.temp }}/reference-data-detection-summary.json"
 
       - name: Save the detection state
         # hashFiles() only sees files inside the workspace, so the state lives in .detection-state/ (not runner.temp).

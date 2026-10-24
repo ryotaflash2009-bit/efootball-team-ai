@@ -48,7 +48,8 @@ describe("PES Master → 暫定のカード（2026-10-15・両方にあるカー
   });
 
   it("必須の値が欠ける・知らない種類は入れない（理由を返す）", () => {
-    expect(mapPesMasterPlayer({ ...FX[0].pm, card_type: 99 }, { fetchedAt: NOW })).toMatchObject({ ok: false, reason: "unknown_card_type:99/1" });
+    // 知らない種類の組はカードを残し、種類だけ null（推測しない・2026-10-24）
+    expect(mapPesMasterPlayer({ ...FX[0].pm, card_type: 99 }, { fetchedAt: NOW })).toMatchObject({ ok: true, row: { card_type: null } });
     expect(mapPesMasterPlayer({ ...FX[0].pm, position: 40 }, { fetchedAt: NOW })).toMatchObject({ ok: false, reason: "unknown_position:40" });
     expect(mapPesMasterPlayer({ ...FX[0].pm, finishing: "x" }, { fetchedAt: NOW })).toMatchObject({ ok: false, reason: "bad_stat:finishing" });
     expect(mapPesMasterPlayer({ ...FX[0].pm, name: " " }, { fetchedAt: NOW })).toMatchObject({ ok: false, reason: "no_name" });

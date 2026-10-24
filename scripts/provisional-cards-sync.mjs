@@ -153,6 +153,7 @@ const summary = {
   provisional: cards.length,
   removedBecauseInWorld: previous.filter((r) => worldIds.has(r.world_card_id)).length,
   withMaxLevel: cards.filter((r) => r.maximum_level != null).length,
+  unknownCardType: cards.filter((r) => r.card_type == null).length,
   withNameJa: cards.filter((r) => r.name_ja).length,
   learnedAliases: Object.keys(aliases.nationality).length + Object.keys(aliases.league).length,
   changed,

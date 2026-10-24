@@ -5255,6 +5255,7 @@ export interface Dictionary {
     recentHeadingTemplate: string;
     recentIntro: string;
     recentEmpty: string;
+    staleNoticeTemplate: string;
     homeUpgradeTemplate: string;
     showAllTemplate: string;
     showLess: string;

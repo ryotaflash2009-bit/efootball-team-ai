@@ -57,10 +57,12 @@ async function main() {
     await go(`${BASE}/players/new`);
     const heading = (await ev(`document.querySelector('[data-testid="recently-added"]')?.innerText ?? ""`)) || "";
     const recentCount = (await ev(`document.querySelectorAll('[data-testid="recently-added-grid"] a[href^="/players/world/"]').length`)) ?? 0;
-    record("最近追加されたカードの一覧（直近 7 日・枚数の表示）", /最近追加されたカード（直近 7 日・\d+ 枚）/.test(heading) && recentCount > 0, `${recentCount} cards`);
+    // 正式なデータの取り込みが 7 日以上止まると 0 枚になる（2026-10-24: 取得元の機械判定）。0 枚なら「まだありません」の表示を確かめる
+    const recentEmpty = await has('[data-testid="recently-added-empty"]');
+    record("最近追加されたカードの一覧（直近 7 日・枚数の表示）", /最近追加されたカード（直近 7 日・\d+ 枚）/.test(heading) && (recentCount > 0 || recentEmpty), `${recentCount} cards${recentEmpty ? " (empty notice)" : ""}`);
     // 日ごとの見出しの下にその日のカード（最初は 12 枚まで・残りはボタン）
     const days = (await ev(`[...document.querySelectorAll('[data-testid="added-day"]')].map((d) => ({ shown: d.querySelectorAll('[data-testid="recently-added-grid"] > li').length, more: !!d.querySelector('[data-testid="added-day-more"]'), n: Number((/（(\\d+) 枚）/.exec(d.innerText) || [])[1] || 0) }))`)) ?? [];
-    record("日ごとに見出しとカード（最初は 12 枚まで・残りはボタン）", days.length > 0 && days.every((d) => d.shown <= 12 && (d.n <= 12 || d.more)), JSON.stringify(days));
+    record("日ごとに見出しとカード（最初は 12 枚まで・残りはボタン）", (recentCount === 0 ? days.length === 0 : days.length > 0) && days.every((d) => d.shown <= 12 && (d.n <= 12 || d.more)), JSON.stringify(days));
     if (days[0]?.more) {
       await ev(`document.querySelector('[data-testid="added-day-more"]').click()`);
       await new Promise((r) => setTimeout(r, 500));

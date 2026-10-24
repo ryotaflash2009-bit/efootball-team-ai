@@ -23,15 +23,15 @@
 | ✅ 合格 | favorites | 32/32 | 2 | 2026-10-20 10:44 | — |
 | ✅ 合格 | final-alpha-readiness-copy（社内向けページ） | 37/37 | 5 | 2026-10-20 11:09 | [final-alpha-readiness-copy.md](./final-alpha-readiness-copy.md) |
 | ✅ 合格 | game-plan | 18/18 | 7 | 2026-10-20 10:44 | — |
-| ✅ 合格 | hydration-seeded | 95/95 | 248 | 2026-10-21 14:59 | — |
+| ✅ 合格 | hydration-seeded | 95/95 | 248 | 2026-10-24 09:48 | — |
 | ✅ 合格 | local-backup | 28/28 | 43 | 2026-10-20 10:52 | [local-backup.md](./local-backup.md) |
 | ✅ 合格 | local-posts（社内向けページ） | 32/32 | 79 | 2026-10-20 11:09 | [local-posts.md](./local-posts.md) |
 | ✅ 合格 | manager-compare | 16/16 | 9 | 2026-10-20 10:52 | — |
 | ✅ 合格 | manager-picker | 35/35 | 6 | 2026-10-20 10:52 | [manager-picker.md](./manager-picker.md) |
 | ✅ 合格 | managers | 43/43 | 3 | 2026-10-20 10:52 | [managers.md](./managers.md) |
-| ✅ 合格 | my-builds | 100/100 | 1 | 2026-10-20 11:48 | [my-builds.md](./my-builds.md) |
+| ✅ 合格 | my-builds | 100/100 | 0 | 2026-10-24 09:53 | [my-builds.md](./my-builds.md) |
 | ✅ 合格 | my-team-cloud | 98/98 | 16 | 2026-10-20 10:53 | [my-team-cloud.md](./my-team-cloud.md) |
-| ✅ 合格 | new-cards | 28/28 | 21 | 2026-10-21 15:03 | [new-cards.md](./new-cards.md) |
+| ✅ 合格 | new-cards | 25/25 | 18 | 2026-10-24 09:53 | [new-cards.md](./new-cards.md) |
 | ✅ 合格 | pack-check | 16/16 | 13 | 2026-10-20 11:49 | [pack-check.md](./pack-check.md) |
 | ✅ 合格 | phase-b5 | 23/23 | 0 | 2026-10-20 10:53 | — |
 | ✅ 合格 | phase-c | 17/17 | 0 | 2026-10-20 10:53 | — |
@@ -42,7 +42,7 @@
 | ✅ 合格 | rls-test（社内向けページ） | 71/71 | 12 | 2026-10-20 11:10 | [rls-test.md](./rls-test.md) |
 | ✅ 合格 | same-player | 9/9 | 5 | 2026-10-21 14:58 | [same-player.md](./same-player.md) |
 | ✅ 合格 | saved-filters | 11/11 | 7 | 2026-10-20 10:55 | — |
-| ✅ 合格 | share-build-link | 6/6 | 2 | 2026-10-20 11:49 | — |
+| ✅ 合格 | share-build-link | 6/6 | 2 | 2026-10-24 09:53 | — |
 | ✅ 合格 | share-card | 24/24 | 62 | 2026-10-20 10:55 | [share-card.md](./share-card.md) |
 | ✅ 合格 | squad-list-banner | 5/5 | 1 | 2026-10-20 10:56 | [squad-list-banner.md](./squad-list-banner.md) |
 | ✅ 合格 | squad-placement-assist | 23/23 | 9 | 2026-10-20 10:56 | [squad-placement-assist.md](./squad-placement-assist.md) |
@@ -50,7 +50,7 @@
 | ✅ 合格 | squads | 51/51 | 1 | 2026-10-20 10:57 | [squads.md](./squads.md) |
 | ✅ 合格 | supabase-auth | 173/173 | 36 | 2026-10-20 10:57 | [supabase-auth.md](./supabase-auth.md) |
 | ✅ 合格 | support-contact（社内向けページ） | 39/39 | 4 | 2026-10-20 11:10 | [support-contact.md](./support-contact.md) |
-| ✅ 合格 | ui | 73/73 | 1 | 2026-10-20 11:49 | [ui.md](./ui.md) |
+| ✅ 合格 | ui | 73/73 | 1 | 2026-10-24 09:53 | [ui.md](./ui.md) |
 | ✅ 合格 | world-sync | 35/35 | 3 | 2026-10-20 10:57 | — |
-| ✅ 合格 | world-ui | 93/93 | 11 | 2026-10-21 14:58 | [world-ui.md](./world-ui.md) |
+| ✅ 合格 | world-ui | 93/93 | 10 | 2026-10-24 09:53 | [world-ui.md](./world-ui.md) |
 
