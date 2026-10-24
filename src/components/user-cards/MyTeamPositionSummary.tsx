@@ -58,7 +58,7 @@ export function MyTeamPositionSummary() {
               </Link>
             )}
             {r.upgrades > 0 ? (
-              <Link href="/players/new" className="truncate text-2xs text-accent hover:underline">
+              <Link href={`/players/new?position=${r.position}`} className="truncate text-2xs text-accent hover:underline">
                 {fillMessage(tm("positionUpgradesTemplate"), { count: String(r.upgrades) })}
               </Link>
             ) : null}
