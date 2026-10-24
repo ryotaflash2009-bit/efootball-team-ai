@@ -23,7 +23,7 @@
 | ✅ 合格 | favorites | 32/32 | 1 | 2026-10-24 10:29 | — |
 | ✅ 合格 | final-alpha-readiness-copy（社内向けページ） | 37/37 | 6 | 2026-10-24 10:53 | [final-alpha-readiness-copy.md](./final-alpha-readiness-copy.md) |
 | ✅ 合格 | game-plan | 18/18 | 7 | 2026-10-24 10:29 | — |
-| ✅ 合格 | hydration-seeded | 95/95 | 248 | 2026-10-24 10:29 | — |
+| ✅ 合格 | hydration-seeded | 95/95 | 249 | 2026-10-24 11:01 | — |
 | ✅ 合格 | local-backup | 28/28 | 42 | 2026-10-24 10:36 | [local-backup.md](./local-backup.md) |
 | ✅ 合格 | local-posts（社内向けページ） | 32/32 | 81 | 2026-10-24 10:53 | [local-posts.md](./local-posts.md) |
 | ✅ 合格 | manager-compare | 16/16 | 9 | 2026-10-24 10:37 | — |
@@ -31,7 +31,7 @@
 | ✅ 合格 | managers | 43/43 | 2 | 2026-10-24 10:37 | [managers.md](./managers.md) |
 | ✅ 合格 | my-builds | 100/100 | 1 | 2026-10-24 10:40 | [my-builds.md](./my-builds.md) |
 | ✅ 合格 | my-team-cloud | 98/98 | 16 | 2026-10-24 10:37 | [my-team-cloud.md](./my-team-cloud.md) |
-| ✅ 合格 | new-cards | 25/25 | 18 | 2026-10-24 10:37 | [new-cards.md](./new-cards.md) |
+| ✅ 合格 | new-cards | 25/25 | 18 | 2026-10-24 11:06 | [new-cards.md](./new-cards.md) |
 | ✅ 合格 | pack-check | 16/16 | 13 | 2026-10-24 10:38 | [pack-check.md](./pack-check.md) |
 | ✅ 合格 | phase-b5 | 23/23 | 1 | 2026-10-24 10:38 | — |
 | ✅ 合格 | phase-c | 17/17 | 0 | 2026-10-24 10:38 | — |
