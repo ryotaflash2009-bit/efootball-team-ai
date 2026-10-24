@@ -29,9 +29,9 @@
 | ✅ 合格 | manager-compare | 16/16 | 9 | 2026-10-24 10:37 | — |
 | ✅ 合格 | manager-picker | 35/35 | 5 | 2026-10-24 10:37 | [manager-picker.md](./manager-picker.md) |
 | ✅ 合格 | managers | 43/43 | 2 | 2026-10-24 10:37 | [managers.md](./managers.md) |
-| ✅ 合格 | my-builds | 100/100 | 1 | 2026-10-24 10:40 | [my-builds.md](./my-builds.md) |
+| ✅ 合格 | my-builds | 100/100 | 1 | 2026-10-24 11:59 | [my-builds.md](./my-builds.md) |
 | ✅ 合格 | my-team-cloud | 98/98 | 16 | 2026-10-24 10:37 | [my-team-cloud.md](./my-team-cloud.md) |
-| ✅ 合格 | new-cards | 25/25 | 18 | 2026-10-24 11:06 | [new-cards.md](./new-cards.md) |
+| ✅ 合格 | new-cards | 25/25 | 19 | 2026-10-24 11:59 | [new-cards.md](./new-cards.md) |
 | ✅ 合格 | pack-check | 16/16 | 13 | 2026-10-24 10:38 | [pack-check.md](./pack-check.md) |
 | ✅ 合格 | phase-b5 | 23/23 | 1 | 2026-10-24 10:38 | — |
 | ✅ 合格 | phase-c | 17/17 | 0 | 2026-10-24 10:38 | — |
@@ -42,7 +42,7 @@
 | ✅ 合格 | rls-test（社内向けページ） | 71/71 | 13 | 2026-10-24 10:55 | [rls-test.md](./rls-test.md) |
 | ✅ 合格 | same-player | 9/9 | 5 | 2026-10-24 10:40 | [same-player.md](./same-player.md) |
 | ✅ 合格 | saved-filters | 11/11 | 8 | 2026-10-24 10:40 | — |
-| ✅ 合格 | share-build-link | 6/6 | 3 | 2026-10-24 10:40 | — |
+| ✅ 合格 | share-build-link | 6/6 | 3 | 2026-10-24 12:00 | — |
 | ✅ 合格 | share-card | 24/24 | 62 | 2026-10-24 10:40 | [share-card.md](./share-card.md) |
 | ✅ 合格 | squad-list-banner | 5/5 | 1 | 2026-10-24 10:41 | [squad-list-banner.md](./squad-list-banner.md) |
 | ✅ 合格 | squad-placement-assist | 23/23 | 9 | 2026-10-24 10:41 | [squad-placement-assist.md](./squad-placement-assist.md) |
@@ -50,7 +50,7 @@
 | ✅ 合格 | squads | 51/51 | 1 | 2026-10-24 10:41 | [squads.md](./squads.md) |
 | ✅ 合格 | supabase-auth | 173/173 | 36 | 2026-10-24 10:41 | [supabase-auth.md](./supabase-auth.md) |
 | ✅ 合格 | support-contact（社内向けページ） | 39/39 | 4 | 2026-10-24 10:55 | [support-contact.md](./support-contact.md) |
-| ✅ 合格 | ui | 73/73 | 1 | 2026-10-24 10:42 | [ui.md](./ui.md) |
+| ✅ 合格 | ui | 73/73 | 1 | 2026-10-24 12:00 | [ui.md](./ui.md) |
 | ✅ 合格 | world-sync | 35/35 | 3 | 2026-10-24 10:42 | — |
-| ✅ 合格 | world-ui | 93/93 | 10 | 2026-10-24 10:42 | [world-ui.md](./world-ui.md) |
+| ✅ 合格 | world-ui | 93/93 | 11 | 2026-10-24 12:00 | [world-ui.md](./world-ui.md) |
 

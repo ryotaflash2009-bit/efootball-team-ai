@@ -17,6 +17,8 @@ describe("上流の 429 のあとの待つ時間（2026-10-24）", () => {
   it("検出の要約に http_429 があるときだけ記録する", () => {
     expect(summaryHas429({ overall: "fetch_stopped", reasons: ["world_player_cards:source_fetch:http_429"] })).toBe(true);
     expect(summaryHas429({ overall: "fetch_stopped", reasons: ["world_player_cards:source_fetch:http_503"] })).toBe(false);
+    // 監督など別の取得元の 429 では World を待たない
+    expect(summaryHas429({ overall: "fetch_stopped", reasons: ["managers:source_fetch:http_429"] })).toBe(false);
     expect(summaryHas429(null)).toBe(false);
   });
 });

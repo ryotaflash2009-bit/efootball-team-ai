@@ -2,7 +2,8 @@
  * 上流（eFootball World）が HTTP 429 を返したあとの「待つ時間」（2026-10-24）。
  *
  *   node scripts/detection-cooldown.mjs check  <state.json> [confirm]   … 待つ時間の中なら上流へ行かずに失敗（exit 1）
- *   node scripts/detection-cooldown.mjs record <state.json> <summary.json> … 検出の結果に http_429 があれば待つ時間を記録
+ *   node scripts/detection-cooldown.mjs record <state.json> <summary.json> … World の取得が http_429 なら待つ時間を記録
+ *   node scripts/detection-cooldown.mjs clear  <state.json>              … 検出が成功したら待つ時間を消す（取得元が戻ったらすぐ毎時に戻す）
  *
  * - 2026-10-20 から上流がサイト全体に機械判定（Vercel Security Checkpoint）をかけ、毎時の検出がすべて 429 になった。
  *   拒否されている間に毎時たずね続けない（相手への負担・制限が長引くのを避ける）。6 時間に 1 回だけ試す。
@@ -23,9 +24,9 @@ export function inCooldown(state, now = Date.now(), confirm = "") {
   return Number.isFinite(until) && now < until;
 }
 
-/** 検出の結果の要約に http_429 があるか。 */
+/** 検出の結果の要約に「World の取得の http_429」があるか（監督など別の取得元の 429 では待たない）。 */
 export function summaryHas429(summary) {
-  return JSON.stringify(summary ?? {}).includes("http_429");
+  return JSON.stringify(summary ?? {}).includes("world_player_cards:source_fetch:http_429");
 }
 
 export function nextCooldown(now = Date.now()) {
@@ -63,7 +64,12 @@ function main(argv) {
     console.log(`cooldown: recorded until ${next.until}`);
     return 0;
   }
-  console.error("usage: detection-cooldown.mjs check <state> [confirm] | record <state> <summary>");
+  if (cmd === "clear") {
+    if (existsSync(statePath)) writeFileSync(statePath, JSON.stringify({ until: null, clearedAt: new Date().toISOString() }) + "\n", "utf8");
+    console.log("cooldown: cleared");
+    return 0;
+  }
+  console.error("usage: detection-cooldown.mjs check <state> [confirm] | record <state> <summary> | clear <state>");
   return 2;
 }
 

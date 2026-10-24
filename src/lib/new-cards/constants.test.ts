@@ -8,10 +8,13 @@ describe("新しいカードの期間と、正式なデータの取り込みの�
     expect(isRecentlyAdded("2026-10-17T12:00:00Z", now)).toBe(false);
     expect(isRecentlyAdded(null, now)).toBe(false);
   });
-  it("最後の取り込みから 7 日より長いときだけ日数を返す", () => {
-    expect(officialStaleDays("2026-10-16T10:13:29Z", now)).toBe(8);
-    expect(officialStaleDays("2026-10-17T13:00:00Z", now)).toBeNull();
-    expect(officialStaleDays(null, now)).toBeNull();
-    expect(officialStaleDays("broken", now)).toBeNull();
+  it("最後の取り込みから 7 日以上・その後に暫定のカードがあるときだけ日数を返す", () => {
+    expect(officialStaleDays("2026-10-16T10:13:29Z", "2026-10-23T21:35:00Z", now)).toBe(8);
+    expect(officialStaleDays("2026-10-17T10:00:00Z", "2026-10-23T21:35:00Z", now)).toBe(7);
+    expect(officialStaleDays("2026-10-18T13:00:00Z", "2026-10-23T21:35:00Z", now)).toBeNull();
+    // 静かな週（暫定のカードが無い・または取り込みより前）は止まっていない
+    expect(officialStaleDays("2026-10-16T10:13:29Z", null, now)).toBeNull();
+    expect(officialStaleDays("2026-10-16T10:13:29Z", "2026-10-15T00:00:00Z", now)).toBeNull();
+    expect(officialStaleDays(null, "2026-10-23T21:35:00Z", now)).toBeNull();
   });
 });

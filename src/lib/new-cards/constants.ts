@@ -9,13 +9,18 @@ export function isRecentlyAdded(addedAt: string | null | undefined, now: number 
   return Number.isFinite(t) && now - t >= 0 && now - t < NEW_CARD_DAYS * 86_400_000;
 }
 
-/** 正式なデータの取り込みが止まっていると見なす日数（これより長いと /players/new に案内・2026-10-24）。 */
-export const OFFICIAL_STALE_DAYS = 7;
+/** 正式なデータの取り込みが止まっていると見なす日数（最近 N 日の正式な追加が空になる日数と同じ・2026-10-24）。 */
+export const OFFICIAL_STALE_DAYS = NEW_CARD_DAYS;
 
-/** 最後の取り込みからの日数（OFFICIAL_STALE_DAYS より長いときだけ・それ以外は null）。 */
-export function officialStaleDays(lastImportAt: string | null | undefined, now: number = Date.now()): number | null {
+/**
+ * 正式なデータの取り込みが止まっている日数（止まっていなければ null）。
+ * 「最後の取り込み（= 最後に変更を適用した時刻）」だけでは、新しいカードの無い静かな週も止まって見えるため、
+ * その後に見つかった暫定のカード（World に無い新しいカード）があるときだけ「止まっている」とする。
+ */
+export function officialStaleDays(lastImportAt: string | null | undefined, newestProvisionalAt: string | null | undefined, now: number = Date.now()): number | null {
   const t = lastImportAt ? Date.parse(lastImportAt) : Number.NaN;
-  if (!Number.isFinite(t)) return null;
+  const p = newestProvisionalAt ? Date.parse(newestProvisionalAt) : Number.NaN;
+  if (!Number.isFinite(t) || !Number.isFinite(p) || p <= t) return null;
   const days = Math.floor((now - t) / 86_400_000);
-  return days > OFFICIAL_STALE_DAYS ? days : null;
+  return days >= OFFICIAL_STALE_DAYS ? days : null;
 }
