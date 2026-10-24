@@ -472,6 +472,7 @@ const part: PartialDictionary = {
     noEnglishName: "(Tidak ada nama Inggris)",
     baseOvrLabel: "Dasar {value}",
     levelCapLabel: "Batas Lv {value}",
+    ownedBadge: "Dimiliki",
   },
 };
 

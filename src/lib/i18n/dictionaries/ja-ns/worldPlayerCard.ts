@@ -6,6 +6,7 @@ const worldPlayerCard: Dictionary["worldPlayerCard"] = {
   noEnglishName: "（英語名なし）",
   baseOvrLabel: "基礎 {value}",
   levelCapLabel: "Lv上限 {value}",
+  ownedBadge: "所持済み",
   };
 
 registerJaNamespace("worldPlayerCard", worldPlayerCard);

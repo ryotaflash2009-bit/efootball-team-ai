@@ -472,6 +472,7 @@ const part: PartialDictionary = {
     noEnglishName: "（無英文名稱）",
     baseOvrLabel: "基礎 {value}",
     levelCapLabel: "等級上限 {value}",
+    ownedBadge: "已擁有",
   },
 };
 

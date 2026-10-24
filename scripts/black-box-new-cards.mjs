@@ -159,6 +159,14 @@ async function main() {
       await waitFor('[data-testid="my-team-position-summary"]', 15000);
       const ps = await ev(`(() => { const lis = [...document.querySelectorAll('[data-testid="my-team-position-summary"] li')]; const cf = lis.find((li) => li.dataset.position === "CF"); const gk = lis.find((li) => li.dataset.position === "GK"); return { n: lis.length, cf: cf?.dataset.count, cfText: cf?.innerText.replace(/\\s+/g, " ") ?? "", gkFind: gk?.querySelector('a[href^="/players?"]')?.getAttribute("href") ?? null }; })()`);
       record("My Team: ポジション別のまとめ（13 行・CF 1 枚と最高のカード・空きは探すリンク）", ps?.n === 13 && ps.cf === "1" && /最高|\d/.test(ps.cfText) && ps.gkFind === "/players?position=GK&sort=ovr_max_desc", `${ps?.n} rows / ${ps?.cfText} / ${ps?.gkFind}`);
+      // 選手の一覧: My Team で所持のカードに「所持済み」の印（2026-10-25）
+      const weakName = await ev(`(async () => (await (await fetch("/api/world/players/${weak}")).json()).player?.nameEn ?? null)()`);
+      if (weakName) {
+        await go(`${BASE}/players?q=${encodeURIComponent(weakName)}`);
+        await waitFor('[data-testid="card-owned-badge"]', 15000).catch(() => {});
+        const owned = (await ev(`[...document.querySelectorAll('[data-testid="card-owned-badge"]')].map((b) => b.closest("div.group")?.querySelector('a[href^="/players/world/"]')?.getAttribute("href").split("/").pop())`)) ?? [];
+        record("選手の一覧: 所持のカードだけに「所持済み」の印", owned.length === 1 && owned[0] === weak, `${weakName}: ${owned.join(",")}`);
+      } else record("選手の一覧: 所持のカードだけに「所持済み」の印", false, "no name");
       await ev(`localStorage.removeItem(${JSON.stringify(MY_TEAM_KEY)})`);
       await go(`${BASE}/`);
       await new Promise((r) => setTimeout(r, 1500));

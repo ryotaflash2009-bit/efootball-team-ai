@@ -2917,6 +2917,7 @@ export interface Dictionary {
     noEnglishName: string;
     baseOvrLabel: string;
     levelCapLabel: string;
+    ownedBadge: string;
   };
   worldPagination: {
     ariaLabel: string;
