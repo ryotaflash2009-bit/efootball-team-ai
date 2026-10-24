@@ -38,17 +38,12 @@ export function MyTeamPositionSummary() {
     <details className="rounded-card border border-border bg-surface p-3" data-testid="my-team-position-summary" open>
       <summary className="flex min-h-[36px] cursor-pointer items-center text-sm font-semibold">{tm("positionSummaryHeading")}</summary>
       <p className="mt-1 text-2xs text-text-dim">{tm("positionSummaryIntro")}</p>
-      <ul className="mt-2 grid grid-cols-1 gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-2 grid grid-cols-2 gap-1.5 sm:grid-cols-3 lg:grid-cols-4">
         {rows.map((r) => (
           <li key={r.position} className="flex min-w-0 flex-col gap-0.5 rounded border border-border/60 px-2 py-1.5 text-xs" data-position={r.position} data-count={r.count}>
             <span className="flex items-baseline gap-2">
-              <span className="w-10 shrink-0 font-bold text-text-dim">{r.position}</span>
+              <span className="font-bold text-text-dim">{r.position}</span>
               <span className="text-text-dim">{fillMessage(tm("positionCountTemplate"), { count: String(r.count) })}</span>
-              {r.upgrades > 0 ? (
-                <Link href="/players/new" className="ms-auto shrink-0 text-accent hover:underline">
-                  {fillMessage(tm("positionUpgradesTemplate"), { count: String(r.upgrades) })}
-                </Link>
-              ) : null}
             </span>
             {r.best ? (
               <span className="flex min-w-0 items-baseline gap-1.5">
@@ -58,13 +53,15 @@ export function MyTeamPositionSummary() {
                 <span className="shrink-0 tabular-nums text-text-dim">{r.bestOvr ?? "—"}</span>
               </span>
             ) : (
-              <span className="flex items-baseline gap-2 text-text-muted">
-                {tm("positionNone")}
-                <Link href={`/players?position=${r.position}&sort=ovr_max_desc`} className="text-accent hover:underline">
-                  {tm("positionFind")}
-                </Link>
-              </span>
+              <Link href={`/players?position=${r.position}&sort=ovr_max_desc`} className="truncate text-text-muted hover:text-accent hover:underline" title={tm("positionNone")}>
+                {tm("positionFind")}
+              </Link>
             )}
+            {r.upgrades > 0 ? (
+              <Link href="/players/new" className="truncate text-2xs text-accent hover:underline">
+                {fillMessage(tm("positionUpgradesTemplate"), { count: String(r.upgrades) })}
+              </Link>
+            ) : null}
           </li>
         ))}
       </ul>
