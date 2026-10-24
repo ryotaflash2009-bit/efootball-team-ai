@@ -15,6 +15,7 @@ import {
   PROVISIONAL_SCHEMA,
   PROVISIONAL_SOURCE,
   parseFeaturedIds,
+  parsePreviousFeaturedDate,
   extractPesMasterPlayer,
   mapPesMasterPlayer,
   nextProvisionalCards,
@@ -57,9 +58,21 @@ async function getJson(url) {
 const previousFile = existsSync(FILE) ? JSON.parse(readFileSync(FILE, "utf8")) : { cards: [] };
 const previous = Array.isArray(previousFile.cards) ? previousFile.cards : [];
 
-// 1. 注目カード
-const featuredIds = parseFeaturedIds(await getText(PESMASTER_FEATURED_URL));
-if (featuredIds.length === 0) {
+// 1. 注目カード（今週と前の週・2026-10-24: EPIC などは前の週に先に載るため、前の週のページも読む）
+const featuredHtml = await getText(PESMASTER_FEATURED_URL);
+const currentIds = parseFeaturedIds(featuredHtml);
+const previousDate = parsePreviousFeaturedDate(featuredHtml);
+let previousWeekIds = [];
+if (previousDate) {
+  await sleep(2000);
+  try {
+    previousWeekIds = parseFeaturedIds(await getText(`${PESMASTER_FEATURED_URL}?date=${previousDate}`));
+  } catch {
+    previousWeekIds = [];
+  }
+}
+const featuredIds = [...new Set([...currentIds, ...previousWeekIds])];
+if (currentIds.length === 0) {
   console.log(JSON.stringify({ status: "stopped", reason: "featured_page_unparsable" }));
   process.exit(1);
 }
@@ -147,6 +160,8 @@ const changed = strip(cards) !== strip(previous) || fetched.length > 0 || JSON.s
 const summary = {
   status: "ok",
   featured: featuredIds.length,
+  featuredPreviousWeek: previousWeekIds.length,
+  previousDate,
   alreadyInWorld: featuredIds.filter((id) => worldIds.has(id)).length,
   fetched: fetched.length,
   rejected,
