@@ -55,6 +55,12 @@ export function ProvisionalCardsView({
   usePageTitle(tp("newCardsPageTitle"));
   // ポジションで絞る（2026-10-25）。チームへの影響は絞らない全体で出す。保存はしない（ページの中だけ）。
   const [position, setPosition] = useState<string | null>(null);
+  // ?position=CF で開いたら、そのポジションで絞った状態にする（My Team のまとめからのリンク・2026-10-25）。
+  // ISR のページのため useSearchParams は使わず、描画のあとに URL を読む（サーバーの HTML と食い違わない）。
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search).get("position");
+    if (p && POSITION_ORDER.includes(p)) setPosition(p);
+  }, []);
   // まだ持っていないカードだけ（My Team の「所持」を除く・2026-10-25）。所持のカードが無ければボタンを出さない。
   const [unownedOnly, setUnownedOnly] = useState(false);
   const { ownedIds } = useOwnedCards();
