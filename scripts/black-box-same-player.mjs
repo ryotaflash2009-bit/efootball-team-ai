@@ -113,15 +113,16 @@ async function main() {
       );
       // 似ているカード（2026-10-25）: 同じポジション・最大 OVR ±3・同じ選手のカードは含めない・もっと見るは同じ条件の一覧
       await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="similar-cards"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
-      const sim = await evalJson(client, `[...document.querySelectorAll('[data-testid="similar-cards"] li a')].map((a) => a.getAttribute("href").split("/").pop())`);
+      const sim = await evalJson(client, `[...document.querySelectorAll('[data-testid="similar-cards"] li a[href^="/players/world/"]')].map((a) => a.getAttribute("href").split("/").pop())`);
       const more = await evalJson(client, `document.querySelector('[data-testid="similar-cards-more"]')?.getAttribute("href") ?? ""`);
+      const cmp = await evalJson(client, `document.querySelector('[data-testid="similar-cards-compare"]')?.getAttribute("href") ?? ""`);
       const me = await evalJson(client, `(async () => (await (await fetch("/api/world/players/${RC_A}")).json()).player ?? null)()`);
       let simOk = Array.isArray(sim) && sim.length > 0 && sim.every((id) => key(id) !== key(RC_A));
       for (const id of (sim ?? []).slice(0, 2)) {
         const p = await evalJson(client, `(async () => (await (await fetch("/api/world/players/${id}")).json()).player ?? null)()`);
         simOk = simOk && !!p && !!me && p.registeredPosition === me.registeredPosition && Math.abs(p.ovrMax - me.ovrMax) <= 3;
       }
-      record("[選手の詳細] 似ているカード（同じポジション・最大 OVR ±3・同じ選手は除く）ともっと見るのリンク", simOk && /^\/players\?position=/.test(more), `n=${sim?.length} more=${more}`);
+      record("[選手の詳細] 似ているカード（同じポジション・最大 OVR ±3・同じ選手は除く）・比べる・もっと見るのリンク", simOk && /^\/players\?position=/.test(more) && cmp === `/compare?ids=${RC_A},${sim?.[0]}`, `n=${sim?.length} more=${more} cmp=${cmp}`);
     }
     // 入れ替えの提案（2026-10-11）: 先発の LB に RC_A がいるスカッドへ、RC_B を控えに追加しようとする → 提案 → 入れ替え → LB が RC_B
     {

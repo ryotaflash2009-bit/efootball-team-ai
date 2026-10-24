@@ -348,6 +348,7 @@ const part: PartialDictionary = {
     similarCardsHeading: "Ähnliche Karten",
     similarCardsHint: "Gleiche Position und Spielstil, max. OVR ±3 (andere Karten desselben Spielers ausgenommen). Praktisch, um eine Alternative zu finden.",
     similarCardsMore: "Alle in der Spielerliste ansehen",
+    similarCardsCompare: "Vergleichen",
     notYetHint: "Einträge, die nicht in der players/search-API enthalten sind",
     notYetZeroNote: "Wird nicht angezeigt, wenn der Wert 0 oder leer ist.",
     notYetBadgeSuffix: ": wird untersucht",

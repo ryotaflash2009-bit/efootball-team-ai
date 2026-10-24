@@ -52,12 +52,19 @@ export function SimilarCards({
       <SectionHeader title={t("playerDetailPage", "similarCardsHeading")} as="h2" hint={t("playerDetailPage", "similarCardsHint")} />
       <ul className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((c) => (
-          <li key={c.worldCardId}>
-            <Link href={`/players/world/${c.worldCardId}`} className="flex items-center justify-between gap-2 rounded border border-border/60 p-2 text-sm hover:border-accent">
+          <li key={c.worldCardId} className="flex items-stretch gap-1">
+            <Link href={`/players/world/${c.worldCardId}`} className="flex min-w-0 flex-1 items-center justify-between gap-2 rounded border border-border/60 p-2 text-sm hover:border-accent">
               <span className="min-w-0 truncate">{resolvePlayerDisplayName({ nameEn: c.nameEn, nameJa: c.nameJa }, locale, c.worldCardId)}</span>
               <span className="shrink-0 text-xs text-text-muted">
                 {c.cardType ?? "—"} · {c.ovrMax ?? "—"}
               </span>
+            </Link>
+            <Link
+              href={`/compare?ids=${worldCardId},${c.worldCardId}`}
+              className="flex shrink-0 items-center rounded border border-border/60 px-2 text-xs text-accent hover:border-accent"
+              data-testid="similar-cards-compare"
+            >
+              {t("playerDetailPage", "similarCardsCompare")}
             </Link>
           </li>
         ))}
