@@ -42,11 +42,23 @@ describe("middleware.ts: Edge Runtime互換性の静的監査", () => {
     expect(source).not.toMatch(/reference-data|WORLD_DATA_SOURCE|@\/lib\/world|@\/lib\/managers/);
   });
 
-  it("既知のimportのみ(next/server・@supabase/ssr・@/lib/supabase/env・@/lib/public-info/internal-pages・@/lib/public-info/search-indexing)を使う", () => {
+  it("既知のimportのみ(next/server・@supabase/ssr・@/lib/supabase/env・@/lib/public-info/internal-pages・@/lib/public-info/search-indexing・@/lib/tier/tier-redirect)を使う", () => {
     const source = readMiddlewareSource();
     const importLines = source.match(/^import .+$/gm) ?? [];
     for (const line of importLines) {
-      expect(line).toMatch(/next\/server|@supabase\/ssr|@\/lib\/supabase\/env|@\/lib\/public-info\/internal-pages|@\/lib\/public-info\/search-indexing/);
+      expect(line).toMatch(/next\/server|@supabase\/ssr|@\/lib\/supabase\/env|@\/lib\/public-info\/internal-pages|@\/lib\/public-info\/search-indexing|@\/lib\/tier\/tier-redirect/);
+    }
+  });
+
+  it("追加依存の@/lib/tier/tier-redirect(2026-10-24)は ./own-tier だけを、own-tier は何も import せず、eval・new Function・require・node:を含まない", () => {
+    const redirect = readFileSync(path.resolve(__dirname, "lib", "tier", "tier-redirect.ts"), "utf8");
+    for (const line of redirect.match(/^import .+$/gm) ?? []) expect(line).toMatch(/^import \{ [\w, ]+ \} from "\.\/own-tier";$/);
+    const ownTier = readFileSync(path.resolve(__dirname, "lib", "tier", "own-tier.ts"), "utf8");
+    expect(ownTier).not.toMatch(/^import (?!type )/m);
+    for (const dep of [redirect, ownTier]) {
+      expect(dep).not.toMatch(/\beval\s*\(/);
+      expect(dep).not.toMatch(/new\s+Function\s*\(/);
+      expect(dep).not.toMatch(/\brequire\s*\(|from "node:/);
     }
   });
 
