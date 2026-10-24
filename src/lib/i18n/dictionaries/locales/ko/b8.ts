@@ -651,7 +651,8 @@ const part: PartialDictionary = {
     squadSuggestSeeAll: "새 카드 모두 보기",
     positionFilterLabel: "포지션으로 필터",
     positionFilterAll: "전체",
-    positionFilterEmpty: "이 포지션의 새 카드는 없습니다.",
+    unownedOnlyLabel: "아직 보유하지 않은 카드만 (My Team의 '보유' 제외)",
+    filterEmpty: "조건에 맞는 새 카드가 없습니다.",
   },
   packCheck: {
     heading: "팩 진단 (내 My Team과 비교)",

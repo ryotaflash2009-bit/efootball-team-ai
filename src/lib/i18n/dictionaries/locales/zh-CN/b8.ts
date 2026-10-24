@@ -651,7 +651,8 @@ const part: PartialDictionary = {
     squadSuggestSeeAll: "查看全部新卡",
     positionFilterLabel: "按位置筛选",
     positionFilterAll: "全部",
-    positionFilterEmpty: "此位置没有新卡。",
+    unownedOnlyLabel: "只看还没有的卡（不含 My Team 中的“拥有”）",
+    filterEmpty: "没有符合条件的新卡。",
   },
   packCheck: {
     heading: "卡包诊断（与你的 My Team 比较）",

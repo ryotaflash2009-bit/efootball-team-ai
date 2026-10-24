@@ -5293,7 +5293,8 @@ export interface Dictionary {
     squadSuggestSeeAll: string;
     positionFilterLabel: string;
     positionFilterAll: string;
-    positionFilterEmpty: string;
+    unownedOnlyLabel: string;
+    filterEmpty: string;
   };
   packCheck: {
     heading: string;

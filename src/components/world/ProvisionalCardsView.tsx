@@ -16,6 +16,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { WorldPlayerCard, type WorldPlayerCardData } from "@/components/world/WorldPlayerCard";
 import { NewCardsTeamImpact } from "@/components/world/NewCardsTeamImpact";
 import { POSITION_ORDER } from "@/lib/tier/own-tier";
+import { useOwnedCards } from "@/lib/new-cards/use-owned-cards";
 
 const GRID = "grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7";
 /** 日ごとに最初に出す枚数（残りは「残り N 枚を表示」・2026-10-17 画面の整理）。 */
@@ -54,14 +55,20 @@ export function ProvisionalCardsView({
   usePageTitle(tp("newCardsPageTitle"));
   // ポジションで絞る（2026-10-25）。チームへの影響は絞らない全体で出す。保存はしない（ページの中だけ）。
   const [position, setPosition] = useState<string | null>(null);
+  // まだ持っていないカードだけ（My Team の「所持」を除く・2026-10-25）。所持のカードが無ければボタンを出さない。
+  const [unownedOnly, setUnownedOnly] = useState(false);
+  const { ownedIds } = useOwnedCards();
+  const ownedSet = useMemo(() => new Set(ownedIds), [ownedIds]);
   const positionCounts = useMemo(() => {
     const m = new Map<string, number>();
     for (const c of [...recent, ...cards]) if (c.registeredPosition) m.set(c.registeredPosition, (m.get(c.registeredPosition) ?? 0) + 1);
     return POSITION_ORDER.filter((p) => m.has(p)).map((p) => ({ position: p, count: m.get(p) ?? 0 }));
   }, [recent, cards]);
-  const inPosition = (c: WorldPlayerCardData) => position == null || c.registeredPosition === position;
-  const shownRecent = useMemo(() => recent.filter(inPosition), [recent, position]); // eslint-disable-line react-hooks/exhaustive-deps
-  const shownCards = useMemo(() => cards.filter(inPosition), [cards, position]); // eslint-disable-line react-hooks/exhaustive-deps
+  const inPosition = (c: WorldPlayerCardData) => (position == null || c.registeredPosition === position) && !(unownedOnly && ownedSet.has(c.worldCardId));
+  const shownRecent = useMemo(() => recent.filter(inPosition), [recent, position, unownedOnly, ownedSet]); // eslint-disable-line react-hooks/exhaustive-deps
+  const shownCards = useMemo(() => cards.filter(inPosition), [cards, position, unownedOnly, ownedSet]); // eslint-disable-line react-hooks/exhaustive-deps
+  const filtering = position != null || unownedOnly;
+  const ownedAmongNew = useMemo(() => [...recent, ...cards].some((c) => ownedSet.has(c.worldCardId)), [recent, cards, ownedSet]);
   // 日ごとに並べる（日付の無いものは最後に「その他」として 1 つ）
   const dayGroups = useMemo(() => {
     const byId = new Map(shownRecent.map((c) => [c.worldCardId, c]));
@@ -70,7 +77,7 @@ export function ProvisionalCardsView({
       const list = b.allIds.map((id) => byId.get(id)).filter((c): c is WorldPlayerCardData => c != null);
       list.forEach((c) => used.add(c.worldCardId));
       if (list.length === 0) return [];
-      return [{ key: b.date, title: fillMessage(tp("batchRowTemplate"), { date: formatDate(new Date(`${b.date}T12:00:00+09:00`), displayLocale), count: String(position ? list.length : b.count) }), cards: list, packCheckIds: b.ids, truncated: b.truncated }];
+      return [{ key: b.date, title: fillMessage(tp("batchRowTemplate"), { date: formatDate(new Date(`${b.date}T12:00:00+09:00`), displayLocale), count: String(filtering ? list.length : b.count) }), cards: list, packCheckIds: b.ids, truncated: b.truncated }];
     });
     const rest = shownRecent.filter((c) => !used.has(c.worldCardId));
     if (rest.length > 0) groups.push({ key: "rest", title: null, cards: rest, packCheckIds: [], truncated: false });
@@ -84,7 +91,7 @@ export function ProvisionalCardsView({
       <p className="text-xs text-text-dim">{tp("recentIntro")}</p>
       {shownRecent.length === 0 ? (
         <Surface padding="md" className="text-sm text-text-dim" data-testid="recently-added-empty">
-          {position ? tp("positionFilterEmpty") : tp("recentEmpty")}
+          {filtering ? tp("filterEmpty") : tp("recentEmpty")}
         </Surface>
       ) : (
         dayGroups.map((g) => <DayGroup key={g.key} group={g} packCheckLimit={packCheckLimit} />)
@@ -96,7 +103,7 @@ export function ProvisionalCardsView({
       <SectionHeader title={tp("provisionalHeading")} as="h2" />
       {shownCards.length === 0 ? (
         <p className="text-xs text-text-muted" data-testid="provisional-cards-empty">
-          {position ? tp("positionFilterEmpty") : tp("newCardsEmpty")}
+          {filtering ? tp("filterEmpty") : tp("newCardsEmpty")}
         </p>
       ) : (
         <>
@@ -129,6 +136,13 @@ export function ProvisionalCardsView({
       ) : null}
 
       <NewCardsTeamImpact newCards={[...recent, ...cards]} />
+
+      {ownedAmongNew ? (
+        <label className="flex w-fit cursor-pointer items-center gap-2 text-xs text-text-dim">
+          <input type="checkbox" checked={unownedOnly} onChange={(e) => setUnownedOnly(e.target.checked)} data-testid="new-cards-unowned-only" />
+          {tp("unownedOnlyLabel")}
+        </label>
+      ) : null}
 
       {positionCounts.length > 1 ? (
         <div className="flex flex-wrap gap-1.5" role="group" aria-label={tp("positionFilterLabel")} data-testid="new-cards-position-filter">

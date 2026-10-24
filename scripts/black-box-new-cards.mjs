@@ -206,6 +206,30 @@ async function main() {
       record("新しいカード: ポジションで絞る（そのポジションだけ・すべてで戻る）", items.length > 0 && items.every((w) => w.includes(pos)) && pressed === "true" && after === before, `${pos}: ${items.length} / all ${before}→${after}`);
     } else record("新しいカード: ポジションで絞る（そのポジションだけ・すべてで戻る）", true, "1 position or fewer");
 
+    // 新しいカード: まだ持っていないカードだけ（2026-10-25）。新しいカード 1 枚を My Team の所持にして、そのカードだけ消える
+    {
+      const ids = (await ev(`[...document.querySelectorAll('[data-testid="recently-added-grid"] li a[href^="/players/world/"], [data-testid="provisional-cards-grid"] li a[href^="/players/world/"]')].map((a) => a.getAttribute("href").split("/").pop())`)) ?? [];
+      const target = ids[0];
+      if (target) {
+        await ev(`localStorage.setItem(${JSON.stringify(MY_TEAM_KEY)}, ${JSON.stringify(JSON.stringify({ storageVersion: "my-team-storage/2026-08-30.v1", updatedAt: NOW, records: [myTeamRecord(target)] }))})`);
+        await go(`${BASE}/players/new`);
+        await waitFor('[data-testid="new-cards-unowned-only"]', 15000);
+        const count = () => ev(`document.querySelectorAll('[data-testid="recently-added-grid"] li, [data-testid="provisional-cards-grid"] li').length`);
+        const before = await count();
+        await ev(`document.querySelector('[data-testid="new-cards-unowned-only"]').click()`);
+        await new Promise((r) => setTimeout(r, 500));
+        const after = await count();
+        const shown = () => ev(`!!document.querySelector('[data-testid="recently-added-grid"] a[href="/players/world/${target}"], [data-testid="provisional-cards-grid"] a[href="/players/world/${target}"]')`);
+        const hidden = (await shown()) === false;
+        await ev(`document.querySelector('[data-testid="new-cards-unowned-only"]').click()`);
+        await new Promise((r) => setTimeout(r, 500));
+        const back = await shown();
+        // 日ごとに最初の 12 枚だけ出すため、1 枚消えると次のカードが繰り上がることがある（枚数は同じか 1 減る）
+        record("新しいカード: まだ持っていないカードだけ（所持の 1 枚が消え、外すと戻る）", hidden && back === true && (after === before || after === before - 1), `${before}→${after} back=${back}`);
+        await ev(`localStorage.removeItem(${JSON.stringify(MY_TEAM_KEY)})`);
+      } else record("新しいカード: まだ持っていないカードだけ（所持の 1 枚が消える）", true, "no new cards");
+    }
+
     // 選手の検索: 暫定のカードも検索で見つかる（2026-10-24）
     const prov = await ev(`(async () => ((await (await fetch("/api/world/new-cards")).json()).cards || []).find((c) => c.provisional && c.nameEn) ?? null)()`);
     if (prov) {
