@@ -2764,6 +2764,8 @@ export interface Dictionary {
     needTwoPlayersTitle: string;
     needTwoPlayersDescriptionTemplate: string;
     browseHighOvrButton: string;
+    similarSuggestHeading: string;
+    similarSuggestHint: string;
   };
   comparePage: {
     title: string;

@@ -4427,5 +4427,7 @@
  "playerDetailPage.similarCardsCompare": "e888155d8c7d",
  "worldPlayerCard.ownedBadge": "17b760c41cd2",
  "provisionalCards.unownedOnlyLabel": "432c0ce235ab",
- "provisionalCards.filterEmpty": "f2d160279f82"
+ "provisionalCards.filterEmpty": "f2d160279f82",
+ "comparisonBoard.similarSuggestHeading": "5d68140bfda0",
+ "comparisonBoard.similarSuggestHint": "c65a318829b5"
 }

@@ -123,6 +123,15 @@ async function main() {
         simOk = simOk && !!p && !!me && p.registeredPosition === me.registeredPosition && Math.abs(p.ovrMax - me.ovrMax) <= 3;
       }
       record("[選手の詳細] 似ているカード（同じポジション・最大 OVR ±3・同じ選手は除く）・比べる・もっと見るのリンク", simOk && /^\/players\?position=/.test(more) && cmp === `/compare?ids=${RC_A},${sim?.[0]}`, `n=${sim?.length} more=${more} cmp=${cmp}`);
+      // 比較: 1 枚のとき「似ているカードを追加」→ 押すと 2 枚の比較（URL の ids に入る・2026-10-25）
+      await go(client, `${BASE}/compare?ids=${RC_A}`);
+      await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="compare-similar-suggestions"] button')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+      const sugId = await evalJson(client, `document.querySelector('[data-testid="compare-similar-suggestions"] button')?.dataset.worldCardId ?? null`);
+      if (sugId) await evalJson(client, `document.querySelector('[data-testid="compare-similar-suggestions"] button').click()`);
+      await waitForCondition(async () => evalJson(client, `location.search.includes(${JSON.stringify(`${RC_A},`)})`), { timeoutMs: 15000, intervalMs: 300 }).catch(() => {});
+      const search = await evalJson(client, `decodeURIComponent(location.search)`);
+      const gone = await evalJson(client, `!document.querySelector('[data-testid="compare-similar-suggestions"]')`);
+      record("[比較] 1 枚のとき似ているカードを追加 → 2 枚の比較になり、提案は消える", !!sugId && search.includes(`${RC_A},${sugId}`) && gone === true, `${sugId} ${search}`);
     }
     // 入れ替えの提案（2026-10-11）: 先発の LB に RC_A がいるスカッドへ、RC_B を控えに追加しようとする → 提案 → 入れ替え → LB が RC_B
     {

@@ -15,6 +15,7 @@ import { adjustGroupLevel, groupBreakdowns, summarizeGroupPoints } from "@/lib/p
 import { autoAllocate } from "@/lib/progression/auto-allocate";
 import type { WorldPlayerDetail } from "@/lib/world/types";
 import { AddPlayerSearch } from "./AddPlayerSearch";
+import { CompareSimilarSuggestions } from "./CompareSimilarSuggestions";
 import { PlayerControlColumn } from "./PlayerControlColumn";
 import { ComparisonCockpit } from "./ComparisonCockpit";
 import { ComparisonTables } from "./ComparisonTables";
@@ -414,6 +415,10 @@ export function ComparisonBoard({ initialInputs }: { initialInputs: ComparisonPl
           onAdd={addPlayer}
           onClose={closeSearch}
         />
+      ) : null}
+
+      {players.length === 1 ? (
+        <CompareSimilarSuggestions key={players[0].display.worldCardId} base={players[0].display} onAdd={addPlayer} />
       ) : null}
 
       {players.length >= COMPARISON_MAX ? (

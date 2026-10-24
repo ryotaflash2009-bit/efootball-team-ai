@@ -28,6 +28,8 @@ const comparisonBoard: Dictionary["comparisonBoard"] = {
   needTwoPlayersDescriptionTemplate:
     "上の空きスロットの「＋ 比較へ選手を追加」から選択できます（最大{max}人）。同一人物の別カードも比較できます。",
   browseHighOvrButton: "高OVRカードから探す",
+  similarSuggestHeading: "似ているカードを追加",
+  similarSuggestHint: "同じポジション・同じプレースタイルで、最大 OVR が ±3 のカードです。押すと比較に追加します。",
   };
 
 registerJaNamespace("comparisonBoard", comparisonBoard);

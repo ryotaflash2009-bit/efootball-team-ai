@@ -2822,6 +2822,8 @@ const en: Dictionary = {
     needTwoPlayersDescriptionTemplate:
       "Use an empty slot above to add a player (up to {max}). Different cards of the same player can also be compared.",
     browseHighOvrButton: "Browse high-OVR cards",
+    similarSuggestHeading: "Add a similar card",
+    similarSuggestHint: "Same position and playing style, max OVR within ±3. Tap to add it to the comparison.",
   },
   comparePage: {
     title: "Player Compare",
