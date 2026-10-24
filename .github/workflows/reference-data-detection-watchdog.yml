@@ -98,3 +98,26 @@ jobs:
             gh workflow run reference-data-update-detection.yml --repo "$REPO" --ref main -f confirm=detect
             echo "dispatched detection" >> "$GITHUB_STEP_SUMMARY"
           fi
+
+      # 2026-10-25（本人の指示「自動更新の頻度は落とすな」）: GitHub の schedule の遅れ・欠落で暫定のカードの同期（毎時）が
+      # 2 時間を超えて始まっていなければ 1 回だけ起動する。同期は PES Master と公開 API を読むだけ（Secrets・Production なし）。
+      - name: Decide and dispatch provisional cards sync
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh run list --repo "$REPO" --workflow reference-data-provisional-cards.yml --limit 20 \
+            --json databaseId,event,createdAt,status,conclusion > prov-runs.json
+          node --input-type=module -e '
+            import { readFileSync, appendFileSync } from "node:fs";
+            import { decideProvisionalDispatch } from "./scripts/lib/detection-watchdog.mjs";
+            const runs = JSON.parse(readFileSync("prov-runs.json", "utf8")).map((r) => ({ id: r.databaseId, event: r.event, createdAt: r.createdAt, status: r.status, conclusion: r.conclusion }));
+            const d = decideProvisionalDispatch({ now: new Date().toISOString(), runs });
+            console.log(JSON.stringify(d));
+            appendFileSync(process.env.GITHUB_STEP_SUMMARY ?? "/dev/null", `provisional watchdog: ${d.reason} (last run ${d.lastRunAt ?? "none"}, ${d.ageMinutes ?? "?"} min)\n`);
+          ' | tee prov-decision.json
+          if grep -q '"dispatch":true' prov-decision.json; then
+            gh workflow run reference-data-provisional-cards.yml --repo "$REPO" --ref main
+            echo "dispatched provisional cards sync" >> "$GITHUB_STEP_SUMMARY"
+          fi

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { decideWatchdogDispatch, WATCHDOG_STALE_MS } from "../../../../scripts/lib/detection-watchdog.mjs";
+import { decideProvisionalDispatch, decideWatchdogDispatch, PROVISIONAL_STALE_MS, WATCHDOG_STALE_MS } from "../../../../scripts/lib/detection-watchdog.mjs";
 
 const NOW = "2026-10-13T12:00:00Z";
 const ago = (min: number) => new Date(Date.parse(NOW) - min * 60000).toISOString();
@@ -39,5 +39,20 @@ describe("検出の watchdog（案 D・準備だけ）", () => {
     expect(decideWatchdogDispatch({ now: NOW, runs: [], enabled: true }).reason).toBe("no_successful_detection");
     expect(decideWatchdogDispatch({ now: NOW, runs: [run(1, -30), { ...run(2, 10), createdAt: "bad" }], enabled: true }).reason).toBe("no_successful_detection");
     expect(decideWatchdogDispatch({ now: "bad", runs: [], enabled: true }).reason).toBe("invalid_now");
+  });
+});
+
+describe("暫定のカードの同期の watchdog（2026-10-25）", () => {
+  const stale = PROVISIONAL_STALE_MS / 60000 + 1;
+  it("最後に始まってから 2 時間を超えたら起動（直近が失敗でも）", () => {
+    expect(decideProvisionalDispatch({ now: NOW, runs: [run(1, stale)] })).toMatchObject({ dispatch: true, reason: "stale" });
+    expect(decideProvisionalDispatch({ now: NOW, runs: [run(1, stale, { conclusion: "failure" })] })).toMatchObject({ dispatch: true, reason: "stale" });
+    expect(decideProvisionalDispatch({ now: NOW, runs: [] })).toMatchObject({ dispatch: true, reason: "no_sync_run" });
+  });
+  it("2 時間以内・実行中・止めている（skipped）なら起動しない", () => {
+    expect(decideProvisionalDispatch({ now: NOW, runs: [run(1, stale), run(2, 30, { conclusion: "failure" })] })).toMatchObject({ dispatch: false, reason: "fresh" });
+    expect(decideProvisionalDispatch({ now: NOW, runs: [run(1, stale), run(2, 1, { status: "in_progress", conclusion: null })] })).toMatchObject({ dispatch: false, reason: "sync_in_progress" });
+    expect(decideProvisionalDispatch({ now: NOW, runs: [run(1, stale, { conclusion: "skipped" })] })).toMatchObject({ dispatch: false, reason: "sync_disabled" });
+    expect(decideProvisionalDispatch({ now: "x", runs: [] })).toMatchObject({ dispatch: false, reason: "invalid_now" });
   });
 });

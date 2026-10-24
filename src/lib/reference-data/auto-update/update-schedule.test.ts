@@ -159,14 +159,15 @@ describe("リポジトリ内の全workflow: scheduleは検出workflow・検出�
     }
   });
 
-  it("watchdog(2026-10-10): 起動するのは検出workflowだけ・Secrets/Environmentなし・検出の変数と停止の変数のGate・3時間ごと", () => {
+  it("watchdog(2026-10-10): 起動するのは検出workflowと暫定のカードの同期だけ・Secrets/Environmentなし・検出の変数と停止の変数のGate・3時間ごと", () => {
     const body = code(readWf(WATCHDOG_WORKFLOW_FILE));
     expect(body).toMatch(/- cron: "43 \*\/3 \* \* \*"/);
     expect(body).not.toMatch(/secrets\./);
     expect(body).not.toMatch(/environment\s*:/);
     // workflow の起動は検出の workflow_dispatch（confirm detect）の 1 か所だけ
     const dispatches = body.match(/gh workflow run [^\n]+/g) ?? [];
-    expect(dispatches).toEqual([`gh workflow run ${DETECTION_WORKFLOW_FILE} --repo "$REPO" --ref main -f confirm=detect`]);
+    // 2026-10-25: 暫定のカードの同期（Secrets・Production なし）の起動を追加（schedule の遅れ・欠落の補い）
+    expect(dispatches).toEqual([`gh workflow run ${DETECTION_WORKFLOW_FILE} --repo "$REPO" --ref main -f confirm=detect`, `gh workflow run ${PROVISIONAL_WORKFLOW_FILE} --repo "$REPO" --ref main`]);
     expect(body).not.toMatch(/gh (api|run rerun|variable|secret)/);
     // 取り消しは、古い承認待ちの Production Apply の run だけ（数字の ID を確かめてから・2026-10-11）
     const cancels = body.match(/gh run cancel [^\n]+/g) ?? [];

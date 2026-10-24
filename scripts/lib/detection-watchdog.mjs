@@ -50,3 +50,28 @@ export function decideWatchdogDispatch({ now, runs, enabled, staleMs = WATCHDOG_
   if (ageMs > staleMs) return { dispatch: true, reason: "stale", lastSuccessAt, ageMinutes };
   return { dispatch: false, reason: "fresh", lastSuccessAt, ageMinutes };
 }
+
+/** 暫定のカードの同期（毎時）が最後に始まってからこの時間を超えたら起動する（GitHub の schedule の遅れ・欠落の補い・2026-10-25）。 */
+export const PROVISIONAL_STALE_MS = 2 * 60 * 60 * 1000;
+
+/**
+ * 暫定のカードの同期の watchdog の判定（pure・2026-10-25 本人の指示「自動更新の頻度は落とすな」）。
+ * 同期は PES Master を読むだけで上流の 429 の待ち時間は無関係なため、直近の結果（成功・失敗）に関係なく「最後に始まった時刻」で決める。
+ * 実行中・待機中があれば起動しない。止めている（skipped）なら起動しない。
+ * @param {{ now: string, runs: DetectionRun[], staleMs?: number }} p
+ * @returns {{ dispatch: boolean, reason: string, lastRunAt: string | null, ageMinutes: number | null }}
+ */
+export function decideProvisionalDispatch({ now, runs, staleMs = PROVISIONAL_STALE_MS }) {
+  const t = Date.parse(now);
+  if (!Number.isFinite(t)) return { dispatch: false, reason: "invalid_now", lastRunAt: null, ageMinutes: null };
+  const valid = (runs ?? []).filter((r) => r && Number.isFinite(Date.parse(r.createdAt)) && Date.parse(r.createdAt) <= t);
+  if (valid.some((r) => r.status !== "completed")) return { dispatch: false, reason: "sync_in_progress", lastRunAt: null, ageMinutes: null };
+  const newest = [...valid].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))[0] ?? null;
+  const lastRunAt = newest ? new Date(Date.parse(newest.createdAt)).toISOString() : null;
+  const ageMs = newest ? t - Date.parse(newest.createdAt) : null;
+  const ageMinutes = ageMs === null ? null : Math.round(ageMs / 60000);
+  if (newest && newest.conclusion === "skipped") return { dispatch: false, reason: "sync_disabled", lastRunAt, ageMinutes };
+  if (!newest) return { dispatch: true, reason: "no_sync_run", lastRunAt, ageMinutes };
+  if (ageMs > staleMs) return { dispatch: true, reason: "stale", lastRunAt, ageMinutes };
+  return { dispatch: false, reason: "fresh", lastRunAt, ageMinutes };
+}
