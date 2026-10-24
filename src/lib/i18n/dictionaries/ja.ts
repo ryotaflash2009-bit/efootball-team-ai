@@ -2825,6 +2825,9 @@ export interface Dictionary {
     notYetHeading: string;
     samePlayerOtherCardsHeadingTemplate: string;
     samePlayerOtherCardsHint: string;
+    similarCardsHeading: string;
+    similarCardsHint: string;
+    similarCardsMore: string;
     notYetHint: string;
     notYetZeroNote: string;
     notYetBadgeSuffix: string;
