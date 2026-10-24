@@ -43,6 +43,9 @@ const provisionalCards: Dictionary["provisionalCards"] = {
   squadSuggestEmptySlotTemplate: "{basis} {newOvr}（空いている枠）",
   squadSuggestNone: "いまの新しいカードには、このスカッドの選手を上回るものはありません。",
   squadSuggestSeeAll: "新しいカードをすべて見る",
+  positionFilterLabel: "ポジションで絞る",
+  positionFilterAll: "すべて",
+  positionFilterEmpty: "このポジションの新しいカードはありません。",
 };
 
 registerJaNamespace("provisionalCards", provisionalCards);

@@ -648,6 +648,9 @@ const part: PartialDictionary = {
     squadSuggestEmptySlotTemplate: "{basis} {newOvr} (slot kosong)",
     squadSuggestNone: "Tidak ada kartu baru yang mengalahkan pemain di skuad ini.",
     squadSuggestSeeAll: "Lihat semua kartu baru",
+    positionFilterLabel: "Saring berdasarkan posisi",
+    positionFilterAll: "Semua",
+    positionFilterEmpty: "Tidak ada kartu baru untuk posisi ini.",
   },
   packCheck: {
     heading: "Cek pack (dibandingkan dengan My Team-mu)",

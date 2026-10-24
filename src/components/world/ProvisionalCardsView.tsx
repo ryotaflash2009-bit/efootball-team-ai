@@ -15,6 +15,7 @@ import { Surface } from "@/components/ui/Surface";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { WorldPlayerCard, type WorldPlayerCardData } from "@/components/world/WorldPlayerCard";
 import { NewCardsTeamImpact } from "@/components/world/NewCardsTeamImpact";
+import { POSITION_ORDER } from "@/lib/tier/own-tier";
 
 const GRID = "grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7";
 /** 日ごとに最初に出す枚数（残りは「残り N 枚を表示」・2026-10-17 画面の整理）。 */
@@ -51,28 +52,39 @@ export function ProvisionalCardsView({
   }, [latestAddedAt]);
   const tp = (k: Parameters<typeof t<"provisionalCards">>[1]) => t("provisionalCards", k);
   usePageTitle(tp("newCardsPageTitle"));
+  // ポジションで絞る（2026-10-25）。チームへの影響は絞らない全体で出す。保存はしない（ページの中だけ）。
+  const [position, setPosition] = useState<string | null>(null);
+  const positionCounts = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const c of [...recent, ...cards]) if (c.registeredPosition) m.set(c.registeredPosition, (m.get(c.registeredPosition) ?? 0) + 1);
+    return POSITION_ORDER.filter((p) => m.has(p)).map((p) => ({ position: p, count: m.get(p) ?? 0 }));
+  }, [recent, cards]);
+  const inPosition = (c: WorldPlayerCardData) => position == null || c.registeredPosition === position;
+  const shownRecent = useMemo(() => recent.filter(inPosition), [recent, position]); // eslint-disable-line react-hooks/exhaustive-deps
+  const shownCards = useMemo(() => cards.filter(inPosition), [cards, position]); // eslint-disable-line react-hooks/exhaustive-deps
   // 日ごとに並べる（日付の無いものは最後に「その他」として 1 つ）
   const dayGroups = useMemo(() => {
-    const byId = new Map(recent.map((c) => [c.worldCardId, c]));
+    const byId = new Map(shownRecent.map((c) => [c.worldCardId, c]));
     const used = new Set<string>();
-    const groups: DayGroupData[] = batches.map((b) => {
+    const groups: DayGroupData[] = batches.flatMap((b) => {
       const list = b.allIds.map((id) => byId.get(id)).filter((c): c is WorldPlayerCardData => c != null);
       list.forEach((c) => used.add(c.worldCardId));
-      return { key: b.date, title: fillMessage(tp("batchRowTemplate"), { date: formatDate(new Date(`${b.date}T12:00:00+09:00`), displayLocale), count: String(b.count) }), cards: list, packCheckIds: b.ids, truncated: b.truncated };
+      if (list.length === 0) return [];
+      return [{ key: b.date, title: fillMessage(tp("batchRowTemplate"), { date: formatDate(new Date(`${b.date}T12:00:00+09:00`), displayLocale), count: String(position ? list.length : b.count) }), cards: list, packCheckIds: b.ids, truncated: b.truncated }];
     });
-    const rest = recent.filter((c) => !used.has(c.worldCardId));
+    const rest = shownRecent.filter((c) => !used.has(c.worldCardId));
     if (rest.length > 0) groups.push({ key: "rest", title: null, cards: rest, packCheckIds: [], truncated: false });
     return groups;
     // tp は辞書の参照（locale で変わる）
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recent, batches, displayLocale, t]);
+  }, [shownRecent, batches, displayLocale, t]);
   const recentSection = (
     <section className="flex flex-col gap-3" data-testid="recently-added">
-      <SectionHeader title={tp("recentHeadingTemplate").replace("{days}", String(recentDays)).replace("{count}", String(recent.length))} as="h2" />
+      <SectionHeader title={tp("recentHeadingTemplate").replace("{days}", String(recentDays)).replace("{count}", String(shownRecent.length))} as="h2" />
       <p className="text-xs text-text-dim">{tp("recentIntro")}</p>
-      {recent.length === 0 ? (
+      {shownRecent.length === 0 ? (
         <Surface padding="md" className="text-sm text-text-dim" data-testid="recently-added-empty">
-          {tp("recentEmpty")}
+          {position ? tp("positionFilterEmpty") : tp("recentEmpty")}
         </Surface>
       ) : (
         dayGroups.map((g) => <DayGroup key={g.key} group={g} packCheckLimit={packCheckLimit} />)
@@ -82,9 +94,9 @@ export function ProvisionalCardsView({
   const provisionalSection = (
     <section className="flex flex-col gap-3">
       <SectionHeader title={tp("provisionalHeading")} as="h2" />
-      {cards.length === 0 ? (
+      {shownCards.length === 0 ? (
         <p className="text-xs text-text-muted" data-testid="provisional-cards-empty">
-          {tp("newCardsEmpty")}
+          {position ? tp("positionFilterEmpty") : tp("newCardsEmpty")}
         </p>
       ) : (
         <>
@@ -93,7 +105,7 @@ export function ProvisionalCardsView({
             <p className="mt-1">{tp("maxLevelUnknown")}</p>
           </Surface>
           <ul className={GRID} data-testid="provisional-cards-grid">
-            {cards.map((c) => (
+            {shownCards.map((c) => (
               <li key={c.worldCardId}>
                 <WorldPlayerCard player={c} />
               </li>
@@ -117,6 +129,26 @@ export function ProvisionalCardsView({
       ) : null}
 
       <NewCardsTeamImpact newCards={[...recent, ...cards]} />
+
+      {positionCounts.length > 1 ? (
+        <div className="flex flex-wrap gap-1.5" role="group" aria-label={tp("positionFilterLabel")} data-testid="new-cards-position-filter">
+          {[{ position: null as string | null, count: recent.length + cards.length }, ...positionCounts].map((o) => {
+            const active = o.position === position;
+            return (
+              <button
+                key={o.position ?? "all"}
+                type="button"
+                aria-pressed={active}
+                data-position={o.position ?? "all"}
+                onClick={() => setPosition(o.position)}
+                className={`min-h-[32px] rounded-full border px-3 text-xs ${active ? "border-accent bg-accent/15 font-semibold text-accent" : "border-border text-text-dim hover:bg-surface-2"}`}
+              >
+                {o.position ?? tp("positionFilterAll")} <span className="tabular-nums text-text-muted">{o.count}</span>
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
 
       {provisionalFirst ? provisionalSection : recentSection}
 

@@ -184,6 +184,20 @@ async function main() {
     const provLabel = await ev(`document.querySelector('[data-testid="provisional-cards-grid"] li')?.innerText.replace(/\\s+/g, " ") ?? null`);
     record("暫定のカードの OVR は BASE と表示（最大 OVR が無いとき）", provLabel == null || /BASE/.test(provLabel), (provLabel ?? "no provisional").slice(0, 60));
 
+    // 新しいカード: ポジションで絞る（2026-10-25）。押したポジションのカードだけになり、「すべて」で戻る
+    if (await has('[data-testid="new-cards-position-filter"]')) {
+      const before = await ev(`document.querySelectorAll('[data-testid="recently-added-grid"] li, [data-testid="provisional-cards-grid"] li').length`);
+      const pos = await ev(`document.querySelectorAll('[data-testid="new-cards-position-filter"] button')[1]?.dataset.position ?? null`);
+      await ev(`document.querySelector('[data-testid="new-cards-position-filter"] button[data-position="${pos}"]').click()`);
+      await new Promise((r) => setTimeout(r, 500));
+      const items = (await ev(`[...document.querySelectorAll('[data-testid="recently-added-grid"] li, [data-testid="provisional-cards-grid"] li')].map((li) => li.innerText.split(/\\s+/))`)) ?? [];
+      const pressed = await ev(`document.querySelector('[data-testid="new-cards-position-filter"] button[data-position="${pos}"]').getAttribute("aria-pressed")`);
+      await ev(`document.querySelector('[data-testid="new-cards-position-filter"] button[data-position="all"]').click()`);
+      await new Promise((r) => setTimeout(r, 500));
+      const after = await ev(`document.querySelectorAll('[data-testid="recently-added-grid"] li, [data-testid="provisional-cards-grid"] li').length`);
+      record("新しいカード: ポジションで絞る（そのポジションだけ・すべてで戻る）", items.length > 0 && items.every((w) => w.includes(pos)) && pressed === "true" && after === before, `${pos}: ${items.length} / all ${before}→${after}`);
+    } else record("新しいカード: ポジションで絞る（そのポジションだけ・すべてで戻る）", true, "1 position or fewer");
+
     // 選手の検索: 暫定のカードも検索で見つかる（2026-10-24）
     const prov = await ev(`(async () => ((await (await fetch("/api/world/new-cards")).json()).cards || []).find((c) => c.provisional && c.nameEn) ?? null)()`);
     if (prov) {

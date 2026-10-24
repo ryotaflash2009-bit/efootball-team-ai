@@ -4421,5 +4421,8 @@
  "myTeam.positionUpgradesTemplate": "32368b87c29b",
  "playerDetailPage.similarCardsHeading": "9aca8c14c4a3",
  "playerDetailPage.similarCardsHint": "38b9475bd552",
- "playerDetailPage.similarCardsMore": "7ac7c175f7a5"
+ "playerDetailPage.similarCardsMore": "7ac7c175f7a5",
+ "provisionalCards.positionFilterLabel": "c32cccaf2265",
+ "provisionalCards.positionFilterAll": "a52ace420f21",
+ "provisionalCards.positionFilterEmpty": "5da3fe94a070"
 }

@@ -5289,6 +5289,9 @@ export interface Dictionary {
     squadSuggestEmptySlotTemplate: string;
     squadSuggestNone: string;
     squadSuggestSeeAll: string;
+    positionFilterLabel: string;
+    positionFilterAll: string;
+    positionFilterEmpty: string;
   };
   packCheck: {
     heading: string;

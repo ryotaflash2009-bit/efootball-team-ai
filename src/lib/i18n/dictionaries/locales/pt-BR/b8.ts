@@ -648,6 +648,9 @@ const part: PartialDictionary = {
     squadSuggestEmptySlotTemplate: "{basis} {newOvr} (espaço vazio)",
     squadSuggestNone: "Nenhuma das cartas novas supera os jogadores deste elenco.",
     squadSuggestSeeAll: "Ver todas as cartas novas",
+    positionFilterLabel: "Filtrar por posição",
+    positionFilterAll: "Todas",
+    positionFilterEmpty: "Não há cartas novas para esta posição.",
   },
   packCheck: {
     heading: "Análise de packs (comparado com seu My Team)",

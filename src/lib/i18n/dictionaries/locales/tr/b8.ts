@@ -648,6 +648,9 @@ const part: PartialDictionary = {
     squadSuggestEmptySlotTemplate: "{basis} {newOvr} (boş yuva)",
     squadSuggestNone: "Yeni kartların hiçbiri bu kadrodaki oyuncuları geçmiyor.",
     squadSuggestSeeAll: "Tüm yeni kartları gör",
+    positionFilterLabel: "Mevkiye göre filtrele",
+    positionFilterAll: "Tümü",
+    positionFilterEmpty: "Bu mevki için yeni kart yok.",
   },
   packCheck: {
     heading: "Paket analizi (My Team'inle karşılaştırma)",

@@ -5351,6 +5351,9 @@ const en: Dictionary = {
     squadSuggestEmptySlotTemplate: "{basis} {newOvr} (empty slot)",
     squadSuggestNone: "None of the current new cards beats the players in this squad.",
     squadSuggestSeeAll: "See all new cards",
+    positionFilterLabel: "Filter by position",
+    positionFilterAll: "All",
+    positionFilterEmpty: "No new cards for this position.",
   },
   packCheck: {
     heading: "Pack check (compared with your My Team)",

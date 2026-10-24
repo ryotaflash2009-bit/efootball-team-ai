@@ -648,6 +648,9 @@ const part: PartialDictionary = {
     squadSuggestEmptySlotTemplate: "{basis} {newOvr} (emplacement vide)",
     squadSuggestNone: "Aucune des nouvelles cartes ne dépasse les joueurs de cet effectif.",
     squadSuggestSeeAll: "Voir toutes les nouvelles cartes",
+    positionFilterLabel: "Filtrer par poste",
+    positionFilterAll: "Toutes",
+    positionFilterEmpty: "Aucune nouvelle carte pour ce poste.",
   },
   packCheck: {
     heading: "Analyse de packs (comparée à votre My Team)",
