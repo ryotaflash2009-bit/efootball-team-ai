@@ -64,7 +64,7 @@ export function TierListView({
         {positions.map((p) => (
           <Link
             key={p}
-            href={`/tier?position=${p}`}
+            href={`/tier/${p}`}
             aria-current={p === position ? "page" : undefined}
             className={`rounded-md border px-2.5 py-1 text-xs ${p === position ? "border-accent bg-accent/10 font-semibold text-accent" : "border-border text-text-dim hover:border-accent/50"}`}
           >
