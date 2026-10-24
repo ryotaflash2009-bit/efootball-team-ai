@@ -174,6 +174,11 @@ async function main() {
     const oldCount = await ev(`document.querySelectorAll('[data-testid="card-new-badge"]').length`);
     record("選手の一覧: 新しいカードに NEW の印（古いカードには出ない）", recentCount === 0 ? true : firstNew === true && oldCount === 0, `first=${firstNew} oldPage=${oldCount}`);
 
+    // 暫定のカード（最大 OVR が無い）は左上の OVR を「BASE」と出す（MAX と誤解させない・2026-10-25）
+    await go(`${BASE}/players/new`);
+    const provLabel = await ev(`document.querySelector('[data-testid="provisional-cards-grid"] li')?.innerText.replace(/\\s+/g, " ") ?? null`);
+    record("暫定のカードの OVR は BASE と表示（最大 OVR が無いとき）", provLabel == null || /BASE/.test(provLabel), (provLabel ?? "no provisional").slice(0, 60));
+
     // 選手の検索: 暫定のカードも検索で見つかる（2026-10-24）
     const prov = await ev(`(async () => ((await (await fetch("/api/world/new-cards")).json()).cards || []).find((c) => c.provisional && c.nameEn) ?? null)()`);
     if (prov) {

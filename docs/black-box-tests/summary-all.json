@@ -192,8 +192,8 @@
       "status": "pass",
       "passed": 95,
       "total": 95,
-      "seconds": 251,
-      "ranAt": "2026-10-24T13:16:31.968Z",
+      "seconds": 250,
+      "ranAt": "2026-10-24T15:16:13.522Z",
       "line": "95/95 PASS",
       "fails": [],
       "report": null
@@ -267,11 +267,11 @@
     "new-cards": {
       "name": "new-cards",
       "status": "pass",
-      "passed": 26,
-      "total": 26,
+      "passed": 27,
+      "total": 27,
       "seconds": 21,
-      "ranAt": "2026-10-24T14:36:22.041Z",
-      "line": "[black-box-new-cards] 26/26 PASS",
+      "ranAt": "2026-10-24T15:20:23.282Z",
+      "line": "[black-box-new-cards] 27/27 PASS",
       "fails": [],
       "report": "new-cards.md"
     },
@@ -489,8 +489,8 @@
       "status": "pass",
       "passed": 93,
       "total": 93,
-      "seconds": 10,
-      "ranAt": "2026-10-24T14:36:59.048Z",
+      "seconds": 19,
+      "ranAt": "2026-10-24T15:20:43.877Z",
       "line": "[black-box-world-ui] 93/93 PASS",
       "fails": [],
       "report": "world-ui.md"
@@ -507,5 +507,5 @@
       "report": null
     }
   },
-  "updatedAt": "2026-10-24T14:37:09.152Z"
+  "updatedAt": "2026-10-24T15:21:03.350Z"
 }
