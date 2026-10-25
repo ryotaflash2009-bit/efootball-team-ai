@@ -27,7 +27,7 @@ export function FavoritesView() {
   usePageTitle(t("favoritesView", "pageTitle"));
   const { locale } = useLocale();
   const { favorites, available, scopeStatus } = useFavorites();
-  const { myTeamIds } = useMyTeam();
+  const { myTeamIds, getByWorldId } = useMyTeam();
   const ids = useMemo(() => favorites.map((f) => f.worldCardId), [favorites]);
   const { cards, loading, error } = useResolvedCards(ids);
   const [filter, setFilter] = useState<UserCardFilterState>(DEFAULT_FILTER);
@@ -120,6 +120,7 @@ export function FavoritesView() {
           <ul className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {visible.map((row) => {
               const fav = favByWorldId.get(row.worldCardId);
+              const teamRec = getByWorldId(row.worldCardId);
               const player = row.card;
               const name =
                 resolvePlayerDisplayName(player ?? {}, locale, t("squadBuildPanel", "cardFallbackNameTemplate").replace("{id}", row.worldCardId));
@@ -132,6 +133,8 @@ export function FavoritesView() {
                       addedAt: fav?.addedAt,
                       note: fav?.note,
                       tags: fav?.tags,
+                      // My Team での状態（所持・欲しい など）も出す（My Team の画面と同じバッジ・2026-10-26）
+                      ownershipStatus: teamRec && !teamRec.deletedAt ? teamRec.ownershipStatus : undefined,
                     }}
                     showFavorite
                     extraActions={<MyTeamButton worldCardId={row.worldCardId} playerName={name} variant="compact" />}
