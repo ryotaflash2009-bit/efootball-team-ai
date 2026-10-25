@@ -287,6 +287,23 @@ async function main() {
     await go(`${BASE}/players/new`);
     const overflow = await ev("document.documentElement.scrollWidth - document.documentElement.clientWidth");
     record("390px で横のはみ出しなし", overflow <= 1, `overflow=${overflow}`);
+    // 選手一覧のカードから直接 My Team へ（2026-10-26）: 押す → 追加のダイアログ → 保存 → カードが「登録済み」・保存データに入る
+    {
+      await ev(`localStorage.removeItem(${JSON.stringify(MY_TEAM_KEY)})`);
+      await go(`${BASE}/players`);
+      const addBtn = `[...document.querySelectorAll("button")].find((b) => b.textContent.trim() === "My Team に追加" && b.closest(".group"))`;
+      await waitForCondition(async () => ev(`!!${addBtn}`), { timeoutMs: 15000, intervalMs: 250 }).catch(() => {});
+      const id = await ev(`${addBtn}?.closest(".group")?.querySelector('a[href^="/players/world/"]')?.getAttribute("href").split("/").pop() ?? null`);
+      await ev(`${addBtn}?.click()`);
+      const submit = `[...document.querySelectorAll('[role="dialog"] button')].find((b) => b.textContent.trim() === "My Team に追加")`;
+      await waitForCondition(async () => ev(`!!${submit}`), { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+      await ev(`${submit}?.click()`);
+      await new Promise((r) => setTimeout(r, 800));
+      const card = id ? await ev(`document.querySelector('.group a[href="/players/world/${id}"]')?.closest(".group")?.innerText ?? ""`) : "";
+      const saved = await ev(`(JSON.parse(localStorage.getItem(${JSON.stringify(MY_TEAM_KEY)}) ?? "{}").records ?? []).map((r) => r.worldCardId)`);
+      record("[選手一覧] カードから直接 My Team に追加（ダイアログで保存 → カードが登録済み・保存データに入る）", !!id && Array.isArray(saved) && saved.includes(id) && /My Team 登録済み/.test(card), `${id} saved=${JSON.stringify(saved)}`);
+      await ev(`localStorage.removeItem(${JSON.stringify(MY_TEAM_KEY)})`);
+    }
     record("ページ内で JS の例外が起きない", errors.length === 0, errors.slice(0, 2).join(" / "));
   } finally {
     await closeTab(browser.port, tab.id).catch(() => {});
