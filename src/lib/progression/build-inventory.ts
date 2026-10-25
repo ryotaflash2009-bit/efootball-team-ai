@@ -1,5 +1,7 @@
 import type { SavedBuild } from "./types";
 import type { WorldPlayerListItem } from "@/lib/world/types";
+import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
+import type { Locale } from "@/lib/i18n/locale";
 import type { MyTeamRecord } from "@/lib/user-cards/types";
 import type { StoredSquad } from "@/lib/squad/types";
 import { getFormation } from "@/lib/squad/formations";
@@ -447,7 +449,9 @@ export function filterBuildInventory(
   });
 }
 
-function playerName(item: BuildInventoryItem): string {
+/** locale を渡すと画面に出す名前（ja 以外は英語名）で並べる（2026-10-25。省略時は従来どおり日本語名を優先）。 */
+function playerName(item: BuildInventoryItem, locale?: Locale): string {
+  if (locale) return resolvePlayerDisplayName(item.card ?? {}, locale, item.build.worldCardId).toLowerCase();
   return (item.card?.nameJa || item.card?.nameEn || item.build.worldCardId).toLowerCase();
 }
 
@@ -455,6 +459,7 @@ function playerName(item: BuildInventoryItem): string {
 export function sortBuildInventory(
   items: BuildInventoryItem[],
   key: BuildInventorySortKey,
+  locale?: Locale,
 ): BuildInventoryItem[] {
   const arr = items.slice();
   const byId = (a: BuildInventoryItem, b: BuildInventoryItem) => a.build.buildId.localeCompare(b.build.buildId);
@@ -477,7 +482,7 @@ export function sortBuildInventory(
         r = cmpTime(buildTimeValue(a.build.createdAt), buildTimeValue(b.build.createdAt), true);
         break;
       case "player_asc":
-        r = playerName(a).localeCompare(playerName(b), "ja");
+        r = playerName(a, locale).localeCompare(playerName(b, locale), locale ?? "ja");
         break;
       case "name_asc":
         r = a.build.buildName.localeCompare(b.build.buildName, "ja");

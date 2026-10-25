@@ -75,8 +75,8 @@ export function DuplicateReviewSection({
   const [sort, setSort] = useState<DuplicateReviewSortKey>("updated_desc");
 
   const visible = useMemo(
-    () => sortDuplicateReviewGroups(filterDuplicateReviewGroups(review.groups, filter), sort),
-    [review.groups, filter, sort],
+    () => sortDuplicateReviewGroups(filterDuplicateReviewGroups(review.groups, filter), sort, locale),
+    [review.groups, filter, sort, locale],
   );
 
   const s = review.summary;
