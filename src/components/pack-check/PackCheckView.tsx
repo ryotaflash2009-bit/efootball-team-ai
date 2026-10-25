@@ -18,6 +18,8 @@ import { useResolvedCards } from "@/lib/user-cards/use-resolved-cards";
 import { packCheck, type PackCardVerdict } from "@/lib/new-cards/pack-check";
 import type { ImpactCard } from "@/lib/new-cards/team-impact";
 import { fetchNewCardsOnce } from "@/lib/new-cards/fetch-new-cards";
+import { squadsStrengthenedByCard, type SquadFit } from "@/lib/new-cards/card-squad-fit";
+import { useSavedSquadFitInputs } from "@/components/world/useSavedSquadFitInputs";
 import type { WorldPlayerListItem } from "@/lib/world/types";
 
 const MAX_CARDS = 30;
@@ -77,6 +79,17 @@ export function PackCheckView() {
   const { ownedIds, owned, scopeStatus } = useOwnedCards();
   const pack = useMemo(() => ids.map((id) => packCards.get(id)).filter((c): c is NonNullable<typeof c> => c != null), [ids, packCards]);
   const { results, summary } = useMemo(() => packCheck(pack, owned), [pack, owned]);
+  // カードごとに強くなる保存スカッド（2026-10-26・選手の詳細と同じ規則）
+  const squadInputs = useSavedSquadFitInputs();
+  const fitsById = useMemo(() => {
+    const m = new Map<string, SquadFit[]>();
+    if (!squadInputs || squadInputs.length === 0) return m;
+    for (const r of results) {
+      const f = squadsStrengthenedByCard(r.card, squadInputs);
+      if (f.length > 0) m.set(r.card.worldCardId, f);
+    }
+    return m;
+  }, [results, squadInputs]);
 
   // 検索
   const [q, setQ] = useState("");
@@ -246,6 +259,19 @@ export function PackCheckView() {
                     <Link href={`/compare?ids=${r.card.worldCardId},${r.bestOwned.worldCardId}`} className="w-fit text-xs text-accent hover:underline" data-testid="compare-with-owned">
                       {tp("compareAbilities")}
                     </Link>
+                  ) : null}
+                  {fitsById.get(r.card.worldCardId) ? (
+                    <span className="flex flex-wrap items-baseline gap-x-2 text-xs" data-testid="pack-check-squad-fit">
+                      <span className="text-text-dim">{t("provisionalCards", "squadFitHeading")}</span>
+                      {fitsById.get(r.card.worldCardId)!.map((f) => (
+                        <span key={f.squadId} className="inline-flex items-baseline gap-1">
+                          <Link href={`/squads/${encodeURIComponent(f.squadId)}`} className="text-accent hover:underline">
+                            {f.squadName}
+                          </Link>
+                          <span className="font-bold text-text-dim">{f.position}</span>
+                        </span>
+                      ))}
+                    </span>
                   ) : null}
                   {/* 引けたらそのまま My Team へ（2026-10-25）。追加すると判定は「所持済み」になる */}
                   {r.verdict !== "already_owned" ? (
