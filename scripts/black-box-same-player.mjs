@@ -128,11 +128,18 @@ async function main() {
         const KEY = "efootball-team-ai:local:guest:my-team:v1";
         const now = new Date().toISOString();
         const recOf = (id) => ({ localRecordId: `mt_${id}`, teamCardId: `tc_${id}`, worldCardId: id, ownershipStatus: "owned", usageStatus: "unused", selectedBuildId: null, favoriteBuildId: null, note: "", tags: [], addedAt: now, updatedAt: now, deletedAt: null, source: "local", syncStatus: "local_only" });
-        await evalJson(client, `localStorage.setItem(${JSON.stringify(KEY)}, ${JSON.stringify(JSON.stringify({ storageVersion: "my-team-storage/2026-08-30.v1", updatedAt: now, records: sim?.[0] ? [recOf(sim[0])] : [] }))})`);
+        await evalJson(client, `localStorage.setItem(${JSON.stringify(KEY)}, ${JSON.stringify(JSON.stringify({ storageVersion: "my-team-storage/2026-08-30.v1", updatedAt: now, records: [...(sim?.[0] ? [recOf(sim[0])] : []), recOf(RC_B)] }))})`);
         await go(client, `${BASE}/players/world/${RC_A}`);
         await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="similar-owned"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
         const ownedIds = await evalJson(client, `[...document.querySelectorAll('[data-testid="similar-owned"]')].map((b) => b.closest("li").querySelector('a[href^="/players/world/"]').getAttribute("href").split("/").pop())`);
         record("[選手の詳細] 似ているカードのうち所持のカードに「所持済み」", Array.isArray(ownedIds) && ownedIds.length === 1 && ownedIds[0] === sim?.[0], JSON.stringify(ownedIds));
+        // 同じ選手の別のカード・比較の列にも同じ印（2026-10-25）
+        const sameOwned = await evalJson(client, `[...document.querySelectorAll('[data-testid="same-player-owned"]')].map((b) => b.closest("a").getAttribute("href").split("/").pop())`);
+        record("[選手の詳細] 同じ選手の別のカードのうち所持のカードに「所持済み」", Array.isArray(sameOwned) && sameOwned.length === 1 && sameOwned[0] === RC_B, JSON.stringify(sameOwned));
+        await go(client, `${BASE}/compare?ids=${RC_A},${RC_B}`);
+        await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="compare-owned"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+        const cmpOwned = await evalJson(client, `document.querySelectorAll('[data-testid="compare-owned"]').length`);
+        record("[比較] 所持のカードの列だけに「所持済み」（2 枚のうち 1 枚）", cmpOwned === 1, `n=${cmpOwned}`);
         await evalJson(client, `localStorage.removeItem(${JSON.stringify(KEY)})`);
       }
       // 比較: 1 枚のとき「似ているカードを追加」→ 押すと 2 枚の比較（URL の ids に入る・2026-10-25）
