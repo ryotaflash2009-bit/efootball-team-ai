@@ -40,16 +40,17 @@
 | ✅ 合格 | public-signup-limited | 117/117 | 102 | 2026-10-25 19:07 | [public-signup-limited.md](./public-signup-limited.md) |
 | ✅ 合格 | release-gate | 2/2 | 572 | 2026-10-25 19:09 | — |
 | ✅ 合格 | rls-test（社内向けページ） | 71/71 | 12 | 2026-10-25 15:16 | [rls-test.md](./rls-test.md) |
-| ✅ 合格 | same-player | 19/19 | 25 | 2026-10-25 19:19 | [same-player.md](./same-player.md) |
+| ✅ 合格 | same-player | 20/20 | 26 | 2026-10-25 19:23 | [same-player.md](./same-player.md) |
 | ✅ 合格 | saved-filters | 11/11 | 6 | 2026-10-25 19:19 | — |
 | ✅ 合格 | share-build-link | 6/6 | 2 | 2026-10-25 19:19 | — |
 | ✅ 合格 | share-card | 24/24 | 59 | 2026-10-25 19:19 | [share-card.md](./share-card.md) |
 | ✅ 合格 | squad-list-banner | 5/5 | 2 | 2026-10-25 19:20 | [squad-list-banner.md](./squad-list-banner.md) |
 | ✅ 合格 | squad-placement-assist | 23/23 | 9 | 2026-10-25 19:20 | [squad-placement-assist.md](./squad-placement-assist.md) |
 | ✅ 合格 | squad-use | 12/12 | 0 | 2026-10-25 19:20 | [squad-use.md](./squad-use.md) |
-| ✅ 合格 | squads | 51/51 | 1 | 2026-10-25 19:20 | [squads.md](./squads.md) |
+| ✅ 合格 | squads | 51/51 | 1 | 2026-10-25 19:24 | [squads.md](./squads.md) |
 | ✅ 合格 | supabase-auth | 173/173 | 35 | 2026-10-25 19:20 | [supabase-auth.md](./supabase-auth.md) |
 | ✅ 合格 | support-contact（社内向けページ） | 39/39 | 4 | 2026-10-25 15:16 | [support-contact.md](./support-contact.md) |
 | ✅ 合格 | ui | 74/74 | 1 | 2026-10-25 19:21 | [ui.md](./ui.md) |
 | ✅ 合格 | world-sync | 35/35 | 1 | 2026-10-25 19:21 | — |
-| ✅ 合格 | world-ui | 93/93 | 8 | 2026-10-25 19:21 | [world-ui.md](./world-ui.md) |
+| ✅ 合格 | world-ui | 93/93 | 9 | 2026-10-25 19:24 | [world-ui.md](./world-ui.md) |
+
