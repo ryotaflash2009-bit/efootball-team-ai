@@ -311,7 +311,7 @@ const part: PartialDictionary = {
     formationLabel: "Diziliş",
     createAndEditButton: "Oluştur ve düzenle",
     heroHeading: "İlk 11 + yedeklerle bir kadro kurun",
-    heroDescription: "Bir diziliş seç ve tüm World kartlarından oyuncu yerleştir. Gelişim yapılarını, teknik direktör bonuslarını ve Link-Up Play koşullarını tek ekranda gör. Gelişim hedefleri eFHUB referansına göredir, OVR tahminidir. Kadrolar yalnızca bu tarayıcıda (localStorage) saklanır.",
+    heroDescription: "Bir diziliş seç ve tüm World kartlarından oyuncu yerleştir. Gelişim buildlerini, teknik direktör bonuslarını ve Link-Up Play koşullarını tek ekranda gör. Gelişim hedefleri eFHUB referansına dayanır, OVR bir tahmindir. Kadrolar bu tarayıcıda saklanır (giriş yaptıktan sonra hesap sayfasından buluta kaydedip geri de alabilirsin; alfa özelliği).",
     createFirstSquadButton: "İlk kadronuzu oluşturun",
     createNewSquadButton: "Yeni kadro oluştur",
     goToCompareButton: "Oyuncu karşılaştırmaya git",

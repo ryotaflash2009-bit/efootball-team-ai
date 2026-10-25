@@ -929,7 +929,7 @@ const en: Dictionary = {
     formationLabel: "Formation",
     createAndEditButton: "Create and edit",
     heroHeading: "Build a squad with 11 starters + bench",
-    heroDescription: "Pick a formation and place players from every World card. See progression builds, manager boosts and Link-Up Play conditions on one screen. Progression targets follow the eFHUB reference and OVR is an estimate. Squads are stored only in this browser (localStorage).",
+    heroDescription: "Pick a formation and place players from every World card. See progression builds, manager boosts and Link-Up Play conditions on one screen. Progression targets follow the eFHUB reference and OVR is an estimate. Squads are stored in this browser (after signing in you can also save them to and restore them from the cloud on the account page; alpha feature).",
     createFirstSquadButton: "Create your first squad",
     createNewSquadButton: "Create a new squad",
     goToCompareButton: "Go to player compare",

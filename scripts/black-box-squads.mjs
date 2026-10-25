@@ -62,7 +62,7 @@ async function main() {
   record("一覧: 新規作成フォーム（作成して編集）の文言は辞書に存在する", jaDict.includes("作成して編集"), "");
   record(
     "一覧: フォーメーション選択肢の説明文言は辞書に存在する",
-    jaDict.includes("スカッドはこの端末のブラウザ内（localStorage）にのみ保存されます"),
+    jaDict.includes("スカッドはこの端末のブラウザに保存されます（ログイン後はアカウント画面からクラウドへの保存・取得もできます"),
     "",
   );
   record("一覧: 空状態 or 一覧の表示", list.text.includes("保存済みのスカッド") || list.text.includes("読み込み中") || list.text.includes("アカウント情報を確認しています"), "");

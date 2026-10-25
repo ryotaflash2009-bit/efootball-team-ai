@@ -2053,7 +2053,6 @@
  "squadList.formationLabel": "49a63d72be2f",
  "squadList.createAndEditButton": "f16fe4b4115f",
  "squadList.heroHeading": "62400c46f0a6",
- "squadList.heroDescription": "0312fa5e0ca4",
  "squadList.createFirstSquadButton": "9e27c2c7539d",
  "squadList.createNewSquadButton": "8cb2995ddc7c",
  "squadList.goToCompareButton": "b712695d920a",
@@ -4433,5 +4432,6 @@
  "tierList.newCardsLinkTemplate": "0df5188cf71b",
  "bestXi.aboutMoreSummary": "7fa1719cf3d5",
  "localStorageNotice.bodySuffixBuilds": "1efc35c9f85f",
- "buildImportModal.safetySummary": "6da334e3d9a6"
+ "buildImportModal.safetySummary": "6da334e3d9a6",
+ "squadList.heroDescription": "c9eff035a409"
 }

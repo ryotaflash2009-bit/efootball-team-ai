@@ -311,7 +311,7 @@ const part: PartialDictionary = {
     formationLabel: "陣型",
     createAndEditButton: "建立並編輯",
     heroHeading: "以 11 名先發＋板凳組建陣容",
-    heroDescription: "選擇陣型，從所有 World 卡中安排球員。在一個畫面中查看培養構建、總教練加成與 Link-Up Play 條件。培養的對象能力按 eFHUB 基準，OVR 為推定。陣容僅儲存在此瀏覽器（localStorage）中。",
+    heroDescription: "選擇陣型，從 World 的全部卡中安排球員。可在同一畫面查看培養方案、教練加成和 Link-Up Play 條件。培養的目標能力以 eFHUB 為準，OVR 為估算值。陣容儲存在此裝置的瀏覽器中（登入後也可在帳戶頁面儲存到雲端或從雲端取回，Alpha 功能）。",
     createFirstSquadButton: "建立第一個陣容",
     createNewSquadButton: "建立新陣容",
     goToCompareButton: "前往球員比較",

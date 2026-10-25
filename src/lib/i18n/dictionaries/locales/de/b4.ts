@@ -311,7 +311,7 @@ const part: PartialDictionary = {
     formationLabel: "Formation",
     createAndEditButton: "Erstellen und bearbeiten",
     heroHeading: "Stelle einen Kader mit 11 Startspielern + Bank zusammen",
-    heroDescription: "Wähle eine Formation und setze Spieler aus allen World-Karten ein. Entwicklungs-Builds, Trainerboni und Link-Up-Play-Bedingungen auf einem Bildschirm. Die Entwicklungsziele folgen der eFHUB-Referenz, die OVR ist eine Schätzung. Kader werden nur in diesem Browser gespeichert (localStorage).",
+    heroDescription: "Wähle eine Formation und platziere Spieler aus allen World-Karten. Sieh Entwicklungs-Builds, Trainer-Boni und Link-Up-Play-Bedingungen auf einem Bildschirm. Die Entwicklungsziele folgen der eFHUB-Referenz, die OVR ist eine Schätzung. Kader werden in diesem Browser gespeichert (nach der Anmeldung kannst du sie auf der Kontoseite auch in der Cloud speichern und abrufen; Alpha-Funktion).",
     createFirstSquadButton: "Ersten Kader erstellen",
     createNewSquadButton: "Neuen Kader erstellen",
     goToCompareButton: "Zum Spielervergleich",
