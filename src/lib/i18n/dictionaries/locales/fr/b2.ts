@@ -411,6 +411,7 @@ const part: PartialDictionary = {
     whatMyTeam: "Mon équipe",
     whatBuilds: "Builds de progression enregistrés",
     whatFavoritesAndMyTeam: "Favoris et Mon équipe",
+    bodySuffixBuilds: "enregistrés. Une fois connecté, vous pouvez utiliser la fonction expérimentale (alpha) de la page du compte pour enregistrer et récupérer les builds dans le cloud par une action explicite. Ce n'est pas une synchronisation automatique entre appareils.",
     bodyPrefixTemplate: "Ces données ({what}) sont actuellement enregistrées ",
     bodyBold: "uniquement dans ce navigateur",
     bodySuffix: ". La synchronisation ou la sauvegarde vers un autre appareil, ainsi que l’enregistrement sur un serveur, ne sont pas encore pris en charge. La connexion et la synchronisation de compte sont prévues dans une future version.",

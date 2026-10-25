@@ -411,6 +411,7 @@ const part: PartialDictionary = {
     whatMyTeam: "我的球队",
     whatBuilds: "已保存的培养方案",
     whatFavoritesAndMyTeam: "收藏和我的球队",
+    bodySuffixBuilds: "保存。登录后，可在账户页面通过明确的操作使用将已保存的培养方案保存到云端或从云端取回的试验功能（Alpha）。这不是设备之间的自动同步。",
     bodyPrefixTemplate: "{what}目前",
     bodyBold: "仅保存在此浏览器中",
     bodySuffix: "。尚不支持同步或备份到其他设备，也不支持保存到服务器。登录和账户同步计划在未来版本中推出。",

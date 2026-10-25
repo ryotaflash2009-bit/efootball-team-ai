@@ -10,6 +10,7 @@ const part: PartialDictionary = {
     safetyLine5: "Build yang diimpor tidak otomatis diterapkan ke Tim Saya, skuad, atau favorit kartu (referensi juga tidak dibuat).",
     safetyLine6: "File dengan formatVersion yang tidak didukung ditolak tanpa konversi.",
     safetyLine7: "Setelah impor, kelola build satu per satu di Build Saya (build tidak otomatis dijadikan build terpilih atau favorit).",
+    safetySummary: "Catatan impor (tidak ada yang diunggah atau ditimpa, dll.)",
     launcherHeading: "Impor Build Tersimpan (Impor JSON Lokal)",
     launcherDescriptionPrefix: "Pilih file JSON lokal yang sebelumnya diekspor dari aplikasi ini; isinya akan divalidasi dan ditampilkan pratinjaunya, lalu ",
     addBoldLabel: "ditambahkan",

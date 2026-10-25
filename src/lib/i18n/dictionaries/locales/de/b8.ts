@@ -10,6 +10,7 @@ const part: PartialDictionary = {
     safetyLine5: "Importierte Builds werden nicht automatisch auf Mein Team, Kader oder Kartenfavoriten angewendet (es werden auch keine Verweise erstellt).",
     safetyLine6: "Dateien mit einer nicht unterstützten formatVersion werden ohne Konvertierung abgelehnt.",
     safetyLine7: "Verwalte die Builds nach dem Import einzeln in Meine Builds (sie werden nicht automatisch als ausgewählter oder Favoriten-Build festgelegt).",
+    safetySummary: "Hinweise zum Import (nichts wird hochgeladen oder überschrieben usw.)",
     launcherHeading: "Gespeicherte Builds importieren (lokaler JSON-Import)",
     launcherDescriptionPrefix: "Wähle eine lokale JSON-Datei, die zuvor aus dieser App exportiert wurde. Ihr Inhalt wird geprüft und in einer Vorschau angezeigt und nach der letzten Bestätigung als gespeicherte Builds ",
     addBoldLabel: "hinzugefügt",

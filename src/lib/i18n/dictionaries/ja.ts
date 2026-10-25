@@ -1173,6 +1173,7 @@ export interface Dictionary {
     safetyLine5: string;
     safetyLine6: string;
     safetyLine7: string;
+    safetySummary: string;
     launcherHeading: string;
     launcherDescriptionPrefix: string;
     addBoldLabel: string;
@@ -3060,6 +3061,7 @@ export interface Dictionary {
     whatMyTeam: string;
     whatBuilds: string;
     whatFavoritesAndMyTeam: string;
+    bodySuffixBuilds: string;
     bodyPrefixTemplate: string;
     bodyBold: string;
     bodySuffix: string;

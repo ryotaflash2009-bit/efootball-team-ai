@@ -10,6 +10,7 @@ const part: PartialDictionary = {
     safetyLine5: "가져온 빌드는 내 팀, 스쿼드, 카드 즐겨찾기에 자동으로 적용되지 않습니다(참조도 만들지 않습니다).",
     safetyLine6: "지원하지 않는 formatVersion의 파일은 변환하지 않고 거부합니다.",
     safetyLine7: "가져온 후에는 내 빌드에서 빌드를 개별적으로 관리하세요(선택 빌드나 즐겨찾기 빌드로 자동 설정되지 않습니다).",
+    safetySummary: "불러오기 주의 (전송하지 않음, 덮어쓰지 않음 등)",
     launcherHeading: "저장된 빌드 가져오기(로컬 JSON 가져오기)",
     launcherDescriptionPrefix: "이 앱에서 이전에 내보낸 로컬 JSON 파일을 선택하면 내용을 검증하고 미리 보여 준 뒤, 최종 확인 후 저장된 빌드로 ",
     addBoldLabel: "추가",

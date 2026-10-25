@@ -7,6 +7,7 @@ const localStorageNotice: Dictionary["localStorageNotice"] = {
   whatMyTeam: "My Team",
   whatBuilds: "保存した育成ビルド",
   whatFavoritesAndMyTeam: "お気に入りと My Team",
+  bodySuffixBuilds: "保存されます。ログイン後は、アカウント画面から明示的な操作で保存ビルドをクラウドへ保存・取得できる試験機能（アルファ）を利用できます。端末間の自動同期ではありません。",
   bodyPrefixTemplate: "{what}は、現在",
   bodyBold: "このブラウザにのみ",
   bodySuffix:

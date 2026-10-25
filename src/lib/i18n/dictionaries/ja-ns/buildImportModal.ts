@@ -10,6 +10,7 @@ const buildImportModal: Dictionary["buildImportModal"] = {
   safetyLine5: "読み込んだビルドを My Team・スカッド・カードのお気に入りへ自動で適用しません（参照も作りません）。",
   safetyLine6: "未対応の formatVersion のファイルは変換せず拒否します。",
   safetyLine7: "読み込み後は My Builds で個別に管理してください（選択中ビルド・お気に入りには自動設定しません）。",
+  safetySummary: "読み込みの注意（送信しない・上書きしない など）",
   launcherHeading: "保存ビルドの読み込み（ローカル JSON インポート）",
   launcherDescriptionPrefix:
     "前回このアプリから書き出したローカル JSON ファイルを選ぶと、内容を検証してプレビューし、最終確認のうえ保存ビルドとして",

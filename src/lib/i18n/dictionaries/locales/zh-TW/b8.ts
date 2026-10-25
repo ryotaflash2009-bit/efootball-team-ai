@@ -10,6 +10,7 @@ const part: PartialDictionary = {
     safetyLine5: "匯入的方案不會自動套用至我的球隊、陣容或卡片收藏（也不會建立任何參照）。",
     safetyLine6: "不支援的 formatVersion 檔案會直接拒絕，不進行轉換。",
     safetyLine7: "匯入後，請在我的方案中個別管理（不會自動設為已選擇或收藏的方案）。",
+    safetySummary: "匯入須知（不上傳，不覆寫等）",
     launcherHeading: "匯入已儲存的方案（本機 JSON 匯入）",
     launcherDescriptionPrefix: "選擇先前從本 App 匯出的本機 JSON 檔案，系統會驗證並預覽內容，經最終確認後",
     addBoldLabel: "新增",
