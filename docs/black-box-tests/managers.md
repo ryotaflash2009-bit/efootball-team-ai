@@ -1,20 +1,20 @@
 # 監督機能 ブラックボックステスト結果
 
-実行日時: 2026-10-10T21:55:47.619Z
+実行日時: 2026-10-25T15:32:25.928Z
 対象: http://localhost:3000（localhost のみ）  外部アクセス: **0 回**
 
 | 結果 | 項目 | 詳細 |
 |---|---|---|
 | PASS | 監督一覧API: HTTP 200 | HTTP 200 |
-| PASS | 監督一覧API: 総数 > 0 | total=69 |
+| PASS | 監督一覧API: 総数 > 0 | total=71 |
 | PASS | 監督一覧API: source = amine250 | amine250/efootball-managers |
 | PASS | 監督一覧API: 各行に戦術適性6項目 |  |
 | PASS | 監督一覧API: 内部情報/SQLを含まない |  |
 | PASS | 検索: Antonio Conte が見つかる | total=1 |
 | PASS | 検索: 大文字小文字を無視 |  |
-| PASS | 検索: SQLインジェクション風でもテーブルが無事 | HTTP 400 after=69 |
-| PASS | フィルタ: ブースターあり | total=67 |
-| PASS | フィルタ: Link-Up Play あり | total=28 |
+| PASS | 検索: SQLインジェクション風でもテーブルが無事 | HTTP 400 after=71 |
+| PASS | フィルタ: ブースターあり | total=69 |
+| PASS | フィルタ: Link-Up Play あり | total=30 |
 | PASS | 同名別カード: Guardiola が複数・全部別 ID | total=2 |
 | PASS | 詳細API: 正常な ID → 200 | HTTP 200 |
 | PASS | 詳細API: Conte のブースター = Defensive Awareness +1 / Kicking Power +1 |  |
@@ -38,7 +38,7 @@
 | PASS | 画面: 存在しない ID の詳細はクラッシュせず not-found | HTTP 200 |
 | PASS | サイドメニュー: マネージャーが有効リンク |  |
 | PASS | 育成タブ: 監督補正セクション（監督を選択）がある |  |
-| PASS | 育成タブ: 監督なし時 managerBoosterDelta=0 の注記 |  |
+| PASS | 育成タブ: 監督なし時 監督の補正 = 0 の注記 |  |
 | PASS | 統合検算: Messi の基礎 Defensive Awareness に Conte の +1 を足すと最終値 | base=44 +1 |
 | PASS | 回帰: ホーム 200 + サイドメニュー |  |
 | PASS | 回帰: プレイヤー一覧 200 + 総件数 + 詳細リンク |  |

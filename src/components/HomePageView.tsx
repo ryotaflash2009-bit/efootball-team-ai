@@ -3,6 +3,7 @@
 import { ProvisionalCardsLink } from "@/components/world/ProvisionalCardsLink";
 import { HomeNewCardsUpgrade } from "@/components/world/HomeNewCardsUpgrade";
 import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
+import "@/lib/i18n/dictionaries/ja-ns/worldPlayerCard";
 import Link from "next/link";
 import { WorldCardImage } from "@/components/world/WorldCardImage";
 import { PageContainer } from "@/components/ui/PageContainer";
@@ -16,6 +17,7 @@ import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { formatDateTime, formatNumber } from "@/lib/i18n/format";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { fillMessage } from "@/lib/i18n/message-format";
+import { useMyTeam } from "@/lib/user-cards/hooks";
 
 export interface HomePageWorldSummary {
   totalCount: number;
@@ -51,7 +53,7 @@ const QUICK_STEPS: { href: string; icon: IconName; title: keyof Dictionary["home
   { href: "/diagnosis-history", icon: "external", title: "quickStep6Title", body: "quickStep6Body" },
 ];
 
-function MiniCard({ p, priority = false }: { p: HomeMiniCardData; priority?: boolean }) {
+function MiniCard({ p, priority = false, owned = false }: { p: HomeMiniCardData; priority?: boolean; owned?: boolean }) {
   const { locale, displayLocale } = useLocale();
   const t = useT();
   const fallback = t("squadBuildPanel", "cardFallbackNameTemplate").replace("{id}", p.worldCardId);
@@ -69,6 +71,11 @@ function MiniCard({ p, priority = false }: { p: HomeMiniCardData; priority?: boo
         {p.registeredPosition ? (
           <span className="absolute end-1 top-1 rounded bg-black/75 px-1.5 py-0.5 text-2xs font-bold text-text">
             {p.registeredPosition}
+          </span>
+        ) : null}
+        {owned ? (
+          <span className="absolute bottom-1 start-1 rounded bg-success/90 px-1 text-[9px] font-bold text-black" data-testid="home-owned">
+            {t("worldPlayerCard", "ownedBadge")}
           </span>
         ) : null}
       </div>
@@ -101,6 +108,9 @@ export function HomePageView({
   const t = useT();
   const { locale, displayLocale } = useLocale();
   const th = (k: keyof Dictionary["homePage"]) => t("homePage", k);
+  // My Team で「所持」のカードに印（2026-10-26）。hydration 中は空のスナップショットなので ISR の HTML と一致する。
+  const { getByWorldId } = useMyTeam();
+  const isOwned = (id: string) => { const r = getByWorldId(id); return !!r && r.ownershipStatus === "owned" && !r.deletedAt; };
   const fillH = (s: string, vars: Record<string, string>) =>
     fillMessage(s, vars);
 
@@ -279,7 +289,7 @@ export function HomePageView({
             />
             <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-2">
               {topOvr.map((p, i) => (
-                <MiniCard key={p.worldCardId} p={p} priority={i < 4} />
+                <MiniCard key={p.worldCardId} p={p} priority={i < 4} owned={isOwned(p.worldCardId)} />
               ))}
             </div>
           </section>
@@ -299,7 +309,7 @@ export function HomePageView({
             />
             <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-2">
               {recent.map((p, i) => (
-                <MiniCard key={p.worldCardId} p={p} priority={false} />
+                <MiniCard key={p.worldCardId} p={p} priority={false} owned={isOwned(p.worldCardId)} />
               ))}
             </div>
           </section>
