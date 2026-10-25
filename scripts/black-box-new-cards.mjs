@@ -206,6 +206,19 @@ async function main() {
       record("新しいカード: ポジションで絞る（そのポジションだけ・すべてで戻る）", items.length > 0 && items.every((w) => w.includes(pos)) && pressed === "true" && after === before, `${pos}: ${items.length} / all ${before}→${after}`);
     } else record("新しいカード: ポジションで絞る（そのポジションだけ・すべてで戻る）", true, "1 position or fewer");
 
+    // 新しいカード: ?position= で開くと絞った状態（My Team のまとめからのリンク・2026-10-25）
+    {
+      const pos = await ev(`document.querySelectorAll('[data-testid="new-cards-position-filter"] button')[1]?.dataset.position ?? null`);
+      if (pos) {
+        await go(`${BASE}/players/new?position=${pos}`);
+        await waitFor(`[data-testid="new-cards-position-filter"] button[data-position="${pos}"][aria-pressed="true"]`, 15000);
+        const pressed = await ev(`document.querySelector('[data-testid="new-cards-position-filter"] button[data-position="${pos}"]')?.getAttribute("aria-pressed")`);
+        const words = (await ev(`[...document.querySelectorAll('[data-testid="recently-added-grid"] li, [data-testid="provisional-cards-grid"] li')].map((li) => li.innerText.split(/\\s+/))`)) ?? [];
+        record("新しいカード: ?position= で開くとそのポジションで絞った状態", pressed === "true" && words.length > 0 && words.every((w) => w.includes(pos)), `${pos}: ${words.length}`);
+        await go(`${BASE}/players/new`);
+      } else record("新しいカード: ?position= で開くとそのポジションで絞った状態", true, "1 position or fewer");
+    }
+
     // 新しいカード: まだ持っていないカードだけ（2026-10-25）。新しいカード 1 枚を My Team の所持にして、そのカードだけ消える
     {
       const ids = (await ev(`[...document.querySelectorAll('[data-testid="recently-added-grid"] li a[href^="/players/world/"], [data-testid="provisional-cards-grid"] li a[href^="/players/world/"]')].map((a) => a.getAttribute("href").split("/").pop())`)) ?? [];
