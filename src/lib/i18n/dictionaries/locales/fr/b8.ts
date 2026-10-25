@@ -653,6 +653,8 @@ const part: PartialDictionary = {
     squadSuggestSeeAll: "Voir toutes les nouvelles cartes",
     squadOwnedHeading: "Emplacements que vos propres cartes peuvent renforcer",
     squadOwnedIntro: "Cartes que vous possédez dans My Team et qui ne sont pas dans cet effectif, dont le poste enregistré correspond à l'emplacement et dont l'OVR dépasse le joueur actuel (pour les emplacements vides, l'OVR le plus élevé).",
+    squadFitHeading: "Effectifs que cette carte renforcerait",
+    squadFitIntro: "Vos effectifs enregistrés où cette carte occupe un emplacement de son poste enregistré avec un OVR supérieur au joueur actuel.",
     positionFilterLabel: "Filtrer par poste",
     positionFilterAll: "Toutes",
     unownedOnlyLabel: "Seulement les cartes que vous n'avez pas encore (hors « possédées » de My Team)",
