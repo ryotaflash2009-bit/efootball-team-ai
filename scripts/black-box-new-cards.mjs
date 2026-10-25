@@ -220,6 +220,18 @@ async function main() {
         await go(`${BASE}/players/new`);
       } else record("新しいカード: ?position= で開くとそのポジションで絞った状態", true, "1 position or fewer");
     }
+    // カードの無いポジション・不正な値の ?position= では絞らない（すべてのまま・2026-10-25）
+    {
+      const present = (await ev(`[...document.querySelectorAll('[data-testid="new-cards-position-filter"] button')].map((b) => b.dataset.position)`)) ?? [];
+      const absent = ["GK", "CB", "LB", "RB", "DMF", "CMF", "LMF", "RMF", "AMF", "LWF", "RWF", "SS", "CF"].find((p) => !present.includes(p)) ?? "XX";
+      const all = await ev(`document.querySelectorAll('[data-testid="recently-added-grid"] li, [data-testid="provisional-cards-grid"] li').length`);
+      await go(`${BASE}/players/new?position=${absent}`);
+      await new Promise((r) => setTimeout(r, 1500));
+      const n = await ev(`document.querySelectorAll('[data-testid="recently-added-grid"] li, [data-testid="provisional-cards-grid"] li').length`);
+      const allPressed = await ev(`document.querySelector('[data-testid="new-cards-position-filter"] button[data-position="all"]')?.getAttribute("aria-pressed") ?? "none"`);
+      record("新しいカード: カードの無いポジションの ?position= では絞らない", n === all && allPressed !== "false", `${absent}: ${n}/${all} all=${allPressed}`);
+      await go(`${BASE}/players/new`);
+    }
 
     // 新しいカード: まだ持っていないカードだけ（2026-10-25）。新しいカード 1 枚を My Team の所持にして、そのカードだけ消える
     {
