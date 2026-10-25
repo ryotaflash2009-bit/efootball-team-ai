@@ -2,6 +2,7 @@
 
 import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
 import "@/lib/i18n/dictionaries/ja-ns/userCardTile";
+import "@/lib/i18n/dictionaries/ja-ns/compareAddButton";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import type { WorldPlayerListItem } from "@/lib/world/types";
@@ -78,6 +79,8 @@ export function UserCardTile({
   removeLabel?: string;
 }) {
   const [compareMsg, setCompareMsg] = useState<string | null>(null);
+  /** 追加の後に「比較を見る」へ渡す比較リスト（2026-10-25）。 */
+  const [compareIds, setCompareIds] = useState<string[]>([]);
   const t = useT();
   const { locale } = useLocale();
   const tuc = (k: keyof Dictionary["userCardTile"]) => t("userCardTile", k);
@@ -109,6 +112,7 @@ export function UserCardTile({
 
   function addToCompare() {
     const r = addCompareId(worldCardId);
+    setCompareIds(r.ids);
     setCompareMsg(
       r.result === "added"
         ? tuc("compareAddedMsg")
@@ -254,7 +258,16 @@ export function UserCardTile({
           </button>
         ) : null}
       </div>
-      {compareMsg ? <p className="px-2.5 pb-2 text-2xs text-accent" role="status">{compareMsg}</p> : null}
+      {compareMsg ? (
+        <p className="flex flex-wrap items-center gap-x-2 px-2.5 pb-2 text-2xs text-accent" role="status">
+          <span>{compareMsg}</span>
+          {compareIds.length >= 1 ? (
+            <Link href={`/compare?ids=${compareIds.join(",")}`} className="underline" data-testid="user-card-view-compare">
+              {t("compareAddButton", "viewCompareTemplate").replace("{count}", String(compareIds.length))}
+            </Link>
+          ) : null}
+        </p>
+      ) : null}
     </div>
   );
 }
