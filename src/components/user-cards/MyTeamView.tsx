@@ -201,7 +201,12 @@ export function MyTeamView() {
       </Surface>
 
       <YourBestPanel ids={ids} nameOf={(id) => resolvePlayerDisplayName(cards.get(id) ?? {}, locale, cardFallbackName(id))} />
-      <MyTeamPositionSummary />
+      <MyTeamPositionSummary
+        selectedPosition={filter.position && filter.ownership === "owned" ? filter.position : null}
+        onSelectPosition={(position) =>
+          setFilter((f) => (position ? { ...f, position, ownership: "owned" } : { ...f, position: "", ownership: "" }))
+        }
+      />
 
       <UserCardFilters
         state={filter}
