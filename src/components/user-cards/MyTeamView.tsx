@@ -2,7 +2,7 @@
 
 import "@/lib/i18n/dictionaries/ja-ns/myTeam";
 import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import Link from "next/link";
 import { useMyTeam, useFavorites } from "@/lib/user-cards/hooks";
 import { detectLegacyDataForKind } from "@/lib/local-storage-scope/legacy-detect";
@@ -57,6 +57,8 @@ export function MyTeamView() {
   const legacySummary = detectLegacyDataForKind("myTeam");
   const { cards, loading, error } = useResolvedCards(ids);
   const [filter, setFilter] = useState<UserCardFilterState>(DEFAULT_FILTER);
+  /** ポジション別のまとめから絞ったとき、一覧が画面の外なら一覧へ移る（スマホ・2026-10-26）。 */
+  const listTopRef = useRef<HTMLDivElement>(null);
   const [editRec, setEditRec] = useState<MyTeamRecord | null>(null);
   const [confirmRec, setConfirmRec] = useState<MyTeamRecord | null>(null);
   const [buildPanelRec, setBuildPanelRec] = useState<MyTeamRecord | null>(null);
@@ -203,20 +205,24 @@ export function MyTeamView() {
       <YourBestPanel ids={ids} nameOf={(id) => resolvePlayerDisplayName(cards.get(id) ?? {}, locale, cardFallbackName(id))} />
       <MyTeamPositionSummary
         selectedPosition={filter.position && filter.ownership === "owned" ? filter.position : null}
-        onSelectPosition={(position) =>
-          setFilter((f) => (position ? { ...f, position, ownership: "owned" } : { ...f, position: "", ownership: "" }))
-        }
+        onSelectPosition={(position) => {
+          setFilter((f) => (position ? { ...f, position, ownership: "owned" } : { ...f, position: "", ownership: "" }));
+          const el = listTopRef.current;
+          if (position && el && el.getBoundingClientRect().top > window.innerHeight * 0.75) el.scrollIntoView({ block: "start", behavior: "smooth" });
+        }}
       />
 
-      <UserCardFilters
-        state={filter}
-        onChange={setFilter}
-        positions={facets.positions}
-        cardTypes={facets.cardTypes}
-        showOwnership
-        total={myTeam.length}
-        shown={visible.length}
-      />
+      <div ref={listTopRef} className="scroll-mt-24">
+        <UserCardFilters
+          state={filter}
+          onChange={setFilter}
+          positions={facets.positions}
+          cardTypes={facets.cardTypes}
+          showOwnership
+          total={myTeam.length}
+          shown={visible.length}
+        />
+      </div>
 
       {visible.length === 0 ? (
         <EmptyState

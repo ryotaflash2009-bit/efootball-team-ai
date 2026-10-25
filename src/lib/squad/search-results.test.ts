@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { sortSearchResults, boosterChipsForCard } from "./search-results";
+import { sortSearchResults, boosterChipsForCard, ownedCardsForSlot } from "./search-results";
 import type { WorldPlayerListItem } from "@/lib/world/types";
 
 function card(over: Partial<WorldPlayerListItem>): WorldPlayerListItem {
@@ -80,5 +80,25 @@ describe("boosterChipsForCard（純関数）", () => {
       expect(c.level).toBeGreaterThanOrEqual(1);
     }
     expect(chips).toHaveLength(2);
+  });
+});
+
+describe("ownedCardsForSlot（純関数）", () => {
+  const owned = [
+    card({ worldCardId: "1", registeredPosition: "CB", ovrMax: 99 }),
+    card({ worldCardId: "2", registeredPosition: "GK", ovrMax: 85 }),
+    card({ worldCardId: "3", registeredPosition: "GK", ovrMax: 92 }),
+    card({ worldCardId: "4", registeredPosition: "CF", ovrMax: null, ovrBase: 70 }),
+  ];
+  it("対象ポジションを先に・その中は最大 OVR の高い順", () => {
+    expect(ownedCardsForSlot(owned, "GK").map((c) => c.worldCardId)).toEqual(["3", "2", "1", "4"]);
+  });
+  it("ポジションなし（ベンチ）は最大 OVR の高い順・ovrMax が無ければ ovrBase", () => {
+    expect(ownedCardsForSlot(owned, null).map((c) => c.worldCardId)).toEqual(["1", "3", "2", "4"]);
+  });
+  it("最大枚数・元の配列は変えない", () => {
+    expect(ownedCardsForSlot(owned, "GK", 2).map((c) => c.worldCardId)).toEqual(["3", "2"]);
+    expect(owned.map((c) => c.worldCardId)).toEqual(["1", "2", "3", "4"]);
+    expect(ownedCardsForSlot([], "GK")).toEqual([]);
   });
 });
