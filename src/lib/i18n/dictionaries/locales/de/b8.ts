@@ -651,6 +651,8 @@ const part: PartialDictionary = {
     squadSuggestEmptySlotTemplate: "{basis} {newOvr} (leerer Platz)",
     squadSuggestNone: "Keine der neuen Karten übertrifft die Spieler dieses Kaders.",
     squadSuggestSeeAll: "Alle neuen Karten ansehen",
+    squadOwnedHeading: "Plätze, die deine eigenen Karten stärken können",
+    squadOwnedIntro: "Karten aus deinem My Team, die nicht in diesem Kader sind, deren registrierte Position zum Platz passt und deren OVR den aktuellen Spieler übertrifft (bei leeren Plätzen das höchste OVR).",
     positionFilterLabel: "Nach Position filtern",
     positionFilterAll: "Alle",
     unownedOnlyLabel: "Nur Karten, die du noch nicht hast (ohne „im Besitz“ in My Team)",

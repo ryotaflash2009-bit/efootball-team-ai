@@ -651,6 +651,8 @@ const part: PartialDictionary = {
     squadSuggestEmptySlotTemplate: "{basis} {newOvr} (빈 슬롯)",
     squadSuggestNone: "현재 새 카드 중 이 스쿼드 선수를 넘는 카드는 없습니다.",
     squadSuggestSeeAll: "새 카드 모두 보기",
+    squadOwnedHeading: "보유 카드로 강화할 수 있는 슬롯",
+    squadOwnedIntro: "My Team에서 보유한 카드 중 이 스쿼드에 없는 카드로, 슬롯 포지션과 등록 포지션이 같고 현재 선수보다 OVR이 높은 카드입니다(빈 슬롯은 가장 높은 카드).",
     positionFilterLabel: "포지션으로 필터",
     positionFilterAll: "전체",
     unownedOnlyLabel: "아직 보유하지 않은 카드만 (My Team의 '보유' 제외)",

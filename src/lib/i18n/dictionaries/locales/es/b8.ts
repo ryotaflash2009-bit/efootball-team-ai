@@ -651,6 +651,8 @@ const part: PartialDictionary = {
     squadSuggestEmptySlotTemplate: "{basis} {newOvr} (hueco vacío)",
     squadSuggestNone: "Ninguna de las cartas nuevas supera a los jugadores de esta plantilla.",
     squadSuggestSeeAll: "Ver todas las cartas nuevas",
+    squadOwnedHeading: "Huecos que tus propias cartas pueden reforzar",
+    squadOwnedIntro: "Cartas que posees en My Team y que no están en esta plantilla, cuya posición registrada coincide con el hueco y cuyo OVR supera al jugador actual (en huecos vacíos, el OVR más alto).",
     positionFilterLabel: "Filtrar por posición",
     positionFilterAll: "Todas",
     unownedOnlyLabel: "Solo cartas que aún no tienes (excluye las \"tuyas\" de My Team)",

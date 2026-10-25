@@ -5298,6 +5298,8 @@ export interface Dictionary {
     squadSuggestEmptySlotTemplate: string;
     squadSuggestNone: string;
     squadSuggestSeeAll: string;
+    squadOwnedHeading: string;
+    squadOwnedIntro: string;
     positionFilterLabel: string;
     positionFilterAll: string;
     unownedOnlyLabel: string;

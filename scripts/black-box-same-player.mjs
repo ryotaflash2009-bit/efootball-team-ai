@@ -183,6 +183,13 @@ async function main() {
       const a = rows?.find((r) => r.id === RC_A);
       const o = rows?.find((r) => r.id === OTHER);
       record("[スカッドの選手検索] 入力前に所持カードを出す（置いたカードは押せない・所持の印）", Array.isArray(rows) && rows.length === 2 && !!a && a.disabled && !!o && !o.disabled && rows.every((r) => r.owned), JSON.stringify(rows));
+      // 所持カードで強くできる枠（2026-10-26）: スカッドにいない所持のカード（OTHER）が同じ登録ポジションの空いている枠に出る・スカッドにいる RC_A は出ない
+      {
+        const otherPos = (await (await fetch(`${BASE}/api/world/players/${OTHER}`)).json().catch(() => null))?.player?.registeredPosition ?? null;
+        await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="squad-owned-upgrades"]')`), { timeoutMs: 15000, intervalMs: 300 }).catch(() => {});
+        const up = await evalJson(client, `[...document.querySelectorAll('[data-testid="squad-owned-upgrades-list"] > li')].map((li) => ({ id: li.dataset.worldCardId, pos: li.querySelector("span")?.textContent ?? "" }))`);
+        record("[所持カードで強くできる枠] スカッドにいない所持のカードを同じポジションの空いている枠に出す（スカッドにいるカードは出さない）", Array.isArray(up) && up.some((r) => r.id === OTHER && r.pos === otherPos) && !up.some((r) => r.id === RC_A), `${otherPos} ${JSON.stringify(up)}`);
+      }
       // 比較の「選手を追加」も同じ（比較に入っているカードは押せない）
       await go(client, `${BASE}/compare?ids=${RC_A}`);
       await waitForCondition(async () => evalJson(client, `!![...document.querySelectorAll("button")].find((b) => /人目へ選手を追加/.test(b.textContent))`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
