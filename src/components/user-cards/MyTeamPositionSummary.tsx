@@ -13,8 +13,15 @@ import { positionSummary } from "@/lib/user-cards/position-summary";
 /**
  * My Team のポジション別のまとめ（2026-10-25）。所持のカードが無ければ何も出さない。
  * 持っていないポジションは選手の一覧（そのポジション・最大 OVR の高い順）へ、強化できる新しいカードは新しいカードの画面へ。
+ * onSelectPosition を渡すと、枚数を押して下の一覧をそのポジションの「所持」に絞る（もう一度押すと解除・2026-10-25）。
  */
-export function MyTeamPositionSummary() {
+export function MyTeamPositionSummary({
+  selectedPosition,
+  onSelectPosition,
+}: {
+  selectedPosition?: string | null;
+  onSelectPosition?: (position: string | null) => void;
+} = {}) {
   const t = useT();
   const { locale } = useLocale();
   const tm = (k: Parameters<typeof t<"myTeam">>[1]) => t("myTeam", k);
@@ -43,7 +50,19 @@ export function MyTeamPositionSummary() {
           <li key={r.position} className="flex min-w-0 flex-col gap-0.5 rounded border border-border/60 px-2 py-1.5 text-xs" data-position={r.position} data-count={r.count}>
             <span className="flex items-baseline gap-2">
               <span className="font-bold text-text-dim">{r.position}</span>
-              <span className="text-text-dim">{fillMessage(tm("positionCountTemplate"), { count: String(r.count) })}</span>
+              {onSelectPosition && r.count > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => onSelectPosition(selectedPosition === r.position ? null : r.position)}
+                  aria-pressed={selectedPosition === r.position}
+                  className={`rounded px-1 underline-offset-2 hover:underline ${selectedPosition === r.position ? "bg-accent-soft text-accent" : "text-accent"}`}
+                  data-testid="position-summary-filter"
+                >
+                  {fillMessage(tm("positionCountTemplate"), { count: String(r.count) })}
+                </button>
+              ) : (
+                <span className="text-text-dim">{fillMessage(tm("positionCountTemplate"), { count: String(r.count) })}</span>
+              )}
             </span>
             {r.best ? (
               <span className="flex min-w-0 items-baseline gap-1.5">
