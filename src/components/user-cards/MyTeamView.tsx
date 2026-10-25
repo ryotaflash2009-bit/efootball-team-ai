@@ -159,7 +159,18 @@ export function MyTeamView() {
 
   return (
     <div className="flex flex-col gap-4">
-      <PageHeader title={tmt("pageTitle")} icon="shirt" description={tmt("pageDescription")} />
+      <PageHeader
+        title={tmt("pageTitle")}
+        icon="shirt"
+        description={tmt("pageDescription")}
+        actions={
+          // 登録したカードから AI ベスト11 へ（2026-10-26）
+          <Link href="/best-xi" className={buttonClasses("secondary", "sm")} data-testid="my-team-best-xi-link">
+            <Icon name="trophy" size={14} />
+            {t("nav", "bestXi")}
+          </Link>
+        }
+      />
       <LocalStorageNotice kind="my-team" />
       {legacySummary.hasData ? (
         <Surface tone="outline" padding="sm" className="flex flex-col gap-1.5">
