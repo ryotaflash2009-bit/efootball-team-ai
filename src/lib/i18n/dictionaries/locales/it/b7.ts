@@ -159,6 +159,7 @@ const part: PartialDictionary = {
     heading: "AI Best XI",
     description: "Seleziona un undici titolare tra i giocatori e le build che hai salvato, usando regole deterministiche.",
     disclaimerNotAi: "AI Best XI usa i tuoi dati salvati e regole di selezione deterministiche. Non usa l’IA generativa e non invia mai dati a un servizio di IA esterno.",
+    aboutMoreSummary: "Come sceglie e note (dettagli)",
     modeLabel: "Ottimizzazione complessiva / di tutta la squadra",
     modeDescription: "L’ottimizzazione complessiva / di tutta la squadra confronta insieme tutti gli 11 posti, così che una singola valutazione altissima non nasconda altri posti deboli, e seleziona un undici titolare in 4-3-3 tra i candidati salvati (non viene usato alcun \"punteggio IA\" a somma ponderata).",
     formationNotice: "Scegli un modulo per la selezione (predefinito 4-3-3).",

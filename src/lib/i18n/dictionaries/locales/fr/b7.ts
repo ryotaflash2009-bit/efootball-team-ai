@@ -159,6 +159,7 @@ const part: PartialDictionary = {
     heading: "AI Best XI",
     description: "Sélectionne un onze de départ parmi vos joueurs et builds enregistrés, selon des règles déterministes.",
     disclaimerNotAi: "AI Best XI utilise vos données enregistrées et des règles de sélection déterministes. Il n’utilise pas d’IA générative et n’envoie jamais de données à un service d’IA externe.",
+    aboutMoreSummary: "Méthode et remarques (détails)",
     modeLabel: "Optimisation globale de l’équipe",
     modeDescription: "L’optimisation globale de l’équipe compare les 11 postes ensemble, pour qu’une note très élevée ne masque pas d’autres postes faibles, et sélectionne un onze de départ en 4-3-3 parmi vos candidats enregistrés (aucun « score IA » à somme pondérée n’est utilisé).",
     formationNotice: "Choisissez une formation pour la sélection (par défaut 4-3-3).",

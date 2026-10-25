@@ -205,12 +205,16 @@ export function BestXiView() {
       />
 
       <div className="rounded-card border border-border bg-surface p-3 text-xs text-text-dim sm:p-4">
+        {/* スマホで長すぎたため、要点（生成AI不使用・フォーメーション）だけ出し、残りは「詳しく」に（2026-10-25 画面の整理） */}
         <p>{tb("disclaimerNotAi")}</p>
-        <p className="mt-1">{tb("modeDescription")}</p>
         <p className="mt-1 font-semibold text-text">{tb("formationNotice")}</p>
-        <p className="mt-1">{tb("withinYourCandidatesText")}</p>
-        <p className="mt-1">{tb("notAWinPredictionText")}</p>
-        <p className="mt-1">{tb("resultsNotSavedText")}</p>
+        <details className="mt-2" data-testid="best-xi-about-more">
+          <summary className="cursor-pointer font-semibold text-text-dim">{tb("aboutMoreSummary")}</summary>
+          <p className="mt-1">{tb("modeDescription")}</p>
+          <p className="mt-1">{tb("withinYourCandidatesText")}</p>
+          <p className="mt-1">{tb("notAWinPredictionText")}</p>
+          <p className="mt-1">{tb("resultsNotSavedText")}</p>
+        </details>
         <details className="mt-2">
           <summary className="cursor-pointer font-semibold text-text-dim">{tb("criteriaHeading")}</summary>
           <ol className="mt-1 list-decimal ps-4">

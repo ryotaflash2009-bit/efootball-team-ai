@@ -159,6 +159,7 @@ const part: PartialDictionary = {
     heading: "AI Best XI",
     description: "저장된 선수와 빌드 중에서 결정론적 규칙으로 선발 11인을 선정합니다.",
     disclaimerNotAi: "AI Best XI는 저장된 데이터와 결정론적 선정 규칙을 사용합니다. 생성형 AI를 사용하지 않으며 외부 AI 서비스로 데이터를 보내지 않습니다.",
+    aboutMoreSummary: "선정 방법과 주의 (자세히)",
     modeLabel: "종합 / 팀 전체 최적화",
     modeDescription: "종합 / 팀 전체 최적화는 11개 자리를 함께 비교하므로, 한 명의 매우 높은 평가치가 다른 약한 자리를 가리지 않습니다. 저장된 후보 중에서 4-3-3 선발 11인을 선정합니다(가중 합계 방식의 \"AI 점수\"는 사용하지 않습니다).",
     formationNotice: "포메이션을 골라 선발합니다 (기본값 4-3-3).",
