@@ -168,6 +168,23 @@ async function main() {
       const lb = saved?.slots?.find((x) => x.slotId === "lb")?.worldCardId;
       record("[入れ替え] 入れ替えると、元のカードの位置（LB）に新しいカード・控えには増えない・同じ選手の重複なし", lb === RC_B && (saved?.substitutes?.length ?? -1) === 0, `lb=${lb} subs=${saved?.substitutes?.length}`);
     }
+    // スカッドの選手検索: 入力前に My Team の所持カードを出す（2026-10-26）。置いたカードは押せない・所持の印つき
+    {
+      const KEY = "efootball-team-ai:local:guest:my-team:v1";
+      const now = new Date().toISOString();
+      const recOf = (id) => ({ localRecordId: `mt_${id}`, teamCardId: `tc_${id}`, worldCardId: id, ownershipStatus: "owned", usageStatus: "unused", selectedBuildId: null, favoriteBuildId: null, note: "", tags: [], addedAt: now, updatedAt: now, deletedAt: null, source: "local", syncStatus: "local_only" });
+      await evalJson(client, `localStorage.setItem(${JSON.stringify(KEY)}, ${JSON.stringify(JSON.stringify({ storageVersion: "my-team-storage/2026-08-30.v1", updatedAt: now, records: [recOf(RC_A), recOf(OTHER)] }))})`);
+      await client.send("Runtime.evaluate", { expression: `localStorage.setItem(${JSON.stringify(SQUADS_KEY)}, ${JSON.stringify(JSON.stringify([squad("sq_bbownedpick1", RC_A, null)]))})` });
+      await go(client, `${BASE}/squads/sq_bbownedpick1`);
+      await waitForCondition(async () => evalJson(client, `!![...document.querySelectorAll("button")].find((b) => /ベンチ選手を追加/.test(b.textContent))`), { timeoutMs: 15000, intervalMs: 250 }).catch(() => {});
+      await evalJson(client, `[...document.querySelectorAll("button")].find((b) => /ベンチ選手を追加/.test(b.textContent))?.click()`);
+      await waitForCondition(async () => evalJson(client, `document.querySelectorAll('[data-testid="squad-search-owned"] li').length >= 2`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+      const rows = await evalJson(client, `[...document.querySelectorAll('[data-testid="squad-search-owned"] li')].map((li) => ({ id: li.querySelector('a[href^="/players/world/"]')?.getAttribute("href").split("/").pop() ?? null, disabled: !!li.querySelector("button")?.disabled, owned: !!li.querySelector('[data-testid="search-card-owned"]') }))`);
+      const a = rows?.find((r) => r.id === RC_A);
+      const o = rows?.find((r) => r.id === OTHER);
+      record("[スカッドの選手検索] 入力前に所持カードを出す（置いたカードは押せない・所持の印）", Array.isArray(rows) && rows.length === 2 && !!a && a.disabled && !!o && !o.disabled && rows.every((r) => r.owned), JSON.stringify(rows));
+      await evalJson(client, `localStorage.removeItem(${JSON.stringify(KEY)})`);
+    }
     // 先発の所属の内訳（2026-10-11）: LB と RB に同じ国籍の 2 枚 → 「国籍」に「<国籍> ×2」・選手一覧の絞り込みへのリンク
     {
       const d = await (await fetch(`${BASE}/api/world/players/${RC_A}`)).json().catch(() => null);
