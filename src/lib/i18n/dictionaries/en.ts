@@ -962,6 +962,7 @@ const en: Dictionary = {
     noManagerLabel: "No manager",
     updatedAtTemplate: "Updated {date}",
     outdatedRulesBadge: "Saved under outdated rules",
+    ownedUpgradesTemplate: "Your own cards can strengthen {count} slot(s)",
     addThisCardLink: "Add this card",
     openLink: "Open",
     compareLink: "Compare",

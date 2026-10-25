@@ -16,6 +16,7 @@ import {
   isSquadStorageAvailable,
   getActiveSquadsStorageKey,
 } from "@/lib/squad/squad-storage";
+import { useOwnedUpgradeCounts } from "./useOwnedUpgradeCounts";
 import { saveTemplateFromSquad } from "@/lib/squad/templates";
 import { findSquadUsageByWorldCardId } from "@/lib/squad/usage";
 import { FORMATIONS, getFormation } from "@/lib/squad/formations";
@@ -139,6 +140,10 @@ export function SquadListBoard({
     const hits = new Set(findSquadUsageByWorldCardId(listSquads(), v).map((u) => u.squadId));
     setUsageHits(hits);
   }, [playerQuery, entries]);
+
+  // 所持カードで強くできる枠の数（2026-10-26）。一覧（entries）を読み直したときに保存データの全体も読み直す
+  const fullSquads = useMemo(() => (entries ? listSquads() : null), [entries]);
+  const ownedUpgrades = useOwnedUpgradeCounts(fullSquads);
 
   const shown = useMemo(() => {
     let list = entries ?? [];
@@ -417,6 +422,13 @@ export function SquadListBoard({
                     <p className="mt-0.5 text-2xs text-text-muted">
                       {fillSl(tsl("updatedAtTemplate"), { date: safeFormatDateTime(e.updatedAt, displayLocale) })}
                     </p>
+                    {ownedUpgrades.get(e.squadId) ? (
+                      <Link href={`/squads/${e.squadId}`} className="mt-0.5 w-fit" data-testid="squad-list-owned-upgrades">
+                        <Badge tone="success" size="xs">
+                          {fillSl(tsl("ownedUpgradesTemplate"), { count: String(ownedUpgrades.get(e.squadId)) })}
+                        </Badge>
+                      </Link>
+                    ) : null}
                     {e.rulesOutdated ? (
                       <span className="mt-0.5">
                         <Badge tone="warning" size="xs">{tsl("outdatedRulesBadge")}</Badge>

@@ -211,6 +211,11 @@ async function main() {
       const sq = squad("sq_bbownedswap1", RC_A, null);
       sq.slots = sq.slots.map((x) => (x.slotId === "rb" ? { ...x, worldCardId: weak } : x));
       await client.send("Runtime.evaluate", { expression: `localStorage.setItem(${JSON.stringify(SQUADS_KEY)}, ${JSON.stringify(JSON.stringify([sq]))})` });
+      // スカッドの一覧: 「所持カードで N 枠強くできます」の印（2026-10-26）
+      await go(client, `${BASE}/squads`);
+      await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="squad-list-owned-upgrades"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+      const listBadge = await evalJson(client, `(() => { const a = document.querySelector('[data-testid="squad-list-owned-upgrades"]'); return a ? { href: a.getAttribute("href"), text: a.textContent.trim() } : null; })()`);
+      record("[スカッドの一覧] 所持カードで強くできる枠の数の印（スカッドへのリンク）", listBadge?.href === "/squads/sq_bbownedswap1" && /所持カードで [1-9]\d* 枠強くできます/.test(listBadge?.text ?? ""), JSON.stringify(listBadge));
       await go(client, `${BASE}/squads/sq_bbownedswap1`);
       const btn = `document.querySelector('[data-testid="squad-owned-upgrades-list"] > li[data-world-card-id="${OTHER}"] [data-testid="squad-owned-upgrade-apply"]')`;
       await waitForCondition(async () => evalJson(client, `!!${btn}`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});

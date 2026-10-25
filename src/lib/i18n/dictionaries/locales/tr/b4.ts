@@ -344,6 +344,7 @@ const part: PartialDictionary = {
     noManagerLabel: "Teknik direktörsüz",
     updatedAtTemplate: "Güncelleme: {date}",
     outdatedRulesBadge: "Eski kurallarla kaydedildi",
+    ownedUpgradesTemplate: "Kendi kartların {count} yuvayı güçlendirebilir",
     addThisCardLink: "Bu kartı ekle",
     openLink: "Aç",
     compareLink: "Karşılaştır",

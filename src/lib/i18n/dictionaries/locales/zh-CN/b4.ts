@@ -344,6 +344,7 @@ const part: PartialDictionary = {
     noManagerLabel: "无主教练",
     updatedAtTemplate: "更新于 {date}",
     outdatedRulesBadge: "按旧规则保存",
+    ownedUpgradesTemplate: "已拥有的卡可加强 {count} 个位置",
     addThisCardLink: "添加此球员卡",
     openLink: "打开",
     compareLink: "对比",

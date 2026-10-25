@@ -940,6 +940,7 @@ export interface Dictionary {
     noManagerLabel: string;
     updatedAtTemplate: string;
     outdatedRulesBadge: string;
+    ownedUpgradesTemplate: string;
     addThisCardLink: string;
     openLink: string;
     compareLink: string;
