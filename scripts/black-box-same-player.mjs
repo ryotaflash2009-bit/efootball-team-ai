@@ -178,8 +178,8 @@ async function main() {
       await go(client, `${BASE}/squads/sq_bbownedpick1`);
       await waitForCondition(async () => evalJson(client, `!![...document.querySelectorAll("button")].find((b) => /ベンチ選手を追加/.test(b.textContent))`), { timeoutMs: 15000, intervalMs: 250 }).catch(() => {});
       await evalJson(client, `[...document.querySelectorAll("button")].find((b) => /ベンチ選手を追加/.test(b.textContent))?.click()`);
-      await waitForCondition(async () => evalJson(client, `document.querySelectorAll('[data-testid="squad-search-owned"] li').length >= 2`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
-      const rows = await evalJson(client, `[...document.querySelectorAll('[data-testid="squad-search-owned"] li')].map((li) => ({ id: li.querySelector('a[href^="/players/world/"]')?.getAttribute("href").split("/").pop() ?? null, disabled: !!li.querySelector("button")?.disabled, owned: !!li.querySelector('[data-testid="search-card-owned"]') }))`);
+      await waitForCondition(async () => evalJson(client, `document.querySelectorAll('[data-testid="squad-search-owned"] > ul > li').length >= 2`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+      const rows = await evalJson(client, `[...document.querySelectorAll('[data-testid="squad-search-owned"] > ul > li')].map((li) => ({ id: li.querySelector('a[href^="/players/world/"]')?.getAttribute("href").split("/").pop() ?? null, disabled: !!li.querySelector("button")?.disabled, owned: !!li.querySelector('[data-testid="search-card-owned"]') }))`);
       const a = rows?.find((r) => r.id === RC_A);
       const o = rows?.find((r) => r.id === OTHER);
       record("[スカッドの選手検索] 入力前に所持カードを出す（置いたカードは押せない・所持の印）", Array.isArray(rows) && rows.length === 2 && !!a && a.disabled && !!o && !o.disabled && rows.every((r) => r.owned), JSON.stringify(rows));
