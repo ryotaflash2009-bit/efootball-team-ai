@@ -651,6 +651,8 @@ const part: PartialDictionary = {
     squadSuggestEmptySlotTemplate: "{basis} {newOvr} (boş yuva)",
     squadSuggestNone: "Yeni kartların hiçbiri bu kadrodaki oyuncuları geçmiyor.",
     squadSuggestSeeAll: "Tüm yeni kartları gör",
+    squadOwnedHeading: "Kendi kartlarınla güçlenebilecek yuvalar",
+    squadOwnedIntro: "My Team'de sahip olduğun ve bu kadroda olmayan, kayıtlı mevkisi yuvayla aynı olan ve OVR'si mevcut oyuncudan yüksek kartlar (boş yuvalarda en yüksek OVR).",
     positionFilterLabel: "Mevkiye göre filtrele",
     positionFilterAll: "Tümü",
     unownedOnlyLabel: "Yalnızca henüz sahip olmadığın kartlar (My Team'de \"sahip\" olanlar hariç)",

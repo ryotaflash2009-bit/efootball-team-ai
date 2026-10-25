@@ -43,6 +43,8 @@ const provisionalCards: Dictionary["provisionalCards"] = {
   squadSuggestEmptySlotTemplate: "{basis} {newOvr}（空いている枠）",
   squadSuggestNone: "いまの新しいカードには、このスカッドの選手を上回るものはありません。",
   squadSuggestSeeAll: "新しいカードをすべて見る",
+  squadOwnedHeading: "所持カードで強くできる枠",
+  squadOwnedIntro: "My Team で「所持」のカードのうち、このスカッドに入っていないもので、登録ポジションが枠と同じで今の選手より OVR が高いものです（空いている枠は最も高いもの）。",
   positionFilterLabel: "ポジションで絞る",
   positionFilterAll: "すべて",
   unownedOnlyLabel: "まだ持っていないカードだけ（My Team の「所持」を除く）",

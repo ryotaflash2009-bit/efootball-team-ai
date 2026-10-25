@@ -5359,6 +5359,8 @@ const en: Dictionary = {
     squadSuggestEmptySlotTemplate: "{basis} {newOvr} (empty slot)",
     squadSuggestNone: "None of the current new cards beats the players in this squad.",
     squadSuggestSeeAll: "See all new cards",
+    squadOwnedHeading: "Slots your own cards can strengthen",
+    squadOwnedIntro: "Cards you own in My Team that are not in this squad, whose registered position matches the slot and whose OVR beats the current player (for empty slots, the highest OVR).",
     positionFilterLabel: "Filter by position",
     positionFilterAll: "All",
     unownedOnlyLabel: "Only cards you don't own yet (excludes My Team \"owned\")",

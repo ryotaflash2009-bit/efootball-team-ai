@@ -651,6 +651,8 @@ const part: PartialDictionary = {
     squadSuggestEmptySlotTemplate: "{basis} {newOvr}（空位）",
     squadSuggestNone: "目前的新卡中，没有超过这个阵容球员的卡。",
     squadSuggestSeeAll: "查看全部新卡",
+    squadOwnedHeading: "可用已拥有的卡加强的位置",
+    squadOwnedIntro: "My Team 中已拥有但不在此阵容中的卡，登记位置与该位置相同且 OVR 高于当前球员（空位则为 OVR 最高的卡）。",
     positionFilterLabel: "按位置筛选",
     positionFilterAll: "全部",
     unownedOnlyLabel: "只看还没有的卡（不含 My Team 中的“拥有”）",

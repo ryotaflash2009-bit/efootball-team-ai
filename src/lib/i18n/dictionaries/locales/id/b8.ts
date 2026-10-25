@@ -651,6 +651,8 @@ const part: PartialDictionary = {
     squadSuggestEmptySlotTemplate: "{basis} {newOvr} (slot kosong)",
     squadSuggestNone: "Tidak ada kartu baru yang mengalahkan pemain di skuad ini.",
     squadSuggestSeeAll: "Lihat semua kartu baru",
+    squadOwnedHeading: "Slot yang bisa diperkuat kartu milikmu",
+    squadOwnedIntro: "Kartu milikmu di My Team yang tidak ada di skuad ini, yang posisi terdaftarnya sama dengan slot dan OVR-nya lebih tinggi dari pemain sekarang (slot kosong: OVR tertinggi).",
     positionFilterLabel: "Saring berdasarkan posisi",
     positionFilterAll: "Semua",
     unownedOnlyLabel: "Hanya kartu yang belum kamu miliki (tanpa \"dimiliki\" di My Team)",

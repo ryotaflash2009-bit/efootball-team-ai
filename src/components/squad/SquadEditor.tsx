@@ -19,6 +19,7 @@ import { worldDetailToSquadDisplay } from "@/lib/squad/from-world";
 import { squadAffiliationSummary } from "@/lib/squad/affiliation-summary";
 import { SquadAffiliationPanel } from "@/components/squad/SquadAffiliationPanel";
 import { SquadNewCardsPanel } from "@/components/squad/SquadNewCardsPanel";
+import { SquadOwnedUpgradesPanel } from "@/components/squad/SquadOwnedUpgradesPanel";
 import { buildSquad } from "@/lib/squad/build-squad";
 import { diagnoseSquad, buildSquadDiagnosisInput } from "@/lib/squad/squad-diagnosis";
 import { buildTacticalPlacementInputs } from "@/lib/squad/squad-tactical-review";
@@ -2130,6 +2131,7 @@ export function SquadEditor({
             )}
           />
         ) : null}
+        {squad ? <SquadOwnedUpgradesPanel slots={newCardSlots} inSquad={newCardInSquad} /> : null}
         {squad ? <SquadNewCardsPanel slots={newCardSlots} inSquad={newCardInSquad} /> : null}
         {squad ? <GamePlanPanel squad={squad} starterOptions={starterOptions} benchOptions={benchOptions} /> : null}
       </div>
