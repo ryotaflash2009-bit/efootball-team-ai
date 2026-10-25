@@ -191,6 +191,8 @@ async function main() {
     await go(`${BASE}/players/new`);
     const provLabel = await ev(`document.querySelector('[data-testid="provisional-cards-grid"] li')?.innerText.replace(/\\s+/g, " ") ?? null`);
     record("暫定のカードの OVR は BASE と表示（最大 OVR が無いとき）", provLabel == null || /BASE/.test(provLabel), (provLabel ?? "no provisional").slice(0, 60));
+    const provOvrs = (await ev(`[...document.querySelectorAll('[data-testid="provisional-cards-grid"] li')].map((li) => Number(li.querySelector("span.text-lg")?.textContent))`)) ?? [];
+    record("暫定のカードは OVR の高い順", provOvrs.every((v, k) => k === 0 || provOvrs[k - 1] >= v), provOvrs.slice(0, 8).join(","));
 
     // 新しいカード: ポジションで絞る（2026-10-25）。押したポジションのカードだけになり、「すべて」で戻る
     if (await has('[data-testid="new-cards-position-filter"]')) {
