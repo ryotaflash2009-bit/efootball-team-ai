@@ -2,6 +2,7 @@
 
 import "@/lib/i18n/dictionaries/ja-ns/comparePlayerIdentityCard";
 import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
+import "@/lib/i18n/dictionaries/ja-ns/worldPlayerCard";
 import Link from "next/link";
 import type { ComparisonPlayerInput } from "@/lib/comparison/types";
 import { resolveCardImageSources } from "@/lib/world/image";
@@ -12,6 +13,7 @@ import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { fillMessage } from "@/lib/i18n/message-format";
+import { useMyTeam } from "@/lib/user-cards/hooks";
 
 /**
  * 比較列の上部に出すコンパクトなカード識別表示。
@@ -47,6 +49,10 @@ export function ComparePlayerIdentityCard({
   const pom = (player.selectedConditionalBoosters ?? []).find((c) => c.selection !== "none") ?? null;
   const teamLine = [d.team, d.nationality].filter((v): v is string => !!v).join(" · ");
   const compact = columnCount >= 3;
+  // My Team で「所持」のカードに印（2026-10-25）。
+  const { getByWorldId } = useMyTeam();
+  const ownedRec = getByWorldId(d.worldCardId);
+  const owned = !!ownedRec && ownedRec.ownershipStatus === "owned" && !ownedRec.deletedAt;
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -56,6 +62,7 @@ export function ComparePlayerIdentityCard({
 
       <div className="text-center">
         <p className="truncate text-sm font-semibold" title={name}>
+          {owned ? <span className="me-1 rounded bg-success/90 px-1 text-[9px] font-bold text-black" data-testid="compare-owned">{t("worldPlayerCard", "ownedBadge")}</span> : null}
           {name}
         </p>
         <p className="truncate text-[11px] text-text-dim" title={d.nameEn ?? ""}>

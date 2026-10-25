@@ -1,6 +1,7 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/worldPlayerSearchCard";
+import "@/lib/i18n/dictionaries/ja-ns/worldPlayerCard";
 import Link from "next/link";
 import type { WorldPlayerListItem } from "@/lib/world/types";
 import { buildPlayerSearchCardView } from "@/lib/world/search-card";
@@ -10,6 +11,7 @@ import { Icon } from "@/components/ui/Icon";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { fillMessage } from "@/lib/i18n/message-format";
+import { useMyTeam } from "@/lib/user-cards/hooks";
 
 /**
  * 選手検索結果の 1 カード（スカッド検索 / 選手比較検索で共通の表示部分）。
@@ -52,6 +54,10 @@ export function WorldPlayerSearchCard({
   const fillWc = (s: string, vars: Record<string, string>) =>
     fillMessage(s, vars);
   const v = buildPlayerSearchCardView(player, locale);
+  // My Team で「所持」のカードに印（スカッドの選手検索・比較の追加で、持っているカードを選びやすく・2026-10-26）。
+  const { getByWorldId } = useMyTeam();
+  const ownedRec = getByWorldId(player.worldCardId);
+  const owned = !!ownedRec && ownedRec.ownershipStatus === "owned" && !ownedRec.deletedAt;
 
   return (
     <li>
@@ -89,6 +95,11 @@ export function WorldPlayerSearchCard({
           <p className="truncate text-2xs text-text-dim">{v.nameEn || twc("noEnglishName")}</p>
 
           <div className="mt-1 flex flex-wrap items-center gap-1">
+            {owned ? (
+              <span className="rounded bg-success/90 px-1 text-[9px] font-bold text-black" data-testid="search-card-owned">
+                {t("worldPlayerCard", "ownedBadge")}
+              </span>
+            ) : null}
             {v.registeredPosition ? <Badge tone="neutral" size="xs">{v.registeredPosition}</Badge> : null}
             {v.cardType ? <Badge tone="outline" size="xs">{v.cardType}</Badge> : null}
             <span className="text-2xs text-text-muted">{fillWc(twc("maxOvrLabel"), { value: String(v.ovr ?? "—") })}</span>
