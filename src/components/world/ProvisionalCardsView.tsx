@@ -59,8 +59,9 @@ export function ProvisionalCardsView({
   // ISR のページのため useSearchParams は使わず、描画のあとに URL を読む（サーバーの HTML と食い違わない）。
   useEffect(() => {
     const p = new URLSearchParams(window.location.search).get("position");
-    if (p && POSITION_ORDER.includes(p)) setPosition(p);
-  }, []);
+    // カードの無いポジションは絞らない（絞ったまま「すべて」に戻れなくなるのを防ぐ）
+    if (p && POSITION_ORDER.includes(p) && [...recent, ...cards].some((c) => c.registeredPosition === p)) setPosition(p);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   // まだ持っていないカードだけ（My Team の「所持」を除く・2026-10-25）。所持のカードが無ければボタンを出さない。
   const [unownedOnly, setUnownedOnly] = useState(false);
   const { ownedIds } = useOwnedCards();
@@ -154,7 +155,7 @@ export function ProvisionalCardsView({
         </label>
       ) : null}
 
-      {positionCounts.length > 1 ? (
+      {positionCounts.length > 1 || position != null ? (
         <div className="flex flex-wrap gap-1.5" role="group" aria-label={tp("positionFilterLabel")} data-testid="new-cards-position-filter">
           {[{ position: null as string | null, count: recent.length + cards.length }, ...positionCounts].map((o) => {
             const active = o.position === position;
