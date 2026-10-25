@@ -1,6 +1,6 @@
 # Phase B.5 ブラックボックステスト結果（SQLite 導入後の既存UI）
 
-実行日時: 2026-10-10T21:55:53.544Z
+実行日時: 2026-10-25T15:33:27.232Z
 対象: http://localhost:3000（dev サーバー）
 外部アクセス: 0 回（localhost のみ。選手画像プロキシの有効IDは叩かない）
 
@@ -19,6 +19,7 @@
 | PASS | Messi 詳細が表示される | HTTP 200 |
 | PASS | Messi 詳細に画像要素がある |  |
 | PASS | Messi 詳細にデータ来歴がある |  |
+| PASS | 旧形式の詳細から World のカードの画面へのリンク（「今後実装予定」は出さない） |  |
 | PASS | Cannavaro 詳細が表示される | HTTP 200 |
 | PASS | 一覧から詳細へ移動できる（href=/players/{id} または /players/world/{id}） |  |
 | PASS | 不正IDの詳細ページでクラッシュしない | HTTP 200 |
@@ -27,7 +28,7 @@
 | PASS | パストラバーサル形の画像IDは安全に拒否される（3xx/400/404・500ではない） | HTTP 308 |
 | PASS | スラッシュ入り画像IDは安全に拒否される（3xx/400/404） | HTTP 400 |
 | PASS | 存在しない数字IDのプレースホルダー応答 | 前フェーズで検証済み（/api/player-image/99999999999999 → 200 image/svg+xml）。外部アクセス回避のため本フェーズでは再テストせず |
-| PASS | SQLite 導入後も既存UIソースは未編集 | Phase B.5 の編集対象に UI ファイルは含まれない。サイズ: src/app/page.tsx:4651B / src/app/players/page.tsx:5409B / src/app/players/[id]/page.tsx:783B / src/components/PlayerCard.tsx:1559B / src/components/PlayerImage.tsx:1434B / src/components/PlayerSilhouette.tsx:1119B / src/lib/players.ts:3927B / src/lib/player-image.ts:6350B / src/app/api/player-image/[id]/route.ts:2571B / next.config.mjs:600B |
+| PASS | SQLite 導入後も既存UIソースは未編集 | Phase B.5 の編集対象に UI ファイルは含まれない。サイズ: src/app/page.tsx:6149B / src/app/players/page.tsx:6023B / src/app/players/[id]/page.tsx:783B / src/components/PlayerCard.tsx:1559B / src/components/PlayerImage.tsx:1434B / src/components/PlayerSilhouette.tsx:1119B / src/lib/players.ts:3927B / src/lib/player-image.ts:6350B / src/app/api/player-image/[id]/route.ts:2571B / next.config.mjs:600B |
 | PASS | UI のデータ参照先は players.sample.json のまま（未切替） | src/lib/players.ts 未編集 / SQLite は scripts と data のみ |
 
 ## 判定: 全項目 PASS

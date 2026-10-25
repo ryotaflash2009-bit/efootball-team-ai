@@ -83,7 +83,7 @@ async function main() {
 
     const pages = [
       "/", "/players", "/players?position=CF", `/players/world/${ids[0]}`, `/players/world/${ids[0]}?tab=progression`, `/players/world/${ids[3]}?tab=stats`, `/players/world/${ids[5]}`,
-      "/managers", ...(managerId ? [`/managers/${managerId}`] : []), "/compare", `/compare?ids=${ids[0]},${ids[1]}`, "/squads", "/squads/templates", "/best-xi", "/boosters",
+      "/managers", ...(managerId ? [`/managers/${managerId}`] : []), "/compare", `/compare?ids=${ids[0]},${ids[1]}`, "/squads", "/squads/templates", "/best-xi", "/boosters", "/tier", "/tier/CF", "/players/new",
       "/my-team", "/my-builds", "/favorites", "/build-inventory", "/diagnosis-history", "/data-management", "/about", "/support",
     ];
     for (const locale of ["ja", "en"]) {

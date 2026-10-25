@@ -1,6 +1,6 @@
 # Supabase RLS 分離検証(PoC) ブラックボックステスト結果
 
-実行日時: 2026-10-11T10:43:11.256Z
+実行日時: 2026-10-25T15:16:19.742Z
 対象: http://localhost:3000（Production Build上の隔離ヘッドレスChrome確認。ブラウザー側Supabaseクライアント(auth・DBとも)はテストダブルへ差し替え、実Supabaseへは接続しない）
 
 実ユーザーのMy Team・保存ビルド・保存スカッド・SQLiteは一切変更しない。RLS自体の分離証明は実Supabase上のSQL監査・手動検証で別途行う。
