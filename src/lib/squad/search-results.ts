@@ -29,3 +29,19 @@ export function sortSearchResults(
     .sort((a, b) => a.r - b.r || a.i - b.i || a.p.worldCardId.localeCompare(b.p.worldCardId))
     .map((x) => x.p);
 }
+
+/**
+ * 検索語の入力前に出す「My Team の所持カード」の並び（純関数・2026-10-26）。
+ * 対象ポジション一致 → 最大 OVR の高い順 → World ID で安定。最大 limit 枚。
+ */
+export function ownedCardsForSlot(
+  owned: readonly WorldPlayerListItem[],
+  targetPosition: string | null | undefined,
+  limit = 30,
+): WorldPlayerListItem[] {
+  const ovr = (p: WorldPlayerListItem) => p.ovrMax ?? p.ovrBase ?? -1;
+  const pos = (p: WorldPlayerListItem) => (targetPosition != null && p.registeredPosition === targetPosition ? 0 : 1);
+  return [...owned]
+    .sort((a, b) => pos(a) - pos(b) || ovr(b) - ovr(a) || a.worldCardId.localeCompare(b.worldCardId))
+    .slice(0, Math.max(0, limit));
+}
