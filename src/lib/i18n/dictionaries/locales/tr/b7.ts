@@ -159,6 +159,7 @@ const part: PartialDictionary = {
     heading: "AI Best XI",
     description: "Kayıtlı oyuncularınız ve buildleriniz arasından deterministik kurallarla bir ilk 11 seçer.",
     disclaimerNotAi: "AI Best XI, kayıtlı verilerinizi ve deterministik seçim kurallarını kullanır. Üretken yapay zekâ kullanmaz ve verileri asla harici bir yapay zekâ hizmetine göndermez.",
+    aboutMoreSummary: "Seçim yöntemi ve notlar (ayrıntılar)",
     modeLabel: "Genel / tüm takım optimizasyonu",
     modeDescription: "Genel / tüm takım optimizasyonu 11 pozisyonun tamamını birlikte karşılaştırır; böylece tek bir çok yüksek derece diğer zayıf pozisyonları gizleyemez ve kayıtlı adaylarınız arasından 4-3-3 bir ilk 11 seçer (ağırlıklı toplamlı bir \"AI puanı\" kullanılmaz).",
     formationNotice: "Seçim için bir diziliş seç (varsayılan 4-3-3).",

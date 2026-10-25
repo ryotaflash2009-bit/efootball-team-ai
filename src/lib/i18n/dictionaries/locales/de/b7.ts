@@ -159,6 +159,7 @@ const part: PartialDictionary = {
     heading: "AI Best XI",
     description: "Wählt mit festen Regeln eine Startelf aus deinen gespeicherten Spielern und Builds aus.",
     disclaimerNotAi: "AI Best XI nutzt deine gespeicherten Daten und feste Auswahlregeln. Es verwendet keine generative KI und sendet niemals Daten an einen externen KI-Dienst.",
+    aboutMoreSummary: "Auswahl & Hinweise (Details)",
     modeLabel: "Gesamtoptimierung / ganzes Team",
     modeDescription: "Die Gesamtoptimierung vergleicht alle 11 Positionen gemeinsam, damit eine einzelne extrem hohe Wertung keine anderen schwachen Positionen verdeckt, und wählt eine 4-3-3-Startelf aus deinen gespeicherten Kandidaten aus (es wird kein gewichteter „KI-Score“ verwendet).",
     formationNotice: "Wähle eine Formation für die Auswahl (Standard 4-3-3).",

@@ -159,6 +159,7 @@ const part: PartialDictionary = {
     heading: "AI Best XI",
     description: "Memilih starting XI dari pemain dan build tersimpan Anda dengan aturan deterministik.",
     disclaimerNotAi: "AI Best XI menggunakan data tersimpan Anda dan aturan pemilihan deterministik. Fitur ini tidak menggunakan AI generatif dan tidak pernah mengirim data ke layanan AI eksternal.",
+    aboutMoreSummary: "Cara memilih & catatan (detail)",
     modeLabel: "Optimasi keseluruhan / seluruh tim",
     modeDescription: "Optimasi keseluruhan / seluruh tim membandingkan ke-11 slot sekaligus, sehingga satu rating yang sangat tinggi tidak dapat menutupi slot lain yang lemah, lalu memilih starting XI 4-3-3 dari kandidat tersimpan Anda (tanpa \"skor AI\" berbobot).",
     formationNotice: "Pilih formasi untuk pemilihan (bawaan 4-3-3).",

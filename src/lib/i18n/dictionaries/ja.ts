@@ -3151,6 +3151,7 @@ export interface Dictionary {
     heading: string;
     description: string;
     disclaimerNotAi: string;
+    aboutMoreSummary: string;
     modeLabel: string;
     modeDescription: string;
     formationNotice: string;

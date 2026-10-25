@@ -159,6 +159,7 @@ const part: PartialDictionary = {
     heading: "AI Best XI",
     description: "Seleciona um time titular entre seus jogadores e builds salvos usando regras determinísticas.",
     disclaimerNotAi: "O AI Best XI usa seus dados salvos e regras de seleção determinísticas. Ele não usa IA generativa e nunca envia dados a um serviço de IA externo.",
+    aboutMoreSummary: "Como escolhe e avisos (detalhes)",
     modeLabel: "Otimização geral / do time inteiro",
     modeDescription: "A otimização geral / do time inteiro compara as 11 vagas em conjunto, para que uma única avaliação muito alta não esconda outras vagas fracas, e seleciona um time titular 4-3-3 entre seus candidatos salvos (nenhuma \"pontuação de IA\" por soma ponderada é usada).",
     formationNotice: "Escolha uma formação para a seleção (padrão 4-3-3).",

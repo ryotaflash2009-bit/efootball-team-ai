@@ -105,7 +105,7 @@ function OwnedBadge({ worldCardId }: { worldCardId: string }) {
   const rec = getByWorldId(worldCardId);
   if (!rec || rec.ownershipStatus !== "owned" || rec.deletedAt) return null;
   return (
-    <span className="absolute bottom-1 end-1 rounded bg-success/90 px-1.5 py-0.5 text-[9px] font-bold leading-none text-black" data-testid="card-owned-badge">
+    <span className="absolute end-1 top-[4.25rem] rounded bg-success/90 px-1.5 py-0.5 text-[9px] font-bold leading-none text-black" data-testid="card-owned-badge">
       {t("worldPlayerCard", "ownedBadge")}
     </span>
   );

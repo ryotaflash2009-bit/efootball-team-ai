@@ -159,6 +159,7 @@ const part: PartialDictionary = {
     heading: "AI Best XI",
     description: "依據固定的規則，從您已儲存的球員與方案中選出先發陣容。",
     disclaimerNotAi: "AI Best XI 使用您已儲存的資料與固定的選拔規則。不使用生成式 AI，也絕不會將資料傳送至外部 AI 服務。",
+    aboutMoreSummary: "選擇方法與注意事項（詳細）",
     modeLabel: "整體／全隊最佳化",
     modeDescription: "整體／全隊最佳化會一併比較全部 11 個位置，避免單一極高的評分掩蓋其他較弱的位置，並從您已儲存的候選中選出 4-3-3 先發陣容（不使用加權總和的「AI 分數」）。",
     formationNotice: "選擇陣型後進行選拔（預設 4-3-3）。",

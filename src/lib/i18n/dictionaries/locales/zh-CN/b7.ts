@@ -159,6 +159,7 @@ const part: PartialDictionary = {
     heading: "AI Best XI",
     description: "根据确定性规则，从你保存的球员和方案中选出首发阵容。",
     disclaimerNotAi: "AI Best XI 使用你保存的数据和确定性的选择规则。它不使用生成式 AI，也绝不会将数据发送到外部 AI 服务。",
+    aboutMoreSummary: "选择方法与注意事项（详细）",
     modeLabel: "综合 / 全队最优化",
     modeDescription: "综合 / 全队最优化会把 11 个位置放在一起比较，避免某一个极高的评分掩盖其他薄弱位置，并从你保存的候选中选出 4-3-3 首发阵容（不使用加权求和的“AI 分数”）。",
     formationNotice: "选择阵型后进行选拔（默认 4-3-3）。",

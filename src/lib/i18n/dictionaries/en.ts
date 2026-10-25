@@ -3214,6 +3214,7 @@ const en: Dictionary = {
     heading: "AI Best XI",
     description: "Selects a starting XI from your saved players and builds using deterministic rules.",
     disclaimerNotAi: "AI Best XI uses your saved data and deterministic selection rules. It does not use generative AI and never sends data to an external AI service.",
+    aboutMoreSummary: "How it picks & notes (details)",
     modeLabel: "Overall / whole-team optimization",
     modeDescription: "Overall / whole-team optimization compares all 11 slots together, so no single extremely high rating can hide other weak slots, and selects a 4-3-3 starting XI from your saved candidates (no weighted-sum \"AI score\" is used).",
     formationNotice: "Choose a formation to pick for (default 4-3-3).",
