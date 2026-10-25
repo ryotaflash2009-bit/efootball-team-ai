@@ -1,6 +1,8 @@
 import type { WorldPlayerListItem } from "@/lib/world/types";
 import { resolveAttachedBooster } from "@/lib/progression/booster-resolution";
 import type { UserCardFilterState } from "@/components/user-cards/UserCardFilters";
+import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
+import type { Locale } from "@/lib/i18n/locale";
 
 /** カードに Power of Many の付属ブースターがあるか（fixed 版とは区別）。 */
 export function cardHasPowerOfMany(card: WorldPlayerListItem): boolean {
@@ -23,8 +25,11 @@ export interface UserCardRow {
   ownershipStatus?: string;
 }
 
-/** 純関数: フィルター状態に応じて行を絞り込み・並び替える。 */
-export function filterAndSortUserCards(rows: UserCardRow[], state: UserCardFilterState): UserCardRow[] {
+/**
+ * 純関数: フィルター状態に応じて行を絞り込み・並び替える。
+ * locale を渡すと「名前順」は画面に出す名前（ja は日本語名）で並べる（2026-10-25。省略時は従来どおり英語名）。
+ */
+export function filterAndSortUserCards(rows: UserCardRow[], state: UserCardFilterState, locale?: Locale): UserCardRow[] {
   const q = state.q.trim().toLowerCase();
   const filtered = rows.filter((row) => {
     const c = row.card;
@@ -69,11 +74,12 @@ export function filterAndSortUserCards(rows: UserCardRow[], state: UserCardFilte
     case "ovr_asc":
       sorted.sort((a, b) => ovr(a.card) - ovr(b.card));
       break;
-    case "name":
-      sorted.sort((a, b) =>
-        (a.card?.nameEn ?? a.worldCardId).localeCompare(b.card?.nameEn ?? b.worldCardId),
-      );
+    case "name": {
+      const nameOf = (r: UserCardRow) =>
+        locale ? resolvePlayerDisplayName(r.card ?? {}, locale, r.worldCardId) : (r.card?.nameEn ?? r.worldCardId);
+      sorted.sort((a, b) => nameOf(a).localeCompare(nameOf(b), locale));
       break;
+    }
     case "position":
       sorted.sort((a, b) =>
         (a.card?.registeredPosition ?? "zzz").localeCompare(b.card?.registeredPosition ?? "zzz"),

@@ -333,6 +333,22 @@ describe("filterAndSortUserCards（純関数）", () => {
     expect(byName.indexOf("1")).toBeLessThan(byName.indexOf("2")); // Messi < Neuer
   });
 
+  it("並び替え: 名前順は表示言語の名前で並べる（ja は日本語名）", () => {
+    const named: UserCardRow[] = [
+      { worldCardId: "a", addedAt: "2026-08-01", card: fakeCard({ worldCardId: "a", nameEn: "Alisson", nameJa: "アリソン" }) },
+      { worldCardId: "b", addedAt: "2026-08-02", card: fakeCard({ worldCardId: "b", nameEn: "Zidane", nameJa: "ジダン" }) },
+      { worldCardId: "c", addedAt: "2026-08-03", card: fakeCard({ worldCardId: "c", nameEn: "Kaka", nameJa: "カカ" }) },
+    ];
+    const ids = (locale?: "ja" | "en") =>
+      filterAndSortUserCards(named, { ...base, sort: "name" }, locale).map((r) => r.worldCardId);
+    expect(ids("ja")).toEqual(["a", "c", "b"]); // アリソン < カカ < ジダン
+    expect(ids("en")).toEqual(["a", "c", "b"]); // Alisson < Kaka < Zidane
+    expect(ids()).toEqual(["a", "c", "b"]);
+    const swapped = named.map((r) => (r.worldCardId === "b" ? { ...r, card: fakeCard({ worldCardId: "b", nameEn: "Zidane", nameJa: "イニエスタ" }) } : r));
+    expect(filterAndSortUserCards(swapped, { ...base, sort: "name" }, "ja").map((r) => r.worldCardId)).toEqual(["a", "b", "c"]);
+    expect(filterAndSortUserCards(swapped, { ...base, sort: "name" }, "en").map((r) => r.worldCardId)).toEqual(["a", "c", "b"]);
+  });
+
   it("facetsFromRows: 解決済みカードから選択肢", () => {
     const f = facetsFromRows(rows);
     expect(f.positions).toEqual(["GK", "SS"]);

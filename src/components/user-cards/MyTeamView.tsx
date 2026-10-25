@@ -104,7 +104,7 @@ export function MyTeamView() {
     [myTeam, cards],
   );
   const facets = useMemo(() => facetsFromRows(rows), [rows]);
-  const visible = useMemo(() => filterAndSortUserCards(rows, filter), [rows, filter]);
+  const visible = useMemo(() => filterAndSortUserCards(rows, filter, locale), [rows, filter, locale]);
   const recByWorldId = useMemo(() => new Map(myTeam.map((r) => [r.worldCardId, r])), [myTeam]);
 
   const mainCount = myTeam.filter((r) => r.usageStatus === "main").length;

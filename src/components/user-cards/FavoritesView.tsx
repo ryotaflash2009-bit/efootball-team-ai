@@ -44,7 +44,7 @@ export function FavoritesView() {
   );
 
   const facets = useMemo(() => facetsFromRows(rows), [rows]);
-  const visible = useMemo(() => filterAndSortUserCards(rows, filter), [rows, filter]);
+  const visible = useMemo(() => filterAndSortUserCards(rows, filter, locale), [rows, filter, locale]);
   const favByWorldId = useMemo(() => new Map(favorites.map((f) => [f.worldCardId, f])), [favorites]);
 
   if (scopeStatus === "loading") {
