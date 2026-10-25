@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { routePathname } from "@/lib/navigation/route-pathname";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { useT } from "@/lib/i18n/LocaleContext";
 import { fillMessage } from "@/lib/i18n/message-format";
@@ -97,7 +98,8 @@ export function SidebarNav({
   onNavigate?: () => void;
   collapsed?: boolean;
 }) {
-  const pathname = usePathname();
+  // Vercel の ISR の作り直しでは "/index" になるため "/" にそろえる（サーバーとブラウザーで印を一致させる・React #418 の対策）
+  const pathname = routePathname(usePathname());
   const t = useT();
   const activeHref = activeHrefOf(pathname);
   const unseen = useUnseenNewCards(pathname);
