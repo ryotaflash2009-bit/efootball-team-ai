@@ -411,6 +411,7 @@ const part: PartialDictionary = {
     whatMyTeam: "내 팀",
     whatBuilds: "저장된 육성 빌드",
     whatFavoritesAndMyTeam: "즐겨찾기와 내 팀",
+    bodySuffixBuilds: "저장됩니다. 로그인 후 계정 화면에서 명시적인 조작으로 저장 빌드를 클라우드에 저장·불러오기할 수 있는 시험 기능(알파)을 사용할 수 있습니다. 기기 간 자동 동기화는 아닙니다.",
     bodyPrefixTemplate: "{what}은(는) 현재 ",
     bodyBold: "이 브라우저에만",
     bodySuffix: " 저장됩니다. 다른 기기로의 동기화나 백업, 서버 저장은 아직 지원하지 않습니다. 로그인과 계정 동기화는 향후 버전에서 제공할 예정입니다.",

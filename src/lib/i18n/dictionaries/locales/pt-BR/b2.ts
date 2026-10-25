@@ -411,6 +411,7 @@ const part: PartialDictionary = {
     whatMyTeam: "O Meu time",
     whatBuilds: "As builds de progressão salvas",
     whatFavoritesAndMyTeam: "Os favoritos e o Meu time",
+    bodySuffixBuilds: "salvos. Depois de entrar, você pode usar o recurso experimental (alfa) na página da conta para salvar e recuperar builds na nuvem por ação explícita. Não é sincronização automática entre dispositivos.",
     bodyPrefixTemplate: "{what}: atualmente salvo ",
     bodyBold: "apenas neste navegador",
     bodySuffix: ". Ainda não há suporte para sincronizar ou fazer backup em outro dispositivo, nem para salvar em um servidor. Login e sincronização de conta estão planejados para uma versão futura.",

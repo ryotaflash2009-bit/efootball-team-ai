@@ -411,6 +411,7 @@ const part: PartialDictionary = {
     whatMyTeam: "Mi equipo",
     whatBuilds: "Builds de progresión guardadas",
     whatFavoritesAndMyTeam: "Favoritos y Mi equipo",
+    bodySuffixBuilds: "guardan. Tras iniciar sesión, puedes usar la función experimental (alfa) de la página de cuenta para guardar y recuperar builds en la nube con una acción explícita. No es una sincronización automática entre dispositivos.",
     bodyPrefixTemplate: "{what}: por ahora se guarda ",
     bodyBold: "solo en este navegador",
     bodySuffix: ". Aún no se puede sincronizar ni hacer copia de seguridad en otro dispositivo, ni guardar en un servidor. El inicio de sesión y la sincronización de cuenta están previstos para una versión futura.",

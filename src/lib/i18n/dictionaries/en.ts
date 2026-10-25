@@ -1202,6 +1202,7 @@ const en: Dictionary = {
     safetyLine5: "Imported builds are not automatically applied to My Team, squads, or card favorites (no references are created either).",
     safetyLine6: "Files with an unsupported formatVersion are rejected without conversion.",
     safetyLine7: "After importing, manage builds individually in My Builds (they are not automatically set as the selected or favorite build).",
+    safetySummary: "Import notes (nothing is uploaded or overwritten, etc.)",
     launcherHeading: "Import Saved Builds (Local JSON Import)",
     launcherDescriptionPrefix:
       "Choose a local JSON file previously exported from this app, and its content will be validated and previewed, then ",
@@ -3121,6 +3122,7 @@ const en: Dictionary = {
     whatMyTeam: "My Team",
     whatBuilds: "Saved progression builds",
     whatFavoritesAndMyTeam: "Favorites and My Team",
+    bodySuffixBuilds: "stored. After signing in, you can use the experimental (alpha) feature on the account page to save builds to and restore them from the cloud by explicit action. This is not automatic syncing between devices.",
     bodyPrefixTemplate: "{what} is currently saved ",
     bodyBold: "only in this browser",
     bodySuffix:

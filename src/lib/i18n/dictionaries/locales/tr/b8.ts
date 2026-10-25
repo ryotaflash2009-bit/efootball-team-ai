@@ -10,6 +10,7 @@ const part: PartialDictionary = {
     safetyLine5: "İçe aktarılan buildler Takımım'a, kadrolara veya kart favorilerine otomatik olarak uygulanmaz (hiçbir referans da oluşturulmaz).",
     safetyLine6: "Desteklenmeyen formatVersion değerine sahip dosyalar dönüştürülmeden reddedilir.",
     safetyLine7: "İçe aktardıktan sonra buildleri Buildlerim'de tek tek yönetin (otomatik olarak seçili veya favori build yapılmazlar).",
+    safetySummary: "İçe aktarma notları (hiçbir şey yüklenmez veya üzerine yazılmaz vb.)",
     launcherHeading: "Kayıtlı buildleri içe aktar (yerel JSON içe aktarma)",
     launcherDescriptionPrefix: "Bu uygulamadan daha önce dışa aktarılmış yerel bir JSON dosyası seçin; içeriği doğrulanıp önizlenir, ardından son onaydan sonra kayıtlı build olarak ",
     addBoldLabel: "eklenir",

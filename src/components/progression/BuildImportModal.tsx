@@ -108,11 +108,15 @@ export function BuildImportLauncher({
             <b>{t("buildImportModal", "addBoldLabel")}</b>
             {t("buildImportModal", "launcherDescriptionSuffix")}
           </p>
-          <ul className="mt-1 list-disc ps-4 text-2xs text-text-muted">
-            {safetyLines.map((l) => (
-              <li key={l}>{l}</li>
-            ))}
-          </ul>
+          {/* 7 項目の注意はスマホで長いため畳む（2026-10-25 画面の整理）。文言は HTML に残る */}
+          <details className="mt-1 text-2xs text-text-muted" data-testid="build-import-safety">
+            <summary className="cursor-pointer font-semibold">{t("buildImportModal", "safetySummary")}</summary>
+            <ul className="mt-1 list-disc ps-4">
+              {safetyLines.map((l) => (
+                <li key={l}>{l}</li>
+              ))}
+            </ul>
+          </details>
         </div>
         <Button
           variant="secondary"

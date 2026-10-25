@@ -411,6 +411,7 @@ const part: PartialDictionary = {
     whatMyTeam: "Tim Saya",
     whatBuilds: "Build progresi tersimpan",
     whatFavoritesAndMyTeam: "Favorit dan Tim Saya",
+    bodySuffixBuilds: "disimpan. Setelah masuk, kamu bisa memakai fitur uji coba (alfa) di halaman akun untuk menyimpan dan mengambil build dari cloud dengan tindakan eksplisit. Ini bukan sinkronisasi otomatis antarperangkat.",
     bodyPrefixTemplate: "{what} saat ini disimpan ",
     bodyBold: "hanya di browser ini",
     bodySuffix: ". Sinkronisasi atau cadangan data ke perangkat lain, maupun penyimpanan ke server, belum didukung. Login dan sinkronisasi akun direncanakan untuk versi mendatang.",

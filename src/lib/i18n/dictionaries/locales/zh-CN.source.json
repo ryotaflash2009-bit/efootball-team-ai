@@ -4431,5 +4431,7 @@
  "comparisonBoard.similarSuggestHeading": "5d68140bfda0",
  "comparisonBoard.similarSuggestHint": "c65a318829b5",
  "tierList.newCardsLinkTemplate": "0df5188cf71b",
- "bestXi.aboutMoreSummary": "7fa1719cf3d5"
+ "bestXi.aboutMoreSummary": "7fa1719cf3d5",
+ "localStorageNotice.bodySuffixBuilds": "1efc35c9f85f",
+ "buildImportModal.safetySummary": "6da334e3d9a6"
 }

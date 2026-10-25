@@ -411,6 +411,7 @@ const part: PartialDictionary = {
     whatMyTeam: "Takımım",
     whatBuilds: "Kayıtlı gelişim buildleri",
     whatFavoritesAndMyTeam: "Favoriler ve Takımım",
+    bodySuffixBuilds: "kaydedilir. Giriş yaptıktan sonra hesap sayfasındaki deneysel (alfa) özellikle buildleri açık bir işlemle buluta kaydedip geri alabilirsin. Bu, cihazlar arası otomatik eşitleme değildir.",
     bodyPrefixTemplate: "{what} şu anda ",
     bodyBold: "yalnızca bu tarayıcıda",
     bodySuffix: " kaydediliyor. Başka bir cihaza senkronizasyon veya yedekleme ya da bir sunucuya kaydetme henüz desteklenmiyor. Giriş ve hesap senkronizasyonu gelecekteki bir sürüm için planlanıyor.",

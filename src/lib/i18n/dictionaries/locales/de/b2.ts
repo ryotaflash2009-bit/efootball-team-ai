@@ -411,6 +411,7 @@ const part: PartialDictionary = {
     whatMyTeam: "Mein Team",
     whatBuilds: "Gespeicherte Entwicklungs-Builds",
     whatFavoritesAndMyTeam: "Favoriten und Mein Team",
+    bodySuffixBuilds: "gespeichert. Nach der Anmeldung kannst du auf der Kontoseite die experimentelle Funktion (Alpha) nutzen, um Builds per ausdrücklicher Aktion in der Cloud zu speichern und abzurufen. Es ist keine automatische Synchronisierung zwischen Geräten.",
     bodyPrefixTemplate: "{what}: derzeit ",
     bodyBold: "nur in diesem Browser",
     bodySuffix: " gespeichert. Synchronisierung oder Sicherung auf ein anderes Gerät sowie Speichern auf einem Server werden noch nicht unterstützt. Anmeldung und Kontosynchronisierung sind für eine künftige Version geplant.",

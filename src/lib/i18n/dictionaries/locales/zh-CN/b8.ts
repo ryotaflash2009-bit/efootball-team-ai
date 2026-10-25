@@ -10,6 +10,7 @@ const part: PartialDictionary = {
     safetyLine5: "导入的方案不会自动应用到我的球队、阵容或球员卡收藏（也不会创建任何引用）。",
     safetyLine6: "不支持的 formatVersion 文件会被拒绝，不会进行转换。",
     safetyLine7: "导入后，请在我的方案中逐个管理（不会自动设为已选方案或收藏方案）。",
+    safetySummary: "导入须知（不上传，不覆盖等）",
     launcherHeading: "导入已保存的方案（本地 JSON 导入）",
     launcherDescriptionPrefix: "选择之前从本应用导出的本地 JSON 文件，系统会验证并预览其内容，在最终确认后将其",
     addBoldLabel: "添加",

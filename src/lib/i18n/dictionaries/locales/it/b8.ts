@@ -10,6 +10,7 @@ const part: PartialDictionary = {
     safetyLine5: "Le build importate non vengono applicate automaticamente a La mia squadra, alle rose o ai preferiti delle carte (né vengono creati riferimenti).",
     safetyLine6: "I file con un formatVersion non supportato vengono rifiutati senza conversione.",
     safetyLine7: "Dopo l’importazione, gestisci le build singolarmente in Le mie build (non vengono impostate automaticamente come build selezionata o preferita).",
+    safetySummary: "Note sull'importazione (nulla viene caricato o sovrascritto, ecc.)",
     launcherHeading: "Importa build salvate (importazione JSON locale)",
     launcherDescriptionPrefix: "Scegli un file JSON locale esportato in precedenza da questa app: il contenuto verrà convalidato e mostrato in anteprima, poi ",
     addBoldLabel: "aggiunto",
