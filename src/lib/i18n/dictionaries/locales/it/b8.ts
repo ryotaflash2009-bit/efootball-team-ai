@@ -653,6 +653,8 @@ const part: PartialDictionary = {
     squadSuggestSeeAll: "Vedi tutte le nuove carte",
     squadOwnedHeading: "Slot che le tue carte possono rafforzare",
     squadOwnedIntro: "Carte che possiedi in My Team e che non sono in questa rosa, il cui ruolo registrato corrisponde allo slot e il cui OVR supera il giocatore attuale (per gli slot vuoti, l'OVR più alto).",
+    squadFitHeading: "Rose che questa carta rafforzerebbe",
+    squadFitIntro: "Le tue rose salvate in cui questa carta occupa uno slot del suo ruolo registrato con un OVR più alto del giocatore attuale.",
     positionFilterLabel: "Filtra per ruolo",
     positionFilterAll: "Tutte",
     unownedOnlyLabel: "Solo carte che non hai ancora (escluse quelle \"possedute\" in My Team)",

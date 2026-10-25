@@ -223,6 +223,18 @@ async function main() {
       record("[所持カードで強くできる枠] 「入れ替える」で今の選手を外して所持のカードを置く", !!weak && label.trim() === "入れ替える" && rb === OTHER && !stillWeak, `weak=${weak} label=${label.trim()} rb=${rb} stillWeak=${stillWeak}`);
       await evalJson(client, `localStorage.removeItem(${JSON.stringify(KEY)})`);
     }
+    // 選手の詳細: このカードで強くなるスカッド（2026-10-26）。RB に弱いカードのスカッド → OTHER（RB）の詳細に出る・OTHER を入れたスカッドは出ない
+    {
+      const weak = (await (await fetch(`${BASE}/api/world/players?position=RB&sort=ovr_max_asc&pageSize=1`)).json().catch(() => null))?.players?.[0]?.worldCardId ?? null;
+      const a = squad("sq_bbsquadfit01", RC_A, null);
+      a.slots = a.slots.map((x) => (x.slotId === "rb" ? { ...x, worldCardId: weak } : x));
+      const b = squad("sq_bbsquadfit02", RC_A, OTHER);
+      await client.send("Runtime.evaluate", { expression: `localStorage.setItem(${JSON.stringify(SQUADS_KEY)}, ${JSON.stringify(JSON.stringify([a, b]))})` });
+      await go(client, `${BASE}/players/world/${OTHER}`);
+      await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="squad-fit"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+      const fit = await evalJson(client, `[...document.querySelectorAll('[data-testid="squad-fit"] li')].map((li) => li.dataset.squadId)`);
+      record("[選手の詳細] このカードで強くなるスカッド（弱い RB のスカッドは出る・このカードが入っているスカッドは出ない）", !!weak && Array.isArray(fit) && fit.includes("sq_bbsquadfit01") && !fit.includes("sq_bbsquadfit02"), JSON.stringify(fit));
+    }
     // 先発の所属の内訳（2026-10-11）: LB と RB に同じ国籍の 2 枚 → 「国籍」に「<国籍> ×2」・選手一覧の絞り込みへのリンク
     {
       const d = await (await fetch(`${BASE}/api/world/players/${RC_A}`)).json().catch(() => null);
