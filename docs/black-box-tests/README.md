@@ -2,7 +2,7 @@
 
 `node scripts/black-box-all.mjs` が作る一覧です（手で編集しない）。各行の「報告」が詳しい結果です。
 
-- 合格 **41** ・ 失敗 **0** ・ 対象外 **5** ・ 全 46 本
+- 合格 **46** ・ 失敗 **0** ・ 対象外 **0** ・ 全 46 本
 - 対象外 = 社内向けページが必要な rail を、社内向けページが無効のビルドで実行した（失敗ではない。`NEXT_PUBLIC_EFTA_INTERNAL_PAGES=enabled` でビルドすると実行できる）
 
 | 結果 | rail | 件数 | 秒 | 最後に実行 | 報告 |
@@ -21,9 +21,11 @@
 | ✅ 合格 | cost-rule | 11/11 | 3 | 2026-10-25 19:01 | — |
 | ✅ 合格 | diagnosis-facts | 16/16 | 4 | 2026-10-25 19:01 | — |
 | ✅ 合格 | favorites | 32/32 | 1 | 2026-10-25 19:01 | — |
+| ✅ 合格 | final-alpha-readiness-copy（社内向けページ） | 37/37 | 5 | 2026-10-25 15:14 | [final-alpha-readiness-copy.md](./final-alpha-readiness-copy.md) |
 | ✅ 合格 | game-plan | 18/18 | 6 | 2026-10-25 19:01 | — |
 | ✅ 合格 | hydration-seeded | 107/107 | 276 | 2026-10-25 19:01 | — |
 | ✅ 合格 | local-backup | 28/28 | 41 | 2026-10-25 19:05 | [local-backup.md](./local-backup.md) |
+| ✅ 合格 | local-posts（社内向けページ） | 32/32 | 79 | 2026-10-25 15:14 | [local-posts.md](./local-posts.md) |
 | ✅ 合格 | manager-compare | 16/16 | 9 | 2026-10-25 19:06 | — |
 | ✅ 合格 | manager-picker | 35/35 | 4 | 2026-10-25 19:06 | [manager-picker.md](./manager-picker.md) |
 | ✅ 合格 | managers | 43/43 | 2 | 2026-10-25 19:06 | [managers.md](./managers.md) |
@@ -34,8 +36,10 @@
 | ✅ 合格 | phase-b5 | 24/24 | 0 | 2026-10-25 19:07 | — |
 | ✅ 合格 | phase-c | 17/17 | 0 | 2026-10-25 19:07 | — |
 | ✅ 合格 | progression | 99/99 | 1 | 2026-10-25 19:07 | [progression.md](./progression.md) |
+| ✅ 合格 | public-preparation（社内向けページ） | 117/117 | 12 | 2026-10-25 15:15 | [public-preparation.md](./public-preparation.md) |
 | ✅ 合格 | public-signup-limited | 117/117 | 102 | 2026-10-25 19:07 | [public-signup-limited.md](./public-signup-limited.md) |
 | ✅ 合格 | release-gate | 2/2 | 572 | 2026-10-25 19:09 | — |
+| ✅ 合格 | rls-test（社内向けページ） | 71/71 | 12 | 2026-10-25 15:16 | [rls-test.md](./rls-test.md) |
 | ✅ 合格 | same-player | 19/19 | 25 | 2026-10-25 19:19 | [same-player.md](./same-player.md) |
 | ✅ 合格 | saved-filters | 11/11 | 6 | 2026-10-25 19:19 | — |
 | ✅ 合格 | share-build-link | 6/6 | 2 | 2026-10-25 19:19 | — |
@@ -45,12 +49,7 @@
 | ✅ 合格 | squad-use | 12/12 | 0 | 2026-10-25 19:20 | [squad-use.md](./squad-use.md) |
 | ✅ 合格 | squads | 51/51 | 1 | 2026-10-25 19:20 | [squads.md](./squads.md) |
 | ✅ 合格 | supabase-auth | 173/173 | 35 | 2026-10-25 19:20 | [supabase-auth.md](./supabase-auth.md) |
+| ✅ 合格 | support-contact（社内向けページ） | 39/39 | 4 | 2026-10-25 15:16 | [support-contact.md](./support-contact.md) |
 | ✅ 合格 | ui | 74/74 | 1 | 2026-10-25 19:21 | [ui.md](./ui.md) |
 | ✅ 合格 | world-sync | 35/35 | 1 | 2026-10-25 19:21 | — |
 | ✅ 合格 | world-ui | 93/93 | 8 | 2026-10-25 19:21 | [world-ui.md](./world-ui.md) |
-| ⏭ 対象外 | final-alpha-readiness-copy（社内向けページ） | — | 0 | 2026-10-25 19:01 | [final-alpha-readiness-copy.md](./final-alpha-readiness-copy.md) |
-| ⏭ 対象外 | local-posts（社内向けページ） | — | 0 | 2026-10-25 19:06 | [local-posts.md](./local-posts.md) |
-| ⏭ 対象外 | public-preparation（社内向けページ） | — | 0 | 2026-10-25 19:07 | [public-preparation.md](./public-preparation.md) |
-| ⏭ 対象外 | rls-test（社内向けページ） | — | 0 | 2026-10-25 19:19 | [rls-test.md](./rls-test.md) |
-| ⏭ 対象外 | support-contact（社内向けページ） | — | 0 | 2026-10-25 19:21 | [support-contact.md](./support-contact.md) |
-

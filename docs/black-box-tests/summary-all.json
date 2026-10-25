@@ -156,12 +156,12 @@
     },
     "final-alpha-readiness-copy": {
       "name": "final-alpha-readiness-copy",
-      "status": "skip",
-      "passed": null,
-      "total": null,
-      "seconds": 0,
-      "ranAt": "2026-10-25T19:01:16.124Z",
-      "line": "社内向けページが無効のビルド",
+      "status": "pass",
+      "passed": 37,
+      "total": 37,
+      "seconds": 5,
+      "ranAt": "2026-10-25T15:14:30.909Z",
+      "line": "37/37 PASS",
       "fails": [],
       "report": "final-alpha-readiness-copy.md"
     },
@@ -211,12 +211,12 @@
     },
     "local-posts": {
       "name": "local-posts",
-      "status": "skip",
-      "passed": null,
-      "total": null,
-      "seconds": 0,
-      "ranAt": "2026-10-25T19:06:39.706Z",
-      "line": "社内向けページが無効のビルド",
+      "status": "pass",
+      "passed": 32,
+      "total": 32,
+      "seconds": 79,
+      "ranAt": "2026-10-25T15:14:36.197Z",
+      "line": "[black-box-local-posts] 32/32 PASS",
       "fails": [],
       "report": "local-posts.md"
     },
@@ -321,12 +321,12 @@
     },
     "public-preparation": {
       "name": "public-preparation",
-      "status": "skip",
-      "passed": null,
-      "total": null,
-      "seconds": 0,
-      "ranAt": "2026-10-25T19:07:55.953Z",
-      "line": "社内向けページが無効のビルド",
+      "status": "pass",
+      "passed": 117,
+      "total": 117,
+      "seconds": 12,
+      "ranAt": "2026-10-25T15:15:55.473Z",
+      "line": "[black-box-public-preparation] 117/117 PASS",
       "fails": [],
       "report": "public-preparation.md"
     },
@@ -343,12 +343,12 @@
     },
     "rls-test": {
       "name": "rls-test",
-      "status": "skip",
-      "passed": null,
-      "total": null,
-      "seconds": 0,
-      "ranAt": "2026-10-25T19:19:09.847Z",
-      "line": "社内向けページが無効のビルド",
+      "status": "pass",
+      "passed": 71,
+      "total": 71,
+      "seconds": 12,
+      "ranAt": "2026-10-25T15:16:07.460Z",
+      "line": "[black-box-rls-test] 71/71 PASS",
       "fails": [],
       "report": "rls-test.md"
     },
@@ -453,12 +453,12 @@
     },
     "support-contact": {
       "name": "support-contact",
-      "status": "skip",
-      "passed": null,
-      "total": null,
-      "seconds": 0,
-      "ranAt": "2026-10-25T19:21:28.082Z",
-      "line": "社内向けページが無効のビルド",
+      "status": "pass",
+      "passed": 39,
+      "total": 39,
+      "seconds": 4,
+      "ranAt": "2026-10-25T15:16:19.757Z",
+      "line": "[black-box-support-contact] 39/39 PASS",
       "fails": [],
       "report": "support-contact.md"
     },
@@ -507,5 +507,5 @@
       "report": null
     }
   },
-  "updatedAt": "2026-10-25T19:21:38.007Z"
+  "updatedAt": "2026-10-25T18:35:22.797Z"
 }

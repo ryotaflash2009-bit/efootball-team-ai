@@ -11,6 +11,7 @@ import { ProvisionalCardNotice } from "@/components/world/ProvisionalCardNotice"
 import { SamePlayerOtherCards } from "@/components/world/SamePlayerOtherCards";
 import { SimilarCards } from "@/components/world/SimilarCards";
 import { MyTeamFitPanel } from "@/components/world/MyTeamFitPanel";
+import { SquadFitPanel } from "@/components/world/SquadFitPanel";
 import Link from "next/link";
 import { useMemo } from "react";
 import { playersFilterHref } from "@/lib/world/filter-patterns";
@@ -237,6 +238,7 @@ export function WorldPlayerDetailView({
         <WorldPlayerHero player={player} imageSources={heroImageSources} />
         {player.provisional ? <ProvisionalCardNotice info={player.provisional} /> : null}
         <MyTeamFitPanel card={fitCard} />
+        <SquadFitPanel card={fitCard} />
         <Tabs
           ariaLabel={tp("tabsAriaLabel")}
           sticky
