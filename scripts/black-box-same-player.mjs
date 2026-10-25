@@ -239,6 +239,11 @@ async function main() {
       await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="squad-fit"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
       const fit = await evalJson(client, `[...document.querySelectorAll('[data-testid="squad-fit"] li')].map((li) => li.dataset.squadId)`);
       record("[選手の詳細] このカードで強くなるスカッド（弱い RB のスカッドは出る・このカードが入っているスカッドは出ない）", !!weak && Array.isArray(fit) && fit.includes("sq_bbsquadfit01") && !fit.includes("sq_bbsquadfit02"), JSON.stringify(fit));
+      // パック診断でも同じ（2026-10-26）
+      await go(client, `${BASE}/pack-check?ids=${OTHER}`);
+      await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="pack-check-squad-fit"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+      const packFit = await evalJson(client, `[...document.querySelectorAll('[data-testid="pack-check-squad-fit"] a')].map((a) => a.getAttribute("href"))`);
+      record("[パック診断] 引いたカードで強くなるスカッドへのリンク（入っているスカッドは出ない）", Array.isArray(packFit) && packFit.includes("/squads/sq_bbsquadfit01") && !packFit.includes("/squads/sq_bbsquadfit02"), JSON.stringify(packFit));
     }
     // 先発の所属の内訳（2026-10-11）: LB と RB に同じ国籍の 2 枚 → 「国籍」に「<国籍> ×2」・選手一覧の絞り込みへのリンク
     {

@@ -1,18 +1,14 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/provisionalCards";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { fillMessage } from "@/lib/i18n/message-format";
 import { Surface } from "@/components/ui/Surface";
-import { useSyncedStorageScope } from "@/lib/local-storage-scope/resolve-scope";
-import { listSquads } from "@/lib/squad/squad-storage";
-import { getFormation } from "@/lib/squad/formations";
-import type { StoredSquad } from "@/lib/squad/types";
-import { useResolvedCards } from "@/lib/user-cards/use-resolved-cards";
-import { squadsStrengthenedByCard, type SquadFitInput } from "@/lib/new-cards/card-squad-fit";
+import { squadsStrengthenedByCard } from "@/lib/new-cards/card-squad-fit";
+import { useSavedSquadFitInputs } from "./useSavedSquadFitInputs";
 import type { ImpactCard } from "@/lib/new-cards/team-impact";
 
 /** 最初に出す行数（残りは「すべて表示」）。 */
@@ -26,36 +22,9 @@ export function SquadFitPanel({ card }: { card: ImpactCard }) {
   const t = useT();
   const { locale } = useLocale();
   const tp = (k: Parameters<typeof t<"provisionalCards">>[1]) => t("provisionalCards", k);
-  const scopeState = useSyncedStorageScope();
-  const [squads, setSquads] = useState<StoredSquad[] | null>(null);
+  const inputs = useSavedSquadFitInputs();
   const [all, setAll] = useState(false);
-  useEffect(() => {
-    if (scopeState.status === "loading") {
-      setSquads(null);
-      return;
-    }
-    setSquads(listSquads());
-  }, [scopeState.status === "resolved" ? scopeState.scope.kind : "loading", scopeState.status === "resolved" && scopeState.scope.kind === "account" ? scopeState.scope.scopeId : null]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const ids = useMemo(() => [...new Set((squads ?? []).flatMap((s) => s.slots.map((x) => x.worldCardId)).filter((x): x is string => !!x))], [squads]);
-  const { cards, loading } = useResolvedCards(ids);
-  const fits = useMemo(() => {
-    if (!squads || squads.length === 0 || loading) return [];
-    const inputs: SquadFitInput[] = squads.map((sq) => {
-      const posBySlot = new Map(getFormation(sq.formationId).slots.map((s) => [s.slotId, s.position]));
-      return {
-        squadId: sq.squadId,
-        squadName: sq.squadName,
-        slots: sq.slots.flatMap((sl) => {
-          const c = sl.worldCardId ? cards.get(sl.worldCardId) : null;
-          if (sl.worldCardId && !c) return [];
-          return [{ slotId: sl.slotId, position: posBySlot.get(sl.slotId) ?? "", current: c ?? null }];
-        }),
-        inSquad: new Set([...sq.slots.map((s) => s.worldCardId), ...sq.substitutes.map((s) => s.worldCardId)].filter((x): x is string => !!x)),
-      };
-    });
-    return squadsStrengthenedByCard(card, inputs);
-  }, [squads, cards, loading, card]);
+  const fits = useMemo(() => (inputs && inputs.length > 0 ? squadsStrengthenedByCard(card, inputs) : []), [inputs, card]);
 
   if (fits.length === 0) return null;
   const name = (c: ImpactCard) => resolvePlayerDisplayName(c, locale);
