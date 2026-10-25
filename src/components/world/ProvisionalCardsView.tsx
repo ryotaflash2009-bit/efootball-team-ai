@@ -72,7 +72,11 @@ export function ProvisionalCardsView({
   }, [recent, cards]);
   const inPosition = (c: WorldPlayerCardData) => (position == null || c.registeredPosition === position) && !(unownedOnly && ownedSet.has(c.worldCardId));
   const shownRecent = useMemo(() => recent.filter(inPosition), [recent, position, unownedOnly, ownedSet]); // eslint-disable-line react-hooks/exhaustive-deps
-  const shownCards = useMemo(() => cards.filter(inPosition), [cards, position, unownedOnly, ownedSet]); // eslint-disable-line react-hooks/exhaustive-deps
+  // 暫定のカードも OVR の高い順（最近追加されたカードの日ごとの並びと同じ・2026-10-25）
+  const shownCards = useMemo(
+    () => cards.filter(inPosition).sort((a, b) => (b.ovrMax ?? b.ovrBase ?? -1) - (a.ovrMax ?? a.ovrBase ?? -1) || a.worldCardId.localeCompare(b.worldCardId)),
+    [cards, position, unownedOnly, ownedSet], // eslint-disable-line react-hooks/exhaustive-deps
+  );
   const filtering = position != null || unownedOnly;
   const ownedAmongNew = useMemo(() => [...recent, ...cards].some((c) => ownedSet.has(c.worldCardId)), [recent, cards, ownedSet]);
   // 日ごとに並べる（日付の無いものは最後に「その他」として 1 つ）
