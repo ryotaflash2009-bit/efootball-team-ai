@@ -225,8 +225,8 @@ export function BuildInventoryView() {
 
   const inv = useMemo(() => buildInventory(builds, myTeam, squads, cards), [builds, myTeam, squads, cards]);
   const visibleItems = useMemo(
-    () => sortBuildInventory(filterBuildInventory(inv.items, filter), sort),
-    [inv.items, filter, sort],
+    () => sortBuildInventory(filterBuildInventory(inv.items, filter), sort, locale),
+    [inv.items, filter, sort, locale],
   );
   const visibleIssues = useMemo(
     () => filterBuildInventoryIssues(inv.issues, issueKind, issueQuery),

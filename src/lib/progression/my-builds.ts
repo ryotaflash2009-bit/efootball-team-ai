@@ -1,5 +1,7 @@
 import type { SavedBuild } from "./types";
 import type { WorldPlayerListItem } from "@/lib/world/types";
+import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
+import type { Locale } from "@/lib/i18n/locale";
 import { PROGRESSION_GROUPS } from "./stat-groups";
 import { groupLabelJa } from "@/lib/world/stat-labels";
 import {
@@ -300,8 +302,10 @@ export function filterBuilds(builds: SavedBuild[], input: BuildFilterInput): Sav
   });
 }
 
-function playerNameForSort(build: SavedBuild, cards: Map<string, WorldPlayerListItem>): string {
+/** locale を渡すと画面に出す名前（ja 以外は英語名）で並べる（2026-10-25。省略時は従来どおり日本語名を優先）。 */
+function playerNameForSort(build: SavedBuild, cards: Map<string, WorldPlayerListItem>, locale?: Locale): string {
   const c = cards.get(build.worldCardId);
+  if (locale) return resolvePlayerDisplayName(c ?? {}, locale, build.worldCardId).toLowerCase();
   return (c?.nameJa || c?.nameEn || build.worldCardId).toLowerCase();
 }
 
@@ -310,6 +314,7 @@ export function sortBuilds(
   builds: SavedBuild[],
   cards: Map<string, WorldPlayerListItem>,
   key: BuildSortKey,
+  locale?: Locale,
 ): SavedBuild[] {
   const arr = builds.slice();
   const byId = (a: SavedBuild, b: SavedBuild) => a.buildId.localeCompare(b.buildId);
@@ -338,7 +343,7 @@ export function sortBuilds(
         r = a.buildName.localeCompare(b.buildName, "ja");
         break;
       case "player_asc":
-        r = playerNameForSort(a, cards).localeCompare(playerNameForSort(b, cards), "ja");
+        r = playerNameForSort(a, cards, locale).localeCompare(playerNameForSort(b, cards, locale), locale ?? "ja");
         break;
     }
     return r !== 0 ? r : byId(a, b);

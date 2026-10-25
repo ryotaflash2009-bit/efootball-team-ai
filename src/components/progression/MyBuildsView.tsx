@@ -211,8 +211,8 @@ export function MyBuildsView() {
   );
   const facets = useMemo(() => buildFacets(builds, cards), [builds, cards]);
   const visible = useMemo(
-    () => sortBuilds(filterBuilds(builds, { cards, filter, usedBuildIds }), cards, sort),
-    [builds, cards, filter, usedBuildIds, sort],
+    () => sortBuilds(filterBuilds(builds, { cards, filter, usedBuildIds }), cards, sort, locale),
+    [builds, cards, filter, usedBuildIds, sort, locale],
   );
 
   const legacyCount = useMemo(

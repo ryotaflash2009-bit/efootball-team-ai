@@ -307,6 +307,15 @@ describe("sortBuilds", () => {
   it("選手名順", () => {
     expect(sortBuilds(builds, cards, "player_asc").map((b) => b.worldCardId)).toEqual(["1", "1", "2"]);
   });
+  it("選手名順は表示言語の名前で並べる（ja 以外は英語名）", () => {
+    const named = new Map<string, WorldPlayerListItem>([
+      ["1", mkCard({ worldCardId: "1", nameJa: "あ選手", nameEn: "Zeta" })],
+      ["2", mkCard({ worldCardId: "2", nameJa: "ん選手", nameEn: "Alpha" })],
+    ]);
+    expect(sortBuilds(builds, named, "player_asc", "ja").map((b) => b.worldCardId)).toEqual(["1", "1", "2"]);
+    expect(sortBuilds(builds, named, "player_asc", "en").map((b) => b.worldCardId)).toEqual(["2", "1", "1"]);
+    expect(sortBuilds(builds, named, "player_asc").map((b) => b.worldCardId)).toEqual(["1", "1", "2"]);
+  });
   it("不正日時は末尾・クラッシュしない", () => {
     const bad = [...builds, mkBuild({ buildId: "b4", updatedAt: "broken" })];
     expect(sortBuilds(bad, cards, "updated_desc").map((b) => b.buildId).at(-1)).toBe("b4");

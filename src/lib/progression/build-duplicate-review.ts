@@ -1,5 +1,7 @@
 import type { SavedBuild, SelectedConditionalBooster } from "./types";
 import type { WorldPlayerListItem } from "@/lib/world/types";
+import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
+import type { Locale } from "@/lib/i18n/locale";
 import { savedBuildSchema } from "./build-storage";
 import type { BuildInventory, BuildInventoryItem, BuildRuleKind, InventorySquadRef } from "./build-inventory";
 import { groupLabelJa } from "@/lib/world/stat-labels";
@@ -581,7 +583,9 @@ export function filterDuplicateReviewGroups(
   });
 }
 
-function groupPlayerName(g: DuplicateGroup): string {
+/** locale を渡すと画面に出す名前（ja 以外は英語名）で並べる（2026-10-25。省略時は従来どおり日本語名を優先）。 */
+function groupPlayerName(g: DuplicateGroup, locale?: Locale): string {
+  if (locale) return resolvePlayerDisplayName(g.card ?? {}, locale, g.worldCardId).toLowerCase();
   return (g.card?.nameJa || g.card?.nameEn || g.worldCardId).toLowerCase();
 }
 function groupPrimaryName(g: DuplicateGroup): string {
@@ -619,6 +623,7 @@ export const DUPLICATE_REVIEW_SORT_KEYS: DuplicateReviewSortKey[] = [
 export function sortDuplicateReviewGroups(
   groups: DuplicateGroup[],
   key: DuplicateReviewSortKey,
+  locale?: Locale,
 ): DuplicateGroup[] {
   const arr = groups.slice();
   const byId = (a: DuplicateGroup, b: DuplicateGroup) => a.id.localeCompare(b.id);
@@ -650,7 +655,7 @@ export function sortDuplicateReviewGroups(
         r = (a.anyUsed ? 0 : 1) - (b.anyUsed ? 0 : 1);
         break;
       case "player_asc":
-        r = groupPlayerName(a).localeCompare(groupPlayerName(b), "ja");
+        r = groupPlayerName(a, locale).localeCompare(groupPlayerName(b, locale), locale ?? "ja");
         break;
       case "name_asc":
         r = groupPrimaryName(a).localeCompare(groupPrimaryName(b), "ja");
