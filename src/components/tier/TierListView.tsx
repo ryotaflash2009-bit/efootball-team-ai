@@ -2,6 +2,7 @@
 
 import { GlossaryLink } from "@/components/public-info/GlossaryLink";
 import "@/lib/i18n/dictionaries/ja-ns/tierList";
+import "@/lib/i18n/dictionaries/ja-ns/worldPlayerCard";
 import Link from "next/link";
 import { useState } from "react";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
@@ -11,6 +12,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Surface } from "@/components/ui/Surface";
 import { Badge } from "@/components/ui/Badge";
 import { usePageTitle } from "@/lib/i18n/use-page-title";
+import { useMyTeam } from "@/lib/user-cards/hooks";
 import { OWN_TIER_RULES_VERSION, type OwnTierRank } from "@/lib/tier/own-tier";
 
 export interface TierListEntryView {
@@ -117,6 +119,9 @@ function TierBlock({ tier, list }: { tier: OwnTierRank; list: TierListEntryView[
   const { locale } = useLocale();
   const tt = (k: Parameters<typeof t<"tierList">>[1]) => t("tierList", k);
   const [all, setAll] = useState(false);
+  // My Team で「所持」のカードに印（似たカードと同じ・2026-10-25）。hydration 中は空のスナップショットなのでサーバーの HTML と一致する。
+  const { getByWorldId } = useMyTeam();
+  const isOwned = (id: string) => { const r = getByWorldId(id); return !!r && r.ownershipStatus === "owned" && !r.deletedAt; };
   const hidden = all ? 0 : Math.max(0, list.length - TIER_INITIAL);
   return (
     <Surface padding="md" className="flex flex-col gap-2" data-testid={`tier-${tier}`}>
@@ -130,6 +135,7 @@ function TierBlock({ tier, list }: { tier: OwnTierRank; list: TierListEntryView[
         {list.map((e, i) => (
           <li key={e.worldCardId} className={`flex items-baseline justify-between gap-2 border-b border-border/60 py-1 text-xs ${!all && i >= TIER_INITIAL ? "hidden" : ""}`}>
             <Link href={`/players/world/${e.worldCardId}`} className="min-w-0 truncate text-accent hover:underline">
+              {isOwned(e.worldCardId) ? <span className="me-1 rounded bg-success/90 px-1 text-[9px] font-bold text-black" data-testid="tier-owned">{t("worldPlayerCard", "ownedBadge")}</span> : null}
               {resolvePlayerDisplayName(e, locale)}
               {e.cardType ? <span className="ms-1 text-text-muted">· {e.cardType}</span> : null}
               {e.isNew ? (
