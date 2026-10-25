@@ -12,6 +12,7 @@ import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { fillMessage } from "@/lib/i18n/message-format";
 import { usePageTitle } from "@/lib/i18n/use-page-title";
 import { Surface } from "@/components/ui/Surface";
+import { MyTeamButton } from "@/components/user-cards/MyTeamButton";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { useResolvedCards } from "@/lib/user-cards/use-resolved-cards";
 import { packCheck, type PackCardVerdict } from "@/lib/new-cards/pack-check";
@@ -245,6 +246,12 @@ export function PackCheckView() {
                     <Link href={`/compare?ids=${r.card.worldCardId},${r.bestOwned.worldCardId}`} className="w-fit text-xs text-accent hover:underline" data-testid="compare-with-owned">
                       {tp("compareAbilities")}
                     </Link>
+                  ) : null}
+                  {/* 引けたらそのまま My Team へ（2026-10-25）。追加すると判定は「所持済み」になる */}
+                  {r.verdict !== "already_owned" ? (
+                    <span data-testid="pack-check-my-team" className="w-fit">
+                      <MyTeamButton worldCardId={r.card.worldCardId} playerName={name(r.card)} variant="compact" />
+                    </span>
                   ) : null}
                 </li>
               ))}

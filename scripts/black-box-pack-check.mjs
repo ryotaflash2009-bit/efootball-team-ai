@@ -91,6 +91,19 @@ async function main() {
     const upgrades = Object.values(verdicts).filter((v) => v === "upgrade").length;
     record("まとめの件数が一覧と合う", summary.includes(`4 枚のうち、強化 ${upgrades} 枚`) && summary.includes("所持済み 1 枚"), summary.replace(/\s+/g, " "));
 
+    // 引いたカードをそのまま My Team へ（2026-10-25）: 所持済みの行には出さない。GK を追加すると「所持済み」になる
+    const rowOf = (id) => `[...document.querySelectorAll('[data-testid="pack-check-list"] li')].find((li) => li.querySelector("a").getAttribute("href").endsWith(${JSON.stringify("__ID__")}))`.replace("__ID__", id);
+    const ownedRowHasBtn = await ev(`!!${rowOf(weakCf)}?.querySelector('[data-testid="pack-check-my-team"]')`);
+    await ev(`${rowOf(gk)}.querySelector('[data-testid="pack-check-my-team"] button').click()`);
+    // ダイアログ（role=dialog）の「My Team に追加」を押す
+    const dlgBtn = `[...document.querySelectorAll('[role="dialog"] button')].find((b) => b.textContent.trim() === "My Team に追加")`;
+    await waitForCondition(async () => ev(`!!${dlgBtn}`), { timeoutMs: 5000, intervalMs: 100 }).catch(() => {});
+    await ev(`${dlgBtn}.click()`);
+    await waitForCondition(async () => (await ev(`${rowOf(gk)}?.dataset.verdict`)) === "already_owned", { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+    const gkVerdict = await ev(`${rowOf(gk)}?.dataset.verdict`);
+    record("引いたカードを My Team に追加できる（所持済みの行には出さない・追加後は所持済み）", ownedRowHasBtn === false && gkVerdict === "already_owned", `ownedRowBtn=${ownedRowHasBtn} gk=${gkVerdict}`);
+    await ev(`localStorage.setItem(${JSON.stringify(MY_TEAM_KEY)}, ${JSON.stringify(JSON.stringify({ storageVersion: "my-team-storage/2026-08-30.v1", updatedAt: NOW, records: [myTeamRecord(weakCf), myTeamRecord(RC_A)] }))})`);
+
     // 選手の詳細: My Team と比べる（所持は弱い CF と Roberto Carlos のまま）
     const fitOf = async (id) => {
       await go(`${BASE}/players/world/${id}`);
