@@ -108,6 +108,7 @@ async function main() {
     record("Messi 詳細が表示される", m.status === 200 && /Lionel Messi/.test(m.body), `HTTP ${m.status}`);
     record("Messi 詳細に画像要素がある", /\/api\/player-image\/89138556575063/.test(m.body), "");
     record("Messi 詳細にデータ来歴がある", /データの来歴|データソース|取得日時/.test(m.body), "");
+    record("旧形式の詳細から World のカードの画面へのリンク（「今後実装予定」は出さない）", /href="\/players\/world\/89138556575063"/.test(m.body) && /data-testid="legacy-world-detail-link"/.test(m.body) && !/実装予定/.test(m.body), "");
     const c = await get("/players/88041460996837");
     record("Cannavaro 詳細が表示される", c.status === 200 && /Fabio Cannavaro/.test(c.body), `HTTP ${c.status}`);
   }

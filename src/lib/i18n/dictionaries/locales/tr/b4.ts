@@ -538,8 +538,9 @@ const part: PartialDictionary = {
     httpMethodLabel: "HTTP yöntemi",
     fetchedAtLabel: "Alınma zamanı",
     noSourceInfo: "Kaynak bilgisi yok.",
-    futureHeading: "Gelecek sürüm için planlananlar",
-    futureDescription: "Özellikler (hücum/savunma/fizik), yetenekler, oyun tarzları, mevkiye özel genel değer, gelişim, güçlendiriciler, kademeler ve oyuncu karşılaştırma. Bunlar eFHUB'ın oyuncu başına verileri daha ayrıntılı araştırıldıktan sonra uygulanacak.",
+    worldDetailHeading: "Değerler, yetenekler, gelişim ve karşılaştırma",
+    worldDetailDescription: "Bu eski sayfadır. Değerler, yetenekler, oyun tarzı, gelişim hesaplayıcı, güçlendiriciler ve karşılaştırma World kart sayfasındadır.",
+    worldDetailLink: "World kart sayfasını aç",
     imageProxyNote: "Oyuncu görselleri efimg.com'dan kendi proxy'miz (/api/player-image/[id]) üzerinden alınır.",
   },
   diagnosisPerspectives: {

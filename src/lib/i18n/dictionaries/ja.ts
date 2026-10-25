@@ -2855,8 +2855,9 @@ export interface Dictionary {
     httpMethodLabel: string;
     fetchedAtLabel: string;
     noSourceInfo: string;
-    futureHeading: string;
-    futureDescription: string;
+    worldDetailHeading: string;
+    worldDetailDescription: string;
+    worldDetailLink: string;
     imageProxyNote: string;
   };
   worldFilters: {

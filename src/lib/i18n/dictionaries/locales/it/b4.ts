@@ -538,8 +538,9 @@ const part: PartialDictionary = {
     httpMethodLabel: "Metodo HTTP",
     fetchedAtLabel: "Recuperato il",
     noSourceInfo: "Nessuna informazione sulla fonte disponibile.",
-    futureHeading: "Previsto in una versione futura",
-    futureDescription: "Statistiche (attacco/difesa/fisico), abilità, stili di gioco, valutazione complessiva per ruolo, progressione, booster, tier e confronto giocatori. Verranno implementati dopo ulteriori ricerche sui dati per giocatore di eFHUB.",
+    worldDetailHeading: "Statistiche, abilità, sviluppo e confronto",
+    worldDetailDescription: "Questa è la pagina precedente. Statistiche, abilità, stile di gioco, calcolo dello sviluppo, booster e confronto sono nella pagina della carta World.",
+    worldDetailLink: "Apri la pagina della carta World",
     imageProxyNote: "Le immagini dei giocatori vengono recuperate da efimg.com tramite il nostro proxy (/api/player-image/[id]).",
   },
   diagnosisPerspectives: {
