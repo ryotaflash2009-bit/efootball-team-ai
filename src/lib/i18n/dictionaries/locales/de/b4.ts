@@ -344,6 +344,7 @@ const part: PartialDictionary = {
     noManagerLabel: "Ohne Trainer",
     updatedAtTemplate: "Aktualisiert {date}",
     outdatedRulesBadge: "Mit veralteten Regeln gespeichert",
+    ownedUpgradesTemplate: "Deine Karten können {count} Platz/Plätze stärken",
     addThisCardLink: "Diese Karte hinzufügen",
     openLink: "Öffnen",
     compareLink: "Vergleichen",

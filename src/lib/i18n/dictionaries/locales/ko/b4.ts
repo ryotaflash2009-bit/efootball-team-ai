@@ -344,6 +344,7 @@ const part: PartialDictionary = {
     noManagerLabel: "감독 없음",
     updatedAtTemplate: "업데이트 {date}",
     outdatedRulesBadge: "이전 규칙으로 저장됨",
+    ownedUpgradesTemplate: "보유 카드로 {count}개 슬롯을 강화할 수 있습니다",
     addThisCardLink: "이 카드 추가",
     openLink: "열기",
     compareLink: "비교",

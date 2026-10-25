@@ -56,6 +56,7 @@ const squadList: Dictionary["squadList"] = {
   noManagerLabel: "監督なし",
   updatedAtTemplate: "更新 {date}",
   outdatedRulesBadge: "旧規則で保存",
+  ownedUpgradesTemplate: "所持カードで {count} 枠強くできます",
   addThisCardLink: "このカードを追加",
   openLink: "開く",
   compareLink: "比較",
