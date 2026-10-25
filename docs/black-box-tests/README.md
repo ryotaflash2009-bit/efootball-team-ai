@@ -31,7 +31,7 @@
 | ✅ 合格 | managers | 43/43 | 2 | 2026-10-25 15:32 | [managers.md](./managers.md) |
 | ✅ 合格 | my-builds | 100/100 | 1 | 2026-10-25 15:32 | [my-builds.md](./my-builds.md) |
 | ✅ 合格 | my-team-cloud | 98/98 | 15 | 2026-10-25 15:58 | [my-team-cloud.md](./my-team-cloud.md) |
-| ✅ 合格 | new-cards | 34/34 | 32 | 2026-10-25 15:32 | [new-cards.md](./new-cards.md) |
+| ✅ 合格 | new-cards | 35/35 | 32 | 2026-10-25 16:15 | [new-cards.md](./new-cards.md) |
 | ✅ 合格 | pack-check | 17/17 | 13 | 2026-10-25 15:33 | [pack-check.md](./pack-check.md) |
 | ✅ 合格 | phase-b5 | 24/24 | 0 | 2026-10-25 15:33 | — |
 | ✅ 合格 | phase-c | 17/17 | 0 | 2026-10-25 15:33 | — |
@@ -40,7 +40,7 @@
 | ✅ 合格 | public-signup-limited | 117/117 | 103 | 2026-10-25 15:33 | [public-signup-limited.md](./public-signup-limited.md) |
 | ✅ 合格 | release-gate | 2/2 | 581 | 2026-10-25 15:35 | — |
 | ✅ 合格 | rls-test（社内向けページ） | 71/71 | 12 | 2026-10-25 15:16 | [rls-test.md](./rls-test.md) |
-| ✅ 合格 | same-player | 16/16 | 23 | 2026-10-25 16:03 | [same-player.md](./same-player.md) |
+| ✅ 合格 | same-player | 16/16 | 28 | 2026-10-25 16:14 | [same-player.md](./same-player.md) |
 | ✅ 合格 | saved-filters | 11/11 | 6 | 2026-10-25 15:45 | — |
 | ✅ 合格 | share-build-link | 6/6 | 2 | 2026-10-25 15:45 | — |
 | ✅ 合格 | share-card | 24/24 | 59 | 2026-10-25 15:45 | [share-card.md](./share-card.md) |
@@ -52,5 +52,5 @@
 | ✅ 合格 | support-contact（社内向けページ） | 39/39 | 4 | 2026-10-25 15:16 | [support-contact.md](./support-contact.md) |
 | ✅ 合格 | ui | 74/74 | 1 | 2026-10-25 15:47 | [ui.md](./ui.md) |
 | ✅ 合格 | world-sync | 35/35 | 4 | 2026-10-25 15:47 | — |
-| ✅ 合格 | world-ui | 93/93 | 10 | 2026-10-25 15:47 | [world-ui.md](./world-ui.md) |
+| ✅ 合格 | world-ui | 93/93 | 9 | 2026-10-25 16:14 | [world-ui.md](./world-ui.md) |
 
