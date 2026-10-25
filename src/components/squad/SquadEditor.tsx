@@ -622,6 +622,30 @@ export function SquadEditor({
     [flashToast, snapshotForUndo, sq],
   );
 
+  /** 「所持カードで強くできる枠」の提案を当てる（今の選手は外して置き換える・元に戻せる・2026-10-26）。 */
+  const applyOwnedUpgrade = useCallback(
+    (slotId: string, worldCardId: string) => {
+      const cur = squadRef.current;
+      if (!cur) return;
+      if (!cur.slots.find((x) => x.slotId === slotId)?.worldCardId) {
+        placeInSlot(slotId, worldCardId);
+        return;
+      }
+      const removed = removeSquadPlayer(cur, { area: "starter", slotId });
+      if (!removed.ok) return;
+      const r = assignWorldCardToSlot(removed.squad, slotId, worldCardId);
+      if (!r.ok) {
+        if (r.errorCode === "same_player_not_allowed") setSwapOffer(worldCardId);
+        else flashToast(ASSIGN_ERROR_MESSAGE[r.errorCode]);
+        return;
+      }
+      snapshotForUndo(removed.operation);
+      setSquad(r.squad);
+      setSelectedSlotId(slotId);
+    },
+    [placeInSlot, flashToast, snapshotForUndo, ASSIGN_ERROR_MESSAGE],
+  );
+
   const removeFromBench = useCallback(
     (index: number) => {
       const cur = squadRef.current;
@@ -2131,7 +2155,7 @@ export function SquadEditor({
             )}
           />
         ) : null}
-        {squad ? <SquadOwnedUpgradesPanel slots={newCardSlots} inSquad={newCardInSquad} /> : null}
+        {squad ? <SquadOwnedUpgradesPanel slots={newCardSlots} inSquad={newCardInSquad} onApply={applyOwnedUpgrade} /> : null}
         {squad ? <SquadNewCardsPanel slots={newCardSlots} inSquad={newCardInSquad} /> : null}
         {squad ? <GamePlanPanel squad={squad} starterOptions={starterOptions} benchOptions={benchOptions} /> : null}
       </div>

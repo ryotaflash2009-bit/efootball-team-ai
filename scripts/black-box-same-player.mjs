@@ -201,6 +201,28 @@ async function main() {
       record("[比較の選手を追加] 入力前に所持カードを出す（比較に入っているカードは押せない）", Array.isArray(crow) && crow.length === 2 && !!ca && ca.disabled && !!co && !co.disabled, JSON.stringify(crow));
       await evalJson(client, `localStorage.removeItem(${JSON.stringify(KEY)})`);
     }
+    // 所持カードで強くできる枠の「入れ替える」（2026-10-26）: RB に弱いカード → 所持の OTHER（RB）を押す → RB が OTHER・弱いカードは外れる
+    {
+      const weak = (await (await fetch(`${BASE}/api/world/players?position=RB&sort=ovr_max_asc&pageSize=1`)).json().catch(() => null))?.players?.[0]?.worldCardId ?? null;
+      const KEY = "efootball-team-ai:local:guest:my-team:v1";
+      const now = new Date().toISOString();
+      const rec = { localRecordId: `mt_${OTHER}`, teamCardId: `tc_${OTHER}`, worldCardId: OTHER, ownershipStatus: "owned", usageStatus: "unused", selectedBuildId: null, favoriteBuildId: null, note: "", tags: [], addedAt: now, updatedAt: now, deletedAt: null, source: "local", syncStatus: "local_only" };
+      await evalJson(client, `localStorage.setItem(${JSON.stringify(KEY)}, ${JSON.stringify(JSON.stringify({ storageVersion: "my-team-storage/2026-08-30.v1", updatedAt: now, records: [rec] }))})`);
+      const sq = squad("sq_bbownedswap1", RC_A, null);
+      sq.slots = sq.slots.map((x) => (x.slotId === "rb" ? { ...x, worldCardId: weak } : x));
+      await client.send("Runtime.evaluate", { expression: `localStorage.setItem(${JSON.stringify(SQUADS_KEY)}, ${JSON.stringify(JSON.stringify([sq]))})` });
+      await go(client, `${BASE}/squads/sq_bbownedswap1`);
+      const btn = `document.querySelector('[data-testid="squad-owned-upgrades-list"] > li[data-world-card-id="${OTHER}"] [data-testid="squad-owned-upgrade-apply"]')`;
+      await waitForCondition(async () => evalJson(client, `!!${btn}`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+      const label = await evalJson(client, `${btn}?.textContent ?? ""`);
+      await evalJson(client, `${btn}?.click()`);
+      await new Promise((r) => setTimeout(r, 1000));
+      const saved = await evalJson(client, `JSON.parse(localStorage.getItem(${JSON.stringify(SQUADS_KEY)})).find((x) => x.squadId === "sq_bbownedswap1")`);
+      const rb = saved?.slots?.find((x) => x.slotId === "rb")?.worldCardId;
+      const stillWeak = [...(saved?.slots ?? []).map((x) => x.worldCardId), ...(saved?.substitutes ?? []).map((x) => x.worldCardId)].includes(weak);
+      record("[所持カードで強くできる枠] 「入れ替える」で今の選手を外して所持のカードを置く", !!weak && label.trim() === "入れ替える" && rb === OTHER && !stillWeak, `weak=${weak} label=${label.trim()} rb=${rb} stillWeak=${stillWeak}`);
+      await evalJson(client, `localStorage.removeItem(${JSON.stringify(KEY)})`);
+    }
     // 先発の所属の内訳（2026-10-11）: LB と RB に同じ国籍の 2 枚 → 「国籍」に「<国籍> ×2」・選手一覧の絞り込みへのリンク
     {
       const d = await (await fetch(`${BASE}/api/world/players/${RC_A}`)).json().catch(() => null);

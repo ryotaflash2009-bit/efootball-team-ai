@@ -2,6 +2,7 @@
 
 import "@/lib/i18n/dictionaries/ja-ns/provisionalCards";
 import "@/lib/i18n/dictionaries/ja-ns/packCheck";
+import "@/lib/i18n/dictionaries/ja-ns/squadEditor";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
@@ -18,8 +19,17 @@ const INITIAL_ROWS = 5;
 /**
  * 所持カードで強くできる枠（2026-10-26）。My Team で「所持」のカードのうちスカッドにいないものを、新しいカードの欄と同じ規則
  * （同じ登録ポジション・OVR が今の選手より高い・同じ選手を 2 つの枠に出さない）で枠に当てる。当てられる枠が無ければ何も出さない。
+ * onApply を渡すと、行ごとに「入れ替える」（空いている枠は「<ポジション> へ追加」）のボタンを出す（2026-10-26）。
  */
-export function SquadOwnedUpgradesPanel({ slots, inSquad }: { slots: SquadSlotForSuggestion[]; inSquad: ReadonlySet<string> }) {
+export function SquadOwnedUpgradesPanel({
+  slots,
+  inSquad,
+  onApply,
+}: {
+  slots: SquadSlotForSuggestion[];
+  inSquad: ReadonlySet<string>;
+  onApply?: (slotId: string, worldCardId: string) => void;
+}) {
   const t = useT();
   const { locale } = useLocale();
   const tp = (k: Parameters<typeof t<"provisionalCards">>[1]) => t("provisionalCards", k);
@@ -56,6 +66,16 @@ export function SquadOwnedUpgradesPanel({ slots, inSquad }: { slots: SquadSlotFo
               <Link href={`/compare?ids=${s.suggestion.worldCardId},${s.current.worldCardId}`} className="text-xs text-accent hover:underline">
                 {t("packCheck", "compareAbilities")}
               </Link>
+            ) : null}
+            {onApply ? (
+              <button
+                type="button"
+                onClick={() => onApply(s.slotId, s.suggestion.worldCardId)}
+                className="ms-auto inline-flex min-h-[32px] items-center rounded-md border border-accent px-2 text-xs font-semibold text-accent hover:bg-accent-soft"
+                data-testid="squad-owned-upgrade-apply"
+              >
+                {s.current ? t("squadEditor", "samePlayerSwapButton") : fillMessage(t("squadEditor", "addToSlotLabelTemplate"), { position: s.position })}
+              </button>
             ) : null}
           </li>
         ))}
