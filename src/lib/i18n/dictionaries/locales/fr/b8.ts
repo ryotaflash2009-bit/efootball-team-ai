@@ -607,6 +607,7 @@ const part: PartialDictionary = {
     entryTemplate: "OVR max. {ovr} · n° {rank} (top {pct} %)",
     showMoreTemplate: "Afficher {count} de plus",
     dataUnavailable: "Impossible de charger les données des joueurs. Réessayez plus tard.",
+    newCardsLinkTemplate: "Voir les nouvelles cartes {position}",
   },
   provisionalCards: {
     badge: "Provisoire",

@@ -5313,6 +5313,7 @@ const en: Dictionary = {
     entryTemplate: "Max OVR {ovr} · #{rank} (top {pct}%)",
     showMoreTemplate: "Show {count} more",
     dataUnavailable: "Player data couldn't be loaded. Please try again later.",
+    newCardsLinkTemplate: "See new {position} cards",
   },
   provisionalCards: {
     badge: "Provisional",

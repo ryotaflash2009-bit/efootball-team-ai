@@ -75,6 +75,7 @@ async function main() {
   const glTerms = (gl.body.match(/data-testid="glossary-term"/g) || []).length;
   record("用語集: /glossary に 12 の用語・フッターからのリンク", gl.status === 200 && glTerms === 12 && /href="\/glossary"/.test(pages.home.body), `terms=${glTerms}`);
   record("用語集: ティアリストから該当の用語へのリンク", /href="\/glossary#tier"/.test(tierPage.body), "");
+  record("ティアリスト: そのポジションの新しいカードへのリンク（/players/new?position=CF）", /data-testid="tier-new-cards-link"/.test(tierPage.body) && /href="\/players\/new\?position=CF"/.test(tierPage.body), "");
   record("共通: 現在位置を aria-current=page で示す", /aria-current="page"/.test(pages.players.body), "");
   record("共通: モバイルメニューボタン（aria-label=メニューを開く）", /aria-label="メニューを開く"/.test(pages.home.body), "");
   record("共通: サイドバー折りたたみボタン", /サイドバーを折りたたむ|サイドバーを開く/.test(pages.home.body), "");

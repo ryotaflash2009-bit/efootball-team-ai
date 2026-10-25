@@ -607,6 +607,7 @@ const part: PartialDictionary = {
     entryTemplate: "Maks. OVR {ovr} · {rank}. (ilk %{pct})",
     showMoreTemplate: "{count} tane daha göster",
     dataUnavailable: "Oyuncu verileri yüklenemedi. Lütfen daha sonra tekrar deneyin.",
+    newCardsLinkTemplate: "Yeni {position} kartlarını gör",
   },
   provisionalCards: {
     badge: "Geçici",

@@ -607,6 +607,7 @@ const part: PartialDictionary = {
     entryTemplate: "OVR maks {ovr} · #{rank} ({pct}% teratas)",
     showMoreTemplate: "Tampilkan {count} lagi",
     dataUnavailable: "Data pemain tidak dapat dimuat. Coba lagi nanti.",
+    newCardsLinkTemplate: "Lihat kartu {position} baru",
   },
   provisionalCards: {
     badge: "Sementara",
