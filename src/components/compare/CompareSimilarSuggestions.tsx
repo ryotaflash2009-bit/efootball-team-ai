@@ -4,6 +4,8 @@ import "@/lib/i18n/dictionaries/ja-ns/comparisonBoard";
 import { useEffect, useState } from "react";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
+import { useMyTeam } from "@/lib/user-cards/hooks";
+import "@/lib/i18n/dictionaries/ja-ns/worldPlayerCard";
 import { pickSimilarCards, similarCardsQuery, type SimilarCardSummary } from "@/lib/world/similar-cards";
 
 const SUGGEST_LIMIT = 4;
@@ -22,6 +24,8 @@ export function CompareSimilarSuggestions({
   const t = useT();
   const { locale } = useLocale();
   const [cards, setCards] = useState<SimilarCardSummary[] | null>(null);
+  const { getByWorldId } = useMyTeam();
+  const isOwned = (id: string) => { const r = getByWorldId(id); return !!r && r.ownershipStatus === "owned" && !r.deletedAt; };
   const [busy, setBusy] = useState<string | null>(null);
   const qs = similarCardsQuery(base);
   const { worldCardId, ovrMax } = base;
@@ -62,6 +66,7 @@ export function CompareSimilarSuggestions({
             >
               <span className="min-w-0 truncate">{resolvePlayerDisplayName({ nameEn: c.nameEn, nameJa: c.nameJa }, locale, c.worldCardId)}</span>
               <span className="shrink-0 text-xs text-text-muted">
+                {isOwned(c.worldCardId) ? <span className="me-1 rounded bg-success/90 px-1 text-[9px] font-bold text-black" data-testid="similar-owned">{t("worldPlayerCard", "ownedBadge")}</span> : null}
                 {c.cardType ?? "—"} · {c.ovrMax ?? "—"} <span className="text-accent">＋</span>
               </span>
             </button>

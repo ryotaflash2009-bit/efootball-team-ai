@@ -7,6 +7,8 @@ import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { Surface } from "@/components/ui/Surface";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
+import { useMyTeam } from "@/lib/user-cards/hooks";
+import "@/lib/i18n/dictionaries/ja-ns/worldPlayerCard";
 import { pickSimilarCards, similarCardsQuery, type SimilarCardSummary } from "@/lib/world/similar-cards";
 
 /**
@@ -27,6 +29,8 @@ export function SimilarCards({
   const t = useT();
   const { locale } = useLocale();
   const [cards, setCards] = useState<SimilarCardSummary[] | null>(null);
+  const { getByWorldId } = useMyTeam();
+  const isOwned = (id: string) => { const r = getByWorldId(id); return !!r && r.ownershipStatus === "owned" && !r.deletedAt; };
   const qs = similarCardsQuery({ registeredPosition, playingStyle, ovrMax });
   useEffect(() => {
     if (!qs || ovrMax == null) {
@@ -56,6 +60,7 @@ export function SimilarCards({
             <Link href={`/players/world/${c.worldCardId}`} className="flex min-w-0 flex-1 items-center justify-between gap-2 rounded border border-border/60 p-2 text-sm hover:border-accent">
               <span className="min-w-0 truncate">{resolvePlayerDisplayName({ nameEn: c.nameEn, nameJa: c.nameJa }, locale, c.worldCardId)}</span>
               <span className="shrink-0 text-xs text-text-muted">
+                {isOwned(c.worldCardId) ? <span className="me-1 rounded bg-success/90 px-1 text-[9px] font-bold text-black" data-testid="similar-owned">{t("worldPlayerCard", "ownedBadge")}</span> : null}
                 {c.cardType ?? "—"} · {c.ovrMax ?? "—"}
               </span>
             </Link>
