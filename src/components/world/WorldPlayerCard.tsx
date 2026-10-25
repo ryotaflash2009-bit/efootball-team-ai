@@ -7,6 +7,7 @@ import Link from "next/link";
 import { WorldCardImage } from "./WorldCardImage";
 import { CompareAddButton } from "@/components/compare/CompareAddButton";
 import { FavoriteButton } from "@/components/user-cards/FavoriteButton";
+import { MyTeamButton } from "@/components/user-cards/MyTeamButton";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { useMyTeam } from "@/lib/user-cards/hooks";
@@ -89,8 +90,10 @@ export function WorldPlayerCard({ player, imagePriority = false }: { player: Wor
           </p>
         </div>
       </Link>
-      <div className="px-2 pb-2">
+      <div className="flex flex-col gap-1 px-2 pb-2">
         <CompareAddButton worldCardId={player.worldCardId} variant="card" />
+        {/* 一覧から直接 My Team へ（詳細を開かずに登録・2026-10-26） */}
+        <MyTeamButton worldCardId={player.worldCardId} playerName={name} variant="card" className="w-full" />
       </div>
     </div>
   );
