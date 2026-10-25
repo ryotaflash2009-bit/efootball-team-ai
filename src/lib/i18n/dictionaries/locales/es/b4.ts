@@ -311,7 +311,7 @@ const part: PartialDictionary = {
     formationLabel: "Formación",
     createAndEditButton: "Crear y editar",
     heroHeading: "Crea una plantilla con 11 titulares + banquillo",
-    heroDescription: "Elige una formación y coloca jugadores de todas las cartas de World. Ve builds de progresión, mejoras del entrenador y condiciones de Link-Up Play en una pantalla. Las habilidades de progresión siguen la referencia de eFHUB y el OVR es una estimación. Las plantillas solo se guardan en este navegador (localStorage).",
+    heroDescription: "Elige una formación y coloca jugadores de todas las cartas de World. Consulta builds de progresión, bonificaciones del mánager y condiciones de Link-Up Play en una sola pantalla. Los objetivos de progresión siguen la referencia de eFHUB y el OVR es una estimación. Las plantillas se guardan en este navegador (tras iniciar sesión también puedes guardarlas y recuperarlas en la nube desde la página de cuenta; función alfa).",
     createFirstSquadButton: "Crea tu primera plantilla",
     createNewSquadButton: "Crear una plantilla nueva",
     goToCompareButton: "Ir a comparar jugadores",

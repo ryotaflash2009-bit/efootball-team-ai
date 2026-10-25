@@ -23,7 +23,7 @@ const squadList: Dictionary["squadList"] = {
   formationLabel: "フォーメーション",
   createAndEditButton: "作成して編集",
   heroHeading: "先発11人＋ベンチのスカッドを組む",
-  heroDescription: "フォーメーションを選び、World の全カードから選手を配置。育成ビルド・監督補正・Link-Up Play 条件を一画面で確認できます。育成の対象能力は eFHUB基準、OVR は推定です。スカッドはこの端末のブラウザ内（localStorage）にのみ保存されます。",
+  heroDescription: "フォーメーションを選び、World の全カードから選手を配置。育成ビルド・監督補正・Link-Up Play 条件を一画面で確認できます。育成の対象能力は eFHUB基準、OVR は推定です。スカッドはこの端末のブラウザに保存されます（ログイン後はアカウント画面からクラウドへの保存・取得もできます・アルファ機能）。",
   createFirstSquadButton: "最初のスカッドを作成",
   createNewSquadButton: "新しいスカッドを作成",
   goToCompareButton: "選手比較へ",
