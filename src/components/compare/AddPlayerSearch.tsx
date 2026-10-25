@@ -3,10 +3,12 @@
 import "@/lib/i18n/dictionaries/ja-ns/addPlayerSearch";
 import "@/lib/i18n/dictionaries/ja-ns/compareRadarChart";
 import "@/lib/i18n/dictionaries/ja-ns/searchInput";
+import "@/lib/i18n/dictionaries/ja-ns/myTeam";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { WorldPlayerListItem } from "@/lib/world/types";
 import { COMPARISON_MAX } from "@/lib/comparison/types";
-import { sortSearchResults } from "@/lib/squad/search-results";
+import { sortSearchResults, ownedCardsForSlot } from "@/lib/squad/search-results";
+import { useOwnedCards } from "@/lib/new-cards/use-owned-cards";
 import { WorldPlayerSearchCard } from "@/components/world/WorldPlayerSearchCard";
 import { useT } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
@@ -64,6 +66,9 @@ export function AddPlayerSearch({
 
   const slotLabel = fillAs(t("compareRadarChart", "personOrdinalTemplate"), { n: String(targetIndex + 1) });
   const existing = useMemo(() => new Set(existingIds), [existingIds]);
+  // 検索語の入力前は My Team の所持カード（最大 OVR の高い順）を出す（スカッドの選手検索と同じ・2026-10-26）
+  const { owned } = useOwnedCards();
+  const ownedList = useMemo(() => ownedCardsForSlot(owned, null), [owned]);
   const full = targetIndex >= COMPARISON_MAX;
 
   useEffect(
@@ -176,9 +181,31 @@ export function AddPlayerSearch({
 
           <div aria-live="polite" className="mt-2">
             {state.kind === "idle" ? (
-              <p className="text-xs text-text-dim">
-                {fillAs(tas("minLengthPromptTemplate"), { min: String(MIN_QUERY_LEN) })}
-              </p>
+              <>
+                <p className="text-xs text-text-dim">
+                  {fillAs(tas("minLengthPromptTemplate"), { min: String(MIN_QUERY_LEN) })}
+                </p>
+                {ownedList.length > 0 ? (
+                  <div className="mt-2" data-testid="compare-search-owned">
+                    <p className="mb-1.5 text-2xs font-semibold text-text-dim">{t("myTeam", "pageTitle")}</p>
+                    <ul className="grid max-h-[55vh] grid-cols-1 gap-2 overflow-y-auto sm:grid-cols-2 xl:grid-cols-3">
+                      {ownedList.map((p) => {
+                        const dup = existing.has(p.worldCardId);
+                        return (
+                          <WorldPlayerSearchCard
+                            key={p.worldCardId}
+                            player={p}
+                            actionLabel={picking === p.worldCardId ? tas("addingLabel") : fillAs(tas("addToSlotTemplate"), { slot: slotLabel })}
+                            onPick={() => pick(p.worldCardId)}
+                            disabled={dup || picking != null}
+                            disabledReason={dup ? tas("alreadyAddedReason") : picking != null ? tas("processingReason") : null}
+                          />
+                        );
+                      })}
+                    </ul>
+                  </div>
+                ) : null}
+              </>
             ) : state.kind === "tooShort" ? (
               <p className="text-xs text-text-dim">
                 {fillAs(tas("tooShortTemplate"), { remaining: String(MIN_QUERY_LEN - q.trim().length) })}

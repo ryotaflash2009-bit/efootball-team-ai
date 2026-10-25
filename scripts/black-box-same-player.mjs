@@ -183,6 +183,15 @@ async function main() {
       const a = rows?.find((r) => r.id === RC_A);
       const o = rows?.find((r) => r.id === OTHER);
       record("[スカッドの選手検索] 入力前に所持カードを出す（置いたカードは押せない・所持の印）", Array.isArray(rows) && rows.length === 2 && !!a && a.disabled && !!o && !o.disabled && rows.every((r) => r.owned), JSON.stringify(rows));
+      // 比較の「選手を追加」も同じ（比較に入っているカードは押せない）
+      await go(client, `${BASE}/compare?ids=${RC_A}`);
+      await waitForCondition(async () => evalJson(client, `!![...document.querySelectorAll("button")].find((b) => /人目へ選手を追加/.test(b.textContent))`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+      await evalJson(client, `[...document.querySelectorAll("button")].find((b) => /人目へ選手を追加/.test(b.textContent))?.click()`);
+      await waitForCondition(async () => evalJson(client, `document.querySelectorAll('[data-testid="compare-search-owned"] > ul > li').length >= 2`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+      const crow = await evalJson(client, `[...document.querySelectorAll('[data-testid="compare-search-owned"] > ul > li')].map((li) => ({ id: li.querySelector('a[href^="/players/world/"]')?.getAttribute("href").split("/").pop() ?? null, disabled: !!li.querySelector("button")?.disabled }))`);
+      const ca = crow?.find((r) => r.id === RC_A);
+      const co = crow?.find((r) => r.id === OTHER);
+      record("[比較の選手を追加] 入力前に所持カードを出す（比較に入っているカードは押せない）", Array.isArray(crow) && crow.length === 2 && !!ca && ca.disabled && !!co && !co.disabled, JSON.stringify(crow));
       await evalJson(client, `localStorage.removeItem(${JSON.stringify(KEY)})`);
     }
     // 先発の所属の内訳（2026-10-11）: LB と RB に同じ国籍の 2 枚 → 「国籍」に「<国籍> ×2」・選手一覧の絞り込みへのリンク

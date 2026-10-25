@@ -105,7 +105,7 @@
       "passed": 168,
       "total": 168,
       "seconds": 88,
-      "ranAt": "2026-10-25T15:25:02.784Z",
+      "ranAt": "2026-10-25T16:01:44.357Z",
       "line": "168/168 PASS",
       "fails": [],
       "report": null
@@ -115,8 +115,8 @@
       "status": "pass",
       "passed": 74,
       "total": 74,
-      "seconds": 3,
-      "ranAt": "2026-10-25T15:26:30.667Z",
+      "seconds": 2,
+      "ranAt": "2026-10-25T16:03:12.616Z",
       "line": "[black-box-compare] 74/74 PASS",
       "fails": [],
       "report": "compare.md"
@@ -170,8 +170,8 @@
       "status": "pass",
       "passed": 16,
       "total": 16,
-      "seconds": 9,
-      "ranAt": "2026-10-25T15:32:08.703Z",
+      "seconds": 8,
+      "ranAt": "2026-10-25T16:03:14.788Z",
       "line": "[manager-compare] 16/16 PASS (ids=65,1,56)",
       "fails": [],
       "report": null
@@ -355,11 +355,11 @@
     "same-player": {
       "name": "same-player",
       "status": "pass",
-      "passed": 15,
-      "total": 15,
+      "passed": 16,
+      "total": 16,
       "seconds": 23,
-      "ranAt": "2026-10-25T15:58:55.200Z",
-      "line": "[black-box-same-player] 15/15 PASS",
+      "ranAt": "2026-10-25T16:03:23.180Z",
+      "line": "[black-box-same-player] 16/16 PASS",
       "fails": [],
       "report": "same-player.md"
     },
@@ -507,5 +507,5 @@
       "report": null
     }
   },
-  "updatedAt": "2026-10-25T15:59:18.091Z"
+  "updatedAt": "2026-10-25T16:03:45.903Z"
 }

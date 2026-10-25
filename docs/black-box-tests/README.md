@@ -16,8 +16,8 @@
 | ✅ 合格 | best-xi-optimization | 42/42 | 17 | 2026-10-25 15:24 | [best-xi-optimization.md](./best-xi-optimization.md) |
 | ✅ 合格 | boosters | 54/54 | 1 | 2026-10-25 15:24 | [boosters.md](./boosters.md) |
 | ✅ 合格 | community | 41/41 | 15 | 2026-10-25 15:24 | [community.md](./community.md) |
-| ✅ 合格 | compare | 74/74 | 3 | 2026-10-25 15:26 | [compare.md](./compare.md) |
-| ✅ 合格 | compare-ability-editor | 168/168 | 88 | 2026-10-25 15:25 | — |
+| ✅ 合格 | compare | 74/74 | 2 | 2026-10-25 16:03 | [compare.md](./compare.md) |
+| ✅ 合格 | compare-ability-editor | 168/168 | 88 | 2026-10-25 16:01 | — |
 | ✅ 合格 | cost-rule | 11/11 | 3 | 2026-10-25 15:26 | — |
 | ✅ 合格 | diagnosis-facts | 16/16 | 5 | 2026-10-25 15:26 | — |
 | ✅ 合格 | favorites | 32/32 | 1 | 2026-10-25 15:53 | — |
@@ -26,7 +26,7 @@
 | ✅ 合格 | hydration-seeded | 107/107 | 278 | 2026-10-25 15:53 | — |
 | ✅ 合格 | local-backup | 28/28 | 41 | 2026-10-25 15:31 | [local-backup.md](./local-backup.md) |
 | ✅ 合格 | local-posts（社内向けページ） | 32/32 | 79 | 2026-10-25 15:14 | [local-posts.md](./local-posts.md) |
-| ✅ 合格 | manager-compare | 16/16 | 9 | 2026-10-25 15:32 | — |
+| ✅ 合格 | manager-compare | 16/16 | 8 | 2026-10-25 16:03 | — |
 | ✅ 合格 | manager-picker | 35/35 | 6 | 2026-10-25 15:32 | [manager-picker.md](./manager-picker.md) |
 | ✅ 合格 | managers | 43/43 | 2 | 2026-10-25 15:32 | [managers.md](./managers.md) |
 | ✅ 合格 | my-builds | 100/100 | 1 | 2026-10-25 15:32 | [my-builds.md](./my-builds.md) |
@@ -40,7 +40,7 @@
 | ✅ 合格 | public-signup-limited | 117/117 | 103 | 2026-10-25 15:33 | [public-signup-limited.md](./public-signup-limited.md) |
 | ✅ 合格 | release-gate | 2/2 | 581 | 2026-10-25 15:35 | — |
 | ✅ 合格 | rls-test（社内向けページ） | 71/71 | 12 | 2026-10-25 15:16 | [rls-test.md](./rls-test.md) |
-| ✅ 合格 | same-player | 15/15 | 23 | 2026-10-25 15:58 | [same-player.md](./same-player.md) |
+| ✅ 合格 | same-player | 16/16 | 23 | 2026-10-25 16:03 | [same-player.md](./same-player.md) |
 | ✅ 合格 | saved-filters | 11/11 | 6 | 2026-10-25 15:45 | — |
 | ✅ 合格 | share-build-link | 6/6 | 2 | 2026-10-25 15:45 | — |
 | ✅ 合格 | share-card | 24/24 | 59 | 2026-10-25 15:45 | [share-card.md](./share-card.md) |
