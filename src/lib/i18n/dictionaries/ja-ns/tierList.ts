@@ -19,6 +19,7 @@ const tierList: Dictionary["tierList"] = {
   entryTemplate: "最大 OVR {ovr}・{rank} 位（上位 {pct}%）",
   showMoreTemplate: "残り {count} 件を表示",
   dataUnavailable: "選手データを読み込めませんでした。時間をおいてもう一度お試しください。",
+  newCardsLinkTemplate: "{position} の新しいカードを見る",
 };
 
 registerJaNamespace("tierList", tierList);

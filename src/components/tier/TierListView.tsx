@@ -75,8 +75,11 @@ export function TierListView({
         ))}
       </nav>
 
-      <p className="text-xs text-text-muted" data-testid="tier-population">
-        {fillMessage(tt("populationTemplate"), { position, count: String(population) })}
+      <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-xs text-text-muted" data-testid="tier-population">
+        <span>{fillMessage(tt("populationTemplate"), { position, count: String(population) })}</span>
+        <Link href={`/players/new?position=${position}`} className="text-accent hover:underline" data-testid="tier-new-cards-link">
+          {fillMessage(tt("newCardsLinkTemplate"), { position })}
+        </Link>
       </p>
 
       {unavailableReason ? (
