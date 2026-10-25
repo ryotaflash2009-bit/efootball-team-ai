@@ -538,8 +538,9 @@ const part: PartialDictionary = {
     httpMethodLabel: "HTTP-Methode",
     fetchedAtLabel: "Abgerufen am",
     noSourceInfo: "Keine Quellenangaben verfügbar.",
-    futureHeading: "Für eine künftige Version geplant",
-    futureDescription: "Attribute (Angriff/Abwehr/Physis), Fähigkeiten, Spielstile, positionsspezifische Gesamtwertung, Entwicklung, Booster, Tiers und Spielervergleich. Diese werden nach weiterer Recherche zu den spielerbezogenen Daten von eFHUB umgesetzt.",
+    worldDetailHeading: "Werte, Fähigkeiten, Entwicklung & Vergleich",
+    worldDetailDescription: "Dies ist die alte Seite. Werte, Fähigkeiten, Spielstil, Entwicklungsrechner, Booster und Vergleich findest du auf der World-Kartenseite.",
+    worldDetailLink: "World-Kartenseite öffnen",
     imageProxyNote: "Spielerbilder werden über unseren eigenen Proxy (/api/player-image/[id]) von efimg.com abgerufen.",
   },
   diagnosisPerspectives: {

@@ -538,8 +538,9 @@ const part: PartialDictionary = {
     httpMethodLabel: "Méthode HTTP",
     fetchedAtLabel: "Récupéré le",
     noSourceInfo: "Aucune information de source disponible.",
-    futureHeading: "Prévu pour une version future",
-    futureDescription: "Statistiques (attaque/défense/physique), compétences, styles de jeu, note générale par poste, progression, boosters, tiers et comparaison de joueurs. Ces éléments seront implémentés après des recherches supplémentaires sur les données par joueur d’eFHUB.",
+    worldDetailHeading: "Statistiques, compétences, progression et comparaison",
+    worldDetailDescription: "Ceci est l'ancienne page. Les statistiques, compétences, style de jeu, calcul de progression, boosters et comparaison se trouvent sur la page de la carte World.",
+    worldDetailLink: "Ouvrir la page de la carte World",
     imageProxyNote: "Les images des joueurs sont récupérées depuis efimg.com via notre propre proxy (/api/player-image/[id]).",
   },
   diagnosisPerspectives: {

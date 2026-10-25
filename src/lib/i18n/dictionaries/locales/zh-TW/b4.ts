@@ -538,8 +538,9 @@ const part: PartialDictionary = {
     httpMethodLabel: "HTTP 方法",
     fetchedAtLabel: "取得時間",
     noSourceInfo: "沒有可用的來源資訊。",
-    futureHeading: "預計於未來版本提供",
-    futureDescription: "能力值（進攻／防守／身體）、技能、球員風格、各位置綜合能力值、培養、加成、等級及球員比較。這些功能將在進一步研究 eFHUB 的個別球員資料後實作。",
+    worldDetailHeading: "能力值，技能，培養，比較",
+    worldDetailDescription: "此頁面為舊版。能力值，技能，打法風格，培養計算，加成和球員比較請在 World 卡的頁面查看。",
+    worldDetailLink: "開啟 World 卡的頁面",
     imageProxyNote: "球員圖片透過我們自己的代理（/api/player-image/[id]）從 efimg.com 取得。",
   },
   diagnosisPerspectives: {

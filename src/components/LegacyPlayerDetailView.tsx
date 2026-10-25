@@ -97,8 +97,12 @@ export function LegacyPlayerDetailView({ player, meta }: { player: LegacyPlayer;
       </section>
 
       <section className="rounded-card border border-dashed border-border bg-surface p-5">
-        <h2 className="text-base font-semibold">{tl("futureHeading")}</h2>
-        <p className="mt-2 text-sm text-text-dim">{tl("futureDescription")}</p>
+        {/* 2026-10-25: 「今後のバージョンで実装予定」は実装済み（World のカードの画面）のため、そこへ案内する */}
+        <h2 className="text-base font-semibold">{tl("worldDetailHeading")}</h2>
+        <p className="mt-2 text-sm text-text-dim">{tl("worldDetailDescription")}</p>
+        <Link href={`/players/world/${encodeURIComponent(player.id)}`} className="mt-2 inline-block text-sm text-accent hover:underline" data-testid="legacy-world-detail-link">
+          {tl("worldDetailLink")}
+        </Link>
         <p className="mt-2 text-xs text-text-dim/70">{tl("imageProxyNote")}</p>
       </section>
     </div>

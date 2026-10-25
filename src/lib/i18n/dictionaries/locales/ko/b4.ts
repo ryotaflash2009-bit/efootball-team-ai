@@ -538,8 +538,9 @@ const part: PartialDictionary = {
     httpMethodLabel: "HTTP 메서드",
     fetchedAtLabel: "가져온 일시",
     noSourceInfo: "출처 정보가 없습니다.",
-    futureHeading: "향후 버전에서 제공 예정",
-    futureDescription: "능력치(공격/수비/피지컬), 스킬, 플레이 스타일, 포지션별 종합, 육성, 부스터, 티어, 선수 비교. eFHUB의 선수별 데이터를 더 조사한 뒤 구현할 예정입니다.",
+    worldDetailHeading: "능력치, 스킬, 육성, 비교",
+    worldDetailDescription: "이 화면은 이전 형식입니다. 능력치, 스킬, 플레이 스타일, 육성 계산, 부스터, 선수 비교는 World 카드 화면에서 볼 수 있습니다.",
+    worldDetailLink: "World 카드 화면 열기",
     imageProxyNote: "선수 이미지는 자체 프록시(/api/player-image/[id])를 통해 efimg.com에서 가져옵니다.",
   },
   diagnosisPerspectives: {

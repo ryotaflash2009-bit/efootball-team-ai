@@ -2269,8 +2269,6 @@
  "legacyPlayerDetail.httpMethodLabel": "c00904931215",
  "legacyPlayerDetail.fetchedAtLabel": "65ac6dca10dd",
  "legacyPlayerDetail.noSourceInfo": "a198e9f1e359",
- "legacyPlayerDetail.futureHeading": "3bf2f405ee78",
- "legacyPlayerDetail.futureDescription": "ca68909ac443",
  "legacyPlayerDetail.imageProxyNote": "94a87aa7aa80",
  "diagnosisPerspectives.title": "81a58e15dbd3",
  "diagnosisPerspectives.badge": "fe3c85b733a9",
@@ -4433,5 +4431,8 @@
  "bestXi.aboutMoreSummary": "7fa1719cf3d5",
  "localStorageNotice.bodySuffixBuilds": "1efc35c9f85f",
  "buildImportModal.safetySummary": "6da334e3d9a6",
- "squadList.heroDescription": "c9eff035a409"
+ "squadList.heroDescription": "c9eff035a409",
+ "legacyPlayerDetail.worldDetailHeading": "654ec172a603",
+ "legacyPlayerDetail.worldDetailDescription": "a33075b2bf5a",
+ "legacyPlayerDetail.worldDetailLink": "18d21d0c6e1b"
 }

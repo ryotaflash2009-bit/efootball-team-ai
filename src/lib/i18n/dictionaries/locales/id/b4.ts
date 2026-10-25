@@ -538,8 +538,9 @@ const part: PartialDictionary = {
     httpMethodLabel: "Metode HTTP",
     fetchedAtLabel: "Diambil pada",
     noSourceInfo: "Tidak ada informasi sumber.",
-    futureHeading: "Direncanakan untuk Versi Mendatang",
-    futureDescription: "Atribut (serangan/pertahanan/fisik), skill, gaya bermain, nilai keseluruhan per posisi, progresi, booster, tier, dan perbandingan pemain. Fitur ini akan diimplementasikan setelah riset lebih lanjut tentang data per pemain eFHUB.",
+    worldDetailHeading: "Statistik, skill, pengembangan & perbandingan",
+    worldDetailDescription: "Ini halaman versi lama. Statistik, skill, gaya bermain, kalkulator pengembangan, booster, dan perbandingan ada di halaman kartu World.",
+    worldDetailLink: "Buka halaman kartu World",
     imageProxyNote: "Gambar pemain diambil dari efimg.com melalui proxy kami sendiri (/api/player-image/[id]).",
   },
   diagnosisPerspectives: {

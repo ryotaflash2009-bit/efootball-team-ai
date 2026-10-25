@@ -2913,9 +2913,9 @@ const en: Dictionary = {
     httpMethodLabel: "HTTP method",
     fetchedAtLabel: "Fetched at",
     noSourceInfo: "No source information available.",
-    futureHeading: "Planned for a Future Version",
-    futureDescription:
-      "Abilities (attack/defense/physical), skills, playing styles, position-specific overall, progression, boosters, tiers, and player compare. These will be implemented after further research into eFHUB's per-player data.",
+    worldDetailHeading: "Stats, skills, progression & comparison",
+    worldDetailDescription: "This is the legacy page. Stats, skills, playing style, progression calculator, boosters and comparison are on the World card page.",
+    worldDetailLink: "Open the World card page",
     imageProxyNote: "Player images are fetched from efimg.com via our own proxy (/api/player-image/[id]).",
   },
   worldFilters: {

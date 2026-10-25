@@ -14,9 +14,9 @@ const legacyPlayerDetail: Dictionary["legacyPlayerDetail"] = {
   httpMethodLabel: "HTTP メソッド",
   fetchedAtLabel: "取得日時",
   noSourceInfo: "取得元情報がありません。",
-  futureHeading: "今後のバージョンで実装予定",
-  futureDescription:
-    "能力値（攻撃/守備/身体能力）、スキル、プレースタイル、ポジション別総合値、育成、ブースター、Tier、選手比較。これらは eFHUB の個別選手データを追加調査したうえで実装します。",
+  worldDetailHeading: "能力値・スキル・育成・比較",
+  worldDetailDescription: "この画面は旧形式です。能力値・スキル・プレースタイル・育成の計算・ブースター・選手比較は、World のカードの画面で見られます。",
+  worldDetailLink: "World のカードの画面を開く",
   imageProxyNote: "選手画像は efimg.com から自前プロキシ（/api/player-image/[id]）経由で取得しています。",
   };
 
