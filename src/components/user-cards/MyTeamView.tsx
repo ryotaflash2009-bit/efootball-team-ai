@@ -19,8 +19,7 @@ import { resolveMyTeamBuildRefs } from "@/lib/progression/my-builds";
 import { UserCardFilters, DEFAULT_FILTER, type UserCardFilterState } from "./UserCardFilters";
 import { UserCardTile } from "./UserCardTile";
 import { LocalStorageNotice } from "./LocalStorageNotice";
-import { MyTeamAddDialog } from "./MyTeamAddDialog";
-import { MyTeamBuildPanel } from "./MyTeamBuildPanel";
+import dynamic from "next/dynamic";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Surface } from "@/components/ui/Surface";
@@ -35,6 +34,10 @@ import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { fillMessage } from "@/lib/i18n/message-format";
 import { usePageTitle } from "@/lib/i18n/use-page-title";
+
+// 編集のダイアログ・ビルドの画面は開いたときだけ読み込む（2026-10-28）
+const MyTeamAddDialog = dynamic(() => import("./MyTeamAddDialog").then((m) => m.MyTeamAddDialog), { ssr: false });
+const MyTeamBuildPanel = dynamic(() => import("./MyTeamBuildPanel").then((m) => m.MyTeamBuildPanel), { ssr: false });
 
 export function MyTeamView() {
   const t = useT();
