@@ -1,12 +1,23 @@
 # プロジェクト基準状態（Project Baseline）
 
-最終更新: 2026-10-06（TeamAIXI v1.0 の公開後）
+最終更新: 2026-10-28（夜間の作業 #360〜#376 の後）
 
 **現在の完全成功ベースライン**。新セッションが最初に読む必須文書の 1 つ。
 値は「直前の完全成功マイルストーンの完了報告」＋「現在のファイル状態」を根拠に更新する。
 ベースライン確認のために全テスト・全ブラックボックスを無条件で再実行しない。
 
-## 最新の検証値（2026-10-06・TeamAIXI v1.0 の公開後）
+## 最新の検証値（2026-10-28・main 3d08cad）
+
+| 項目 | 値 |
+|---|---|
+| `npm run test`（CI の Unit tests・run 40687483574） | 391 テストファイル合格（2 skip・計 393）・5351 テスト合格（37 skip・計 5388） |
+| ローカルの black-box（`node scripts/black-box-all.mjs`・#375 のコード） | 46/46（通常のビルドで 41・社内向けページを有効にしたビルドで 5） |
+| 公開 black-box（総合・8 viewport・本番・#375 の反映の後） | 608/608・性能 14/14・security 20/20・メモリ OK |
+| 公開 hydration-seeded（本番・保存データあり） | 107/107 |
+
+注: ローカルの `vitest` は Windows のアプリケーション制御が rolldown のネイティブバイナリを止めるため起動しない（2026-10-25〜）。単体テストの件数は CI の値を使う。
+
+## 以前の検証値（2026-10-06・TeamAIXI v1.0 の公開後）
 
 v1.0 のリリースの証跡は `docs/production-readiness/evidence/2026-10-05-teamaixi-v1-release.json`（tag `v1.0.0`・main b72d252）。
 
@@ -23,7 +34,7 @@ v1.0 のリリースの証跡は `docs/production-readiness/evidence/2026-10-05-
 | 毎時の検出 | cron `17 * * * *`。観測中（2026-10-06〜13・`hourly-detection-observation.md`） |
 | World / Managers（公開） | 13,372 / 69（applied-state と一致） |
 
-## 最新の検証値（2026-10-02・PR #104 の後）
+## 以前の検証値（2026-10-02・PR #104 の後）
 
 詳細は `docs/production-readiness/evidence/2026-10-02-overnight.json`（前回: `2026-10-02-backup-cards-posts.json`）。
 
@@ -39,7 +50,7 @@ v1.0 のリリースの証跡は `docs/production-readiness/evidence/2026-10-05-
 | npm audit | critical 0・high 1（Next 15 内の postcss・ビルド時のみ）・moderate 1 |
 | Next.js | 15.5.27 |
 
-## 最新の検証値（2026-09-27・PR #87〜#92 の後）
+## 以前の検証値（2026-09-27・PR #87〜#92 の後）
 
 下の表（2026-09-06）より新しい値。詳細は `docs/production-readiness/evidence/auth-readiness-f071-f073-2026-09-27.json`。
 
