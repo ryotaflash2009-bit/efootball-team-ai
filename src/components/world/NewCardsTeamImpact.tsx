@@ -11,6 +11,9 @@ import { fillMessage } from "@/lib/i18n/message-format";
 import { Surface } from "@/components/ui/Surface";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { newCardTeamImpact, type ImpactCard } from "@/lib/new-cards/team-impact";
+import { squadsStrengthenedByCard, type SquadFit } from "@/lib/new-cards/card-squad-fit";
+import { useSavedSquadFitInputs } from "./useSavedSquadFitInputs";
+import { SquadFitLinks } from "./SquadFitLinks";
 
 const SHOW = 12;
 const SHOW_NEW_POSITIONS = 6;
@@ -27,6 +30,17 @@ export function NewCardsTeamImpact({ newCards }: { newCards: ImpactCard[] }) {
   const { ownedIds, owned, scopeStatus } = useOwnedCards();
   const impacts = useMemo(() => newCardTeamImpact(newCards, owned), [newCards, owned]);
   const rows = useMemo(() => [...impacts.filter((x) => x.delta != null).slice(0, SHOW), ...impacts.filter((x) => x.delta == null).slice(0, SHOW_NEW_POSITIONS)], [impacts]);
+  // 各行のカードで強くなる保存スカッド（2026-10-28・パック診断と同じ）
+  const squadInputs = useSavedSquadFitInputs();
+  const fitsById = useMemo(() => {
+    const m = new Map<string, SquadFit[]>();
+    if (!squadInputs || squadInputs.length === 0) return m;
+    for (const x of rows) {
+      const f = squadsStrengthenedByCard(x.card, squadInputs);
+      if (f.length > 0) m.set(x.card.worldCardId, f);
+    }
+    return m;
+  }, [rows, squadInputs]);
   const [all, setAll] = useState(false);
 
   if (scopeStatus === "loading" || newCards.length === 0) return null;
@@ -73,6 +87,7 @@ export function NewCardsTeamImpact({ newCards }: { newCards: ImpactCard[] }) {
                       {t("packCheck", "compareAbilities")}
                     </Link>
                   ) : null}
+                  <SquadFitLinks fits={fitsById.get(x.card.worldCardId)} testId="new-cards-squad-fit" />
                 </li>
               ))}
             </ul>
