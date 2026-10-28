@@ -192,8 +192,8 @@
       "status": "pass",
       "passed": 107,
       "total": 107,
-      "seconds": 281,
-      "ranAt": "2026-10-28T12:46:26.856Z",
+      "seconds": 283,
+      "ranAt": "2026-10-28T13:21:56.017Z",
       "line": "107/107 PASS",
       "fails": [],
       "report": null
@@ -247,8 +247,8 @@
       "status": "pass",
       "passed": 100,
       "total": 100,
-      "seconds": 0,
-      "ranAt": "2026-10-25T20:01:07.926Z",
+      "seconds": 1,
+      "ranAt": "2026-10-28T13:26:39.260Z",
       "line": "[black-box-my-builds] 100/100 PASS",
       "fails": [],
       "report": "my-builds.md"
@@ -355,11 +355,11 @@
     "same-player": {
       "name": "same-player",
       "status": "pass",
-      "passed": 23,
-      "total": 23,
-      "seconds": 27,
-      "ranAt": "2026-10-28T12:52:50.288Z",
-      "line": "[black-box-same-player] 23/23 PASS",
+      "passed": 24,
+      "total": 24,
+      "seconds": 31,
+      "ranAt": "2026-10-28T13:26:40.560Z",
+      "line": "[black-box-same-player] 24/24 PASS",
       "fails": [],
       "report": "same-player.md"
     },
@@ -379,8 +379,8 @@
       "status": "pass",
       "passed": 6,
       "total": 6,
-      "seconds": 2,
-      "ranAt": "2026-10-25T20:13:58.154Z",
+      "seconds": 3,
+      "ranAt": "2026-10-28T13:27:11.205Z",
       "line": "6/6 PASS",
       "fails": [],
       "report": null
@@ -468,7 +468,7 @@
       "passed": 74,
       "total": 74,
       "seconds": 1,
-      "ranAt": "2026-10-25T20:15:46.198Z",
+      "ranAt": "2026-10-28T13:27:13.867Z",
       "line": "[black-box-ui] 74/74 PASS",
       "fails": [],
       "report": "ui.md"
@@ -489,8 +489,8 @@
       "status": "pass",
       "passed": 93,
       "total": 93,
-      "seconds": 8,
-      "ranAt": "2026-10-25T20:15:47.560Z",
+      "seconds": 12,
+      "ranAt": "2026-10-28T13:27:14.723Z",
       "line": "[black-box-world-ui] 93/93 PASS",
       "fails": [],
       "report": "world-ui.md"
@@ -507,5 +507,5 @@
       "report": null
     }
   },
-  "updatedAt": "2026-10-28T12:53:17.546Z"
+  "updatedAt": "2026-10-28T13:27:26.860Z"
 }
