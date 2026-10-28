@@ -631,6 +631,7 @@ const part: PartialDictionary = {
     searchNote: "与搜索相符的暂定卡（根据其他公开信息制作的临时数据）。正式数据到达后会进入下方的普通列表。",
     staleNoticeTemplate: "正式数据（eFootball World）已有 {days} 天未导入（最后导入：{date}）。在此期间的新卡以暂定卡（根据其他公开信息制作的临时数据）显示。",
     homeUpgradeTemplate: "新卡中有 {count} 张比你的 My Team 更强 → 查看",
+    homeOwnedSquadsTemplate: "已拥有的卡可加强 {count} 个阵容 → 查看",
     showAllTemplate: "全部显示（{count} 条）",
     showLess: "收起",
     showMoreCardsTemplate: "显示其余 {count} 张",

@@ -631,6 +631,7 @@ const part: PartialDictionary = {
     searchNote: "Carte provvisorie che corrispondono alla ricerca (dati temporanei da altre informazioni pubbliche). Passano all'elenco normale qui sotto quando arrivano i dati ufficiali.",
     staleNoticeTemplate: "I dati ufficiali (eFootball World) non vengono importati da {days} giorni (ultima importazione: {date}). Le nuove carte da allora sono mostrate come carte provvisorie (dati temporanei ricavati da altre informazioni pubbliche).",
     homeUpgradeTemplate: "{count} nuove carte sono più forti del tuo My Team → Vedi",
+    homeOwnedSquadsTemplate: "Le tue carte possono rafforzare {count} delle tue rose → Vedi",
     showAllTemplate: "Mostra tutto ({count})",
     showLess: "Mostra meno",
     showMoreCardsTemplate: "Mostra altre {count}",

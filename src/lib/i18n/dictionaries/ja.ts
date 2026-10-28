@@ -5281,6 +5281,7 @@ export interface Dictionary {
     searchNote: string;
     staleNoticeTemplate: string;
     homeUpgradeTemplate: string;
+    homeOwnedSquadsTemplate: string;
     showAllTemplate: string;
     showLess: string;
     showMoreCardsTemplate: string;

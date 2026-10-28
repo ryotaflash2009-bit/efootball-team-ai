@@ -2,6 +2,7 @@
 
 import { ProvisionalCardsLink } from "@/components/world/ProvisionalCardsLink";
 import { HomeNewCardsUpgrade } from "@/components/world/HomeNewCardsUpgrade";
+import { HomeOwnedSquadUpgrades } from "@/components/world/HomeOwnedSquadUpgrades";
 import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
 import "@/lib/i18n/dictionaries/ja-ns/worldPlayerCard";
 import Link from "next/link";
@@ -241,6 +242,7 @@ export function HomePageView({
           <div className="mb-3 flex flex-wrap gap-2">
             <ProvisionalCardsLink count={provisionalCount} />
             <HomeNewCardsUpgrade />
+            <HomeOwnedSquadUpgrades />
           </div>
           {world ? (
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
