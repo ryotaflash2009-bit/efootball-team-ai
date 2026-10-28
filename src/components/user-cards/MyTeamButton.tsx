@@ -5,8 +5,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { useMyTeam } from "@/lib/user-cards/hooks";
 import { Icon } from "@/components/ui/Icon";
-import { MyTeamAddDialog } from "./MyTeamAddDialog";
+import dynamic from "next/dynamic";
 import { useT } from "@/lib/i18n/LocaleContext";
+
+// 追加のダイアログは押したときだけ読み込む（一覧のカードごとに置くため最初の JS を軽く・2026-10-28）
+const MyTeamAddDialog = dynamic(() => import("./MyTeamAddDialog").then((m) => m.MyTeamAddDialog), { ssr: false });
 
 /**
  * My Team 追加ボタン（共通）。
@@ -79,12 +82,7 @@ export function MyTeamButton({
       {!available ? (
         <span className="mt-0.5 text-2xs text-warning">{t("myTeamButton", "unavailableNote")}</span>
       ) : null}
-      <MyTeamAddDialog
-        worldCardId={worldCardId}
-        playerName={playerName}
-        open={open}
-        onClose={() => setOpen(false)}
-      />
+      {open ? <MyTeamAddDialog worldCardId={worldCardId} playerName={playerName} open onClose={() => setOpen(false)} /> : null}
     </span>
   );
 }

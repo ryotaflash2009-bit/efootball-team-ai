@@ -16,8 +16,8 @@
       "status": "pass",
       "passed": 164,
       "total": 164,
-      "seconds": 25,
-      "ranAt": "2026-10-28T12:26:47.084Z",
+      "seconds": 23,
+      "ranAt": "2026-10-28T14:13:28.314Z",
       "line": "[black-box-account-scoped-storage] 164/164 PASS",
       "fails": [],
       "report": "account-scoped-storage.md"
@@ -149,7 +149,7 @@
       "passed": 32,
       "total": 32,
       "seconds": 1,
-      "ranAt": "2026-10-25T19:55:28.678Z",
+      "ranAt": "2026-10-28T14:13:51.367Z",
       "line": "[black-box-favorites] 32/32 PASS",
       "fails": [],
       "report": null
@@ -192,8 +192,8 @@
       "status": "pass",
       "passed": 107,
       "total": 107,
-      "seconds": 282,
-      "ranAt": "2026-10-28T13:58:02.650Z",
+      "seconds": 279,
+      "ranAt": "2026-10-28T14:13:52.363Z",
       "line": "107/107 PASS",
       "fails": [],
       "report": null
@@ -259,7 +259,7 @@
       "passed": 98,
       "total": 98,
       "seconds": 15,
-      "ranAt": "2026-10-28T12:31:51.993Z",
+      "ranAt": "2026-10-28T14:18:30.917Z",
       "line": "[black-box-my-team-cloud] 98/98 PASS",
       "fails": [],
       "report": "my-team-cloud.md"
@@ -269,8 +269,8 @@
       "status": "pass",
       "passed": 35,
       "total": 35,
-      "seconds": 33,
-      "ranAt": "2026-10-28T13:09:59.550Z",
+      "seconds": 34,
+      "ranAt": "2026-10-28T14:18:46.344Z",
       "line": "[black-box-new-cards] 35/35 PASS",
       "fails": [],
       "report": "new-cards.md"
@@ -280,8 +280,8 @@
       "status": "pass",
       "passed": 17,
       "total": 17,
-      "seconds": 15,
-      "ranAt": "2026-10-28T13:10:32.902Z",
+      "seconds": 14,
+      "ranAt": "2026-10-28T14:19:19.938Z",
       "line": "[black-box-pack-check] 17/17 PASS",
       "fails": [],
       "report": "pack-check.md"
@@ -490,7 +490,7 @@
       "passed": 93,
       "total": 93,
       "seconds": 11,
-      "ranAt": "2026-10-28T14:03:17.000Z",
+      "ranAt": "2026-10-28T14:19:33.902Z",
       "line": "[black-box-world-ui] 93/93 PASS",
       "fails": [],
       "report": "world-ui.md"
@@ -507,5 +507,5 @@
       "report": null
     }
   },
-  "updatedAt": "2026-10-28T14:03:27.973Z"
+  "updatedAt": "2026-10-28T14:19:44.451Z"
 }
