@@ -11,7 +11,6 @@ import { ProvisionalCardNotice } from "@/components/world/ProvisionalCardNotice"
 import { SamePlayerOtherCards } from "@/components/world/SamePlayerOtherCards";
 import { SimilarCards } from "@/components/world/SimilarCards";
 import { MyTeamFitPanel } from "@/components/world/MyTeamFitPanel";
-import { SquadFitPanel } from "@/components/world/SquadFitPanel";
 import Link from "next/link";
 import { useMemo } from "react";
 import { playersFilterHref } from "@/lib/world/filter-patterns";
@@ -32,6 +31,9 @@ const NOT_YET_FIXED_KEYS = ["Weak Foot Usage", "Weak Foot Accuracy", "Form", "In
  * 育成タブ（育成の計算・ブースター・保存）は重いため、タブを開いたときに読み込む（2026-10-05: 選手詳細の初回の JS を減らす）。
  * ?tab=progression で開いた場合はサーバーで描画される（next/dynamic の ssr は既定で有効）。
  */
+// 保存スカッドを読む欄はブラウザーの中だけ（サーバーでは常に空）。最初の JS から外す（2026-10-28）
+const SquadFitPanel = dynamic(() => import("@/components/world/SquadFitPanel").then((m) => m.SquadFitPanel), { ssr: false });
+
 const ProgressionPanel = dynamic(() => import("@/components/world/progression/ProgressionPanel").then((m) => m.ProgressionPanel), {
   loading: () => <LoadingState variant="cards" />,
 });
