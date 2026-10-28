@@ -23,7 +23,7 @@
 | ✅ 合格 | favorites | 32/32 | 1 | 2026-10-25 19:55 | — |
 | ✅ 合格 | final-alpha-readiness-copy（社内向けページ） | 37/37 | 5 | 2026-10-25 15:14 | [final-alpha-readiness-copy.md](./final-alpha-readiness-copy.md) |
 | ✅ 合格 | game-plan | 18/18 | 6 | 2026-10-25 19:55 | — |
-| ✅ 合格 | hydration-seeded | 107/107 | 281 | 2026-10-28 12:46 | — |
+| ✅ 合格 | hydration-seeded | 107/107 | 278 | 2026-10-28 13:05 | — |
 | ✅ 合格 | local-backup | 28/28 | 41 | 2026-10-25 20:00 | [local-backup.md](./local-backup.md) |
 | ✅ 合格 | local-posts（社内向けページ） | 32/32 | 79 | 2026-10-25 15:14 | [local-posts.md](./local-posts.md) |
 | ✅ 合格 | manager-compare | 16/16 | 8 | 2026-10-25 20:00 | — |
@@ -31,8 +31,8 @@
 | ✅ 合格 | managers | 43/43 | 2 | 2026-10-25 20:01 | [managers.md](./managers.md) |
 | ✅ 合格 | my-builds | 100/100 | 0 | 2026-10-25 20:01 | [my-builds.md](./my-builds.md) |
 | ✅ 合格 | my-team-cloud | 98/98 | 15 | 2026-10-28 12:31 | [my-team-cloud.md](./my-team-cloud.md) |
-| ✅ 合格 | new-cards | 35/35 | 31 | 2026-10-25 20:01 | [new-cards.md](./new-cards.md) |
-| ✅ 合格 | pack-check | 17/17 | 12 | 2026-10-25 20:01 | [pack-check.md](./pack-check.md) |
+| ✅ 合格 | new-cards | 35/35 | 33 | 2026-10-28 13:09 | [new-cards.md](./new-cards.md) |
+| ✅ 合格 | pack-check | 17/17 | 15 | 2026-10-28 13:10 | [pack-check.md](./pack-check.md) |
 | ✅ 合格 | phase-b5 | 24/24 | 0 | 2026-10-25 20:02 | — |
 | ✅ 合格 | phase-c | 17/17 | 0 | 2026-10-25 20:02 | — |
 | ✅ 合格 | progression | 99/99 | 1 | 2026-10-25 20:02 | [progression.md](./progression.md) |
@@ -40,7 +40,7 @@
 | ✅ 合格 | public-signup-limited | 117/117 | 102 | 2026-10-25 20:02 | [public-signup-limited.md](./public-signup-limited.md) |
 | ✅ 合格 | release-gate | 2/2 | 570 | 2026-10-25 20:03 | — |
 | ✅ 合格 | rls-test（社内向けページ） | 71/71 | 12 | 2026-10-25 15:16 | [rls-test.md](./rls-test.md) |
-| ✅ 合格 | same-player | 23/23 | 27 | 2026-10-28 12:52 | [same-player.md](./same-player.md) |
+| ✅ 合格 | same-player | 23/23 | 37 | 2026-10-28 13:10 | [same-player.md](./same-player.md) |
 | ✅ 合格 | saved-filters | 11/11 | 6 | 2026-10-25 20:13 | — |
 | ✅ 合格 | share-build-link | 6/6 | 2 | 2026-10-25 20:13 | — |
 | ✅ 合格 | share-card | 24/24 | 59 | 2026-10-25 20:14 | [share-card.md](./share-card.md) |
