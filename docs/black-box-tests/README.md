@@ -23,7 +23,7 @@
 | ✅ 合格 | favorites | 32/32 | 1 | 2026-10-25 19:55 | — |
 | ✅ 合格 | final-alpha-readiness-copy（社内向けページ） | 37/37 | 5 | 2026-10-25 15:14 | [final-alpha-readiness-copy.md](./final-alpha-readiness-copy.md) |
 | ✅ 合格 | game-plan | 18/18 | 6 | 2026-10-25 19:55 | — |
-| ✅ 合格 | hydration-seeded | 107/107 | 283 | 2026-10-28 13:21 | — |
+| ✅ 合格 | hydration-seeded | 107/107 | 279 | 2026-10-28 13:36 | — |
 | ✅ 合格 | local-backup | 28/28 | 41 | 2026-10-25 20:00 | [local-backup.md](./local-backup.md) |
 | ✅ 合格 | local-posts（社内向けページ） | 32/32 | 79 | 2026-10-25 15:14 | [local-posts.md](./local-posts.md) |
 | ✅ 合格 | manager-compare | 16/16 | 8 | 2026-10-25 20:00 | — |
@@ -40,7 +40,7 @@
 | ✅ 合格 | public-signup-limited | 117/117 | 102 | 2026-10-25 20:02 | [public-signup-limited.md](./public-signup-limited.md) |
 | ✅ 合格 | release-gate | 2/2 | 570 | 2026-10-25 20:03 | — |
 | ✅ 合格 | rls-test（社内向けページ） | 71/71 | 12 | 2026-10-25 15:16 | [rls-test.md](./rls-test.md) |
-| ✅ 合格 | same-player | 24/24 | 31 | 2026-10-28 13:26 | [same-player.md](./same-player.md) |
+| ✅ 合格 | same-player | 24/24 | 28 | 2026-10-28 13:40 | [same-player.md](./same-player.md) |
 | ✅ 合格 | saved-filters | 11/11 | 6 | 2026-10-25 20:13 | — |
 | ✅ 合格 | share-build-link | 6/6 | 3 | 2026-10-28 13:27 | — |
 | ✅ 合格 | share-card | 24/24 | 59 | 2026-10-25 20:14 | [share-card.md](./share-card.md) |
@@ -52,4 +52,5 @@
 | ✅ 合格 | support-contact（社内向けページ） | 39/39 | 4 | 2026-10-25 15:16 | [support-contact.md](./support-contact.md) |
 | ✅ 合格 | ui | 74/74 | 1 | 2026-10-28 13:27 | [ui.md](./ui.md) |
 | ✅ 合格 | world-sync | 35/35 | 1 | 2026-10-25 20:15 | — |
-| ✅ 合格 | world-ui | 93/93 | 12 | 2026-10-28 13:27 | [world-ui.md](./world-ui.md) |
+| ✅ 合格 | world-ui | 93/93 | 11 | 2026-10-28 13:41 | [world-ui.md](./world-ui.md) |
+
