@@ -5320,6 +5320,7 @@ const en: Dictionary = {
     showMoreTemplate: "Show {count} more",
     dataUnavailable: "Player data couldn't be loaded. Please try again later.",
     newCardsLinkTemplate: "See new {position} cards",
+    ownedSummaryTemplate: "You own: {list}",
   },
   provisionalCards: {
     badge: "Provisional",

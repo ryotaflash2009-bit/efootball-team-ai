@@ -609,6 +609,7 @@ const part: PartialDictionary = {
     showMoreTemplate: "Tampilkan {count} lagi",
     dataUnavailable: "Data pemain tidak dapat dimuat. Coba lagi nanti.",
     newCardsLinkTemplate: "Lihat kartu {position} baru",
+    ownedSummaryTemplate: "Milikmu: {list}",
   },
   provisionalCards: {
     badge: "Sementara",
