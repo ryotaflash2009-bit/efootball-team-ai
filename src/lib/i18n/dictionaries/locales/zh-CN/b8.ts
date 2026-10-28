@@ -609,6 +609,7 @@ const part: PartialDictionary = {
     showMoreTemplate: "显示其余 {count} 条",
     dataUnavailable: "无法加载球员数据，请稍后再试。",
     newCardsLinkTemplate: "查看 {position} 的新卡",
+    ownedSummaryTemplate: "你拥有：{list}",
   },
   provisionalCards: {
     badge: "暂定",

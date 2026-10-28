@@ -20,6 +20,7 @@ const tierList: Dictionary["tierList"] = {
   showMoreTemplate: "残り {count} 件を表示",
   dataUnavailable: "選手データを読み込めませんでした。時間をおいてもう一度お試しください。",
   newCardsLinkTemplate: "{position} の新しいカードを見る",
+  ownedSummaryTemplate: "あなたの所持: {list}",
 };
 
 registerJaNamespace("tierList", tierList);

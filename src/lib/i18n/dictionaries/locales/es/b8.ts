@@ -609,6 +609,7 @@ const part: PartialDictionary = {
     showMoreTemplate: "Mostrar {count} más",
     dataUnavailable: "No se pudieron cargar los datos de jugadores. Inténtalo más tarde.",
     newCardsLinkTemplate: "Ver cartas nuevas de {position}",
+    ownedSummaryTemplate: "Tienes: {list}",
   },
   provisionalCards: {
     badge: "Provisional",

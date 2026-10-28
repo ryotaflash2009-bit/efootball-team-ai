@@ -190,6 +190,15 @@ async function main() {
         const up = await evalJson(client, `[...document.querySelectorAll('[data-testid="squad-owned-upgrades-list"] > li')].map((li) => ({ id: li.dataset.worldCardId, pos: li.querySelector("span")?.textContent ?? "" }))`);
         record("[所持カードで強くできる枠] スカッドにいない所持のカードを同じポジションの空いている枠に出す（スカッドにいるカードは出さない）", Array.isArray(up) && up.some((r) => r.id === OTHER && r.pos === otherPos) && !up.some((r) => r.id === RC_A), `${otherPos} ${JSON.stringify(up)}`);
       }
+      // Tier: 所持のカードの数の要約（2026-10-28）。印（tier-owned）の数と要約の合計が一致する
+      {
+        await go(client, `${BASE}/tier/LB`);
+        await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="tier-owned"]')`), { timeoutMs: 15000, intervalMs: 300 }).catch(() => {});
+        const badges = await evalJson(client, `document.querySelectorAll('[data-testid="tier-owned"]').length`);
+        const summary = await evalJson(client, `document.querySelector('[data-testid="tier-owned-summary"]')?.textContent ?? ""`);
+        const total = [...summary.matchAll(/[SABC] (\d+)/g)].reduce((a, m) => a + Number(m[1]), 0);
+        record("[Tier] 所持のカードの数の要約（印の数と一致・無ければ出さない）", badges === 0 ? summary === "" : /^あなたの所持: /.test(summary) && total === badges, `badges=${badges} summary=${summary}`);
+      }
       // 比較の「選手を追加」も同じ（比較に入っているカードは押せない）
       await go(client, `${BASE}/compare?ids=${RC_A}`);
       await waitForCondition(async () => evalJson(client, `!![...document.querySelectorAll("button")].find((b) => /人目へ選手を追加/.test(b.textContent))`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});

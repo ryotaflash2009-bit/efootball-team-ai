@@ -5259,6 +5259,7 @@ export interface Dictionary {
     showMoreTemplate: string;
     dataUnavailable: string;
     newCardsLinkTemplate: string;
+    ownedSummaryTemplate: string;
   };
   provisionalCards: {
     badge: string;

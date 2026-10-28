@@ -4,7 +4,7 @@ import { GlossaryLink } from "@/components/public-info/GlossaryLink";
 import "@/lib/i18n/dictionaries/ja-ns/tierList";
 import "@/lib/i18n/dictionaries/ja-ns/worldPlayerCard";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import { fillMessage } from "@/lib/i18n/message-format";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
@@ -51,6 +51,12 @@ export function TierListView({
   const { locale } = useLocale();
   const tt = (k: Parameters<typeof t<"tierList">>[1]) => t("tierList", k);
   usePageTitle(tt("pageTitle"));
+  // このポジションの Tier に入っている所持のカードの数（2026-10-28）。hydration 中は空のスナップショットなので出ない
+  const { myTeam } = useMyTeam();
+  const ownedSummary = useMemo(() => {
+    const owned = new Set(myTeam.filter((r) => r.ownershipStatus === "owned" && !r.deletedAt).map((r) => r.worldCardId));
+    return TIERS.map((tier) => ({ tier, n: entries.filter((e) => e.tier === tier && owned.has(e.worldCardId)).length })).filter((x) => x.n > 0);
+  }, [myTeam, entries]);
 
   return (
     <div className="flex flex-col gap-4" data-testid="tier-list">
@@ -82,6 +88,11 @@ export function TierListView({
         <Link href={`/players/new?position=${position}`} className="text-accent hover:underline" data-testid="tier-new-cards-link">
           {fillMessage(tt("newCardsLinkTemplate"), { position })}
         </Link>
+        {ownedSummary.length > 0 ? (
+          <span className="text-success" data-testid="tier-owned-summary">
+            {fillMessage(tt("ownedSummaryTemplate"), { list: ownedSummary.map((x) => `${x.tier} ${x.n}`).join(" / ") })}
+          </span>
+        ) : null}
       </p>
 
       {unavailableReason ? (

@@ -609,6 +609,7 @@ const part: PartialDictionary = {
     showMoreTemplate: "{count} tane daha göster",
     dataUnavailable: "Oyuncu verileri yüklenemedi. Lütfen daha sonra tekrar deneyin.",
     newCardsLinkTemplate: "Yeni {position} kartlarını gör",
+    ownedSummaryTemplate: "Sahip oldukların: {list}",
   },
   provisionalCards: {
     badge: "Geçici",
