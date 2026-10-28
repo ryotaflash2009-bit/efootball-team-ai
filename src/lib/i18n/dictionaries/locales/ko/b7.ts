@@ -361,6 +361,8 @@ const part: PartialDictionary = {
     migrationLinkLabel: "로컬 데이터 이전 화면 열기",
     positionSummaryHeading: "포지션별 요약",
     positionSummaryIntro: "'보유' 카드를 등록 포지션별로 세고, 가장 강한 카드와 새 카드로 강화할 수 있는 장수를 표시합니다.",
+    squadFitHeading: "저장한 스쿼드를 강화할 수 있는 보유 카드",
+    squadFitIntro: "보유 카드 중 저장한 스쿼드의 같은 등록 포지션 슬롯에 현재 선수보다 높은 OVR로 들어가는 카드입니다. 스쿼드를 열고 '바꾸기'로 적용할 수 있습니다.",
     positionCountTemplate: "{count}장",
     positionNone: "아직 없음",
     positionFind: "이 포지션 찾기",

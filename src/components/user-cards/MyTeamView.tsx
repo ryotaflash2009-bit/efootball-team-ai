@@ -30,6 +30,7 @@ import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { YourBestPanel } from "@/components/titles/YourBestPanel";
 import { MyTeamPositionSummary } from "@/components/user-cards/MyTeamPositionSummary";
+import { MyTeamSquadFitPanel } from "@/components/user-cards/MyTeamSquadFitPanel";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { fillMessage } from "@/lib/i18n/message-format";
@@ -222,6 +223,7 @@ export function MyTeamView() {
           if (position && el && el.getBoundingClientRect().top > window.innerHeight * 0.75) el.scrollIntoView({ block: "start", behavior: "smooth" });
         }}
       />
+      <MyTeamSquadFitPanel />
 
       <div ref={listTopRef} className="scroll-mt-24">
         <UserCardFilters

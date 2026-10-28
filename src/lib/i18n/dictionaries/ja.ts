@@ -3114,6 +3114,8 @@ export interface Dictionary {
     migrationLinkLabel: string;
     positionSummaryHeading: string;
     positionSummaryIntro: string;
+    squadFitHeading: string;
+    squadFitIntro: string;
     positionCountTemplate: string;
     positionNone: string;
     positionFind: string;

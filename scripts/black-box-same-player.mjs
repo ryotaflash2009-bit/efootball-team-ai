@@ -244,6 +244,18 @@ async function main() {
       await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="pack-check-squad-fit"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
       const packFit = await evalJson(client, `[...document.querySelectorAll('[data-testid="pack-check-squad-fit"] a')].map((a) => a.getAttribute("href"))`);
       record("[パック診断] 引いたカードで強くなるスカッドへのリンク（入っているスカッドは出ない）", Array.isArray(packFit) && packFit.includes("/squads/sq_bbsquadfit01") && !packFit.includes("/squads/sq_bbsquadfit02"), JSON.stringify(packFit));
+      // My Team: 保存スカッドを強くできる所持カード（2026-10-28）
+      {
+        const KEY = "efootball-team-ai:local:guest:my-team:v1";
+        const now = new Date().toISOString();
+        const rec = { localRecordId: `mt_${OTHER}`, teamCardId: `tc_${OTHER}`, worldCardId: OTHER, ownershipStatus: "owned", usageStatus: "unused", selectedBuildId: null, favoriteBuildId: null, note: "", tags: [], addedAt: now, updatedAt: now, deletedAt: null, source: "local", syncStatus: "local_only" };
+        await evalJson(client, `localStorage.setItem(${JSON.stringify(KEY)}, ${JSON.stringify(JSON.stringify({ storageVersion: "my-team-storage/2026-08-30.v1", updatedAt: now, records: [rec] }))})`);
+        await go(client, `${BASE}/my-team`);
+        await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="my-team-squad-fit"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+        const mt = await evalJson(client, `[...document.querySelectorAll('[data-testid="my-team-squad-fit"] li[data-world-card-id="${OTHER}"] [data-testid="my-team-squad-fit-link"]')].map((a) => a.getAttribute("href"))`);
+        record("[My Team] 保存スカッドを強くできる所持カード（弱い RB のスカッドへのリンク・入っているスカッドは出ない）", Array.isArray(mt) && mt.includes("/squads/sq_bbsquadfit01") && !mt.includes("/squads/sq_bbsquadfit02"), JSON.stringify(mt));
+        await evalJson(client, `localStorage.removeItem(${JSON.stringify(KEY)})`);
+      }
     }
     // 先発の所属の内訳（2026-10-11）: LB と RB に同じ国籍の 2 枚 → 「国籍」に「<国籍> ×2」・選手一覧の絞り込みへのリンク
     {

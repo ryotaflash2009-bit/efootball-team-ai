@@ -361,6 +361,8 @@ const part: PartialDictionary = {
     migrationLinkLabel: "Yerel veri taşıma ekranını aç",
     positionSummaryHeading: "Mevkiye göre",
     positionSummaryIntro: "Sahip olunan kartlar kayıtlı mevkiye göre sayılır; en güçlü kartın ve kaç yeni kartın güçlendirme olacağı gösterilir.",
+    squadFitHeading: "Kayıtlı kadrolarını güçlendirebilecek sahip olduğun kartlar",
+    squadFitIntro: "Kayıtlı bir kadroda aynı kayıtlı mevkideki bir yuvaya mevcut oyuncudan daha yüksek OVR ile girecek sahip olduğun kartlar. Kadroyu açıp “Değiştir” ile uygulayabilirsin.",
     positionCountTemplate: "Kart: {count}",
     positionNone: "Henüz yok",
     positionFind: "Bu mevkiyi bul",
