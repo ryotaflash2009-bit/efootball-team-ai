@@ -8,7 +8,7 @@
 | 結果 | rail | 件数 | 秒 | 最後に実行 | 報告 |
 |---|---|---|---|---|---|
 | ✅ 合格 | ability-progression | 522/522 | 164 | 2026-10-25 19:47 | — |
-| ✅ 合格 | account-scoped-storage | 164/164 | 23 | 2026-10-28 14:13 | [account-scoped-storage.md](./account-scoped-storage.md) |
+| ✅ 合格 | account-scoped-storage | 164/164 | 23 | 2026-10-28 14:51 | [account-scoped-storage.md](./account-scoped-storage.md) |
 | ✅ 合格 | alpha-copy-fixes | 34/34 | 6 | 2026-10-25 19:50 | [alpha-copy-fixes.md](./alpha-copy-fixes.md) |
 | ✅ 合格 | auth-google | 71/71 | 25 | 2026-10-25 19:50 | [auth-google.md](./auth-google.md) |
 | ✅ 合格 | base-percentile | 115/115 | 117 | 2026-10-25 19:51 | [base-percentile.md](./base-percentile.md) |
@@ -23,14 +23,14 @@
 | ✅ 合格 | favorites | 32/32 | 1 | 2026-10-28 14:13 | — |
 | ✅ 合格 | final-alpha-readiness-copy（社内向けページ） | 37/37 | 5 | 2026-10-25 15:14 | [final-alpha-readiness-copy.md](./final-alpha-readiness-copy.md) |
 | ✅ 合格 | game-plan | 18/18 | 6 | 2026-10-25 19:55 | — |
-| ✅ 合格 | hydration-seeded | 107/107 | 279 | 2026-10-28 14:13 | — |
-| ✅ 合格 | local-backup | 28/28 | 41 | 2026-10-25 20:00 | [local-backup.md](./local-backup.md) |
+| ✅ 合格 | hydration-seeded | 107/107 | 278 | 2026-10-28 14:51 | — |
+| ✅ 合格 | local-backup | 28/28 | 41 | 2026-10-28 14:56 | [local-backup.md](./local-backup.md) |
 | ✅ 合格 | local-posts（社内向けページ） | 32/32 | 79 | 2026-10-25 15:14 | [local-posts.md](./local-posts.md) |
 | ✅ 合格 | manager-compare | 16/16 | 8 | 2026-10-25 20:00 | — |
 | ✅ 合格 | manager-picker | 35/35 | 5 | 2026-10-25 20:01 | [manager-picker.md](./manager-picker.md) |
 | ✅ 合格 | managers | 43/43 | 2 | 2026-10-25 20:01 | [managers.md](./managers.md) |
-| ✅ 合格 | my-builds | 100/100 | 1 | 2026-10-28 14:02 | [my-builds.md](./my-builds.md) |
-| ✅ 合格 | my-team-cloud | 98/98 | 15 | 2026-10-28 14:18 | [my-team-cloud.md](./my-team-cloud.md) |
+| ✅ 合格 | my-builds | 100/100 | 1 | 2026-10-28 14:57 | [my-builds.md](./my-builds.md) |
+| ✅ 合格 | my-team-cloud | 98/98 | 15 | 2026-10-28 14:57 | [my-team-cloud.md](./my-team-cloud.md) |
 | ✅ 合格 | new-cards | 35/35 | 34 | 2026-10-28 14:18 | [new-cards.md](./new-cards.md) |
 | ✅ 合格 | pack-check | 17/17 | 14 | 2026-10-28 14:19 | [pack-check.md](./pack-check.md) |
 | ✅ 合格 | phase-b5 | 24/24 | 0 | 2026-10-25 20:02 | — |
@@ -40,7 +40,7 @@
 | ✅ 合格 | public-signup-limited | 117/117 | 102 | 2026-10-25 20:02 | [public-signup-limited.md](./public-signup-limited.md) |
 | ✅ 合格 | release-gate | 2/2 | 570 | 2026-10-25 20:03 | — |
 | ✅ 合格 | rls-test（社内向けページ） | 71/71 | 12 | 2026-10-25 15:16 | [rls-test.md](./rls-test.md) |
-| ✅ 合格 | same-player | 24/24 | 29 | 2026-10-28 14:02 | [same-player.md](./same-player.md) |
+| ✅ 合格 | same-player | 24/24 | 29 | 2026-10-28 14:57 | [same-player.md](./same-player.md) |
 | ✅ 合格 | saved-filters | 11/11 | 6 | 2026-10-25 20:13 | — |
 | ✅ 合格 | share-build-link | 6/6 | 2 | 2026-10-28 14:03 | — |
 | ✅ 合格 | share-card | 24/24 | 59 | 2026-10-25 20:14 | [share-card.md](./share-card.md) |
