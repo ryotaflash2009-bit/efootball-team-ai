@@ -22,6 +22,7 @@ const provisionalCards: Dictionary["provisionalCards"] = {
   searchNote: "検索に合う暫定のカードです（ほかの公開情報から作った仮のデータ）。正式なデータが届くと、下の通常の一覧に入ります。",
   staleNoticeTemplate: "正式なデータ（eFootball World）の取り込みが {days} 日止まっています（最後の取り込み: {date}）。その間の新しいカードは、暫定のカード（ほかの公開情報から作った仮のデータ）で表示しています。",
   homeUpgradeTemplate: "新しいカードのうち {count} 枚が、あなたの My Team より強いです → 見る",
+  homeOwnedSquadsTemplate: "所持カードで {count} 個のスカッドを強くできます → 見る",
   showAllTemplate: "すべて表示（{count} 件）",
   showLess: "少なく表示",
   showMoreCardsTemplate: "残り {count} 枚を表示",

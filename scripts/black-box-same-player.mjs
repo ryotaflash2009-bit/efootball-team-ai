@@ -225,6 +225,11 @@ async function main() {
       await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="squad-list-owned-upgrades"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
       const listBadge = await evalJson(client, `(() => { const a = document.querySelector('[data-testid="squad-list-owned-upgrades"]'); return a ? { href: a.getAttribute("href"), text: a.textContent.trim() } : null; })()`);
       record("[スカッドの一覧] 所持カードで強くできる枠の数の印（スカッドへのリンク）", listBadge?.href === "/squads/sq_bbownedswap1" && /所持カードで [1-9]\d* 枠強くできます/.test(listBadge?.text ?? ""), JSON.stringify(listBadge));
+      // トップ: 所持カードで強くできるスカッドの数（2026-10-28）
+      await go(client, `${BASE}/`);
+      await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="home-owned-squad-upgrades"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+      const homeLink = await evalJson(client, `(() => { const a = document.querySelector('[data-testid="home-owned-squad-upgrades"]'); return a ? { href: a.getAttribute("href"), text: a.textContent.trim() } : null; })()`);
+      record("[トップ] 所持カードで強くできるスカッドの数（スカッドの一覧へ）", homeLink?.href === "/squads" && /所持カードで 1 個のスカッドを強くできます/.test(homeLink?.text ?? ""), JSON.stringify(homeLink));
       await go(client, `${BASE}/squads/sq_bbownedswap1`);
       const btn = `document.querySelector('[data-testid="squad-owned-upgrades-list"] > li[data-world-card-id="${OTHER}"] [data-testid="squad-owned-upgrade-apply"]')`;
       await waitForCondition(async () => evalJson(client, `!!${btn}`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});

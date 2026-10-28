@@ -631,6 +631,7 @@ const part: PartialDictionary = {
     searchNote: "Aramana uyan geçici kartlar (diğer açık bilgilerden oluşturulan geçici veri). Resmi veri gelince aşağıdaki normal listeye geçer.",
     staleNoticeTemplate: "Resmi veriler (eFootball World) {days} gündür içe aktarılmadı (son içe aktarma: {date}). O zamandan beri gelen yeni kartlar geçici kart olarak gösteriliyor (diğer açık bilgilerden oluşturulan geçici veri).",
     homeUpgradeTemplate: "{count} yeni kart My Team'inden daha güçlü → Gör",
+    homeOwnedSquadsTemplate: "Kendi kartların {count} kadronu güçlendirebilir → Gör",
     showAllTemplate: "Tümünü göster ({count})",
     showLess: "Daha az göster",
     showMoreCardsTemplate: "{count} tane daha göster",

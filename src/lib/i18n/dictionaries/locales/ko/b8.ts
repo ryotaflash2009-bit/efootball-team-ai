@@ -631,6 +631,7 @@ const part: PartialDictionary = {
     searchNote: "검색에 맞는 임시 카드입니다(다른 공개 정보로 만든 임시 데이터). 정식 데이터가 들어오면 아래 일반 목록으로 옮겨집니다.",
     staleNoticeTemplate: "정식 데이터(eFootball World)의 가져오기가 {days}일째 멈춰 있습니다(마지막 가져오기: {date}). 그동안의 새 카드는 임시 카드(다른 공개 정보로 만든 임시 데이터)로 표시합니다.",
     homeUpgradeTemplate: "새 카드 중 {count}장이 내 My Team보다 강합니다 → 보기",
+    homeOwnedSquadsTemplate: "보유 카드로 스쿼드 {count}개를 강화할 수 있습니다 → 보기",
     showAllTemplate: "모두 보기 ({count}건)",
     showLess: "접기",
     showMoreCardsTemplate: "나머지 {count}장 보기",
