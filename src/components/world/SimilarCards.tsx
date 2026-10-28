@@ -8,6 +8,7 @@ import { Surface } from "@/components/ui/Surface";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { useMyTeam } from "@/lib/user-cards/hooks";
+import { fetchJsonRetry } from "@/lib/fetch-json-retry";
 import "@/lib/i18n/dictionaries/ja-ns/worldPlayerCard";
 import { pickSimilarCards, similarCardsQuery, type SimilarCardSummary } from "@/lib/world/similar-cards";
 
@@ -39,9 +40,8 @@ export function SimilarCards({
     }
     const controller = new AbortController();
     (async () => {
-      const res = await fetch(`/api/world/players?${qs}`, { signal: controller.signal });
-      const json = res.ok ? ((await res.json()) as { players?: unknown[] }) : {};
-      setCards(pickSimilarCards(worldCardId, ovrMax, json.players ?? []));
+      const json = await fetchJsonRetry<{ players?: unknown[] }>(`/api/world/players?${qs}`, { signal: controller.signal });
+      setCards(pickSimilarCards(worldCardId, ovrMax, json?.players ?? []));
     })().catch(() => {
       if (!controller.signal.aborted) setCards([]);
     });
