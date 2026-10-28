@@ -361,6 +361,8 @@ const part: PartialDictionary = {
     migrationLinkLabel: "Ouvrir l’écran de migration des données locales",
     positionSummaryHeading: "Par poste",
     positionSummaryIntro: "Cartes possédées comptées par poste enregistré, avec votre carte la plus forte et le nombre de nouvelles cartes qui seraient une amélioration.",
+    squadFitHeading: "Cartes possédées qui renforceraient vos effectifs enregistrés",
+    squadFitIntro: "Cartes possédées qui occuperaient un emplacement du même poste enregistré dans un effectif enregistré avec un OVR supérieur au joueur actuel. Ouvrez l'effectif et utilisez « Échanger » pour l'appliquer.",
     positionCountTemplate: "Cartes : {count}",
     positionNone: "Aucune pour l'instant",
     positionFind: "Chercher ce poste",

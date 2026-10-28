@@ -47,6 +47,8 @@ const myTeam: Dictionary["myTeam"] = {
   migrationLinkLabel: "ローカルデータ移行画面を開く",
   positionSummaryHeading: "ポジション別のまとめ",
   positionSummaryIntro: "「所持」のカードを登録ポジションごとに数え、最も強いカードと、新しいカードで強くできる枚数を出しています。",
+  squadFitHeading: "保存スカッドを強くできる所持カード",
+  squadFitIntro: "「所持」のカードのうち、保存したスカッドの同じ登録ポジションの枠に、今の選手より OVR が高いかたちで入るものです。スカッド名を押すと開き、「入れ替える」で当てられます。",
   positionCountTemplate: "{count} 枚",
   positionNone: "まだありません",
   positionFind: "このポジションを探す",

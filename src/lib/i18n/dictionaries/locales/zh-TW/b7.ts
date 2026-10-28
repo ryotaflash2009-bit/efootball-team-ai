@@ -361,6 +361,8 @@ const part: PartialDictionary = {
     migrationLinkLabel: "開啟本機資料移轉畫面",
     positionSummaryHeading: "依位置彙整",
     positionSummaryIntro: "依登錄位置統計擁有的卡，顯示最強的卡以及能用新卡強化的數量。",
+    squadFitHeading: "能加強已儲存陣容的已擁有卡",
+    squadFitIntro: "已擁有的卡中，能以高於目前球員的 OVR 進入已儲存陣容中相同登錄位置的卡。開啟陣容後可用「更換」套用。",
     positionCountTemplate: "{count} 張",
     positionNone: "還沒有",
     positionFind: "搜尋此位置",
