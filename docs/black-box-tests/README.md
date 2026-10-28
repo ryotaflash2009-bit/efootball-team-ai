@@ -31,8 +31,8 @@
 | ✅ 合格 | managers | 43/43 | 2 | 2026-10-25 20:01 | [managers.md](./managers.md) |
 | ✅ 合格 | my-builds | 100/100 | 1 | 2026-10-28 13:26 | [my-builds.md](./my-builds.md) |
 | ✅ 合格 | my-team-cloud | 98/98 | 15 | 2026-10-28 12:31 | [my-team-cloud.md](./my-team-cloud.md) |
-| ✅ 合格 | new-cards | 35/35 | 31 | 2026-10-25 20:01 | [new-cards.md](./new-cards.md) |
-| ✅ 合格 | pack-check | 17/17 | 12 | 2026-10-25 20:01 | [pack-check.md](./pack-check.md) |
+| ✅ 合格 | new-cards | 35/35 | 33 | 2026-10-28 13:09 | [new-cards.md](./new-cards.md) |
+| ✅ 合格 | pack-check | 17/17 | 15 | 2026-10-28 13:10 | [pack-check.md](./pack-check.md) |
 | ✅ 合格 | phase-b5 | 24/24 | 0 | 2026-10-25 20:02 | — |
 | ✅ 合格 | phase-c | 17/17 | 0 | 2026-10-25 20:02 | — |
 | ✅ 合格 | progression | 99/99 | 1 | 2026-10-25 20:02 | [progression.md](./progression.md) |
@@ -53,4 +53,3 @@
 | ✅ 合格 | ui | 74/74 | 1 | 2026-10-28 13:27 | [ui.md](./ui.md) |
 | ✅ 合格 | world-sync | 35/35 | 1 | 2026-10-25 20:15 | — |
 | ✅ 合格 | world-ui | 93/93 | 12 | 2026-10-28 13:27 | [world-ui.md](./world-ui.md) |
-

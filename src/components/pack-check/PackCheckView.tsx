@@ -20,6 +20,7 @@ import type { ImpactCard } from "@/lib/new-cards/team-impact";
 import { fetchNewCardsOnce } from "@/lib/new-cards/fetch-new-cards";
 import { squadsStrengthenedByCard, type SquadFit } from "@/lib/new-cards/card-squad-fit";
 import { useSavedSquadFitInputs } from "@/components/world/useSavedSquadFitInputs";
+import { SquadFitLinks } from "@/components/world/SquadFitLinks";
 import type { WorldPlayerListItem } from "@/lib/world/types";
 
 const MAX_CARDS = 30;
@@ -260,19 +261,7 @@ export function PackCheckView() {
                       {tp("compareAbilities")}
                     </Link>
                   ) : null}
-                  {fitsById.get(r.card.worldCardId) ? (
-                    <span className="flex flex-wrap items-baseline gap-x-2 text-xs" data-testid="pack-check-squad-fit">
-                      <span className="text-text-dim">{t("provisionalCards", "squadFitHeading")}</span>
-                      {fitsById.get(r.card.worldCardId)!.map((f) => (
-                        <span key={f.squadId} className="inline-flex items-baseline gap-1">
-                          <Link href={`/squads/${encodeURIComponent(f.squadId)}`} className="text-accent hover:underline">
-                            {f.squadName}
-                          </Link>
-                          <span className="font-bold text-text-dim">{f.position}</span>
-                        </span>
-                      ))}
-                    </span>
-                  ) : null}
+                  <SquadFitLinks fits={fitsById.get(r.card.worldCardId)} testId="pack-check-squad-fit" />
                   {/* 引けたらそのまま My Team へ（2026-10-25）。追加すると判定は「所持済み」になる */}
                   {r.verdict !== "already_owned" ? (
                     <span data-testid="pack-check-my-team" className="w-fit">
