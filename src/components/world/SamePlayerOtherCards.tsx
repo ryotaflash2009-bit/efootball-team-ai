@@ -11,6 +11,7 @@ import { personKeyOf } from "@/lib/world/person-identity";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { otherCardsOfSamePlayer, type OtherCardSummary } from "@/lib/world/same-player-cards";
 import { useMyTeam } from "@/lib/user-cards/hooks";
+import { fetchJsonRetry } from "@/lib/fetch-json-retry";
 
 /**
  * 同じ選手の別のカード（2026-10-11）。同じ選手かどうかはカード ID の下位 20 ビット（人物のキー）で決める。
@@ -35,9 +36,8 @@ export function SamePlayerOtherCards({ worldCardId, nameEn }: { worldCardId: str
     (async () => {
       const found: unknown[] = [];
       for (let page = 1; page <= 3; page++) {
-        const res = await fetch(`/api/world/players?q=${encodeURIComponent(name)}&pageSize=100&page=${page}`, { signal: controller.signal });
-        if (!res.ok) break;
-        const json = (await res.json()) as { players?: unknown[]; hasNext?: boolean };
+        const json = await fetchJsonRetry<{ players?: unknown[]; hasNext?: boolean }>(`/api/world/players?q=${encodeURIComponent(name)}&pageSize=100&page=${page}`, { signal: controller.signal });
+        if (!json) break;
         found.push(...(json.players ?? []));
         if (!json.hasNext) break;
       }
