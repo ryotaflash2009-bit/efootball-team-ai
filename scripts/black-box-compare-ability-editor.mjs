@@ -133,6 +133,7 @@ async function run(browser, vp) {
   await sleep(800);
   const baseP2 = await tableValue("ボールキープ", 1);
   await tap("[data-testid=compare-open-ability-editor]");
+  await waitFor(() => !!document.querySelector("[data-testid=compare-ability-sheet]"), 10000); // 編集の画面は開くときに読み込む（2026-10-30）
   let s = await sheet();
   record("全画面の編集モード（aria-modal）で、編集中の選手（1人目）を題名に明示・背景スクロール停止", s.open && s.modal === "true" && /リオネル メッシ/.test(s.title) && s.bodyLocked, s.title);
   record("選手の切替タブ（1人目が選択中）", JSON.stringify(s.tabs) === JSON.stringify(["true", "false"]));
@@ -177,6 +178,7 @@ async function run(browser, vp) {
   record("再読込しても配分を保持（URL）", (await tableValue("ボールキープ", 0)) === 86 + L);
   // Escape で閉じる
   await tap("[data-testid=compare-open-ability-editor]");
+  await waitFor(() => !!document.querySelector("[data-testid=compare-ability-sheet]"), 10000); // 編集の画面は開くときに読み込む（2026-10-30）
   await c.send("Input.dispatchKeyEvent", { type: "rawKeyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
   await c.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape" });
   await sleep(300);
@@ -185,6 +187,7 @@ async function run(browser, vp) {
   await ev(() => [...document.querySelectorAll("button")].find((b) => b.textContent.trim() === "English")?.click());
   await sleep(600);
   await tap("[data-testid=compare-open-ability-editor]");
+  await waitFor(() => !!document.querySelector("[data-testid=compare-ability-sheet]"), 10000); // 編集の画面は開くときに読み込む（2026-10-30）
   await tap("[data-testid=compare-ability-sheet] [data-stat=tightPossession]");
   const en = await ev(() => {
     const re = /[぀-ヿ一-龯]/;
@@ -213,6 +216,7 @@ async function run(browser, vp) {
       await ev((k) => { const tabs = [...document.querySelectorAll("#compare-cockpit [role=tab]")]; tabs[k - 1]?.click(); }, n);
       await sleep(300);
       await tap("[data-testid=compare-open-ability-editor]");
+      await waitFor(() => !!document.querySelector("[data-testid=compare-ability-sheet]"), 10000); // 編集の画面は開くときに読み込む（2026-10-30）
       s = await sheet();
       record(`${n}人比較: ${n}人目を編集中と明示、タブ${n}個`, s.open && s.tabs.length === n && s.tabs[n - 1] === "true", s.title);
       await tap("[data-testid=compare-ability-sheet] [data-stat=tightPossession]");
