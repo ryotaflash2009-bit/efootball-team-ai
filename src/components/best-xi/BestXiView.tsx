@@ -9,7 +9,7 @@ import { saveSquad } from "@/lib/squad/squad-storage";
 import { bestXiToSquad } from "@/lib/best-xi/to-squad";
 import type { ManagerContext } from "@/lib/progression/types";
 import type { ManagerDetail } from "@/lib/managers/types";
-import { ManagerPicker } from "@/components/managers/ManagerPicker";
+import dynamic from "next/dynamic";
 import { CurrentManagerCard } from "@/components/managers/CurrentManagerCard";
 import { useMyTeam } from "@/lib/user-cards/hooks";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
@@ -30,7 +30,6 @@ import {
 } from "@/lib/best-xi/affiliation-filter";
 import { selectBestXi } from "@/lib/best-xi/select";
 import { selectBestXiBench, type BestXiBenchResult } from "@/lib/best-xi/bench";
-import { BestXiNewCardsPanel } from "@/components/best-xi/BestXiNewCardsPanel";
 import {
   EXCLUSION_REASON_LABEL_KEY,
   LIMITATION_LABEL_KEY,
@@ -51,6 +50,11 @@ import { Icon } from "@/components/ui/Icon";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { fillMessage } from "@/lib/i18n/message-format";
 import { usePageTitle } from "@/lib/i18n/use-page-title";
+
+// 監督の選択（開いたとき）・新しいカードの欄（結果の後）は後から読み込む（2026-10-30）
+const loadManagerPicker = () => import("@/components/managers/ManagerPicker");
+const ManagerPicker = dynamic(() => loadManagerPicker().then((m) => m.ManagerPicker), { ssr: false });
+const BestXiNewCardsPanel = dynamic(() => import("@/components/best-xi/BestXiNewCardsPanel").then((m) => m.BestXiNewCardsPanel), { ssr: false });
 
 /** 初期のフォーメーション。2026-10-11 から利用者が選べる（選んだフォーメーションだけで選出・比較はしない）。 */
 const DEFAULT_FORMATION_ID = "4-3-3";
@@ -329,17 +333,19 @@ export function BestXiView() {
                 </p>
               </>
             ) : null}
-            <ManagerPicker
-              open={managerPickerOpen}
-              onClose={() => setManagerPickerOpen(false)}
-              currentManagerId={manager?.internalManagerId ?? null}
-              onSelect={(ctx, d) => {
-                if (applyManager) pendingGenerateRef.current = true;
-                setManager(ctx);
-                setManagerDetail(d);
-                setManagerPickerOpen(false);
-              }}
-            />
+            {managerPickerOpen ? (
+              <ManagerPicker
+                open
+                onClose={() => setManagerPickerOpen(false)}
+                currentManagerId={manager?.internalManagerId ?? null}
+                onSelect={(ctx, d) => {
+                  if (applyManager) pendingGenerateRef.current = true;
+                  setManager(ctx);
+                  setManagerDetail(d);
+                  setManagerPickerOpen(false);
+                }}
+              />
+            ) : null}
           </div>
 
           {affiliationFilter ? (

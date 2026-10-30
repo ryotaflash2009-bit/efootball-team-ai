@@ -60,8 +60,8 @@
       "status": "pass",
       "passed": 42,
       "total": 42,
-      "seconds": 15,
-      "ranAt": "2026-10-25T19:53:17.144Z",
+      "seconds": 17,
+      "ranAt": "2026-10-30T13:55:11.621Z",
       "line": "[black-box-best-xi-optimization] 42/42 PASS",
       "fails": [],
       "report": "best-xi-optimization.md"
@@ -72,7 +72,7 @@
       "passed": 27,
       "total": 27,
       "seconds": 0,
-      "ranAt": "2026-10-25T19:53:32.457Z",
+      "ranAt": "2026-10-30T13:55:28.972Z",
       "line": "[black-box-best-xi] 27/27 PASS",
       "fails": [],
       "report": "best-xi.md"
@@ -192,8 +192,8 @@
       "status": "pass",
       "passed": 107,
       "total": 107,
-      "seconds": 277,
-      "ranAt": "2026-10-30T13:44:56.637Z",
+      "seconds": 278,
+      "ranAt": "2026-10-30T13:55:29.247Z",
       "line": "107/107 PASS",
       "fails": [],
       "report": null
@@ -225,8 +225,8 @@
       "status": "pass",
       "passed": 35,
       "total": 35,
-      "seconds": 5,
-      "ranAt": "2026-10-30T13:49:34.059Z",
+      "seconds": 6,
+      "ranAt": "2026-10-30T14:00:07.259Z",
       "line": "[black-box-manager-picker] 35/35 PASS",
       "fails": [],
       "report": "manager-picker.md"
