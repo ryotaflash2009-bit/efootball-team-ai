@@ -5323,6 +5323,7 @@ export interface Dictionary {
     addButton: string;
     removeButton: string;
     clearButton: string;
+    addAllTemplate: string;
     addNewCards: string;
     limitTemplate: string;
     emptyPack: string;

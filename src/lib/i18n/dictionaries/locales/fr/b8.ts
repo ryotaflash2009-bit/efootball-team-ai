@@ -673,6 +673,7 @@ const part: PartialDictionary = {
     addButton: "Ajouter",
     removeButton: "Retirer",
     clearButton: "Tout retirer",
+    addAllTemplate: "Ajouter les {count} cartes absentes de My Team (comme possédées)",
     addNewCards: "Choisir parmi les cartes récentes et provisoires",
     limitTemplate: "Vous pouvez choisir jusqu'à {max} cartes.",
     emptyPack: "Aucune carte choisie pour l'instant.",

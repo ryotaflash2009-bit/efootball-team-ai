@@ -5384,6 +5384,7 @@ const en: Dictionary = {
     addButton: "Add",
     removeButton: "Remove",
     clearButton: "Remove all",
+    addAllTemplate: "Add the {count} card(s) not in My Team (as owned)",
     addNewCards: "Pick from recently added and provisional cards",
     limitTemplate: "You can pick up to {max} cards.",
     emptyPack: "No cards picked yet.",
