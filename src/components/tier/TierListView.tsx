@@ -2,9 +2,8 @@
 
 import { GlossaryLink } from "@/components/public-info/GlossaryLink";
 import "@/lib/i18n/dictionaries/ja-ns/tierList";
-import "@/lib/i18n/dictionaries/ja-ns/worldPlayerCard";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import { fillMessage } from "@/lib/i18n/message-format";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
@@ -12,7 +11,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Surface } from "@/components/ui/Surface";
 import { Badge } from "@/components/ui/Badge";
 import { usePageTitle } from "@/lib/i18n/use-page-title";
-import { useMyTeam } from "@/lib/user-cards/hooks";
+import dynamic from "next/dynamic";
 import { OWN_TIER_RULES_VERSION, type OwnTierRank } from "@/lib/tier/own-tier";
 
 export interface TierListEntryView {
@@ -29,6 +28,9 @@ export interface TierListEntryView {
 }
 
 const TIERS: OwnTierRank[] = ["S", "A", "B", "C"];
+// 「所持」の印・要約はブラウザーの中だけ（My Team の読み込みを最初の JS から外す・2026-10-30）
+const OwnedMark = dynamic(() => import("@/components/world/OwnedMark").then((m) => m.OwnedMark), { ssr: false });
+const TierOwnedSummary = dynamic(() => import("./TierOwnedSummary").then((m) => m.TierOwnedSummary), { ssr: false });
 const TIER_TONE: Record<OwnTierRank, "accent" | "success" | "info" | "neutral"> = { S: "accent", A: "success", B: "info", C: "neutral" };
 
 /** F-090 ポジション別 Tier（自前のデータ・最大 OVR の順位・2026-10-14）。 */
@@ -51,12 +53,6 @@ export function TierListView({
   const { locale } = useLocale();
   const tt = (k: Parameters<typeof t<"tierList">>[1]) => t("tierList", k);
   usePageTitle(tt("pageTitle"));
-  // このポジションの Tier に入っている所持のカードの数（2026-10-28）。hydration 中は空のスナップショットなので出ない
-  const { myTeam } = useMyTeam();
-  const ownedSummary = useMemo(() => {
-    const owned = new Set(myTeam.filter((r) => r.ownershipStatus === "owned" && !r.deletedAt).map((r) => r.worldCardId));
-    return TIERS.map((tier) => ({ tier, n: entries.filter((e) => e.tier === tier && owned.has(e.worldCardId)).length })).filter((x) => x.n > 0);
-  }, [myTeam, entries]);
 
   return (
     <div className="flex flex-col gap-4" data-testid="tier-list">
@@ -88,11 +84,7 @@ export function TierListView({
         <Link href={`/players/new?position=${position}`} className="text-accent hover:underline" data-testid="tier-new-cards-link">
           {fillMessage(tt("newCardsLinkTemplate"), { position })}
         </Link>
-        {ownedSummary.length > 0 ? (
-          <span className="text-success" data-testid="tier-owned-summary">
-            {fillMessage(tt("ownedSummaryTemplate"), { list: ownedSummary.map((x) => `${x.tier} ${x.n}`).join(" / ") })}
-          </span>
-        ) : null}
+        <TierOwnedSummary entries={entries} />
       </p>
 
       {unavailableReason ? (
@@ -130,9 +122,6 @@ function TierBlock({ tier, list }: { tier: OwnTierRank; list: TierListEntryView[
   const { locale } = useLocale();
   const tt = (k: Parameters<typeof t<"tierList">>[1]) => t("tierList", k);
   const [all, setAll] = useState(false);
-  // My Team で「所持」のカードに印（似たカードと同じ・2026-10-25）。hydration 中は空のスナップショットなのでサーバーの HTML と一致する。
-  const { getByWorldId } = useMyTeam();
-  const isOwned = (id: string) => { const r = getByWorldId(id); return !!r && r.ownershipStatus === "owned" && !r.deletedAt; };
   const hidden = all ? 0 : Math.max(0, list.length - TIER_INITIAL);
   return (
     <Surface padding="md" className="flex flex-col gap-2" data-testid={`tier-${tier}`}>
@@ -146,7 +135,7 @@ function TierBlock({ tier, list }: { tier: OwnTierRank; list: TierListEntryView[
         {list.map((e, i) => (
           <li key={e.worldCardId} className={`flex items-baseline justify-between gap-2 border-b border-border/60 py-1 text-xs ${!all && i >= TIER_INITIAL ? "hidden" : ""}`}>
             <Link href={`/players/world/${e.worldCardId}`} className="min-w-0 truncate text-accent hover:underline">
-              {isOwned(e.worldCardId) ? <span className="me-1 rounded bg-success/90 px-1 text-[9px] font-bold text-black" data-testid="tier-owned">{t("worldPlayerCard", "ownedBadge")}</span> : null}
+              <OwnedMark worldCardId={e.worldCardId} className="me-1 rounded bg-success/90 px-1 text-[9px] font-bold text-black" testId="tier-owned" />
               {resolvePlayerDisplayName(e, locale)}
               {e.cardType ? <span className="ms-1 text-text-muted">· {e.cardType}</span> : null}
               {e.isNew ? (
