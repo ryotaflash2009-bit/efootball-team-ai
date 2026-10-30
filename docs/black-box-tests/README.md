@@ -12,8 +12,8 @@
 | ✅ 合格 | alpha-copy-fixes | 34/34 | 6 | 2026-10-25 19:50 | [alpha-copy-fixes.md](./alpha-copy-fixes.md) |
 | ✅ 合格 | auth-google | 71/71 | 25 | 2026-10-25 19:50 | [auth-google.md](./auth-google.md) |
 | ✅ 合格 | base-percentile | 115/115 | 117 | 2026-10-25 19:51 | [base-percentile.md](./base-percentile.md) |
-| ✅ 合格 | best-xi | 27/27 | 0 | 2026-10-25 19:53 | [best-xi.md](./best-xi.md) |
-| ✅ 合格 | best-xi-optimization | 42/42 | 15 | 2026-10-25 19:53 | [best-xi-optimization.md](./best-xi-optimization.md) |
+| ✅ 合格 | best-xi | 27/27 | 0 | 2026-10-30 13:55 | [best-xi.md](./best-xi.md) |
+| ✅ 合格 | best-xi-optimization | 42/42 | 17 | 2026-10-30 13:55 | [best-xi-optimization.md](./best-xi-optimization.md) |
 | ✅ 合格 | boosters | 54/54 | 1 | 2026-10-25 19:53 | [boosters.md](./boosters.md) |
 | ✅ 合格 | community | 41/41 | 15 | 2026-10-30 12:59 | [community.md](./community.md) |
 | ✅ 合格 | compare | 74/74 | 2 | 2026-10-30 13:28 | [compare.md](./compare.md) |
@@ -27,7 +27,7 @@
 | ✅ 合格 | local-backup | 28/28 | 41 | 2026-10-30 14:07 | [local-backup.md](./local-backup.md) |
 | ✅ 合格 | local-posts（社内向けページ） | 32/32 | 79 | 2026-10-25 15:14 | [local-posts.md](./local-posts.md) |
 | ✅ 合格 | manager-compare | 16/16 | 9 | 2026-10-30 13:33 | — |
-| ✅ 合格 | manager-picker | 35/35 | 5 | 2026-10-30 13:49 | [manager-picker.md](./manager-picker.md) |
+| ✅ 合格 | manager-picker | 35/35 | 6 | 2026-10-30 14:00 | [manager-picker.md](./manager-picker.md) |
 | ✅ 合格 | managers | 43/43 | 2 | 2026-10-25 20:01 | [managers.md](./managers.md) |
 | ✅ 合格 | my-builds | 100/100 | 0 | 2026-10-30 14:07 | [my-builds.md](./my-builds.md) |
 | ✅ 合格 | my-team-cloud | 98/98 | 15 | 2026-10-28 14:57 | [my-team-cloud.md](./my-team-cloud.md) |
@@ -53,4 +53,3 @@
 | ✅ 合格 | ui | 74/74 | 1 | 2026-10-28 14:03 | [ui.md](./ui.md) |
 | ✅ 合格 | world-sync | 35/35 | 1 | 2026-10-25 20:15 | — |
 | ✅ 合格 | world-ui | 93/93 | 11 | 2026-10-30 12:58 | [world-ui.md](./world-ui.md) |
-
