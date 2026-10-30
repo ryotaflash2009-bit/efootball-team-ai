@@ -10,12 +10,15 @@ import { listBuilds } from "@/lib/progression/build-storage";
 import { CompareRadarChart } from "./CompareRadarChart";
 import { CompareCategoryPreview } from "./CompareCategoryPreview";
 import { CompareTrainingPanel } from "./CompareTrainingPanel";
-import { CompareSaveBuildDialog } from "./CompareSaveBuildDialog";
-import { CompareAbilityEditSheet } from "./CompareAbilityEditSheet";
+import dynamic from "next/dynamic";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { fillMessage } from "@/lib/i18n/message-format";
+
+// 保存のダイアログ・能力値の編集は開いたときだけ読み込む（2026-10-30）
+const CompareSaveBuildDialog = dynamic(() => import("./CompareSaveBuildDialog").then((m) => m.CompareSaveBuildDialog), { ssr: false });
+const CompareAbilityEditSheet = dynamic(() => import("./CompareAbilityEditSheet").then((m) => m.CompareAbilityEditSheet), { ssr: false });
 
 /**
  * 比較コックピット: 育成スライダー・能力値レーダー・選択カテゴリの近接プレビューを 1 つの表示領域へ集約する。

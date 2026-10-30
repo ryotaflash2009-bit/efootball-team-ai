@@ -14,13 +14,11 @@ import { resolveAllocation } from "@/lib/progression/resolve-allocation";
 import { adjustGroupLevel, groupBreakdowns, summarizeGroupPoints } from "@/lib/progression/group-allocation";
 import { autoAllocate } from "@/lib/progression/auto-allocate";
 import type { WorldPlayerDetail } from "@/lib/world/types";
-import { AddPlayerSearch } from "./AddPlayerSearch";
-import { CompareSimilarSuggestions } from "./CompareSimilarSuggestions";
 import { PlayerControlColumn } from "./PlayerControlColumn";
 import { ComparisonCockpit } from "./ComparisonCockpit";
 import { ComparisonTables } from "./ComparisonTables";
 import type { RadarMode } from "@/lib/comparison/ability-radar";
-import { ManagerPicker } from "@/components/managers/ManagerPicker";
+import dynamic from "next/dynamic";
 import { Surface } from "@/components/ui/Surface";
 import { Icon } from "@/components/ui/Icon";
 import { Button } from "@/components/ui/Button";
@@ -30,6 +28,11 @@ import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { useSyncedStorageScope } from "@/lib/local-storage-scope/resolve-scope";
 import { fillMessage } from "@/lib/i18n/message-format";
 import { CURRENT_COST_RULE_ID, resolveCostRuleId } from "@/lib/progression/progression-rules";
+
+// 開いたとき・必要なときだけ出す部品は後から読み込む（比較の最初の JS を軽く・2026-10-30）
+const AddPlayerSearch = dynamic(() => import("./AddPlayerSearch").then((m) => m.AddPlayerSearch), { ssr: false });
+const CompareSimilarSuggestions = dynamic(() => import("./CompareSimilarSuggestions").then((m) => m.CompareSimilarSuggestions), { ssr: false });
+const ManagerPicker = dynamic(() => import("@/components/managers/ManagerPicker").then((m) => m.ManagerPicker), { ssr: false });
 
 // 表示ラベルは i18n の bench.mode* に集約。ここは順序と値のみ定義。
 const SHARED_MODES: CompareBuildMode[] = ["none", "attack", "defense", "balance", "gk"];
@@ -269,13 +272,15 @@ export function ComparisonBoard({ initialInputs }: { initialInputs: ComparisonPl
         </div>
       </Surface>
 
-      <ManagerPicker
-        open={sharedPickerOpen}
-        onClose={() => setSharedPickerOpen(false)}
-        currentManagerId={sharedManagerId}
-        title={tcb("sharedManagerPickerTitle")}
-        onSelect={(ctx) => applySharedManager(ctx)}
-      />
+      {sharedPickerOpen ? (
+        <ManagerPicker
+          open
+          onClose={() => setSharedPickerOpen(false)}
+          currentManagerId={sharedManagerId}
+          title={tcb("sharedManagerPickerTitle")}
+          onSelect={(ctx) => applySharedManager(ctx)}
+        />
+      ) : null}
       {perPlayerPicker != null && players[perPlayerPicker] ? (
         <ManagerPicker
           open
