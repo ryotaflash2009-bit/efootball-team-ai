@@ -22,6 +22,8 @@ import { squadsStrengthenedByCard, type SquadFit } from "@/lib/new-cards/card-sq
 import { useSavedSquadFitInputs } from "@/components/world/useSavedSquadFitInputs";
 import { SquadFitLinks } from "@/components/world/SquadFitLinks";
 import type { WorldPlayerListItem } from "@/lib/world/types";
+import { useMyTeam } from "@/lib/user-cards/hooks";
+import { addToMyTeam } from "@/lib/user-cards/my-team-storage";
 
 const MAX_CARDS = 30;
 const MIN_QUERY_LEN = 2;
@@ -80,6 +82,12 @@ export function PackCheckView() {
   const { ownedIds, owned, scopeStatus } = useOwnedCards();
   const pack = useMemo(() => ids.map((id) => packCards.get(id)).filter((c): c is NonNullable<typeof c> => c != null), [ids, packCards]);
   const { results, summary } = useMemo(() => packCheck(pack, owned), [pack, owned]);
+  // まだ My Team に無い引いたカード（まとめて「所持」で追加・2026-10-30）
+  const { getByWorldId } = useMyTeam();
+  const notRegistered = results.filter((r) => !getByWorldId(r.card.worldCardId));
+  const addAll = () => {
+    for (const r of notRegistered) addToMyTeam({ worldCardId: r.card.worldCardId, ownershipStatus: "owned" });
+  };
   // カードごとに強くなる保存スカッド（2026-10-26・選手の詳細と同じ規則）
   const squadInputs = useSavedSquadFitInputs();
   const fitsById = useMemo(() => {
@@ -271,9 +279,21 @@ export function PackCheckView() {
                 </li>
               ))}
             </ul>
-            <button type="button" className="w-fit text-xs text-text-dim hover:underline" onClick={() => setIds([])}>
-              {tp("clearButton")}
-            </button>
+            <div className="flex flex-wrap items-center gap-3">
+              {notRegistered.length > 0 ? (
+                <button
+                  type="button"
+                  className="inline-flex min-h-[36px] items-center rounded-md border border-accent px-3 text-xs font-semibold text-accent hover:bg-accent-soft"
+                  onClick={addAll}
+                  data-testid="pack-check-add-all"
+                >
+                  {fillMessage(tp("addAllTemplate"), { count: String(notRegistered.length) })}
+                </button>
+              ) : null}
+              <button type="button" className="w-fit text-xs text-text-dim hover:underline" onClick={() => setIds([])}>
+                {tp("clearButton")}
+              </button>
+            </div>
           </>
         )}
       </section>

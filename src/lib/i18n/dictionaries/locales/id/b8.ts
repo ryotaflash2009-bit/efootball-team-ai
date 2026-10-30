@@ -674,6 +674,7 @@ const part: PartialDictionary = {
     addButton: "Tambah",
     removeButton: "Hapus",
     clearButton: "Hapus semua",
+    addAllTemplate: "Tambahkan {count} kartu yang belum ada di My Team (sebagai milikmu)",
     addNewCards: "Pilih dari kartu yang baru ditambahkan dan kartu sementara",
     limitTemplate: "Kamu bisa memilih hingga {max} kartu.",
     emptyPack: "Belum ada kartu yang dipilih.",

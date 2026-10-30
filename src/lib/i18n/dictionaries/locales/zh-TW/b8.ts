@@ -674,6 +674,7 @@ const part: PartialDictionary = {
     addButton: "加入",
     removeButton: "移除",
     clearButton: "全部移除",
+    addAllTemplate: "一次新增 My Team 中沒有的 {count} 張卡（已擁有）",
     addNewCards: "從最近新增的卡和暫定卡中選擇",
     limitTemplate: "最多可選擇 {max} 張。",
     emptyPack: "還沒有選擇卡。",

@@ -674,6 +674,7 @@ const part: PartialDictionary = {
     addButton: "추가",
     removeButton: "빼기",
     clearButton: "모두 빼기",
+    addAllTemplate: "My Team에 없는 {count}장을 한꺼번에 추가(보유)",
     addNewCards: "최근 추가된 카드·임시 카드에서 고르기",
     limitTemplate: "최대 {max}장까지 고를 수 있습니다.",
     emptyPack: "아직 고른 카드가 없습니다.",
