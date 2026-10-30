@@ -193,7 +193,7 @@
       "passed": 107,
       "total": 107,
       "seconds": 279,
-      "ranAt": "2026-10-30T14:02:28.120Z",
+      "ranAt": "2026-10-30T14:48:51.686Z",
       "line": "107/107 PASS",
       "fails": [],
       "report": null
@@ -278,11 +278,11 @@
     "pack-check": {
       "name": "pack-check",
       "status": "pass",
-      "passed": 17,
-      "total": 17,
-      "seconds": 14,
-      "ranAt": "2026-10-28T14:19:19.938Z",
-      "line": "[black-box-pack-check] 17/17 PASS",
+      "passed": 18,
+      "total": 18,
+      "seconds": 17,
+      "ranAt": "2026-10-30T14:53:30.705Z",
+      "line": "[black-box-pack-check] 18/18 PASS",
       "fails": [],
       "report": "pack-check.md"
     },
@@ -357,8 +357,8 @@
       "status": "pass",
       "passed": 24,
       "total": 24,
-      "seconds": 29,
-      "ranAt": "2026-10-30T13:49:39.433Z",
+      "seconds": 30,
+      "ranAt": "2026-10-30T14:53:47.969Z",
       "line": "[black-box-same-player] 24/24 PASS",
       "fails": [],
       "report": "same-player.md"
@@ -507,5 +507,5 @@
       "report": null
     }
   },
-  "updatedAt": "2026-10-30T13:51:18.111Z"
+  "updatedAt": "2026-10-30T14:54:18.029Z"
 }
