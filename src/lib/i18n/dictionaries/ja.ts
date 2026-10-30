@@ -5307,6 +5307,7 @@ export interface Dictionary {
     squadOwnedIntro: string;
     squadFitHeading: string;
     squadFitIntro: string;
+    squadFitAppliedTemplate: string;
     positionFilterLabel: string;
     positionFilterAll: string;
     unownedOnlyLabel: string;

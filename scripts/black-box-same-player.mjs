@@ -253,6 +253,21 @@ async function main() {
       await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="squad-fit"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
       const fit = await evalJson(client, `[...document.querySelectorAll('[data-testid="squad-fit"] li')].map((li) => li.dataset.squadId)`);
       record("[選手の詳細] このカードで強くなるスカッド（弱い RB のスカッドは出る・このカードが入っているスカッドは出ない）", !!weak && Array.isArray(fit) && fit.includes("sq_bbsquadfit01") && !fit.includes("sq_bbsquadfit02"), JSON.stringify(fit));
+      // その場で入れる（2026-10-30）: 「入れ替える」→ 保存データの RB が OTHER・弱いカードは外れる・「入れました」のリンク・行は消える
+      {
+        const btn = `document.querySelector('[data-testid="squad-fit"] li[data-squad-id="sq_bbsquadfit01"] [data-testid="squad-fit-apply"]')`;
+        const label = await evalJson(client, `${btn}?.textContent ?? ""`);
+        await evalJson(client, `${btn}?.click()`);
+        await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="squad-fit-applied"]')`), { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+        const saved = await evalJson(client, `JSON.parse(localStorage.getItem(${JSON.stringify(SQUADS_KEY)})).find((x) => x.squadId === "sq_bbsquadfit01")`);
+        const rb = saved?.slots?.find((x) => x.slotId === "rb")?.worldCardId;
+        const still = [...(saved?.slots ?? []).map((x) => x.worldCardId), ...(saved?.substitutes ?? []).map((x) => x.worldCardId)].includes(weak);
+        const link = await evalJson(client, `document.querySelector('[data-testid="squad-fit-applied"] a')?.getAttribute("href") ?? ""`);
+        const rowGone = !(await evalJson(client, `!!document.querySelector('[data-testid="squad-fit"] li[data-squad-id="sq_bbsquadfit01"]')`));
+        record("[選手の詳細] 「入れ替える」でその場でスカッドに入れる（RB が置き換わる・入れましたのリンク・行は消える）", label.trim() === "入れ替える" && rb === OTHER && !still && link === "/squads/sq_bbsquadfit01" && rowGone, `label=${label.trim()} rb=${rb} still=${still} link=${link} rowGone=${rowGone}`);
+        // 次のパック診断・My Team の確認のため、スカッドを元に戻す
+        await client.send("Runtime.evaluate", { expression: `localStorage.setItem(${JSON.stringify(SQUADS_KEY)}, ${JSON.stringify(JSON.stringify([a, b]))})` });
+      }
       // パック診断でも同じ（2026-10-26）
       await go(client, `${BASE}/pack-check?ids=${OTHER}`);
       await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="pack-check-squad-fit"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});

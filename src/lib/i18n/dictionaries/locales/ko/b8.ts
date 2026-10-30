@@ -657,6 +657,7 @@ const part: PartialDictionary = {
     squadOwnedIntro: "My Team에서 보유한 카드 중 이 스쿼드에 없는 카드로, 슬롯 포지션과 등록 포지션이 같고 현재 선수보다 OVR이 높은 카드입니다(빈 슬롯은 가장 높은 카드).",
     squadFitHeading: "이 카드로 강화되는 스쿼드",
     squadFitIntro: "저장한 스쿼드 중 이 카드의 등록 포지션 슬롯에 현재 선수보다 높은 OVR로 들어가는 스쿼드입니다.",
+    squadFitAppliedTemplate: "‘{squad}’에 넣었습니다",
     positionFilterLabel: "포지션으로 필터",
     positionFilterAll: "전체",
     unownedOnlyLabel: "아직 보유하지 않은 카드만 (My Team의 '보유' 제외)",
