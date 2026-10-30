@@ -53,7 +53,7 @@ import {
   formatBuildTimestamp,
 } from "@/lib/progression/my-builds";
 import { buildDuplicateReview } from "@/lib/progression/build-duplicate-review";
-import { DuplicateReviewSection } from "./DuplicateReviewSection";
+import dynamic from "next/dynamic";
 import { analyzeSavedBuild, buildSiblingInputs, toBuildAnalysisCardInput } from "@/lib/progression/build-analysis";
 import {
   analyzeBuildIntent,
@@ -100,6 +100,9 @@ import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { fillMessage } from "@/lib/i18n/message-format";
 import { usePageTitle } from "@/lib/i18n/use-page-title";
+
+// 重複の候補の欄は一覧の下にあるため後から読み込む（2026-10-30）
+const DuplicateReviewSection = dynamic(() => import("./DuplicateReviewSection").then((m) => m.DuplicateReviewSection), { ssr: false });
 
 /** groupPriorities/primaryGoal を除いた BuildIntentInput(プリセットが既定値を持たない、常に手動値のみのフィールド)。 */
 function omitGoalAndPriorities(intent: BuildIntentInput): Omit<BuildIntentInput, "primaryGoal" | "groupPriorities"> {
