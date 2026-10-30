@@ -17,7 +17,7 @@
       "passed": 164,
       "total": 164,
       "seconds": 23,
-      "ranAt": "2026-10-30T14:02:05.361Z",
+      "ranAt": "2026-10-30T14:40:50.861Z",
       "line": "[black-box-account-scoped-storage] 164/164 PASS",
       "fails": [],
       "report": "account-scoped-storage.md"
@@ -148,8 +148,8 @@
       "status": "pass",
       "passed": 32,
       "total": 32,
-      "seconds": 1,
-      "ranAt": "2026-10-28T14:13:51.367Z",
+      "seconds": 2,
+      "ranAt": "2026-10-30T14:41:14.200Z",
       "line": "[black-box-favorites] 32/32 PASS",
       "fails": [],
       "report": null
@@ -247,8 +247,8 @@
       "status": "pass",
       "passed": 100,
       "total": 100,
-      "seconds": 0,
-      "ranAt": "2026-10-30T14:07:47.628Z",
+      "seconds": 1,
+      "ranAt": "2026-10-30T14:45:56.823Z",
       "line": "[black-box-my-builds] 100/100 PASS",
       "fails": [],
       "report": "my-builds.md"
@@ -259,7 +259,7 @@
       "passed": 98,
       "total": 98,
       "seconds": 15,
-      "ranAt": "2026-10-28T14:57:12.524Z",
+      "ranAt": "2026-10-30T14:45:57.355Z",
       "line": "[black-box-my-team-cloud] 98/98 PASS",
       "fails": [],
       "report": "my-team-cloud.md"
@@ -435,7 +435,7 @@
       "passed": 51,
       "total": 51,
       "seconds": 1,
-      "ranAt": "2026-10-30T13:51:17.178Z",
+      "ranAt": "2026-10-30T14:46:56.485Z",
       "line": "[black-box-squads] 51/51 PASS",
       "fails": [],
       "report": "squads.md"
@@ -507,5 +507,5 @@
       "report": null
     }
   },
-  "updatedAt": "2026-10-30T14:54:18.029Z"
+  "updatedAt": "2026-10-30T14:46:57.527Z"
 }
