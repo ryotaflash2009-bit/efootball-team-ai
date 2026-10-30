@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { WorldPlayerListItem } from "@/lib/world/types";
+import { fetchJsonRetry } from "@/lib/fetch-json-retry";
 
 /**
  * お気に入り / My Team の worldCardId 一覧から、カード要約をまとめて解決する。
@@ -29,9 +30,10 @@ export function useResolvedCards(worldCardIds: string[]): {
     let cancelled = false;
     setLoading(true);
     setError(null);
-    fetch(`/api/world/players/by-ids?ids=${missing.join(",")}`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
-      .then((body: { players?: WorldPlayerListItem[] }) => {
+    // 一時的な失敗（5xx・通信）は 1 回だけやり直す（2026-10-30・My Team・スカッドの提案などの多くの欄が使う）
+    fetchJsonRetry<{ players?: WorldPlayerListItem[] }>(`/api/world/players/by-ids?ids=${missing.join(",")}`)
+      .then((body) => {
+        if (!body) throw new Error("by-ids unavailable");
         if (cancelled) return;
         for (const id of missing) fetchedRef.current.add(id);
         setCards((prev) => {
