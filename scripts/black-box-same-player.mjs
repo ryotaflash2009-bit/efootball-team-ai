@@ -273,6 +273,15 @@ async function main() {
       await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="pack-check-squad-fit"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
       const packFit = await evalJson(client, `[...document.querySelectorAll('[data-testid="pack-check-squad-fit"] a')].map((a) => a.getAttribute("href"))`);
       record("[パック診断] 引いたカードで強くなるスカッドへのリンク（入っているスカッドは出ない）", Array.isArray(packFit) && packFit.includes("/squads/sq_bbsquadfit01") && !packFit.includes("/squads/sq_bbsquadfit02"), JSON.stringify(packFit));
+      // パック診断からその場で入れる（2026-10-31）→ 確認の後にスカッドを元に戻す
+      {
+        await evalJson(client, `document.querySelector('[data-testid="pack-check-squad-fit-apply"]')?.click()`);
+        await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="pack-check-squad-applied"]')`), { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+        const pv = await evalJson(client, `JSON.parse(localStorage.getItem(${JSON.stringify(SQUADS_KEY)})).find((x) => x.squadId === "sq_bbsquadfit01")`);
+        const pl = await evalJson(client, `document.querySelector('[data-testid="pack-check-squad-applied"] a')?.getAttribute("href") ?? ""`);
+        record("[パック診断] 「入れ替える」でその場でスカッドに入れる（RB が引いたカード・入れましたのリンク）", pv?.slots?.find((x) => x.slotId === "rb")?.worldCardId === OTHER && pl === "/squads/sq_bbsquadfit01", `rb=${pv?.slots?.find((x) => x.slotId === "rb")?.worldCardId} link=${pl}`);
+        await client.send("Runtime.evaluate", { expression: `localStorage.setItem(${JSON.stringify(SQUADS_KEY)}, ${JSON.stringify(JSON.stringify([a, b]))})` });
+      }
       // My Team: 保存スカッドを強くできる所持カード（2026-10-28）
       {
         const KEY = "efootball-team-ai:local:guest:my-team:v1";
