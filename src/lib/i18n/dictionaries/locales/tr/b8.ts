@@ -673,6 +673,7 @@ const part: PartialDictionary = {
     addButton: "Ekle",
     removeButton: "Çıkar",
     clearButton: "Tümünü çıkar",
+    addAllTemplate: "My Team'de olmayan {count} kartı ekle (sahip olunan olarak)",
     addNewCards: "Yakın zamanda eklenen ve geçici kartlardan seç",
     limitTemplate: "En fazla {max} kart seçebilirsin.",
     emptyPack: "Henüz kart seçilmedi.",

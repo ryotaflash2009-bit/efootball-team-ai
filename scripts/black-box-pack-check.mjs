@@ -102,6 +102,15 @@ async function main() {
     await waitForCondition(async () => (await ev(`${rowOf(gk)}?.dataset.verdict`)) === "already_owned", { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
     const gkVerdict = await ev(`${rowOf(gk)}?.dataset.verdict`);
     record("引いたカードを My Team に追加できる（所持済みの行には出さない・追加後は所持済み）", ownedRowHasBtn === false && gkVerdict === "already_owned", `ownedRowBtn=${ownedRowHasBtn} gk=${gkVerdict}`);
+    // まとめて追加（2026-10-30）: My Team に無いカード（強い CF・RC_B）の数を出し、押すとすべて「所持済み」・ボタンは消える
+    {
+      const label = await ev(`document.querySelector('[data-testid="pack-check-add-all"]')?.textContent ?? ""`);
+      await ev(`document.querySelector('[data-testid="pack-check-add-all"]')?.click()`);
+      await waitForCondition(async () => (await ev(`[...document.querySelectorAll('[data-testid="pack-check-list"] li')].every((li) => li.dataset.verdict === "already_owned")`)) === true, { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+      const all = await ev(`[...document.querySelectorAll('[data-testid="pack-check-list"] li')].map((li) => li.dataset.verdict)`);
+      const gone = !(await has('[data-testid="pack-check-add-all"]'));
+      record("My Team に無いカードをまとめて追加（件数の表示・追加後はすべて所持済み・ボタンは消える）", /My Team に無い 2 枚/.test(label) && Array.isArray(all) && all.length === 4 && all.every((v) => v === "already_owned") && gone, `${label} ${JSON.stringify(all)} gone=${gone}`);
+    }
     await ev(`localStorage.setItem(${JSON.stringify(MY_TEAM_KEY)}, ${JSON.stringify(JSON.stringify({ storageVersion: "my-team-storage/2026-08-30.v1", updatedAt: NOW, records: [myTeamRecord(weakCf), myTeamRecord(RC_A)] }))})`);
 
     // 選手の詳細: My Team と比べる（所持は弱い CF と Roberto Carlos のまま）

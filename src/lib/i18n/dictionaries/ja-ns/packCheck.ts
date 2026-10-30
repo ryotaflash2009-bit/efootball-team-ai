@@ -13,6 +13,7 @@ const packCheck: Dictionary["packCheck"] = {
   addButton: "追加",
   removeButton: "外す",
   clearButton: "すべて外す",
+  addAllTemplate: "My Team に無い {count} 枚をまとめて追加（所持）",
   addNewCards: "最近追加されたカード・暫定のカードから選ぶ",
   limitTemplate: "選べるのは {max} 枚までです。",
   emptyPack: "まだカードを選んでいません。",
