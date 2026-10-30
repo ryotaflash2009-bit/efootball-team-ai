@@ -93,8 +93,8 @@
       "status": "pass",
       "passed": 41,
       "total": 41,
-      "seconds": 16,
-      "ranAt": "2026-10-28T12:46:10.571Z",
+      "seconds": 15,
+      "ranAt": "2026-10-30T12:59:55.713Z",
       "line": "[black-box-community] 41/41 PASS",
       "fails": [],
       "report": "community.md"
@@ -192,8 +192,8 @@
       "status": "pass",
       "passed": 107,
       "total": 107,
-      "seconds": 281,
-      "ranAt": "2026-10-30T12:52:21.380Z",
+      "seconds": 279,
+      "ranAt": "2026-10-30T13:00:10.376Z",
       "line": "107/107 PASS",
       "fails": [],
       "report": null
@@ -357,8 +357,8 @@
       "status": "pass",
       "passed": 24,
       "total": 24,
-      "seconds": 28,
-      "ranAt": "2026-10-30T12:57:37.093Z",
+      "seconds": 30,
+      "ranAt": "2026-10-30T13:04:49.341Z",
       "line": "[black-box-same-player] 24/24 PASS",
       "fails": [],
       "report": "same-player.md"

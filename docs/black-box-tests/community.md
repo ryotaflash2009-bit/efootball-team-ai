@@ -1,6 +1,6 @@
 # コミュニティ 第 1 段階 ブラックボックステスト結果
 
-実行日時: 2026-10-28T12:46:26.695Z
+実行日時: 2026-10-30T13:00:10.362Z
 対象: http://localhost:3000（Production Build 上の隔離ヘッドレス Chrome・認証と community_* の関数のテストダブル。実 Supabase へは接続しない）
 公開の状態: COMMUNITY_MODE = enabled
 
