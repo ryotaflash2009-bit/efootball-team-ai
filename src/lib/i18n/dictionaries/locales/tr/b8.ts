@@ -657,6 +657,7 @@ const part: PartialDictionary = {
     squadOwnedIntro: "My Team'de sahip olduğun ve bu kadroda olmayan, kayıtlı mevkisi yuvayla aynı olan ve OVR'si mevcut oyuncudan yüksek kartlar (boş yuvalarda en yüksek OVR).",
     squadFitHeading: "Bu kartın güçlendireceği kadrolar",
     squadFitIntro: "Kayıtlı kadrolarından, bu kartın kayıtlı mevkisindeki bir yuvaya mevcut oyuncudan daha yüksek OVR ile girdiği kadrolar.",
+    squadFitAppliedTemplate: "“{squad}” kadrosuna eklendi",
     positionFilterLabel: "Mevkiye göre filtrele",
     positionFilterAll: "Tümü",
     unownedOnlyLabel: "Yalnızca henüz sahip olmadığın kartlar (My Team'de \"sahip\" olanlar hariç)",

@@ -5368,6 +5368,7 @@ const en: Dictionary = {
     squadOwnedIntro: "Cards you own in My Team that are not in this squad, whose registered position matches the slot and whose OVR beats the current player (for empty slots, the highest OVR).",
     squadFitHeading: "Squads this card would strengthen",
     squadFitIntro: "Your saved squads where this card fits a slot of its registered position with a higher OVR than the current player.",
+    squadFitAppliedTemplate: "Added to “{squad}”",
     positionFilterLabel: "Filter by position",
     positionFilterAll: "All",
     unownedOnlyLabel: "Only cards you don't own yet (excludes My Team \"owned\")",

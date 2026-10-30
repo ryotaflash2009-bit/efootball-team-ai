@@ -11,9 +11,9 @@ import type { SquadFitInput } from "@/lib/new-cards/card-squad-fit";
 /**
  * 保存スカッドを「1 枚のカードで強くなるか」の判定の入力にする（2026-10-26・選手の詳細とパック診断で共通）。
  * スカッドはブラウザーの中だけ（スコープの解決の後に読む・hydration の後）。読み込み中は null。
- * カードを読めていない枠は「空き」と誤って扱わないよう除く。
+ * カードを読めていない枠は「空き」と誤って扱わないよう除く。version を変えると保存データを読み直す（その場で入れた後）。
  */
-export function useSavedSquadFitInputs(): SquadFitInput[] | null {
+export function useSavedSquadFitInputs(version = 0): SquadFitInput[] | null {
   const scopeState = useSyncedStorageScope();
   const [squads, setSquads] = useState<StoredSquad[] | null>(null);
   useEffect(() => {
@@ -22,7 +22,7 @@ export function useSavedSquadFitInputs(): SquadFitInput[] | null {
       return;
     }
     setSquads(listSquads());
-  }, [scopeState.status === "resolved" ? scopeState.scope.kind : "loading", scopeState.status === "resolved" && scopeState.scope.kind === "account" ? scopeState.scope.scopeId : null]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [version, scopeState.status === "resolved" ? scopeState.scope.kind : "loading", scopeState.status === "resolved" && scopeState.scope.kind === "account" ? scopeState.scope.scopeId : null]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const ids = useMemo(() => [...new Set((squads ?? []).flatMap((s) => s.slots.map((x) => x.worldCardId)).filter((x): x is string => !!x))], [squads]);
   const { cards, loading } = useResolvedCards(ids);

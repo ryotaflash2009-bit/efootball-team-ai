@@ -657,6 +657,7 @@ const part: PartialDictionary = {
     squadOwnedIntro: "Cartas que você possui no My Team e que não estão neste elenco, cuja posição registrada coincide com o espaço e cujo OVR supera o jogador atual (em espaços vazios, o maior OVR).",
     squadFitHeading: "Elencos que esta carta reforçaria",
     squadFitIntro: "Seus elencos salvos em que esta carta se encaixa em um espaço da sua posição registrada com OVR maior que o do jogador atual.",
+    squadFitAppliedTemplate: "Adicionada a “{squad}”",
     positionFilterLabel: "Filtrar por posição",
     positionFilterAll: "Todas",
     unownedOnlyLabel: "Só cartas que você ainda não tem (exclui as \"suas\" do My Team)",

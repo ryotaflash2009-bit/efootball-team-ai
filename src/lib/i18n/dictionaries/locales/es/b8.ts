@@ -657,6 +657,7 @@ const part: PartialDictionary = {
     squadOwnedIntro: "Cartas que posees en My Team y que no están en esta plantilla, cuya posición registrada coincide con el hueco y cuyo OVR supera al jugador actual (en huecos vacíos, el OVR más alto).",
     squadFitHeading: "Plantillas que esta carta reforzaría",
     squadFitIntro: "Tus plantillas guardadas en las que esta carta encaja en un hueco de su posición registrada con un OVR mayor que el jugador actual.",
+    squadFitAppliedTemplate: "Añadida a «{squad}»",
     positionFilterLabel: "Filtrar por posición",
     positionFilterAll: "Todas",
     unownedOnlyLabel: "Solo cartas que aún no tienes (excluye las \"tuyas\" de My Team)",
