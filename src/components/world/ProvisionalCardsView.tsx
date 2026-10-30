@@ -14,9 +14,12 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Surface } from "@/components/ui/Surface";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { WorldPlayerCard, type WorldPlayerCardData } from "@/components/world/WorldPlayerCard";
-import { NewCardsTeamImpact } from "@/components/world/NewCardsTeamImpact";
+import dynamic from "next/dynamic";
 import { POSITION_ORDER } from "@/lib/tier/own-tier";
 import { useOwnedCards } from "@/lib/new-cards/use-owned-cards";
+
+// My Team・保存スカッドと比べる欄はブラウザーの中だけ（サーバーでは空）。最初の JS から外す（2026-10-30）
+const NewCardsTeamImpact = dynamic(() => import("@/components/world/NewCardsTeamImpact").then((m) => m.NewCardsTeamImpact), { ssr: false });
 
 const GRID = "grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7";
 /** 日ごとに最初に出す枚数（残りは「残り N 枚を表示」・2026-10-17 画面の整理）。 */
