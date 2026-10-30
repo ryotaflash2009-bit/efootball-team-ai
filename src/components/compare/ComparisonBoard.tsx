@@ -30,9 +30,21 @@ import { fillMessage } from "@/lib/i18n/message-format";
 import { CURRENT_COST_RULE_ID, resolveCostRuleId } from "@/lib/progression/progression-rules";
 
 // 開いたとき・必要なときだけ出す部品は後から読み込む（比較の最初の JS を軽く・2026-10-30）
-const AddPlayerSearch = dynamic(() => import("./AddPlayerSearch").then((m) => m.AddPlayerSearch), { ssr: false });
+const loadAddPlayerSearch = () => import("./AddPlayerSearch");
+const loadManagerPicker = () => import("@/components/managers/ManagerPicker");
+const AddPlayerSearch = dynamic(() => loadAddPlayerSearch().then((m) => m.AddPlayerSearch), { ssr: false });
 const CompareSimilarSuggestions = dynamic(() => import("./CompareSimilarSuggestions").then((m) => m.CompareSimilarSuggestions), { ssr: false });
-const ManagerPicker = dynamic(() => import("@/components/managers/ManagerPicker").then((m) => m.ManagerPicker), { ssr: false });
+const ManagerPicker = dynamic(() => loadManagerPicker().then((m) => m.ManagerPicker), { ssr: false });
+// 最初の表示の後に先読み（開くときに待たせない）
+function usePrefetchCompareParts() {
+  useEffect(() => {
+    const id = setTimeout(() => {
+      void loadAddPlayerSearch();
+      void loadManagerPicker();
+    }, 300);
+    return () => clearTimeout(id);
+  }, []);
+}
 
 // 表示ラベルは i18n の bench.mode* に集約。ここは順序と値のみ定義。
 const SHARED_MODES: CompareBuildMode[] = ["none", "attack", "defense", "balance", "gk"];
@@ -49,6 +61,7 @@ function useBuildModeLabels(): Record<CompareBuildMode, string> {
 }
 
 export function ComparisonBoard({ initialInputs }: { initialInputs: ComparisonPlayerInput[] }) {
+  usePrefetchCompareParts();
   // 保存ビルドの保存先（guest/アカウント）をこの画面でも解決する（未解決だと保存・一覧読み込みができない）。
   useSyncedStorageScope();
   const t = useT();

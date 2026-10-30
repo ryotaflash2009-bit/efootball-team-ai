@@ -2,7 +2,7 @@
 
 import "@/lib/i18n/dictionaries/ja-ns/comparisonCockpit";
 import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ComparisonPlayerInput, ComparisonResult } from "@/lib/comparison/types";
 import type { AutoAllocateProfile, PointsSummary, ProgressionGroup, SavedBuild } from "@/lib/progression/types";
 import { buildComparisonRadarData, type RadarMode } from "@/lib/comparison/ability-radar";
@@ -17,8 +17,10 @@ import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { fillMessage } from "@/lib/i18n/message-format";
 
 // 保存のダイアログ・能力値の編集は開いたときだけ読み込む（2026-10-30）
-const CompareSaveBuildDialog = dynamic(() => import("./CompareSaveBuildDialog").then((m) => m.CompareSaveBuildDialog), { ssr: false });
-const CompareAbilityEditSheet = dynamic(() => import("./CompareAbilityEditSheet").then((m) => m.CompareAbilityEditSheet), { ssr: false });
+const loadSaveBuildDialog = () => import("./CompareSaveBuildDialog");
+const loadAbilityEditSheet = () => import("./CompareAbilityEditSheet");
+const CompareSaveBuildDialog = dynamic(() => loadSaveBuildDialog().then((m) => m.CompareSaveBuildDialog), { ssr: false });
+const CompareAbilityEditSheet = dynamic(() => loadAbilityEditSheet().then((m) => m.CompareAbilityEditSheet), { ssr: false });
 
 /**
  * 比較コックピット: 育成スライダー・能力値レーダー・選択カテゴリの近接プレビューを 1 つの表示領域へ集約する。
@@ -76,6 +78,14 @@ export function ComparisonCockpit({
   // 能力から育成（1人ずつの編集モード）。null = 閉じている。
   const [abilityEditFor, setAbilityEditFor] = useState<number | null>(null);
   const closeAbilityEditor = useCallback(() => setAbilityEditFor(null), []);
+  // 最初の表示の後に先読みしておき、開くときに待たせない（2026-10-30）
+  useEffect(() => {
+    const id = setTimeout(() => {
+      void loadAbilityEditSheet();
+      void loadSaveBuildDialog();
+    }, 300);
+    return () => clearTimeout(id);
+  }, []);
   const t = useT();
   const { locale } = useLocale();
   const tcc = useCallback((k: keyof Dictionary["comparisonCockpit"]) => t("comparisonCockpit", k), [t]);
