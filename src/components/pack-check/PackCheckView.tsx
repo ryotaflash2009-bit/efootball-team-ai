@@ -21,6 +21,8 @@ import { fetchNewCardsOnce } from "@/lib/new-cards/fetch-new-cards";
 import { squadsStrengthenedByCard, type SquadFit } from "@/lib/new-cards/card-squad-fit";
 import { useSavedSquadFitInputs } from "@/components/world/useSavedSquadFitInputs";
 import { SquadFitLinks } from "@/components/world/SquadFitLinks";
+import { getSquad, saveSquad } from "@/lib/squad/squad-storage";
+import { placeCardInSlot } from "@/lib/squad/place-card";
 import type { WorldPlayerListItem } from "@/lib/world/types";
 import { useMyTeam } from "@/lib/user-cards/hooks";
 import { addToMyTeam } from "@/lib/user-cards/my-team-storage";
@@ -89,7 +91,18 @@ export function PackCheckView() {
     for (const r of notRegistered) addToMyTeam({ worldCardId: r.card.worldCardId, ownershipStatus: "owned" });
   };
   // カードごとに強くなる保存スカッド（2026-10-26・選手の詳細と同じ規則）
-  const squadInputs = useSavedSquadFitInputs();
+  // 引いたカードをその場でスカッドに入れる（2026-10-31）。入れた後は保存データを読み直す
+  const [squadVersion, setSquadVersion] = useState(0);
+  const [applied, setApplied] = useState<{ squadId: string; squadName: string } | null>(null);
+  const applyToSquad = (worldCardId: string, f: SquadFit) => {
+    const sq = getSquad(f.squadId);
+    if (!sq) return;
+    const r = placeCardInSlot(sq, f.slotId, worldCardId);
+    if (!r.ok || !saveSquad(r.squad).ok) return;
+    setApplied({ squadId: f.squadId, squadName: sq.squadName });
+    setSquadVersion((v) => v + 1);
+  };
+  const squadInputs = useSavedSquadFitInputs(squadVersion);
   const fitsById = useMemo(() => {
     const m = new Map<string, SquadFit[]>();
     if (!squadInputs || squadInputs.length === 0) return m;
@@ -235,6 +248,13 @@ export function PackCheckView() {
               {summary.bestDelta != null ? <p className="text-xs text-text-dim">{fillMessage(tp("bestDeltaTemplate"), { delta: String(summary.bestDelta) })}</p> : null}
             </Surface>
             {packLoading && pack.length < ids.length ? <p className="text-xs text-text-muted">{tp("loading")}</p> : null}
+            {applied ? (
+              <p role="status" className="text-xs text-success" data-testid="pack-check-squad-applied">
+                <Link href={`/squads/${encodeURIComponent(applied.squadId)}`} className="hover:underline">
+                  {fillMessage(t("provisionalCards", "squadFitAppliedTemplate"), { squad: applied.squadName })}
+                </Link>
+              </p>
+            ) : null}
             <ul className="flex flex-col divide-y divide-border rounded-card border border-border bg-surface text-sm" data-testid="pack-check-list">
               {results.map((r) => (
                 <li key={r.card.worldCardId} className="flex flex-col gap-0.5 px-3 py-2" data-verdict={r.verdict}>
@@ -269,7 +289,7 @@ export function PackCheckView() {
                       {tp("compareAbilities")}
                     </Link>
                   ) : null}
-                  <SquadFitLinks fits={fitsById.get(r.card.worldCardId)} testId="pack-check-squad-fit" />
+                  <SquadFitLinks fits={fitsById.get(r.card.worldCardId)} testId="pack-check-squad-fit" onApply={(f) => applyToSquad(r.card.worldCardId, f)} />
                   {/* 引けたらそのまま My Team へ（2026-10-25）。追加すると判定は「所持済み」になる */}
                   {r.verdict !== "already_owned" ? (
                     <span data-testid="pack-check-my-team" className="w-fit">

@@ -192,8 +192,8 @@
       "status": "pass",
       "passed": 107,
       "total": 107,
-      "seconds": 279,
-      "ranAt": "2026-10-30T15:14:46.116Z",
+      "seconds": 280,
+      "ranAt": "2026-10-30T15:32:30.557Z",
       "line": "107/107 PASS",
       "fails": [],
       "report": null
@@ -269,8 +269,8 @@
       "status": "pass",
       "passed": 35,
       "total": 35,
-      "seconds": 35,
-      "ranAt": "2026-10-30T12:57:02.116Z",
+      "seconds": 33,
+      "ranAt": "2026-10-30T15:37:10.527Z",
       "line": "[black-box-new-cards] 35/35 PASS",
       "fails": [],
       "report": "new-cards.md"
@@ -280,8 +280,8 @@
       "status": "pass",
       "passed": 18,
       "total": 18,
-      "seconds": 17,
-      "ranAt": "2026-10-30T14:53:30.705Z",
+      "seconds": 13,
+      "ranAt": "2026-10-30T15:37:43.211Z",
       "line": "[black-box-pack-check] 18/18 PASS",
       "fails": [],
       "report": "pack-check.md"
@@ -355,11 +355,11 @@
     "same-player": {
       "name": "same-player",
       "status": "pass",
-      "passed": 26,
-      "total": 26,
-      "seconds": 29,
-      "ranAt": "2026-10-30T15:19:40.026Z",
-      "line": "[black-box-same-player] 26/26 PASS",
+      "passed": 27,
+      "total": 27,
+      "seconds": 30,
+      "ranAt": "2026-10-30T15:37:56.454Z",
+      "line": "[black-box-same-player] 27/27 PASS",
       "fails": [],
       "report": "same-player.md"
     },
@@ -507,5 +507,5 @@
       "report": null
     }
   },
-  "updatedAt": "2026-10-30T15:20:09.184Z"
+  "updatedAt": "2026-10-30T15:38:25.962Z"
 }
