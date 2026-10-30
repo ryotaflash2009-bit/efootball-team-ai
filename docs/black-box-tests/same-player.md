@@ -1,6 +1,6 @@
 # 同じ選手の別のカード ブラックボックステスト結果
 
-実行日時: 2026-10-30T15:02:19.671Z
+実行日時: 2026-10-30T15:20:09.172Z
 対象: http://localhost:3000（Production Build 上の隔離ヘッドレス Chrome）
 
 | 結果 | 項目 | 詳細 |
@@ -28,6 +28,7 @@
 | PASS | [選手の詳細] 「入れ替える」でその場でスカッドに入れる（RB が置き換わる・入れましたのリンク・行は消える） | label=入れ替える rb=88036360587367 still=false link=/squads/sq_bbsquadfit01 rowGone=true |
 | PASS | [パック診断] 引いたカードで強くなるスカッドへのリンク（入っているスカッドは出ない） | ["/squads/sq_bbsquadfit01"] |
 | PASS | [My Team] 保存スカッドを強くできる所持カード（弱い RB のスカッドへのリンク・入っているスカッドは出ない） | ["/squads/sq_bbsquadfit01"] |
+| PASS | [My Team] 「入れ替える」でその場でスカッドに入れる（RB が所持のカード・入れましたのリンク） | rb=88036360587367 link=/squads/sq_bbsquadfit01 |
 | PASS | [所属の内訳] 先発の同じ国籍を「国籍 ×人数」で示し、選手一覧の絞り込みへリンクする | Brazil {"n":["Brazil ×2"],"href":"/players?nationality=Brazil"} |
 | PASS | ページ内で JS の例外が起きない |  |
 

@@ -23,14 +23,14 @@
 | ✅ 合格 | favorites | 32/32 | 2 | 2026-10-30 14:41 | — |
 | ✅ 合格 | final-alpha-readiness-copy（社内向けページ） | 37/37 | 5 | 2026-10-25 15:14 | [final-alpha-readiness-copy.md](./final-alpha-readiness-copy.md) |
 | ✅ 合格 | game-plan | 18/18 | 7 | 2026-10-30 13:44 | — |
-| ✅ 合格 | hydration-seeded | 107/107 | 279 | 2026-10-30 14:57 | — |
+| ✅ 合格 | hydration-seeded | 107/107 | 279 | 2026-10-30 15:14 | — |
 | ✅ 合格 | local-backup | 28/28 | 41 | 2026-10-30 14:07 | [local-backup.md](./local-backup.md) |
 | ✅ 合格 | local-posts（社内向けページ） | 32/32 | 79 | 2026-10-25 15:14 | [local-posts.md](./local-posts.md) |
 | ✅ 合格 | manager-compare | 16/16 | 9 | 2026-10-30 13:33 | — |
 | ✅ 合格 | manager-picker | 35/35 | 6 | 2026-10-30 14:00 | [manager-picker.md](./manager-picker.md) |
 | ✅ 合格 | managers | 43/43 | 2 | 2026-10-25 20:01 | [managers.md](./managers.md) |
 | ✅ 合格 | my-builds | 100/100 | 1 | 2026-10-30 14:45 | [my-builds.md](./my-builds.md) |
-| ✅ 合格 | my-team-cloud | 98/98 | 15 | 2026-10-30 14:45 | [my-team-cloud.md](./my-team-cloud.md) |
+| ✅ 合格 | my-team-cloud | 98/98 | 15 | 2026-10-30 15:19 | [my-team-cloud.md](./my-team-cloud.md) |
 | ✅ 合格 | new-cards | 35/35 | 35 | 2026-10-30 12:57 | [new-cards.md](./new-cards.md) |
 | ✅ 合格 | pack-check | 18/18 | 17 | 2026-10-30 14:53 | [pack-check.md](./pack-check.md) |
 | ✅ 合格 | phase-b5 | 24/24 | 0 | 2026-10-25 20:02 | — |
@@ -40,7 +40,7 @@
 | ✅ 合格 | public-signup-limited | 117/117 | 102 | 2026-10-25 20:02 | [public-signup-limited.md](./public-signup-limited.md) |
 | ✅ 合格 | release-gate | 2/2 | 570 | 2026-10-25 20:03 | — |
 | ✅ 合格 | rls-test（社内向けページ） | 71/71 | 12 | 2026-10-25 15:16 | [rls-test.md](./rls-test.md) |
-| ✅ 合格 | same-player | 25/25 | 29 | 2026-10-30 15:01 | [same-player.md](./same-player.md) |
+| ✅ 合格 | same-player | 26/26 | 29 | 2026-10-30 15:19 | [same-player.md](./same-player.md) |
 | ✅ 合格 | saved-filters | 11/11 | 6 | 2026-10-25 20:13 | — |
 | ✅ 合格 | share-build-link | 6/6 | 2 | 2026-10-28 14:03 | — |
 | ✅ 合格 | share-card | 24/24 | 59 | 2026-10-30 13:50 | [share-card.md](./share-card.md) |
@@ -53,3 +53,4 @@
 | ✅ 合格 | ui | 74/74 | 1 | 2026-10-28 14:03 | [ui.md](./ui.md) |
 | ✅ 合格 | world-sync | 35/35 | 1 | 2026-10-25 20:15 | — |
 | ✅ 合格 | world-ui | 93/93 | 12 | 2026-10-30 15:02 | [world-ui.md](./world-ui.md) |
+
