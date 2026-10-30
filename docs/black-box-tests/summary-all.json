@@ -17,7 +17,7 @@
       "passed": 164,
       "total": 164,
       "seconds": 23,
-      "ranAt": "2026-10-28T14:51:29.340Z",
+      "ranAt": "2026-10-30T14:02:05.361Z",
       "line": "[black-box-account-scoped-storage] 164/164 PASS",
       "fails": [],
       "report": "account-scoped-storage.md"
@@ -192,8 +192,8 @@
       "status": "pass",
       "passed": 107,
       "total": 107,
-      "seconds": 277,
-      "ranAt": "2026-10-30T13:44:56.637Z",
+      "seconds": 279,
+      "ranAt": "2026-10-30T14:02:28.120Z",
       "line": "107/107 PASS",
       "fails": [],
       "report": null
@@ -204,7 +204,7 @@
       "passed": 28,
       "total": 28,
       "seconds": 41,
-      "ranAt": "2026-10-28T14:56:30.543Z",
+      "ranAt": "2026-10-30T14:07:06.647Z",
       "line": "[black-box-local-backup] 28/28 PASS",
       "fails": [],
       "report": "local-backup.md"
@@ -247,8 +247,8 @@
       "status": "pass",
       "passed": 100,
       "total": 100,
-      "seconds": 1,
-      "ranAt": "2026-10-28T14:57:11.987Z",
+      "seconds": 0,
+      "ranAt": "2026-10-30T14:07:47.628Z",
       "line": "[black-box-my-builds] 100/100 PASS",
       "fails": [],
       "report": "my-builds.md"
@@ -507,5 +507,5 @@
       "report": null
     }
   },
-  "updatedAt": "2026-10-30T13:51:18.111Z"
+  "updatedAt": "2026-10-30T14:07:48.122Z"
 }
