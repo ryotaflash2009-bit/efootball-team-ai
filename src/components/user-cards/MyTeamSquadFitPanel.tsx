@@ -2,6 +2,7 @@
 
 import "@/lib/i18n/dictionaries/ja-ns/myTeam";
 import "@/lib/i18n/dictionaries/ja-ns/provisionalCards";
+import "@/lib/i18n/dictionaries/ja-ns/squadEditor";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
@@ -11,6 +12,8 @@ import { useOwnedCards } from "@/lib/new-cards/use-owned-cards";
 import { useSavedSquadFitInputs } from "@/components/world/useSavedSquadFitInputs";
 import { squadsStrengthenedByCard, type SquadFit } from "@/lib/new-cards/card-squad-fit";
 import type { WorldPlayerListItem } from "@/lib/world/types";
+import { getSquad, saveSquad } from "@/lib/squad/squad-storage";
+import { placeCardInSlot } from "@/lib/squad/place-card";
 
 /** 最初に出す行数（残りは「すべて表示」）。 */
 const INITIAL_ROWS = 5;
@@ -25,7 +28,18 @@ export function MyTeamSquadFitPanel() {
   const tm = (k: Parameters<typeof t<"myTeam">>[1]) => t("myTeam", k);
   const tp = (k: Parameters<typeof t<"provisionalCards">>[1]) => t("provisionalCards", k);
   const { owned } = useOwnedCards();
-  const inputs = useSavedSquadFitInputs();
+  // 「入れ替える」でその場でスカッドに入れる（選手の詳細の欄と同じ・2026-10-31）
+  const [version, setVersion] = useState(0);
+  const [applied, setApplied] = useState<{ squadId: string; squadName: string } | null>(null);
+  const inputs = useSavedSquadFitInputs(version);
+  const apply = (squadId: string, slotId: string, worldCardId: string) => {
+    const sq = getSquad(squadId);
+    if (!sq) return;
+    const r = placeCardInSlot(sq, slotId, worldCardId);
+    if (!r.ok || !saveSquad(r.squad).ok) return;
+    setApplied({ squadId, squadName: sq.squadName });
+    setVersion((v) => v + 1);
+  };
   const [all, setAll] = useState(false);
   const rows = useMemo(() => {
     if (!inputs || inputs.length === 0) return [];
@@ -38,11 +52,18 @@ export function MyTeamSquadFitPanel() {
     return out.sort((a, b) => best(b) - best(a) || a.card.worldCardId.localeCompare(b.card.worldCardId));
   }, [owned, inputs]);
 
-  if (rows.length === 0) return null;
+  if (rows.length === 0 && !applied) return null;
   return (
     <details className="rounded-card border border-border bg-surface p-3" data-testid="my-team-squad-fit" open>
       <summary className="flex min-h-[36px] cursor-pointer items-center text-sm font-semibold">{tm("squadFitHeading")}</summary>
       <p className="mt-1 text-2xs text-text-dim">{tm("squadFitIntro")}</p>
+      {applied ? (
+        <p role="status" className="mt-1 text-xs text-success" data-testid="my-team-squad-fit-applied">
+          <Link href={`/squads/${encodeURIComponent(applied.squadId)}`} className="hover:underline">
+            {fillMessage(tp("squadFitAppliedTemplate"), { squad: applied.squadName })}
+          </Link>
+        </p>
+      ) : null}
       <ul className="mt-2 flex flex-col divide-y divide-border">
         {(all ? rows : rows.slice(0, INITIAL_ROWS)).map(({ card, fits }) => (
           <li key={card.worldCardId} className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 py-1.5 text-xs" data-world-card-id={card.worldCardId}>
@@ -56,6 +77,14 @@ export function MyTeamSquadFitPanel() {
                 </Link>
                 <span className="font-bold text-text-dim">{f.position}</span>
                 {f.delta != null ? <span className="tabular-nums text-success">+{f.delta}</span> : null}
+                <button
+                  type="button"
+                  onClick={() => apply(f.squadId, f.slotId, card.worldCardId)}
+                  className="rounded border border-accent px-1.5 text-2xs font-semibold text-accent hover:bg-accent-soft"
+                  data-testid="my-team-squad-fit-apply"
+                >
+                  {f.current ? t("squadEditor", "samePlayerSwapButton") : fillMessage(t("squadEditor", "addToSlotLabelTemplate"), { position: f.position })}
+                </button>
               </span>
             ))}
           </li>

@@ -283,6 +283,12 @@ async function main() {
         await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="my-team-squad-fit"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
         const mt = await evalJson(client, `[...document.querySelectorAll('[data-testid="my-team-squad-fit"] li[data-world-card-id="${OTHER}"] [data-testid="my-team-squad-fit-link"]')].map((a) => a.getAttribute("href"))`);
         record("[My Team] 保存スカッドを強くできる所持カード（弱い RB のスカッドへのリンク・入っているスカッドは出ない）", Array.isArray(mt) && mt.includes("/squads/sq_bbsquadfit01") && !mt.includes("/squads/sq_bbsquadfit02"), JSON.stringify(mt));
+        // その場で入れる（2026-10-31）
+        await evalJson(client, `document.querySelector('[data-testid="my-team-squad-fit"] li[data-world-card-id="${OTHER}"] [data-testid="my-team-squad-fit-apply"]')?.click()`);
+        await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="my-team-squad-fit-applied"]')`), { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+        const sv = await evalJson(client, `JSON.parse(localStorage.getItem(${JSON.stringify(SQUADS_KEY)})).find((x) => x.squadId === "sq_bbsquadfit01")`);
+        const mtLink = await evalJson(client, `document.querySelector('[data-testid="my-team-squad-fit-applied"] a')?.getAttribute("href") ?? ""`);
+        record("[My Team] 「入れ替える」でその場でスカッドに入れる（RB が所持のカード・入れましたのリンク）", sv?.slots?.find((x) => x.slotId === "rb")?.worldCardId === OTHER && mtLink === "/squads/sq_bbsquadfit01", `rb=${sv?.slots?.find((x) => x.slotId === "rb")?.worldCardId} link=${mtLink}`);
         await evalJson(client, `localStorage.removeItem(${JSON.stringify(KEY)})`);
       }
     }
