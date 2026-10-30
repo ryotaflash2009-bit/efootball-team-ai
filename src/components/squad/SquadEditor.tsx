@@ -17,9 +17,6 @@ import { getBuild, listBuilds } from "@/lib/progression/build-storage";
 import { toProgressionCard } from "@/lib/progression/from-world";
 import { worldDetailToSquadDisplay } from "@/lib/squad/from-world";
 import { squadAffiliationSummary } from "@/lib/squad/affiliation-summary";
-import { SquadAffiliationPanel } from "@/components/squad/SquadAffiliationPanel";
-import { SquadNewCardsPanel } from "@/components/squad/SquadNewCardsPanel";
-import { SquadOwnedUpgradesPanel } from "@/components/squad/SquadOwnedUpgradesPanel";
 import { buildSquad } from "@/lib/squad/build-squad";
 import { diagnoseSquad, buildSquadDiagnosisInput } from "@/lib/squad/squad-diagnosis";
 import { buildTacticalPlacementInputs } from "@/lib/squad/squad-tactical-review";
@@ -97,7 +94,6 @@ import { SquadManagerPanel } from "./SquadManagerPanel";
 import { TeamSummaryPanel } from "./TeamSummaryPanel";
 import { SquadDiagnosisPanel } from "./SquadDiagnosisPanel";
 import { LinkUpPanel } from "./LinkUpPanel";
-import { PlayerSearchPanel } from "./PlayerSearchPanel";
 import { Surface } from "@/components/ui/Surface";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
@@ -107,8 +103,6 @@ import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { duplicatePersons, isSamePerson } from "@/lib/world/person-identity";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
-import { DiagnosisPerspectivesPanel } from "./DiagnosisPerspectivesPanel";
-import { SquadUniquenessPanel } from "./SquadUniquenessPanel";
 import { buildDiagnosisPerspectives, toPerspectiveInput } from "@/lib/squad/diagnosis-perspectives";
 import { fillMessage } from "@/lib/i18n/message-format";
 import { resolveCostRuleId } from "@/lib/progression/progression-rules";
@@ -153,6 +147,14 @@ function useMoveErrorMessage(): Record<SquadMoveErrorCode, string> {
 }
 
 // ゲームプランの欄は閉じた状態で下にあるため、初回の JS に含めず必要になってから読み込む（2026-10-07）。
+// 下の方の欄・選手の検索は後から読み込む（最初の JS を軽く・2026-10-30）
+const SquadAffiliationPanel = dynamic(() => import("@/components/squad/SquadAffiliationPanel").then((x) => x.SquadAffiliationPanel), { ssr: false });
+const SquadNewCardsPanel = dynamic(() => import("@/components/squad/SquadNewCardsPanel").then((x) => x.SquadNewCardsPanel), { ssr: false });
+const SquadOwnedUpgradesPanel = dynamic(() => import("@/components/squad/SquadOwnedUpgradesPanel").then((x) => x.SquadOwnedUpgradesPanel), { ssr: false });
+const loadPlayerSearchPanel = () => import("./PlayerSearchPanel");
+const PlayerSearchPanel = dynamic(() => loadPlayerSearchPanel().then((x) => x.PlayerSearchPanel), { ssr: false });
+const DiagnosisPerspectivesPanel = dynamic(() => import("./DiagnosisPerspectivesPanel").then((x) => x.DiagnosisPerspectivesPanel), { ssr: false });
+const SquadUniquenessPanel = dynamic(() => import("./SquadUniquenessPanel").then((x) => x.SquadUniquenessPanel), { ssr: false });
 const GamePlanPanel = dynamic(() => import("@/components/squad/GamePlanPanel").then((m) => m.GamePlanPanel), { ssr: false });
 
 export function SquadEditor({
@@ -168,6 +170,11 @@ export function SquadEditor({
   /** My Team側で選択されていた保存ビルド（URL の ?build=）。pendingWorldCardIdとセットでのみ有効。 */
   pendingBuildId?: string | null;
 }) {
+  // 枠を押したときに検索を待たせないよう、最初の表示の後に先読みする（2026-10-30）
+  useEffect(() => {
+    const id = setTimeout(() => void loadPlayerSearchPanel(), 300);
+    return () => clearTimeout(id);
+  }, []);
   const router = useRouter();
   const pathname = usePathname();
   const t = useT();
