@@ -3,6 +3,7 @@
 import { ProvisionalCardsLink } from "@/components/world/ProvisionalCardsLink";
 import dynamic from "next/dynamic";
 import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
+import "@/lib/i18n/dictionaries/ja-ns/provisionalCards";
 import Link from "next/link";
 import { WorldCardImage } from "@/components/world/WorldCardImage";
 import { PageContainer } from "@/components/ui/PageContainer";
@@ -13,7 +14,7 @@ import { buttonClasses } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
-import { formatDateTime, formatNumber } from "@/lib/i18n/format";
+import { formatDate, formatDateTime, formatNumber } from "@/lib/i18n/format";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { fillMessage } from "@/lib/i18n/message-format";
 
@@ -93,6 +94,7 @@ export function HomePageView({
   recent,
   temporaryError = false,
   provisionalCount = 0,
+  staleDays = null,
 }: {
   world: HomePageWorldSummary | null;
   efhubTotal: number | null;
@@ -103,6 +105,8 @@ export function HomePageView({
   temporaryError?: boolean;
   /** 新しいカード（暫定）の枚数（2026-10-15）。 */
   provisionalCount?: number;
+  /** 正式なデータの取り込みが止まっている日数（7 日以上・サーバーで計算・2026-11-01）。 */
+  staleDays?: number | null;
 }) {
   const t = useT();
   const { locale, displayLocale } = useLocale();
@@ -234,6 +238,11 @@ export function HomePageView({
         {/* データ指標 */}
         <section>
           <SectionHeader title={th("dataStatusHeading")} as="h2" hint={world ? world.source : undefined} />
+          {staleDays != null && world?.syncFinishedAt ? (
+            <p className="mb-3 rounded-md border border-warning/50 px-3 py-2 text-xs text-text-dim" data-testid="official-data-stale">
+              {t("provisionalCards", "staleNoticeTemplate").replace("{days}", String(staleDays)).replace("{date}", formatDate(new Date(world.syncFinishedAt), displayLocale))}
+            </p>
+          ) : null}
           <div className="mb-3 flex flex-wrap gap-2">
             <ProvisionalCardsLink count={provisionalCount} />
             <HomeNewCardsUpgrade />

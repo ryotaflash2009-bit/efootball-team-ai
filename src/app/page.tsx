@@ -13,6 +13,7 @@ import { pageMetadata } from "@/lib/seo/page-metadata";
 import { NEW_CARD_DAYS, RECENT_LIMIT } from "@/lib/new-cards/constants";
 import { JsonLdScript } from "@/components/seo/JsonLdScript";
 import { websiteJsonLd } from "@/lib/seo/structured-data";
+import { officialStaleDays } from "@/lib/new-cards/constants";
 
 export const metadata = pageMetadata({
   path: "/",
@@ -87,6 +88,9 @@ export default async function HomePage() {
     recentlyAdded = [];
   }
   const provisionalCount = listProvisionalPlayers().length + recentlyAdded.length;
+  // 正式なデータの取り込みが止まっていれば知らせる（選手一覧・新しいカードと同じ規則・2026-11-01）。ISR の作り直し（5 分）ごとに計算する
+  const newestProvisionalAt = listProvisionalPlayers().map((p) => p.provisional?.firstSeenAt ?? null).filter((v): v is string => typeof v === "string").sort().at(-1) ?? null;
+  const staleDays = officialStaleDays(world?.syncFinishedAt ?? null, newestProvisionalAt);
 
   return (
     <>
@@ -99,6 +103,7 @@ export default async function HomePage() {
         recent={recent}
         temporaryError={temporaryError}
         provisionalCount={provisionalCount}
+        staleDays={staleDays}
       />
     </>
   );
