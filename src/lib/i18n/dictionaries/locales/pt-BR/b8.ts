@@ -668,6 +668,7 @@ const part: PartialDictionary = {
     squadFitHeading: "Elencos que esta carta reforçaria",
     squadFitIntro: "Seus elencos salvos em que esta carta se encaixa em um espaço da sua posição registrada com OVR maior que o do jogador atual.",
     squadFitAppliedTemplate: "Adicionada a “{squad}”",
+    squadUsageHeadingTemplate: "Elencos que usam esta carta ({count})",
     positionFilterLabel: "Filtrar por posição",
     positionFilterAll: "Todas",
     unownedOnlyLabel: "Só cartas que você ainda não tem (exclui as \"suas\" do My Team)",

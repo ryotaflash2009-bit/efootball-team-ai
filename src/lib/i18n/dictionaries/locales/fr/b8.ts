@@ -668,6 +668,7 @@ const part: PartialDictionary = {
     squadFitHeading: "Effectifs que cette carte renforcerait",
     squadFitIntro: "Vos effectifs enregistrés où cette carte occupe un emplacement de son poste enregistré avec un OVR supérieur au joueur actuel.",
     squadFitAppliedTemplate: "Ajoutée à « {squad} »",
+    squadUsageHeadingTemplate: "Effectifs utilisant cette carte ({count})",
     positionFilterLabel: "Filtrer par poste",
     positionFilterAll: "Toutes",
     unownedOnlyLabel: "Seulement les cartes que vous n'avez pas encore (hors « possédées » de My Team)",

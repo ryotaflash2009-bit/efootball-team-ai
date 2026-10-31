@@ -301,6 +301,10 @@ async function main() {
       await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="squad-fit"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
       const fit = await evalJson(client, `[...document.querySelectorAll('[data-testid="squad-fit"] li')].map((li) => li.dataset.squadId)`);
       record("[選手の詳細] このカードで強くなるスカッド（弱い RB のスカッドは出る・このカードが入っているスカッドは出ない）", !!weak && Array.isArray(fit) && fit.includes("sq_bbsquadfit01") && !fit.includes("sq_bbsquadfit02"), JSON.stringify(fit));
+      // このカードを使っているスカッド（2026-11-01）: OTHER は sq_bbsquadfit02 の控え → 「ベンチ」で出る・使っていないスカッドは出ない
+      await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="squad-usage"]')`), { timeoutMs: 15000, intervalMs: 300 }).catch(() => {});
+      const usageRows = await evalJson(client, `[...document.querySelectorAll('[data-testid="squad-usage"] li')].map((li) => ({ id: li.dataset.squadId, text: li.textContent }))`);
+      record("[選手の詳細] このカードを使っているスカッド（控えのスカッドが「ベンチ」で出る・使っていないスカッドは出ない）", Array.isArray(usageRows) && usageRows.length === 1 && usageRows[0].id === "sq_bbsquadfit02" && /ベンチ/.test(usageRows[0].text), JSON.stringify(usageRows));
       // その場で入れる（2026-10-30）: 「入れ替える」→ 保存データの RB が OTHER・弱いカードは外れる・「入れました」のリンク・行は消える
       {
         const btn = `document.querySelector('[data-testid="squad-fit"] li[data-squad-id="sq_bbsquadfit01"] [data-testid="squad-fit-apply"]')`;

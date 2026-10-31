@@ -53,6 +53,7 @@ const provisionalCards: Dictionary["provisionalCards"] = {
   squadFitHeading: "このカードで強くなるスカッド",
   squadFitIntro: "保存したスカッドのうち、このカードの登録ポジションの枠に今の選手より OVR が高いかたちで入るものです。",
   squadFitAppliedTemplate: "「{squad}」に入れました",
+  squadUsageHeadingTemplate: "このカードを使っているスカッド（{count}）",
   positionFilterLabel: "ポジションで絞る",
   positionFilterAll: "すべて",
   unownedOnlyLabel: "まだ持っていないカードだけ（My Team の「所持」を除く）",

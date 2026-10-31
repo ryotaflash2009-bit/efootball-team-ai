@@ -5390,6 +5390,7 @@ const en: Dictionary = {
     squadFitHeading: "Squads this card would strengthen",
     squadFitIntro: "Your saved squads where this card fits a slot of its registered position with a higher OVR than the current player.",
     squadFitAppliedTemplate: "Added to “{squad}”",
+    squadUsageHeadingTemplate: "Squads using this card ({count})",
     positionFilterLabel: "Filter by position",
     positionFilterAll: "All",
     unownedOnlyLabel: "Only cards you don't own yet (excludes My Team \"owned\")",

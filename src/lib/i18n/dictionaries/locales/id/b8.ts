@@ -668,6 +668,7 @@ const part: PartialDictionary = {
     squadFitHeading: "Skuad yang akan diperkuat kartu ini",
     squadFitIntro: "Skuad tersimpan di mana kartu ini masuk ke slot posisi terdaftarnya dengan OVR lebih tinggi dari pemain sekarang.",
     squadFitAppliedTemplate: "Ditambahkan ke “{squad}”",
+    squadUsageHeadingTemplate: "Skuad yang memakai kartu ini ({count})",
     positionFilterLabel: "Saring berdasarkan posisi",
     positionFilterAll: "Semua",
     unownedOnlyLabel: "Hanya kartu yang belum kamu miliki (tanpa \"dimiliki\" di My Team)",
