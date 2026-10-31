@@ -265,6 +265,13 @@ async function main() {
         const link = await evalJson(client, `document.querySelector('[data-testid="squad-fit-applied"] a')?.getAttribute("href") ?? ""`);
         const rowGone = !(await evalJson(client, `!!document.querySelector('[data-testid="squad-fit"] li[data-squad-id="sq_bbsquadfit01"]')`));
         record("[選手の詳細] 「入れ替える」でその場でスカッドに入れる（RB が置き換わる・入れましたのリンク・行は消える）", label.trim() === "入れ替える" && rb === OTHER && !still && link === "/squads/sq_bbsquadfit01" && rowGone, `label=${label.trim()} rb=${rb} still=${still} link=${link} rowGone=${rowGone}`);
+        // 元に戻す（2026-10-31）: RB が元の弱いカードに戻り、行がまた出る
+        await evalJson(client, `document.querySelector('[data-testid="squad-fit-applied-undo"]')?.click()`);
+        await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="squad-fit"] li[data-squad-id="sq_bbsquadfit01"]')`), { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+        const back = await evalJson(client, `JSON.parse(localStorage.getItem(${JSON.stringify(SQUADS_KEY)})).find((x) => x.squadId === "sq_bbsquadfit01")?.slots?.find((x) => x.slotId === "rb")?.worldCardId ?? null`);
+        const rowBack = await evalJson(client, `!!document.querySelector('[data-testid="squad-fit"] li[data-squad-id="sq_bbsquadfit01"]')`);
+        const noticeGone = !(await evalJson(client, `!!document.querySelector('[data-testid="squad-fit-applied"]')`));
+        record("[選手の詳細] 「元に戻す」で入れる前のスカッドに戻る（RB が元のカード・行がまた出る）", back === weak && rowBack && noticeGone, `rb=${back} rowBack=${rowBack} noticeGone=${noticeGone}`);
         // 次のパック診断・My Team の確認のため、スカッドを元に戻す
         await client.send("Runtime.evaluate", { expression: `localStorage.setItem(${JSON.stringify(SQUADS_KEY)}, ${JSON.stringify(JSON.stringify([a, b]))})` });
       }
