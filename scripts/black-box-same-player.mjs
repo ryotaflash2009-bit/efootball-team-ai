@@ -308,6 +308,18 @@ async function main() {
         record("[パック診断] 「入れ替える」でその場でスカッドに入れる（RB が引いたカード・入れましたのリンク）", pv?.slots?.find((x) => x.slotId === "rb")?.worldCardId === OTHER && pl === "/squads/sq_bbsquadfit01", `rb=${pv?.slots?.find((x) => x.slotId === "rb")?.worldCardId} link=${pl}`);
         await client.send("Runtime.evaluate", { expression: `localStorage.setItem(${JSON.stringify(SQUADS_KEY)}, ${JSON.stringify(JSON.stringify([a, b]))})` });
       }
+      // お気に入り: 手に入れると保存スカッドが強くなるカード（2026-11-01）。OTHER をお気に入り（所持でない）に → 弱い RB のスカッドへのリンク
+      {
+        const FKEY = "efootball-team-ai:local:guest:favorites:v1";
+        const now = new Date().toISOString();
+        const fav = { localRecordId: `fav_${OTHER}`, worldCardId: OTHER, note: "", tags: [], addedAt: now, updatedAt: now, source: "local", syncStatus: "local_only" };
+        await evalJson(client, `localStorage.setItem(${JSON.stringify(FKEY)}, ${JSON.stringify(JSON.stringify({ storageVersion: "favorites-storage/2026-08-30.v1", updatedAt: now, records: [fav] }))}); localStorage.removeItem("efootball-team-ai:local:guest:my-team:v1")`);
+        await go(client, `${BASE}/favorites`);
+        await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="favorites-squad-fit"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+        const fl = await evalJson(client, `[...document.querySelectorAll('[data-testid="favorites-squad-fit"] li[data-world-card-id="${OTHER}"] [data-testid="favorites-squad-fit-link"]')].map((a) => a.getAttribute("href"))`);
+        record("[お気に入り] 手に入れると保存スカッドが強くなるカード（弱い RB のスカッドへのリンク・入っているスカッドは出ない）", Array.isArray(fl) && fl.includes("/squads/sq_bbsquadfit01") && !fl.includes("/squads/sq_bbsquadfit02"), JSON.stringify(fl));
+        await evalJson(client, `localStorage.removeItem(${JSON.stringify(FKEY)})`);
+      }
       // My Team: 保存スカッドを強くできる所持カード（2026-10-28）
       {
         const KEY = "efootball-team-ai:local:guest:my-team:v1";

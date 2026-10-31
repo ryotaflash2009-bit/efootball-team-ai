@@ -502,6 +502,8 @@ const part: PartialDictionary = {
   favoritesView: {
     pageTitle: "收藏",
     pageDescription: "儲存你感興趣的球員卡，之後可以確認培養或進行比較。未持有的球員卡也能登錄。",
+    squadFitHeading: "得到後能加強已儲存陣容的卡",
+    squadFitIntro: "收藏中在 My Team 未標記為已擁有、能以高於目前球員的 OVR 進入已儲存陣容中相同登錄位置的卡。",
     emptyTitle: "目前還沒有收藏",
     emptyDescription: "可在球員清單或球員詳細資料頁面使用星號圖示加入。未持有的球員卡也能收藏。",
     noResultsTitle: "沒有符合條件的收藏",

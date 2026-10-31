@@ -502,6 +502,8 @@ const part: PartialDictionary = {
   favoritesView: {
     pageTitle: "즐겨찾기",
     pageDescription: "관심 있는 카드를 저장해 두고 나중에 육성을 확인하거나 비교하세요. 보유하지 않은 카드도 등록할 수 있습니다.",
+    squadFitHeading: "얻으면 저장한 스쿼드가 강해지는 카드",
+    squadFitIntro: "즐겨찾기 중 My Team에서 보유로 표시되지 않은 카드로, 저장한 스쿼드의 같은 등록 포지션 슬롯에 현재 선수보다 높은 OVR로 들어가는 카드입니다.",
     emptyTitle: "아직 즐겨찾기가 없습니다",
     emptyDescription: "선수 목록이나 선수 상세 페이지의 별 아이콘으로 카드를 추가하세요. 보유하지 않은 카드도 즐겨찾기할 수 있습니다.",
     noResultsTitle: "조건에 맞는 즐겨찾기가 없습니다",

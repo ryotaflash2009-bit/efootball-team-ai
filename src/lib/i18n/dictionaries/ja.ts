@@ -2992,6 +2992,8 @@ export interface Dictionary {
   favoritesView: {
     pageTitle: string;
     pageDescription: string;
+    squadFitHeading: string;
+    squadFitIntro: string;
     emptyTitle: string;
     emptyDescription: string;
     noResultsTitle: string;

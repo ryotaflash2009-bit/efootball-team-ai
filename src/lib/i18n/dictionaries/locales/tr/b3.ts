@@ -502,6 +502,8 @@ const part: PartialDictionary = {
   favoritesView: {
     pageTitle: "Favoriler",
     pageDescription: "İlgilendiğiniz kartları kaydedin, gelişimlerini daha sonra kontrol edip karşılaştırın. Sahip olmadığınız kartlar da kaydedilebilir.",
+    squadFitHeading: "Elde edersen kayıtlı kadrolarını güçlendirecek kartlar",
+    squadFitIntro: "My Team'de sahip olarak işaretlenmemiş, kayıtlı bir kadroda aynı kayıtlı mevkideki bir yuvaya mevcut oyuncudan daha yüksek OVR ile girecek favoriler.",
     emptyTitle: "Henüz favoriniz yok",
     emptyDescription: "Oyuncu listesinde veya oyuncu detay sayfasındaki yıldız simgesiyle kart ekleyin. Sahip olmadığınız kartlar da favorilere eklenebilir.",
     noResultsTitle: "Ölçütlerinize uyan favori yok",

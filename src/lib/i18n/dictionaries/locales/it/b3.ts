@@ -502,6 +502,8 @@ const part: PartialDictionary = {
   favoritesView: {
     pageTitle: "Preferiti",
     pageDescription: "Salva le carte che ti interessano e controllane progressione e confronto in seguito. Puoi registrare anche carte che non possiedi.",
+    squadFitHeading: "Carte che rafforzerebbero le tue rose salvate se le ottenessi",
+    squadFitIntro: "Preferiti non segnati come posseduti in My Team che occuperebbero uno slot dello stesso ruolo registrato in una rosa salvata con un OVR più alto del giocatore attuale.",
     emptyTitle: "Non hai ancora preferiti",
     emptyDescription: "Aggiungi carte con l’icona a stella nell’elenco dei giocatori o nella pagina di dettaglio di un giocatore. Puoi aggiungere ai preferiti anche carte che non possiedi.",
     noResultsTitle: "Nessun preferito corrisponde ai criteri",

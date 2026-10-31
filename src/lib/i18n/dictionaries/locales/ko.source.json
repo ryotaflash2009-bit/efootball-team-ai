@@ -4458,5 +4458,7 @@
  "userCardFilters.squadUseFilterAriaLabel": "b3430ba0308e",
  "userCardFilters.squadUseFilterAll": "dd86f7542ead",
  "userCardFilters.squadUseFilterUsed": "dbd7603a3a13",
- "userCardFilters.squadUseFilterUnused": "13177eb9a1c7"
+ "userCardFilters.squadUseFilterUnused": "13177eb9a1c7",
+ "favoritesView.squadFitHeading": "c65215c92bf6",
+ "favoritesView.squadFitIntro": "ac915b8a3b2b"
 }

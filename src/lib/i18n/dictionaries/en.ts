@@ -3052,6 +3052,8 @@ const en: Dictionary = {
   favoritesView: {
     pageTitle: "Favorites",
     pageDescription: "Save cards you're interested in, and check their progression and compare them later. Cards you don't own can be registered too.",
+    squadFitHeading: "Cards that would strengthen your saved squads if you got them",
+    squadFitIntro: "Favorites not marked as owned in My Team that would fit a slot of the same registered position in a saved squad with a higher OVR than the current player.",
     emptyTitle: "You have no favorites yet",
     emptyDescription: "Add cards using the star icon in the players list or on a player's detail page. Cards you don't own can be favorited too.",
     noResultsTitle: "No favorites match your criteria",

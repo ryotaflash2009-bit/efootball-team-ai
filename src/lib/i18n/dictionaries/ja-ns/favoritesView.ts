@@ -5,6 +5,8 @@ import { registerJaNamespace } from "../ja-registry";
 const favoritesView: Dictionary["favoritesView"] = {
   pageTitle: "お気に入り",
   pageDescription: "気になるカードを保存して、あとで育成・比較を確認できます。所有していないカードも登録できます。",
+  squadFitHeading: "手に入れると保存スカッドが強くなるカード",
+  squadFitIntro: "お気に入りのうち My Team で所持になっていないカードで、保存したスカッドの同じ登録ポジションの枠に、今の選手より OVR が高いかたちで入るものです。",
   emptyTitle: "お気に入りはまだありません",
   emptyDescription: "選手一覧や選手詳細の星アイコンから追加できます。所有していないカードも登録できます。",
   noResultsTitle: "条件に一致するお気に入りがありません",
