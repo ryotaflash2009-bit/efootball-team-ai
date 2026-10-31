@@ -4,11 +4,13 @@ import "@/lib/i18n/dictionaries/ja-ns/addPlayerSearch";
 import "@/lib/i18n/dictionaries/ja-ns/compareRadarChart";
 import "@/lib/i18n/dictionaries/ja-ns/searchInput";
 import "@/lib/i18n/dictionaries/ja-ns/myTeam";
+import "@/lib/i18n/dictionaries/ja-ns/favoritesView";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { WorldPlayerListItem } from "@/lib/world/types";
 import { COMPARISON_MAX } from "@/lib/comparison/types";
 import { sortSearchResults, ownedCardsForSlot } from "@/lib/squad/search-results";
 import { useOwnedCards } from "@/lib/new-cards/use-owned-cards";
+import { useFavoriteCards } from "@/lib/new-cards/use-favorite-cards";
 import { WorldPlayerSearchCard } from "@/components/world/WorldPlayerSearchCard";
 import { useT } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
@@ -67,8 +69,11 @@ export function AddPlayerSearch({
   const slotLabel = fillAs(t("compareRadarChart", "personOrdinalTemplate"), { n: String(targetIndex + 1) });
   const existing = useMemo(() => new Set(existingIds), [existingIds]);
   // 検索語の入力前は My Team の所持カード（最大 OVR の高い順）を出す（スカッドの選手検索と同じ・2026-10-26）
-  const { owned } = useOwnedCards();
+  const { owned, ownedIds } = useOwnedCards();
   const ownedList = useMemo(() => ownedCardsForSlot(owned, null), [owned]);
+  // お気に入り（所持のカードは除く）も所持の次に出す（2026-11-01）
+  const favorites = useFavoriteCards(ownedIds);
+  const favoriteList = useMemo(() => ownedCardsForSlot(favorites, null), [favorites]);
   const full = targetIndex >= COMPARISON_MAX;
 
   useEffect(
@@ -190,6 +195,26 @@ export function AddPlayerSearch({
                     <p className="mb-1.5 text-2xs font-semibold text-text-dim">{t("myTeam", "pageTitle")}</p>
                     <ul className="grid max-h-[55vh] grid-cols-1 gap-2 overflow-y-auto sm:grid-cols-2 xl:grid-cols-3">
                       {ownedList.map((p) => {
+                        const dup = existing.has(p.worldCardId);
+                        return (
+                          <WorldPlayerSearchCard
+                            key={p.worldCardId}
+                            player={p}
+                            actionLabel={picking === p.worldCardId ? tas("addingLabel") : fillAs(tas("addToSlotTemplate"), { slot: slotLabel })}
+                            onPick={() => pick(p.worldCardId)}
+                            disabled={dup || picking != null}
+                            disabledReason={dup ? tas("alreadyAddedReason") : picking != null ? tas("processingReason") : null}
+                          />
+                        );
+                      })}
+                    </ul>
+                  </div>
+                ) : null}
+                {favoriteList.length > 0 ? (
+                  <div className="mt-2" data-testid="compare-search-favorites">
+                    <p className="mb-1.5 text-2xs font-semibold text-text-dim">{t("favoritesView", "pageTitle")}</p>
+                    <ul className="grid max-h-[55vh] grid-cols-1 gap-2 overflow-y-auto sm:grid-cols-2 xl:grid-cols-3">
+                      {favoriteList.map((p) => {
                         const dup = existing.has(p.worldCardId);
                         return (
                           <WorldPlayerSearchCard

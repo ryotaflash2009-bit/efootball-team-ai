@@ -4,10 +4,12 @@ import "@/lib/i18n/dictionaries/ja-ns/addPlayerSearch";
 import "@/lib/i18n/dictionaries/ja-ns/playerSearchPanel";
 import "@/lib/i18n/dictionaries/ja-ns/searchInput";
 import "@/lib/i18n/dictionaries/ja-ns/myTeam";
+import "@/lib/i18n/dictionaries/ja-ns/favoritesView";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { WorldPlayerListItem } from "@/lib/world/types";
 import { sortSearchResults, ownedCardsForSlot } from "@/lib/squad/search-results";
 import { useOwnedCards } from "@/lib/new-cards/use-owned-cards";
+import { useFavoriteCards } from "@/lib/new-cards/use-favorite-cards";
 import { SquadPlayerSearchCard } from "./SquadPlayerSearchCard";
 import { useT } from "@/lib/i18n/LocaleContext";
 import { isSearchInputRejectedResponse } from "@/lib/search/search-input";
@@ -61,8 +63,11 @@ export function PlayerSearchPanel({
   const t = useT();
   // 同じ選手（人物のキー）がスカッドにいるカードには注意を出す（押せる・選ぶと入れ替えの確認・2026-10-11）
   const placedPersonKeys = useMemo(() => new Set([...placedIds].map((id) => personKeyOf(id)).filter((k): k is string => !!k)), [placedIds]);
-  const { owned } = useOwnedCards();
+  const { owned, ownedIds } = useOwnedCards();
   const ownedForSlot = useMemo(() => ownedCardsForSlot(owned, targetPosition), [owned, targetPosition]);
+  // お気に入り（所持のカードは除く）も、所持の次に同じ並びで出す（2026-11-01）
+  const favorites = useFavoriteCards(ownedIds);
+  const favoritesForSlot = useMemo(() => ownedCardsForSlot(favorites, targetPosition), [favorites, targetPosition]);
   const fillPs = (s: string, vars: Record<string, string>) =>
     fillMessage(s, vars);
 
@@ -160,6 +165,24 @@ export function PlayerSearchPanel({
                 <p className="mb-1.5 text-2xs font-semibold text-text-dim">{t("myTeam", "pageTitle")}</p>
                 <ul className="grid max-h-[55vh] grid-cols-1 gap-2 overflow-y-auto lg:grid-cols-2 2xl:grid-cols-3">
                   {ownedForSlot.map((p) => (
+                    <SquadPlayerSearchCard
+                      key={p.worldCardId}
+                      player={p}
+                      targetLabel={targetLabel}
+                      duplicate={placedIds.has(p.worldCardId)}
+                      duplicateWhere={placedIds.has(p.worldCardId) && placedLabel ? placedLabel(p.worldCardId) : null}
+                      samePlayerInSquad={placedPersonKeys.has(personKeyOf(p.worldCardId) ?? "")}
+                      onPick={() => onPick(p.worldCardId)}
+                    />
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            {favoritesForSlot.length > 0 ? (
+              <div className="mt-2" data-testid="squad-search-favorites">
+                <p className="mb-1.5 text-2xs font-semibold text-text-dim">{t("favoritesView", "pageTitle")}</p>
+                <ul className="grid max-h-[55vh] grid-cols-1 gap-2 overflow-y-auto lg:grid-cols-2 2xl:grid-cols-3">
+                  {favoritesForSlot.map((p) => (
                     <SquadPlayerSearchCard
                       key={p.worldCardId}
                       player={p}

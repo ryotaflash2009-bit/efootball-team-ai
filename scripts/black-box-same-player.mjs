@@ -183,6 +183,20 @@ async function main() {
       const a = rows?.find((r) => r.id === RC_A);
       const o = rows?.find((r) => r.id === OTHER);
       record("[スカッドの選手検索] 入力前に所持カードを出す（置いたカードは押せない・所持の印）", Array.isArray(rows) && rows.length === 2 && !!a && a.disabled && !!o && !o.disabled && rows.every((r) => r.owned), JSON.stringify(rows));
+      // お気に入り（所持でない）も所持の次に出す（2026-11-01）: RC_B をお気に入りに → お気に入りの欄に出る・所持の OTHER は重ねて出さない
+      {
+        const FKEY = "efootball-team-ai:local:guest:favorites:v1";
+        const now2 = new Date().toISOString();
+        const favRec = (id) => ({ localRecordId: `fav_${id}`, worldCardId: id, note: "", tags: [], addedAt: now2, updatedAt: now2, source: "local", syncStatus: "local_only" });
+        await evalJson(client, `localStorage.setItem(${JSON.stringify(FKEY)}, ${JSON.stringify(JSON.stringify({ storageVersion: "favorites-storage/2026-08-30.v1", updatedAt: now2, records: [favRec(RC_B), favRec(OTHER)] }))})`);
+        await go(client, `${BASE}/squads/sq_bbownedpick1`);
+        await waitForCondition(async () => evalJson(client, `!![...document.querySelectorAll("button")].find((b) => /ベンチ選手を追加/.test(b.textContent))`), { timeoutMs: 15000, intervalMs: 250 }).catch(() => {});
+        await evalJson(client, `[...document.querySelectorAll("button")].find((b) => /ベンチ選手を追加/.test(b.textContent))?.click()`);
+        await waitForCondition(async () => evalJson(client, `document.querySelectorAll('[data-testid="squad-search-favorites"] > ul > li').length >= 1`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+        const favIds = await evalJson(client, `[...document.querySelectorAll('[data-testid="squad-search-favorites"] > ul > li')].map((li) => li.querySelector('a[href^="/players/world/"]')?.getAttribute("href").split("/").pop() ?? null)`);
+        record("[スカッドの選手検索] 入力前にお気に入りも出す（所持のカードは重ねない）", Array.isArray(favIds) && favIds.includes(RC_B) && !favIds.includes(OTHER), JSON.stringify(favIds));
+        await evalJson(client, `localStorage.removeItem(${JSON.stringify(FKEY)})`);
+      }
       // 所持カードで強くできる枠（2026-10-26）: スカッドにいない所持のカード（OTHER）が同じ登録ポジションの空いている枠に出る・スカッドにいる RC_A は出ない
       {
         const otherPos = (await (await fetch(`${BASE}/api/world/players/${OTHER}`)).json().catch(() => null))?.player?.registeredPosition ?? null;
