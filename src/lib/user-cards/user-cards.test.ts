@@ -349,6 +349,13 @@ describe("filterAndSortUserCards（純関数）", () => {
     expect(filterAndSortUserCards(swapped, { ...base, sort: "name" }, "en").map((r) => r.worldCardId)).toEqual(["a", "c", "b"]);
   });
 
+  it("スカッドでの使用で絞り込む（My Team）", () => {
+    const used: UserCardRow[] = rows.map((r, i) => ({ ...r, squadUsed: i === 0 }));
+    expect(filterAndSortUserCards(used, { ...base, squadUse: "used" }).map((r) => r.worldCardId)).toEqual(["1"]);
+    expect(filterAndSortUserCards(used, { ...base, squadUse: "unused" }).map((r) => r.worldCardId).sort()).toEqual(["2", "3"]);
+    expect(filterAndSortUserCards(used, { ...base, squadUse: "" }).length).toBe(3);
+  });
+
   it("facetsFromRows: 解決済みカードから選択肢", () => {
     const f = facetsFromRows(rows);
     expect(f.positions).toEqual(["GK", "SS"]);

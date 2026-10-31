@@ -4454,5 +4454,9 @@
  "playerDetailPage.realFormMismatchTemplate": "b711bbc27572",
  "squadList.notOwnedTemplate": "71234737865f",
  "provisionalCards.squadNotOwnedHeading": "c1a9bc5cec7c",
- "provisionalCards.squadNotOwnedIntro": "4430572f469b"
+ "provisionalCards.squadNotOwnedIntro": "4430572f469b",
+ "userCardFilters.squadUseFilterAriaLabel": "b3430ba0308e",
+ "userCardFilters.squadUseFilterAll": "dd86f7542ead",
+ "userCardFilters.squadUseFilterUsed": "dbd7603a3a13",
+ "userCardFilters.squadUseFilterUnused": "13177eb9a1c7"
 }

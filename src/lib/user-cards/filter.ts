@@ -23,6 +23,8 @@ export interface UserCardRow {
   /** My Team のときのみ。 */
   inMyTeam?: boolean;
   ownershipStatus?: string;
+  /** 保存スカッドで使っている（My Team だけ・2026-10-31）。 */
+  squadUsed?: boolean;
 }
 
 /**
@@ -49,6 +51,8 @@ export function filterAndSortUserCards(rows: UserCardRow[], state: UserCardFilte
     if (state.cardType && c?.cardType !== state.cardType) return false;
     if (state.booster === "has" && (!c || !cardHasBooster(c))) return false;
     if (state.booster === "pom" && (!c || !cardHasPowerOfMany(c))) return false;
+    if (state.squadUse === "used" && !row.squadUsed) return false;
+    if (state.squadUse === "unused" && row.squadUsed) return false;
 
     if (state.ownership) {
       if (state.ownership === "in_team" && !row.inMyTeam) return false;

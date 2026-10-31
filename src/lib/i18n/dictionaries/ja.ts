@@ -3032,6 +3032,10 @@ export interface Dictionary {
     inTeamFilterAll: string;
     inTeamFilterYes: string;
     inTeamFilterNo: string;
+    squadUseFilterAriaLabel: string;
+    squadUseFilterAll: string;
+    squadUseFilterUsed: string;
+    squadUseFilterUnused: string;
     boosterFilterAriaLabel: string;
     boosterFilterAll: string;
     boosterFilterHas: string;

@@ -106,8 +106,9 @@ export function MyTeamView() {
         card: cards.get(r.worldCardId) ?? null,
         inMyTeam: true,
         ownershipStatus: r.ownershipStatus,
+        squadUsed: (usageByCard.get(r.worldCardId)?.length ?? 0) > 0,
       })),
-    [myTeam, cards],
+    [myTeam, cards, usageByCard],
   );
   const facets = useMemo(() => facetsFromRows(rows), [rows]);
   const visible = useMemo(() => filterAndSortUserCards(rows, filter, locale), [rows, filter, locale]);
@@ -235,6 +236,7 @@ export function MyTeamView() {
           positions={facets.positions}
           cardTypes={facets.cardTypes}
           showOwnership
+          showSquadUse
           total={myTeam.length}
           shown={visible.length}
         />

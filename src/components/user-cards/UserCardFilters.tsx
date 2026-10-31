@@ -20,6 +20,8 @@ export interface UserCardFilterState {
   cardType: string;
   ownership: string;
   booster: string; // "" | "has" | "pom"
+  /** スカッドでの使用（My Team だけ・2026-10-31）: "" | "used" | "unused" */
+  squadUse?: string;
   sort: UserCardSort;
 }
 
@@ -29,6 +31,7 @@ export const DEFAULT_FILTER: UserCardFilterState = {
   cardType: "",
   ownership: "",
   booster: "",
+  squadUse: "",
   sort: "added_desc",
 };
 
@@ -55,6 +58,7 @@ export function UserCardFilters({
   positions,
   cardTypes,
   showOwnership = false,
+  showSquadUse = false,
   total,
   shown,
 }: {
@@ -63,6 +67,8 @@ export function UserCardFilters({
   positions: string[];
   cardTypes: string[];
   showOwnership?: boolean;
+  /** スカッドでの使用の絞り込みを出す（My Team）。 */
+  showSquadUse?: boolean;
   total: number;
   shown: number;
 }) {
@@ -71,7 +77,7 @@ export function UserCardFilters({
   const SORT_OPTIONS = useSortOptions();
   const set = (patch: Partial<UserCardFilterState>) => onChange({ ...state, ...patch });
   const active =
-    state.q !== "" || state.position !== "" || state.cardType !== "" || state.ownership !== "" || state.booster !== "";
+    state.q !== "" || state.position !== "" || state.cardType !== "" || state.ownership !== "" || state.booster !== "" || (state.squadUse ?? "") !== "";
 
   return (
     <div className="flex flex-col gap-2 rounded-md border border-border bg-surface-2/40 p-2.5">
@@ -167,6 +173,20 @@ export function UserCardFilters({
           <option value="has">{tuf("boosterFilterHas")}</option>
           <option value="pom">{tuf("boosterFilterPom")}</option>
         </select>
+
+        {showSquadUse ? (
+          <select
+            value={state.squadUse ?? ""}
+            onChange={(e) => set({ squadUse: e.target.value })}
+            aria-label={tuf("squadUseFilterAriaLabel")}
+            className="h-8 rounded-md border border-border bg-surface px-2 text-xs"
+            data-testid="squad-use-filter"
+          >
+            <option value="">{tuf("squadUseFilterAll")}</option>
+            <option value="used">{tuf("squadUseFilterUsed")}</option>
+            <option value="unused">{tuf("squadUseFilterUnused")}</option>
+          </select>
+        ) : null}
 
         {active ? (
           <button
