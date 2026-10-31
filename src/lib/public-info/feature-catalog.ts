@@ -32,6 +32,8 @@ export const AVAILABLE_FEATURE_KEYS: AboutKey[] = [
   "availableCloudSave",
   "availableCommunity",
   "availableTier",
+  "availableNewCards",
+  "availableOwnedCards",
 ];
 
 export const BETA_FEATURE_KEYS: AboutKey[] = [

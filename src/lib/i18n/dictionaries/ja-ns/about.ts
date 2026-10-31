@@ -30,6 +30,8 @@ const about: Dictionary["about"] = {
   availableCloudSave: "クラウド保存（ログイン時・My Team・保存ビルド・保存スカッドを手動で保存し、別の端末で足りないものだけ追加）",
   availableCommunity: "コミュニティ（ログイン時・公開プロフィール・友達・友達との診断の比較・ライバル・ブロック・ミュート・通報。既定は非公開）",
   availableTier: "ポジション別 Tier（最大 OVR のポジション内の上位・TeamAIXI のデータから計算）",
+  availableNewCards: "新しいカード（最近追加された正式なカード・暫定のカード）とパック診断（引いたカードを My Team と比べる）",
+  availableOwnedCards: "所持カードの活用（所持済みの印・所持カードで強くできるスカッドの提案・その場での入れ替えと元に戻す・所持になっていないカードの知らせ）",
   betaHeading: "既知の制約",
   betaBestXiIntro: "AIベスト11は動作しますが、次の既知の制約があります。",
   betaBestXiSubPositionLimit: "副ポジション適性のデータは一部のカードでしか確認できません。",
@@ -48,7 +50,7 @@ const about: Dictionary["about"] = {
   notProvidedGenerativeAi: "生成AI・外部AI APIとの連携",
   notOfficialNotice: "本サービスは KONAMI および eFootball™ の公式サービスではなく、KONAMI による公認・提携・運営を受けていません。",
   winRateNotice: "分析結果は勝率や試合結果を保証するものではありません。",
-  draftNotice: "このページは TeamAIXI（2026年10月15日）の内容です。機能は今後のアップデートで変わる場合があります。",
+  draftNotice: "このページは TeamAIXI（2026年11月1日）の内容です。機能は今後のアップデートで変わる場合があります。",
   };
 
 registerJaNamespace("about", about);

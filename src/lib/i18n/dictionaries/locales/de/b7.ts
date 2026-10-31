@@ -296,6 +296,8 @@ const part: PartialDictionary = {
     availableCloudSave: "Cloud-Speicherung (angemeldet: My Team, gespeicherte Builds und Kader manuell sichern und auf einem anderen Gerät nur Fehlendes ergänzen)",
     availableCommunity: "Community (angemeldet: öffentliches Profil, Freunde, Diagnosevergleich mit Freunden, Rivalen, Blockieren, Stummschalten und Melden; standardmäßig privat)",
     availableTier: "Tier nach Position (höchstes Max-OVR je Position, berechnet aus den Daten von TeamAIXI)",
+    availableNewCards: "Neue Karten (kürzlich hinzugefügte offizielle und vorläufige Karten) und Pack-Check (gezogene Karten mit deinem My Team vergleichen)",
+    availableOwnedCards: "Eigene Karten nutzen (Markierung „im Besitz“, Vorschläge für Kader, die deine Karten stärken, Tausch mit einem Tipp samt Rückgängig, Hinweise auf nicht als im Besitz markierte Karten)",
     betaHeading: "Bekannte Einschränkungen",
     betaBestXiIntro: "AI Best XI funktioniert, hat aber die folgenden bekannten Einschränkungen.",
     betaBestXiSubPositionLimit: "Daten zur Eignung für zusätzliche Positionen gibt es nur für wenige Karten.",
@@ -314,7 +316,7 @@ const part: PartialDictionary = {
     notProvidedGenerativeAi: "Generative KI oder Anbindung an externe KI-APIs",
     notOfficialNotice: "Der Dienst ist kein offizieller Dienst von KONAMI oder eFootball™ und wird von KONAMI weder unterstützt noch betrieben, noch ist er mit KONAMI verbunden.",
     winRateNotice: "Analyseergebnisse garantieren keine Siegquoten oder Spielergebnisse.",
-    draftNotice: "Diese Seite beschreibt TeamAIXI (Stand 15. Oktober 2026). Funktionen können sich in zukünftigen Updates ändern.",
+    draftNotice: "Diese Seite beschreibt TeamAIXI (Stand 1. November 2026). Funktionen können sich in zukünftigen Updates ändern.",
   },
   myTeam: {
     pageTitle: "Mein Team",
