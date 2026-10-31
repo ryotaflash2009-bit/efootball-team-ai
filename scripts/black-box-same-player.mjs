@@ -238,6 +238,18 @@ async function main() {
       await waitForCondition(async () => evalJson(client, `document.querySelectorAll('[data-testid="squad-not-owned"] li').length >= 2`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
       const notOwnedRows = await evalJson(client, `[...document.querySelectorAll('[data-testid="squad-not-owned"] li')].map((li) => ({ id: li.dataset.worldCardId, add: !!li.querySelector("button") }))`);
       record("[スカッドの編集] My Team で所持になっていないカード（2 枚・My Team に追加のボタン）", Array.isArray(notOwnedRows) && notOwnedRows.length === 2 && notOwnedRows.some((r) => r.id === RC_A) && notOwnedRows.some((r) => r.id === weak) && notOwnedRows.every((r) => r.add), JSON.stringify(notOwnedRows));
+      // まとめて追加（2026-11-01）→ 2 枚とも所持になり欄が消える（この後の確認のため My Team を元に戻す）
+      {
+        const KEY = "efootball-team-ai:local:guest:my-team:v1";
+        const before = await evalJson(client, `localStorage.getItem(${JSON.stringify(KEY)})`);
+        await evalJson(client, `document.querySelector('[data-testid="squad-not-owned-add-all"]')?.click()`);
+        await waitForCondition(async () => evalJson(client, `!document.querySelector('[data-testid="squad-not-owned"]')`), { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+        const owned = await evalJson(client, `(JSON.parse(localStorage.getItem(${JSON.stringify(KEY)}) ?? "{}").records ?? []).filter((r) => r.ownershipStatus === "owned").map((r) => r.worldCardId)`);
+        const gone = await evalJson(client, `!document.querySelector('[data-testid="squad-not-owned"]')`);
+        record("[スカッドの編集] 所持になっていないカードをまとめて追加（2 枚とも所持・欄が消える）", Array.isArray(owned) && owned.includes(RC_A) && owned.includes(weak) && gone, `owned=${JSON.stringify(owned)} gone=${gone}`);
+        await evalJson(client, `localStorage.setItem(${JSON.stringify(KEY)}, ${JSON.stringify(before)})`);
+        await go(client, `${BASE}/squads/sq_bbownedswap1`);
+      }
       const btn = `document.querySelector('[data-testid="squad-owned-upgrades-list"] > li[data-world-card-id="${OTHER}"] [data-testid="squad-owned-upgrade-apply"]')`;
       await waitForCondition(async () => evalJson(client, `!!${btn}`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
       const label = await evalJson(client, `${btn}?.textContent ?? ""`);
