@@ -11,7 +11,7 @@ import type { ManagerContext } from "@/lib/progression/types";
 import type { ManagerDetail } from "@/lib/managers/types";
 import dynamic from "next/dynamic";
 import { CurrentManagerCard } from "@/components/managers/CurrentManagerCard";
-import { useMyTeam } from "@/lib/user-cards/hooks";
+import { useFavorites, useMyTeam } from "@/lib/user-cards/hooks";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { listBuilds } from "@/lib/progression/build-storage";
@@ -83,17 +83,25 @@ export function BestXiView() {
     () => [...new Set(myTeam.filter((r) => r.ownershipStatus === "owned").map((r) => r.worldCardId))],
     [myTeam],
   );
-  const { cards: progressionCards, affiliations, loading: cardsLoading } = useBestXiProgressionCards(ownedWorldCardIds);
+  // お気に入りも候補に入れる（2026-11-01・「手に入れたらどうなるか」）。所持でないお気に入りは ☆ を付けて区別する。保存しない
+  const [includeFavorites, setIncludeFavorites] = useState(false);
+  const { favorites } = useFavorites();
+  const ownedSet = useMemo(() => new Set(ownedWorldCardIds), [ownedWorldCardIds]);
+  const poolWorldCardIds = useMemo(
+    () => (includeFavorites ? [...ownedWorldCardIds, ...favorites.map((f) => f.worldCardId).filter((id) => !ownedSet.has(id))] : ownedWorldCardIds),
+    [includeFavorites, ownedWorldCardIds, favorites, ownedSet],
+  );
+  const { cards: progressionCards, affiliations, loading: cardsLoading } = useBestXiProgressionCards(poolWorldCardIds);
 
   // 保存ビルドはクライアントのlocalStorageから読む(build-storageに変更通知イベントが無いため、
   // マウント時と「再選出」操作のタイミングで読み直す)。
   const [buildsByWorldCardId, setBuildsByWorldCardId] = useState<Map<string, SavedBuild[]>>(new Map());
   const reloadBuilds = useCallback(() => {
     const map = new Map<string, SavedBuild[]>();
-    for (const id of ownedWorldCardIds) map.set(id, listBuilds(id));
+    for (const id of poolWorldCardIds) map.set(id, listBuilds(id));
     setBuildsByWorldCardId(map);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ownedWorldCardIds.join(",")]);
+  }, [poolWorldCardIds.join(",")]);
   useEffect(() => {
     reloadBuilds();
   }, [reloadBuilds]);
@@ -110,7 +118,7 @@ export function BestXiView() {
   );
   // 縛り（国籍・リーグ・チーム・2026-10-11）。選ぶと、その条件に合う自分のカードだけで選び直す。
   const [affiliationFilter, setAffiliationFilter] = useState<BestXiAffiliationFilter | null>(null);
-  const options = useMemo(() => affiliationOptions(ownedWorldCardIds, affiliations), [ownedWorldCardIds, affiliations]);
+  const options = useMemo(() => affiliationOptions(poolWorldCardIds, affiliations), [poolWorldCardIds, affiliations]);
   const { candidates, unavailableCards } = useMemo(
     () => applyAffiliationFilter(buildBestXiCandidates({ myTeam, progressionCards, buildsByWorldCardId, manager: managerInRanking ? manager : null }), affiliations, affiliationFilter),
     [myTeam, progressionCards, buildsByWorldCardId, affiliations, affiliationFilter, managerInRanking, manager],
@@ -195,8 +203,8 @@ export function BestXiView() {
     [result, bench, candidates],
   );
   const displayName = useCallback(
-    (c: BestXiCandidate) => resolvePlayerDisplayName({ nameJa: c.nameJa, nameEn: c.nameEn }, locale, null),
-    [locale],
+    (c: BestXiCandidate) => `${ownedSet.has(c.worldCardId) ? "" : "☆ "}${resolvePlayerDisplayName({ nameJa: c.nameJa, nameEn: c.nameEn }, locale, null)}`,
+    [locale, ownedSet],
   );
 
   return (
@@ -287,6 +295,12 @@ export function BestXiView() {
                   ) : null,
                 )}
               </select>
+              {favorites.length > 0 ? (
+                <label className="flex min-h-[32px] cursor-pointer items-center gap-1.5 text-xs text-text-dim">
+                  <input type="checkbox" checked={includeFavorites} onChange={(e) => setIncludeFavorites(e.target.checked)} data-testid="best-xi-include-favorites" />
+                  {tb("includeFavoritesLabel")}
+                </label>
+              ) : null}
               {cardsLoading ? (
                 <span role="status" aria-live="polite" className="text-2xs text-text-muted">
                   {tb("generatingText")}

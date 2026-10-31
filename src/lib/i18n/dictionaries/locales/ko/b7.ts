@@ -218,6 +218,7 @@ const part: PartialDictionary = {
     limitationsHeading: "제한 사항",
     samePlayerExcludedTemplate: "같은 선수의 다른 카드를 사용해서 선택하지 않은 카드({count}): {names}",
     affiliationFilterAriaLabel: "제한 (국적·리그·클럽)",
+    includeFavoritesLabel: "즐겨찾기도 후보에 포함(☆는 My Team에서 보유하지 않은 카드)",
     affiliationFilterNone: "제한 없음 (모든 카드)",
     affiliationKind_nationality: "국적",
     affiliationKind_league: "리그",

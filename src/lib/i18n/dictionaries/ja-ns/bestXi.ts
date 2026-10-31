@@ -66,6 +66,7 @@ const bestXi: Dictionary["bestXi"] = {
   limitationsHeading: "制限事項",
   samePlayerExcludedTemplate: "同じ選手の別のカードを使ったため選ばなかったカード（{count}）: {names}",
   affiliationFilterAriaLabel: "縛り（国籍・リーグ・チーム）",
+  includeFavoritesLabel: "お気に入りも候補に入れる（☆ は My Team で所持していないカード）",
   affiliationFilterNone: "縛りなし（全カード）",
   affiliationKind_nationality: "国籍",
   affiliationKind_league: "リーグ",

@@ -3229,6 +3229,7 @@ export interface Dictionary {
     limitationsHeading: string;
     samePlayerExcludedTemplate: string;
     affiliationFilterAriaLabel: string;
+    includeFavoritesLabel: string;
     affiliationFilterNone: string;
     affiliationKind_nationality: string;
     affiliationKind_league: string;

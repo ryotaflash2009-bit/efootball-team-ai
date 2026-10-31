@@ -3291,6 +3291,7 @@ const en: Dictionary = {
     limitationsHeading: "Limitations",
     samePlayerExcludedTemplate: "Not picked because another card of the same player is used ({count}): {names}",
     affiliationFilterAriaLabel: "Restriction (nationality, league, club)",
+    includeFavoritesLabel: "Include favorites (☆ = not owned in My Team)",
     affiliationFilterNone: "No restriction (all cards)",
     affiliationKind_nationality: "Nationality",
     affiliationKind_league: "League",
