@@ -1,18 +1,23 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/comparisonBoard";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { useMyTeam } from "@/lib/user-cards/hooks";
 import "@/lib/i18n/dictionaries/ja-ns/worldPlayerCard";
 import { pickSimilarCards, similarCardsQuery, type SimilarCardSummary } from "@/lib/world/similar-cards";
+import { useOwnedCards } from "@/lib/new-cards/use-owned-cards";
+import { bestOwnedForPosition } from "@/lib/comparison/best-owned";
+import { fetchJsonRetry } from "@/lib/fetch-json-retry";
+import { fillMessage } from "@/lib/i18n/message-format";
 
 const SUGGEST_LIMIT = 4;
 
 /**
  * 比較が 1 枚のときの「似ているカードを追加」（2026-10-25）。同じポジション・同じプレースタイル・最大 OVR ±3（同じ選手は除く）。
  * 押すと比較に追加する（既存の追加と同じ処理）。見つからなければ何も出さない。
+ * あわせて、所持のうち同じポジションで最も強いカードとの比較も出す（2026-11-01・同じ選手の別のカードは除く）。
  */
 export function CompareSimilarSuggestions({
   base,
@@ -27,6 +32,8 @@ export function CompareSimilarSuggestions({
   const { getByWorldId } = useMyTeam();
   const isOwned = (id: string) => { const r = getByWorldId(id); return !!r && r.ownershipStatus === "owned" && !r.deletedAt; };
   const [busy, setBusy] = useState<string | null>(null);
+  const { owned } = useOwnedCards();
+  const bestOwned = useMemo(() => bestOwnedForPosition(base, owned), [base, owned]);
   const qs = similarCardsQuery(base);
   const { worldCardId, ovrMax } = base;
   useEffect(() => {
@@ -36,43 +43,65 @@ export function CompareSimilarSuggestions({
     }
     const controller = new AbortController();
     (async () => {
-      const res = await fetch(`/api/world/players?${qs}`, { signal: controller.signal });
-      const json = res.ok ? ((await res.json()) as { players?: unknown[] }) : {};
-      setCards(pickSimilarCards(worldCardId, ovrMax, json.players ?? [], SUGGEST_LIMIT));
+      const json = await fetchJsonRetry<{ players?: unknown[] }>(`/api/world/players?${qs}`, { signal: controller.signal });
+      setCards(pickSimilarCards(worldCardId, ovrMax, json?.players ?? [], SUGGEST_LIMIT));
     })().catch(() => {
       if (!controller.signal.aborted) setCards([]);
     });
     return () => controller.abort();
   }, [worldCardId, qs, ovrMax]);
 
-  if (!cards || cards.length === 0) return null;
+  const add = async (id: string) => {
+    setBusy(id);
+    await onAdd(id);
+    setBusy(null);
+  };
+  const hasSimilar = !!cards && cards.length > 0;
+  if (!hasSimilar && !bestOwned) return null;
   return (
-    <section className="flex flex-col gap-2 rounded-card border border-border bg-surface p-3" data-testid="compare-similar-suggestions">
-      <h2 className="text-sm font-semibold">{t("comparisonBoard", "similarSuggestHeading")}</h2>
-      <p className="text-2xs text-text-dim">{t("comparisonBoard", "similarSuggestHint")}</p>
-      <ul className="grid gap-1.5 sm:grid-cols-2">
-        {cards.map((c) => (
-          <li key={c.worldCardId}>
-            <button
-              type="button"
-              disabled={busy != null}
-              onClick={async () => {
-                setBusy(c.worldCardId);
-                await onAdd(c.worldCardId);
-                setBusy(null);
-              }}
-              className="flex w-full items-center justify-between gap-2 rounded border border-border/60 p-2 text-start text-sm hover:border-accent disabled:opacity-60"
-              data-world-card-id={c.worldCardId}
-            >
-              <span className="min-w-0 truncate">{resolvePlayerDisplayName({ nameEn: c.nameEn, nameJa: c.nameJa }, locale, c.worldCardId)}</span>
-              <span className="shrink-0 text-xs text-text-muted">
-                {isOwned(c.worldCardId) ? <span className="me-1 rounded bg-success/90 px-1 text-[9px] font-bold text-black" data-testid="similar-owned">{t("worldPlayerCard", "ownedBadge")}</span> : null}
-                {c.cardType ?? "—"} · {c.ovrMax ?? "—"} <span className="text-accent">＋</span>
-              </span>
-            </button>
-          </li>
-        ))}
-      </ul>
-    </section>
+    <>
+      {bestOwned ? (
+        <section className="flex flex-col gap-2 rounded-card border border-border bg-surface p-3" data-testid="compare-best-owned">
+          <h2 className="text-sm font-semibold">{fillMessage(t("comparisonBoard", "bestOwnedHeadingTemplate"), { position: base.registeredPosition ?? "" })}</h2>
+          <button
+            type="button"
+            disabled={busy != null}
+            onClick={() => void add(bestOwned.worldCardId)}
+            className="flex w-full items-center justify-between gap-2 rounded border border-border/60 p-2 text-start text-sm hover:border-accent disabled:opacity-60 sm:w-1/2"
+            data-world-card-id={bestOwned.worldCardId}
+          >
+            <span className="min-w-0 truncate">{resolvePlayerDisplayName({ nameEn: bestOwned.nameEn, nameJa: bestOwned.nameJa }, locale, bestOwned.worldCardId)}</span>
+            <span className="shrink-0 text-xs text-text-muted">
+              {bestOwned.cardType ?? "—"} · {bestOwned.ovrMax ?? bestOwned.ovrBase ?? "—"} <span className="text-accent">＋</span>
+            </span>
+          </button>
+        </section>
+      ) : null}
+      {hasSimilar ? (
+        <section className="flex flex-col gap-2 rounded-card border border-border bg-surface p-3" data-testid="compare-similar-suggestions">
+          <h2 className="text-sm font-semibold">{t("comparisonBoard", "similarSuggestHeading")}</h2>
+          <p className="text-2xs text-text-dim">{t("comparisonBoard", "similarSuggestHint")}</p>
+          <ul className="grid gap-1.5 sm:grid-cols-2">
+            {cards!.map((c) => (
+              <li key={c.worldCardId}>
+                <button
+                  type="button"
+                  disabled={busy != null}
+                  onClick={() => void add(c.worldCardId)}
+                  className="flex w-full items-center justify-between gap-2 rounded border border-border/60 p-2 text-start text-sm hover:border-accent disabled:opacity-60"
+                  data-world-card-id={c.worldCardId}
+                >
+                  <span className="min-w-0 truncate">{resolvePlayerDisplayName({ nameEn: c.nameEn, nameJa: c.nameJa }, locale, c.worldCardId)}</span>
+                  <span className="shrink-0 text-xs text-text-muted">
+                    {isOwned(c.worldCardId) ? <span className="me-1 rounded bg-success/90 px-1 text-[9px] font-bold text-black" data-testid="similar-owned">{t("worldPlayerCard", "ownedBadge")}</span> : null}
+                    {c.cardType ?? "—"} · {c.ovrMax ?? "—"} <span className="text-accent">＋</span>
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+    </>
   );
 }

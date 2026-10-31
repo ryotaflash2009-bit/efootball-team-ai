@@ -381,6 +381,7 @@ const part: PartialDictionary = {
     browseHighOvrButton: "높은 OVR 카드 보기",
     similarSuggestHeading: "비슷한 카드 추가",
     similarSuggestHint: "같은 포지션, 같은 플레이 스타일이며 최대 OVR이 ±3인 카드입니다. 누르면 비교에 추가합니다.",
+    bestOwnedHeadingTemplate: "보유한 {position} 중 가장 강한 카드와 비교",
   },
   comparePlayerIdentityCard: {
     cardImageAltTemplate: "{name} {cardType} 카드 이미지",

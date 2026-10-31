@@ -30,6 +30,7 @@ const comparisonBoard: Dictionary["comparisonBoard"] = {
   browseHighOvrButton: "高OVRカードから探す",
   similarSuggestHeading: "似ているカードを追加",
   similarSuggestHint: "同じポジション・同じプレースタイルで、最大 OVR が ±3 のカードです。押すと比較に追加します。",
+  bestOwnedHeadingTemplate: "あなたの所持の {position} で最も強いカードと比べる",
   };
 
 registerJaNamespace("comparisonBoard", comparisonBoard);

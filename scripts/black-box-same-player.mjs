@@ -142,6 +142,21 @@ async function main() {
         record("[比較] 所持のカードの列だけに「所持済み」（2 枚のうち 1 枚）", cmpOwned === 1, `n=${cmpOwned}`);
         await evalJson(client, `localStorage.removeItem(${JSON.stringify(KEY)})`);
       }
+      // 比較: 1 枚のとき、所持の同じポジションで最も強いカードと比べる（2026-11-01）。所持に RC_B（同じ選手）と似ているカード → 似ているカードが出る（同じ選手は除く）→ 押すと 2 枚の比較
+      {
+        const KEY = "efootball-team-ai:local:guest:my-team:v1";
+        const now = new Date().toISOString();
+        const recOf = (id) => ({ localRecordId: `mt_${id}`, teamCardId: `tc_${id}`, worldCardId: id, ownershipStatus: "owned", usageStatus: "unused", selectedBuildId: null, favoriteBuildId: null, note: "", tags: [], addedAt: now, updatedAt: now, deletedAt: null, source: "local", syncStatus: "local_only" });
+        await evalJson(client, `localStorage.setItem(${JSON.stringify(KEY)}, ${JSON.stringify(JSON.stringify({ storageVersion: "my-team-storage/2026-08-30.v1", updatedAt: now, records: [recOf(RC_B), ...(sim?.[0] ? [recOf(sim[0])] : [])] }))})`);
+        await go(client, `${BASE}/compare?ids=${RC_A}`);
+        await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="compare-best-owned"] button')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+        const bestId = await evalJson(client, `document.querySelector('[data-testid="compare-best-owned"] button')?.dataset.worldCardId ?? null`);
+        if (bestId) await evalJson(client, `document.querySelector('[data-testid="compare-best-owned"] button').click()`);
+        await waitForCondition(async () => evalJson(client, `location.search.includes(${JSON.stringify(`${RC_A},`)})`), { timeoutMs: 15000, intervalMs: 300 }).catch(() => {});
+        const q = await evalJson(client, `decodeURIComponent(location.search)`);
+        record("[比較] 1 枚のとき所持の同じポジションで最も強いカードと比べる（同じ選手は除く・押すと 2 枚の比較）", !!sim?.[0] && bestId === sim[0] && q.includes(`${RC_A},${sim[0]}`), `${bestId} ${q}`);
+        await evalJson(client, `localStorage.removeItem(${JSON.stringify(KEY)})`);
+      }
       // 比較: 1 枚のとき「似ているカードを追加」→ 押すと 2 枚の比較（URL の ids に入る・2026-10-25）
       await go(client, `${BASE}/compare?ids=${RC_A}`);
       await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="compare-similar-suggestions"] button')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});

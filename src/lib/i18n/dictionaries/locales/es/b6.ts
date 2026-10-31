@@ -381,6 +381,7 @@ const part: PartialDictionary = {
     browseHighOvrButton: "Ver cartas de OVR alto",
     similarSuggestHeading: "Añadir una carta similar",
     similarSuggestHint: "Misma posición y estilo de juego, OVR máximo ±3. Toca para añadirla a la comparación.",
+    bestOwnedHeadingTemplate: "Comparar con tu {position} poseída más fuerte",
   },
   comparePlayerIdentityCard: {
     cardImageAltTemplate: "Imagen de la carta {cardType} de {name}",
