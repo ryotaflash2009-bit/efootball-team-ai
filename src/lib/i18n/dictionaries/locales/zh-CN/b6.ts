@@ -381,6 +381,7 @@ const part: PartialDictionary = {
     browseHighOvrButton: "浏览高 OVR 卡片",
     similarSuggestHeading: "添加相似的卡",
     similarSuggestHint: "同一位置、同一打法风格，最大 OVR 相差 ±3 的卡。点击即可加入比较。",
+    bestOwnedHeadingTemplate: "与你已拥有的最强 {position} 比较",
   },
   comparePlayerIdentityCard: {
     cardImageAltTemplate: "{name} {cardType} 卡片图片",

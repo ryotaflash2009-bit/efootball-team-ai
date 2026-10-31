@@ -2827,6 +2827,7 @@ const en: Dictionary = {
     browseHighOvrButton: "Browse high-OVR cards",
     similarSuggestHeading: "Add a similar card",
     similarSuggestHint: "Same position and playing style, max OVR within ±3. Tap to add it to the comparison.",
+    bestOwnedHeadingTemplate: "Compare with your strongest owned {position}",
   },
   comparePage: {
     title: "Player Compare",

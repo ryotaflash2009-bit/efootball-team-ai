@@ -381,6 +381,7 @@ const part: PartialDictionary = {
     browseHighOvrButton: "Jelajahi kartu OVR tinggi",
     similarSuggestHeading: "Tambah kartu serupa",
     similarSuggestHint: "Posisi dan gaya bermain sama, OVR maks ±3. Ketuk untuk menambahkannya ke perbandingan.",
+    bestOwnedHeadingTemplate: "Bandingkan dengan {position} milikmu yang paling kuat",
   },
   comparePlayerIdentityCard: {
     cardImageAltTemplate: "Gambar kartu {cardType} {name}",

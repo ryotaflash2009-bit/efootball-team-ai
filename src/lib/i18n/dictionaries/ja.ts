@@ -2769,6 +2769,7 @@ export interface Dictionary {
     browseHighOvrButton: string;
     similarSuggestHeading: string;
     similarSuggestHint: string;
+    bestOwnedHeadingTemplate: string;
   };
   comparePage: {
     title: string;
