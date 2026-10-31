@@ -15,7 +15,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { buttonClasses } from "@/components/ui/Button";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
-import { formatDateTime, formatNumber } from "@/lib/i18n/format";
+import { formatDate, formatDateTime, formatNumber } from "@/lib/i18n/format";
 
 type SP = Record<string, string | string[] | undefined>;
 
@@ -74,6 +74,7 @@ export function PlayersPageView({
   searchParams,
   provisionalCount = 0,
   provisionalMatches = [],
+  staleDays = null,
 }: {
   result: Omit<WorldListResult, "players"> & { players: WorldPlayerCardData[] };
   facets: WorldFacets;
@@ -84,6 +85,8 @@ export function PlayersPageView({
   provisionalCount?: number;
   /** 検索に合う暫定のカード（2026-10-24・World の取り込みが止まっている間も新しいカードを見つけられるように）。 */
   provisionalMatches?: WorldPlayerCardData[];
+  /** 正式なデータの取り込みが止まっている日数（7 日以上・サーバーで計算・2026-11-01）。 */
+  staleDays?: number | null;
 }) {
   const t = useT();
   const { locale, displayLocale } = useLocale();
@@ -96,6 +99,11 @@ export function PlayersPageView({
 
   return (
     <div className="flex flex-col gap-5">
+      {staleDays != null && sourceMeta?.syncFinishedAt ? (
+        <p className="rounded-md border border-warning/50 px-3 py-2 text-xs text-text-dim" data-testid="official-data-stale">
+          {t("provisionalCards", "staleNoticeTemplate").replace("{days}", String(staleDays)).replace("{date}", formatDate(new Date(sourceMeta.syncFinishedAt), displayLocale))}
+        </p>
+      ) : null}
       <ProvisionalCardsLink count={provisionalCount} />
       {provisionalMatches.length > 0 ? (
         <section className="flex flex-col gap-2" data-testid="provisional-search-results">

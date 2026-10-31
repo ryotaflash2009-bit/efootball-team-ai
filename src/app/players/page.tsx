@@ -12,6 +12,7 @@ import { SearchInputRejectedError, checkSearchInput } from "@/lib/search/search-
 import type { WorldPlayerCardData } from "@/components/world/WorldPlayerCard";
 import { settledInOrder } from "@/lib/settled-in-order";
 import { pageMetadata } from "@/lib/seo/page-metadata";
+import { officialStaleDays } from "@/lib/new-cards/constants";
 
 export const metadata = pageMetadata({
   path: "/players",
@@ -139,9 +140,13 @@ export default async function PlayersPage({ searchParams }: { searchParams: Prom
     query.maxOvr != null ||
     query.hasBooster != null
   );
+  // 正式なデータの取り込みが止まっていれば知らせる（新しいカードの画面と同じ規則・2026-11-01）
+  const newestProvisionalAt = listProvisionalPlayers().map((p) => p.provisional?.firstSeenAt ?? null).filter((v): v is string => typeof v === "string").sort().at(-1) ?? null;
+  const staleDays = officialStaleDays(sourceMeta?.syncFinishedAt ?? null, newestProvisionalAt);
   return (
     <PageContainer>
       <PlayersPageView
+        staleDays={staleDays}
         result={{ ...result, players: result.players.map(toCardData) }}
         facets={facets}
         sourceMeta={sourceMeta}
