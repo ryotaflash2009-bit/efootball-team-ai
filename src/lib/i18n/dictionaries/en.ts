@@ -5385,6 +5385,8 @@ const en: Dictionary = {
     squadOwnedIntro: "Cards you own in My Team that are not in this squad, whose registered position matches the slot and whose OVR beats the current player (for empty slots, the highest OVR).",
     squadNotOwnedHeading: "Cards not marked as owned in My Team",
     squadNotOwnedIntro: "In the game you can only field cards you own. If you own these, add them to My Team so owned-card suggestions and pack check can use them.",
+    benchOwnedHeading: "Owned cards you could put on the bench",
+    benchOwnedIntro: "For starting positions with no same-position player on the bench, your strongest owned card that is not in the squad.",
     squadFitHeading: "Squads this card would strengthen",
     squadFitIntro: "Your saved squads where this card fits a slot of its registered position with a higher OVR than the current player.",
     squadFitAppliedTemplate: "Added to “{squad}”",

@@ -663,6 +663,8 @@ const part: PartialDictionary = {
     squadOwnedIntro: "Cartes que vous possédez dans My Team et qui ne sont pas dans cet effectif, dont le poste enregistré correspond à l'emplacement et dont l'OVR dépasse le joueur actuel (pour les emplacements vides, l'OVR le plus élevé).",
     squadNotOwnedHeading: "Cartes non marquées comme possédées dans My Team",
     squadNotOwnedIntro: "Dans le jeu, vous ne pouvez aligner que les cartes que vous possédez. Si vous les avez, ajoutez-les à My Team pour que les suggestions et la vérification de packs les utilisent.",
+    benchOwnedHeading: "Cartes possédées pour le banc",
+    benchOwnedIntro: "Pour les postes titulaires sans joueur du même poste sur le banc, votre carte possédée la plus forte qui n'est pas dans l'effectif.",
     squadFitHeading: "Effectifs que cette carte renforcerait",
     squadFitIntro: "Vos effectifs enregistrés où cette carte occupe un emplacement de son poste enregistré avec un OVR supérieur au joueur actuel.",
     squadFitAppliedTemplate: "Ajoutée à « {squad} »",

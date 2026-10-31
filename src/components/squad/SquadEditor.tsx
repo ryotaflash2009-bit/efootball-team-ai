@@ -150,6 +150,7 @@ function useMoveErrorMessage(): Record<SquadMoveErrorCode, string> {
 // 下の方の欄・選手の検索は後から読み込む（最初の JS を軽く・2026-10-30）
 const SquadAffiliationPanel = dynamic(() => import("@/components/squad/SquadAffiliationPanel").then((x) => x.SquadAffiliationPanel), { ssr: false });
 const SquadNewCardsPanel = dynamic(() => import("@/components/squad/SquadNewCardsPanel").then((x) => x.SquadNewCardsPanel), { ssr: false });
+const SquadBenchOwnedPanel = dynamic(() => import("@/components/squad/SquadBenchOwnedPanel").then((x) => x.SquadBenchOwnedPanel), { ssr: false });
 const SquadNotOwnedPanel = dynamic(() => import("@/components/squad/SquadNotOwnedPanel").then((x) => x.SquadNotOwnedPanel), { ssr: false });
 const SquadOwnedUpgradesPanel = dynamic(() => import("@/components/squad/SquadOwnedUpgradesPanel").then((x) => x.SquadOwnedUpgradesPanel), { ssr: false });
 const loadPlayerSearchPanel = () => import("./PlayerSearchPanel");
@@ -1222,6 +1223,16 @@ export function SquadEditor({
     });
     return [...starters, ...subs];
   }, [squad, newCardSlots, cards, t]);
+  // 控えに入れられる所持カードの欄の入力（先発の枠のポジション・控えの登録ポジション。読めていない控えは「不明」で覆わない・2026-11-01）
+  const benchPanelInput = useMemo(() => {
+    if (!squad) return { starterPositions: [] as string[], benchPositions: [] as (string | null)[] };
+    const formationSlots = getFormation(squad.formationId).slots;
+    const benchPositions = squad.substitutes.map((sub) => {
+      const c = sub.worldCardId ? cards[sub.worldCardId] : undefined;
+      return c && c !== "loading" && c !== "error" ? (c.display.registeredPosition ?? null) : null;
+    });
+    return { starterPositions: formationSlots.map((s) => s.position), benchPositions };
+  }, [squad, cards]);
   const newCardInSquad = useMemo(() => new Set([...(squad?.slots.map((s) => s.worldCardId) ?? []), ...(squad?.substitutes.map((s) => s.worldCardId) ?? [])].filter((x): x is string => !!x)), [squad]);
 
   // ビルド使用状況サマリー（現在の 1 スカッドのみ・表示専用）用の行
@@ -2178,6 +2189,15 @@ export function SquadEditor({
           />
         ) : null}
         {squad ? <SquadNotOwnedPanel cards={notOwnedInput} /> : null}
+        {squad ? (
+          <SquadBenchOwnedPanel
+            starterPositions={benchPanelInput.starterPositions}
+            benchPositions={benchPanelInput.benchPositions}
+            inSquad={newCardInSquad}
+            benchFull={squad.substitutes.length >= MAX_SUBSTITUTES}
+            onAdd={(id) => void addBench(id)}
+          />
+        ) : null}
         {squad ? <SquadOwnedUpgradesPanel slots={newCardSlots} inSquad={newCardInSquad} onApply={applyOwnedUpgrade} /> : null}
         {squad ? <SquadNewCardsPanel slots={newCardSlots} inSquad={newCardInSquad} /> : null}
         {squad ? <GamePlanPanel squad={squad} starterOptions={starterOptions} benchOptions={benchOptions} /> : null}
