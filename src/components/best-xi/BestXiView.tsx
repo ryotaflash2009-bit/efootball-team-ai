@@ -12,6 +12,7 @@ import type { ManagerDetail } from "@/lib/managers/types";
 import dynamic from "next/dynamic";
 import { CurrentManagerCard } from "@/components/managers/CurrentManagerCard";
 import { useFavorites, useMyTeam } from "@/lib/user-cards/hooks";
+import type { MyTeamRecord } from "@/lib/user-cards/types";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import { listBuilds } from "@/lib/progression/build-storage";
@@ -91,6 +92,29 @@ export function BestXiView() {
     () => (includeFavorites ? [...ownedWorldCardIds, ...favorites.map((f) => f.worldCardId).filter((id) => !ownedSet.has(id))] : ownedWorldCardIds),
     [includeFavorites, ownedWorldCardIds, favorites, ownedSet],
   );
+  // 候補は My Team の「所持」の記録から作るため、お気に入りは画面の中だけの記録（保存しない）として足す
+  const poolRecords = useMemo<MyTeamRecord[]>(() => {
+    if (!includeFavorites) return myTeam;
+    const extra = favorites
+      .filter((f) => !ownedSet.has(f.worldCardId))
+      .map((f) => ({
+        localRecordId: `fav_${f.worldCardId}`,
+        teamCardId: `fav_${f.worldCardId}`,
+        worldCardId: f.worldCardId,
+        ownershipStatus: "owned" as const,
+        usageStatus: "unknown" as const,
+        selectedBuildId: null,
+        favoriteBuildId: null,
+        note: "",
+        tags: [],
+        addedAt: f.addedAt,
+        updatedAt: f.updatedAt,
+        deletedAt: null,
+        source: "local" as const,
+        syncStatus: "local_only" as const,
+      }));
+    return [...myTeam, ...extra];
+  }, [includeFavorites, myTeam, favorites, ownedSet]);
   const { cards: progressionCards, affiliations, loading: cardsLoading } = useBestXiProgressionCards(poolWorldCardIds);
 
   // 保存ビルドはクライアントのlocalStorageから読む(build-storageに変更通知イベントが無いため、
@@ -120,8 +144,8 @@ export function BestXiView() {
   const [affiliationFilter, setAffiliationFilter] = useState<BestXiAffiliationFilter | null>(null);
   const options = useMemo(() => affiliationOptions(poolWorldCardIds, affiliations), [poolWorldCardIds, affiliations]);
   const { candidates, unavailableCards } = useMemo(
-    () => applyAffiliationFilter(buildBestXiCandidates({ myTeam, progressionCards, buildsByWorldCardId, manager: managerInRanking ? manager : null }), affiliations, affiliationFilter),
-    [myTeam, progressionCards, buildsByWorldCardId, affiliations, affiliationFilter, managerInRanking, manager],
+    () => applyAffiliationFilter(buildBestXiCandidates({ myTeam: poolRecords, progressionCards, buildsByWorldCardId, manager: managerInRanking ? manager : null }), affiliations, affiliationFilter),
+    [poolRecords, progressionCards, buildsByWorldCardId, affiliations, affiliationFilter, managerInRanking, manager],
   );
 
   const poolPlayerCount = useMemo(

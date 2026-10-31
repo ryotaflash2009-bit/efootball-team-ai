@@ -375,7 +375,12 @@ async function main() {
       await go(client, `${BASE}/best-xi`);
       await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="best-xi-include-favorites"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
       const pitchText = () => evalJson(client, `document.body.innerText`);
-      const clickGenerate = () => evalJson(client, `[...document.querySelectorAll("button")].find((b) => /^(ベスト11を作成|再選出)$/.test(b.textContent.trim()) && !b.disabled)?.click()`);
+      const genBtn = `[...document.querySelectorAll("button")].find((b) => /^(ベスト11を作成|再選出)$/.test(b.textContent.trim()))`;
+      // 候補（カード・ビルド）の読み込み中はボタンが押せないので、押せるまで待ってから押す
+      const clickGenerate = async () => {
+        await waitForCondition(async () => evalJson(client, `!!${genBtn} && !${genBtn}.disabled`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+        await evalJson(client, `${genBtn}?.click()`);
+      };
       await clickGenerate();
       await new Promise((r) => setTimeout(r, 1500));
       const before = await pitchText();
@@ -384,7 +389,8 @@ async function main() {
       await clickGenerate();
       await new Promise((r) => setTimeout(r, 2000));
       const after = await pitchText();
-      record("[AI ベスト11] お気に入りも候補に入れる（入れる前は ☆ なし・入れると所持でないカードが ☆ つきで選ばれる）", !/☆ /.test(before) && /☆ (ロベルト|Roberto)/.test(after), `before☆=${/☆ /.test(before)} after=${(after.match(/☆ [^\n]{0,20}/) ?? [""])[0]}`);
+      const rcStar = /☆ (ロベルト|Roberto)/;
+      record("[AI ベスト11] お気に入りも候補に入れる（入れる前は ☆ なし・入れると所持でないカードが ☆ つきで選ばれる）", !rcStar.test(before) && rcStar.test(after), `before=${rcStar.test(before)} after=${rcStar.test(after)}`);
       await evalJson(client, `localStorage.removeItem(${JSON.stringify(KEY)}); localStorage.removeItem(${JSON.stringify(FKEY)})`);
     }
     // 先発の所属の内訳（2026-10-11）: LB と RB に同じ国籍の 2 枚 → 「国籍」に「<国籍> ×2」・選手一覧の絞り込みへのリンク
