@@ -218,6 +218,7 @@ const part: PartialDictionary = {
     limitationsHeading: "Sınırlamalar",
     samePlayerExcludedTemplate: "Aynı oyuncunun başka bir kartı kullanıldığı için seçilmeyenler ({count}): {names}",
     affiliationFilterAriaLabel: "Kısıtlama (uyruk, lig, kulüp)",
+    includeFavoritesLabel: "Favorileri de dahil et (☆ = My Team'de sahip olunmayan kart)",
     affiliationFilterNone: "Kısıtlama yok (tüm kartlar)",
     affiliationKind_nationality: "Uyruk",
     affiliationKind_league: "Lig",

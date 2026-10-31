@@ -364,6 +364,35 @@ async function main() {
         await evalJson(client, `localStorage.removeItem(${JSON.stringify(KEY)})`);
       }
     }
+    // AI ベスト11: お気に入りも候補に入れる（2026-11-01）。所持は OTHER だけ・お気に入りに RC_A → 入れると RC_A が ☆ つきで選ばれる
+    {
+      const KEY = "efootball-team-ai:local:guest:my-team:v1";
+      const FKEY = "efootball-team-ai:local:guest:favorites:v1";
+      const now = new Date().toISOString();
+      const rec = { localRecordId: `mt_${OTHER}`, teamCardId: `tc_${OTHER}`, worldCardId: OTHER, ownershipStatus: "owned", usageStatus: "unused", selectedBuildId: null, favoriteBuildId: null, note: "", tags: [], addedAt: now, updatedAt: now, deletedAt: null, source: "local", syncStatus: "local_only" };
+      const fav = { localRecordId: `fav_${RC_A}`, worldCardId: RC_A, note: "", tags: [], addedAt: now, updatedAt: now, source: "local", syncStatus: "local_only" };
+      await evalJson(client, `localStorage.setItem(${JSON.stringify(KEY)}, ${JSON.stringify(JSON.stringify({ storageVersion: "my-team-storage/2026-08-30.v1", updatedAt: now, records: [rec] }))}); localStorage.setItem(${JSON.stringify(FKEY)}, ${JSON.stringify(JSON.stringify({ storageVersion: "favorites-storage/2026-08-30.v1", updatedAt: now, records: [fav] }))})`);
+      await go(client, `${BASE}/best-xi`);
+      await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="best-xi-include-favorites"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+      const pitchText = () => evalJson(client, `document.body.innerText`);
+      const genBtn = `[...document.querySelectorAll("button")].find((b) => /^(ベスト11を作成|再選出)$/.test(b.textContent.trim()))`;
+      // 候補（カード・ビルド）の読み込み中はボタンが押せないので、押せるまで待ってから押す
+      const clickGenerate = async () => {
+        await waitForCondition(async () => evalJson(client, `!!${genBtn} && !${genBtn}.disabled`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+        await evalJson(client, `${genBtn}?.click()`);
+      };
+      await clickGenerate();
+      await new Promise((r) => setTimeout(r, 1500));
+      const before = await pitchText();
+      await evalJson(client, `document.querySelector('[data-testid="best-xi-include-favorites"]')?.click()`);
+      await new Promise((r) => setTimeout(r, 2500));
+      await clickGenerate();
+      await new Promise((r) => setTimeout(r, 2000));
+      const after = await pitchText();
+      const rcStar = /☆ (ロベルト|Roberto)/;
+      record("[AI ベスト11] お気に入りも候補に入れる（入れる前は ☆ なし・入れると所持でないカードが ☆ つきで選ばれる）", !rcStar.test(before) && rcStar.test(after), `before=${rcStar.test(before)} after=${rcStar.test(after)}`);
+      await evalJson(client, `localStorage.removeItem(${JSON.stringify(KEY)}); localStorage.removeItem(${JSON.stringify(FKEY)})`);
+    }
     // 先発の所属の内訳（2026-10-11）: LB と RB に同じ国籍の 2 枚 → 「国籍」に「<国籍> ×2」・選手一覧の絞り込みへのリンク
     {
       const d = await (await fetch(`${BASE}/api/world/players/${RC_A}`)).json().catch(() => null);

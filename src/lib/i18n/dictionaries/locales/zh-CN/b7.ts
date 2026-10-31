@@ -218,6 +218,7 @@ const part: PartialDictionary = {
     limitationsHeading: "限制",
     samePlayerExcludedTemplate: "因已使用同一球员的另一张卡而未选择的卡（{count}）：{names}",
     affiliationFilterAriaLabel: "限定（国籍、联赛、俱乐部）",
+    includeFavoritesLabel: "将收藏也列为候选（☆ 为 My Team 中未拥有的卡）",
     affiliationFilterNone: "不限定（全部卡）",
     affiliationKind_nationality: "国籍",
     affiliationKind_league: "联赛",

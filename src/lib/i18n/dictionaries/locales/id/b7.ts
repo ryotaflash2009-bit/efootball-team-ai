@@ -218,6 +218,7 @@ const part: PartialDictionary = {
     limitationsHeading: "Batasan",
     samePlayerExcludedTemplate: "Tidak dipilih karena kartu lain dari pemain yang sama sudah dipakai ({count}): {names}",
     affiliationFilterAriaLabel: "Batasan (kewarganegaraan, liga, klub)",
+    includeFavoritesLabel: "Sertakan favorit (☆ = belum dimiliki di My Team)",
     affiliationFilterNone: "Tanpa batasan (semua kartu)",
     affiliationKind_nationality: "Kewarganegaraan",
     affiliationKind_league: "Liga",

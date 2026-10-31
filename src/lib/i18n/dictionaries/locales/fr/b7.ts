@@ -218,6 +218,7 @@ const part: PartialDictionary = {
     limitationsHeading: "Limites",
     samePlayerExcludedTemplate: "Non retenues car une autre carte du même joueur est utilisée ({count}) : {names}",
     affiliationFilterAriaLabel: "Restriction (nationalité, ligue, club)",
+    includeFavoritesLabel: "Inclure les favoris (☆ = non possédée dans My Team)",
     affiliationFilterNone: "Aucune restriction (toutes les cartes)",
     affiliationKind_nationality: "Nationalité",
     affiliationKind_league: "Ligue",
