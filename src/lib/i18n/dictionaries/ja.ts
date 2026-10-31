@@ -5329,6 +5329,7 @@ export interface Dictionary {
     squadFitHeading: string;
     squadFitIntro: string;
     squadFitAppliedTemplate: string;
+    squadUsageHeadingTemplate: string;
     positionFilterLabel: string;
     positionFilterAll: string;
     unownedOnlyLabel: string;

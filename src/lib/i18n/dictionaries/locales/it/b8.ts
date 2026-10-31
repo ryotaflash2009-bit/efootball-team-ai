@@ -668,6 +668,7 @@ const part: PartialDictionary = {
     squadFitHeading: "Rose che questa carta rafforzerebbe",
     squadFitIntro: "Le tue rose salvate in cui questa carta occupa uno slot del suo ruolo registrato con un OVR più alto del giocatore attuale.",
     squadFitAppliedTemplate: "Aggiunta a «{squad}»",
+    squadUsageHeadingTemplate: "Rose che usano questa carta ({count})",
     positionFilterLabel: "Filtra per ruolo",
     positionFilterAll: "Tutte",
     unownedOnlyLabel: "Solo carte che non hai ancora (escluse quelle \"possedute\" in My Team)",

@@ -668,6 +668,7 @@ const part: PartialDictionary = {
     squadFitHeading: "這張卡能加強的陣容",
     squadFitIntro: "已儲存的陣容中，這張卡能以高於目前球員的 OVR 進入其登錄位置的位置。",
     squadFitAppliedTemplate: "已放入「{squad}」",
+    squadUsageHeadingTemplate: "使用這張卡的陣容（{count}）",
     positionFilterLabel: "依位置篩選",
     positionFilterAll: "全部",
     unownedOnlyLabel: "只看還沒有的卡（不含 My Team 中的「擁有」）",

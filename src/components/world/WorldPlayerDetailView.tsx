@@ -37,6 +37,7 @@ const NOT_YET_FIXED_KEYS = ["Weak Foot Usage", "Weak Foot Accuracy", "Form", "In
 const RealFormPanel = dynamic(() => import("@/components/world/RealFormPanel").then((m) => m.RealFormPanel), { ssr: false });
 const SHOW_REAL_FORM = areInternalPagesVisible();
 
+const SquadUsagePanel = dynamic(() => import("@/components/world/SquadUsagePanel").then((m) => m.SquadUsagePanel), { ssr: false });
 const SquadFitPanel = dynamic(() => import("@/components/world/SquadFitPanel").then((m) => m.SquadFitPanel), { ssr: false });
 
 const ProgressionPanel = dynamic(() => import("@/components/world/progression/ProgressionPanel").then((m) => m.ProgressionPanel), {
@@ -245,6 +246,7 @@ export function WorldPlayerDetailView({
         <WorldPlayerHero player={player} imageSources={heroImageSources} />
         {player.provisional ? <ProvisionalCardNotice info={player.provisional} /> : null}
         <MyTeamFitPanel card={fitCard} />
+        <SquadUsagePanel worldCardId={player.worldCardId} />
         <SquadFitPanel card={fitCard} />
         {SHOW_REAL_FORM ? <RealFormPanel nameEn={player.nameEn} nationality={player.nationality} /> : null}
         <Tabs
