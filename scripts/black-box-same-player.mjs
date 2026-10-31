@@ -225,6 +225,9 @@ async function main() {
       await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="squad-list-owned-upgrades"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
       const listBadge = await evalJson(client, `(() => { const a = document.querySelector('[data-testid="squad-list-owned-upgrades"]'); return a ? { href: a.getAttribute("href"), text: a.textContent.trim() } : null; })()`);
       record("[スカッドの一覧] 所持カードで強くできる枠の数の印（スカッドへのリンク）", listBadge?.href === "/squads/sq_bbownedswap1" && /所持カードで [1-9]\d* 枠強くできます/.test(listBadge?.text ?? ""), JSON.stringify(listBadge));
+      // 所持になっていないカードの数（2026-10-31）: LB の RC_A と RB の弱いカードは My Team で所持でない → 2 枚
+      const notOwnedText = await evalJson(client, `document.querySelector('[data-testid="squad-list-not-owned"]')?.textContent ?? ""`);
+      record("[スカッドの一覧] My Team で所持になっていないカードの数", /所持になっていないカード 2 枚/.test(notOwnedText), notOwnedText);
       // トップ: 所持カードで強くできるスカッドの数（2026-10-28）
       await go(client, `${BASE}/`);
       await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="home-owned-squad-upgrades"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});

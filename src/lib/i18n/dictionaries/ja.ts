@@ -941,6 +941,7 @@ export interface Dictionary {
     updatedAtTemplate: string;
     outdatedRulesBadge: string;
     ownedUpgradesTemplate: string;
+    notOwnedTemplate: string;
     addThisCardLink: string;
     openLink: string;
     compareLink: string;
