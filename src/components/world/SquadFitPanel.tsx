@@ -10,8 +10,8 @@ import { fillMessage } from "@/lib/i18n/message-format";
 import { Surface } from "@/components/ui/Surface";
 import { squadsStrengthenedByCard } from "@/lib/new-cards/card-squad-fit";
 import { useSavedSquadFitInputs } from "./useSavedSquadFitInputs";
-import { getSquad, saveSquad } from "@/lib/squad/squad-storage";
-import { placeCardInSlot } from "@/lib/squad/place-card";
+import { useSquadQuickApply } from "./useSquadQuickApply";
+import { SquadQuickAppliedNotice } from "./SquadQuickAppliedNotice";
 import type { ImpactCard } from "@/lib/new-cards/team-impact";
 
 /** 最初に出す行数（残りは「すべて表示」）。 */
@@ -26,17 +26,9 @@ export function SquadFitPanel({ card }: { card: ImpactCard }) {
   const { locale } = useLocale();
   const tp = (k: Parameters<typeof t<"provisionalCards">>[1]) => t("provisionalCards", k);
   // 「入れ替える」でその場でスカッドに入れる（2026-10-30）。入れた後は保存データを読み直し、そのスカッドへのリンクを出す
-  const [version, setVersion] = useState(0);
-  const [applied, setApplied] = useState<{ squadId: string; squadName: string } | null>(null);
+  const { version, applied, apply: quickApply, undo } = useSquadQuickApply();
   const inputs = useSavedSquadFitInputs(version);
-  const apply = (squadId: string, slotId: string) => {
-    const sq = getSquad(squadId);
-    if (!sq) return;
-    const r = placeCardInSlot(sq, slotId, card.worldCardId);
-    if (!r.ok || !saveSquad(r.squad).ok) return;
-    setApplied({ squadId, squadName: sq.squadName });
-    setVersion((v) => v + 1);
-  };
+  const apply = (squadId: string, slotId: string) => quickApply(squadId, slotId, card.worldCardId);
   const [all, setAll] = useState(false);
   const fits = useMemo(() => (inputs && inputs.length > 0 ? squadsStrengthenedByCard(card, inputs) : []), [inputs, card]);
 
@@ -47,13 +39,7 @@ export function SquadFitPanel({ card }: { card: ImpactCard }) {
     <Surface padding="md" className="flex flex-col gap-2 text-sm" data-testid="squad-fit">
       <h2 className="font-semibold">{tp("squadFitHeading")}</h2>
       <p className="text-xs text-text-dim">{tp("squadFitIntro")}</p>
-      {applied ? (
-        <p role="status" className="text-xs text-success" data-testid="squad-fit-applied">
-          <Link href={`/squads/${encodeURIComponent(applied.squadId)}`} className="hover:underline">
-            {fillMessage(tp("squadFitAppliedTemplate"), { squad: applied.squadName })}
-          </Link>
-        </p>
-      ) : null}
+      <SquadQuickAppliedNotice applied={applied} onUndo={undo} testId="squad-fit-applied" />
       {fits.length > 0 ? (
         <ul className="flex flex-col divide-y divide-border">
           {(all ? fits : fits.slice(0, INITIAL_ROWS)).map((f) => (
