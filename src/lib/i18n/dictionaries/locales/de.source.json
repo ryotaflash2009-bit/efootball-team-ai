@@ -4451,5 +4451,7 @@
  "playerDetailPage.realFormFutureYear": "f86e02b46b48",
  "playerDetailPage.realFormStale": "6d5e076f214d",
  "playerDetailPage.realFormUnavailable": "484932ab8b71",
- "playerDetailPage.realFormMismatchTemplate": "b711bbc27572"
+ "playerDetailPage.realFormMismatchTemplate": "b711bbc27572",
+ "provisionalCards.squadNotOwnedHeading": "c1a9bc5cec7c",
+ "provisionalCards.squadNotOwnedIntro": "4430572f469b"
 }

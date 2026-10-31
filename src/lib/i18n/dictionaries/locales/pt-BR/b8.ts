@@ -661,6 +661,8 @@ const part: PartialDictionary = {
     squadSuggestSeeAll: "Ver todas as cartas novas",
     squadOwnedHeading: "Espaços que suas próprias cartas podem reforçar",
     squadOwnedIntro: "Cartas que você possui no My Team e que não estão neste elenco, cuja posição registrada coincide com o espaço e cujo OVR supera o jogador atual (em espaços vazios, o maior OVR).",
+    squadNotOwnedHeading: "Cartas não marcadas como possuídas no My Team",
+    squadNotOwnedIntro: "No jogo você só pode escalar cartas que possui. Se você as tem, adicione ao My Team para que as sugestões e a verificação de pacotes as usem.",
     squadFitHeading: "Elencos que esta carta reforçaria",
     squadFitIntro: "Seus elencos salvos em que esta carta se encaixa em um espaço da sua posição registrada com OVR maior que o do jogador atual.",
     squadFitAppliedTemplate: "Adicionada a “{squad}”",

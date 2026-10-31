@@ -661,6 +661,8 @@ const part: PartialDictionary = {
     squadSuggestSeeAll: "Tüm yeni kartları gör",
     squadOwnedHeading: "Kendi kartlarınla güçlenebilecek yuvalar",
     squadOwnedIntro: "My Team'de sahip olduğun ve bu kadroda olmayan, kayıtlı mevkisi yuvayla aynı olan ve OVR'si mevcut oyuncudan yüksek kartlar (boş yuvalarda en yüksek OVR).",
+    squadNotOwnedHeading: "My Team'de sahip olunan olarak işaretlenmemiş kartlar",
+    squadNotOwnedIntro: "Oyunda yalnızca sahip olduğun kartları kadroya koyabilirsin. Bunlara sahipsen My Team'e ekle; böylece öneriler ve paket kontrolü onları kullanır.",
     squadFitHeading: "Bu kartın güçlendireceği kadrolar",
     squadFitIntro: "Kayıtlı kadrolarından, bu kartın kayıtlı mevkisindeki bir yuvaya mevcut oyuncudan daha yüksek OVR ile girdiği kadrolar.",
     squadFitAppliedTemplate: "“{squad}” kadrosuna eklendi",

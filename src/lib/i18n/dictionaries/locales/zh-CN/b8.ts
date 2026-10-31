@@ -661,6 +661,8 @@ const part: PartialDictionary = {
     squadSuggestSeeAll: "查看全部新卡",
     squadOwnedHeading: "可用已拥有的卡加强的位置",
     squadOwnedIntro: "My Team 中已拥有但不在此阵容中的卡，登记位置与该位置相同且 OVR 高于当前球员（空位则为 OVR 最高的卡）。",
+    squadNotOwnedHeading: "My Team 中未标记为已拥有的卡",
+    squadNotOwnedIntro: "游戏中只能编入已拥有的卡。如果你拥有这些卡，把它们加入 My Team，已拥有卡的建议和卡包诊断就会用到它们。",
     squadFitHeading: "这张卡能加强的阵容",
     squadFitIntro: "已保存的阵容中，这张卡能以高于当前球员的 OVR 进入其登记位置的位置。",
     squadFitAppliedTemplate: "已放入“{squad}”",

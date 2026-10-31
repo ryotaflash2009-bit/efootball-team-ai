@@ -661,6 +661,8 @@ const part: PartialDictionary = {
     squadSuggestSeeAll: "Ver todas las cartas nuevas",
     squadOwnedHeading: "Huecos que tus propias cartas pueden reforzar",
     squadOwnedIntro: "Cartas que posees en My Team y que no están en esta plantilla, cuya posición registrada coincide con el hueco y cuyo OVR supera al jugador actual (en huecos vacíos, el OVR más alto).",
+    squadNotOwnedHeading: "Cartas no marcadas como poseídas en My Team",
+    squadNotOwnedIntro: "En el juego solo puedes alinear cartas que posees. Si las tienes, añádelas a My Team para que las sugerencias y la revisión de sobres las usen.",
     squadFitHeading: "Plantillas que esta carta reforzaría",
     squadFitIntro: "Tus plantillas guardadas en las que esta carta encaja en un hueco de su posición registrada con un OVR mayor que el jugador actual.",
     squadFitAppliedTemplate: "Añadida a «{squad}»",
