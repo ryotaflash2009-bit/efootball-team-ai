@@ -296,6 +296,8 @@ const part: PartialDictionary = {
     availableCloudSave: "클라우드 저장(로그인 시: My Team·저장 빌드·저장 스쿼드를 수동으로 저장하고, 다른 기기에서는 없는 것만 추가)",
     availableCommunity: "커뮤니티(로그인 시: 공개 프로필·친구·친구와 진단 비교·라이벌·차단·뮤트·신고, 기본은 비공개)",
     availableTier: "포지션별 티어(포지션 내 최대 OVR 상위, TeamAIXI 데이터로 계산)",
+    availableNewCards: "새 카드(최근 추가된 정식 카드·임시 카드)와 팩 진단(뽑은 카드를 My Team과 비교)",
+    availableOwnedCards: "보유 카드 활용(보유 표시·보유 카드로 강화할 수 있는 스쿼드 제안·한 번에 교체하고 되돌리기·보유로 표시되지 않은 카드 알림)",
     betaHeading: "알려진 제한 사항",
     betaBestXiIntro: "AI Best XI는 작동하지만 다음과 같은 알려진 제한 사항이 있습니다.",
     betaBestXiSubPositionLimit: "추가 포지션 적성 데이터는 일부 카드에만 있습니다.",
@@ -314,7 +316,7 @@ const part: PartialDictionary = {
     notProvidedGenerativeAi: "생성형 AI 또는 외부 AI API 연동",
     notOfficialNotice: "본 서비스는 KONAMI 또는 eFootball™의 공식 서비스가 아니며, KONAMI가 보증, 제휴 또는 운영하지 않습니다.",
     winRateNotice: "분석 결과는 승률이나 경기 결과를 보장하지 않습니다.",
-    draftNotice: "이 페이지는 TeamAIXI(2026년 10월 15일 기준)에 대한 설명입니다. 기능은 향후 업데이트에서 변경될 수 있습니다.",
+    draftNotice: "이 페이지는 TeamAIXI(2026년 11월 1일 기준)에 대한 설명입니다. 기능은 향후 업데이트에서 변경될 수 있습니다.",
   },
   myTeam: {
     pageTitle: "내 팀",

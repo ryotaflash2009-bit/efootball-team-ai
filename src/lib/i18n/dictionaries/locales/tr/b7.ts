@@ -296,6 +296,8 @@ const part: PartialDictionary = {
     availableCloudSave: "Bulut kaydı (girişliyken: My Team, kayıtlı build'ler ve kadroları elle kaydet; başka cihazda yalnızca eksik olanları ekle)",
     availableCommunity: "Topluluk (girişliyken: herkese açık profil, arkadaşlar, arkadaşlarla teşhis karşılaştırması, rakipler, engelleme, sessize alma ve bildirme; varsayılan olarak gizli)",
     availableTier: "Mevkiye göre tier (her mevkide en yüksek maksimum OVR, TeamAIXI verilerinden hesaplanır)",
+    availableNewCards: "Yeni kartlar (yakın zamanda eklenen resmî ve geçici kartlar) ve paket kontrolü (çıkan kartları My Team ile karşılaştır)",
+    availableOwnedCards: "Sahip olduğun kartlardan yararlanma (sahip işareti, kartlarının güçlendirebileceği kadro önerileri, tek dokunuşla değiştirme ve geri alma, sahip olarak işaretlenmemiş kart uyarıları)",
     betaHeading: "Bilinen sınırlamalar",
     betaBestXiIntro: "AI Best XI çalışır, ancak aşağıdaki bilinen sınırlamalara sahiptir.",
     betaBestXiSubPositionLimit: "Ek mevki uygunluk verileri yalnızca az sayıda kart için mevcut.",
@@ -314,7 +316,7 @@ const part: PartialDictionary = {
     notProvidedGenerativeAi: "Herhangi bir üretken yapay zekâ veya harici yapay zekâ API entegrasyonu",
     notOfficialNotice: "Hizmet, resmi bir KONAMI veya eFootball™ hizmeti değildir; KONAMI tarafından onaylanmamış, KONAMI ile bağlantılı değildir ve KONAMI tarafından işletilmemektedir.",
     winRateNotice: "Analiz sonuçları kazanma oranını veya maç sonuçlarını garanti etmez.",
-    draftNotice: "Bu sayfa TeamAIXI'yi 15 Ekim 2026 itibarıyla anlatır. Özellikler gelecekteki güncellemelerde değişebilir.",
+    draftNotice: "Bu sayfa TeamAIXI'yi 1 Kasım 2026 itibarıyla anlatır. Özellikler gelecekteki güncellemelerde değişebilir.",
   },
   myTeam: {
     pageTitle: "Takımım",

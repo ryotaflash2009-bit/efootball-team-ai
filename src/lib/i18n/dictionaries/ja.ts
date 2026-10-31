@@ -3320,6 +3320,8 @@ export interface Dictionary {
     availableCloudSave: string;
     availableCommunity: string;
     availableTier: string;
+    availableNewCards: string;
+    availableOwnedCards: string;
     betaHeading: string;
     betaBestXiIntro: string;
     betaBestXiSubPositionLimit: string;

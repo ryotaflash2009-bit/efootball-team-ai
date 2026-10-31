@@ -296,6 +296,8 @@ const part: PartialDictionary = {
     availableCloudSave: "雲端儲存（登入時：手動儲存 My Team、已儲存的培養方案和陣容，在其他裝置上只新增缺少的內容）",
     availableCommunity: "社群（登入時：公開資料、好友、與好友比較診斷、對手、封鎖、靜音和檢舉；預設不公開）",
     availableTier: "依位置的梯隊（各位置內最高 OVR 前段，根據 TeamAIXI 的資料計算）",
+    availableNewCards: "新卡（最近新增的正式卡和暫定卡）與卡包診斷（把抽到的卡與你的 My Team 比較）",
+    availableOwnedCards: "活用已擁有的卡（已擁有標記、可用已擁有的卡加強的陣容建議、一鍵替換與復原、未標記為已擁有的卡的提示）",
     betaHeading: "已知限制",
     betaBestXiIntro: "AI Best XI 可正常運作，但有以下已知限制。",
     betaBestXiSubPositionLimit: "額外位置的適性資料僅涵蓋少部分卡片。",
@@ -314,7 +316,7 @@ const part: PartialDictionary = {
     notProvidedGenerativeAi: "任何生成式 AI 或外部 AI API 整合",
     notOfficialNotice: "本服務並非 KONAMI 或 eFootball™ 的官方服務，亦未獲得 KONAMI 的認可，與 KONAMI 無關聯，也非由 KONAMI 營運。",
     winRateNotice: "分析結果不保證勝率或比賽結果。",
-    draftNotice: "本頁介紹截至 2026 年 10 月 15 日的 TeamAIXI。功能可能會在今後的更新中變化。",
+    draftNotice: "本頁介紹截至 2026 年 11 月 1 日的 TeamAIXI。功能可能會在今後的更新中變化。",
   },
   myTeam: {
     pageTitle: "我的球隊",

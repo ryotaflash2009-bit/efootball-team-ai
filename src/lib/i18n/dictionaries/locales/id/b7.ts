@@ -296,6 +296,8 @@ const part: PartialDictionary = {
     availableCloudSave: "Penyimpanan cloud (saat masuk: simpan manual My Team, build dan skuad tersimpan, lalu di perangkat lain tambahkan hanya yang belum ada)",
     availableCommunity: "Komunitas (saat masuk: profil publik, teman, perbandingan diagnosis dengan teman, rival, blokir, bisukan, dan laporkan; privat secara bawaan)",
     availableTier: "Tier per posisi (OVR maksimum teratas di tiap posisi, dihitung dari data TeamAIXI)",
+    availableNewCards: "Kartu baru (kartu resmi yang baru ditambahkan dan kartu sementara) dan cek paket (bandingkan kartu yang didapat dengan My Team)",
+    availableOwnedCards: "Memanfaatkan kartu milikmu (tanda milik, saran skuad yang bisa diperkuat kartu milikmu, tukar sekali ketuk dan batalkan, pemberitahuan kartu yang belum ditandai milikmu)",
     betaHeading: "Batasan yang diketahui",
     betaBestXiIntro: "AI Best XI berfungsi, tetapi memiliki batasan berikut.",
     betaBestXiSubPositionLimit: "Data kecocokan posisi tambahan hanya tersedia untuk sebagian kecil kartu.",
@@ -314,7 +316,7 @@ const part: PartialDictionary = {
     notProvidedGenerativeAi: "AI generatif atau integrasi API AI eksternal apa pun",
     notOfficialNotice: "Layanan ini bukan layanan resmi KONAMI atau eFootball™ dan tidak didukung, berafiliasi, atau dioperasikan oleh KONAMI.",
     winRateNotice: "Hasil analisis tidak menjamin persentase kemenangan atau hasil pertandingan.",
-    draftNotice: "Halaman ini menjelaskan TeamAIXI per 15 Oktober 2026. Fitur dapat berubah pada pembaruan berikutnya.",
+    draftNotice: "Halaman ini menjelaskan TeamAIXI per 1 November 2026. Fitur dapat berubah pada pembaruan berikutnya.",
   },
   myTeam: {
     pageTitle: "Tim Saya",

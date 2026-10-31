@@ -3545,7 +3545,7 @@
  "about.notProvidedGenerativeAi": "3586e632fd3b",
  "about.notOfficialNotice": "39eb5550e774",
  "about.winRateNotice": "429c8da38520",
- "about.draftNotice": "8eb0d7be3228",
+ "about.draftNotice": "0d89a76ef557",
  "myTeam.pageTitle": "cee021f1b617",
  "myTeam.pageDescription": "eaade6cca723",
  "myTeam.emptyTitle": "240dd517dfb0",
@@ -4459,6 +4459,11 @@
  "userCardFilters.squadUseFilterAll": "dd86f7542ead",
  "userCardFilters.squadUseFilterUsed": "dbd7603a3a13",
  "userCardFilters.squadUseFilterUnused": "13177eb9a1c7",
+<<<<<<< HEAD
  "favoritesView.squadFitHeading": "c65215c92bf6",
  "favoritesView.squadFitIntro": "ac915b8a3b2b"
+=======
+ "about.availableNewCards": "9eb6516ccd6a",
+ "about.availableOwnedCards": "ce84831f5f94"
+>>>>>>> origin/main
 }

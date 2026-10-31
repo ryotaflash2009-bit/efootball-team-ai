@@ -296,6 +296,8 @@ const part: PartialDictionary = {
     availableCloudSave: "云端保存（登录时：手动保存 My Team、已保存的培养方案和阵容，在其他设备上只添加缺少的内容）",
     availableCommunity: "社区（登录时：公开资料、好友、与好友比较诊断、对手、屏蔽、静音和举报；默认不公开）",
     availableTier: "按位置的梯队（各位置内最高 OVR 靠前，根据 TeamAIXI 的数据计算）",
+    availableNewCards: "新卡（最近添加的正式卡和暂定卡）与卡包诊断（把抽到的卡与你的 My Team 比较）",
+    availableOwnedCards: "活用已拥有的卡（已拥有标记、可用已拥有的卡加强的阵容建议、一键替换与撤销、未标记为已拥有的卡的提示）",
     betaHeading: "已知限制",
     betaBestXiIntro: "AI Best XI 可以正常使用，但存在以下已知限制。",
     betaBestXiSubPositionLimit: "只有少部分球员卡有额外位置适应性数据。",
@@ -314,7 +316,7 @@ const part: PartialDictionary = {
     notProvidedGenerativeAi: "任何生成式 AI 或外部 AI API 集成",
     notOfficialNotice: "本服务不是 KONAMI 或 eFootball™ 的官方服务，也未获得 KONAMI 的认可，与 KONAMI 无关联，且并非由 KONAMI 运营。",
     winRateNotice: "分析结果不保证胜率或比赛结果。",
-    draftNotice: "本页介绍截至 2026 年 10 月 15 日的 TeamAIXI。功能可能会在今后的更新中变化。",
+    draftNotice: "本页介绍截至 2026 年 11 月 1 日的 TeamAIXI。功能可能会在今后的更新中变化。",
   },
   myTeam: {
     pageTitle: "我的球队",
