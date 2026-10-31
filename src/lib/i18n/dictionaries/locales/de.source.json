@@ -4452,5 +4452,7 @@
  "playerDetailPage.realFormStale": "6d5e076f214d",
  "playerDetailPage.realFormUnavailable": "484932ab8b71",
  "playerDetailPage.realFormMismatchTemplate": "b711bbc27572",
- "squadList.notOwnedTemplate": "71234737865f"
+ "squadList.notOwnedTemplate": "71234737865f",
+ "provisionalCards.squadNotOwnedHeading": "c1a9bc5cec7c",
+ "provisionalCards.squadNotOwnedIntro": "4430572f469b"
 }

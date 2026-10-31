@@ -234,6 +234,10 @@ async function main() {
       const homeLink = await evalJson(client, `(() => { const a = document.querySelector('[data-testid="home-owned-squad-upgrades"]'); return a ? { href: a.getAttribute("href"), text: a.textContent.trim() } : null; })()`);
       record("[トップ] 所持カードで強くできるスカッドの数（スカッドの一覧へ）", homeLink?.href === "/squads" && /所持カードで 1 個のスカッドを強くできます/.test(homeLink?.text ?? ""), JSON.stringify(homeLink));
       await go(client, `${BASE}/squads/sq_bbownedswap1`);
+      // 編集画面: My Team で所持になっていないカード（2026-10-31）→ LB の RC_A・RB の弱いカードの 2 枚・各行に My Team に追加
+      await waitForCondition(async () => evalJson(client, `document.querySelectorAll('[data-testid="squad-not-owned"] li').length >= 2`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+      const notOwnedRows = await evalJson(client, `[...document.querySelectorAll('[data-testid="squad-not-owned"] li')].map((li) => ({ id: li.dataset.worldCardId, add: !!li.querySelector("button") }))`);
+      record("[スカッドの編集] My Team で所持になっていないカード（2 枚・My Team に追加のボタン）", Array.isArray(notOwnedRows) && notOwnedRows.length === 2 && notOwnedRows.some((r) => r.id === RC_A) && notOwnedRows.some((r) => r.id === weak) && notOwnedRows.every((r) => r.add), JSON.stringify(notOwnedRows));
       const btn = `document.querySelector('[data-testid="squad-owned-upgrades-list"] > li[data-world-card-id="${OTHER}"] [data-testid="squad-owned-upgrade-apply"]')`;
       await waitForCondition(async () => evalJson(client, `!!${btn}`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
       const label = await evalJson(client, `${btn}?.textContent ?? ""`);

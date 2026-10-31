@@ -22,8 +22,8 @@
 | ✅ 合格 | diagnosis-facts | 16/16 | 4 | 2026-10-30 13:44 | — |
 | ✅ 合格 | favorites | 32/32 | 2 | 2026-10-30 14:41 | — |
 | ✅ 合格 | final-alpha-readiness-copy（社内向けページ） | 37/37 | 5 | 2026-10-25 15:14 | [final-alpha-readiness-copy.md](./final-alpha-readiness-copy.md) |
-| ✅ 合格 | game-plan | 18/18 | 7 | 2026-10-30 13:44 | — |
-| ✅ 合格 | hydration-seeded | 107/107 | 281 | 2026-10-31 09:15 | — |
+| ✅ 合格 | game-plan | 18/18 | 8 | 2026-10-31 09:23 | — |
+| ✅ 合格 | hydration-seeded | 107/107 | 280 | 2026-10-31 09:23 | — |
 | ✅ 合格 | local-backup | 28/28 | 41 | 2026-10-30 14:07 | [local-backup.md](./local-backup.md) |
 | ✅ 合格 | local-posts（社内向けページ） | 32/32 | 79 | 2026-10-25 15:14 | [local-posts.md](./local-posts.md) |
 | ✅ 合格 | manager-compare | 16/16 | 9 | 2026-10-30 13:33 | — |
@@ -53,4 +53,3 @@
 | ✅ 合格 | ui | 74/74 | 1 | 2026-10-28 14:03 | [ui.md](./ui.md) |
 | ✅ 合格 | world-sync | 35/35 | 1 | 2026-10-25 20:15 | — |
 | ✅ 合格 | world-ui | 93/93 | 11 | 2026-10-31 09:43 | [world-ui.md](./world-ui.md) |
-
