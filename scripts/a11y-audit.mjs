@@ -10,6 +10,10 @@
  * - ボタン・リンク・入力に、読み上げの名前（text・aria-label・aria-labelledby・title・<label>）がある
  * - id の重複がない / tabindex が正の値の要素がない
  * 結果は件数と要素の短い説明だけ（本文・利用者のデータは保存しない）。色のコントラストは対象外。
+ *
+ * A11Y_SEEDED=1 で、隔離したブラウザーの localStorage に My Team（所持 8 枚）と保存スカッド（1 つ）を入れてから回る
+ * （所持の印・スカッドの提案・入れ替えるのボタンなど、保存データがあるときだけ出る部品も確かめる・2026-10-31）。
+ * 対象の画面に Tier・新しいカード・パック診断・スカッドの編集・選手の詳細を足す。
  */
 import { writeFileSync } from "node:fs";
 import path from "node:path";
@@ -23,6 +27,7 @@ const REPORT = process.env.REPORT_PATH ? path.resolve(ROOT, process.env.REPORT_P
 if (REPORT && !REPORT.startsWith(path.join(ROOT, "data") + path.sep)) throw new Error("REPORT_PATH must be inside ./data");
 if (!REPORT && !BASE.startsWith("http://localhost")) throw new Error("REPORT_PATH is required when BASE_URL is not localhost");
 
+const SEEDED = process.env.A11Y_SEEDED === "1";
 const PAGES = ["/", "/players", "/managers", "/compare", "/squads", "/best-xi", "/favorites", "/my-builds", "/my-team", "/diagnosis-history", "/data-management", "/about", "/terms", "/privacy", "/disclaimer", "/support"];
 const VIEWPORTS = [
   { name: "desktop-1280", width: 1280, height: 800, mobile: false },
@@ -94,9 +99,24 @@ async function main() {
     const missed = expected.filter((e) => !self.some((p) => p.startsWith(e)));
     if (missed.length) throw new Error(`self-test did not detect: ${missed.join(", ")}`);
     console.log(`self-test: ${expected.length}/${expected.length} known problems detected`);
+    const pages = [...PAGES];
+    if (SEEDED) {
+      // 最大 OVR の高い 8 枚を所持にし、1 枚目の登録ポジションの枠が空いているスカッドを作る（隔離したブラウザーの中だけ）
+      const list = await (await fetch(`${BASE}/api/world/players?pageSize=8&sort=ovr_max_desc`)).json();
+      const ids = list.players.map((x) => x.worldCardId);
+      const now = new Date().toISOString();
+      const rec = (id) => ({ localRecordId: `mt_${id}`, teamCardId: `tc_${id}`, worldCardId: id, ownershipStatus: "owned", usageStatus: "unused", selectedBuildId: null, favoriteBuildId: null, note: "", tags: [], addedAt: now, updatedAt: now, deletedAt: null, source: "local", syncStatus: "local_only" });
+      const slots = [["gk", 50, 92], ["lb", 15, 72], ["lcb", 38, 77], ["rcb", 62, 77], ["rb", 85, 72], ["dmf", 50, 58], ["lcmf", 33, 44], ["rcmf", 67, 44], ["lwf", 16, 22], ["cf", 50, 15], ["rwf", 84, 22]];
+      const squad = { squadId: "sq_a11yseeded01", squadName: "a11y", formationId: "4-3-3", managerId: null, slots: slots.map(([slotId, x, y]) => ({ slotId, worldCardId: null, buildMode: "none", savedBuildId: null, x, y, roleOverride: null })), substitutes: [], captainSlotId: null, setPieces: { corners: null, freeKicks: null, penalties: null }, linkUp: { centerPieceSlotId: null, keyManSlotId: null }, coordinateVersion: "squad-positioning/2026-08-30.v1", rulesVersion: "progression/2026-08-28.v2", schemaVersion: 1, createdAt: now, updatedAt: now };
+      await client.send("Page.navigate", { url: `${BASE}/about` });
+      await sleep(1500);
+      await client.send("Runtime.evaluate", { expression: `localStorage.setItem("efootball-team-ai:local:guest:my-team:v1", ${JSON.stringify(JSON.stringify({ storageVersion: "my-team-storage/2026-08-30.v1", updatedAt: now, records: ids.map(rec) }))}); localStorage.setItem("efootball-team-ai:local:guest:squads:v1", ${JSON.stringify(JSON.stringify([squad]))})` });
+      pages.push("/tier/CF", "/players/new", `/pack-check?ids=${ids.slice(0, 3).join(",")}`, "/squads/sq_a11yseeded01", `/players/world/${ids[0]}`);
+      console.log(`seeded: My Team ${ids.length} owned, 1 squad`);
+    }
     for (const vp of VIEWPORTS) {
       await client.send("Emulation.setDeviceMetricsOverride", { width: vp.width, height: vp.height, deviceScaleFactor: 1, mobile: vp.mobile });
-      for (const p of PAGES) {
+      for (const p of pages) {
         await client.send("Page.navigate", { url: `${BASE}${p}` });
         let ready = false;
         for (let i = 0; i < 40 && !ready; i++) {
