@@ -312,6 +312,17 @@ async function main() {
         const sv = await evalJson(client, `JSON.parse(localStorage.getItem(${JSON.stringify(SQUADS_KEY)})).find((x) => x.squadId === "sq_bbsquadfit01")`);
         const mtLink = await evalJson(client, `document.querySelector('[data-testid="my-team-squad-fit-applied"] a')?.getAttribute("href") ?? ""`);
         record("[My Team] 「入れ替える」でその場でスカッドに入れる（RB が所持のカード・入れましたのリンク）", sv?.slots?.find((x) => x.slotId === "rb")?.worldCardId === OTHER && mtLink === "/squads/sq_bbsquadfit01", `rb=${sv?.slots?.find((x) => x.slotId === "rb")?.worldCardId} link=${mtLink}`);
+        // スカッドでの使用の絞り込み（2026-10-31）: OTHER はスカッドで使っている → 「使用中」で出て「未使用」で消える
+        const pickSquadUse = async (v) => {
+          await evalJson(client, `(() => { const el = document.querySelector('[data-testid="squad-use-filter"]'); const set = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value").set; set.call(el, ${JSON.stringify(v)}); el.dispatchEvent(new Event("change", { bubbles: true })); })()`);
+          await new Promise((r) => setTimeout(r, 400));
+          // 一覧のカード（「My Team から削除」のボタンがあるもの）の数で見る（ポジション別のまとめにも同じカードのリンクがあるため）
+          return evalJson(client, `[...document.querySelectorAll("button")].filter((b) => /My Team から削除/.test(b.textContent)).length > 0`);
+        };
+        const inUsed = await pickSquadUse("used");
+        const inUnused = await pickSquadUse("unused");
+        await pickSquadUse("");
+        record("[My Team] スカッドでの使用で絞り込む（使用中に出る・未使用で消える）", inUsed === true && inUnused === false, `used=${inUsed} unused=${inUnused}`);
         await evalJson(client, `localStorage.removeItem(${JSON.stringify(KEY)})`);
       }
     }
