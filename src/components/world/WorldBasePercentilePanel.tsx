@@ -1,7 +1,7 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/basePercentile";
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import type { WorldStatValue, WorldStatGroup } from "@/lib/world/types";
 import { abilityName } from "@/lib/progression/ability-editor-labels";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
@@ -42,6 +42,8 @@ export function WorldBasePercentilePanel({ stats, registeredPosition }: { stats:
   const { locale, displayLocale } = useLocale();
   const bp = (k: BpKey) => t("basePercentile", k);
   const data = useWorldBasePercentiles();
+  // 同じページに 2 回出る（概要と育成のタブ）ため、見出しの id は描画ごとに一意にする（2026-10-31）
+  const headingId = `base-percentile-heading-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const [choice, setChoice] = useState<PercentileScopeChoice>("all");
 
   const scopeKey = scopeKeyFor(choice, registeredPosition);
@@ -58,8 +60,8 @@ export function WorldBasePercentilePanel({ stats, registeredPosition }: { stats:
   ];
 
   return (
-    <section className="mt-4 rounded-md border border-border bg-surface-2/40 p-3" data-testid="base-percentile-panel" aria-labelledby="base-percentile-heading">
-      <h3 id="base-percentile-heading" className="text-sm font-bold">
+    <section className="mt-4 rounded-md border border-border bg-surface-2/40 p-3" data-testid="base-percentile-panel" aria-labelledby={headingId}>
+      <h3 id={headingId} className="text-sm font-bold">
         {bp("heading")}
       </h3>
       <p className="mt-1 text-xs text-text-dim">{bp("explanation")}</p>

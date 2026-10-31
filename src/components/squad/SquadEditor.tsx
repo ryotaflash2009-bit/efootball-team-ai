@@ -1373,6 +1373,9 @@ export function SquadEditor({
         {tse("backToSquadList")}
       </Link>
 
+      {/* 見える題名は編集できるスカッド名の入力なので、読み上げ用のページの見出しを置く（2026-10-31・a11y） */}
+      <h1 className="sr-only">{squad.squadName}</h1>
+
       {/* ヘッダー（スティッキー） */}
       <Surface
         tone="raised"
@@ -2251,7 +2254,11 @@ function SkeletonEditor({ computed }: { computed: ReturnType<typeof buildSquad> 
 }
 
 function Notice({ title, children }: { title: string; children: React.ReactNode }) {
+  // 見つからない・保存できないときもページの見出しを 1 つ置く（読み上げ用・2026-10-31）
   return (
-    <EmptyState icon="squad" variant="no-results" title={title} description={children} />
+    <>
+      <h1 className="sr-only">{title}</h1>
+      <EmptyState icon="squad" variant="no-results" title={title} description={children} />
+    </>
   );
 }

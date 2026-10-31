@@ -419,7 +419,7 @@ export function SquadListBoard({
             {shown.map((e) => (
               <li key={e.squadId}>
                 <Surface className="flex h-full gap-3">
-                  <Link href={`/squads/${e.squadId}`} className="w-16 shrink-0">
+                  <Link href={`/squads/${e.squadId}`} className="w-16 shrink-0" aria-label={e.squadName}>
                     <MiniPitch formationId={e.formationId} />
                   </Link>
                   <div className="flex min-w-0 flex-1 flex-col">

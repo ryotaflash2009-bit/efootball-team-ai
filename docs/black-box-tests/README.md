@@ -44,13 +44,12 @@
 | ✅ 合格 | saved-filters | 11/11 | 6 | 2026-10-25 20:13 | — |
 | ✅ 合格 | share-build-link | 6/6 | 2 | 2026-10-28 14:03 | — |
 | ✅ 合格 | share-card | 24/24 | 59 | 2026-10-30 13:50 | [share-card.md](./share-card.md) |
-| ✅ 合格 | squad-list-banner | 5/5 | 2 | 2026-10-31 09:20 | [squad-list-banner.md](./squad-list-banner.md) |
+| ✅ 合格 | squad-list-banner | 5/5 | 2 | 2026-10-31 09:43 | [squad-list-banner.md](./squad-list-banner.md) |
 | ✅ 合格 | squad-placement-assist | 23/23 | 9 | 2026-10-30 13:51 | [squad-placement-assist.md](./squad-placement-assist.md) |
 | ✅ 合格 | squad-use | 12/12 | 0 | 2026-10-30 13:51 | [squad-use.md](./squad-use.md) |
-| ✅ 合格 | squads | 51/51 | 1 | 2026-10-31 09:30 | [squads.md](./squads.md) |
+| ✅ 合格 | squads | 51/51 | 2 | 2026-10-31 09:43 | [squads.md](./squads.md) |
 | ✅ 合格 | supabase-auth | 173/173 | 35 | 2026-10-25 20:15 | [supabase-auth.md](./supabase-auth.md) |
 | ✅ 合格 | support-contact（社内向けページ） | 39/39 | 4 | 2026-10-25 15:16 | [support-contact.md](./support-contact.md) |
 | ✅ 合格 | ui | 74/74 | 1 | 2026-10-28 14:03 | [ui.md](./ui.md) |
 | ✅ 合格 | world-sync | 35/35 | 1 | 2026-10-25 20:15 | — |
-| ✅ 合格 | world-ui | 93/93 | 10 | 2026-10-31 08:43 | [world-ui.md](./world-ui.md) |
-
+| ✅ 合格 | world-ui | 93/93 | 11 | 2026-10-31 09:43 | [world-ui.md](./world-ui.md) |
