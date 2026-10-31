@@ -27,15 +27,16 @@ import { buttonClasses } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
-import { YourBestPanel } from "@/components/titles/YourBestPanel";
-import { MyTeamPositionSummary } from "@/components/user-cards/MyTeamPositionSummary";
-import { MyTeamSquadFitPanel } from "@/components/user-cards/MyTeamSquadFitPanel";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { fillMessage } from "@/lib/i18n/message-format";
 import { usePageTitle } from "@/lib/i18n/use-page-title";
 
 // 編集のダイアログ・ビルドの画面は開いたときだけ読み込む（2026-10-28）
+// 一覧の上のまとめの欄（データを読んだ後に出る）も後から読み込む（2026-11-01）
+const YourBestPanel = dynamic(() => import("@/components/titles/YourBestPanel").then((m) => m.YourBestPanel), { ssr: false });
+const MyTeamPositionSummary = dynamic(() => import("@/components/user-cards/MyTeamPositionSummary").then((m) => m.MyTeamPositionSummary), { ssr: false });
+const MyTeamSquadFitPanel = dynamic(() => import("@/components/user-cards/MyTeamSquadFitPanel").then((m) => m.MyTeamSquadFitPanel), { ssr: false });
 const MyTeamAddDialog = dynamic(() => import("./MyTeamAddDialog").then((m) => m.MyTeamAddDialog), { ssr: false });
 const MyTeamBuildPanel = dynamic(() => import("./MyTeamBuildPanel").then((m) => m.MyTeamBuildPanel), { ssr: false });
 
