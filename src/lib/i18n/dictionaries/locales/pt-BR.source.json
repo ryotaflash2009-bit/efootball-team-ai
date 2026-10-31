@@ -4445,5 +4445,11 @@
  "tierList.ownedSummaryTemplate": "212e1144f628",
  "provisionalCards.homeOwnedSquadsTemplate": "50eab2ccfbc7",
  "packCheck.addAllTemplate": "599a2119d985",
- "provisionalCards.squadFitAppliedTemplate": "216b2136138b"
+ "provisionalCards.squadFitAppliedTemplate": "216b2136138b",
+ "playerDetailPage.realFormHeading": "aab8a9129526",
+ "playerDetailPage.realFormNoteTemplate": "1eec713ffaa9",
+ "playerDetailPage.realFormFutureYear": "f86e02b46b48",
+ "playerDetailPage.realFormStale": "6d5e076f214d",
+ "playerDetailPage.realFormUnavailable": "484932ab8b71",
+ "playerDetailPage.realFormMismatchTemplate": "b711bbc27572"
 }

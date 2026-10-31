@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/Badge";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { formatDateTime } from "@/lib/i18n/format";
+import { areInternalPagesVisible } from "@/lib/public-info/internal-pages";
 
 const NOT_YET_FIXED_KEYS = ["Weak Foot Usage", "Weak Foot Accuracy", "Form", "Injury Resistance", "Tier"];
 
@@ -32,6 +33,10 @@ const NOT_YET_FIXED_KEYS = ["Weak Foot Usage", "Weak Foot Accuracy", "Form", "In
  * ?tab=progression で開いた場合はサーバーで描画される（next/dynamic の ssr は既定で有効）。
  */
 // 保存スカッドを読む欄はブラウザーの中だけ（サーバーでは常に空）。最初の JS から外す（2026-10-28）
+// 開発用の現実の今季成績（内部ページを有効にしたビルドだけ・本番のビルドには読み込まない・2026-10-31）
+const RealFormPanel = dynamic(() => import("@/components/world/RealFormPanel").then((m) => m.RealFormPanel), { ssr: false });
+const SHOW_REAL_FORM = areInternalPagesVisible();
+
 const SquadFitPanel = dynamic(() => import("@/components/world/SquadFitPanel").then((m) => m.SquadFitPanel), { ssr: false });
 
 const ProgressionPanel = dynamic(() => import("@/components/world/progression/ProgressionPanel").then((m) => m.ProgressionPanel), {
@@ -241,6 +246,7 @@ export function WorldPlayerDetailView({
         {player.provisional ? <ProvisionalCardNotice info={player.provisional} /> : null}
         <MyTeamFitPanel card={fitCard} />
         <SquadFitPanel card={fitCard} />
+        {SHOW_REAL_FORM ? <RealFormPanel nameEn={player.nameEn} nationality={player.nationality} /> : null}
         <Tabs
           ariaLabel={tp("tabsAriaLabel")}
           sticky
