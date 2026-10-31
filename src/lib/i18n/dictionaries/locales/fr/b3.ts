@@ -502,6 +502,8 @@ const part: PartialDictionary = {
   favoritesView: {
     pageTitle: "Favoris",
     pageDescription: "Enregistrez les cartes qui vous intéressent pour consulter leur progression et les comparer plus tard. Vous pouvez aussi ajouter des cartes que vous ne possédez pas.",
+    squadFitHeading: "Cartes qui renforceraient vos effectifs enregistrés si vous les obteniez",
+    squadFitIntro: "Favoris non marqués comme possédés dans My Team qui occuperaient un emplacement du même poste enregistré dans un effectif enregistré avec un OVR supérieur au joueur actuel.",
     emptyTitle: "Vous n’avez pas encore de favoris",
     emptyDescription: "Ajoutez des cartes avec l’icône étoile dans la liste des joueurs ou sur la fiche d’un joueur. Les cartes que vous ne possédez pas peuvent aussi être ajoutées aux favoris.",
     noResultsTitle: "Aucun favori ne correspond à vos critères",

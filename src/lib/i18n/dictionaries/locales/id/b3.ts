@@ -502,6 +502,8 @@ const part: PartialDictionary = {
   favoritesView: {
     pageTitle: "Favorit",
     pageDescription: "Simpan kartu yang Anda minati, lalu periksa progresinya dan bandingkan nanti. Kartu yang tidak Anda miliki juga dapat didaftarkan.",
+    squadFitHeading: "Kartu yang akan memperkuat skuad tersimpan jika kamu mendapatkannya",
+    squadFitIntro: "Favorit yang belum ditandai milikmu di My Team dan akan masuk ke slot posisi terdaftar yang sama di skuad tersimpan dengan OVR lebih tinggi dari pemain sekarang.",
     emptyTitle: "Anda belum memiliki favorit",
     emptyDescription: "Tambahkan kartu dengan ikon bintang di daftar pemain atau di halaman detail pemain. Kartu yang tidak Anda miliki juga dapat difavoritkan.",
     noResultsTitle: "Tidak ada favorit yang cocok dengan kriteria Anda",

@@ -20,6 +20,10 @@ import { buttonClasses } from "@/components/ui/Button";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { usePageTitle } from "@/lib/i18n/use-page-title";
+import dynamic from "next/dynamic";
+
+// 保存スカッドを読む欄は後から読み込む（2026-11-01）
+const FavoritesSquadFitPanel = dynamic(() => import("./FavoritesSquadFitPanel").then((m) => m.FavoritesSquadFitPanel), { ssr: false });
 
 export function FavoritesView() {
   const t = useT();
@@ -45,6 +49,18 @@ export function FavoritesView() {
 
   const facets = useMemo(() => facetsFromRows(rows), [rows]);
   const visible = useMemo(() => filterAndSortUserCards(rows, filter, locale), [rows, filter, locale]);
+  // 所持でないお気に入り（読めたカードだけ）。手に入れると強くなる保存スカッドの欄に渡す
+  const notOwnedCards = useMemo(
+    () =>
+      favorites
+        .filter((f) => {
+          const rec = getByWorldId(f.worldCardId);
+          return !rec || rec.ownershipStatus !== "owned" || rec.deletedAt;
+        })
+        .map((f) => cards.get(f.worldCardId))
+        .filter((c): c is NonNullable<typeof c> => c != null),
+    [favorites, cards, getByWorldId],
+  );
   const favByWorldId = useMemo(() => new Map(favorites.map((f) => [f.worldCardId, f])), [favorites]);
 
   if (scopeStatus === "loading") {
@@ -89,6 +105,8 @@ export function FavoritesView() {
       {error ? (
         <p className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-2xs text-danger">{error}</p>
       ) : null}
+
+      <FavoritesSquadFitPanel cards={notOwnedCards} />
 
       <UserCardFilters
         state={filter}

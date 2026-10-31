@@ -502,6 +502,8 @@ const part: PartialDictionary = {
   favoritesView: {
     pageTitle: "Favoriten",
     pageDescription: "Speichere Karten, die dich interessieren, und sieh dir später ihre Entwicklung an oder vergleiche sie. Auch Karten, die du nicht besitzt, kannst du hinzufügen.",
+    squadFitHeading: "Karten, die deine gespeicherten Kader stärken würden, wenn du sie bekommst",
+    squadFitIntro: "Favoriten, die in My Team nicht als im Besitz markiert sind und in einem gespeicherten Kader einen Platz derselben registrierten Position mit höherem OVR als der aktuelle Spieler besetzen würden.",
     emptyTitle: "Du hast noch keine Favoriten",
     emptyDescription: "Füge Karten über das Sternsymbol in der Spielerliste oder auf der Detailseite eines Spielers hinzu. Auch Karten, die du nicht besitzt, können Favoriten sein.",
     noResultsTitle: "Keine Favoriten entsprechen deinen Kriterien",

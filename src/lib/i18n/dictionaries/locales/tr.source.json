@@ -4460,5 +4460,7 @@
  "userCardFilters.squadUseFilterUsed": "dbd7603a3a13",
  "userCardFilters.squadUseFilterUnused": "13177eb9a1c7",
  "about.availableNewCards": "9eb6516ccd6a",
- "about.availableOwnedCards": "ce84831f5f94"
+ "about.availableOwnedCards": "ce84831f5f94",
+ "favoritesView.squadFitHeading": "c65215c92bf6",
+ "favoritesView.squadFitIntro": "ac915b8a3b2b"
 }

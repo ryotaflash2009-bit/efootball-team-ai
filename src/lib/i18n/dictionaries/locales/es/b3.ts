@@ -502,6 +502,8 @@ const part: PartialDictionary = {
   favoritesView: {
     pageTitle: "Favoritos",
     pageDescription: "Guarda las cartas que te interesan para revisar su progresión y compararlas más tarde. También puedes registrar cartas que no tienes.",
+    squadFitHeading: "Cartas que reforzarían tus plantillas guardadas si las consigues",
+    squadFitIntro: "Favoritas no marcadas como poseídas en My Team que encajarían en un hueco de la misma posición registrada de una plantilla guardada con un OVR mayor que el jugador actual.",
     emptyTitle: "Aún no tienes favoritos",
     emptyDescription: "Añade cartas con el icono de estrella en la lista de jugadores o en la página de detalle de un jugador. También puedes marcar como favoritas cartas que no tienes.",
     noResultsTitle: "Ningún favorito coincide con tus criterios",
