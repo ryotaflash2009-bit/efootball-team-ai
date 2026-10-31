@@ -345,6 +345,7 @@ const part: PartialDictionary = {
     updatedAtTemplate: "Güncelleme: {date}",
     outdatedRulesBadge: "Eski kurallarla kaydedildi",
     ownedUpgradesTemplate: "Kendi kartların {count} yuvayı güçlendirebilir",
+    notOwnedTemplate: "My Team'de sahip olunan olarak işaretlenmemiş {count} kart",
     addThisCardLink: "Bu kartı ekle",
     openLink: "Aç",
     compareLink: "Karşılaştır",

@@ -963,6 +963,7 @@ const en: Dictionary = {
     updatedAtTemplate: "Updated {date}",
     outdatedRulesBadge: "Saved under outdated rules",
     ownedUpgradesTemplate: "Your own cards can strengthen {count} slot(s)",
+    notOwnedTemplate: "{count} card(s) not marked as owned in My Team",
     addThisCardLink: "Add this card",
     openLink: "Open",
     compareLink: "Compare",

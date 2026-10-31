@@ -345,6 +345,7 @@ const part: PartialDictionary = {
     updatedAtTemplate: "更新於 {date}",
     outdatedRulesBadge: "以舊規則儲存",
     ownedUpgradesTemplate: "已擁有的卡可加強 {count} 個位置",
+    notOwnedTemplate: "My Team 中未標記為已擁有的卡 {count} 張",
     addThisCardLink: "加入此球員卡",
     openLink: "開啟",
     compareLink: "比較",
