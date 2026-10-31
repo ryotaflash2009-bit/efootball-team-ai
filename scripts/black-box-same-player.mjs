@@ -316,7 +316,8 @@ async function main() {
         const pickSquadUse = async (v) => {
           await evalJson(client, `(() => { const el = document.querySelector('[data-testid="squad-use-filter"]'); const set = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value").set; set.call(el, ${JSON.stringify(v)}); el.dispatchEvent(new Event("change", { bubbles: true })); })()`);
           await new Promise((r) => setTimeout(r, 400));
-          return evalJson(client, `[...document.querySelectorAll('a[href="/players/world/${OTHER}"]')].some((a) => !a.closest('[data-testid="my-team-squad-fit"]'))`);
+          // 一覧のカード（「My Team から削除」のボタンがあるもの）の数で見る（ポジション別のまとめにも同じカードのリンクがあるため）
+          return evalJson(client, `[...document.querySelectorAll("button")].filter((b) => /My Team から削除/.test(b.textContent)).length > 0`);
         };
         const inUsed = await pickSquadUse("used");
         const inUnused = await pickSquadUse("unused");
