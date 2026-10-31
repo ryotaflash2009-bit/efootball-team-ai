@@ -2831,6 +2831,12 @@ export interface Dictionary {
     samePlayerOtherCardsHint: string;
     similarCardsHeading: string;
     similarCardsHint: string;
+    realFormHeading: string;
+    realFormNoteTemplate: string;
+    realFormFutureYear: string;
+    realFormStale: string;
+    realFormUnavailable: string;
+    realFormMismatchTemplate: string;
     similarCardsMore: string;
     similarCardsCompare: string;
     notYetHint: string;

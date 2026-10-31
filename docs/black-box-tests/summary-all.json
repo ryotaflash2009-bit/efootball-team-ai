@@ -192,8 +192,8 @@
       "status": "pass",
       "passed": 107,
       "total": 107,
-      "seconds": 281,
-      "ranAt": "2026-10-31T08:14:01.738Z",
+      "seconds": 282,
+      "ranAt": "2026-10-31T08:38:25.851Z",
       "line": "107/107 PASS",
       "fails": [],
       "report": null
@@ -358,7 +358,7 @@
       "passed": 28,
       "total": 28,
       "seconds": 30,
-      "ranAt": "2026-10-31T08:19:11.390Z",
+      "ranAt": "2026-10-31T08:43:07.823Z",
       "line": "[black-box-same-player] 28/28 PASS",
       "fails": [],
       "report": "same-player.md"
@@ -489,8 +489,8 @@
       "status": "pass",
       "passed": 93,
       "total": 93,
-      "seconds": 12,
-      "ranAt": "2026-10-30T15:02:20.819Z",
+      "seconds": 10,
+      "ranAt": "2026-10-31T08:43:38.284Z",
       "line": "[black-box-world-ui] 93/93 PASS",
       "fails": [],
       "report": "world-ui.md"
@@ -507,5 +507,5 @@
       "report": null
     }
   },
-  "updatedAt": "2026-10-31T08:19:41.023Z"
+  "updatedAt": "2026-10-31T08:43:48.084Z"
 }
