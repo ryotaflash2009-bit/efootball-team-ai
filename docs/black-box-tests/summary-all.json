@@ -355,11 +355,11 @@
     "same-player": {
       "name": "same-player",
       "status": "pass",
-      "passed": 31,
-      "total": 31,
-      "seconds": 30,
-      "ranAt": "2026-10-31T10:33:43.783Z",
-      "line": "[black-box-same-player] 31/31 PASS",
+      "passed": 32,
+      "total": 32,
+      "seconds": 32,
+      "ranAt": "2026-10-31T10:38:20.221Z",
+      "line": "[black-box-same-player] 32/32 PASS",
       "fails": [],
       "report": "same-player.md"
     },
@@ -435,7 +435,7 @@
       "passed": 51,
       "total": 51,
       "seconds": 1,
-      "ranAt": "2026-10-31T10:35:34.754Z",
+      "ranAt": "2026-10-31T10:38:51.772Z",
       "line": "[black-box-squads] 51/51 PASS",
       "fails": [],
       "report": "squads.md"
@@ -507,5 +507,5 @@
       "report": null
     }
   },
-  "updatedAt": "2026-10-31T10:53:40.062Z"
+  "updatedAt": "2026-10-31T10:36:25.148Z"
 }
