@@ -3380,6 +3380,8 @@ const en: Dictionary = {
     availableCloudSave: "Cloud saving (when signed in: manually save My Team, saved builds and saved squads, and add back only what's missing on another device)",
     availableCommunity: "Community (when signed in: public profile, friends, diagnosis comparison with friends, rivals, block, mute and report; private by default)",
     availableTier: "Tier list by position (top max OVR within each position, calculated from TeamAIXI's data)",
+    availableNewCards: "New cards (recently added official and provisional cards) and pack check (compare pulled cards with your My Team)",
+    availableOwnedCards: "Making use of owned cards (owned marks, suggestions of squads your owned cards can strengthen, one-tap swap with undo, notices for cards not marked as owned)",
     betaHeading: "Known limitations",
     betaBestXiIntro: "AI Best XI works, but has the following known limitations.",
     betaBestXiSubPositionLimit: "Additional-position aptitude data is only available for a small subset of cards.",
@@ -3398,7 +3400,7 @@ const en: Dictionary = {
     notProvidedGenerativeAi: "Any generative AI or external AI API integration",
     notOfficialNotice: "The Service is not an official KONAMI or eFootball™ service and is not endorsed by, affiliated with or operated by KONAMI.",
     winRateNotice: "Analysis results do not guarantee win rates or match outcomes.",
-    draftNotice: "This page describes TeamAIXI as of October 15, 2026. Features may change in future updates.",
+    draftNotice: "This page describes TeamAIXI as of November 1, 2026. Features may change in future updates.",
   },
   disclaimer: {
     pageTitle: "Disclaimer | TeamAIXI",
