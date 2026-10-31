@@ -48,6 +48,8 @@ const provisionalCards: Dictionary["provisionalCards"] = {
   squadOwnedIntro: "My Team で「所持」のカードのうち、このスカッドに入っていないもので、登録ポジションが枠と同じで今の選手より OVR が高いものです（空いている枠は最も高いもの）。",
   squadNotOwnedHeading: "My Team で所持になっていないカード",
   squadNotOwnedIntro: "ゲームでは持っているカードしか編成できません。持っているカードなら My Team に追加しておくと、所持カードの提案やパック診断に使われます。",
+  benchOwnedHeading: "控えに入れられる所持カード",
+  benchOwnedIntro: "先発のポジションのうち控えに同じポジションの選手がいないものについて、スカッドにいない所持カードで最も強いものです。",
   squadFitHeading: "このカードで強くなるスカッド",
   squadFitIntro: "保存したスカッドのうち、このカードの登録ポジションの枠に今の選手より OVR が高いかたちで入るものです。",
   squadFitAppliedTemplate: "「{squad}」に入れました",

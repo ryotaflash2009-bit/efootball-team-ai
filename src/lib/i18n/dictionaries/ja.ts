@@ -5324,6 +5324,8 @@ export interface Dictionary {
     squadOwnedIntro: string;
     squadNotOwnedHeading: string;
     squadNotOwnedIntro: string;
+    benchOwnedHeading: string;
+    benchOwnedIntro: string;
     squadFitHeading: string;
     squadFitIntro: string;
     squadFitAppliedTemplate: string;

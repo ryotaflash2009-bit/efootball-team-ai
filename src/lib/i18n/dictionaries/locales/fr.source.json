@@ -4464,5 +4464,7 @@
  "favoritesView.squadFitHeading": "c65215c92bf6",
  "favoritesView.squadFitIntro": "ac915b8a3b2b",
  "bestXi.includeFavoritesLabel": "bb97cd1ca4e5",
- "comparisonBoard.bestOwnedHeadingTemplate": "e1a06754d366"
+ "comparisonBoard.bestOwnedHeadingTemplate": "e1a06754d366",
+ "provisionalCards.benchOwnedHeading": "a5a12c745dfe",
+ "provisionalCards.benchOwnedIntro": "50a8a07e8d3b"
 }

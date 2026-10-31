@@ -663,6 +663,8 @@ const part: PartialDictionary = {
     squadOwnedIntro: "My Team 中已擁有但不在此陣容中的卡，登錄位置與該位置相同且 OVR 高於目前球員（空位則為 OVR 最高的卡）。",
     squadNotOwnedHeading: "My Team 中未標記為已擁有的卡",
     squadNotOwnedIntro: "遊戲中只能編入已擁有的卡。如果你擁有這些卡，把它們加入 My Team，已擁有卡的建議和卡包診斷就會用到它們。",
+    benchOwnedHeading: "可放入替補的已擁有卡",
+    benchOwnedIntro: "對於替補中沒有相同位置球員的先發位置，顯示不在陣容中的最強已擁有卡。",
     squadFitHeading: "這張卡能加強的陣容",
     squadFitIntro: "已儲存的陣容中，這張卡能以高於目前球員的 OVR 進入其登錄位置的位置。",
     squadFitAppliedTemplate: "已放入「{squad}」",
