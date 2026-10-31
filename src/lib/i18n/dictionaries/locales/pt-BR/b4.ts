@@ -345,6 +345,7 @@ const part: PartialDictionary = {
     updatedAtTemplate: "Atualizado em {date}",
     outdatedRulesBadge: "Salvo com regras desatualizadas",
     ownedUpgradesTemplate: "Suas cartas podem reforçar {count} espaço(s)",
+    notOwnedTemplate: "{count} cartas não marcadas como possuídas no My Team",
     addThisCardLink: "Adicionar esta carta",
     openLink: "Abrir",
     compareLink: "Comparar",

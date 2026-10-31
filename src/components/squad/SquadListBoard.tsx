@@ -17,6 +17,8 @@ import {
   getActiveSquadsStorageKey,
 } from "@/lib/squad/squad-storage";
 import { useOwnedUpgradeCounts } from "./useOwnedUpgradeCounts";
+import { countNotOwnedInSquad } from "@/lib/squad/not-owned";
+import { useMyTeam } from "@/lib/user-cards/hooks";
 import { saveTemplateFromSquad } from "@/lib/squad/templates";
 import { findSquadUsageByWorldCardId } from "@/lib/squad/usage";
 import { FORMATIONS, getFormation } from "@/lib/squad/formations";
@@ -144,6 +146,18 @@ export function SquadListBoard({
   // 所持カードで強くできる枠の数（2026-10-26）。一覧（entries）を読み直したときに保存データの全体も読み直す
   const fullSquads = useMemo(() => (entries ? listSquads() : null), [entries]);
   const ownedUpgrades = useOwnedUpgradeCounts(fullSquads);
+  // My Team で所持になっていないカードの数（My Team に所持のカードが 1 枚以上ある人だけ・2026-10-31）
+  const { myTeam } = useMyTeam();
+  const notOwned = useMemo(() => {
+    const owned = new Set(myTeam.filter((r) => r.ownershipStatus === "owned" && !r.deletedAt).map((r) => r.worldCardId));
+    const m = new Map<string, number>();
+    if (owned.size === 0 || !fullSquads) return m;
+    for (const sq of fullSquads) {
+      const n = countNotOwnedInSquad(sq, owned);
+      if (n > 0) m.set(sq.squadId, n);
+    }
+    return m;
+  }, [myTeam, fullSquads]);
 
   const shown = useMemo(() => {
     let list = entries ?? [];
@@ -422,6 +436,13 @@ export function SquadListBoard({
                     <p className="mt-0.5 text-2xs text-text-muted">
                       {fillSl(tsl("updatedAtTemplate"), { date: safeFormatDateTime(e.updatedAt, displayLocale) })}
                     </p>
+                    {notOwned.get(e.squadId) ? (
+                      <span className="mt-0.5 w-fit" data-testid="squad-list-not-owned">
+                        <Badge tone="warning" size="xs">
+                          {fillSl(tsl("notOwnedTemplate"), { count: String(notOwned.get(e.squadId)) })}
+                        </Badge>
+                      </span>
+                    ) : null}
                     {ownedUpgrades.get(e.squadId) ? (
                       <Link href={`/squads/${e.squadId}`} className="mt-0.5 w-fit" data-testid="squad-list-owned-upgrades">
                         <Badge tone="success" size="xs">

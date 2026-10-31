@@ -345,6 +345,7 @@ const part: PartialDictionary = {
     updatedAtTemplate: "Diperbarui {date}",
     outdatedRulesBadge: "Disimpan dengan aturan lama",
     ownedUpgradesTemplate: "Kartu milikmu bisa memperkuat {count} slot",
+    notOwnedTemplate: "{count} kartu belum ditandai sebagai milikmu di My Team",
     addThisCardLink: "Tambahkan kartu ini",
     openLink: "Buka",
     compareLink: "Bandingkan",
