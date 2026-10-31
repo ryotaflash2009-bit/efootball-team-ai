@@ -661,6 +661,8 @@ const part: PartialDictionary = {
     squadSuggestSeeAll: "새 카드 모두 보기",
     squadOwnedHeading: "보유 카드로 강화할 수 있는 슬롯",
     squadOwnedIntro: "My Team에서 보유한 카드 중 이 스쿼드에 없는 카드로, 슬롯 포지션과 등록 포지션이 같고 현재 선수보다 OVR이 높은 카드입니다(빈 슬롯은 가장 높은 카드).",
+    squadNotOwnedHeading: "My Team에서 보유로 표시되지 않은 카드",
+    squadNotOwnedIntro: "게임에서는 보유한 카드만 편성할 수 있습니다. 보유 중이라면 My Team에 추가해 두면 보유 카드 제안과 팩 진단에 사용됩니다.",
     squadFitHeading: "이 카드로 강화되는 스쿼드",
     squadFitIntro: "저장한 스쿼드 중 이 카드의 등록 포지션 슬롯에 현재 선수보다 높은 OVR로 들어가는 스쿼드입니다.",
     squadFitAppliedTemplate: "‘{squad}’에 넣었습니다",

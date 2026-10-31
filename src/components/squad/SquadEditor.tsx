@@ -150,6 +150,7 @@ function useMoveErrorMessage(): Record<SquadMoveErrorCode, string> {
 // 下の方の欄・選手の検索は後から読み込む（最初の JS を軽く・2026-10-30）
 const SquadAffiliationPanel = dynamic(() => import("@/components/squad/SquadAffiliationPanel").then((x) => x.SquadAffiliationPanel), { ssr: false });
 const SquadNewCardsPanel = dynamic(() => import("@/components/squad/SquadNewCardsPanel").then((x) => x.SquadNewCardsPanel), { ssr: false });
+const SquadNotOwnedPanel = dynamic(() => import("@/components/squad/SquadNotOwnedPanel").then((x) => x.SquadNotOwnedPanel), { ssr: false });
 const SquadOwnedUpgradesPanel = dynamic(() => import("@/components/squad/SquadOwnedUpgradesPanel").then((x) => x.SquadOwnedUpgradesPanel), { ssr: false });
 const loadPlayerSearchPanel = () => import("./PlayerSearchPanel");
 const PlayerSearchPanel = dynamic(() => loadPlayerSearchPanel().then((x) => x.PlayerSearchPanel), { ssr: false });
@@ -1210,6 +1211,17 @@ export function SquadEditor({
       }];
     });
   }, [squad, cards]);
+  // My Team で所持になっていないカードの欄の入力（先発は枠のポジション・控えは「ベンチ」・読めていないカードは除く・2026-10-31）
+  const notOwnedInput = useMemo(() => {
+    if (!squad) return [];
+    const starters = newCardSlots.flatMap((s) => (s.current ? [{ worldCardId: s.current.worldCardId, nameJa: s.current.nameJa, nameEn: s.current.nameEn, position: s.position }] : []));
+    const subs = squad.substitutes.flatMap((sub) => {
+      const c = sub.worldCardId ? cards[sub.worldCardId] : undefined;
+      if (!sub.worldCardId || !c || c === "loading" || c === "error") return [];
+      return [{ worldCardId: sub.worldCardId, nameJa: c.display.nameJa ?? null, nameEn: c.display.nameEn ?? null, position: t("bench", "heading") }];
+    });
+    return [...starters, ...subs];
+  }, [squad, newCardSlots, cards, t]);
   const newCardInSquad = useMemo(() => new Set([...(squad?.slots.map((s) => s.worldCardId) ?? []), ...(squad?.substitutes.map((s) => s.worldCardId) ?? [])].filter((x): x is string => !!x)), [squad]);
 
   // ビルド使用状況サマリー（現在の 1 スカッドのみ・表示専用）用の行
@@ -2162,6 +2174,7 @@ export function SquadEditor({
             )}
           />
         ) : null}
+        {squad ? <SquadNotOwnedPanel cards={notOwnedInput} /> : null}
         {squad ? <SquadOwnedUpgradesPanel slots={newCardSlots} inSquad={newCardInSquad} onApply={applyOwnedUpgrade} /> : null}
         {squad ? <SquadNewCardsPanel slots={newCardSlots} inSquad={newCardInSquad} /> : null}
         {squad ? <GamePlanPanel squad={squad} starterOptions={starterOptions} benchOptions={benchOptions} /> : null}
