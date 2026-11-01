@@ -1,10 +1,10 @@
 # 総合ブラックボックス(公開範囲・全viewport・操作・性能)
 
-実行日時: 2026-10-31T14:44:18.810Z  対象: http://localhost:3000
+実行日時: 2026-10-31T16:38:42.318Z  対象: http://localhost:3000
 viewport: desktop-1280x720, desktop-1440x900, desktop-1920x1080, tablet-768x1024, tablet-820x1180, mobile-390x844, mobile-393x852, mobile-430x932  期待件数: World 13,517 / Managers 71
 
 **画面・操作: 608/608 PASS** (console error 0, warning 0, network error 0, 5xx 0, 想定外4xx 0, overflow 0)
-**性能: 14/14 OK**  **メモリ: OK (growth 1.22)**  **公開範囲・セキュリティ: 18/18 PASS**
+**性能: 14/14 OK**  **メモリ: OK (growth 1.2)**  **公開範囲・セキュリティ: 18/18 PASS**
 
 ## 失敗
 
@@ -14,635 +14,635 @@ viewport: desktop-1280x720, desktop-1440x900, desktop-1920x1080, tablet-768x1024
 
 | 結果 | viewport | route | 操作 | ms | requests | 詳細 |
 |---|---|---|---|---|---|---|
-| PASS | desktop-1280x720 | / | view | 856 | 82 | World 13,517 |
-| PASS | desktop-1280x720 | /players | view | 639 | 96 | 24 cards |
-| PASS | desktop-1280x720 | /players/world/<id> | view | 634 | 96 | identity ok |
-| PASS | desktop-1280x720 | /managers | view | 628 | 82 | managers 71 |
-| PASS | desktop-1280x720 | /managers/65 | view | 636 | 71 | identity ok |
-| PASS | desktop-1280x720 | /compare | view | 633 | 91 | h1 ok |
-| PASS | desktop-1280x720 | /squads | view | 627 | 93 | h1 ok |
-| PASS | desktop-1280x720 | /squads/templates | view | 622 | 87 | h1 ok |
-| PASS | desktop-1280x720 | /squads/compare | view | 617 | 91 | h1 ok |
-| PASS | desktop-1280x720 | /best-xi | view | 620 | 84 | h1 ok |
-| PASS | desktop-1280x720 | /players/new | view | 922 | 84 | h1 ok |
-| PASS | desktop-1280x720 | /pack-check | view | 618 | 84 | h1 ok |
-| PASS | desktop-1280x720 | /tier/CF | view | 636 | 112 | h1 ok |
-| PASS | desktop-1280x720 | /glossary | view | 623 | 71 | h1 ok |
-| PASS | desktop-1280x720 | /favorites | view | 618 | 84 | h1 ok |
-| PASS | desktop-1280x720 | /my-team | view | 618 | 84 | h1 ok |
-| PASS | desktop-1280x720 | /my-builds | view | 620 | 84 | h1 ok |
-| PASS | desktop-1280x720 | /build-inventory | view | 621 | 85 | h1 ok |
-| PASS | desktop-1280x720 | /support | view | 620 | 71 | legal links present |
-| PASS | desktop-1280x720 | /terms | view | 623 | 71 | h1 ok |
-| PASS | desktop-1280x720 | /privacy | view | 621 | 71 | h1 ok |
-| PASS | desktop-1280x720 | /disclaimer | view | 619 | 73 | h1 ok |
-| PASS | desktop-1280x720 | /about | view | 622 | 72 | h1 ok |
-| PASS | desktop-1280x720 | /data-management | view | 622 | 71 | local data management only |
-| PASS | desktop-1280x720 | /auth/sign-in | view | 865 | 84 | h1 ok |
-| PASS | desktop-1280x720 | /auth/sign-up | view | 617 | 86 | h1 ok |
-| PASS | desktop-1280x720 | /auth/forgot-password | view | 620 | 85 | h1 ok |
-| PASS | desktop-1280x720 | /this-page-does-not-exist | view | 618 | 85 | not-found view |
-| PASS | desktop-1280x720 | /players/world/<id> | view | 872 | 85 | not-found view |
-| PASS | desktop-1280x720 | /account/rls-test | view | 619 | 87 | not-found view |
-| PASS | desktop-1280x720 | /release-readiness | view | 619 | 89 | not-found view |
-| PASS | desktop-1280x720 | /players/ | trailing slash | 634 | 99 | → /players |
-| PASS | desktop-1280x720 | /account/rls-test/ | trailing slash | 624 | 88 | not-found view |
-| PASS | desktop-1280x720 | /release-readiness/ | trailing slash | 621 | 90 | not-found view |
-| PASS | desktop-1280x720 | /players | language ja→en→ja | 775 | 99 | switched and restored |
-| PASS | desktop-1280x720 | /players | search ja | 1260 | 103 | 25 results |
-| PASS | desktop-1280x720 | /players | search en | 1254 | 103 | 25 results |
-| PASS | desktop-1280x720 | /players | search unicode | 1257 | 125 | 18 results |
-| PASS | desktop-1280x720 | /players | search symbols | 1496 | 116 | 0 results |
-| PASS | desktop-1280x720 | header search | submit with Enter | 1010 | 88 | 25 results |
-| PASS | desktop-1280x720 | /players | search control-character rejected safely | 621 | 87 | rejection view |
-| PASS | desktop-1280x720 | /players | search clear | 1012 | 122 | 24 cards |
-| PASS | desktop-1280x720 | /players | position filter | 1007 | 121 | position set, 24 cards |
-| PASS | desktop-1280x720 | /players | card type filter | 1008 | 113 | cardType set, 24 cards |
-| PASS | desktop-1280x720 | /players | sort | 1010 | 125 | sort set, 24 cards |
-| PASS | desktop-1280x720 | /players | nationality filter | 204 | 0 | not a feature of this site (no nationality filter exists); skipped by design |
-| PASS | desktop-1280x720 | /players | pagination | 1015 | 164 | page 2 differs |
-| PASS | desktop-1280x720 | /players → detail → back | navigate and back | 1299 | 126 | detail and back ok |
-| PASS | desktop-1280x720 | /compare | compare 2 players | 651 | 85 | 2 identities shown |
-| PASS | desktop-1280x720 | /compare | compare 3 players | 633 | 89 | 3 identities shown |
-| PASS | desktop-1280x720 | /compare | compare 4 players | 636 | 91 | 4 identities shown |
-| PASS | desktop-1280x720 | /managers | manager search | 1247 | 100 | 2 results |
-| PASS | desktop-1280x720 | /managers | manager filter | 1003 | 88 | booster=1, 25 results |
-| PASS | desktop-1280x720 | /managers → detail | open manager | 894 | 101 | manager detail |
-| PASS | desktop-1280x720 | /support → /terms → /privacy | legal navigation | 1378 | 87 | support → terms → privacy |
-| PASS | desktop-1280x720 | /share/diagnosis | share view (ja) | 622 | 86 | ok state, 8 categories, noindex |
-| PASS | desktop-1280x720 | /share/diagnosis | share view (en) and back to ja | 1729 | 183 | English labels, restored to Japanese |
-| PASS | desktop-1280x720 | /squads/compare?a=&b= | squad compare with query parameters (ja, en) | 2272 | 403 | two squads in browser storage only; ja and en with ?a=&b= |
-| PASS | desktop-1280x720 | /share/diagnosis | share: older rules noted | 623 | 88 | older-rules note |
-| PASS | desktop-1280x720 | /share/diagnosis | share rejected: checksum mismatch | 611 | 0 | safe error (checksum_mismatch) |
-| PASS | desktop-1280x720 | /share/diagnosis | share rejected: unknown version | 610 | 0 | safe error (unsupported_version) |
-| PASS | desktop-1280x720 | /share/diagnosis | share rejected: script string | 611 | 0 | safe error (invalid_payload) |
-| PASS | desktop-1280x720 | /share/diagnosis | share rejected: URL string | 609 | 0 | safe error (invalid_payload) |
-| PASS | desktop-1280x720 | /share/diagnosis | share rejected: control/NUL | 615 | 0 | safe error (invalid_payload) |
-| PASS | desktop-1280x720 | /share/diagnosis | share rejected: user field | 609 | 0 | safe error (invalid_payload) |
-| PASS | desktop-1280x720 | /share/diagnosis | share rejected: missing field | 610 | 0 | safe error (invalid_payload) |
-| PASS | desktop-1280x720 | /share/diagnosis | share rejected: malformed encoding | 613 | 0 | safe error (bad_format) |
-| PASS | desktop-1280x720 | /share/diagnosis | share rejected: over limit | 610 | 0 | safe error (too_long) |
-| PASS | desktop-1280x720 | /share/diagnosis | share rejected: empty | 612 | 0 | safe error (empty) |
-| PASS | desktop-1280x720 | /share/diagnosis | share: hashchange, back/forward, reload | 1192 | 91 | state follows the URL |
-| PASS | desktop-1280x720 | /squads/<fixture> | share link: preview, copy, open | 1733 | 263 | copy: manual fallback; Web Share: available |
-| PASS | desktop-1280x720 | /diagnosis-history | history: empty state | 1035 | 165 | empty state |
-| PASS | desktop-1280x720 | /diagnosis-history | history: corrupted item skipped, delete one, delete all, reload | 1195 | 179 | 3 shown, 1 corrupted skipped, delete one/all verified |
-| PASS | desktop-1280x720 | /diagnosis-history | history: maximum 50 entries | 624 | 90 | 50 entries rendered |
-| PASS | desktop-1280x720 | /diagnosis-history | history: storage unavailable degrades safely | 623 | 89 | unavailable message, no success |
-| PASS | desktop-1280x720 | /squads/<fixture> | history: save from diagnosis, duplicate, list, open as share link | 1840 | 264 | saved once, duplicate skipped, listed, share link opens |
-| PASS | desktop-1280x720 | /diagnosis-history | before/after: order by date, trends, rules mismatch refused | 643 | 90 | older=before, +17 improved, 1 improved row, rules mismatch refused |
-| PASS | desktop-1280x720 | /share/compare | comparison share link opens; bad links rejected | 2258 | 86 | opens with card and noindex; 4 bad links rejected |
-| PASS | desktop-1280x720 | /diagnosis-history | before/after: save image | 865 | 88 | PNG generated and handed to the browser |
-| PASS | desktop-1440x900 | / | view | 619 | 93 | World 13,517 |
-| PASS | desktop-1440x900 | /players | view | 636 | 98 | 24 cards |
-| PASS | desktop-1440x900 | /players/world/<id> | view | 629 | 99 | identity ok |
-| PASS | desktop-1440x900 | /managers | view | 631 | 87 | managers 71 |
-| PASS | desktop-1440x900 | /managers/65 | view | 624 | 73 | identity ok |
-| PASS | desktop-1440x900 | /compare | view | 623 | 93 | h1 ok |
-| PASS | desktop-1440x900 | /squads | view | 621 | 95 | h1 ok |
-| PASS | desktop-1440x900 | /squads/templates | view | 617 | 89 | h1 ok |
-| PASS | desktop-1440x900 | /squads/compare | view | 618 | 94 | h1 ok |
-| PASS | desktop-1440x900 | /best-xi | view | 618 | 86 | h1 ok |
-| PASS | desktop-1440x900 | /players/new | view | 784 | 85 | h1 ok |
-| PASS | desktop-1440x900 | /pack-check | view | 618 | 86 | h1 ok |
-| PASS | desktop-1440x900 | /tier/CF | view | 631 | 138 | h1 ok |
-| PASS | desktop-1440x900 | /glossary | view | 621 | 73 | h1 ok |
-| PASS | desktop-1440x900 | /favorites | view | 622 | 86 | h1 ok |
-| PASS | desktop-1440x900 | /my-team | view | 618 | 86 | h1 ok |
-| PASS | desktop-1440x900 | /my-builds | view | 621 | 86 | h1 ok |
-| PASS | desktop-1440x900 | /build-inventory | view | 629 | 87 | h1 ok |
-| PASS | desktop-1440x900 | /support | view | 619 | 75 | legal links present |
-| PASS | desktop-1440x900 | /terms | view | 621 | 73 | h1 ok |
-| PASS | desktop-1440x900 | /privacy | view | 621 | 73 | h1 ok |
-| PASS | desktop-1440x900 | /disclaimer | view | 621 | 75 | h1 ok |
-| PASS | desktop-1440x900 | /about | view | 619 | 74 | h1 ok |
-| PASS | desktop-1440x900 | /data-management | view | 617 | 73 | local data management only |
-| PASS | desktop-1440x900 | /auth/sign-in | view | 860 | 86 | h1 ok |
-| PASS | desktop-1440x900 | /auth/sign-up | view | 620 | 88 | h1 ok |
-| PASS | desktop-1440x900 | /auth/forgot-password | view | 618 | 87 | h1 ok |
-| PASS | desktop-1440x900 | /this-page-does-not-exist | view | 620 | 87 | not-found view |
-| PASS | desktop-1440x900 | /players/world/<id> | view | 871 | 87 | not-found view |
-| PASS | desktop-1440x900 | /account/rls-test | view | 625 | 87 | not-found view |
-| PASS | desktop-1440x900 | /release-readiness | view | 619 | 89 | not-found view |
-| PASS | desktop-1440x900 | /players/ | trailing slash | 635 | 99 | → /players |
-| PASS | desktop-1440x900 | /account/rls-test/ | trailing slash | 621 | 88 | not-found view |
-| PASS | desktop-1440x900 | /release-readiness/ | trailing slash | 623 | 90 | not-found view |
-| PASS | desktop-1440x900 | /players | language ja→en→ja | 701 | 99 | switched and restored |
-| PASS | desktop-1440x900 | /players | search ja | 1256 | 110 | 25 results |
-| PASS | desktop-1440x900 | /players | search en | 1255 | 110 | 25 results |
-| PASS | desktop-1440x900 | /players | search unicode | 1255 | 125 | 18 results |
-| PASS | desktop-1440x900 | /players | search symbols | 1257 | 116 | 0 results |
-| PASS | desktop-1440x900 | header search | submit with Enter | 1006 | 106 | 25 results |
-| PASS | desktop-1440x900 | /players | search control-character rejected safely | 626 | 87 | rejection view |
-| PASS | desktop-1440x900 | /players | search clear | 1011 | 122 | 24 cards |
-| PASS | desktop-1440x900 | /players | position filter | 1012 | 121 | position set, 24 cards |
-| PASS | desktop-1440x900 | /players | card type filter | 1010 | 113 | cardType set, 24 cards |
-| PASS | desktop-1440x900 | /players | sort | 1008 | 125 | sort set, 24 cards |
-| PASS | desktop-1440x900 | /players | nationality filter | 203 | 0 | not a feature of this site (no nationality filter exists); skipped by design |
-| PASS | desktop-1440x900 | /players | pagination | 1009 | 164 | page 2 differs |
-| PASS | desktop-1440x900 | /players → detail → back | navigate and back | 1302 | 139 | detail and back ok |
-| PASS | desktop-1440x900 | /compare | compare 2 players | 629 | 85 | 2 identities shown |
-| PASS | desktop-1440x900 | /compare | compare 3 players | 631 | 89 | 3 identities shown |
-| PASS | desktop-1440x900 | /compare | compare 4 players | 632 | 91 | 4 identities shown |
-| PASS | desktop-1440x900 | /managers | manager search | 1253 | 103 | 2 results |
-| PASS | desktop-1440x900 | /managers | manager filter | 1014 | 91 | booster=1, 25 results |
-| PASS | desktop-1440x900 | /managers → detail | open manager | 890 | 104 | manager detail |
-| PASS | desktop-1440x900 | /support → /terms → /privacy | legal navigation | 1375 | 87 | support → terms → privacy |
-| PASS | desktop-1440x900 | /share/diagnosis | share view (ja) | 625 | 88 | ok state, 8 categories, noindex |
-| PASS | desktop-1440x900 | /share/diagnosis | share view (en) and back to ja | 1751 | 183 | English labels, restored to Japanese |
-| PASS | desktop-1440x900 | /squads/compare?a=&b= | squad compare with query parameters (ja, en) | 2268 | 403 | two squads in browser storage only; ja and en with ?a=&b= |
-| PASS | desktop-1440x900 | /share/diagnosis | share: older rules noted | 623 | 88 | older-rules note |
-| PASS | desktop-1440x900 | /share/diagnosis | share rejected: checksum mismatch | 614 | 0 | safe error (checksum_mismatch) |
-| PASS | desktop-1440x900 | /share/diagnosis | share rejected: unknown version | 610 | 0 | safe error (unsupported_version) |
-| PASS | desktop-1440x900 | /share/diagnosis | share rejected: script string | 614 | 0 | safe error (invalid_payload) |
-| PASS | desktop-1440x900 | /share/diagnosis | share rejected: URL string | 613 | 0 | safe error (invalid_payload) |
-| PASS | desktop-1440x900 | /share/diagnosis | share rejected: control/NUL | 613 | 0 | safe error (invalid_payload) |
-| PASS | desktop-1440x900 | /share/diagnosis | share rejected: user field | 611 | 0 | safe error (invalid_payload) |
-| PASS | desktop-1440x900 | /share/diagnosis | share rejected: missing field | 609 | 0 | safe error (invalid_payload) |
-| PASS | desktop-1440x900 | /share/diagnosis | share rejected: malformed encoding | 608 | 0 | safe error (bad_format) |
-| PASS | desktop-1440x900 | /share/diagnosis | share rejected: over limit | 612 | 0 | safe error (too_long) |
-| PASS | desktop-1440x900 | /share/diagnosis | share rejected: empty | 610 | 0 | safe error (empty) |
-| PASS | desktop-1440x900 | /share/diagnosis | share: hashchange, back/forward, reload | 1190 | 91 | state follows the URL |
-| PASS | desktop-1440x900 | /diagnosis-history | history: empty state | 1032 | 179 | empty state |
-| PASS | desktop-1440x900 | /diagnosis-history | history: corrupted item skipped, delete one, delete all, reload | 1192 | 179 | 3 shown, 1 corrupted skipped, delete one/all verified |
-| PASS | desktop-1440x900 | /diagnosis-history | history: maximum 50 entries | 625 | 90 | 50 entries rendered |
-| PASS | desktop-1440x900 | /diagnosis-history | before/after: order by date, trends, rules mismatch refused | 639 | 90 | older=before, +17 improved, 1 improved row, rules mismatch refused |
-| PASS | desktop-1440x900 | /share/compare | comparison share link opens; bad links rejected | 2243 | 88 | opens with card and noindex; 4 bad links rejected |
-| PASS | desktop-1920x1080 | / | view | 623 | 93 | World 13,517 |
-| PASS | desktop-1920x1080 | /players | view | 641 | 116 | 24 cards |
-| PASS | desktop-1920x1080 | /players/world/<id> | view | 633 | 98 | identity ok |
-| PASS | desktop-1920x1080 | /managers | view | 636 | 90 | managers 71 |
-| PASS | desktop-1920x1080 | /managers/65 | view | 626 | 88 | identity ok |
-| PASS | desktop-1920x1080 | /compare | view | 623 | 93 | h1 ok |
-| PASS | desktop-1920x1080 | /squads | view | 623 | 97 | h1 ok |
-| PASS | desktop-1920x1080 | /squads/templates | view | 620 | 89 | h1 ok |
-| PASS | desktop-1920x1080 | /squads/compare | view | 620 | 93 | h1 ok |
-| PASS | desktop-1920x1080 | /best-xi | view | 621 | 86 | h1 ok |
-| PASS | desktop-1920x1080 | /players/new | view | 795 | 87 | h1 ok |
-| PASS | desktop-1920x1080 | /pack-check | view | 619 | 86 | h1 ok |
-| PASS | desktop-1920x1080 | /tier/CF | view | 633 | 142 | h1 ok |
-| PASS | desktop-1920x1080 | /glossary | view | 619 | 73 | h1 ok |
-| PASS | desktop-1920x1080 | /favorites | view | 621 | 86 | h1 ok |
-| PASS | desktop-1920x1080 | /my-team | view | 618 | 86 | h1 ok |
-| PASS | desktop-1920x1080 | /my-builds | view | 619 | 86 | h1 ok |
-| PASS | desktop-1920x1080 | /build-inventory | view | 624 | 87 | h1 ok |
-| PASS | desktop-1920x1080 | /support | view | 622 | 75 | legal links present |
-| PASS | desktop-1920x1080 | /terms | view | 618 | 73 | h1 ok |
-| PASS | desktop-1920x1080 | /privacy | view | 620 | 73 | h1 ok |
-| PASS | desktop-1920x1080 | /disclaimer | view | 621 | 86 | h1 ok |
-| PASS | desktop-1920x1080 | /about | view | 619 | 74 | h1 ok |
-| PASS | desktop-1920x1080 | /data-management | view | 619 | 73 | local data management only |
-| PASS | desktop-1920x1080 | /auth/sign-in | view | 867 | 86 | h1 ok |
-| PASS | desktop-1920x1080 | /auth/sign-up | view | 619 | 88 | h1 ok |
-| PASS | desktop-1920x1080 | /auth/forgot-password | view | 616 | 87 | h1 ok |
-| PASS | desktop-1920x1080 | /this-page-does-not-exist | view | 622 | 87 | not-found view |
-| PASS | desktop-1920x1080 | /players/world/<id> | view | 873 | 87 | not-found view |
-| PASS | desktop-1920x1080 | /account/rls-test | view | 623 | 87 | not-found view |
-| PASS | desktop-1920x1080 | /release-readiness | view | 623 | 89 | not-found view |
-| PASS | desktop-1920x1080 | /players/ | trailing slash | 638 | 117 | → /players |
-| PASS | desktop-1920x1080 | /account/rls-test/ | trailing slash | 622 | 88 | not-found view |
-| PASS | desktop-1920x1080 | /release-readiness/ | trailing slash | 621 | 90 | not-found view |
-| PASS | desktop-1920x1080 | /players | language ja→en→ja | 692 | 117 | switched and restored |
-| PASS | desktop-1920x1080 | /players | search ja | 1258 | 128 | 25 results |
-| PASS | desktop-1920x1080 | /players | search en | 1255 | 128 | 25 results |
-| PASS | desktop-1920x1080 | /players | search unicode | 1259 | 155 | 18 results |
-| PASS | desktop-1920x1080 | /players | search symbols | 1258 | 134 | 0 results |
-| PASS | desktop-1920x1080 | header search | submit with Enter | 1004 | 108 | 25 results |
-| PASS | desktop-1920x1080 | /players | search control-character rejected safely | 623 | 87 | rejection view |
-| PASS | desktop-1920x1080 | /players | search clear | 1010 | 142 | 24 cards |
-| PASS | desktop-1920x1080 | /players | position filter | 1009 | 151 | position set, 24 cards |
-| PASS | desktop-1920x1080 | /players | card type filter | 1012 | 147 | cardType set, 24 cards |
-| PASS | desktop-1920x1080 | /players | sort | 1013 | 161 | sort set, 24 cards |
+| PASS | desktop-1280x720 | / | view | 646 | 78 | World 13,517 |
+| PASS | desktop-1280x720 | /players | view | 649 | 93 | 24 cards |
+| PASS | desktop-1280x720 | /players/world/<id> | view | 647 | 95 | identity ok |
+| PASS | desktop-1280x720 | /managers | view | 648 | 78 | managers 71 |
+| PASS | desktop-1280x720 | /managers/65 | view | 651 | 67 | identity ok |
+| PASS | desktop-1280x720 | /compare | view | 634 | 88 | h1 ok |
+| PASS | desktop-1280x720 | /squads | view | 644 | 89 | h1 ok |
+| PASS | desktop-1280x720 | /squads/templates | view | 649 | 83 | h1 ok |
+| PASS | desktop-1280x720 | /squads/compare | view | 654 | 87 | h1 ok |
+| PASS | desktop-1280x720 | /best-xi | view | 653 | 80 | h1 ok |
+| PASS | desktop-1280x720 | /players/new | view | 680 | 80 | h1 ok |
+| PASS | desktop-1280x720 | /pack-check | view | 640 | 80 | h1 ok |
+| PASS | desktop-1280x720 | /tier/CF | view | 635 | 108 | h1 ok |
+| PASS | desktop-1280x720 | /glossary | view | 645 | 67 | h1 ok |
+| PASS | desktop-1280x720 | /favorites | view | 640 | 80 | h1 ok |
+| PASS | desktop-1280x720 | /my-team | view | 651 | 80 | h1 ok |
+| PASS | desktop-1280x720 | /my-builds | view | 653 | 80 | h1 ok |
+| PASS | desktop-1280x720 | /build-inventory | view | 657 | 81 | h1 ok |
+| PASS | desktop-1280x720 | /support | view | 653 | 67 | legal links present |
+| PASS | desktop-1280x720 | /terms | view | 642 | 67 | h1 ok |
+| PASS | desktop-1280x720 | /privacy | view | 637 | 67 | h1 ok |
+| PASS | desktop-1280x720 | /disclaimer | view | 651 | 69 | h1 ok |
+| PASS | desktop-1280x720 | /about | view | 638 | 68 | h1 ok |
+| PASS | desktop-1280x720 | /data-management | view | 638 | 67 | local data management only |
+| PASS | desktop-1280x720 | /auth/sign-in | view | 885 | 80 | h1 ok |
+| PASS | desktop-1280x720 | /auth/sign-up | view | 640 | 82 | h1 ok |
+| PASS | desktop-1280x720 | /auth/forgot-password | view | 648 | 81 | h1 ok |
+| PASS | desktop-1280x720 | /this-page-does-not-exist | view | 652 | 81 | not-found view |
+| PASS | desktop-1280x720 | /players/world/<id> | view | 899 | 81 | not-found view |
+| PASS | desktop-1280x720 | /account/rls-test | view | 652 | 83 | not-found view |
+| PASS | desktop-1280x720 | /release-readiness | view | 654 | 85 | not-found view |
+| PASS | desktop-1280x720 | /players/ | trailing slash | 651 | 96 | → /players |
+| PASS | desktop-1280x720 | /account/rls-test/ | trailing slash | 636 | 84 | not-found view |
+| PASS | desktop-1280x720 | /release-readiness/ | trailing slash | 639 | 86 | not-found view |
+| PASS | desktop-1280x720 | /players | language ja→en→ja | 802 | 96 | switched and restored |
+| PASS | desktop-1280x720 | /players | search ja | 1291 | 100 | 25 results |
+| PASS | desktop-1280x720 | /players | search en | 1302 | 100 | 25 results |
+| PASS | desktop-1280x720 | /players | search unicode | 1309 | 110 | 18 results |
+| PASS | desktop-1280x720 | /players | search symbols | 1305 | 98 | 0 results |
+| PASS | desktop-1280x720 | header search | submit with Enter | 1044 | 85 | 25 results |
+| PASS | desktop-1280x720 | /players | search control-character rejected safely | 653 | 83 | rejection view |
+| PASS | desktop-1280x720 | /players | search clear | 1042 | 119 | 24 cards |
+| PASS | desktop-1280x720 | /players | position filter | 1053 | 106 | position set, 24 cards |
+| PASS | desktop-1280x720 | /players | card type filter | 1026 | 98 | cardType set, 24 cards |
+| PASS | desktop-1280x720 | /players | sort | 1286 | 122 | sort set, 24 cards |
+| PASS | desktop-1280x720 | /players | nationality filter | 216 | 0 | not a feature of this site (no nationality filter exists); skipped by design |
+| PASS | desktop-1280x720 | /players | pagination | 1037 | 161 | page 2 differs |
+| PASS | desktop-1280x720 | /players → detail → back | navigate and back | 1329 | 125 | detail and back ok |
+| PASS | desktop-1280x720 | /compare | compare 2 players | 643 | 82 | 2 identities shown |
+| PASS | desktop-1280x720 | /compare | compare 3 players | 652 | 86 | 3 identities shown |
+| PASS | desktop-1280x720 | /compare | compare 4 players | 637 | 88 | 4 identities shown |
+| PASS | desktop-1280x720 | /managers | manager search | 1295 | 96 | 2 results |
+| PASS | desktop-1280x720 | /managers | manager filter | 1045 | 84 | booster=1, 25 results |
+| PASS | desktop-1280x720 | /managers → detail | open manager | 902 | 97 | manager detail |
+| PASS | desktop-1280x720 | /support → /terms → /privacy | legal navigation | 1667 | 83 | support → terms → privacy |
+| PASS | desktop-1280x720 | /share/diagnosis | share view (ja) | 656 | 82 | ok state, 8 categories, noindex |
+| PASS | desktop-1280x720 | /share/diagnosis | share view (en) and back to ja | 1799 | 175 | English labels, restored to Japanese |
+| PASS | desktop-1280x720 | /squads/compare?a=&b= | squad compare with query parameters (ja, en) | 2365 | 372 | two squads in browser storage only; ja and en with ?a=&b= |
+| PASS | desktop-1280x720 | /share/diagnosis | share: older rules noted | 653 | 84 | older-rules note |
+| PASS | desktop-1280x720 | /share/diagnosis | share rejected: checksum mismatch | 637 | 0 | safe error (checksum_mismatch) |
+| PASS | desktop-1280x720 | /share/diagnosis | share rejected: unknown version | 637 | 0 | safe error (unsupported_version) |
+| PASS | desktop-1280x720 | /share/diagnosis | share rejected: script string | 637 | 0 | safe error (invalid_payload) |
+| PASS | desktop-1280x720 | /share/diagnosis | share rejected: URL string | 638 | 0 | safe error (invalid_payload) |
+| PASS | desktop-1280x720 | /share/diagnosis | share rejected: control/NUL | 637 | 0 | safe error (invalid_payload) |
+| PASS | desktop-1280x720 | /share/diagnosis | share rejected: user field | 635 | 0 | safe error (invalid_payload) |
+| PASS | desktop-1280x720 | /share/diagnosis | share rejected: missing field | 634 | 0 | safe error (invalid_payload) |
+| PASS | desktop-1280x720 | /share/diagnosis | share rejected: malformed encoding | 639 | 0 | safe error (bad_format) |
+| PASS | desktop-1280x720 | /share/diagnosis | share rejected: over limit | 625 | 0 | safe error (too_long) |
+| PASS | desktop-1280x720 | /share/diagnosis | share rejected: empty | 624 | 0 | safe error (empty) |
+| PASS | desktop-1280x720 | /share/diagnosis | share: hashchange, back/forward, reload | 1221 | 87 | state follows the URL |
+| PASS | desktop-1280x720 | /squads/<fixture> | share link: preview, copy, open | 1789 | 252 | copy: manual fallback; Web Share: available |
+| PASS | desktop-1280x720 | /diagnosis-history | history: empty state | 1078 | 157 | empty state |
+| PASS | desktop-1280x720 | /diagnosis-history | history: corrupted item skipped, delete one, delete all, reload | 1226 | 171 | 3 shown, 1 corrupted skipped, delete one/all verified |
+| PASS | desktop-1280x720 | /diagnosis-history | history: maximum 50 entries | 654 | 86 | 50 entries rendered |
+| PASS | desktop-1280x720 | /diagnosis-history | history: storage unavailable degrades safely | 653 | 85 | unavailable message, no success |
+| PASS | desktop-1280x720 | /squads/<fixture> | history: save from diagnosis, duplicate, list, open as share link | 1892 | 252 | saved once, duplicate skipped, listed, share link opens |
+| PASS | desktop-1280x720 | /diagnosis-history | before/after: order by date, trends, rules mismatch refused | 652 | 86 | older=before, +17 improved, 1 improved row, rules mismatch refused |
+| PASS | desktop-1280x720 | /share/compare | comparison share link opens; bad links rejected | 2311 | 82 | opens with card and noindex; 4 bad links rejected |
+| PASS | desktop-1280x720 | /diagnosis-history | before/after: save image | 852 | 84 | PNG generated and handed to the browser |
+| PASS | desktop-1440x900 | / | view | 646 | 89 | World 13,517 |
+| PASS | desktop-1440x900 | /players | view | 656 | 95 | 24 cards |
+| PASS | desktop-1440x900 | /players/world/<id> | view | 651 | 99 | identity ok |
+| PASS | desktop-1440x900 | /managers | view | 653 | 83 | managers 71 |
+| PASS | desktop-1440x900 | /managers/65 | view | 652 | 69 | identity ok |
+| PASS | desktop-1440x900 | /compare | view | 635 | 90 | h1 ok |
+| PASS | desktop-1440x900 | /squads | view | 640 | 91 | h1 ok |
+| PASS | desktop-1440x900 | /squads/templates | view | 648 | 85 | h1 ok |
+| PASS | desktop-1440x900 | /squads/compare | view | 648 | 90 | h1 ok |
+| PASS | desktop-1440x900 | /best-xi | view | 639 | 82 | h1 ok |
+| PASS | desktop-1440x900 | /players/new | view | 703 | 81 | h1 ok |
+| PASS | desktop-1440x900 | /pack-check | view | 649 | 82 | h1 ok |
+| PASS | desktop-1440x900 | /tier/CF | view | 634 | 134 | h1 ok |
+| PASS | desktop-1440x900 | /glossary | view | 648 | 69 | h1 ok |
+| PASS | desktop-1440x900 | /favorites | view | 637 | 82 | h1 ok |
+| PASS | desktop-1440x900 | /my-team | view | 652 | 82 | h1 ok |
+| PASS | desktop-1440x900 | /my-builds | view | 653 | 82 | h1 ok |
+| PASS | desktop-1440x900 | /build-inventory | view | 651 | 83 | h1 ok |
+| PASS | desktop-1440x900 | /support | view | 651 | 71 | legal links present |
+| PASS | desktop-1440x900 | /terms | view | 636 | 69 | h1 ok |
+| PASS | desktop-1440x900 | /privacy | view | 652 | 69 | h1 ok |
+| PASS | desktop-1440x900 | /disclaimer | view | 637 | 71 | h1 ok |
+| PASS | desktop-1440x900 | /about | view | 653 | 70 | h1 ok |
+| PASS | desktop-1440x900 | /data-management | view | 639 | 69 | local data management only |
+| PASS | desktop-1440x900 | /auth/sign-in | view | 902 | 82 | h1 ok |
+| PASS | desktop-1440x900 | /auth/sign-up | view | 649 | 84 | h1 ok |
+| PASS | desktop-1440x900 | /auth/forgot-password | view | 638 | 83 | h1 ok |
+| PASS | desktop-1440x900 | /this-page-does-not-exist | view | 653 | 83 | not-found view |
+| PASS | desktop-1440x900 | /players/world/<id> | view | 889 | 83 | not-found view |
+| PASS | desktop-1440x900 | /account/rls-test | view | 639 | 83 | not-found view |
+| PASS | desktop-1440x900 | /release-readiness | view | 651 | 85 | not-found view |
+| PASS | desktop-1440x900 | /players/ | trailing slash | 652 | 96 | → /players |
+| PASS | desktop-1440x900 | /account/rls-test/ | trailing slash | 649 | 84 | not-found view |
+| PASS | desktop-1440x900 | /release-readiness/ | trailing slash | 636 | 86 | not-found view |
+| PASS | desktop-1440x900 | /players | language ja→en→ja | 685 | 96 | switched and restored |
+| PASS | desktop-1440x900 | /players | search ja | 1309 | 107 | 25 results |
+| PASS | desktop-1440x900 | /players | search en | 1304 | 107 | 25 results |
+| PASS | desktop-1440x900 | /players | search unicode | 1310 | 122 | 18 results |
+| PASS | desktop-1440x900 | /players | search symbols | 1308 | 113 | 0 results |
+| PASS | desktop-1440x900 | header search | submit with Enter | 1041 | 103 | 25 results |
+| PASS | desktop-1440x900 | /players | search control-character rejected safely | 655 | 83 | rejection view |
+| PASS | desktop-1440x900 | /players | search clear | 1043 | 119 | 24 cards |
+| PASS | desktop-1440x900 | /players | position filter | 1042 | 118 | position set, 24 cards |
+| PASS | desktop-1440x900 | /players | card type filter | 1039 | 110 | cardType set, 24 cards |
+| PASS | desktop-1440x900 | /players | sort | 1029 | 122 | sort set, 24 cards |
+| PASS | desktop-1440x900 | /players | nationality filter | 215 | 0 | not a feature of this site (no nationality filter exists); skipped by design |
+| PASS | desktop-1440x900 | /players | pagination | 1042 | 161 | page 2 differs |
+| PASS | desktop-1440x900 | /players → detail → back | navigate and back | 1554 | 153 | detail and back ok |
+| PASS | desktop-1440x900 | /compare | compare 2 players | 653 | 82 | 2 identities shown |
+| PASS | desktop-1440x900 | /compare | compare 3 players | 639 | 86 | 3 identities shown |
+| PASS | desktop-1440x900 | /compare | compare 4 players | 654 | 88 | 4 identities shown |
+| PASS | desktop-1440x900 | /managers | manager search | 1542 | 99 | 2 results |
+| PASS | desktop-1440x900 | /managers | manager filter | 1040 | 87 | booster=1, 25 results |
+| PASS | desktop-1440x900 | /managers → detail | open manager | 901 | 100 | manager detail |
+| PASS | desktop-1440x900 | /support → /terms → /privacy | legal navigation | 1430 | 83 | support → terms → privacy |
+| PASS | desktop-1440x900 | /share/diagnosis | share view (ja) | 648 | 84 | ok state, 8 categories, noindex |
+| PASS | desktop-1440x900 | /share/diagnosis | share view (en) and back to ja | 1785 | 175 | English labels, restored to Japanese |
+| PASS | desktop-1440x900 | /squads/compare?a=&b= | squad compare with query parameters (ja, en) | 2348 | 387 | two squads in browser storage only; ja and en with ?a=&b= |
+| PASS | desktop-1440x900 | /share/diagnosis | share: older rules noted | 652 | 84 | older-rules note |
+| PASS | desktop-1440x900 | /share/diagnosis | share rejected: checksum mismatch | 636 | 0 | safe error (checksum_mismatch) |
+| PASS | desktop-1440x900 | /share/diagnosis | share rejected: unknown version | 634 | 0 | safe error (unsupported_version) |
+| PASS | desktop-1440x900 | /share/diagnosis | share rejected: script string | 638 | 0 | safe error (invalid_payload) |
+| PASS | desktop-1440x900 | /share/diagnosis | share rejected: URL string | 636 | 0 | safe error (invalid_payload) |
+| PASS | desktop-1440x900 | /share/diagnosis | share rejected: control/NUL | 635 | 0 | safe error (invalid_payload) |
+| PASS | desktop-1440x900 | /share/diagnosis | share rejected: user field | 638 | 0 | safe error (invalid_payload) |
+| PASS | desktop-1440x900 | /share/diagnosis | share rejected: missing field | 638 | 0 | safe error (invalid_payload) |
+| PASS | desktop-1440x900 | /share/diagnosis | share rejected: malformed encoding | 636 | 0 | safe error (bad_format) |
+| PASS | desktop-1440x900 | /share/diagnosis | share rejected: over limit | 639 | 0 | safe error (too_long) |
+| PASS | desktop-1440x900 | /share/diagnosis | share rejected: empty | 637 | 0 | safe error (empty) |
+| PASS | desktop-1440x900 | /share/diagnosis | share: hashchange, back/forward, reload | 1211 | 87 | state follows the URL |
+| PASS | desktop-1440x900 | /diagnosis-history | history: empty state | 1086 | 171 | empty state |
+| PASS | desktop-1440x900 | /diagnosis-history | history: corrupted item skipped, delete one, delete all, reload | 1244 | 171 | 3 shown, 1 corrupted skipped, delete one/all verified |
+| PASS | desktop-1440x900 | /diagnosis-history | history: maximum 50 entries | 654 | 86 | 50 entries rendered |
+| PASS | desktop-1440x900 | /diagnosis-history | before/after: order by date, trends, rules mismatch refused | 651 | 86 | older=before, +17 improved, 1 improved row, rules mismatch refused |
+| PASS | desktop-1440x900 | /share/compare | comparison share link opens; bad links rejected | 2323 | 84 | opens with card and noindex; 4 bad links rejected |
+| PASS | desktop-1920x1080 | / | view | 648 | 89 | World 13,517 |
+| PASS | desktop-1920x1080 | /players | view | 654 | 113 | 24 cards |
+| PASS | desktop-1920x1080 | /players/world/<id> | view | 654 | 98 | identity ok |
+| PASS | desktop-1920x1080 | /managers | view | 653 | 86 | managers 71 |
+| PASS | desktop-1920x1080 | /managers/65 | view | 651 | 84 | identity ok |
+| PASS | desktop-1920x1080 | /compare | view | 640 | 90 | h1 ok |
+| PASS | desktop-1920x1080 | /squads | view | 654 | 93 | h1 ok |
+| PASS | desktop-1920x1080 | /squads/templates | view | 639 | 85 | h1 ok |
+| PASS | desktop-1920x1080 | /squads/compare | view | 652 | 89 | h1 ok |
+| PASS | desktop-1920x1080 | /best-xi | view | 649 | 82 | h1 ok |
+| PASS | desktop-1920x1080 | /players/new | view | 700 | 83 | h1 ok |
+| PASS | desktop-1920x1080 | /pack-check | view | 649 | 82 | h1 ok |
+| PASS | desktop-1920x1080 | /tier/CF | view | 640 | 138 | h1 ok |
+| PASS | desktop-1920x1080 | /glossary | view | 651 | 69 | h1 ok |
+| PASS | desktop-1920x1080 | /favorites | view | 648 | 82 | h1 ok |
+| PASS | desktop-1920x1080 | /my-team | view | 653 | 82 | h1 ok |
+| PASS | desktop-1920x1080 | /my-builds | view | 638 | 82 | h1 ok |
+| PASS | desktop-1920x1080 | /build-inventory | view | 653 | 83 | h1 ok |
+| PASS | desktop-1920x1080 | /support | view | 651 | 71 | legal links present |
+| PASS | desktop-1920x1080 | /terms | view | 638 | 69 | h1 ok |
+| PASS | desktop-1920x1080 | /privacy | view | 651 | 69 | h1 ok |
+| PASS | desktop-1920x1080 | /disclaimer | view | 649 | 82 | h1 ok |
+| PASS | desktop-1920x1080 | /about | view | 639 | 70 | h1 ok |
+| PASS | desktop-1920x1080 | /data-management | view | 655 | 69 | local data management only |
+| PASS | desktop-1920x1080 | /auth/sign-in | view | 886 | 82 | h1 ok |
+| PASS | desktop-1920x1080 | /auth/sign-up | view | 651 | 84 | h1 ok |
+| PASS | desktop-1920x1080 | /auth/forgot-password | view | 640 | 83 | h1 ok |
+| PASS | desktop-1920x1080 | /this-page-does-not-exist | view | 651 | 83 | not-found view |
+| PASS | desktop-1920x1080 | /players/world/<id> | view | 901 | 83 | not-found view |
+| PASS | desktop-1920x1080 | /account/rls-test | view | 653 | 83 | not-found view |
+| PASS | desktop-1920x1080 | /release-readiness | view | 649 | 85 | not-found view |
+| PASS | desktop-1920x1080 | /players/ | trailing slash | 656 | 114 | → /players |
+| PASS | desktop-1920x1080 | /account/rls-test/ | trailing slash | 638 | 84 | not-found view |
+| PASS | desktop-1920x1080 | /release-readiness/ | trailing slash | 638 | 86 | not-found view |
+| PASS | desktop-1920x1080 | /players | language ja→en→ja | 669 | 114 | switched and restored |
+| PASS | desktop-1920x1080 | /players | search ja | 1305 | 125 | 25 results |
+| PASS | desktop-1920x1080 | /players | search en | 1310 | 125 | 25 results |
+| PASS | desktop-1920x1080 | /players | search unicode | 1302 | 152 | 18 results |
+| PASS | desktop-1920x1080 | /players | search symbols | 1299 | 131 | 0 results |
+| PASS | desktop-1920x1080 | header search | submit with Enter | 1059 | 105 | 25 results |
+| PASS | desktop-1920x1080 | /players | search control-character rejected safely | 649 | 83 | rejection view |
+| PASS | desktop-1920x1080 | /players | search clear | 1042 | 132 | 24 cards |
+| PASS | desktop-1920x1080 | /players | position filter | 1043 | 148 | position set, 24 cards |
+| PASS | desktop-1920x1080 | /players | card type filter | 1039 | 130 | cardType set, 24 cards |
+| PASS | desktop-1920x1080 | /players | sort | 1032 | 158 | sort set, 24 cards |
 | PASS | desktop-1920x1080 | /players | nationality filter | 203 | 0 | not a feature of this site (no nationality filter exists); skipped by design |
-| PASS | desktop-1920x1080 | /players | pagination | 1007 | 180 | page 2 differs |
-| PASS | desktop-1920x1080 | /players → detail → back | navigate and back | 1296 | 146 | detail and back ok |
-| PASS | desktop-1920x1080 | /compare | compare 2 players | 631 | 85 | 2 identities shown |
-| PASS | desktop-1920x1080 | /compare | compare 3 players | 631 | 89 | 3 identities shown |
-| PASS | desktop-1920x1080 | /compare | compare 4 players | 636 | 91 | 4 identities shown |
-| PASS | desktop-1920x1080 | /managers | manager search | 1247 | 106 | 2 results |
-| PASS | desktop-1920x1080 | /managers | manager filter | 1004 | 94 | booster=1, 25 results |
-| PASS | desktop-1920x1080 | /managers → detail | open manager | 892 | 107 | manager detail |
-| PASS | desktop-1920x1080 | /support → /terms → /privacy | legal navigation | 1369 | 87 | support → terms → privacy |
-| PASS | desktop-1920x1080 | /share/diagnosis | share view (ja) | 627 | 88 | ok state, 8 categories, noindex |
-| PASS | desktop-1920x1080 | /share/diagnosis | share view (en) and back to ja | 1722 | 183 | English labels, restored to Japanese |
-| PASS | desktop-1920x1080 | /squads/compare?a=&b= | squad compare with query parameters (ja, en) | 2269 | 407 | two squads in browser storage only; ja and en with ?a=&b= |
-| PASS | desktop-1920x1080 | /share/diagnosis | share: older rules noted | 620 | 88 | older-rules note |
-| PASS | desktop-1920x1080 | /share/diagnosis | share rejected: checksum mismatch | 612 | 0 | safe error (checksum_mismatch) |
-| PASS | desktop-1920x1080 | /share/diagnosis | share rejected: unknown version | 609 | 0 | safe error (unsupported_version) |
-| PASS | desktop-1920x1080 | /share/diagnosis | share rejected: script string | 614 | 0 | safe error (invalid_payload) |
-| PASS | desktop-1920x1080 | /share/diagnosis | share rejected: URL string | 610 | 0 | safe error (invalid_payload) |
-| PASS | desktop-1920x1080 | /share/diagnosis | share rejected: control/NUL | 612 | 0 | safe error (invalid_payload) |
-| PASS | desktop-1920x1080 | /share/diagnosis | share rejected: user field | 607 | 0 | safe error (invalid_payload) |
-| PASS | desktop-1920x1080 | /share/diagnosis | share rejected: missing field | 610 | 0 | safe error (invalid_payload) |
-| PASS | desktop-1920x1080 | /share/diagnosis | share rejected: malformed encoding | 608 | 0 | safe error (bad_format) |
-| PASS | desktop-1920x1080 | /share/diagnosis | share rejected: over limit | 612 | 0 | safe error (too_long) |
-| PASS | desktop-1920x1080 | /share/diagnosis | share rejected: empty | 610 | 0 | safe error (empty) |
-| PASS | desktop-1920x1080 | /share/diagnosis | share: hashchange, back/forward, reload | 1309 | 91 | state follows the URL |
-| PASS | desktop-1920x1080 | /diagnosis-history | history: empty state | 1039 | 179 | empty state |
-| PASS | desktop-1920x1080 | /diagnosis-history | history: corrupted item skipped, delete one, delete all, reload | 1194 | 179 | 3 shown, 1 corrupted skipped, delete one/all verified |
-| PASS | desktop-1920x1080 | /diagnosis-history | history: maximum 50 entries | 623 | 90 | 50 entries rendered |
-| PASS | desktop-1920x1080 | /diagnosis-history | before/after: order by date, trends, rules mismatch refused | 639 | 90 | older=before, +17 improved, 1 improved row, rules mismatch refused |
-| PASS | desktop-1920x1080 | /share/compare | comparison share link opens; bad links rejected | 2239 | 88 | opens with card and noindex; 4 bad links rejected |
-| PASS | tablet-768x1024 | / | view | 620 | 63 | World 13,517 |
-| PASS | tablet-768x1024 | /players | view | 635 | 60 | 24 cards |
-| PASS | tablet-768x1024 | /players/world/<id> | view | 629 | 66 | identity ok |
-| PASS | tablet-768x1024 | /managers | view | 630 | 36 | managers 71 |
-| PASS | tablet-768x1024 | /managers/65 | view | 628 | 26 | identity ok |
-| PASS | tablet-768x1024 | /compare | view | 629 | 59 | h1 ok |
-| PASS | tablet-768x1024 | /squads | view | 627 | 64 | h1 ok |
-| PASS | tablet-768x1024 | /squads/templates | view | 618 | 49 | h1 ok |
-| PASS | tablet-768x1024 | /squads/compare | view | 618 | 57 | h1 ok |
-| PASS | tablet-768x1024 | /best-xi | view | 620 | 62 | h1 ok |
-| PASS | tablet-768x1024 | /players/new | view | 809 | 54 | h1 ok |
-| PASS | tablet-768x1024 | /pack-check | view | 618 | 49 | h1 ok |
-| PASS | tablet-768x1024 | /tier/CF | view | 633 | 99 | h1 ok |
-| PASS | tablet-768x1024 | /glossary | view | 618 | 25 | h1 ok |
-| PASS | tablet-768x1024 | /favorites | view | 620 | 52 | h1 ok |
-| PASS | tablet-768x1024 | /my-team | view | 620 | 59 | h1 ok |
-| PASS | tablet-768x1024 | /my-builds | view | 621 | 65 | h1 ok |
-| PASS | tablet-768x1024 | /build-inventory | view | 619 | 66 | h1 ok |
-| PASS | tablet-768x1024 | /support | view | 619 | 34 | legal links present |
-| PASS | tablet-768x1024 | /terms | view | 617 | 25 | h1 ok |
-| PASS | tablet-768x1024 | /privacy | view | 617 | 25 | h1 ok |
-| PASS | tablet-768x1024 | /disclaimer | view | 620 | 45 | h1 ok |
-| PASS | tablet-768x1024 | /about | view | 619 | 26 | h1 ok |
-| PASS | tablet-768x1024 | /data-management | view | 621 | 48 | local data management only |
-| PASS | tablet-768x1024 | /auth/sign-in | view | 860 | 45 | h1 ok |
-| PASS | tablet-768x1024 | /auth/sign-up | view | 620 | 48 | h1 ok |
-| PASS | tablet-768x1024 | /auth/forgot-password | view | 620 | 46 | h1 ok |
-| PASS | tablet-768x1024 | /this-page-does-not-exist | view | 622 | 47 | not-found view |
-| PASS | tablet-768x1024 | /players/world/<id> | view | 869 | 47 | not-found view |
-| PASS | tablet-768x1024 | /account/rls-test | view | 620 | 47 | not-found view |
-| PASS | tablet-768x1024 | /release-readiness | view | 623 | 47 | not-found view |
-| PASS | tablet-768x1024 | /players/ | trailing slash | 634 | 61 | → /players |
-| PASS | tablet-768x1024 | /account/rls-test/ | trailing slash | 620 | 48 | not-found view |
-| PASS | tablet-768x1024 | /release-readiness/ | trailing slash | 622 | 48 | not-found view |
-| PASS | tablet-768x1024 | /players | language ja→en→ja | 683 | 61 | switched and restored |
-| PASS | tablet-768x1024 | /players | search ja | 1257 | 66 | 25 results |
-| PASS | tablet-768x1024 | /players | search en | 1263 | 66 | 25 results |
-| PASS | tablet-768x1024 | /players | search unicode | 1253 | 85 | 18 results |
-| PASS | tablet-768x1024 | /players | search symbols | 1253 | 80 | 0 results |
-| PASS | tablet-768x1024 | header search | submit with Enter | 1000 | 74 | 25 results |
-| PASS | tablet-768x1024 | /players | search control-character rejected safely | 622 | 49 | rejection view |
-| PASS | tablet-768x1024 | /players | search clear | 1010 | 66 | 24 cards |
-| PASS | tablet-768x1024 | /players | position filter | 1018 | 73 | position set, 24 cards |
-| PASS | tablet-768x1024 | /players | card type filter | 1019 | 65 | cardType set, 24 cards |
-| PASS | tablet-768x1024 | /players | sort | 1004 | 85 | sort set, 24 cards |
-| PASS | tablet-768x1024 | /players | nationality filter | 203 | 0 | not a feature of this site (no nationality filter exists); skipped by design |
-| PASS | tablet-768x1024 | /players | pagination | 1006 | 104 | page 2 differs |
-| PASS | tablet-768x1024 | /players → detail → back | navigate and back | 1294 | 98 | detail and back ok |
-| PASS | tablet-768x1024 | /compare | compare 2 players | 635 | 48 | 2 identities shown |
-| PASS | tablet-768x1024 | /compare | compare 3 players | 626 | 50 | 3 identities shown |
-| PASS | tablet-768x1024 | /compare | compare 4 players | 627 | 52 | 4 identities shown |
-| PASS | tablet-768x1024 | /managers | manager search | 1252 | 59 | 2 results |
-| PASS | tablet-768x1024 | /managers | manager filter | 999 | 38 | booster=1, 25 results |
-| PASS | tablet-768x1024 | /managers → detail | open manager | 888 | 58 | manager detail |
-| PASS | tablet-768x1024 | /support → /terms → /privacy | legal navigation | 1265 | 46 | support → terms → privacy |
-| PASS | tablet-768x1024 | /share/diagnosis | share view (ja) | 624 | 49 | ok state, 8 categories, noindex |
-| PASS | tablet-768x1024 | /share/diagnosis | share view (en) and back to ja | 1724 | 101 | English labels, restored to Japanese |
-| PASS | tablet-768x1024 | /squads/compare?a=&b= | squad compare with query parameters (ja, en) | 2270 | 273 | two squads in browser storage only; ja and en with ?a=&b= |
-| PASS | tablet-768x1024 | /share/diagnosis | share: older rules noted | 621 | 49 | older-rules note |
-| PASS | tablet-768x1024 | /share/diagnosis | share rejected: checksum mismatch | 612 | 0 | safe error (checksum_mismatch) |
-| PASS | tablet-768x1024 | /share/diagnosis | share rejected: unknown version | 612 | 0 | safe error (unsupported_version) |
-| PASS | tablet-768x1024 | /share/diagnosis | share rejected: script string | 611 | 0 | safe error (invalid_payload) |
-| PASS | tablet-768x1024 | /share/diagnosis | share rejected: URL string | 608 | 0 | safe error (invalid_payload) |
-| PASS | tablet-768x1024 | /share/diagnosis | share rejected: control/NUL | 611 | 0 | safe error (invalid_payload) |
-| PASS | tablet-768x1024 | /share/diagnosis | share rejected: user field | 611 | 0 | safe error (invalid_payload) |
-| PASS | tablet-768x1024 | /share/diagnosis | share rejected: missing field | 610 | 0 | safe error (invalid_payload) |
-| PASS | tablet-768x1024 | /share/diagnosis | share rejected: malformed encoding | 613 | 0 | safe error (bad_format) |
-| PASS | tablet-768x1024 | /share/diagnosis | share rejected: over limit | 611 | 0 | safe error (too_long) |
-| PASS | tablet-768x1024 | /share/diagnosis | share rejected: empty | 611 | 0 | safe error (empty) |
-| PASS | tablet-768x1024 | /share/diagnosis | share: hashchange, back/forward, reload | 1186 | 50 | state follows the URL |
-| PASS | tablet-768x1024 | /diagnosis-history | history: empty state | 1034 | 113 | empty state |
-| PASS | tablet-768x1024 | /diagnosis-history | history: corrupted item skipped, delete one, delete all, reload | 1190 | 103 | 3 shown, 1 corrupted skipped, delete one/all verified |
-| PASS | tablet-768x1024 | /diagnosis-history | history: maximum 50 entries | 621 | 52 | 50 entries rendered |
-| PASS | tablet-768x1024 | /diagnosis-history | before/after: order by date, trends, rules mismatch refused | 639 | 52 | older=before, +17 improved, 1 improved row, rules mismatch refused |
-| PASS | tablet-768x1024 | /share/compare | comparison share link opens; bad links rejected | 2238 | 50 | opens with card and noindex; 4 bad links rejected |
-| PASS | tablet-820x1180 | / | view | 622 | 71 | World 13,517 |
-| PASS | tablet-820x1180 | /players | view | 638 | 60 | 24 cards |
-| PASS | tablet-820x1180 | /players/world/<id> | view | 629 | 66 | identity ok |
-| PASS | tablet-820x1180 | /managers | view | 628 | 38 | managers 71 |
-| PASS | tablet-820x1180 | /managers/65 | view | 628 | 48 | identity ok |
-| PASS | tablet-820x1180 | /compare | view | 622 | 59 | h1 ok |
-| PASS | tablet-820x1180 | /squads | view | 624 | 66 | h1 ok |
-| PASS | tablet-820x1180 | /squads/templates | view | 619 | 49 | h1 ok |
-| PASS | tablet-820x1180 | /squads/compare | view | 619 | 57 | h1 ok |
-| PASS | tablet-820x1180 | /best-xi | view | 618 | 62 | h1 ok |
-| PASS | tablet-820x1180 | /players/new | view | 771 | 54 | h1 ok |
-| PASS | tablet-820x1180 | /pack-check | view | 630 | 49 | h1 ok |
-| PASS | tablet-820x1180 | /tier/CF | view | 631 | 108 | h1 ok |
-| PASS | tablet-820x1180 | /glossary | view | 621 | 25 | h1 ok |
-| PASS | tablet-820x1180 | /favorites | view | 616 | 52 | h1 ok |
-| PASS | tablet-820x1180 | /my-team | view | 619 | 59 | h1 ok |
-| PASS | tablet-820x1180 | /my-builds | view | 619 | 65 | h1 ok |
-| PASS | tablet-820x1180 | /build-inventory | view | 623 | 66 | h1 ok |
-| PASS | tablet-820x1180 | /support | view | 617 | 34 | legal links present |
-| PASS | tablet-820x1180 | /terms | view | 620 | 25 | h1 ok |
-| PASS | tablet-820x1180 | /privacy | view | 621 | 25 | h1 ok |
-| PASS | tablet-820x1180 | /disclaimer | view | 620 | 45 | h1 ok |
-| PASS | tablet-820x1180 | /about | view | 618 | 26 | h1 ok |
-| PASS | tablet-820x1180 | /data-management | view | 621 | 48 | local data management only |
-| PASS | tablet-820x1180 | /auth/sign-in | view | 864 | 45 | h1 ok |
-| PASS | tablet-820x1180 | /auth/sign-up | view | 619 | 48 | h1 ok |
-| PASS | tablet-820x1180 | /auth/forgot-password | view | 616 | 46 | h1 ok |
-| PASS | tablet-820x1180 | /this-page-does-not-exist | view | 621 | 47 | not-found view |
-| PASS | tablet-820x1180 | /players/world/<id> | view | 867 | 47 | not-found view |
-| PASS | tablet-820x1180 | /account/rls-test | view | 620 | 47 | not-found view |
-| PASS | tablet-820x1180 | /release-readiness | view | 620 | 47 | not-found view |
-| PASS | tablet-820x1180 | /players/ | trailing slash | 631 | 61 | → /players |
-| PASS | tablet-820x1180 | /account/rls-test/ | trailing slash | 620 | 48 | not-found view |
-| PASS | tablet-820x1180 | /release-readiness/ | trailing slash | 618 | 48 | not-found view |
-| PASS | tablet-820x1180 | /players | language ja→en→ja | 777 | 61 | switched and restored |
-| PASS | tablet-820x1180 | /players | search ja | 1259 | 74 | 25 results |
-| PASS | tablet-820x1180 | /players | search en | 1270 | 74 | 25 results |
-| PASS | tablet-820x1180 | /players | search unicode | 1254 | 85 | 18 results |
-| PASS | tablet-820x1180 | /players | search symbols | 1251 | 80 | 0 results |
-| PASS | tablet-820x1180 | header search | submit with Enter | 1000 | 88 | 25 results |
-| PASS | tablet-820x1180 | /players | search control-character rejected safely | 620 | 49 | rejection view |
-| PASS | tablet-820x1180 | /players | search clear | 1010 | 74 | 24 cards |
-| PASS | tablet-820x1180 | /players | position filter | 1037 | 81 | position set, 24 cards |
-| PASS | tablet-820x1180 | /players | card type filter | 1019 | 73 | cardType set, 24 cards |
-| PASS | tablet-820x1180 | /players | sort | 1007 | 85 | sort set, 24 cards |
-| PASS | tablet-820x1180 | /players | nationality filter | 203 | 0 | not a feature of this site (no nationality filter exists); skipped by design |
-| PASS | tablet-820x1180 | /players | pagination | 1006 | 117 | page 2 differs |
-| PASS | tablet-820x1180 | /players → detail → back | navigate and back | 1294 | 98 | detail and back ok |
-| PASS | tablet-820x1180 | /compare | compare 2 players | 633 | 48 | 2 identities shown |
-| PASS | tablet-820x1180 | /compare | compare 3 players | 630 | 50 | 3 identities shown |
-| PASS | tablet-820x1180 | /compare | compare 4 players | 634 | 52 | 4 identities shown |
-| PASS | tablet-820x1180 | /managers | manager search | 1243 | 61 | 2 results |
-| PASS | tablet-820x1180 | /managers | manager filter | 1005 | 40 | booster=1, 25 results |
-| PASS | tablet-820x1180 | /managers → detail | open manager | 887 | 60 | manager detail |
-| PASS | tablet-820x1180 | /support → /terms → /privacy | legal navigation | 1367 | 46 | support → terms → privacy |
-| PASS | tablet-820x1180 | /share/diagnosis | share view (ja) | 621 | 49 | ok state, 8 categories, noindex |
-| PASS | tablet-820x1180 | /share/diagnosis | share view (en) and back to ja | 1722 | 101 | English labels, restored to Japanese |
-| PASS | tablet-820x1180 | /squads/compare?a=&b= | squad compare with query parameters (ja, en) | 2267 | 277 | two squads in browser storage only; ja and en with ?a=&b= |
-| PASS | tablet-820x1180 | /share/diagnosis | share: older rules noted | 618 | 49 | older-rules note |
-| PASS | tablet-820x1180 | /share/diagnosis | share rejected: checksum mismatch | 616 | 0 | safe error (checksum_mismatch) |
-| PASS | tablet-820x1180 | /share/diagnosis | share rejected: unknown version | 611 | 0 | safe error (unsupported_version) |
-| PASS | tablet-820x1180 | /share/diagnosis | share rejected: script string | 609 | 0 | safe error (invalid_payload) |
-| PASS | tablet-820x1180 | /share/diagnosis | share rejected: URL string | 611 | 0 | safe error (invalid_payload) |
-| PASS | tablet-820x1180 | /share/diagnosis | share rejected: control/NUL | 611 | 0 | safe error (invalid_payload) |
-| PASS | tablet-820x1180 | /share/diagnosis | share rejected: user field | 611 | 0 | safe error (invalid_payload) |
-| PASS | tablet-820x1180 | /share/diagnosis | share rejected: missing field | 610 | 0 | safe error (invalid_payload) |
-| PASS | tablet-820x1180 | /share/diagnosis | share rejected: malformed encoding | 611 | 0 | safe error (bad_format) |
-| PASS | tablet-820x1180 | /share/diagnosis | share rejected: over limit | 611 | 0 | safe error (too_long) |
-| PASS | tablet-820x1180 | /share/diagnosis | share rejected: empty | 614 | 0 | safe error (empty) |
-| PASS | tablet-820x1180 | /share/diagnosis | share: hashchange, back/forward, reload | 1190 | 52 | state follows the URL |
-| PASS | tablet-820x1180 | /diagnosis-history | history: empty state | 1033 | 121 | empty state |
-| PASS | tablet-820x1180 | /diagnosis-history | history: corrupted item skipped, delete one, delete all, reload | 1192 | 103 | 3 shown, 1 corrupted skipped, delete one/all verified |
-| PASS | tablet-820x1180 | /diagnosis-history | history: maximum 50 entries | 623 | 52 | 50 entries rendered |
-| PASS | tablet-820x1180 | /diagnosis-history | before/after: order by date, trends, rules mismatch refused | 635 | 52 | older=before, +17 improved, 1 improved row, rules mismatch refused |
-| PASS | tablet-820x1180 | /share/compare | comparison share link opens; bad links rejected | 2237 | 50 | opens with card and noindex; 4 bad links rejected |
-| PASS | mobile-390x844 | / | view | 620 | 52 | World 13,517 |
-| PASS | mobile-390x844 | /players | view | 632 | 44 | 24 cards |
-| PASS | mobile-390x844 | /players/world/<id> | view | 633 | 50 | identity ok |
-| PASS | mobile-390x844 | /managers | view | 629 | 31 | managers 71 |
-| PASS | mobile-390x844 | /managers/65 | view | 623 | 26 | identity ok |
-| PASS | mobile-390x844 | /compare | view | 626 | 59 | h1 ok |
-| PASS | mobile-390x844 | /squads | view | 622 | 50 | h1 ok |
-| PASS | mobile-390x844 | /squads/templates | view | 614 | 49 | h1 ok |
-| PASS | mobile-390x844 | /squads/compare | view | 618 | 57 | h1 ok |
-| PASS | mobile-390x844 | /best-xi | view | 617 | 62 | h1 ok |
-| PASS | mobile-390x844 | /players/new | view | 765 | 48 | h1 ok |
-| PASS | mobile-390x844 | /pack-check | view | 626 | 49 | h1 ok |
-| PASS | mobile-390x844 | /tier/CF | view | 630 | 78 | h1 ok |
-| PASS | mobile-390x844 | /glossary | view | 616 | 25 | h1 ok |
-| PASS | mobile-390x844 | /favorites | view | 618 | 52 | h1 ok |
-| PASS | mobile-390x844 | /my-team | view | 621 | 59 | h1 ok |
-| PASS | mobile-390x844 | /my-builds | view | 617 | 56 | h1 ok |
-| PASS | mobile-390x844 | /build-inventory | view | 619 | 66 | h1 ok |
-| PASS | mobile-390x844 | /support | view | 619 | 25 | legal links present |
-| PASS | mobile-390x844 | /terms | view | 618 | 25 | h1 ok |
-| PASS | mobile-390x844 | /privacy | view | 620 | 25 | h1 ok |
-| PASS | mobile-390x844 | /disclaimer | view | 618 | 27 | h1 ok |
-| PASS | mobile-390x844 | /about | view | 617 | 26 | h1 ok |
-| PASS | mobile-390x844 | /data-management | view | 621 | 48 | local data management only |
-| PASS | mobile-390x844 | /auth/sign-in | view | 862 | 45 | h1 ok |
-| PASS | mobile-390x844 | /auth/sign-up | view | 617 | 48 | h1 ok |
-| PASS | mobile-390x844 | /auth/forgot-password | view | 618 | 46 | h1 ok |
-| PASS | mobile-390x844 | /this-page-does-not-exist | view | 625 | 47 | not-found view |
-| PASS | mobile-390x844 | /players/world/<id> | view | 874 | 47 | not-found view |
-| PASS | mobile-390x844 | /account/rls-test | view | 617 | 47 | not-found view |
-| PASS | mobile-390x844 | /release-readiness | view | 619 | 47 | not-found view |
-| PASS | mobile-390x844 | /players/ | trailing slash | 635 | 45 | → /players |
-| PASS | mobile-390x844 | /account/rls-test/ | trailing slash | 622 | 48 | not-found view |
-| PASS | mobile-390x844 | /release-readiness/ | trailing slash | 624 | 48 | not-found view |
-| PASS | mobile-390x844 | /players | language ja→en→ja | 678 | 45 | switched and restored |
-| PASS | mobile-390x844 | /players | search ja | 1256 | 47 | 25 results |
-| PASS | mobile-390x844 | /players | search en | 1254 | 47 | 25 results |
-| PASS | mobile-390x844 | /players | search unicode | 1257 | 53 | 18 results |
-| PASS | mobile-390x844 | /players | search symbols | 1251 | 64 | 0 results |
-| PASS | mobile-390x844 | header search | submit with Enter | 1009 | 65 | 25 results |
-| PASS | mobile-390x844 | /players | search control-character rejected safely | 623 | 49 | rejection view |
-| PASS | mobile-390x844 | /players | search clear | 1010 | 50 | 24 cards |
-| PASS | mobile-390x844 | /players | position filter | 1024 | 49 | position set, 24 cards |
-| PASS | mobile-390x844 | /players | card type filter | 1009 | 45 | cardType set, 24 cards |
-| PASS | mobile-390x844 | /players | sort | 1005 | 53 | sort set, 24 cards |
-| PASS | mobile-390x844 | /players | nationality filter | 201 | 0 | not a feature of this site (no nationality filter exists); skipped by design |
-| PASS | mobile-390x844 | /players | pagination | 1004 | 72 | page 2 differs |
-| PASS | mobile-390x844 | /players → detail → back | navigate and back | 1288 | 69 | detail and back ok |
-| PASS | mobile-390x844 | /compare | compare 2 players | 631 | 48 | 2 identities shown |
-| PASS | mobile-390x844 | /compare | compare 3 players | 630 | 48 | 3 identities shown |
-| PASS | mobile-390x844 | /compare | compare 4 players | 632 | 48 | 4 identities shown |
-| PASS | mobile-390x844 | /managers | manager search | 1242 | 54 | 2 results |
-| PASS | mobile-390x844 | /managers | manager filter | 1006 | 32 | booster=1, 25 results |
-| PASS | mobile-390x844 | /managers → detail | open manager | 888 | 53 | manager detail |
-| PASS | mobile-390x844 | /support → /terms → /privacy | legal navigation | 1374 | 46 | support → terms → privacy |
-| PASS | mobile-390x844 | /share/diagnosis | share view (ja) | 627 | 49 | ok state, 8 categories, noindex |
-| PASS | mobile-390x844 | /share/diagnosis | share view (en) and back to ja | 1729 | 101 | English labels, restored to Japanese |
-| PASS | mobile-390x844 | /squads/compare?a=&b= | squad compare with query parameters (ja, en) | 2265 | 264 | two squads in browser storage only; ja and en with ?a=&b= |
-| PASS | mobile-390x844 | /share/diagnosis | share: older rules noted | 620 | 49 | older-rules note |
-| PASS | mobile-390x844 | /share/diagnosis | share rejected: checksum mismatch | 610 | 0 | safe error (checksum_mismatch) |
-| PASS | mobile-390x844 | /share/diagnosis | share rejected: unknown version | 609 | 0 | safe error (unsupported_version) |
-| PASS | mobile-390x844 | /share/diagnosis | share rejected: script string | 612 | 0 | safe error (invalid_payload) |
-| PASS | mobile-390x844 | /share/diagnosis | share rejected: URL string | 611 | 0 | safe error (invalid_payload) |
-| PASS | mobile-390x844 | /share/diagnosis | share rejected: control/NUL | 608 | 0 | safe error (invalid_payload) |
-| PASS | mobile-390x844 | /share/diagnosis | share rejected: user field | 610 | 0 | safe error (invalid_payload) |
-| PASS | mobile-390x844 | /share/diagnosis | share rejected: missing field | 610 | 0 | safe error (invalid_payload) |
-| PASS | mobile-390x844 | /share/diagnosis | share rejected: malformed encoding | 611 | 0 | safe error (bad_format) |
-| PASS | mobile-390x844 | /share/diagnosis | share rejected: over limit | 608 | 0 | safe error (too_long) |
-| PASS | mobile-390x844 | /share/diagnosis | share rejected: empty | 613 | 0 | safe error (empty) |
-| PASS | mobile-390x844 | /share/diagnosis | share: hashchange, back/forward, reload | 1188 | 50 | state follows the URL |
-| PASS | mobile-390x844 | /squads/<fixture> | share link: preview, copy, open | 1720 | 183 | copy: manual fallback; Web Share: available |
-| PASS | mobile-390x844 | /diagnosis-history | history: empty state | 1032 | 102 | empty state |
-| PASS | mobile-390x844 | /diagnosis-history | history: corrupted item skipped, delete one, delete all, reload | 1190 | 103 | 3 shown, 1 corrupted skipped, delete one/all verified |
-| PASS | mobile-390x844 | /diagnosis-history | history: maximum 50 entries | 621 | 52 | 50 entries rendered |
-| PASS | mobile-390x844 | /diagnosis-history | history: storage unavailable degrades safely | 621 | 51 | unavailable message, no success |
-| PASS | mobile-390x844 | /squads/<fixture> | history: save from diagnosis, duplicate, list, open as share link | 1716 | 178 | saved once, duplicate skipped, listed, share link opens |
-| PASS | mobile-390x844 | /diagnosis-history | before/after: order by date, trends, rules mismatch refused | 633 | 52 | older=before, +17 improved, 1 improved row, rules mismatch refused |
-| PASS | mobile-390x844 | /share/compare | comparison share link opens; bad links rejected | 2240 | 50 | opens with card and noindex; 4 bad links rejected |
-| PASS | mobile-390x844 | /diagnosis-history | before/after: save image | 775 | 52 | PNG generated and handed to the browser |
-| PASS | mobile-393x852 | / | view | 621 | 52 | World 13,517 |
-| PASS | mobile-393x852 | /players | view | 629 | 44 | 24 cards |
-| PASS | mobile-393x852 | /players/world/<id> | view | 630 | 49 | identity ok |
-| PASS | mobile-393x852 | /managers | view | 627 | 31 | managers 71 |
-| PASS | mobile-393x852 | /managers/65 | view | 623 | 26 | identity ok |
-| PASS | mobile-393x852 | /compare | view | 620 | 59 | h1 ok |
-| PASS | mobile-393x852 | /squads | view | 622 | 50 | h1 ok |
-| PASS | mobile-393x852 | /squads/templates | view | 617 | 49 | h1 ok |
-| PASS | mobile-393x852 | /squads/compare | view | 618 | 58 | h1 ok |
-| PASS | mobile-393x852 | /best-xi | view | 617 | 62 | h1 ok |
-| PASS | mobile-393x852 | /players/new | view | 757 | 48 | h1 ok |
-| PASS | mobile-393x852 | /pack-check | view | 617 | 49 | h1 ok |
-| PASS | mobile-393x852 | /tier/CF | view | 635 | 78 | h1 ok |
-| PASS | mobile-393x852 | /glossary | view | 620 | 25 | h1 ok |
-| PASS | mobile-393x852 | /favorites | view | 618 | 52 | h1 ok |
-| PASS | mobile-393x852 | /my-team | view | 617 | 59 | h1 ok |
-| PASS | mobile-393x852 | /my-builds | view | 622 | 56 | h1 ok |
-| PASS | mobile-393x852 | /build-inventory | view | 620 | 66 | h1 ok |
-| PASS | mobile-393x852 | /support | view | 622 | 25 | legal links present |
-| PASS | mobile-393x852 | /terms | view | 617 | 25 | h1 ok |
-| PASS | mobile-393x852 | /privacy | view | 620 | 25 | h1 ok |
-| PASS | mobile-393x852 | /disclaimer | view | 619 | 27 | h1 ok |
-| PASS | mobile-393x852 | /about | view | 619 | 26 | h1 ok |
-| PASS | mobile-393x852 | /data-management | view | 619 | 48 | local data management only |
-| PASS | mobile-393x852 | /auth/sign-in | view | 860 | 45 | h1 ok |
-| PASS | mobile-393x852 | /auth/sign-up | view | 619 | 48 | h1 ok |
-| PASS | mobile-393x852 | /auth/forgot-password | view | 617 | 46 | h1 ok |
-| PASS | mobile-393x852 | /this-page-does-not-exist | view | 619 | 47 | not-found view |
-| PASS | mobile-393x852 | /players/world/<id> | view | 869 | 47 | not-found view |
-| PASS | mobile-393x852 | /account/rls-test | view | 622 | 47 | not-found view |
-| PASS | mobile-393x852 | /release-readiness | view | 618 | 47 | not-found view |
-| PASS | mobile-393x852 | /players/ | trailing slash | 628 | 45 | → /players |
-| PASS | mobile-393x852 | /account/rls-test/ | trailing slash | 618 | 48 | not-found view |
-| PASS | mobile-393x852 | /release-readiness/ | trailing slash | 620 | 48 | not-found view |
-| PASS | mobile-393x852 | /players | language ja→en→ja | 772 | 45 | switched and restored |
-| PASS | mobile-393x852 | /players | search ja | 1251 | 47 | 25 results |
-| PASS | mobile-393x852 | /players | search en | 1254 | 47 | 25 results |
-| PASS | mobile-393x852 | /players | search unicode | 1254 | 53 | 18 results |
-| PASS | mobile-393x852 | /players | search symbols | 1250 | 64 | 0 results |
-| PASS | mobile-393x852 | header search | submit with Enter | 1007 | 65 | 25 results |
-| PASS | mobile-393x852 | /players | search control-character rejected safely | 625 | 49 | rejection view |
-| PASS | mobile-393x852 | /players | search clear | 1011 | 49 | 24 cards |
-| PASS | mobile-393x852 | /players | position filter | 1021 | 49 | position set, 24 cards |
-| PASS | mobile-393x852 | /players | card type filter | 1012 | 45 | cardType set, 24 cards |
-| PASS | mobile-393x852 | /players | sort | 1009 | 53 | sort set, 24 cards |
-| PASS | mobile-393x852 | /players | nationality filter | 202 | 0 | not a feature of this site (no nationality filter exists); skipped by design |
-| PASS | mobile-393x852 | /players | pagination | 1006 | 72 | page 2 differs |
-| PASS | mobile-393x852 | /players → detail → back | navigate and back | 1287 | 69 | detail and back ok |
-| PASS | mobile-393x852 | /compare | compare 2 players | 630 | 48 | 2 identities shown |
-| PASS | mobile-393x852 | /compare | compare 3 players | 632 | 48 | 3 identities shown |
-| PASS | mobile-393x852 | /compare | compare 4 players | 632 | 48 | 4 identities shown |
-| PASS | mobile-393x852 | /managers | manager search | 1253 | 54 | 2 results |
-| PASS | mobile-393x852 | /managers | manager filter | 1006 | 32 | booster=1, 25 results |
-| PASS | mobile-393x852 | /managers → detail | open manager | 883 | 53 | manager detail |
-| PASS | mobile-393x852 | /support → /terms → /privacy | legal navigation | 1259 | 46 | support → terms → privacy |
-| PASS | mobile-393x852 | /share/diagnosis | share view (ja) | 622 | 49 | ok state, 8 categories, noindex |
-| PASS | mobile-393x852 | /share/diagnosis | share view (en) and back to ja | 1731 | 101 | English labels, restored to Japanese |
-| PASS | mobile-393x852 | /squads/compare?a=&b= | squad compare with query parameters (ja, en) | 2262 | 264 | two squads in browser storage only; ja and en with ?a=&b= |
-| PASS | mobile-393x852 | /share/diagnosis | share: older rules noted | 620 | 49 | older-rules note |
-| PASS | mobile-393x852 | /share/diagnosis | share rejected: checksum mismatch | 611 | 0 | safe error (checksum_mismatch) |
-| PASS | mobile-393x852 | /share/diagnosis | share rejected: unknown version | 609 | 0 | safe error (unsupported_version) |
-| PASS | mobile-393x852 | /share/diagnosis | share rejected: script string | 609 | 0 | safe error (invalid_payload) |
-| PASS | mobile-393x852 | /share/diagnosis | share rejected: URL string | 611 | 0 | safe error (invalid_payload) |
-| PASS | mobile-393x852 | /share/diagnosis | share rejected: control/NUL | 610 | 0 | safe error (invalid_payload) |
-| PASS | mobile-393x852 | /share/diagnosis | share rejected: user field | 609 | 0 | safe error (invalid_payload) |
-| PASS | mobile-393x852 | /share/diagnosis | share rejected: missing field | 609 | 0 | safe error (invalid_payload) |
-| PASS | mobile-393x852 | /share/diagnosis | share rejected: malformed encoding | 609 | 0 | safe error (bad_format) |
-| PASS | mobile-393x852 | /share/diagnosis | share rejected: over limit | 610 | 0 | safe error (too_long) |
-| PASS | mobile-393x852 | /share/diagnosis | share rejected: empty | 611 | 0 | safe error (empty) |
-| PASS | mobile-393x852 | /share/diagnosis | share: hashchange, back/forward, reload | 1187 | 50 | state follows the URL |
-| PASS | mobile-393x852 | /diagnosis-history | history: empty state | 1033 | 102 | empty state |
-| PASS | mobile-393x852 | /diagnosis-history | history: corrupted item skipped, delete one, delete all, reload | 1193 | 103 | 3 shown, 1 corrupted skipped, delete one/all verified |
-| PASS | mobile-393x852 | /diagnosis-history | history: maximum 50 entries | 621 | 52 | 50 entries rendered |
-| PASS | mobile-393x852 | /diagnosis-history | before/after: order by date, trends, rules mismatch refused | 638 | 52 | older=before, +17 improved, 1 improved row, rules mismatch refused |
-| PASS | mobile-393x852 | /share/compare | comparison share link opens; bad links rejected | 2239 | 50 | opens with card and noindex; 4 bad links rejected |
-| PASS | mobile-430x932 | / | view | 620 | 58 | World 13,517 |
-| PASS | mobile-430x932 | /players | view | 629 | 44 | 24 cards |
-| PASS | mobile-430x932 | /players/world/<id> | view | 627 | 49 | identity ok |
-| PASS | mobile-430x932 | /managers | view | 632 | 31 | managers 71 |
-| PASS | mobile-430x932 | /managers/65 | view | 623 | 26 | identity ok |
-| PASS | mobile-430x932 | /compare | view | 624 | 59 | h1 ok |
-| PASS | mobile-430x932 | /squads | view | 623 | 50 | h1 ok |
-| PASS | mobile-430x932 | /squads/templates | view | 619 | 49 | h1 ok |
-| PASS | mobile-430x932 | /squads/compare | view | 617 | 57 | h1 ok |
-| PASS | mobile-430x932 | /best-xi | view | 617 | 62 | h1 ok |
-| PASS | mobile-430x932 | /players/new | view | 777 | 50 | h1 ok |
-| PASS | mobile-430x932 | /pack-check | view | 627 | 49 | h1 ok |
-| PASS | mobile-430x932 | /tier/CF | view | 633 | 80 | h1 ok |
-| PASS | mobile-430x932 | /glossary | view | 619 | 25 | h1 ok |
-| PASS | mobile-430x932 | /favorites | view | 618 | 52 | h1 ok |
-| PASS | mobile-430x932 | /my-team | view | 620 | 59 | h1 ok |
-| PASS | mobile-430x932 | /my-builds | view | 620 | 65 | h1 ok |
-| PASS | mobile-430x932 | /build-inventory | view | 620 | 66 | h1 ok |
-| PASS | mobile-430x932 | /support | view | 619 | 25 | legal links present |
-| PASS | mobile-430x932 | /terms | view | 620 | 25 | h1 ok |
-| PASS | mobile-430x932 | /privacy | view | 619 | 25 | h1 ok |
-| PASS | mobile-430x932 | /disclaimer | view | 621 | 27 | h1 ok |
-| PASS | mobile-430x932 | /about | view | 618 | 26 | h1 ok |
-| PASS | mobile-430x932 | /data-management | view | 620 | 48 | local data management only |
-| PASS | mobile-430x932 | /auth/sign-in | view | 868 | 45 | h1 ok |
-| PASS | mobile-430x932 | /auth/sign-up | view | 617 | 48 | h1 ok |
-| PASS | mobile-430x932 | /auth/forgot-password | view | 617 | 46 | h1 ok |
-| PASS | mobile-430x932 | /this-page-does-not-exist | view | 623 | 47 | not-found view |
-| PASS | mobile-430x932 | /players/world/<id> | view | 875 | 47 | not-found view |
-| PASS | mobile-430x932 | /account/rls-test | view | 622 | 47 | not-found view |
-| PASS | mobile-430x932 | /release-readiness | view | 622 | 47 | not-found view |
-| PASS | mobile-430x932 | /players/ | trailing slash | 633 | 45 | → /players |
-| PASS | mobile-430x932 | /account/rls-test/ | trailing slash | 622 | 48 | not-found view |
-| PASS | mobile-430x932 | /release-readiness/ | trailing slash | 620 | 48 | not-found view |
-| PASS | mobile-430x932 | /players | language ja→en→ja | 670 | 45 | switched and restored |
-| PASS | mobile-430x932 | /players | search ja | 1252 | 47 | 25 results |
-| PASS | mobile-430x932 | /players | search en | 1254 | 47 | 25 results |
-| PASS | mobile-430x932 | /players | search unicode | 1251 | 53 | 18 results |
-| PASS | mobile-430x932 | /players | search symbols | 1249 | 64 | 0 results |
-| PASS | mobile-430x932 | header search | submit with Enter | 1003 | 71 | 25 results |
-| PASS | mobile-430x932 | /players | search control-character rejected safely | 618 | 49 | rejection view |
-| PASS | mobile-430x932 | /players | search clear | 1012 | 50 | 24 cards |
-| PASS | mobile-430x932 | /players | position filter | 1011 | 49 | position set, 24 cards |
-| PASS | mobile-430x932 | /players | card type filter | 1027 | 45 | cardType set, 24 cards |
-| PASS | mobile-430x932 | /players | sort | 1007 | 53 | sort set, 24 cards |
-| PASS | mobile-430x932 | /players | nationality filter | 201 | 0 | not a feature of this site (no nationality filter exists); skipped by design |
-| PASS | mobile-430x932 | /players | pagination | 1017 | 72 | page 2 differs |
-| PASS | mobile-430x932 | /players → detail → back | navigate and back | 1291 | 69 | detail and back ok |
-| PASS | mobile-430x932 | /compare | compare 2 players | 630 | 48 | 2 identities shown |
-| PASS | mobile-430x932 | /compare | compare 3 players | 631 | 48 | 3 identities shown |
-| PASS | mobile-430x932 | /compare | compare 4 players | 632 | 48 | 4 identities shown |
-| PASS | mobile-430x932 | /managers | manager search | 1246 | 54 | 2 results |
-| PASS | mobile-430x932 | /managers | manager filter | 1005 | 32 | booster=1, 25 results |
-| PASS | mobile-430x932 | /managers → detail | open manager | 887 | 53 | manager detail |
-| PASS | mobile-430x932 | /support → /terms → /privacy | legal navigation | 1373 | 46 | support → terms → privacy |
-| PASS | mobile-430x932 | /share/diagnosis | share view (ja) | 623 | 49 | ok state, 8 categories, noindex |
-| PASS | mobile-430x932 | /share/diagnosis | share view (en) and back to ja | 1729 | 101 | English labels, restored to Japanese |
-| PASS | mobile-430x932 | /squads/compare?a=&b= | squad compare with query parameters (ja, en) | 2265 | 264 | two squads in browser storage only; ja and en with ?a=&b= |
-| PASS | mobile-430x932 | /share/diagnosis | share: older rules noted | 619 | 49 | older-rules note |
-| PASS | mobile-430x932 | /share/diagnosis | share rejected: checksum mismatch | 610 | 0 | safe error (checksum_mismatch) |
-| PASS | mobile-430x932 | /share/diagnosis | share rejected: unknown version | 610 | 0 | safe error (unsupported_version) |
-| PASS | mobile-430x932 | /share/diagnosis | share rejected: script string | 610 | 0 | safe error (invalid_payload) |
-| PASS | mobile-430x932 | /share/diagnosis | share rejected: URL string | 609 | 0 | safe error (invalid_payload) |
-| PASS | mobile-430x932 | /share/diagnosis | share rejected: control/NUL | 611 | 0 | safe error (invalid_payload) |
-| PASS | mobile-430x932 | /share/diagnosis | share rejected: user field | 612 | 0 | safe error (invalid_payload) |
-| PASS | mobile-430x932 | /share/diagnosis | share rejected: missing field | 609 | 0 | safe error (invalid_payload) |
-| PASS | mobile-430x932 | /share/diagnosis | share rejected: malformed encoding | 607 | 0 | safe error (bad_format) |
-| PASS | mobile-430x932 | /share/diagnosis | share rejected: over limit | 613 | 0 | safe error (too_long) |
-| PASS | mobile-430x932 | /share/diagnosis | share rejected: empty | 609 | 0 | safe error (empty) |
-| PASS | mobile-430x932 | /share/diagnosis | share: hashchange, back/forward, reload | 1190 | 50 | state follows the URL |
-| PASS | mobile-430x932 | /diagnosis-history | history: empty state | 1035 | 108 | empty state |
-| PASS | mobile-430x932 | /diagnosis-history | history: corrupted item skipped, delete one, delete all, reload | 1190 | 103 | 3 shown, 1 corrupted skipped, delete one/all verified |
-| PASS | mobile-430x932 | /diagnosis-history | history: maximum 50 entries | 620 | 52 | 50 entries rendered |
-| PASS | mobile-430x932 | /diagnosis-history | before/after: order by date, trends, rules mismatch refused | 633 | 52 | older=before, +17 improved, 1 improved row, rules mismatch refused |
-| PASS | mobile-430x932 | /share/compare | comparison share link opens; bad links rejected | 2244 | 50 | opens with card and noindex; 4 bad links rejected |
+| PASS | desktop-1920x1080 | /players | pagination | 1041 | 158 | page 2 differs |
+| PASS | desktop-1920x1080 | /players → detail → back | navigate and back | 1320 | 144 | detail and back ok |
+| PASS | desktop-1920x1080 | /compare | compare 2 players | 652 | 82 | 2 identities shown |
+| PASS | desktop-1920x1080 | /compare | compare 3 players | 653 | 86 | 3 identities shown |
+| PASS | desktop-1920x1080 | /compare | compare 4 players | 652 | 88 | 4 identities shown |
+| PASS | desktop-1920x1080 | /managers | manager search | 1288 | 102 | 2 results |
+| PASS | desktop-1920x1080 | /managers | manager filter | 1040 | 90 | booster=1, 25 results |
+| PASS | desktop-1920x1080 | /managers → detail | open manager | 914 | 103 | manager detail |
+| PASS | desktop-1920x1080 | /support → /terms → /privacy | legal navigation | 1430 | 83 | support → terms → privacy |
+| PASS | desktop-1920x1080 | /share/diagnosis | share view (ja) | 654 | 84 | ok state, 8 categories, noindex |
+| PASS | desktop-1920x1080 | /share/diagnosis | share view (en) and back to ja | 1772 | 175 | English labels, restored to Japanese |
+| PASS | desktop-1920x1080 | /squads/compare?a=&b= | squad compare with query parameters (ja, en) | 2332 | 391 | two squads in browser storage only; ja and en with ?a=&b= |
+| PASS | desktop-1920x1080 | /share/diagnosis | share: older rules noted | 654 | 84 | older-rules note |
+| PASS | desktop-1920x1080 | /share/diagnosis | share rejected: checksum mismatch | 637 | 0 | safe error (checksum_mismatch) |
+| PASS | desktop-1920x1080 | /share/diagnosis | share rejected: unknown version | 638 | 0 | safe error (unsupported_version) |
+| PASS | desktop-1920x1080 | /share/diagnosis | share rejected: script string | 635 | 0 | safe error (invalid_payload) |
+| PASS | desktop-1920x1080 | /share/diagnosis | share rejected: URL string | 634 | 0 | safe error (invalid_payload) |
+| PASS | desktop-1920x1080 | /share/diagnosis | share rejected: control/NUL | 634 | 0 | safe error (invalid_payload) |
+| PASS | desktop-1920x1080 | /share/diagnosis | share rejected: user field | 621 | 0 | safe error (invalid_payload) |
+| PASS | desktop-1920x1080 | /share/diagnosis | share rejected: missing field | 637 | 0 | safe error (invalid_payload) |
+| PASS | desktop-1920x1080 | /share/diagnosis | share rejected: malformed encoding | 639 | 0 | safe error (bad_format) |
+| PASS | desktop-1920x1080 | /share/diagnosis | share rejected: over limit | 634 | 0 | safe error (too_long) |
+| PASS | desktop-1920x1080 | /share/diagnosis | share rejected: empty | 635 | 0 | safe error (empty) |
+| PASS | desktop-1920x1080 | /share/diagnosis | share: hashchange, back/forward, reload | 1353 | 87 | state follows the URL |
+| PASS | desktop-1920x1080 | /diagnosis-history | history: empty state | 1074 | 171 | empty state |
+| PASS | desktop-1920x1080 | /diagnosis-history | history: corrupted item skipped, delete one, delete all, reload | 1218 | 171 | 3 shown, 1 corrupted skipped, delete one/all verified |
+| PASS | desktop-1920x1080 | /diagnosis-history | history: maximum 50 entries | 639 | 86 | 50 entries rendered |
+| PASS | desktop-1920x1080 | /diagnosis-history | before/after: order by date, trends, rules mismatch refused | 650 | 86 | older=before, +17 improved, 1 improved row, rules mismatch refused |
+| PASS | desktop-1920x1080 | /share/compare | comparison share link opens; bad links rejected | 2316 | 84 | opens with card and noindex; 4 bad links rejected |
+| PASS | tablet-768x1024 | / | view | 645 | 59 | World 13,517 |
+| PASS | tablet-768x1024 | /players | view | 640 | 61 | 24 cards |
+| PASS | tablet-768x1024 | /players/world/<id> | view | 650 | 67 | identity ok |
+| PASS | tablet-768x1024 | /managers | view | 654 | 36 | managers 71 |
+| PASS | tablet-768x1024 | /managers/65 | view | 648 | 26 | identity ok |
+| PASS | tablet-768x1024 | /compare | view | 634 | 57 | h1 ok |
+| PASS | tablet-768x1024 | /squads | view | 655 | 62 | h1 ok |
+| PASS | tablet-768x1024 | /squads/templates | view | 650 | 48 | h1 ok |
+| PASS | tablet-768x1024 | /squads/compare | view | 637 | 55 | h1 ok |
+| PASS | tablet-768x1024 | /best-xi | view | 648 | 57 | h1 ok |
+| PASS | tablet-768x1024 | /players/new | view | 700 | 50 | h1 ok |
+| PASS | tablet-768x1024 | /pack-check | view | 639 | 48 | h1 ok |
+| PASS | tablet-768x1024 | /tier/CF | view | 636 | 99 | h1 ok |
+| PASS | tablet-768x1024 | /glossary | view | 650 | 25 | h1 ok |
+| PASS | tablet-768x1024 | /favorites | view | 637 | 51 | h1 ok |
+| PASS | tablet-768x1024 | /my-team | view | 638 | 54 | h1 ok |
+| PASS | tablet-768x1024 | /my-builds | view | 637 | 60 | h1 ok |
+| PASS | tablet-768x1024 | /build-inventory | view | 640 | 61 | h1 ok |
+| PASS | tablet-768x1024 | /support | view | 637 | 33 | legal links present |
+| PASS | tablet-768x1024 | /terms | view | 638 | 25 | h1 ok |
+| PASS | tablet-768x1024 | /privacy | view | 637 | 25 | h1 ok |
+| PASS | tablet-768x1024 | /disclaimer | view | 638 | 44 | h1 ok |
+| PASS | tablet-768x1024 | /about | view | 653 | 26 | h1 ok |
+| PASS | tablet-768x1024 | /data-management | view | 651 | 46 | local data management only |
+| PASS | tablet-768x1024 | /auth/sign-in | view | 885 | 44 | h1 ok |
+| PASS | tablet-768x1024 | /auth/sign-up | view | 649 | 47 | h1 ok |
+| PASS | tablet-768x1024 | /auth/forgot-password | view | 635 | 45 | h1 ok |
+| PASS | tablet-768x1024 | /this-page-does-not-exist | view | 650 | 46 | not-found view |
+| PASS | tablet-768x1024 | /players/world/<id> | view | 904 | 46 | not-found view |
+| PASS | tablet-768x1024 | /account/rls-test | view | 650 | 46 | not-found view |
+| PASS | tablet-768x1024 | /release-readiness | view | 651 | 46 | not-found view |
+| PASS | tablet-768x1024 | /players/ | trailing slash | 653 | 62 | → /players |
+| PASS | tablet-768x1024 | /account/rls-test/ | trailing slash | 637 | 47 | not-found view |
+| PASS | tablet-768x1024 | /release-readiness/ | trailing slash | 656 | 47 | not-found view |
+| PASS | tablet-768x1024 | /players | language ja→en→ja | 662 | 62 | switched and restored |
+| PASS | tablet-768x1024 | /players | search ja | 1291 | 67 | 25 results |
+| PASS | tablet-768x1024 | /players | search en | 1303 | 67 | 25 results |
+| PASS | tablet-768x1024 | /players | search unicode | 1290 | 86 | 18 results |
+| PASS | tablet-768x1024 | /players | search symbols | 1289 | 80 | 0 results |
+| PASS | tablet-768x1024 | header search | submit with Enter | 1054 | 71 | 25 results |
+| PASS | tablet-768x1024 | /players | search control-character rejected safely | 641 | 48 | rejection view |
+| PASS | tablet-768x1024 | /players | search clear | 1039 | 67 | 24 cards |
+| PASS | tablet-768x1024 | /players | position filter | 1055 | 74 | position set, 24 cards |
+| PASS | tablet-768x1024 | /players | card type filter | 1052 | 66 | cardType set, 24 cards |
+| PASS | tablet-768x1024 | /players | sort | 1046 | 86 | sort set, 24 cards |
+| PASS | tablet-768x1024 | /players | nationality filter | 214 | 0 | not a feature of this site (no nationality filter exists); skipped by design |
+| PASS | tablet-768x1024 | /players | pagination | 1049 | 86 | page 2 differs |
+| PASS | tablet-768x1024 | /players → detail → back | navigate and back | 1318 | 97 | detail and back ok |
+| PASS | tablet-768x1024 | /compare | compare 2 players | 650 | 47 | 2 identities shown |
+| PASS | tablet-768x1024 | /compare | compare 3 players | 654 | 49 | 3 identities shown |
+| PASS | tablet-768x1024 | /compare | compare 4 players | 640 | 51 | 4 identities shown |
+| PASS | tablet-768x1024 | /managers | manager search | 1548 | 58 | 2 results |
+| PASS | tablet-768x1024 | /managers | manager filter | 1026 | 38 | booster=1, 25 results |
+| PASS | tablet-768x1024 | /managers → detail | open manager | 905 | 57 | manager detail |
+| PASS | tablet-768x1024 | /support → /terms → /privacy | legal navigation | 1462 | 45 | support → terms → privacy |
+| PASS | tablet-768x1024 | /share/diagnosis | share view (ja) | 652 | 48 | ok state, 8 categories, noindex |
+| PASS | tablet-768x1024 | /share/diagnosis | share view (en) and back to ja | 1770 | 99 | English labels, restored to Japanese |
+| PASS | tablet-768x1024 | /squads/compare?a=&b= | squad compare with query parameters (ja, en) | 2343 | 265 | two squads in browser storage only; ja and en with ?a=&b= |
+| PASS | tablet-768x1024 | /share/diagnosis | share: older rules noted | 650 | 48 | older-rules note |
+| PASS | tablet-768x1024 | /share/diagnosis | share rejected: checksum mismatch | 634 | 0 | safe error (checksum_mismatch) |
+| PASS | tablet-768x1024 | /share/diagnosis | share rejected: unknown version | 635 | 0 | safe error (unsupported_version) |
+| PASS | tablet-768x1024 | /share/diagnosis | share rejected: script string | 639 | 0 | safe error (invalid_payload) |
+| PASS | tablet-768x1024 | /share/diagnosis | share rejected: URL string | 639 | 0 | safe error (invalid_payload) |
+| PASS | tablet-768x1024 | /share/diagnosis | share rejected: control/NUL | 621 | 0 | safe error (invalid_payload) |
+| PASS | tablet-768x1024 | /share/diagnosis | share rejected: user field | 637 | 0 | safe error (invalid_payload) |
+| PASS | tablet-768x1024 | /share/diagnosis | share rejected: missing field | 636 | 0 | safe error (invalid_payload) |
+| PASS | tablet-768x1024 | /share/diagnosis | share rejected: malformed encoding | 638 | 0 | safe error (bad_format) |
+| PASS | tablet-768x1024 | /share/diagnosis | share rejected: over limit | 636 | 0 | safe error (too_long) |
+| PASS | tablet-768x1024 | /share/diagnosis | share rejected: empty | 636 | 0 | safe error (empty) |
+| PASS | tablet-768x1024 | /share/diagnosis | share: hashchange, back/forward, reload | 1226 | 49 | state follows the URL |
+| PASS | tablet-768x1024 | /diagnosis-history | history: empty state | 1087 | 108 | empty state |
+| PASS | tablet-768x1024 | /diagnosis-history | history: corrupted item skipped, delete one, delete all, reload | 1214 | 101 | 3 shown, 1 corrupted skipped, delete one/all verified |
+| PASS | tablet-768x1024 | /diagnosis-history | history: maximum 50 entries | 640 | 51 | 50 entries rendered |
+| PASS | tablet-768x1024 | /diagnosis-history | before/after: order by date, trends, rules mismatch refused | 650 | 51 | older=before, +17 improved, 1 improved row, rules mismatch refused |
+| PASS | tablet-768x1024 | /share/compare | comparison share link opens; bad links rejected | 2329 | 49 | opens with card and noindex; 4 bad links rejected |
+| PASS | tablet-820x1180 | / | view | 650 | 67 | World 13,517 |
+| PASS | tablet-820x1180 | /players | view | 651 | 61 | 24 cards |
+| PASS | tablet-820x1180 | /players/world/<id> | view | 641 | 67 | identity ok |
+| PASS | tablet-820x1180 | /managers | view | 648 | 38 | managers 71 |
+| PASS | tablet-820x1180 | /managers/65 | view | 637 | 47 | identity ok |
+| PASS | tablet-820x1180 | /compare | view | 638 | 57 | h1 ok |
+| PASS | tablet-820x1180 | /squads | view | 641 | 64 | h1 ok |
+| PASS | tablet-820x1180 | /squads/templates | view | 648 | 48 | h1 ok |
+| PASS | tablet-820x1180 | /squads/compare | view | 654 | 55 | h1 ok |
+| PASS | tablet-820x1180 | /best-xi | view | 652 | 57 | h1 ok |
+| PASS | tablet-820x1180 | /players/new | view | 686 | 50 | h1 ok |
+| PASS | tablet-820x1180 | /pack-check | view | 653 | 48 | h1 ok |
+| PASS | tablet-820x1180 | /tier/CF | view | 636 | 108 | h1 ok |
+| PASS | tablet-820x1180 | /glossary | view | 650 | 25 | h1 ok |
+| PASS | tablet-820x1180 | /favorites | view | 651 | 51 | h1 ok |
+| PASS | tablet-820x1180 | /my-team | view | 635 | 54 | h1 ok |
+| PASS | tablet-820x1180 | /my-builds | view | 637 | 60 | h1 ok |
+| PASS | tablet-820x1180 | /build-inventory | view | 650 | 61 | h1 ok |
+| PASS | tablet-820x1180 | /support | view | 645 | 33 | legal links present |
+| PASS | tablet-820x1180 | /terms | view | 648 | 25 | h1 ok |
+| PASS | tablet-820x1180 | /privacy | view | 651 | 25 | h1 ok |
+| PASS | tablet-820x1180 | /disclaimer | view | 650 | 44 | h1 ok |
+| PASS | tablet-820x1180 | /about | view | 636 | 26 | h1 ok |
+| PASS | tablet-820x1180 | /data-management | view | 638 | 46 | local data management only |
+| PASS | tablet-820x1180 | /auth/sign-in | view | 899 | 44 | h1 ok |
+| PASS | tablet-820x1180 | /auth/sign-up | view | 638 | 47 | h1 ok |
+| PASS | tablet-820x1180 | /auth/forgot-password | view | 635 | 45 | h1 ok |
+| PASS | tablet-820x1180 | /this-page-does-not-exist | view | 638 | 46 | not-found view |
+| PASS | tablet-820x1180 | /players/world/<id> | view | 904 | 46 | not-found view |
+| PASS | tablet-820x1180 | /account/rls-test | view | 638 | 46 | not-found view |
+| PASS | tablet-820x1180 | /release-readiness | view | 650 | 46 | not-found view |
+| PASS | tablet-820x1180 | /players/ | trailing slash | 653 | 62 | → /players |
+| PASS | tablet-820x1180 | /account/rls-test/ | trailing slash | 650 | 47 | not-found view |
+| PASS | tablet-820x1180 | /release-readiness/ | trailing slash | 650 | 47 | not-found view |
+| PASS | tablet-820x1180 | /players | language ja→en→ja | 667 | 62 | switched and restored |
+| PASS | tablet-820x1180 | /players | search ja | 1304 | 75 | 25 results |
+| PASS | tablet-820x1180 | /players | search en | 1300 | 75 | 25 results |
+| PASS | tablet-820x1180 | /players | search unicode | 1308 | 86 | 18 results |
+| PASS | tablet-820x1180 | /players | search symbols | 1277 | 80 | 0 results |
+| PASS | tablet-820x1180 | header search | submit with Enter | 1031 | 85 | 25 results |
+| PASS | tablet-820x1180 | /players | search control-character rejected safely | 650 | 48 | rejection view |
+| PASS | tablet-820x1180 | /players | search clear | 1057 | 75 | 24 cards |
+| PASS | tablet-820x1180 | /players | position filter | 1057 | 82 | position set, 24 cards |
+| PASS | tablet-820x1180 | /players | card type filter | 1057 | 74 | cardType set, 24 cards |
+| PASS | tablet-820x1180 | /players | sort | 1031 | 86 | sort set, 24 cards |
+| PASS | tablet-820x1180 | /players | nationality filter | 211 | 0 | not a feature of this site (no nationality filter exists); skipped by design |
+| PASS | tablet-820x1180 | /players | pagination | 1038 | 117 | page 2 differs |
+| PASS | tablet-820x1180 | /players → detail → back | navigate and back | 1318 | 97 | detail and back ok |
+| PASS | tablet-820x1180 | /compare | compare 2 players | 651 | 47 | 2 identities shown |
+| PASS | tablet-820x1180 | /compare | compare 3 players | 886 | 49 | 3 identities shown |
+| PASS | tablet-820x1180 | /compare | compare 4 players | 650 | 51 | 4 identities shown |
+| PASS | tablet-820x1180 | /managers | manager search | 1509 | 60 | 2 results |
+| PASS | tablet-820x1180 | /managers | manager filter | 1043 | 40 | booster=1, 25 results |
+| PASS | tablet-820x1180 | /managers → detail | open manager | 914 | 59 | manager detail |
+| PASS | tablet-820x1180 | /support → /terms → /privacy | legal navigation | 1434 | 45 | support → terms → privacy |
+| PASS | tablet-820x1180 | /share/diagnosis | share view (ja) | 650 | 48 | ok state, 8 categories, noindex |
+| PASS | tablet-820x1180 | /share/diagnosis | share view (en) and back to ja | 1775 | 101 | English labels, restored to Japanese |
+| PASS | tablet-820x1180 | /squads/compare?a=&b= | squad compare with query parameters (ja, en) | 2330 | 269 | two squads in browser storage only; ja and en with ?a=&b= |
+| PASS | tablet-820x1180 | /share/diagnosis | share: older rules noted | 652 | 48 | older-rules note |
+| PASS | tablet-820x1180 | /share/diagnosis | share rejected: checksum mismatch | 623 | 0 | safe error (checksum_mismatch) |
+| PASS | tablet-820x1180 | /share/diagnosis | share rejected: unknown version | 633 | 0 | safe error (unsupported_version) |
+| PASS | tablet-820x1180 | /share/diagnosis | share rejected: script string | 622 | 0 | safe error (invalid_payload) |
+| PASS | tablet-820x1180 | /share/diagnosis | share rejected: URL string | 634 | 0 | safe error (invalid_payload) |
+| PASS | tablet-820x1180 | /share/diagnosis | share rejected: control/NUL | 637 | 0 | safe error (invalid_payload) |
+| PASS | tablet-820x1180 | /share/diagnosis | share rejected: user field | 638 | 0 | safe error (invalid_payload) |
+| PASS | tablet-820x1180 | /share/diagnosis | share rejected: missing field | 635 | 0 | safe error (invalid_payload) |
+| PASS | tablet-820x1180 | /share/diagnosis | share rejected: malformed encoding | 636 | 0 | safe error (bad_format) |
+| PASS | tablet-820x1180 | /share/diagnosis | share rejected: over limit | 620 | 0 | safe error (too_long) |
+| PASS | tablet-820x1180 | /share/diagnosis | share rejected: empty | 637 | 0 | safe error (empty) |
+| PASS | tablet-820x1180 | /share/diagnosis | share: hashchange, back/forward, reload | 1213 | 49 | state follows the URL |
+| PASS | tablet-820x1180 | /diagnosis-history | history: empty state | 1070 | 116 | empty state |
+| PASS | tablet-820x1180 | /diagnosis-history | history: corrupted item skipped, delete one, delete all, reload | 1240 | 101 | 3 shown, 1 corrupted skipped, delete one/all verified |
+| PASS | tablet-820x1180 | /diagnosis-history | history: maximum 50 entries | 653 | 51 | 50 entries rendered |
+| PASS | tablet-820x1180 | /diagnosis-history | before/after: order by date, trends, rules mismatch refused | 649 | 51 | older=before, +17 improved, 1 improved row, rules mismatch refused |
+| PASS | tablet-820x1180 | /share/compare | comparison share link opens; bad links rejected | 2318 | 49 | opens with card and noindex; 4 bad links rejected |
+| PASS | mobile-390x844 | / | view | 648 | 48 | World 13,517 |
+| PASS | mobile-390x844 | /players | view | 652 | 45 | 24 cards |
+| PASS | mobile-390x844 | /players/world/<id> | view | 650 | 52 | identity ok |
+| PASS | mobile-390x844 | /managers | view | 648 | 31 | managers 71 |
+| PASS | mobile-390x844 | /managers/65 | view | 651 | 26 | identity ok |
+| PASS | mobile-390x844 | /compare | view | 653 | 57 | h1 ok |
+| PASS | mobile-390x844 | /squads | view | 652 | 49 | h1 ok |
+| PASS | mobile-390x844 | /squads/templates | view | 636 | 48 | h1 ok |
+| PASS | mobile-390x844 | /squads/compare | view | 638 | 55 | h1 ok |
+| PASS | mobile-390x844 | /best-xi | view | 638 | 57 | h1 ok |
+| PASS | mobile-390x844 | /players/new | view | 684 | 44 | h1 ok |
+| PASS | mobile-390x844 | /pack-check | view | 636 | 48 | h1 ok |
+| PASS | mobile-390x844 | /tier/CF | view | 649 | 78 | h1 ok |
+| PASS | mobile-390x844 | /glossary | view | 647 | 25 | h1 ok |
+| PASS | mobile-390x844 | /favorites | view | 655 | 51 | h1 ok |
+| PASS | mobile-390x844 | /my-team | view | 633 | 54 | h1 ok |
+| PASS | mobile-390x844 | /my-builds | view | 640 | 54 | h1 ok |
+| PASS | mobile-390x844 | /build-inventory | view | 650 | 61 | h1 ok |
+| PASS | mobile-390x844 | /support | view | 651 | 25 | legal links present |
+| PASS | mobile-390x844 | /terms | view | 648 | 25 | h1 ok |
+| PASS | mobile-390x844 | /privacy | view | 654 | 25 | h1 ok |
+| PASS | mobile-390x844 | /disclaimer | view | 652 | 27 | h1 ok |
+| PASS | mobile-390x844 | /about | view | 650 | 26 | h1 ok |
+| PASS | mobile-390x844 | /data-management | view | 640 | 46 | local data management only |
+| PASS | mobile-390x844 | /auth/sign-in | view | 888 | 44 | h1 ok |
+| PASS | mobile-390x844 | /auth/sign-up | view | 637 | 47 | h1 ok |
+| PASS | mobile-390x844 | /auth/forgot-password | view | 653 | 45 | h1 ok |
+| PASS | mobile-390x844 | /this-page-does-not-exist | view | 650 | 46 | not-found view |
+| PASS | mobile-390x844 | /players/world/<id> | view | 900 | 46 | not-found view |
+| PASS | mobile-390x844 | /account/rls-test | view | 651 | 46 | not-found view |
+| PASS | mobile-390x844 | /release-readiness | view | 637 | 46 | not-found view |
+| PASS | mobile-390x844 | /players/ | trailing slash | 638 | 46 | → /players |
+| PASS | mobile-390x844 | /account/rls-test/ | trailing slash | 648 | 47 | not-found view |
+| PASS | mobile-390x844 | /release-readiness/ | trailing slash | 651 | 47 | not-found view |
+| PASS | mobile-390x844 | /players | language ja→en→ja | 772 | 46 | switched and restored |
+| PASS | mobile-390x844 | /players | search ja | 1302 | 48 | 25 results |
+| PASS | mobile-390x844 | /players | search en | 1304 | 48 | 25 results |
+| PASS | mobile-390x844 | /players | search unicode | 1304 | 54 | 18 results |
+| PASS | mobile-390x844 | /players | search symbols | 1303 | 64 | 0 results |
+| PASS | mobile-390x844 | header search | submit with Enter | 1053 | 60 | 25 results |
+| PASS | mobile-390x844 | /players | search control-character rejected safely | 637 | 48 | rejection view |
+| PASS | mobile-390x844 | /players | search clear | 1043 | 51 | 24 cards |
+| PASS | mobile-390x844 | /players | position filter | 1058 | 50 | position set, 24 cards |
+| PASS | mobile-390x844 | /players | card type filter | 1058 | 46 | cardType set, 24 cards |
+| PASS | mobile-390x844 | /players | sort | 1044 | 54 | sort set, 24 cards |
+| PASS | mobile-390x844 | /players | nationality filter | 216 | 0 | not a feature of this site (no nationality filter exists); skipped by design |
+| PASS | mobile-390x844 | /players | pagination | 1029 | 54 | page 2 differs |
+| PASS | mobile-390x844 | /players → detail → back | navigate and back | 1320 | 69 | detail and back ok |
+| PASS | mobile-390x844 | /compare | compare 2 players | 653 | 47 | 2 identities shown |
+| PASS | mobile-390x844 | /compare | compare 3 players | 654 | 47 | 3 identities shown |
+| PASS | mobile-390x844 | /compare | compare 4 players | 652 | 47 | 4 identities shown |
+| PASS | mobile-390x844 | /managers | manager search | 1301 | 53 | 2 results |
+| PASS | mobile-390x844 | /managers | manager filter | 1023 | 32 | booster=1, 25 results |
+| PASS | mobile-390x844 | /managers → detail | open manager | 904 | 52 | manager detail |
+| PASS | mobile-390x844 | /support → /terms → /privacy | legal navigation | 1414 | 45 | support → terms → privacy |
+| PASS | mobile-390x844 | /share/diagnosis | share view (ja) | 652 | 48 | ok state, 8 categories, noindex |
+| PASS | mobile-390x844 | /share/diagnosis | share view (en) and back to ja | 1789 | 99 | English labels, restored to Japanese |
+| PASS | mobile-390x844 | /squads/compare?a=&b= | squad compare with query parameters (ja, en) | 2343 | 239 | two squads in browser storage only; ja and en with ?a=&b= |
+| PASS | mobile-390x844 | /share/diagnosis | share: older rules noted | 637 | 48 | older-rules note |
+| PASS | mobile-390x844 | /share/diagnosis | share rejected: checksum mismatch | 636 | 0 | safe error (checksum_mismatch) |
+| PASS | mobile-390x844 | /share/diagnosis | share rejected: unknown version | 624 | 0 | safe error (unsupported_version) |
+| PASS | mobile-390x844 | /share/diagnosis | share rejected: script string | 625 | 0 | safe error (invalid_payload) |
+| PASS | mobile-390x844 | /share/diagnosis | share rejected: URL string | 638 | 0 | safe error (invalid_payload) |
+| PASS | mobile-390x844 | /share/diagnosis | share rejected: control/NUL | 621 | 0 | safe error (invalid_payload) |
+| PASS | mobile-390x844 | /share/diagnosis | share rejected: user field | 623 | 0 | safe error (invalid_payload) |
+| PASS | mobile-390x844 | /share/diagnosis | share rejected: missing field | 637 | 0 | safe error (invalid_payload) |
+| PASS | mobile-390x844 | /share/diagnosis | share rejected: malformed encoding | 636 | 0 | safe error (bad_format) |
+| PASS | mobile-390x844 | /share/diagnosis | share rejected: over limit | 635 | 0 | safe error (too_long) |
+| PASS | mobile-390x844 | /share/diagnosis | share rejected: empty | 637 | 0 | safe error (empty) |
+| PASS | mobile-390x844 | /share/diagnosis | share: hashchange, back/forward, reload | 1224 | 49 | state follows the URL |
+| PASS | mobile-390x844 | /squads/<fixture> | share link: preview, copy, open | 1780 | 176 | copy: manual fallback; Web Share: available |
+| PASS | mobile-390x844 | /diagnosis-history | history: empty state | 1088 | 97 | empty state |
+| PASS | mobile-390x844 | /diagnosis-history | history: corrupted item skipped, delete one, delete all, reload | 1223 | 101 | 3 shown, 1 corrupted skipped, delete one/all verified |
+| PASS | mobile-390x844 | /diagnosis-history | history: maximum 50 entries | 651 | 51 | 50 entries rendered |
+| PASS | mobile-390x844 | /diagnosis-history | history: storage unavailable degrades safely | 649 | 50 | unavailable message, no success |
+| PASS | mobile-390x844 | /squads/<fixture> | history: save from diagnosis, duplicate, list, open as share link | 1762 | 176 | saved once, duplicate skipped, listed, share link opens |
+| PASS | mobile-390x844 | /diagnosis-history | before/after: order by date, trends, rules mismatch refused | 651 | 51 | older=before, +17 improved, 1 improved row, rules mismatch refused |
+| PASS | mobile-390x844 | /share/compare | comparison share link opens; bad links rejected | 2330 | 49 | opens with card and noindex; 4 bad links rejected |
+| PASS | mobile-390x844 | /diagnosis-history | before/after: save image | 805 | 51 | PNG generated and handed to the browser |
+| PASS | mobile-393x852 | / | view | 650 | 48 | World 13,517 |
+| PASS | mobile-393x852 | /players | view | 650 | 45 | 24 cards |
+| PASS | mobile-393x852 | /players/world/<id> | view | 653 | 51 | identity ok |
+| PASS | mobile-393x852 | /managers | view | 649 | 31 | managers 71 |
+| PASS | mobile-393x852 | /managers/65 | view | 637 | 26 | identity ok |
+| PASS | mobile-393x852 | /compare | view | 649 | 57 | h1 ok |
+| PASS | mobile-393x852 | /squads | view | 639 | 49 | h1 ok |
+| PASS | mobile-393x852 | /squads/templates | view | 636 | 48 | h1 ok |
+| PASS | mobile-393x852 | /squads/compare | view | 656 | 56 | h1 ok |
+| PASS | mobile-393x852 | /best-xi | view | 638 | 57 | h1 ok |
+| PASS | mobile-393x852 | /players/new | view | 687 | 44 | h1 ok |
+| PASS | mobile-393x852 | /pack-check | view | 647 | 48 | h1 ok |
+| PASS | mobile-393x852 | /tier/CF | view | 642 | 78 | h1 ok |
+| PASS | mobile-393x852 | /glossary | view | 648 | 25 | h1 ok |
+| PASS | mobile-393x852 | /favorites | view | 638 | 51 | h1 ok |
+| PASS | mobile-393x852 | /my-team | view | 637 | 54 | h1 ok |
+| PASS | mobile-393x852 | /my-builds | view | 640 | 54 | h1 ok |
+| PASS | mobile-393x852 | /build-inventory | view | 650 | 61 | h1 ok |
+| PASS | mobile-393x852 | /support | view | 652 | 25 | legal links present |
+| PASS | mobile-393x852 | /terms | view | 649 | 25 | h1 ok |
+| PASS | mobile-393x852 | /privacy | view | 639 | 25 | h1 ok |
+| PASS | mobile-393x852 | /disclaimer | view | 652 | 27 | h1 ok |
+| PASS | mobile-393x852 | /about | view | 638 | 26 | h1 ok |
+| PASS | mobile-393x852 | /data-management | view | 649 | 46 | local data management only |
+| PASS | mobile-393x852 | /auth/sign-in | view | 887 | 44 | h1 ok |
+| PASS | mobile-393x852 | /auth/sign-up | view | 651 | 47 | h1 ok |
+| PASS | mobile-393x852 | /auth/forgot-password | view | 638 | 45 | h1 ok |
+| PASS | mobile-393x852 | /this-page-does-not-exist | view | 637 | 46 | not-found view |
+| PASS | mobile-393x852 | /players/world/<id> | view | 885 | 46 | not-found view |
+| PASS | mobile-393x852 | /account/rls-test | view | 652 | 46 | not-found view |
+| PASS | mobile-393x852 | /release-readiness | view | 638 | 46 | not-found view |
+| PASS | mobile-393x852 | /players/ | trailing slash | 649 | 46 | → /players |
+| PASS | mobile-393x852 | /account/rls-test/ | trailing slash | 638 | 47 | not-found view |
+| PASS | mobile-393x852 | /release-readiness/ | trailing slash | 639 | 47 | not-found view |
+| PASS | mobile-393x852 | /players | language ja→en→ja | 667 | 46 | switched and restored |
+| PASS | mobile-393x852 | /players | search ja | 1290 | 48 | 25 results |
+| PASS | mobile-393x852 | /players | search en | 1306 | 48 | 25 results |
+| PASS | mobile-393x852 | /players | search unicode | 1300 | 54 | 18 results |
+| PASS | mobile-393x852 | /players | search symbols | 1292 | 64 | 0 results |
+| PASS | mobile-393x852 | header search | submit with Enter | 1057 | 60 | 25 results |
+| PASS | mobile-393x852 | /players | search control-character rejected safely | 651 | 48 | rejection view |
+| PASS | mobile-393x852 | /players | search clear | 1036 | 49 | 24 cards |
+| PASS | mobile-393x852 | /players | position filter | 1056 | 50 | position set, 24 cards |
+| PASS | mobile-393x852 | /players | card type filter | 1056 | 46 | cardType set, 24 cards |
+| PASS | mobile-393x852 | /players | sort | 1041 | 54 | sort set, 24 cards |
+| PASS | mobile-393x852 | /players | nationality filter | 215 | 0 | not a feature of this site (no nationality filter exists); skipped by design |
+| PASS | mobile-393x852 | /players | pagination | 1037 | 54 | page 2 differs |
+| PASS | mobile-393x852 | /players → detail → back | navigate and back | 1315 | 68 | detail and back ok |
+| PASS | mobile-393x852 | /compare | compare 2 players | 654 | 47 | 2 identities shown |
+| PASS | mobile-393x852 | /compare | compare 3 players | 652 | 47 | 3 identities shown |
+| PASS | mobile-393x852 | /compare | compare 4 players | 655 | 47 | 4 identities shown |
+| PASS | mobile-393x852 | /managers | manager search | 1285 | 53 | 2 results |
+| PASS | mobile-393x852 | /managers | manager filter | 1041 | 32 | booster=1, 25 results |
+| PASS | mobile-393x852 | /managers → detail | open manager | 900 | 52 | manager detail |
+| PASS | mobile-393x852 | /support → /terms → /privacy | legal navigation | 1300 | 45 | support → terms → privacy |
+| PASS | mobile-393x852 | /share/diagnosis | share view (ja) | 652 | 48 | ok state, 8 categories, noindex |
+| PASS | mobile-393x852 | /share/diagnosis | share view (en) and back to ja | 1774 | 99 | English labels, restored to Japanese |
+| PASS | mobile-393x852 | /squads/compare?a=&b= | squad compare with query parameters (ja, en) | 2341 | 239 | two squads in browser storage only; ja and en with ?a=&b= |
+| PASS | mobile-393x852 | /share/diagnosis | share: older rules noted | 637 | 48 | older-rules note |
+| PASS | mobile-393x852 | /share/diagnosis | share rejected: checksum mismatch | 622 | 0 | safe error (checksum_mismatch) |
+| PASS | mobile-393x852 | /share/diagnosis | share rejected: unknown version | 637 | 0 | safe error (unsupported_version) |
+| PASS | mobile-393x852 | /share/diagnosis | share rejected: script string | 622 | 0 | safe error (invalid_payload) |
+| PASS | mobile-393x852 | /share/diagnosis | share rejected: URL string | 636 | 0 | safe error (invalid_payload) |
+| PASS | mobile-393x852 | /share/diagnosis | share rejected: control/NUL | 636 | 0 | safe error (invalid_payload) |
+| PASS | mobile-393x852 | /share/diagnosis | share rejected: user field | 638 | 0 | safe error (invalid_payload) |
+| PASS | mobile-393x852 | /share/diagnosis | share rejected: missing field | 638 | 0 | safe error (invalid_payload) |
+| PASS | mobile-393x852 | /share/diagnosis | share rejected: malformed encoding | 634 | 0 | safe error (bad_format) |
+| PASS | mobile-393x852 | /share/diagnosis | share rejected: over limit | 652 | 0 | safe error (too_long) |
+| PASS | mobile-393x852 | /share/diagnosis | share rejected: empty | 638 | 0 | safe error (empty) |
+| PASS | mobile-393x852 | /share/diagnosis | share: hashchange, back/forward, reload | 1231 | 49 | state follows the URL |
+| PASS | mobile-393x852 | /diagnosis-history | history: empty state | 1070 | 97 | empty state |
+| PASS | mobile-393x852 | /diagnosis-history | history: corrupted item skipped, delete one, delete all, reload | 1210 | 101 | 3 shown, 1 corrupted skipped, delete one/all verified |
+| PASS | mobile-393x852 | /diagnosis-history | history: maximum 50 entries | 652 | 51 | 50 entries rendered |
+| PASS | mobile-393x852 | /diagnosis-history | before/after: order by date, trends, rules mismatch refused | 651 | 51 | older=before, +17 improved, 1 improved row, rules mismatch refused |
+| PASS | mobile-393x852 | /share/compare | comparison share link opens; bad links rejected | 2310 | 49 | opens with card and noindex; 4 bad links rejected |
+| PASS | mobile-430x932 | / | view | 650 | 54 | World 13,517 |
+| PASS | mobile-430x932 | /players | view | 652 | 45 | 24 cards |
+| PASS | mobile-430x932 | /players/world/<id> | view | 651 | 51 | identity ok |
+| PASS | mobile-430x932 | /managers | view | 653 | 31 | managers 71 |
+| PASS | mobile-430x932 | /managers/65 | view | 651 | 26 | identity ok |
+| PASS | mobile-430x932 | /compare | view | 653 | 57 | h1 ok |
+| PASS | mobile-430x932 | /squads | view | 650 | 49 | h1 ok |
+| PASS | mobile-430x932 | /squads/templates | view | 636 | 48 | h1 ok |
+| PASS | mobile-430x932 | /squads/compare | view | 649 | 55 | h1 ok |
+| PASS | mobile-430x932 | /best-xi | view | 639 | 57 | h1 ok |
+| PASS | mobile-430x932 | /players/new | view | 686 | 46 | h1 ok |
+| PASS | mobile-430x932 | /pack-check | view | 638 | 48 | h1 ok |
+| PASS | mobile-430x932 | /tier/CF | view | 640 | 80 | h1 ok |
+| PASS | mobile-430x932 | /glossary | view | 639 | 25 | h1 ok |
+| PASS | mobile-430x932 | /favorites | view | 651 | 51 | h1 ok |
+| PASS | mobile-430x932 | /my-team | view | 651 | 54 | h1 ok |
+| PASS | mobile-430x932 | /my-builds | view | 636 | 60 | h1 ok |
+| PASS | mobile-430x932 | /build-inventory | view | 648 | 61 | h1 ok |
+| PASS | mobile-430x932 | /support | view | 653 | 25 | legal links present |
+| PASS | mobile-430x932 | /terms | view | 648 | 25 | h1 ok |
+| PASS | mobile-430x932 | /privacy | view | 639 | 25 | h1 ok |
+| PASS | mobile-430x932 | /disclaimer | view | 633 | 27 | h1 ok |
+| PASS | mobile-430x932 | /about | view | 641 | 26 | h1 ok |
+| PASS | mobile-430x932 | /data-management | view | 649 | 46 | local data management only |
+| PASS | mobile-430x932 | /auth/sign-in | view | 896 | 44 | h1 ok |
+| PASS | mobile-430x932 | /auth/sign-up | view | 654 | 47 | h1 ok |
+| PASS | mobile-430x932 | /auth/forgot-password | view | 637 | 45 | h1 ok |
+| PASS | mobile-430x932 | /this-page-does-not-exist | view | 640 | 46 | not-found view |
+| PASS | mobile-430x932 | /players/world/<id> | view | 901 | 46 | not-found view |
+| PASS | mobile-430x932 | /account/rls-test | view | 639 | 46 | not-found view |
+| PASS | mobile-430x932 | /release-readiness | view | 639 | 46 | not-found view |
+| PASS | mobile-430x932 | /players/ | trailing slash | 653 | 46 | → /players |
+| PASS | mobile-430x932 | /account/rls-test/ | trailing slash | 653 | 47 | not-found view |
+| PASS | mobile-430x932 | /release-readiness/ | trailing slash | 635 | 47 | not-found view |
+| PASS | mobile-430x932 | /players | language ja→en→ja | 776 | 46 | switched and restored |
+| PASS | mobile-430x932 | /players | search ja | 1302 | 48 | 25 results |
+| PASS | mobile-430x932 | /players | search en | 1305 | 48 | 25 results |
+| PASS | mobile-430x932 | /players | search unicode | 1305 | 54 | 18 results |
+| PASS | mobile-430x932 | /players | search symbols | 1303 | 64 | 0 results |
+| PASS | mobile-430x932 | header search | submit with Enter | 1052 | 68 | 25 results |
+| PASS | mobile-430x932 | /players | search control-character rejected safely | 638 | 48 | rejection view |
+| PASS | mobile-430x932 | /players | search clear | 1042 | 49 | 24 cards |
+| PASS | mobile-430x932 | /players | position filter | 1058 | 50 | position set, 24 cards |
+| PASS | mobile-430x932 | /players | card type filter | 1042 | 46 | cardType set, 24 cards |
+| PASS | mobile-430x932 | /players | sort | 1042 | 54 | sort set, 24 cards |
+| PASS | mobile-430x932 | /players | nationality filter | 215 | 0 | not a feature of this site (no nationality filter exists); skipped by design |
+| PASS | mobile-430x932 | /players | pagination | 1041 | 54 | page 2 differs |
+| PASS | mobile-430x932 | /players → detail → back | navigate and back | 1323 | 68 | detail and back ok |
+| PASS | mobile-430x932 | /compare | compare 2 players | 638 | 47 | 2 identities shown |
+| PASS | mobile-430x932 | /compare | compare 3 players | 653 | 57 | 3 identities shown |
+| PASS | mobile-430x932 | /compare | compare 4 players | 651 | 47 | 4 identities shown |
+| PASS | mobile-430x932 | /managers | manager search | 1280 | 53 | 2 results |
+| PASS | mobile-430x932 | /managers | manager filter | 1049 | 32 | booster=1, 25 results |
+| PASS | mobile-430x932 | /managers → detail | open manager | 890 | 52 | manager detail |
+| PASS | mobile-430x932 | /support → /terms → /privacy | legal navigation | 1412 | 45 | support → terms → privacy |
+| PASS | mobile-430x932 | /share/diagnosis | share view (ja) | 652 | 48 | ok state, 8 categories, noindex |
+| PASS | mobile-430x932 | /share/diagnosis | share view (en) and back to ja | 1783 | 99 | English labels, restored to Japanese |
+| PASS | mobile-430x932 | /squads/compare?a=&b= | squad compare with query parameters (ja, en) | 2345 | 256 | two squads in browser storage only; ja and en with ?a=&b= |
+| PASS | mobile-430x932 | /share/diagnosis | share: older rules noted | 637 | 48 | older-rules note |
+| PASS | mobile-430x932 | /share/diagnosis | share rejected: checksum mismatch | 635 | 0 | safe error (checksum_mismatch) |
+| PASS | mobile-430x932 | /share/diagnosis | share rejected: unknown version | 635 | 0 | safe error (unsupported_version) |
+| PASS | mobile-430x932 | /share/diagnosis | share rejected: script string | 622 | 0 | safe error (invalid_payload) |
+| PASS | mobile-430x932 | /share/diagnosis | share rejected: URL string | 624 | 0 | safe error (invalid_payload) |
+| PASS | mobile-430x932 | /share/diagnosis | share rejected: control/NUL | 637 | 0 | safe error (invalid_payload) |
+| PASS | mobile-430x932 | /share/diagnosis | share rejected: user field | 638 | 0 | safe error (invalid_payload) |
+| PASS | mobile-430x932 | /share/diagnosis | share rejected: missing field | 637 | 0 | safe error (invalid_payload) |
+| PASS | mobile-430x932 | /share/diagnosis | share rejected: malformed encoding | 634 | 0 | safe error (bad_format) |
+| PASS | mobile-430x932 | /share/diagnosis | share rejected: over limit | 637 | 0 | safe error (too_long) |
+| PASS | mobile-430x932 | /share/diagnosis | share rejected: empty | 637 | 0 | safe error (empty) |
+| PASS | mobile-430x932 | /share/diagnosis | share: hashchange, back/forward, reload | 1219 | 49 | state follows the URL |
+| PASS | mobile-430x932 | /diagnosis-history | history: empty state | 1087 | 103 | empty state |
+| PASS | mobile-430x932 | /diagnosis-history | history: corrupted item skipped, delete one, delete all, reload | 1229 | 101 | 3 shown, 1 corrupted skipped, delete one/all verified |
+| PASS | mobile-430x932 | /diagnosis-history | history: maximum 50 entries | 652 | 51 | 50 entries rendered |
+| PASS | mobile-430x932 | /diagnosis-history | before/after: order by date, trends, rules mismatch refused | 651 | 51 | older=before, +17 improved, 1 improved row, rules mismatch refused |
+| PASS | mobile-430x932 | /share/compare | comparison share link opens; bad links rejected | 2312 | 49 | opens with card and noindex; 4 bad links rejected |
 
 ## 性能
 
 | 判定 | viewport | page | cold load | warm load | TTFB | DCL | LCP | CLS | long task max/total | requests | dup | slowest | API count/max | loading表示 | errors |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| OK | desktop-1280x720 | / | 243 | 35 | 6 | 21 | 56 | 0 | 0/0 | 80 | 2 | 222 | 4/222 | 409 | 0 |
-| OK | desktop-1280x720 | /players | 195 | 47 | 13 | 42 | 84 | 0 | 0/0 | 96 | 0 | 172 | 4/97 | 422 | 0 |
-| OK | desktop-1280x720 | /players/world/<id> | 239 | 50 | 16 | 47 | 72 | 0 | 0/0 | 96 | 0 | 386 | 4/386 | 419 | 0 |
-| OK | desktop-1280x720 | /managers | 57 | 35 | 11 | 33 | 60 | 0 | 0/0 | 82 | 0 | 38 | 0/0 | 409 | 0 |
-| OK | desktop-1280x720 | /compare?ids=<2> | 102 | 51 | 14 | 48 | 80 | 0 | 0/0 | 83 | 0 | 73 | 0/0 | 428 | 0 |
-| OK | desktop-1280x720 | /squads | 71 | 37 | 10 | 35 | 324 | 0 | 0/0 | 96 | 0 | 42 | 0/0 | 303 | 0 |
-| OK | desktop-1280x720 | /best-xi | 189 | 35 | 6 | 16 | 48 | 0 | 0/0 | 84 | 0 | 42 | 0/0 | 414 | 0 |
-| OK | mobile-390x844 | / | 127 | 30 | 6 | 18 | 44 | 0 | 0/0 | 53 | 0 | 114 | 4/114 | 407 | 0 |
-| OK | mobile-390x844 | /players | 125 | 45 | 13 | 42 | 68 | 0 | 0/0 | 43 | 2 | 91 | 4/91 | 419 | 0 |
-| OK | mobile-390x844 | /players/world/<id> | 118 | 45 | 15 | 43 | 60 | 0 | 0/0 | 49 | 1 | 407 | 4/407 | 414 | 0 |
-| OK | mobile-390x844 | /managers | 60 | 35 | 11 | 33 | 52 | 0 | 0/0 | 31 | 1 | 28 | 0/0 | 411 | 0 |
-| OK | mobile-390x844 | /compare?ids=<2> | 87 | 51 | 14 | 49 | 76 | 0 | 0/0 | 48 | 1 | 77 | 0/0 | 425 | 0 |
-| OK | mobile-390x844 | /squads | 69 | 36 | 9 | 34 | 316 | 0 | 0/0 | 50 | 1 | 33 | 0/0 | 297 | 0 |
-| OK | mobile-390x844 | /best-xi | 121 | 33 | 6 | 16 | 44 | 0 | 0/0 | 62 | 0 | 43 | 0/0 | 300 | 0 |
+| OK | desktop-1280x720 | / | 177 | 22 | 5 | 20 | 48 | 0 | 0/0 | 76 | 2 | 164 | 4/164 | 419 | 0 |
+| OK | desktop-1280x720 | /players | 128 | 33 | 10 | 30 | 52 | 0 | 0/0 | 93 | 0 | 106 | 4/79 | 422 | 0 |
+| OK | desktop-1280x720 | /players/world/<id> | 126 | 34 | 12 | 31 | 48 | 0 | 0/0 | 95 | 0 | 387 | 4/387 | 418 | 0 |
+| OK | desktop-1280x720 | /managers | 40 | 26 | 9 | 24 | 40 | 0 | 0/0 | 78 | 0 | 23 | 0/0 | 297 | 0 |
+| OK | desktop-1280x720 | /compare?ids=<2> | 51 | 38 | 10 | 36 | 56 | 0 | 0/0 | 80 | 0 | 66 | 0/0 | 434 | 0 |
+| OK | desktop-1280x720 | /squads | 106 | 26 | 7 | 24 | 324 | 0 | 0/0 | 92 | 3 | 24 | 0/0 | 296 | 0 |
+| OK | desktop-1280x720 | /best-xi | 102 | 25 | 4 | 12 | 36 | 0 | 0/0 | 80 | 0 | 27 | 0/0 | 296 | 0 |
+| OK | mobile-390x844 | / | 89 | 21 | 4 | 12 | 32 | 0 | 0/0 | 49 | 0 | 79 | 4/79 | 294 | 0 |
+| OK | mobile-390x844 | /players | 66 | 32 | 10 | 30 | 48 | 0 | 0/0 | 44 | 2 | 47 | 4/47 | 419 | 0 |
+| OK | mobile-390x844 | /players/world/<id> | 75 | 34 | 11 | 32 | 44 | 0 | 0/0 | 50 | 1 | 336 | 4/336 | 417 | 0 |
+| OK | mobile-390x844 | /managers | 38 | 25 | 8 | 24 | 40 | 0 | 0/0 | 31 | 1 | 17 | 0/0 | 297 | 0 |
+| OK | mobile-390x844 | /compare?ids=<2> | 58 | 34 | 9 | 32 | 48 | 0 | 0/0 | 47 | 1 | 91 | 0/0 | 419 | 0 |
+| OK | mobile-390x844 | /squads | 46 | 25 | 6 | 24 | 316 | 0 | 0/0 | 49 | 1 | 23 | 0/0 | 295 | 0 |
+| OK | mobile-390x844 | /best-xi | 63 | 23 | 4 | 11 | 28 | 0 | 0/0 | 57 | 0 | 25 | 0/0 | 294 | 0 |
 
-メモリ(一覧⇔詳細10往復・GC後JS heap KB): 10860, 13163, 13276, 13276, 13275, 13280, 13271, 13274, 13277, 13295
+メモリ(一覧⇔詳細10往復・GC後JS heap KB): 10967, 13170, 13172, 13172, 13172, 13173, 13172, 13173, 13175, 13194
 
 ## 公開範囲・セキュリティ
 
