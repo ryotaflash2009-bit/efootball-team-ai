@@ -615,6 +615,8 @@ const part: PartialDictionary = {
     showMoreTemplate: "Tampilkan {count} lagi",
     dataUnavailable: "Data pemain tidak dapat dimuat. Coba lagi nanti.",
     newCardsLinkTemplate: "Lihat kartu {position} baru",
+    provisionalNoteTemplate: "{count} kartu sementara {position} yang rilis selama impor data resmi (eFootball World) berhenti tidak masuk Tier ini karena OVR maksimalnya belum diketahui.",
+    provisionalLinkTemplate: "Lihat kartu sementara {position}",
     ownedSummaryTemplate: "Milikmu: {list}",
   },
   provisionalCards: {

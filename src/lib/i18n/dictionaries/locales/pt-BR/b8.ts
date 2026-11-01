@@ -615,6 +615,8 @@ const part: PartialDictionary = {
     showMoreTemplate: "Mostrar mais {count}",
     dataUnavailable: "Não foi possível carregar os dados dos jogadores. Tente novamente mais tarde.",
     newCardsLinkTemplate: "Ver cartas novas de {position}",
+    provisionalNoteTemplate: "{count} cartas provisórias de {position} lançadas enquanto a importação dos dados oficiais (eFootball World) está parada não estão neste Tier, porque o OVR máximo delas é desconhecido.",
+    provisionalLinkTemplate: "Ver cartas provisórias de {position}",
     ownedSummaryTemplate: "Você tem: {list}",
   },
   provisionalCards: {

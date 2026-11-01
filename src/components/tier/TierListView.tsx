@@ -41,6 +41,7 @@ export function TierListView({
   entries,
   unavailableReason,
   syncFinishedAt,
+  provisionalCount = 0,
 }: {
   positions: string[];
   position: string;
@@ -48,6 +49,8 @@ export function TierListView({
   entries: TierListEntryView[];
   unavailableReason: "too_few_cards" | "not_sorted" | null;
   syncFinishedAt: string | null;
+  /** このポジションの暫定のカードの枚数（Tier には入れない・2026-11-01）。 */
+  provisionalCount?: number;
 }) {
   const t = useT();
   const { locale } = useLocale();
@@ -86,6 +89,15 @@ export function TierListView({
         </Link>
         <TierOwnedSummary entries={entries} />
       </p>
+
+      {provisionalCount > 0 ? (
+        <p className="rounded-md border border-warning/50 px-3 py-2 text-xs text-text-dim" data-testid="tier-provisional-note">
+          {fillMessage(tt("provisionalNoteTemplate"), { position, count: String(provisionalCount) })}{" "}
+          <Link href={`/players?position=${position}`} className="text-accent hover:underline">
+            {fillMessage(tt("provisionalLinkTemplate"), { position })}
+          </Link>
+        </p>
+      ) : null}
 
       {unavailableReason ? (
         <Surface padding="md" className="text-sm text-text-dim" data-testid="tier-unavailable">

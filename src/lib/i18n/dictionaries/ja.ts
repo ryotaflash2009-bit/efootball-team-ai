@@ -5278,6 +5278,8 @@ export interface Dictionary {
     showMoreTemplate: string;
     dataUnavailable: string;
     newCardsLinkTemplate: string;
+    provisionalNoteTemplate: string;
+    provisionalLinkTemplate: string;
     ownedSummaryTemplate: string;
   };
   provisionalCards: {

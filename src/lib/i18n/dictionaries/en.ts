@@ -5339,6 +5339,8 @@ const en: Dictionary = {
     showMoreTemplate: "Show {count} more",
     dataUnavailable: "Player data couldn't be loaded. Please try again later.",
     newCardsLinkTemplate: "See new {position} cards",
+    provisionalNoteTemplate: "{count} provisional {position} cards released while the official data (eFootball World) import is paused are not in this Tier, because their max OVR is unknown.",
+    provisionalLinkTemplate: "See provisional {position} cards",
     ownedSummaryTemplate: "You own: {list}",
   },
   provisionalCards: {
