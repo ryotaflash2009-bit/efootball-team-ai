@@ -16,6 +16,7 @@ import { useT } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { isSearchInputRejectedResponse } from "@/lib/search/search-input";
 import { fillMessage } from "@/lib/i18n/message-format";
+import { playersWithProvisional } from "@/lib/world/search-with-provisional";
 
 /**
  * 比較へ追加する選手を検索して選ぶ（World の全カード・件数は参照データの更新で変わる。docs/product/world-card-counts.md）。
@@ -110,7 +111,8 @@ export function AddPlayerSearch({
       }
       const data = await r.json();
       if (reqId !== reqIdRef.current) return; // 古いレスポンスは破棄
-      setState({ kind: "results", players: Array.isArray(data.players) ? data.players : [] });
+      // 暫定のカード（正式なデータの反映前）も比べられるように、検索に合うものを後ろに足す（2026-11-01）
+      setState({ kind: "results", players: playersWithProvisional(data) });
     } catch {
       if (reqId !== reqIdRef.current) return;
       setState({ kind: "error" });

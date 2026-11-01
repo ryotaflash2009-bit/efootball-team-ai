@@ -444,6 +444,26 @@ async function main() {
       record("[My Team] カードを探して所持で追加（保存データに所持で入る・追加した行は押せない）", Array.isArray(saved) && saved.includes(`${RC_A}:owned`) && nowDisabled, `${JSON.stringify(saved)} disabled=${nowDisabled}`);
       await evalJson(client, `localStorage.removeItem(${JSON.stringify(KEY)})`);
     }
+    // スカッドの選手検索で暫定のカードも選べる（2026-11-01）: 暫定のカードの名前で検索 → 「暫定」の印つきで出る → ベンチに追加 → 保存される
+    {
+      const provCard = await evalJson(client, `(async () => ((await (await fetch("/api/world/new-cards")).json()).cards || []).find((c) => c.provisional && c.nameEn && c.nameEn.length > 4) ?? null)()`);
+      if (provCard) {
+        await client.send("Runtime.evaluate", { expression: `localStorage.setItem(${JSON.stringify(SQUADS_KEY)}, ${JSON.stringify(JSON.stringify([squad("sq_bbprovsrch1", null, null)]))})` });
+        await go(client, `${BASE}/squads/sq_bbprovsrch1`);
+        await waitForCondition(async () => evalJson(client, `!![...document.querySelectorAll("button")].find((b) => /ベンチ選手を追加/.test(b.textContent))`), { timeoutMs: 15000, intervalMs: 250 }).catch(() => {});
+        await evalJson(client, `[...document.querySelectorAll("button")].find((b) => /ベンチ選手を追加/.test(b.textContent))?.click()`);
+        // ヘッダーにも検索の入力があるため、最後の（スカッドの選手検索の）入力に入れる
+        await waitForCondition(async () => evalJson(client, `document.querySelectorAll('input[type="search"]').length >= 2`), { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+        await evalJson(client, `(() => { const el = [...document.querySelectorAll('input[type="search"]')].at(-1); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set; set.call(el, ${JSON.stringify(provCard.nameEn)}); el.dispatchEvent(new Event("input", { bubbles: true })); })()`);
+        const rowSel = `[...document.querySelectorAll("li")].find((li) => li.querySelector('a[href="/players/world/${provCard.worldCardId}"]') && li.querySelector("button"))`;
+        await waitForCondition(async () => evalJson(client, `!!${rowSel}`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+        const hasBadge = await evalJson(client, `!!${rowSel}?.querySelector('[data-testid="provisional-badge"]')`);
+        await evalJson(client, `${rowSel}?.querySelector("button")?.click()`);
+        await new Promise((r) => setTimeout(r, 1000));
+        const subs = await evalJson(client, `(JSON.parse(localStorage.getItem(${JSON.stringify(SQUADS_KEY)})).find((x) => x.squadId === "sq_bbprovsrch1")?.substitutes ?? []).map((x) => x.worldCardId)`);
+        record("[スカッドの選手検索] 暫定のカードも検索で選べる（「暫定」の印・ベンチに追加して保存）", hasBadge === true && Array.isArray(subs) && subs.includes(provCard.worldCardId), `${provCard.nameEn} badge=${hasBadge} subs=${JSON.stringify(subs)}`);
+      } else record("[スカッドの選手検索] 暫定のカードも検索で選べる", true, "no provisional cards");
+    }
     // 先発の所属の内訳（2026-10-11）: LB と RB に同じ国籍の 2 枚 → 「国籍」に「<国籍> ×2」・選手一覧の絞り込みへのリンク
     {
       const d = await (await fetch(`${BASE}/api/world/players/${RC_A}`)).json().catch(() => null);
