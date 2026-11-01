@@ -82,7 +82,7 @@ import {
   type PresetCategoryId,
 } from "@/lib/progression/build-intent-presets";
 import { PROGRESSION_GROUPS } from "@/lib/progression/stat-groups";
-import { BuildAnalysisPanel, type PresetIntentStatus } from "./BuildAnalysisPanel";
+import type { PresetIntentStatus } from "./BuildAnalysisPanel";
 import { resolveCardImageSources } from "@/lib/world/image";
 import { WorldCardImage } from "@/components/world/WorldCardImage";
 import { LocalStorageNotice } from "@/components/user-cards/LocalStorageNotice";
@@ -102,6 +102,9 @@ import { fillMessage } from "@/lib/i18n/message-format";
 import { usePageTitle } from "@/lib/i18n/use-page-title";
 
 // 重複の候補の欄は一覧の下にあるため後から読み込む（2026-10-30）
+// 分析の欄（大きい）は「分析」を押したときだけ使う＝最初の JS から外し、少し後に先読みする（2026-11-01）
+const loadBuildAnalysisPanel = () => import("./BuildAnalysisPanel").then((m) => m.BuildAnalysisPanel);
+const BuildAnalysisPanel = dynamic(loadBuildAnalysisPanel, { ssr: false });
 const DuplicateReviewSection = dynamic(() => import("./DuplicateReviewSection").then((m) => m.DuplicateReviewSection), { ssr: false });
 
 /** groupPriorities/primaryGoal を除いた BuildIntentInput(プリセットが既定値を持たない、常に手動値のみのフィールド)。 */
@@ -865,18 +868,23 @@ export function BuildInventoryView() {
       siblings: intentSiblings,
     });
   }, [analyzingItem, analysis, intent, intentSiblings]);
-  const analysisPanelRef = useRef<HTMLDivElement | null>(null);
+  // 分析の欄は後から読み込まれるため、欄が出た時（要素が付いた時）にもスクロールする
+  const [analysisPanelEl, setAnalysisPanelEl] = useState<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const t = setTimeout(() => void loadBuildAnalysisPanel().catch(() => {}), 300);
+    return () => clearTimeout(t);
+  }, []);
   useEffect(() => {
     if (!analyzingBuildId) return;
     if (typeof window === "undefined") return;
-    const el = analysisPanelRef.current;
+    const el = analysisPanelEl;
     if (!el) return;
     const rect = el.getBoundingClientRect();
     const alreadyVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
     if (alreadyVisible) return;
     const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
     el.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
-  }, [analyzingBuildId]);
+  }, [analyzingBuildId, analysisPanelEl]);
   const legacyOnlyActive =
     filter.rules === "legacy" &&
     filter.q.trim() === "" &&
@@ -1246,7 +1254,7 @@ export function BuildInventoryView() {
 
       {analyzingItem && analysis && analysisPanelId ? (
         <BuildAnalysisPanel
-          ref={analysisPanelRef}
+          ref={setAnalysisPanelEl}
           analysis={analysis}
           playerName={analyzingName}
           buildName={analyzingItem.build.buildName}

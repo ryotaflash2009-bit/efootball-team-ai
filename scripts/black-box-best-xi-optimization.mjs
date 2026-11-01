@@ -533,6 +533,24 @@ async function main() {
     record("[大規模候補プール] 妥当な時間内(15秒以内)に完了する", largeElapsed < 15000, `elapsedMs=${largeElapsed}`);
 
     // ============================================================
+    // 9b. 保存ビルド分析（/build-inventory）: 分析の欄は押したときに後から読み込む（2026-11-01）。押すと欄が出て、閉じられる
+    // ============================================================
+    {
+      await setMyTeam(client, [MALDINI_CB]);
+      await setBuildsStore(client, { [MALDINI_CB]: [savedBuild({ worldCardId: MALDINI_CB, buildId: "bbAnalyze", buildName: "分析用ビルド" })] });
+      await navigateAndSettle(client, `${BASE}/build-inventory`);
+      const btnSel = `document.querySelector('button[aria-controls="build-analysis-bbAnalyze"]')`;
+      await waitForCondition(async () => evalJson(client, `!!${btnSel}`), { timeoutMs: 15000, intervalMs: 250 }).catch(() => {});
+      await evalJson(client, `${btnSel}?.click()`);
+      const opened = await waitForCondition(async () => evalJson(client, `!!document.getElementById("build-analysis-bbAnalyze")`), { timeoutMs: 15000, intervalMs: 200 }).then(() => true).catch(() => false);
+      const expanded = await evalJson(client, `${btnSel}?.getAttribute("aria-expanded")`);
+      await evalJson(client, `${btnSel}?.click()`);
+      const closed = await waitForCondition(async () => evalJson(client, `!document.getElementById("build-analysis-bbAnalyze")`), { timeoutMs: 5000, intervalMs: 200 }).then(() => true).catch(() => false);
+      record("[保存ビルド分析] 「分析」で分析の欄が出る（後から読み込み）・もう一度押すと閉じる", opened && expanded === "true" && closed, `opened=${opened} expanded=${expanded} closed=${closed}`);
+      await navigateAndSettle(client, `${BASE}/best-xi`); // 後の確認は AI ベスト11 のページを読み直す
+    }
+
+    // ============================================================
     // 10. 390px幅(モバイル)でも横スクロールが発生せず表示できる
     // ============================================================
     await setMyTeam(client, FULL_XI);
