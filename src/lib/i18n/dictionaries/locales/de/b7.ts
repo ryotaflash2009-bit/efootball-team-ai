@@ -366,6 +366,8 @@ const part: PartialDictionary = {
     positionSummaryIntro: "Besessene Karten nach registrierter Position gezählt, mit deiner stärksten Karte und wie viele neue Karten eine Verbesserung wären.",
     squadFitHeading: "Eigene Karten, die deine gespeicherten Kader stärken würden",
     squadFitIntro: "Eigene Karten, die in einem gespeicherten Kader einen Platz derselben registrierten Position mit höherem OVR als der aktuelle Spieler besetzen würden. Öffne den Kader und nutze „Tauschen“.",
+    quickAddHeading: "Karten suchen und zu My Team hinzufügen",
+    quickAddAction: "Als im Besitz hinzufügen",
     positionCountTemplate: "Karten: {count}",
     positionNone: "Noch keine",
     positionFind: "Diese Position suchen",

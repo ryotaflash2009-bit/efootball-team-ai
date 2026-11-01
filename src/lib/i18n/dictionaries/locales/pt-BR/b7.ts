@@ -366,6 +366,8 @@ const part: PartialDictionary = {
     positionSummaryIntro: "Cartas suas contadas por posição registrada, com sua carta mais forte e quantas cartas novas seriam uma melhoria.",
     squadFitHeading: "Cartas que você possui que reforçariam seus elencos salvos",
     squadFitIntro: "Cartas que você possui que se encaixariam em um espaço da mesma posição registrada de um elenco salvo com OVR maior que o do jogador atual. Abra o elenco e use “Trocar” para aplicar.",
+    quickAddHeading: "Encontre cartas e adicione ao My Team",
+    quickAddAction: "Adicionar como possuída",
     positionCountTemplate: "Cartas: {count}",
     positionNone: "Nenhuma ainda",
     positionFind: "Buscar esta posição",

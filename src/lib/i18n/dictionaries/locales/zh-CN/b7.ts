@@ -366,6 +366,8 @@ const part: PartialDictionary = {
     positionSummaryIntro: "按登记位置统计拥有的卡，显示最强的卡以及能用新卡强化的数量。",
     squadFitHeading: "能加强已保存阵容的已拥有卡",
     squadFitIntro: "已拥有的卡中，能以高于当前球员的 OVR 进入已保存阵容中相同登记位置的卡。打开阵容后可用“更换”应用。",
+    quickAddHeading: "查找卡片并加入 My Team",
+    quickAddAction: "作为已拥有加入",
     positionCountTemplate: "{count} 张",
     positionNone: "还没有",
     positionFind: "查找此位置",
