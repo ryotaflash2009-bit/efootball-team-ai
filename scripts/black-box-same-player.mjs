@@ -452,8 +452,9 @@ async function main() {
         await go(client, `${BASE}/squads/sq_bbprovsrch1`);
         await waitForCondition(async () => evalJson(client, `!![...document.querySelectorAll("button")].find((b) => /ベンチ選手を追加/.test(b.textContent))`), { timeoutMs: 15000, intervalMs: 250 }).catch(() => {});
         await evalJson(client, `[...document.querySelectorAll("button")].find((b) => /ベンチ選手を追加/.test(b.textContent))?.click()`);
-        await waitForCondition(async () => evalJson(client, `!!document.querySelector('input[type="search"]')`), { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
-        await evalJson(client, `(() => { const el = document.querySelector('input[type="search"]'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set; set.call(el, ${JSON.stringify(provCard.nameEn)}); el.dispatchEvent(new Event("input", { bubbles: true })); })()`);
+        // ヘッダーにも検索の入力があるため、最後の（スカッドの選手検索の）入力に入れる
+        await waitForCondition(async () => evalJson(client, `document.querySelectorAll('input[type="search"]').length >= 2`), { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+        await evalJson(client, `(() => { const el = [...document.querySelectorAll('input[type="search"]')].at(-1); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set; set.call(el, ${JSON.stringify(provCard.nameEn)}); el.dispatchEvent(new Event("input", { bubbles: true })); })()`);
         const rowSel = `[...document.querySelectorAll("li")].find((li) => li.querySelector('a[href="/players/world/${provCard.worldCardId}"]') && li.querySelector("button"))`;
         await waitForCondition(async () => evalJson(client, `!!${rowSel}`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
         const hasBadge = await evalJson(client, `!!${rowSel}?.querySelector('[data-testid="provisional-badge"]')`);
