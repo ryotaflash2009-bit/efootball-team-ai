@@ -86,8 +86,6 @@ import {
 import type { SquadBuildUsageRowInput } from "@/lib/progression/my-builds";
 import { FormationSelect } from "./FormationSelect";
 import { SquadPitch } from "./SquadPitch";
-import { SlotPlayerPanel } from "./SlotPlayerPanel";
-import { SquadBuildPanel } from "./SquadBuildPanel";
 import { SquadBuildUsagePanel } from "./SquadBuildUsagePanel";
 import { SquadBench, type BenchRow } from "./SquadBench";
 import { SquadManagerPanel } from "./SquadManagerPanel";
@@ -154,6 +152,11 @@ const SquadBenchOwnedPanel = dynamic(() => import("@/components/squad/SquadBench
 const SquadNotOwnedPanel = dynamic(() => import("@/components/squad/SquadNotOwnedPanel").then((x) => x.SquadNotOwnedPanel), { ssr: false });
 const SquadOwnedUpgradesPanel = dynamic(() => import("@/components/squad/SquadOwnedUpgradesPanel").then((x) => x.SquadOwnedUpgradesPanel), { ssr: false });
 const loadPlayerSearchPanel = () => import("./PlayerSearchPanel");
+// 枠を選んだとき・ビルドを選ぶときの欄も押してから使う＝最初の JS から外して先読みする（2026-11-01）
+const loadSlotPlayerPanel = () => import("./SlotPlayerPanel");
+const SlotPlayerPanel = dynamic(() => loadSlotPlayerPanel().then((x) => x.SlotPlayerPanel), { ssr: false });
+const loadSquadBuildPanel = () => import("./SquadBuildPanel");
+const SquadBuildPanel = dynamic(() => loadSquadBuildPanel().then((x) => x.SquadBuildPanel), { ssr: false });
 const PlayerSearchPanel = dynamic(() => loadPlayerSearchPanel().then((x) => x.PlayerSearchPanel), { ssr: false });
 const DiagnosisPerspectivesPanel = dynamic(() => import("./DiagnosisPerspectivesPanel").then((x) => x.DiagnosisPerspectivesPanel), { ssr: false });
 const SquadUniquenessPanel = dynamic(() => import("./SquadUniquenessPanel").then((x) => x.SquadUniquenessPanel), { ssr: false });
@@ -174,7 +177,11 @@ export function SquadEditor({
 }) {
   // 枠を押したときに検索を待たせないよう、最初の表示の後に先読みする（2026-10-30）
   useEffect(() => {
-    const id = setTimeout(() => void loadPlayerSearchPanel(), 300);
+    const id = setTimeout(() => {
+      void loadPlayerSearchPanel();
+      void loadSlotPlayerPanel().catch(() => {});
+      void loadSquadBuildPanel().catch(() => {});
+    }, 300);
     return () => clearTimeout(id);
   }, []);
   const router = useRouter();

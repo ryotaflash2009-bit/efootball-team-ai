@@ -444,6 +444,19 @@ async function main() {
       record("[My Team] カードを探して所持で追加（保存データに所持で入る・追加した行は押せない）", Array.isArray(saved) && saved.includes(`${RC_A}:owned`) && nowDisabled, `${JSON.stringify(saved)} disabled=${nowDisabled}`);
       await evalJson(client, `localStorage.removeItem(${JSON.stringify(KEY)})`);
     }
+    // 枠を選んだときの欄・保存ビルドを選ぶ欄は押してから読み込む（2026-11-01）: 埋まった LB を押す → 欄が出る → 「保存ビルドを選ぶ」→ 選ぶ欄が出る
+    {
+      await client.send("Runtime.evaluate", { expression: `localStorage.setItem(${JSON.stringify(SQUADS_KEY)}, ${JSON.stringify(JSON.stringify([squad("sq_bblazypanel1", RC_A, null)]))})` });
+      await go(client, `${BASE}/squads/sq_bblazypanel1`);
+      const slotSel = `[...document.querySelectorAll("button[aria-label]")].find((b) => /^LB: /.test(b.getAttribute("aria-label")))`;
+      await waitForCondition(async () => evalJson(client, `!!${slotSel}`), { timeoutMs: 15000, intervalMs: 250 }).catch(() => {});
+      await evalJson(client, `${slotSel}?.click()`);
+      const chooseSel = `[...document.querySelectorAll("button")].find((b) => b.textContent.trim() === "保存ビルドを選ぶ")`;
+      const slotPanel = await waitForCondition(async () => evalJson(client, `!!${chooseSel}`), { timeoutMs: 15000, intervalMs: 200 }).then(() => true).catch(() => false);
+      await evalJson(client, `${chooseSel}?.click()`);
+      const buildPanel = await waitForCondition(async () => evalJson(client, `document.body.innerText.includes("現在のスカッド用ビルド")`), { timeoutMs: 15000, intervalMs: 200 }).then(() => true).catch(() => false);
+      record("[スカッド] 枠を押すと選手の欄、「保存ビルドを選ぶ」で選ぶ欄が出る（後から読み込み）", slotPanel && buildPanel, `slotPanel=${slotPanel} buildPanel=${buildPanel}`);
+    }
     // スカッドの選手検索で暫定のカードも選べる（2026-11-01）: 暫定のカードの名前で検索 → 「暫定」の印つきで出る → ベンチに追加 → 保存される
     {
       const provCard = await evalJson(client, `(async () => ((await (await fetch("/api/world/new-cards")).json()).cards || []).find((c) => c.provisional && c.nameEn && c.nameEn.length > 4) ?? null)()`);
