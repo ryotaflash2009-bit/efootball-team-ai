@@ -3192,6 +3192,8 @@ const en: Dictionary = {
     positionSummaryIntro: "Owned cards counted by registered position, with your strongest card and how many new cards would be an upgrade.",
     squadFitHeading: "Owned cards that would strengthen your saved squads",
     squadFitIntro: "Owned cards that would fit a slot of the same registered position in a saved squad with a higher OVR than the current player. Open the squad and use “Swap” to apply.",
+    quickAddHeading: "Find cards and add them to My Team",
+    quickAddAction: "Add as owned",
     positionCountTemplate: "Cards: {count}",
     positionNone: "None yet",
     positionFind: "Find this position",
