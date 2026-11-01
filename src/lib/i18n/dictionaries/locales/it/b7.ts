@@ -366,6 +366,8 @@ const part: PartialDictionary = {
     positionSummaryIntro: "Carte possedute contate per ruolo registrato, con la tua carta più forte e quante nuove carte sarebbero un miglioramento.",
     squadFitHeading: "Carte possedute che rafforzerebbero le tue rose salvate",
     squadFitIntro: "Carte possedute che occuperebbero uno slot dello stesso ruolo registrato in una rosa salvata con un OVR più alto del giocatore attuale. Apri la rosa e usa «Sostituisci» per applicarlo.",
+    quickAddHeading: "Trova carte e aggiungile a My Team",
+    quickAddAction: "Aggiungi come posseduta",
     positionCountTemplate: "Carte: {count}",
     positionNone: "Ancora nessuna",
     positionFind: "Cerca questo ruolo",

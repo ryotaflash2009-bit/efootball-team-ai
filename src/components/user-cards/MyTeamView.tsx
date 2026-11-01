@@ -37,6 +37,7 @@ import { usePageTitle } from "@/lib/i18n/use-page-title";
 const YourBestPanel = dynamic(() => import("@/components/titles/YourBestPanel").then((m) => m.YourBestPanel), { ssr: false });
 const MyTeamPositionSummary = dynamic(() => import("@/components/user-cards/MyTeamPositionSummary").then((m) => m.MyTeamPositionSummary), { ssr: false });
 const MyTeamSquadFitPanel = dynamic(() => import("@/components/user-cards/MyTeamSquadFitPanel").then((m) => m.MyTeamSquadFitPanel), { ssr: false });
+const MyTeamQuickAdd = dynamic(() => import("./MyTeamQuickAdd").then((m) => m.MyTeamQuickAdd), { ssr: false });
 const MyTeamAddDialog = dynamic(() => import("./MyTeamAddDialog").then((m) => m.MyTeamAddDialog), { ssr: false });
 const MyTeamBuildPanel = dynamic(() => import("./MyTeamBuildPanel").then((m) => m.MyTeamBuildPanel), { ssr: false });
 
@@ -159,6 +160,8 @@ export function MyTeamView() {
             </Link>
           }
         />
+        {/* 同じ key で空のときと登録があるときの両方に置き、最初の 1 枚を追加して画面が切り替わっても検索を残す */}
+        <MyTeamQuickAdd key="my-team-quick-add" defaultOpen />
       </div>
     );
   }
@@ -229,6 +232,7 @@ export function MyTeamView() {
         }}
       />
       <MyTeamSquadFitPanel />
+      <MyTeamQuickAdd key="my-team-quick-add" />
 
       <div ref={listTopRef} className="scroll-mt-24">
         <UserCardFilters

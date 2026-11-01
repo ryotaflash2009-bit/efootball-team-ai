@@ -3130,6 +3130,8 @@ export interface Dictionary {
     positionSummaryIntro: string;
     squadFitHeading: string;
     squadFitIntro: string;
+    quickAddHeading: string;
+    quickAddAction: string;
     positionCountTemplate: string;
     positionNone: string;
     positionFind: string;

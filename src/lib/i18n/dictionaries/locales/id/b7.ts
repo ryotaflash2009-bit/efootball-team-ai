@@ -366,6 +366,8 @@ const part: PartialDictionary = {
     positionSummaryIntro: "Kartu yang dimiliki dihitung per posisi terdaftar, dengan kartu terkuatmu dan berapa kartu baru yang akan jadi peningkatan.",
     squadFitHeading: "Kartu milikmu yang bisa memperkuat skuad tersimpan",
     squadFitIntro: "Kartu milikmu yang akan masuk ke slot posisi terdaftar yang sama di skuad tersimpan dengan OVR lebih tinggi dari pemain sekarang. Buka skuad dan pakai “Tukar” untuk menerapkan.",
+    quickAddHeading: "Cari kartu dan tambahkan ke My Team",
+    quickAddAction: "Tambah sebagai milikmu",
     positionCountTemplate: "Kartu: {count}",
     positionNone: "Belum ada",
     positionFind: "Cari posisi ini",

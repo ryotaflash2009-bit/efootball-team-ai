@@ -428,6 +428,22 @@ async function main() {
       record("[スカッドの編集] 控えに入れられる所持カード（同じ選手は出さない・押すと控えに入る）", Array.isArray(benchRows) && benchRows.includes(OTHER) && !benchRows.includes(RC_B) && Array.isArray(subs) && subs.includes(OTHER), `rows=${JSON.stringify(benchRows)} subs=${JSON.stringify(subs)}`);
       await evalJson(client, `localStorage.removeItem(${JSON.stringify(KEY)})`);
     }
+    // My Team: カードを探して所持で追加（2026-11-01）。空の My Team で検索 → RC_A を追加 → 保存データに所持で入る・その行は「登録済み」で押せない
+    {
+      const KEY = "efootball-team-ai:local:guest:my-team:v1";
+      await evalJson(client, `localStorage.removeItem(${JSON.stringify(KEY)})`);
+      await go(client, `${BASE}/my-team`);
+      await waitForCondition(async () => evalJson(client, `!!document.querySelector('[data-testid="my-team-quick-add-input"]')`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+      await evalJson(client, `(() => { const el = document.querySelector('[data-testid="my-team-quick-add-input"]'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set; set.call(el, "Roberto Carlos"); el.dispatchEvent(new Event("input", { bubbles: true })); })()`);
+      const rowSel = `[...document.querySelectorAll('[data-testid="my-team-quick-add"] li')].find((li) => li.querySelector('a[href="/players/world/${RC_A}"]'))`;
+      await waitForCondition(async () => evalJson(client, `!!${rowSel}`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+      await evalJson(client, `${rowSel}?.querySelector("button")?.click()`);
+      await new Promise((r) => setTimeout(r, 800));
+      const saved = await evalJson(client, `(JSON.parse(localStorage.getItem(${JSON.stringify(KEY)}) ?? "{}").records ?? []).map((r) => r.worldCardId + ":" + r.ownershipStatus)`);
+      const nowDisabled = await evalJson(client, `!!${rowSel}?.querySelector("button")?.disabled`);
+      record("[My Team] カードを探して所持で追加（保存データに所持で入る・追加した行は押せない）", Array.isArray(saved) && saved.includes(`${RC_A}:owned`) && nowDisabled, `${JSON.stringify(saved)} disabled=${nowDisabled}`);
+      await evalJson(client, `localStorage.removeItem(${JSON.stringify(KEY)})`);
+    }
     // 先発の所属の内訳（2026-10-11）: LB と RB に同じ国籍の 2 枚 → 「国籍」に「<国籍> ×2」・選手一覧の絞り込みへのリンク
     {
       const d = await (await fetch(`${BASE}/api/world/players/${RC_A}`)).json().catch(() => null);

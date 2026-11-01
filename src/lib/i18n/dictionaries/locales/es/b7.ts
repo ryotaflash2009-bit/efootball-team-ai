@@ -366,6 +366,8 @@ const part: PartialDictionary = {
     positionSummaryIntro: "Cartas tuyas contadas por posición registrada, con tu carta más fuerte y cuántas cartas nuevas serían una mejora.",
     squadFitHeading: "Cartas que posees que reforzarían tus plantillas guardadas",
     squadFitIntro: "Cartas que posees que encajarían en un hueco de la misma posición registrada de una plantilla guardada con un OVR mayor que el jugador actual. Abre la plantilla y usa «Cambiar» para aplicarlo.",
+    quickAddHeading: "Busca cartas y añádelas a My Team",
+    quickAddAction: "Añadir como poseída",
     positionCountTemplate: "Cartas: {count}",
     positionNone: "Aún ninguna",
     positionFind: "Buscar esta posición",
