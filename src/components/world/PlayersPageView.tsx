@@ -75,6 +75,8 @@ export function PlayersPageView({
   provisionalCount = 0,
   provisionalMatches = [],
   staleDays = null,
+  provisionalTotal,
+  provisionalMode = "search",
 }: {
   result: Omit<WorldListResult, "players"> & { players: WorldPlayerCardData[] };
   facets: WorldFacets;
@@ -87,6 +89,10 @@ export function PlayersPageView({
   provisionalMatches?: WorldPlayerCardData[];
   /** 正式なデータの取り込みが止まっている日数（7 日以上・サーバーで計算・2026-11-01）。 */
   staleDays?: number | null;
+  /** 合う暫定のカードの総数（表示は最大 12 枚・2026-11-01）。 */
+  provisionalTotal?: number;
+  /** 暫定のカードの欄の出し方（検索語に合う／今の絞り込みに合う）。 */
+  provisionalMode?: "search" | "filter";
 }) {
   const t = useT();
   const { locale, displayLocale } = useLocale();
@@ -107,8 +113,8 @@ export function PlayersPageView({
       <ProvisionalCardsLink count={provisionalCount} />
       {provisionalMatches.length > 0 ? (
         <section className="flex flex-col gap-2" data-testid="provisional-search-results">
-          <h2 className="text-sm font-semibold">{t("provisionalCards", "searchHeadingTemplate").replace("{count}", String(provisionalMatches.length))}</h2>
-          <p className="text-xs text-text-dim">{t("provisionalCards", "searchNote")}</p>
+          <h2 className="text-sm font-semibold">{t("provisionalCards", "searchHeadingTemplate").replace("{count}", String(provisionalTotal ?? provisionalMatches.length))}</h2>
+          <p className="text-xs text-text-dim">{t("provisionalCards", provisionalMode === "filter" ? "filterNote" : "searchNote")}</p>
           <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
             {provisionalMatches.map((p) => (
               <li key={p.worldCardId}>

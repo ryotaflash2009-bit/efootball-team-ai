@@ -13,6 +13,10 @@ import type { WorldPlayerCardData } from "@/components/world/WorldPlayerCard";
 import { settledInOrder } from "@/lib/settled-in-order";
 import { pageMetadata } from "@/lib/seo/page-metadata";
 import { officialStaleDays } from "@/lib/new-cards/constants";
+import { filterProvisionalForList } from "@/lib/world/provisional-mix";
+
+/** 一覧の 1 ページ目に出す暫定のカードの最大数（残りは新しいカードの画面）。 */
+const PROVISIONAL_IN_LIST = 12;
 
 export const metadata = pageMetadata({
   path: "/players",
@@ -143,6 +147,12 @@ export default async function PlayersPage({ searchParams }: { searchParams: Prom
   // 正式なデータの取り込みが止まっていれば知らせる（新しいカードの画面と同じ規則・2026-11-01）
   const newestProvisionalAt = listProvisionalPlayers().map((p) => p.provisional?.firstSeenAt ?? null).filter((v): v is string => typeof v === "string").sort().at(-1) ?? null;
   const staleDays = officialStaleDays(sourceMeta?.syncFinishedAt ?? null, newestProvisionalAt);
+  // 暫定のカード: 検索語があれば検索に合うもの、無ければ 1 ページ目に今の絞り込みに合うもの（2026-11-01・一覧にも混ぜて出す）
+  const provisionalMatches = query.query
+    ? searchProvisionalPlayers(query.query)
+    : query.page === 1
+      ? filterProvisionalForList(listProvisionalPlayers(), query)
+      : [];
   return (
     <PageContainer>
       <PlayersPageView
@@ -152,7 +162,9 @@ export default async function PlayersPage({ searchParams }: { searchParams: Prom
         sourceMeta={sourceMeta}
         hasFilters={hasFilters}
         searchParams={sp}
-        provisionalMatches={query.query ? searchProvisionalPlayers(query.query).map(toCardData) : []}
+        provisionalMatches={provisionalMatches.slice(0, PROVISIONAL_IN_LIST).map(toCardData)}
+        provisionalTotal={provisionalMatches.length}
+        provisionalMode={query.query ? "search" : "filter"}
         provisionalCount={listProvisionalPlayers().length + (await cachedListRecentlyAddedPlayers(NEW_CARD_DAYS, RECENT_LIMIT).catch(() => [])).length}
       />
     </PageContainer>

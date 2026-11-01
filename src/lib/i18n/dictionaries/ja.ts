@@ -5296,6 +5296,7 @@ export interface Dictionary {
     recentEmpty: string;
     searchHeadingTemplate: string;
     searchNote: string;
+    filterNote: string;
     staleNoticeTemplate: string;
     homeUpgradeTemplate: string;
     homeOwnedSquadsTemplate: string;

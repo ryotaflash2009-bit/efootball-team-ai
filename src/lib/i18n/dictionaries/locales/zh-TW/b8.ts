@@ -635,6 +635,7 @@ const part: PartialDictionary = {
     recentEmpty: "最近沒有新增正式的卡。",
     searchHeadingTemplate: "尚未加入正式資料的卡（暫定，{count} 張）",
     searchNote: "與搜尋相符的暫定卡（依其他公開資訊製作的暫時資料）。正式資料到達後會進入下方的一般列表。",
+    filterNote: "符合目前篩選條件的暫定卡（根據其他公開資訊製作的暫時資料，是正式資料匯入暫停期間的新卡）。正式資料到達後會進入下方的一般列表。",
     staleNoticeTemplate: "正式資料（eFootball World）已有 {days} 天未匯入（最後匯入：{date}）。在此期間的新卡以暫定卡（依其他公開資訊製作的暫時資料）顯示。",
     homeUpgradeTemplate: "新卡中有 {count} 張比你的 My Team 更強 → 查看",
     homeOwnedSquadsTemplate: "已擁有的卡可加強 {count} 個陣容 → 查看",

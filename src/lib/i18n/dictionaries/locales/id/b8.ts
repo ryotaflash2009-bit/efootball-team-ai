@@ -635,6 +635,7 @@ const part: PartialDictionary = {
     recentEmpty: "Tidak ada kartu resmi yang ditambahkan baru-baru ini.",
     searchHeadingTemplate: "Kartu yang belum ada di data resmi (sementara, {count})",
     searchNote: "Kartu sementara yang cocok dengan pencarianmu (data sementara dari informasi publik lain). Akan masuk ke daftar biasa di bawah saat data resmi tiba.",
+    filterNote: "Kartu sementara yang cocok dengan filter saat ini (data sementara dari sumber publik lain — kartu baru selama impor data resmi berhenti). Kartu ini masuk ke daftar biasa di bawah setelah data resmi tiba.",
     staleNoticeTemplate: "Data resmi (eFootball World) belum diimpor selama {days} hari (impor terakhir: {date}). Kartu baru sejak itu ditampilkan sebagai kartu sementara (data sementara dari informasi publik lain).",
     homeUpgradeTemplate: "{count} kartu baru lebih kuat dari My Team-mu → Lihat",
     homeOwnedSquadsTemplate: "Kartu milikmu bisa memperkuat {count} skuadmu → Lihat",
