@@ -55,7 +55,8 @@ export function WorldPlayerHero({ player, imageSources: sources }: { player: Saf
             <span className="text-4xl font-black leading-none text-accent tabular-nums sm:text-5xl">
               {player.ovrMax ?? player.ovrBase ?? "–"}
             </span>
-            <span className="pb-1 text-xs font-semibold text-text-dim">{th("maxOvrLabel")}</span>
+            {/* 最大 OVR が無い（暫定のカードなど）ときに大きく出すのは基礎の OVR なので、見出しも「基礎OVR」にする（2026-11-01） */}
+            <span className="pb-1 text-xs font-semibold text-text-dim" data-testid="hero-ovr-label">{th(player.ovrMax != null ? "maxOvrLabel" : "baseOvrLabel")}</span>
             <span className="pb-1 text-xs text-text-dim">
               {th("baseAndCapTemplate")
                 .replace("{base}", String(player.ovrBase ?? "–"))

@@ -104,7 +104,7 @@ export function WorldPlayerSearchCard({
             ) : null}
             {v.registeredPosition ? <Badge tone="neutral" size="xs">{v.registeredPosition}</Badge> : null}
             {v.cardType ? <Badge tone="outline" size="xs">{v.cardType}</Badge> : null}
-            <span className="text-2xs text-text-muted">{fillWc(twc("maxOvrLabel"), { value: String(v.ovr ?? "—") })}</span>
+            <span className="text-2xs text-text-muted">{v.ovrMax == null && v.ovrBase != null ? t("worldPlayerCard", "baseOvrLabel").replace("{value}", String(v.ovrBase)) : fillWc(twc("maxOvrLabel"), { value: String(v.ovr ?? "—") })}</span>
             {v.maximumLevel != null ? (
               <span className="text-2xs text-text-muted">{fillWc(twc("levelCapLabel"), { value: String(v.maximumLevel) })}</span>
             ) : null}

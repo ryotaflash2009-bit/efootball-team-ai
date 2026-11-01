@@ -267,6 +267,16 @@ async function main() {
       record("選手の検索: 暫定のカードも見つかる（API と一覧の画面）", api.includes(prov.worldCardId) && (shown ?? []).includes(prov.worldCardId), `${word} → api ${api.length} / page ${(shown ?? []).length}`);
     } else record("選手の検索: 暫定のカードも見つかる（API と一覧の画面）", true, "no provisional cards");
 
+    // 選手の詳細: 最大 OVR が無いカードは大きな数字の見出しを「基礎OVR」にする（基礎の値を最大と書かない・2026-11-01）
+    {
+      const noMax = await ev(`(async () => ((await (await fetch("/api/world/new-cards")).json()).cards || []).find((c) => c.ovrMax == null && c.ovrBase != null) ?? null)()`);
+      if (noMax) {
+        await go(`${BASE}/players/world/${noMax.worldCardId}`);
+        const label = await ev(`document.querySelector('[data-testid="hero-ovr-label"]')?.textContent ?? null`);
+        record("選手の詳細: 最大 OVR が無いカードは「基礎OVR」と出す（最大と書かない）", label === "基礎OVR", `${noMax.worldCardId} label=${label}`);
+      } else record("選手の詳細: 最大 OVR が無いカードは「基礎OVR」と出す", true, "no card without max OVR");
+    }
+
     // 暫定のカードを一覧とトップにも混ぜる（2026-11-01）: 絞り込み（ポジション）に合う暫定だけが 1 ページ目に出る・トップの「最近更新」に暫定の印
     if (prov && prov.registeredPosition) {
       await go(`${BASE}/players?position=${encodeURIComponent(prov.registeredPosition)}`);
