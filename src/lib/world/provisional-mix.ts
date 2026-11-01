@@ -28,11 +28,18 @@ export function mixByOvr(world: readonly WorldPlayerListItem[], provisional: rea
     .map((x) => x.p);
 }
 
-/** 新しい順に混ぜる（World は見た目の更新の時刻・暫定は最初に見つけた時刻）。同じ時刻は元の順。 */
+/**
+ * 新しい日の順に混ぜる（World は見た目の更新の時刻・暫定は最初に見つけた時刻）。同じ日の中は最大 OVR（無ければ基本）の高い順
+ * （同じ日にまとめて追加されたカードのうち目立つものを先に・2026-11-01）。同じなら元の順。
+ */
 export function mixByRecency(world: readonly WorldPlayerListItem[], provisional: readonly WorldPlayerListItem[], limit: number): WorldPlayerListItem[] {
+  const dayOf = (p: WorldPlayerListItem) => {
+    const t = recencyOf(p);
+    return Number.isFinite(t) ? Math.floor(t / 86_400_000) : -Infinity;
+  };
   return dedupe(world, provisional)
     .map((p, i) => ({ p, i }))
-    .sort((a, b) => recencyOf(b.p) - recencyOf(a.p) || a.i - b.i)
+    .sort((a, b) => dayOf(b.p) - dayOf(a.p) || ovrOf(b.p) - ovrOf(a.p) || a.i - b.i)
     .slice(0, limit)
     .map((x) => x.p);
 }

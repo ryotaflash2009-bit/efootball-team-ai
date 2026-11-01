@@ -31,6 +31,10 @@ describe("mixByRecency", () => {
     const p = [prov({ worldCardId: "p1" }, "2026-10-29T00:00:00Z"), prov({ worldCardId: "p2" }, "2026-10-12T00:00:00Z")];
     expect(mixByRecency(world, p, 10).map((x) => x.worldCardId)).toEqual(["p1", "w1", "p2", "w2"]);
   });
+  it("同じ日の中は最大 OVR（無ければ基本）の高い順", () => {
+    const p = [prov({ worldCardId: "low", ovrMax: null, ovrBase: 77 }, "2026-10-29T09:00:00Z"), prov({ worldCardId: "high", ovrMax: 97 }, "2026-10-29T08:00:00Z"), prov({ worldCardId: "old", ovrMax: 99 }, "2026-10-22T08:00:00Z")];
+    expect(mixByRecency([], p, 10).map((x) => x.worldCardId)).toEqual(["high", "low", "old"]);
+  });
 });
 
 describe("filterProvisionalForList", () => {
