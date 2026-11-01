@@ -14,6 +14,7 @@ import { NEW_CARD_DAYS, RECENT_LIMIT } from "@/lib/new-cards/constants";
 import { JsonLdScript } from "@/components/seo/JsonLdScript";
 import { websiteJsonLd } from "@/lib/seo/structured-data";
 import { officialStaleDays } from "@/lib/new-cards/constants";
+import { mixByOvr, mixByRecency } from "@/lib/world/provisional-mix";
 
 export const metadata = pageMetadata({
   path: "/",
@@ -34,6 +35,7 @@ function toMiniCardData(p: WorldPlayerListItem): HomeMiniCardData {
     ovrMax: p.ovrMax,
     ovrBase: p.ovrBase,
     registeredPosition: p.registeredPosition,
+    provisional: p.provisional ? true : undefined,
     imageSources: resolveCardImageSources({
       worldCardId: p.worldCardId,
       efhubCardId: p.efhubCardId,
@@ -75,8 +77,10 @@ export default async function HomePage() {
   if (settled.usable(0) && metaR.status === "fulfilled") {
     world = { totalCount: metaR.value.totalCount, source: metaR.value.source, syncFinishedAt: metaR.value.syncFinishedAt, latestCardUpdatedAt: metaR.value.latestCardUpdatedAt ?? null };
   }
-  if (settled.usable(1) && topR.status === "fulfilled") topOvr = topR.value.players.map(toMiniCardData);
-  if (settled.usable(2) && recentR.status === "fulfilled") recent = recentR.value.players.map(toMiniCardData);
+  // 暫定のカード（正式なデータの反映前）も混ぜる（2026-11-01・World の取り込みが止まっている間も新しいカードをトップに出す）
+  const provisionalRows = listProvisionalPlayers();
+  if (settled.usable(1) && topR.status === "fulfilled") topOvr = mixByOvr(topR.value.players, provisionalRows, base.pageSize).map(toMiniCardData);
+  if (settled.usable(2) && recentR.status === "fulfilled") recent = mixByRecency(recentR.value.players, provisionalRows, base.pageSize).map(toMiniCardData);
   if (settled.usable(3) && managersR.status === "fulfilled") managerCount = managersR.value;
 
   // 新しいカードの枚数。作り直しの時に取れなければ投げる（少ない枚数のページを 5 分出し続けない）

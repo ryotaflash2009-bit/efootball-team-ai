@@ -267,6 +267,19 @@ async function main() {
       record("選手の検索: 暫定のカードも見つかる（API と一覧の画面）", api.includes(prov.worldCardId) && (shown ?? []).includes(prov.worldCardId), `${word} → api ${api.length} / page ${(shown ?? []).length}`);
     } else record("選手の検索: 暫定のカードも見つかる（API と一覧の画面）", true, "no provisional cards");
 
+    // 暫定のカードを一覧とトップにも混ぜる（2026-11-01）: 絞り込み（ポジション）に合う暫定だけが 1 ページ目に出る・トップの「最近更新」に暫定の印
+    if (prov && prov.registeredPosition) {
+      await go(`${BASE}/players?position=${encodeURIComponent(prov.registeredPosition)}`);
+      const filtered = await ev(`(() => { const s = document.querySelector('[data-testid="provisional-search-results"]'); if (!s) return null; return { n: s.querySelectorAll('a[href^="/players/world/"]').length, pos: [...s.querySelectorAll("li")].map((li) => li.innerText.match(/\\b(GK|CB|LB|RB|DMF|CMF|AMF|LMF|RMF|LWF|RWF|SS|CF)\\b/)?.[0] ?? null), note: s.querySelector("p")?.textContent ?? "" }; })()`);
+      record("選手一覧: 絞り込みに合う暫定のカードを 1 ページ目に出す（同じポジションだけ・絞り込みの説明）", !!filtered && filtered.n > 0 && filtered.n <= 12 && filtered.pos.every((x) => x === null || x === prov.registeredPosition) && /絞り込みに合う/.test(filtered.note), JSON.stringify(filtered));
+      await go(`${BASE}/players?page=2`);
+      const page2 = await ev(`!!document.querySelector('[data-testid="provisional-search-results"]')`);
+      record("選手一覧: 2 ページ目には暫定のカードの欄を出さない", page2 === false, "");
+      await go(`${BASE}/`);
+      const homeBadges = await ev(`document.querySelectorAll('[data-testid="provisional-badge"]').length`);
+      record("トップ: 暫定のカードも混ぜて出す（暫定の印）", homeBadges > 0, `badges=${homeBadges}`);
+    } else record("選手一覧・トップ: 暫定のカードを混ぜる", true, "no provisional cards");
+
     // サイドメニューの「新しいカード」の件数（前回見たあとに追加された枚数）
     const SEEN_KEY = "efootball-team-ai:new-cards-seen:v1";
     await ev(`localStorage.removeItem(${JSON.stringify(SEEN_KEY)})`);

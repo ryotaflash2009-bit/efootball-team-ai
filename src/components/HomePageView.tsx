@@ -1,6 +1,7 @@
 "use client";
 
 import { ProvisionalCardsLink } from "@/components/world/ProvisionalCardsLink";
+import { ProvisionalBadge } from "@/components/world/ProvisionalCardNotice";
 import dynamic from "next/dynamic";
 import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
 import "@/lib/i18n/dictionaries/ja-ns/provisionalCards";
@@ -38,6 +39,8 @@ const OwnedMark = dynamic(() => import("@/components/world/OwnedMark").then((m) 
 const HomeOwnedSquadUpgrades = dynamic(() => import("@/components/world/HomeOwnedSquadUpgrades").then((m) => m.HomeOwnedSquadUpgrades), { ssr: false });
 
 export interface HomeMiniCardData {
+  /** 暫定のカード（正式なデータの反映前・2026-11-01）。 */
+  provisional?: boolean;
   worldCardId: string;
   nameJa: string | null;
   nameEn: string | null;
@@ -82,6 +85,11 @@ function MiniCard({ p, priority = false }: { p: HomeMiniCardData; priority?: boo
       <p className="truncate px-2 py-1.5 text-xs font-semibold" title={name}>
         {name}
       </p>
+      {p.provisional ? (
+        <div className="px-2 pb-1.5">
+          <ProvisionalBadge />
+        </div>
+      ) : null}
     </Link>
   );
 }
@@ -118,7 +126,8 @@ export function HomePageView({
 
   const stats = [
     { label: th("worldCardsLabel"), value: world ? formatNumber(world.totalCount, displayLocale) : "—", icon: "database" as IconName, href: "/players" },
-    { label: th("efhubIndexLabel"), value: efhubTotal != null ? formatNumber(efhubTotal, displayLocale) : "—", icon: "list" as IconName, href: null },
+    // eFHUB の索引の件数は本番のデータ（Supabase）には無いので、無いときは枠ごと出さない（「—」と出していた・2026-11-01）
+    ...(efhubTotal != null ? [{ label: th("efhubIndexLabel"), value: formatNumber(efhubTotal, displayLocale), icon: "list" as IconName, href: null }] : []),
     { label: th("managersLabel"), value: managerCount != null ? formatNumber(managerCount, displayLocale) : "—", icon: "managers" as IconName, href: "/managers" },
     {
       label: th("syncedAtLabel"),
@@ -249,7 +258,7 @@ export function HomePageView({
             <HomeOwnedSquadUpgrades />
           </div>
           {world ? (
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+            <div className={`grid grid-cols-2 gap-3 ${stats.length >= 5 ? "lg:grid-cols-5" : "lg:grid-cols-4"}`}>
               {stats.map((s) => {
                 const body = (
                   <Surface tone="raised" padding="sm" className="h-full" interactive={!!s.href}>

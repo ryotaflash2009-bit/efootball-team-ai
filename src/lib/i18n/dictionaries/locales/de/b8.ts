@@ -635,6 +635,7 @@ const part: PartialDictionary = {
     recentEmpty: "In letzter Zeit wurden keine offiziellen Karten hinzugefügt.",
     searchHeadingTemplate: "Karten, die noch nicht in den offiziellen Daten sind (vorläufig, {count})",
     searchNote: "Vorläufige Karten, die zu deiner Suche passen (vorläufige Daten aus anderen öffentlichen Informationen). Sie wandern in die normale Liste unten, sobald offizielle Daten vorliegen.",
+    filterNote: "Vorläufige Karten, die zu den aktuellen Filtern passen (vorläufige Daten aus anderen öffentlichen Quellen – neue Karten, solange der Import der offiziellen Daten pausiert). Sobald offizielle Daten eintreffen, wandern sie in die normale Liste unten.",
     staleNoticeTemplate: "Offizielle Daten (eFootball World) wurden seit {days} Tagen nicht importiert (letzter Import: {date}). Neue Karten seitdem werden als vorläufige Karten angezeigt (vorläufige Daten aus anderen öffentlichen Informationen).",
     homeUpgradeTemplate: "{count} neue Karten sind stärker als dein My Team → Ansehen",
     homeOwnedSquadsTemplate: "Deine Karten können {count} deiner Kader stärken → Ansehen",

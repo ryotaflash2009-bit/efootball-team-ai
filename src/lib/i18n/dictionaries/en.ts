@@ -5359,6 +5359,7 @@ const en: Dictionary = {
     recentEmpty: "No official cards were added recently.",
     searchHeadingTemplate: "Cards not yet in the official data (provisional, {count})",
     searchNote: "Provisional cards matching your search (temporary data built from other public information). They move into the regular list below when official data arrives.",
+    filterNote: "Provisional cards matching the current filters (temporary data built from other public sources — new cards while the official data import is paused). They move into the normal list below once official data arrives.",
     staleNoticeTemplate: "Official data (eFootball World) has not been imported for {days} days (last import: {date}). New cards since then are shown as provisional cards (temporary data built from other public information).",
     homeUpgradeTemplate: "New cards stronger than your My Team: {count} → View",
     homeOwnedSquadsTemplate: "Your own cards can strengthen {count} of your squads → View",
