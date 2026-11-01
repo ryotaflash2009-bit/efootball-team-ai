@@ -421,6 +421,22 @@ async function main() {
     );
 
     // ============================================================
+    // 3b. 暫定のカード（2026-11-01）: My Team に入れた暫定のカードも 26 能力値があるので候補になる（選べないカードにしない）
+    // ============================================================
+    {
+      const prov = await evalJson(client, `(async () => { const c = ((await (await fetch("/api/world/new-cards")).json()).cards || []).find((x) => x.provisional && x.nameJa && x.registeredPosition !== "GK"); return c ? { id: c.worldCardId, name: c.nameJa } : null; })()`);
+      if (prov) {
+        await setMyTeam(client, [NEUER_GK, prov.id]);
+        await clearBuilds(client);
+        await hardReloadAndSettle(client);
+        await waitForCondition(async () => (await bodyText(client)).includes("選出選手一覧"), { timeoutMs: 15000, intervalMs: 250 });
+        const provBody = await bodyText(client);
+        const listPart = provBody.slice(provBody.indexOf("選出選手一覧"));
+        record("[暫定のカード] My Team の暫定のカードも候補として選ばれる（選べないカードに入らない）", listPart.includes(prov.name) && !provBody.includes("候補にできなかったMy Teamの選手"), `${prov.name} ${prov.id}`);
+      } else record("[暫定のカード] My Team の暫定のカードも候補になる", true, "no provisional cards");
+    }
+
+    // ============================================================
     // 4. GK候補不足: GKスロットは候補不足のまま、他の有効スロットは選考を継続する
     // ============================================================
     await setMyTeam(client, [MALDINI_CB, BECKENBAUER_CB, ROBERTO_CARLOS_LB, THURAM_RB]);
