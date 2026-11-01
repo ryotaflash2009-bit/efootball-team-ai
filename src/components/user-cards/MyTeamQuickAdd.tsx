@@ -12,6 +12,7 @@ import { WorldPlayerSearchCard } from "@/components/world/WorldPlayerSearchCard"
 import { useMyTeam } from "@/lib/user-cards/hooks";
 import { addToMyTeam } from "@/lib/user-cards/my-team-storage";
 import { isSearchInputRejectedResponse } from "@/lib/search/search-input";
+import { playersWithProvisional } from "@/lib/world/search-with-provisional";
 
 const MIN_QUERY_LEN = 2;
 type State = { kind: "idle" } | { kind: "loading" } | { kind: "error" } | { kind: "rejected" } | { kind: "results"; players: WorldPlayerListItem[] };
@@ -45,7 +46,8 @@ export function MyTeamQuickAdd({ defaultOpen = false }: { defaultOpen?: boolean 
       }
       const json = (await r.json().catch(() => null)) as { players?: WorldPlayerListItem[] } | null;
       if (id !== reqId.current) return;
-      setState(json ? { kind: "results", players: Array.isArray(json.players) ? json.players : [] } : { kind: "error" });
+      // 暫定のカード（正式なデータの反映前）も登録できるように、検索に合うものを後ろに足す（2026-11-01）
+      setState(json ? { kind: "results", players: playersWithProvisional(json) } : { kind: "error" });
     }, 300);
     return () => clearTimeout(timer);
   }, [q]);

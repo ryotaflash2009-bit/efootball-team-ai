@@ -12,6 +12,7 @@ import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { fillMessage } from "@/lib/i18n/message-format";
 import { useMyTeam } from "@/lib/user-cards/hooks";
+import { ProvisionalBadge } from "@/components/world/ProvisionalCardNotice";
 
 /**
  * 選手検索結果の 1 カード（スカッド検索 / 選手比較検索で共通の表示部分）。
@@ -95,6 +96,7 @@ export function WorldPlayerSearchCard({
           <p className="truncate text-2xs text-text-dim">{v.nameEn || twc("noEnglishName")}</p>
 
           <div className="mt-1 flex flex-wrap items-center gap-1">
+            {player.provisional ? <ProvisionalBadge /> : null}
             {owned ? (
               <span className="rounded bg-success/90 px-1 text-[9px] font-bold text-black" data-testid="search-card-owned">
                 {t("worldPlayerCard", "ownedBadge")}
