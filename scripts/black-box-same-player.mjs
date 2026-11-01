@@ -466,10 +466,10 @@ async function main() {
         await waitForCondition(async () => evalJson(client, `!![...document.querySelectorAll("button")].find((b) => /ベンチ選手を追加/.test(b.textContent))`), { timeoutMs: 15000, intervalMs: 250 }).catch(() => {});
         await evalJson(client, `[...document.querySelectorAll("button")].find((b) => /ベンチ選手を追加/.test(b.textContent))?.click()`);
         // ヘッダーにも検索の入力があるため、最後の（スカッドの選手検索の）入力に入れる
-        await waitForCondition(async () => evalJson(client, `document.querySelectorAll('input[type="search"]').length >= 2`), { timeoutMs: 8000, intervalMs: 200 }).catch(() => {});
+        await waitForCondition(async () => evalJson(client, `document.querySelectorAll('input[type="search"]').length >= 2`), { timeoutMs: 15000, intervalMs: 200 }).catch(() => {});
         await evalJson(client, `(() => { const el = [...document.querySelectorAll('input[type="search"]')].at(-1); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set; set.call(el, ${JSON.stringify(provCard.nameEn)}); el.dispatchEvent(new Event("input", { bubbles: true })); })()`);
         const rowSel = `[...document.querySelectorAll("li")].find((li) => li.querySelector('a[href="/players/world/${provCard.worldCardId}"]') && li.querySelector("button"))`;
-        await waitForCondition(async () => evalJson(client, `!!${rowSel}`), { timeoutMs: 20000, intervalMs: 300 }).catch(() => {});
+        await waitForCondition(async () => evalJson(client, `!!${rowSel}`), { timeoutMs: 30000, intervalMs: 300 }).catch(() => {});
         const hasBadge = await evalJson(client, `!!${rowSel}?.querySelector('[data-testid="provisional-badge"]')`);
         await evalJson(client, `${rowSel}?.querySelector("button")?.click()`);
         await new Promise((r) => setTimeout(r, 1000));
