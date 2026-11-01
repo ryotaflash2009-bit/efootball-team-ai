@@ -29,21 +29,10 @@ import { categoryName } from "@/lib/progression/ability-editor-labels";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 import { fillMessage } from "@/lib/i18n/message-format";
+import { useSafetyLines } from "./BuildImportLauncher";
 
 type Step = "select" | "error" | "preview" | "confirm" | "saving" | "done" | "savefail";
 
-function useSafetyLines(): string[] {
-  const t = useT();
-  return [
-    t("buildImportModal", "safetyLine1"),
-    t("buildImportModal", "safetyLine2"),
-    t("buildImportModal", "safetyLine3"),
-    t("buildImportModal", "safetyLine4"),
-    t("buildImportModal", "safetyLine5"),
-    t("buildImportModal", "safetyLine6"),
-    t("buildImportModal", "safetyLine7"),
-  ];
-}
 
 const gen = (taken: ReadonlySet<string>) => generateUniqueBuildId(taken);
 
@@ -81,72 +70,8 @@ function describeParseErrorLocalized(
   }
 }
 
-export function BuildImportLauncher({
-  builds,
-  cards,
-  available,
-  stale,
-  onReload,
-}: {
-  builds: SavedBuild[];
-  cards: Map<string, WorldPlayerListItem>;
-  available: boolean;
-  stale: boolean;
-  onReload: () => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const t = useT();
-  const safetyLines = useSafetyLines();
-
-  return (
-    <Surface tone="inset" padding="sm" className="flex flex-col gap-2">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="min-w-0">
-          <p className="text-sm font-semibold">{t("buildImportModal", "launcherHeading")}</p>
-          <p className="mt-0.5 text-2xs text-text-muted">
-            {t("buildImportModal", "launcherDescriptionPrefix")}
-            <b>{t("buildImportModal", "addBoldLabel")}</b>
-            {t("buildImportModal", "launcherDescriptionSuffix")}
-          </p>
-          {/* 7 項目の注意はスマホで長いため畳む（2026-10-25 画面の整理）。文言は HTML に残る */}
-          <details className="mt-1 text-2xs text-text-muted" data-testid="build-import-safety">
-            <summary className="cursor-pointer font-semibold">{t("buildImportModal", "safetySummary")}</summary>
-            <ul className="mt-1 list-disc ps-4">
-              {safetyLines.map((l) => (
-                <li key={l}>{l}</li>
-              ))}
-            </ul>
-          </details>
-        </div>
-        <Button
-          variant="secondary"
-          size="md"
-          iconLeft="sliders"
-          onClick={() => setOpen(true)}
-          disabled={!available}
-          aria-haspopup="dialog"
-        >
-          {t("buildImportModal", "launcherButton")}
-        </Button>
-      </div>
-      {!available ? (
-        <p className="text-2xs text-warning">{t("buildImportModal", "unavailableNote")}</p>
-      ) : null}
-
-      {open ? (
-        <BuildImportModal
-          builds={builds}
-          cards={cards}
-          stale={stale}
-          onReload={onReload}
-          onClose={() => setOpen(false)}
-        />
-      ) : null}
-    </Surface>
-  );
-}
-
-function BuildImportModal({
+/** 取り込みの Modal（入口は BuildImportLauncher.tsx・押したときだけ読み込む・2026-11-01）。 */
+export function BuildImportModal({
   builds,
   cards,
   stale,

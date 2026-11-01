@@ -547,6 +547,20 @@ async function main() {
       await evalJson(client, `${btnSel}?.click()`);
       const closed = await waitForCondition(async () => evalJson(client, `!document.getElementById("build-analysis-bbAnalyze")`), { timeoutMs: 5000, intervalMs: 200 }).then(() => true).catch(() => false);
       record("[保存ビルド分析] 「分析」で分析の欄が出る（後から読み込み）・もう一度押すと閉じる", opened && expanded === "true" && closed, `opened=${opened} expanded=${expanded} closed=${closed}`);
+      // My Builds の書き出し・読み込みの Modal も押してから読み込む（2026-11-01）
+      await navigateAndSettle(client, `${BASE}/my-builds`);
+      const modalOpens = async (label) => {
+        const sel = `[...document.querySelectorAll("button")].find((b) => b.textContent.trim() === ${JSON.stringify(label)} && !b.disabled)`;
+        await waitForCondition(async () => evalJson(client, `!!${sel}`), { timeoutMs: 15000, intervalMs: 250 }).catch(() => {});
+        await evalJson(client, `${sel}?.click()`);
+        const ok = await waitForCondition(async () => evalJson(client, `!!document.querySelector('[role="dialog"]')`), { timeoutMs: 15000, intervalMs: 200 }).then(() => true).catch(() => false);
+        await evalJson(client, `document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }))`);
+        await waitForCondition(async () => evalJson(client, `!document.querySelector('[role="dialog"]')`), { timeoutMs: 5000, intervalMs: 200 }).catch(() => {});
+        return ok;
+      };
+      const exportOk = await modalOpens("保存ビルドを書き出す");
+      const importOk = await modalOpens("保存ビルドを読み込む");
+      record("[My Builds] 書き出し・読み込みの画面が開く（後から読み込み）", exportOk && importOk, `export=${exportOk} import=${importOk}`);
       await navigateAndSettle(client, `${BASE}/best-xi`); // 後の確認は AI ベスト11 のページを読み直す
     }
 
