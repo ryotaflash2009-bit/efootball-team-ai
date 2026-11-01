@@ -88,6 +88,12 @@ describe("buildPlayerSearchCardView", () => {
     expect(v.identityLabel).toContain("World ID 12345678901234567890");
   });
 
+  it("最大 OVR が無いカード（暫定など）は identityLabel で「基礎」と書く（最大と書かない）", () => {
+    const v = buildPlayerSearchCardView(card({ ovrMax: null, ovrBase: 78 }), "ja");
+    expect(v.identityLabel).toContain("基礎 78");
+    expect(v.identityLabel).not.toContain("最大OVR");
+  });
+
   it("identityLabel と imageAlt は locale に応じて切り替わる（欠損時ラベルも含む）", () => {
     const ja = buildPlayerSearchCardView(card({ cardType: null, registeredPosition: null }), "ja");
     const en = buildPlayerSearchCardView(card({ cardType: null, registeredPosition: null }), "en");

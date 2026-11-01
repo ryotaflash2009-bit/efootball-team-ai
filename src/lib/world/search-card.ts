@@ -1,5 +1,6 @@
 import "@/lib/i18n/dictionaries/ja-ns/squadBuildPanel";
 import "@/lib/i18n/dictionaries/ja-ns/worldPlayerSearchCard";
+import "@/lib/i18n/dictionaries/ja-ns/worldPlayerCard";
 import type { WorldPlayerListItem } from "./types";
 import { resolveCardImageSources } from "./image";
 import { resolveAttachedBooster } from "@/lib/progression/booster-resolution";
@@ -93,7 +94,8 @@ export function buildPlayerSearchCardView(player: WorldPlayerListItem, locale: L
     player.cardType ?? translate(locale, "worldPlayerSearchCard", "unknownCardType"),
     player.registeredPosition ?? translate(locale, "worldPlayerSearchCard", "unknownPosition"),
     ovr != null
-      ? translate(locale, "worldPlayerSearchCard", "maxOvrTemplate").replace("{value}", String(ovr))
+      ? // 最大 OVR が無い（暫定のカードなど）ときは基礎の値なので「基礎」と書く（2026-11-01）
+        (player.ovrMax != null ? translate(locale, "worldPlayerSearchCard", "maxOvrTemplate") : translate(locale, "worldPlayerCard", "baseOvrLabel")).replace("{value}", String(ovr))
       : translate(locale, "worldPlayerSearchCard", "noOvrInfoLabel"),
     `World ID ${player.worldCardId}`,
   ].join(" / ");

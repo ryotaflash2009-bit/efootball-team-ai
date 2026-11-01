@@ -2,6 +2,7 @@
 
 import "@/lib/i18n/dictionaries/ja-ns/abilityEditor";
 import "@/lib/i18n/dictionaries/ja-ns/progressionTab";
+import "@/lib/i18n/dictionaries/ja-ns/worldPlayerHero";
 import type {
   ProgressionCard,
   PointsSummary,
@@ -79,7 +80,8 @@ export function ProgressionSummary({
             <span className="text-2xl font-black leading-none text-accent tabular-nums">
               {card.ovrMax ?? card.ovrBase ?? "–"}
             </span>
-            <span className="text-2xs font-semibold text-text-dim">{tp("maxOvrLabel")}</span>
+            {/* 最大 OVR が無い（暫定のカードなど）ときは基礎の値なので「基礎OVR」（2026-11-01） */}
+            <span className="text-2xs font-semibold text-text-dim">{card.ovrMax != null ? tp("maxOvrLabel") : t("worldPlayerHero", "baseOvrLabel")}</span>
             <span className="text-2xs text-text-dim">{tp("levelCap").replace("{level}", String(card.maximumLevel ?? "–"))}</span>
           </div>
           <h3 className="mt-1 truncate text-lg font-bold leading-tight">{name}</h3>
