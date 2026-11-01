@@ -20,6 +20,8 @@ const tierList: Dictionary["tierList"] = {
   showMoreTemplate: "残り {count} 件を表示",
   dataUnavailable: "選手データを読み込めませんでした。時間をおいてもう一度お試しください。",
   newCardsLinkTemplate: "{position} の新しいカードを見る",
+  provisionalNoteTemplate: "正式なデータ（eFootball World）の取り込みが止まっている間に出た {position} の暫定のカード {count} 枚は、最大 OVR が分からないため Tier に入っていません。",
+  provisionalLinkTemplate: "{position} の暫定のカードを見る",
   ownedSummaryTemplate: "あなたの所持: {list}",
 };
 

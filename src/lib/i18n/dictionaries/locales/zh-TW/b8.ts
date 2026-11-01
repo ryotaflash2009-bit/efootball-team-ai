@@ -615,6 +615,8 @@ const part: PartialDictionary = {
     showMoreTemplate: "顯示其餘 {count} 筆",
     dataUnavailable: "無法載入球員資料，請稍後再試。",
     newCardsLinkTemplate: "查看 {position} 的新卡",
+    provisionalNoteTemplate: "正式資料（eFootball World）匯入暫停期間推出的 {count} 張 {position} 暫定卡，因最大 OVR 未知，未列入此 Tier。",
+    provisionalLinkTemplate: "查看 {position} 暫定卡",
     ownedSummaryTemplate: "你擁有：{list}",
   },
   provisionalCards: {

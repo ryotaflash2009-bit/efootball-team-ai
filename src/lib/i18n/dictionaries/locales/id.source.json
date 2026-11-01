@@ -4470,5 +4470,7 @@
  "provisionalCards.squadUsageHeadingTemplate": "1d6a7edbf29b",
  "myTeam.quickAddHeading": "5c1ac5f4e311",
  "myTeam.quickAddAction": "a26ece1e188e",
- "provisionalCards.filterNote": "475f4edf614f"
+ "provisionalCards.filterNote": "475f4edf614f",
+ "tierList.provisionalNoteTemplate": "e759234b9804",
+ "tierList.provisionalLinkTemplate": "df73bf9d45c9"
 }

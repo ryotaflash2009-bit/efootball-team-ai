@@ -76,6 +76,12 @@ async function main() {
   record("用語集: /glossary に 12 の用語・フッターからのリンク", gl.status === 200 && glTerms === 12 && /href="\/glossary"/.test(pages.home.body), `terms=${glTerms}`);
   record("用語集: ティアリストから該当の用語へのリンク", /href="\/glossary#tier"/.test(tierPage.body), "");
   record("ティアリスト: そのポジションの新しいカードへのリンク（/players/new?position=CF）", /data-testid="tier-new-cards-link"/.test(tierPage.body) && /href="\/players\/new\?position=CF"/.test(tierPage.body), "");
+  // 暫定のカードは Tier に入れない・入っていない枚数と見る先を知らせる（2026-11-01）
+  {
+    const provCf = await fetch(`${BASE}/api/world/new-cards`).then((r) => r.json()).then((j) => (j.cards || []).filter((c) => c.provisional && c.registeredPosition === "CF").length).catch(() => null);
+    const hasNote = /data-testid="tier-provisional-note"/.test(tierPage.body);
+    record("ティアリスト: 暫定のカードがあれば「Tier に入っていない」と知らせ、選手一覧の暫定へリンク", provCf ? hasNote && /href="\/players\?position=CF"/.test(tierPage.body) : true, `provCF(new-cards)=${provCf} note=${hasNote}`);
+  }
   record("共通: 現在位置を aria-current=page で示す", /aria-current="page"/.test(pages.players.body), "");
   record("共通: モバイルメニューボタン（aria-label=メニューを開く）", /aria-label="メニューを開く"/.test(pages.home.body), "");
   record("共通: サイドバー折りたたみボタン", /サイドバーを折りたたむ|サイドバーを開く/.test(pages.home.body), "");

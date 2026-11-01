@@ -615,6 +615,8 @@ const part: PartialDictionary = {
     showMoreTemplate: "나머지 {count}건 보기",
     dataUnavailable: "선수 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
     newCardsLinkTemplate: "{position} 새 카드 보기",
+    provisionalNoteTemplate: "정식 데이터(eFootball World) 가져오기가 멈춘 동안 나온 {position} 임시 카드 {count}장은 최대 OVR을 알 수 없어 이 Tier에 들어 있지 않습니다.",
+    provisionalLinkTemplate: "{position} 임시 카드 보기",
     ownedSummaryTemplate: "보유: {list}",
   },
   provisionalCards: {

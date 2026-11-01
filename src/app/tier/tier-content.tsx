@@ -1,6 +1,7 @@
 import { cachedGetFacets, cachedGetSourceMeta, cachedListPlayers } from "@/lib/reference-data/runtime/cached-queries";
 import { isRecentlyAdded } from "@/lib/new-cards/constants";
 import { WorldDataUnavailableError, WorldQueryError } from "@/lib/world/db";
+import { listProvisionalPlayers } from "@/lib/world/repository";
 import { buildOwnTier, sortPositions, pagesNeeded, OWN_TIER_PAGE_SIZE, POSITION_ORDER } from "@/lib/tier/own-tier";
 import { TierListView, TierListUnavailableView, type TierListEntryView } from "@/components/tier/TierListView";
 
@@ -40,5 +41,7 @@ export async function TierContent({ position }: { position: string }) {
   const entries: TierListEntryView[] = tier.ok
     ? tier.entries.map((e) => ({ worldCardId: e.card.worldCardId, nameJa: e.card.nameJa, nameEn: e.card.nameEn, cardType: e.card.cardType, ovrMax: e.card.ovrMax, tier: e.tier, rank: e.rank, topPercent: e.topPercent, isNew: isRecentlyAdded(e.card.addedAt) }))
     : [];
-  return <TierListView positions={positions} position={position} population={population} entries={entries} unavailableReason={tier.ok ? null : tier.reason} syncFinishedAt={syncFinishedAt} />;
+  // 暫定のカード（正式なデータが止まっている間・2026-11-01）は最大 OVR が無いことが多く、順位に入れない。入っていない枚数だけ知らせる
+  const provisionalCount = listProvisionalPlayers().filter((p) => p.registeredPosition === position).length;
+  return <TierListView positions={positions} position={position} population={population} entries={entries} unavailableReason={tier.ok ? null : tier.reason} syncFinishedAt={syncFinishedAt} provisionalCount={provisionalCount} />;
 }
