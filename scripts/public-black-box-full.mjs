@@ -660,6 +660,9 @@ async function main() {
         if (await selectVisible("header input[type='search']")) throw new Error("cramped header input still visible");
         await click("header [data-testid='header-search-link']", "header search link");
         await waitFor(async () => (await locationPath()) === "/players", 10000, "/players");
+        // 画面内の移動のあと、一覧の検索欄が描かれるまで待つ（本番は表示に少し時間がかかる）
+        await settle();
+        await waitFor(async () => await selectVisible("main input[aria-label='選手を検索']"), 10000, "players search input");
         await typeInto("main input[aria-label='選手を検索']", "Messi");
         await waitFor(async () => new URL(await ev("location.href")).searchParams.get("q") === "Messi", 8000, "q in URL");
         await settle();
