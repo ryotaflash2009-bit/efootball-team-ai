@@ -1,6 +1,6 @@
 # Phase C ブラックボックステスト結果（索引 SQLite 投入後の既存UI）
 
-実行日時: 2026-11-01T12:47:10.170Z
+実行日時: 2026-11-03T19:32:16.883Z
 対象: http://localhost:3000
 外部アクセス: 0 回（localhost のみ）
 
@@ -8,7 +8,7 @@
 |---|---|---|
 | PASS | ホームが表示される | HTTP 200 |
 | PASS | プレイヤー一覧が表示される | HTTP 200 |
-| PASS | 選手画像が表示される（<img src=/api/player-image/…> 参照） | 参照 2 件 |
+| PASS | 選手画像が表示される（<img src=/api/player-image/…> 参照） | 参照 3 件 |
 | PASS | 画像は遅延読み込み（最初の最大4枚だけ即時）/ 縦横比固定 | eager 4 / lazy 0 / deferred 20 |
 | PASS | 選手詳細へ移動できる（href=/players/{id} または /players/world/{id}） |  |
 | PASS | 日本語検索が動く（「メッシ」） | HTTP 200 |
