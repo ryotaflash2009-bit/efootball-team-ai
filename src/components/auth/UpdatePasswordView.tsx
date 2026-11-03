@@ -8,7 +8,6 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Surface } from "@/components/ui/Surface";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Field";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { validatePasswordRules } from "@/lib/supabase/password-rules";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 
@@ -25,7 +24,6 @@ export function UpdatePasswordView() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const supabase = getSupabaseBrowserClient();
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -42,6 +40,9 @@ export function UpdatePasswordView() {
       setFieldError(ta("passwordRequirementsHint"));
       return;
     }
+    // supabase-js は重いため、使うときに読み込む（AccountDeletionView と同じ・2026-11-04）。
+    const { getSupabaseBrowserClient } = await import("@/lib/supabase/client");
+    const supabase = getSupabaseBrowserClient();
     if (!supabase) {
       setErrorMessage(ta("genericErrorMessage"));
       return;

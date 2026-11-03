@@ -9,7 +9,6 @@ import { Surface } from "@/components/ui/Surface";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Field";
 import { SignUpSuccessPanel } from "@/components/auth/SignUpSuccessPanel";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isValidEmailFormat, validatePasswordRules } from "@/lib/supabase/password-rules";
 import { classifySignUpFailure } from "@/lib/supabase/auth-errors";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
@@ -33,7 +32,6 @@ export function SignUpView() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const supabase = getSupabaseBrowserClient();
   // ローカル開発ホストだけ、?signupPreview=1 で登録フォームを表示する（black-box で登録フォームの挙動を検証し続けるため）。
   // 本番ホストでは常に限定表示。マウント後に切り替えるので SSR の表示（限定）とずれない。
   const [localPreview, setLocalPreview] = useState(false);
@@ -62,6 +60,9 @@ export function SignUpView() {
       setFieldError(ta("passwordRequirementsHint"));
       return;
     }
+    // supabase-js は重いため、使うときに読み込む（AccountDeletionView と同じ・2026-11-04）。
+    const { getSupabaseBrowserClient } = await import("@/lib/supabase/client");
+    const supabase = getSupabaseBrowserClient();
     if (!supabase) {
       setErrorMessage(ta("genericErrorMessage"));
       return;
