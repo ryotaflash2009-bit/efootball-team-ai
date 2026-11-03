@@ -14,6 +14,7 @@ import { MyTeamFitPanel } from "@/components/world/MyTeamFitPanel";
 import Link from "next/link";
 import { useMemo } from "react";
 import { playersFilterHref } from "@/lib/world/filter-patterns";
+import { usePreferredFootText } from "@/components/world/use-preferred-foot";
 import dynamic from "next/dynamic";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { PageContainer } from "@/components/ui/PageContainer";
@@ -64,6 +65,7 @@ export function WorldPlayerDetailView({
   const t = useT();
   const { locale, displayLocale } = useLocale();
   const tp = (k: keyof Dictionary["playerDetailPage"]) => t("playerDetailPage", k);
+  const footText = usePreferredFootText();
   const analysisScope = hasEfhubAnalysis ? tp("analysisScopeWorldEfhub") : tp("analysisScopeWorld");
   const notYetKeys = [tp("notYetSecondaryPosition"), ...NOT_YET_FIXED_KEYS];
 
@@ -82,7 +84,7 @@ export function WorldPlayerDetailView({
     { label: tp("ageLabel"), value: player.age != null ? `${player.age}` : "—" },
     { label: tp("heightLabel"), value: player.height != null ? `${player.height} cm` : "—" },
     { label: tp("weightLabel"), value: player.weight != null ? `${player.weight} kg` : "—" },
-    { label: tp("preferredFootLabel"), value: player.preferredFoot ?? "—" },
+    { label: tp("preferredFootLabel"), value: footText(player.preferredFoot) ?? "—" },
     { label: tp("playingStyleLabel"), value: player.playingStyle ?? "—", href: playersFilterHref("playingStyle", player.playingStyle) },
     { label: tp("playingStyleDefLabel"), value: player.playingStyleDefensive ?? "—", href: playersFilterHref("playingStyleDef", player.playingStyleDefensive) },
     { label: tp("booster1Label"), value: player.boost1 != null ? `${player.boost1}` : "—" },

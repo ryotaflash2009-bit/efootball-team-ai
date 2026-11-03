@@ -509,6 +509,8 @@ const part: PartialDictionary = {
     maxLevelLabel: "最高等级",
     addedLabel: "加入 TeamAIXI",
     preferredFootLabel: "惯用脚",
+    footLeft: "左脚",
+    footRight: "右脚",
     heightWeightTemplate: "身高 / 体重",
     teamLabel: "球队",
   },

@@ -2848,6 +2848,8 @@ const en: Dictionary = {
     maxLevelLabel: "Max level",
     addedLabel: "Added to TeamAIXI",
     preferredFootLabel: "Preferred foot",
+    footLeft: "Left foot",
+    footRight: "Right foot",
     heightWeightTemplate: "Height / Weight",
     teamLabel: "Team",
   },

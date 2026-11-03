@@ -509,6 +509,8 @@ const part: PartialDictionary = {
     maxLevelLabel: "Maksimum seviye",
     addedLabel: "TeamAIXI'ye eklendi",
     preferredFootLabel: "Tercih edilen ayak",
+    footLeft: "Sol ayak",
+    footRight: "Sağ ayak",
     heightWeightTemplate: "Boy / Kilo",
     teamLabel: "Takım",
   },
