@@ -59,11 +59,14 @@ export function WorldPlayerHero({ player, imageSources: sources }: { player: Saf
             </span>
             {/* 最大 OVR が無い（暫定のカードなど）ときに大きく出すのは基礎の OVR なので、見出しも「基礎OVR」にする（2026-11-01） */}
             <span className="pb-1 text-xs font-semibold text-text-dim" data-testid="hero-ovr-label">{th(player.ovrMax != null ? "maxOvrLabel" : "baseOvrLabel")}</span>
-            <span className="pb-1 text-xs text-text-dim">
-              {th("baseAndCapTemplate")
-                .replace("{base}", String(player.ovrBase ?? "–"))
-                .replace("{cap}", String(player.maximumLevel ?? "–"))}
-            </span>
+            {/* 最大 OVR も最大レベルも無い（暫定のカードなど）ときは、大きな数字と同じ「基礎 81 / Lv上限 –」を重ねて出さない（2026-11-04） */}
+            {player.ovrMax != null || player.maximumLevel != null ? (
+              <span className="pb-1 text-xs text-text-dim" data-testid="hero-base-cap">
+                {th("baseAndCapTemplate")
+                  .replace("{base}", String(player.ovrBase ?? "–"))
+                  .replace("{cap}", String(player.maximumLevel ?? "–"))}
+              </span>
+            ) : null}
           </div>
           <h1 className="mt-2 text-2xl font-bold leading-tight">{name}</h1>
           <p className="text-sm text-text-dim">{player.nameEn || th("noEnglishName")}</p>
