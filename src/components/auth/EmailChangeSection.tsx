@@ -6,7 +6,6 @@ import { useT } from "@/lib/i18n/LocaleContext";
 import { Surface } from "@/components/ui/Surface";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Field";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isValidEmailFormat } from "@/lib/supabase/password-rules";
 import { isEmailDeliveryVerified, resolveAuthRedirectOrigin } from "@/lib/supabase/account-availability";
 import { classifyEmailLinkFailure } from "@/lib/supabase/email-link";
@@ -34,6 +33,8 @@ export function EmailChangeSection() {
       setMessage({ tone: "error", text: ta("invalidEmailError") });
       return;
     }
+    // supabase-js は重いため、使うときに読み込む（AccountDeletionView と同じ・2026-11-04）。
+    const { getSupabaseBrowserClient } = await import("@/lib/supabase/client");
     const supabase = getSupabaseBrowserClient();
     if (!supabase) {
       setMessage({ tone: "error", text: ta("authErrorNotConfigured") });

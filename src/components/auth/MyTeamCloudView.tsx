@@ -8,7 +8,6 @@ import { useT } from "@/lib/i18n/LocaleContext";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Surface } from "@/components/ui/Surface";
 import { Button } from "@/components/ui/Button";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useSupabaseSession } from "@/lib/supabase/use-auth-session";
 import { useMyTeam } from "@/lib/user-cards/hooks";
 import { useResolvedCards } from "@/lib/user-cards/use-resolved-cards";
@@ -109,6 +108,8 @@ export function MyTeamCloudView() {
   const [provenanceAck, setProvenanceAck] = useState(false);
 
   const checkCloud = useCallback(async () => {
+    // supabase-js は重いため、使うときに読み込む（AccountDeletionView と同じ・2026-11-04）。
+    const { getSupabaseBrowserClient } = await import("@/lib/supabase/client");
     const supabase = getSupabaseBrowserClient();
     if (!supabase) return;
     const requestId = ++cloudRequestIdRef.current;
@@ -183,6 +184,8 @@ export function MyTeamCloudView() {
     if (isEmptyAccountWithCloudData) return; // 空データでの上書きは例外なく拒否する
     // UIのdisabled属性とまったく同じ判定関数を使う(画面と処理の食い違いを構造的に防ぐ)。
     if (isProvenanceConfirmationRequired(provenanceStatus, provenanceAck)) return;
+    // supabase-js は重いため、使うときに読み込む（AccountDeletionView と同じ・2026-11-04）。
+    const { getSupabaseBrowserClient } = await import("@/lib/supabase/client");
     const supabase = getSupabaseBrowserClient();
     if (!supabase) return;
     setSaving(true);
@@ -206,6 +209,8 @@ export function MyTeamCloudView() {
 
   async function handleDeleteConfirmed() {
     if (deleting || !cloudSnapshot) return; // 連打防止
+    // supabase-js は重いため、使うときに読み込む（AccountDeletionView と同じ・2026-11-04）。
+    const { getSupabaseBrowserClient } = await import("@/lib/supabase/client");
     const supabase = getSupabaseBrowserClient();
     if (!supabase) return;
     setDeleting(true);
