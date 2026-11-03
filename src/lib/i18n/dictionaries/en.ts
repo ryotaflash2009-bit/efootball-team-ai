@@ -54,7 +54,7 @@ const en: Dictionary = {
     heroTitleSuffix: ".",
     heroDescriptionTemplate:
       "All {count} eFootball World cards. 26 abilities, skills, progression calculations, manager boosters, and Link-Up Play conditions — all in one screen. Items whose calculation rules aren't confirmed are clearly marked \"under verification.\"",
-    searchPlaceholder: "Search by player name or World ID…",
+    searchPlaceholder: "Player name or World ID…",
     searchAriaLabel: "Search players",
     searchButton: "Search",
     compareButton: "Compare Players",
@@ -2943,7 +2943,7 @@ const en: Dictionary = {
     filterLabelMinOvr: "Max OVR ≥",
     filterLabelMaxOvr: "Max OVR ≤",
     filterLabelBooster: "Booster",
-    searchPlaceholder: "Japanese name / English name / World ID / eFHUB ID",
+    searchPlaceholder: "Name (JA/EN), World ID or eFHUB ID",
     searchAriaLabel: "Search players",
     sortAriaLabel: "Sort",
     filterToggleTemplate: "Filters{count}",
