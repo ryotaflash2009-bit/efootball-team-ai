@@ -817,6 +817,9 @@ async function main() {
       }
       await nav(`/squads/compare?a=${ids[0]}&b=${ids[1]}`);
       await waitFor(async () => (await run(pageText)).includes("共通カード"), 10000, "comparison (ja)");
+      // 結果は別チャンク（SquadCompareResult・2026-11-04）。タブの切り替えが効くことも確かめる。
+      await ev(`[...document.querySelectorAll("button[aria-pressed]")].find((b) => b.textContent.trim() === "警告").click()`);
+      await waitFor(async () => await ev(`[...document.querySelectorAll("button[aria-pressed]")].find((b) => b.textContent.trim() === "警告")?.getAttribute("aria-pressed") === "true"`), 5000, "warnings tab");
       await ev(`localStorage.setItem("efootball-team-ai:locale:v1", "en")`);
       await ev("location.reload()");
       await sleep(300);
