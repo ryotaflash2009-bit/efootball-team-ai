@@ -39,7 +39,9 @@ export function Header({ onMenuClick }: { onMenuClick: () => void }) {
           const v = q.trim();
           router.push(v ? `/players?q=${encodeURIComponent(v)}` : "/players");
         }}
-        className="ms-auto flex min-w-0 max-w-sm flex-1 items-center gap-2 rounded-md border border-border bg-surface-2 px-2.5 focus-within:border-accent"
+        // 幅の狭いスマホ（460px 未満）では入力欄が 20〜50px ほどにしかならず使いにくいため、
+        // 代わりに虫眼鏡のボタンで選手一覧（検索欄つき）へ移動する（2026-11-04）。
+        className="ms-auto flex min-w-0 max-w-sm flex-1 items-center gap-2 rounded-md border border-border bg-surface-2 px-2.5 focus-within:border-accent max-[459px]:hidden"
       >
         <Icon name="search" size={16} className="shrink-0 text-text-dim" />
         <input
@@ -53,6 +55,15 @@ export function Header({ onMenuClick }: { onMenuClick: () => void }) {
           className="h-9 min-w-0 flex-1 bg-transparent text-sm text-text placeholder:text-text-muted focus:outline-none"
         />
       </form>
+      <Link
+        href="/players"
+        aria-label={t("header", "searchAriaLabel")}
+        title={t("header", "searchAriaLabel")}
+        data-testid="header-search-link"
+        className="ms-auto inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border bg-surface-2 text-text-dim transition-colors hover:border-accent hover:text-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent min-[460px]:hidden"
+      >
+        <Icon name="search" size={18} />
+      </Link>
 
       <HeaderAccountNav />
 

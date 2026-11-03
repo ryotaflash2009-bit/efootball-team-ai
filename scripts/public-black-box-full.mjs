@@ -653,7 +653,20 @@ async function main() {
         return { ok: true, detail: `${n} results` };
       });
     }
-    await step(vp, "header search", "submit with Enter", async () => {
+    // 460px 未満では、ヘッダーの検索欄の代わりに虫眼鏡のボタンで選手一覧へ移る（2026-11-04）。
+    if (vp.width < 460) {
+      await step(vp, "header search", "search button opens /players", async () => {
+        await nav("/");
+        if (await selectVisible("header input[type='search']")) throw new Error("cramped header input still visible");
+        await click("header [data-testid='header-search-link']", "header search link");
+        await waitFor(async () => (await locationPath()) === "/players", 10000, "/players");
+        await typeInto("main input[aria-label='選手を検索']", "Messi");
+        await waitFor(async () => new URL(await ev("location.href")).searchParams.get("q") === "Messi", 8000, "q in URL");
+        await settle();
+        const n = (await run(worldCardIds)).length;
+        return { ok: n > 0, detail: `${n} results` };
+      });
+    } else await step(vp, "header search", "submit with Enter", async () => {
       await nav("/");
       await typeInto("header input[type='search']", "Messi");
       await client.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, text: "\r" });
