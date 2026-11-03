@@ -90,7 +90,6 @@ import { SquadBuildUsagePanel } from "./SquadBuildUsagePanel";
 import { SquadBench, type BenchRow } from "./SquadBench";
 import { SquadManagerPanel } from "./SquadManagerPanel";
 import { TeamSummaryPanel } from "./TeamSummaryPanel";
-import { SquadDiagnosisPanel } from "./SquadDiagnosisPanel";
 import { LinkUpPanel } from "./LinkUpPanel";
 import { Surface } from "@/components/ui/Surface";
 import { Button } from "@/components/ui/Button";
@@ -158,6 +157,9 @@ const SlotPlayerPanel = dynamic(() => loadSlotPlayerPanel().then((x) => x.SlotPl
 const loadSquadBuildPanel = () => import("./SquadBuildPanel");
 const SquadBuildPanel = dynamic(() => loadSquadBuildPanel().then((x) => x.SquadBuildPanel), { ssr: false });
 const PlayerSearchPanel = dynamic(() => loadPlayerSearchPanel().then((x) => x.PlayerSearchPanel), { ssr: false });
+// スカッド診断の欄は編成エリアの下（最初の画面の外）にあるため、最初の JS から外して先読みする（2026-11-04）
+const loadSquadDiagnosisPanel = () => import("./SquadDiagnosisPanel");
+const SquadDiagnosisPanel = dynamic(() => loadSquadDiagnosisPanel().then((x) => x.SquadDiagnosisPanel), { ssr: false });
 const DiagnosisPerspectivesPanel = dynamic(() => import("./DiagnosisPerspectivesPanel").then((x) => x.DiagnosisPerspectivesPanel), { ssr: false });
 const SquadUniquenessPanel = dynamic(() => import("./SquadUniquenessPanel").then((x) => x.SquadUniquenessPanel), { ssr: false });
 const GamePlanPanel = dynamic(() => import("@/components/squad/GamePlanPanel").then((m) => m.GamePlanPanel), { ssr: false });
@@ -181,6 +183,7 @@ export function SquadEditor({
       void loadPlayerSearchPanel();
       void loadSlotPlayerPanel().catch(() => {});
       void loadSquadBuildPanel().catch(() => {});
+      void loadSquadDiagnosisPanel().catch(() => {});
     }, 300);
     return () => clearTimeout(id);
   }, []);
