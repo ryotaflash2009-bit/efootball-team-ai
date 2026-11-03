@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useT } from "@/lib/i18n/LocaleContext";
 import { Surface } from "@/components/ui/Surface";
 import { Button } from "@/components/ui/Button";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { classifyResendFailure } from "@/lib/supabase/auth-errors";
 import { getRemainingCooldownSeconds, canResendNow } from "@/lib/supabase/resend-cooldown";
 import { isLocalDevHostname } from "@/lib/supabase/local-dev";
@@ -49,6 +48,8 @@ export function SignUpSuccessPanel({ email, successMessage }: { email: string; s
     if (resending) return; // 連打防止
     if (!canResendNow(lastSentAt, Date.now())) return;
 
+    // supabase-js は重いため、使うときに読み込む（AccountDeletionView と同じ・2026-11-04）。
+    const { getSupabaseBrowserClient } = await import("@/lib/supabase/client");
     const supabase = getSupabaseBrowserClient();
     if (!supabase) {
       setResendResult({ tone: "error", text: ta("resendConfirmationFailedMessage") });
