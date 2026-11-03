@@ -4472,5 +4472,7 @@
  "myTeam.quickAddAction": "a26ece1e188e",
  "provisionalCards.filterNote": "475f4edf614f",
  "tierList.provisionalNoteTemplate": "e759234b9804",
- "tierList.provisionalLinkTemplate": "df73bf9d45c9"
+ "tierList.provisionalLinkTemplate": "df73bf9d45c9",
+ "worldPlayerHero.footLeft": "23e11106219f",
+ "worldPlayerHero.footRight": "92135f2d2bdd"
 }

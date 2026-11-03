@@ -21,6 +21,7 @@ import { useWorldBasePercentiles } from "@/lib/percentiles/use-world-base-percen
 import { cardBasePercentiles, type CardPercentile } from "@/lib/percentiles/card-percentiles";
 import { BUCKET_LABEL_KEY } from "@/components/world/WorldBasePercentilePanel";
 import { fillMessage } from "@/lib/i18n/message-format";
+import { usePreferredFootText } from "@/components/world/use-preferred-foot";
 
 function useShortName() {
   const t = useT();
@@ -61,6 +62,7 @@ export function ComparisonTables({
 }) {
   const t = useT();
   const tct = (k: keyof Dictionary["comparisonTables"]) => t("comparisonTables", k);
+  const footText = usePreferredFootText();
   const fillCt = (s: string, vars: Record<string, string>) =>
     fillMessage(s, vars);
   const { locale, displayLocale } = useLocale();
@@ -130,7 +132,7 @@ export function ComparisonTables({
                   <td className="sticky start-0 z-10 bg-surface px-3 py-1.5 text-text-dim">{localizeLibText(row.label, displayLocale)}</td>
                   {row.perPlayer.map((v, i) => (
                     <td key={i} className="px-2 py-1.5 text-center">
-                      {v ?? "—"}
+                      {(row.label === "利き足" && typeof v === "string" ? footText(v) : v) ?? "—"}
                     </td>
                   ))}
                 </tr>

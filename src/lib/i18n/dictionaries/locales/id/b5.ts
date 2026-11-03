@@ -509,6 +509,8 @@ const part: PartialDictionary = {
     maxLevelLabel: "Level maksimum",
     addedLabel: "Ditambahkan ke TeamAIXI",
     preferredFootLabel: "Kaki dominan",
+    footLeft: "Kaki kiri",
+    footRight: "Kaki kanan",
     heightWeightTemplate: "Tinggi / Berat",
     teamLabel: "Tim",
   },

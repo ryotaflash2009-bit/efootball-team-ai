@@ -12,6 +12,7 @@ import { MyTeamButton } from "@/components/user-cards/MyTeamButton";
 import { Icon } from "@/components/ui/Icon";
 import { Badge } from "@/components/ui/Badge";
 import { useT, useLocale } from "@/lib/i18n/LocaleContext";
+import { usePreferredFootText } from "./use-preferred-foot";
 import { resolvePlayerDisplayName } from "@/lib/i18n/display-name";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 
@@ -23,6 +24,7 @@ export function WorldPlayerHero({ player, imageSources: sources }: { player: Saf
   const t = useT();
   const { locale, displayLocale } = useLocale();
   const th = (k: keyof Dictionary["worldPlayerHero"]) => t("worldPlayerHero", k);
+  const footText = usePreferredFootText();
   const name = resolvePlayerDisplayName(player, locale, t("squadBuildPanel", "cardFallbackNameTemplate").replace("{id}", player.worldCardId));
 
   const facts: { label: string; value: string }[] = [
@@ -30,7 +32,7 @@ export function WorldPlayerHero({ player, imageSources: sources }: { player: Saf
     { label: th("maxOvrFactLabel"), value: `${player.ovrMax ?? "–"}` },
     { label: th("maxLevelLabel"), value: `${player.maximumLevel ?? "–"}` },
     { label: th("addedLabel"), value: player.addedAt ? formatDate(new Date(player.addedAt), displayLocale) : "—" },
-    { label: th("preferredFootLabel"), value: player.preferredFoot ?? "—" },
+    { label: th("preferredFootLabel"), value: footText(player.preferredFoot) ?? "—" },
     { label: th("heightWeightTemplate"), value: `${player.height ?? "–"}cm / ${player.weight ?? "–"}kg` },
     { label: th("teamLabel"), value: player.team ?? "—" },
   ];

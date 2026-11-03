@@ -274,6 +274,9 @@ async function main() {
         await go(`${BASE}/players/world/${noMax.worldCardId}`);
         const label = await ev(`document.querySelector('[data-testid="hero-ovr-label"]')?.textContent ?? null`);
         record("選手の詳細: 最大 OVR が無いカードは「基礎OVR」と出す（最大と書かない）", label === "基礎OVR", `${noMax.worldCardId} label=${label}`);
+        // 利き足は元データの英語（Left foot / Right foot）のままにせず、表示言語の言葉にする（2026-11-04）
+        const body = await ev(`document.querySelector("main")?.innerText ?? ""`);
+        record("選手の詳細: 利き足を日本語で出す（Left foot / Right foot のままにしない）", /[左右]足/.test(body) && !/(Left|Right) foot/.test(body), `${noMax.worldCardId}`);
       } else record("選手の詳細: 最大 OVR が無いカードは「基礎OVR」と出す", true, "no card without max OVR");
     }
 

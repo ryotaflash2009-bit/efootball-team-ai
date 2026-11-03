@@ -509,6 +509,8 @@ const part: PartialDictionary = {
     maxLevelLabel: "Nível máximo",
     addedLabel: "Adicionada ao TeamAIXI",
     preferredFootLabel: "Pé preferido",
+    footLeft: "Pé esquerdo",
+    footRight: "Pé direito",
     heightWeightTemplate: "Altura / Peso",
     teamLabel: "Time",
   },
