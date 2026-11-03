@@ -1,6 +1,6 @@
 # Phase B.5 ブラックボックステスト結果（SQLite 導入後の既存UI）
 
-実行日時: 2026-11-01T12:47:09.910Z
+実行日時: 2026-11-03T19:32:16.623Z
 対象: http://localhost:3000（dev サーバー）
 外部アクセス: 0 回（localhost のみ。選手画像プロキシの有効IDは叩かない）
 
@@ -9,7 +9,7 @@
 | PASS | ホームが表示される | HTTP 200 |
 | PASS | ホームにデータ状態が出る |  |
 | PASS | プレイヤー一覧が表示される | HTTP 200 |
-| PASS | 選手画像参照が存在する（<img src=/api/player-image/…>） | 参照 2 件 |
+| PASS | 選手画像参照が存在する（<img src=/api/player-image/…>） | 参照 4 件 |
 | PASS | 画像は遅延読み込み（最初の最大4枚だけ即時・残りは画面の近くで） | eager 4 / lazy 0 / deferred 20 |
 | PASS | 画像枠の縦横比固定（aspect-[3/4] = CLS対策） |  |
 | PASS | 日本語検索が動く（「メッシ」） | HTTP 200 |
