@@ -104,6 +104,8 @@ function matchNote(m: SourceMatch, sameNameOvr: number | null | "loading", tp: T
       return { text: tp("matchStats"), tone: "ok" };
     case "typeLevelOvr":
       return { text: tp("matchTypeLevelOvr"), tone: "ok" };
+    case "crossSource":
+      return { text: tp("matchCrossSource"), tone: "ok" };
     case "candidate":
       return { text: fillMessage(tp("matchCandidateTemplate"), { count: String(m.record.resolved_card_ids.length) }), tone: "warn" };
     case "cardIdConflict":

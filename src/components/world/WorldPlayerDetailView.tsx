@@ -253,8 +253,8 @@ export function WorldPlayerDetailView({
 
   // 比べるカード（毎回のレンダーで新しい物を作らない・2026-10-18）
   const fitCard = useMemo(
-    () => ({ worldCardId: player.worldCardId, nameJa: player.nameJa, nameEn: player.nameEn, registeredPosition: player.registeredPosition ?? null, ovrBase: player.ovrBase ?? null, ovrMax: player.ovrMax ?? null }),
-    [player.worldCardId, player.nameJa, player.nameEn, player.registeredPosition, player.ovrBase, player.ovrMax],
+    () => ({ worldCardId: player.worldCardId, nameJa: player.nameJa, nameEn: player.nameEn, registeredPosition: player.registeredPosition ?? null, ovrBase: player.ovrBase ?? null, ovrMax: player.ovrMax ?? null, maximumLevel: player.maximumLevel ?? null }),
+    [player.worldCardId, player.nameJa, player.nameEn, player.registeredPosition, player.ovrBase, player.ovrMax, player.maximumLevel],
   );
 
   return (

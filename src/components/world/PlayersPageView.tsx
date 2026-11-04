@@ -126,6 +126,11 @@ export function PlayersPageView({
             {provisionalMatches.map((p) => (
               <li key={p.worldCardId}>
                 <WorldPlayerCard player={p} />
+                {SourceRatingsBadges ? (
+                  <div className="mt-1">
+                    <SourceRatingsBadges card={p} compact />
+                  </div>
+                ) : null}
               </li>
             ))}
           </ul>

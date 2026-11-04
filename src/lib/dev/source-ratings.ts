@@ -52,7 +52,7 @@ const sourceRecordSchema = z.looseObject({
   source_table_type: z.string().default(""),
   fetched_at: z.string().default(""),
   /** API がローカルの World データと突き合わせた結果（ファイルには無い）。{@link resolveRecordCards} */
-  resolved_by: z.enum(["stats", "typeLevelOvr"]).nullable().default(null),
+  resolved_by: z.enum(["stats", "typeLevelOvr", "crossSource"]).nullable().default(null),
   resolved_card_ids: z.array(z.string()).default([]),
 });
 
@@ -74,6 +74,7 @@ export interface SourceCardRef {
   registeredPosition: string | null;
   ovrBase?: number | null;
   ovrMax: number | null;
+  maximumLevel?: number | null;
 }
 
 /**
@@ -167,22 +168,53 @@ export interface ResolverCard {
   maximumLevel: number | null;
   ovrBase: number | null;
   ovrMax: number | null;
+  stats: Readonly<Record<string, number>>;
+}
+
+/** 個別ページの Lv 上限（「育成不可」などは null）。 */
+function recordMaxLevel(record: SourceRecord): number | null {
+  const level = Number.parseInt(record.stats_and_boosters["Lv上限"] ?? "", 10);
+  return Number.isFinite(level) ? level : null;
+}
+
+/** カードデータに無いカード番号の記録を、照合の候補として扱う形にする。 */
+function recordAsCard(record: SourceRecord, id: string): ResolverCard {
+  const [ovrBase = null, ovrMax = ovrBase] = recordOveralls(record);
+  return {
+    worldCardId: id,
+    nameJa: record.player_name,
+    nameEn: null,
+    cardType: recordCardType(record),
+    maximumLevel: recordMaxLevel(record),
+    ovrBase,
+    ovrMax,
+    stats: recordCoreStats(record) ?? {},
+  };
 }
 
 /**
- * カード番号の無い記録が、どの World カードのものかをローカルのカードデータから特定する。
+ * カード番号の無い記録が、どのカードのものかをカードデータと他のソースの記録から特定する。
  * - stats: 同名のカードのうち、26 能力値がすべて基本値と同じ（ソース A は順位用の総合値がカードの総合値と基準が違うため）
  * - typeLevelOvr: 同名のカードのうち、種別・Lv 上限・総合値（初期または最大）が同じ
+ * - crossSource: 上のどちらかで候補が複数あり、他のソースが特定したカードがその中の 1 枚だけ
  *
+ * カードデータに無くても、他の記録のカード番号が指すカードは候補に入れる（新しいカードと取り違えて確定にしない）。
+ * 種別・Lv 上限が分からない候補は「同じかもしれない」として残す。
  * ポジションでは絞らない（順位の表は登録ポジション以外の順位も載せる）。候補が複数なら全部残し、画面では確定扱いにしない。
  */
-export function resolveRecordCards(
-  file: SourceRatingsFile,
-  cards: readonly ResolverCard[],
-  statsOf: (worldCardId: string) => Readonly<Record<string, number>>,
-): SourceRatingsFile {
+export function resolveRecordCards(file: SourceRatingsFile, cards: readonly ResolverCard[]): SourceRatingsFile {
+  const known = new Set(cards.map((c) => c.worldCardId));
+  const allCards = [...cards];
+  for (const record of file.players.flatMap((p) => p.records)) {
+    const id = recordCardId(record);
+    if (id && !known.has(id)) {
+      known.add(id);
+      allCards.push(recordAsCard(record, id));
+    }
+  }
+
   const byName = new Map<string, ResolverCard[]>();
-  for (const card of cards) {
+  for (const card of allCards) {
     for (const key of new Set([card.nameJa, card.nameEn].filter((n): n is string => !!n?.trim()).map(nameKey))) {
       const list = byName.get(key);
       if (list) list.push(card);
@@ -195,26 +227,41 @@ export function resolveRecordCards(
     if (recordCardId(record) || !candidates) return record;
     const stats = recordCoreStats(record);
     if (stats) {
-      const same = candidates.filter((c) => {
-        const own = statsOf(c.worldCardId);
-        return Object.entries(stats).every(([key, value]) => own[key] === value);
-      });
+      const same = candidates.filter((c) => Object.entries(stats).every(([key, value]) => c.stats[key] === value));
       if (same.length > 0) return { ...record, resolved_by: "stats", resolved_card_ids: same.map((c) => c.worldCardId) };
     }
     const type = recordCardType(record);
     const overalls = recordOveralls(record);
     if (!type || overalls.length === 0) return record;
-    const level = Number.parseInt(record.stats_and_boosters["Lv上限"] ?? "", 10);
+    const level = recordMaxLevel(record);
     const same = candidates.filter(
       (c) =>
-        c.cardType === type &&
-        (!Number.isFinite(level) || c.maximumLevel === level) &&
+        (c.cardType == null || c.cardType === type) &&
+        (level == null || c.maximumLevel == null || c.maximumLevel === level) &&
         overalls.some((v) => v === c.ovrBase || v === c.ovrMax),
     );
     return same.length > 0 ? { ...record, resolved_by: "typeLevelOvr", resolved_card_ids: same.map((c) => c.worldCardId) } : record;
   };
+  const resolved = file.players.map((p) => ({ ...p, records: p.records.map(resolve) }));
 
-  return { ...file, players: file.players.map((p) => ({ ...p, records: p.records.map(resolve) })) };
+  // カードごとに、特定できたソース（カード番号・1 枚に絞れた記録）を集める
+  const sourcesByCard = new Map<string, Set<SourceId>>();
+  const addSource = (id: string, source: SourceId) => {
+    const sources = sourcesByCard.get(id);
+    if (sources) sources.add(source);
+    else sourcesByCard.set(id, new Set([source]));
+  };
+  for (const record of resolved.flatMap((p) => p.records)) {
+    const id = recordCardId(record) ?? (record.resolved_card_ids.length === 1 ? record.resolved_card_ids[0] : null);
+    if (id) addSource(id, record.source);
+  }
+  const narrow = (record: SourceRecord): SourceRecord => {
+    if (record.resolved_card_ids.length < 2) return record;
+    const others = record.resolved_card_ids.filter((id) => [...(sourcesByCard.get(id) ?? [])].some((s) => s !== record.source));
+    return others.length === 1 ? { ...record, resolved_by: "crossSource", resolved_card_ids: others } : record;
+  };
+
+  return { ...file, players: resolved.map((p) => ({ ...p, records: p.records.map(narrow) })) };
 }
 
 export interface SourceRatingsIndex {
@@ -261,33 +308,37 @@ export function buildSourceRatingsIndex(file: SourceRatingsFile): SourceRatingsI
  * - cardId: 記録のカード番号がこのカードと同じ（確定）
  * - stats: カード番号の無い記録で、26 能力値が同じカードがこの 1 枚だけ（確定）
  * - typeLevelOvr: カード番号の無い記録で、種別・Lv 上限・総合値が同じカードがこの 1 枚だけ（手元のカードデータの中で確定）
+ * - crossSource: 同じ条件のカードが複数ある中で、他のソースが特定したカードがこの 1 枚だけ（有力）
  * - nameOvr: 上の 2 つで特定できない記録で、名前・総合値（とポジション）が同じ。同名・同総合値の別カードがあり得るので、画面で確定できたときだけ結び付ける
  * - candidate: 能力値または種別などが同じカードが複数あり、このカードはその 1 枚（未確定）
- * - cardIdConflict: カード番号は同じだが、総合値がこのカードと食い違う（誤った番号の可能性。確定として出さない）
+ * - cardIdConflict: カード番号は同じだが、総合値か Lv 上限がこのカードと食い違う（誤った番号の可能性。確定として出さない）
  * - samePerson: カード番号の人物のキーが同じ＝同じ選手の別のカード向け（選手は確定・カードは別。参考表示）
  * - nameOnly: カード番号の無い記録で、名前だけが同じ（同じ選手の別のカード向けの可能性が高い。参考表示）
  *
  * カード番号を持つ記録は名前では結び付けない（同名の別人を混ぜない）。
  */
-export type SourceMatchKind = "cardId" | "stats" | "typeLevelOvr" | "nameOvr" | "candidate" | "cardIdConflict" | "samePerson" | "nameOnly";
+export type SourceMatchKind = "cardId" | "stats" | "typeLevelOvr" | "crossSource" | "nameOvr" | "candidate" | "cardIdConflict" | "samePerson" | "nameOnly";
 
 export interface SourceMatch {
   kind: SourceMatchKind;
   record: SourceRecord;
 }
 
-const MATCH_ORDER: Record<SourceMatchKind, number> = { cardId: 0, stats: 1, typeLevelOvr: 2, nameOvr: 3, candidate: 4, cardIdConflict: 5, samePerson: 6, nameOnly: 7 };
+const MATCH_ORDER: Record<SourceMatchKind, number> = { cardId: 0, stats: 1, typeLevelOvr: 2, crossSource: 3, nameOvr: 4, candidate: 5, cardIdConflict: 6, samePerson: 7, nameOnly: 8 };
 
 /** このカードのものとして結び付けてよい（バッジ・タブの本体に出す）種類。 */
 export function isCardLevelMatch(kind: SourceMatchKind): boolean {
   return kind !== "cardIdConflict" && kind !== "samePerson" && kind !== "nameOnly";
 }
 
-/** 記録の総合値が、このカードの初期・最大の総合値のどちらとも違う。 */
-function overallConflicts(record: SourceRecord, card: SourceCardRef): boolean {
-  const own = [card.ovrBase, card.ovrMax].filter((v): v is number => v != null);
+/** 記録の総合値がこのカードの初期・最大のどちらとも違う、または Lv 上限が違う。 */
+function recordConflicts(record: SourceRecord, card: SourceCardRef): boolean {
+  // 最大総合値が不明なカード（暫定）は、初期の総合値がソースと 1 ずれることがあるので比べない
+  const own = card.ovrMax == null ? [] : [card.ovrBase, card.ovrMax].filter((v): v is number => v != null);
   const overalls = recordOveralls(record);
-  return own.length > 0 && overalls.length > 0 && !overalls.some((v) => own.includes(v));
+  if (own.length > 0 && overalls.length > 0 && !overalls.some((v) => own.includes(v))) return true;
+  const level = recordMaxLevel(record);
+  return level != null && card.maximumLevel != null && level !== card.maximumLevel;
 }
 
 /** カード番号の無い記録の、このカードに対する種類。 */
@@ -303,7 +354,7 @@ function nameRecordKind(record: SourceRecord, card: SourceCardRef): SourceMatchK
 export function matchCard(index: SourceRatingsIndex, card: SourceCardRef): SourceMatch[] {
   const out: SourceMatch[] = [];
   const exact = new Set(index.byCardId.get(card.worldCardId) ?? []);
-  for (const record of exact) out.push({ kind: overallConflicts(record, card) ? "cardIdConflict" : "cardId", record });
+  for (const record of exact) out.push({ kind: recordConflicts(record, card) ? "cardIdConflict" : "cardId", record });
   const person = personKeyOf(card.worldCardId);
   for (const record of person ? (index.byPerson.get(person) ?? []) : []) {
     if (!exact.has(record)) out.push({ kind: "samePerson", record });

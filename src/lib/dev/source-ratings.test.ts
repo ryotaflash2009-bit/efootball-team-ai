@@ -218,8 +218,18 @@ describe("matchCard", () => {
   });
   it("参考の種類（総合値が食い違うカード番号・同じ選手の別カード・名前だけ）は、このカードのものとして結び付けない", () => {
     expect(
-      ["cardId", "stats", "typeLevelOvr", "nameOvr", "candidate", "cardIdConflict", "samePerson", "nameOnly"].filter((k) => isCardLevelMatch(k as never)),
-    ).toEqual(["cardId", "stats", "typeLevelOvr", "nameOvr", "candidate"]);
+      ["cardId", "stats", "typeLevelOvr", "crossSource", "nameOvr", "candidate", "cardIdConflict", "samePerson", "nameOnly"].filter((k) => isCardLevelMatch(k as never)),
+    ).toEqual(["cardId", "stats", "typeLevelOvr", "crossSource", "nameOvr", "candidate"]);
+  });
+  it("最大総合値が不明なカード（暫定）は、総合値の違いを食い違いにしない", () => {
+    const m = matchCard(index, card({ worldCardId: "52904601956478", ovrBase: 96, ovrMax: null }));
+    expect(m.find((x) => x.record.source === "C")?.kind).toBe("cardId");
+  });
+  it("カード番号が同じでも、Lv 上限が違えば cardIdConflict", () => {
+    const leveled = buildSourceRatingsIndex(sourceRatingsFileSchema.parse({ schema_version: 1, generated_at: "x", sources: {}, players: [{ name_key: "k", records: [{ ...pesdbMbappe, stats_and_boosters: { 最大総合値: "98", Lv上限: "32" } }] }] }));
+    expect(matchCard(leveled, card({ worldCardId: "52904601956478", ovrMax: 98, maximumLevel: 35 }))[0].kind).toBe("cardIdConflict");
+    expect(matchCard(leveled, card({ worldCardId: "52904601956478", ovrMax: 98, maximumLevel: 32 }))[0].kind).toBe("cardId");
+    expect(matchCard(leveled, card({ worldCardId: "52904601956478", ovrMax: 98, maximumLevel: null }))[0].kind).toBe("cardId");
   });
   it("カード番号が同じでも、総合値が初期・最大のどちらとも違えば cardIdConflict（実データ: 86 の記録に 97 のカードの番号）", () => {
     const m = matchCard(index, card({ worldCardId: "52904601956478", ovrBase: 90, ovrMax: 101 }));
@@ -246,59 +256,81 @@ describe("resolveRecordCards", () => {
     maximumLevel: 32,
     ovrBase: 86,
     ovrMax: 102,
+    stats: {},
     ...over,
   });
-  const fileOf = (record: Record<string, unknown>) =>
-    sourceRatingsFileSchema.parse({ schema_version: 1, generated_at: "x", sources: {}, players: [{ name_key: "k", records: [{ ...game8Mbappe, ...record }] }] });
+  const fileOf = (record: Record<string, unknown>, ...more: Record<string, unknown>[]) =>
+    sourceRatingsFileSchema.parse({ schema_version: 1, generated_at: "x", sources: {}, players: [{ name_key: "k", records: [{ ...game8Mbappe, ...record }, ...more.map((m) => ({ ...game8Mbappe, ...m }))] }] });
   const recordOf = (f: ReturnType<typeof fileOf>) => f.players[0].records[0];
-  const statsById = (map: Record<string, Record<string, number>>) => (id: string) => map[id] ?? {};
 
   it("26 能力値がすべて同じカードが 1 枚なら stats（順位用の総合値がカードと違っても特定できる）", () => {
-    const out = resolveRecordCards(
-      fileOf({ stats_and_boosters: { 最大総合値: "107", ...statLabels } }),
-      [resolverCard({}), resolverCard({ worldCardId: "2" })],
-      statsById({ "1": fullStats, "2": { ...fullStats, speed: 1 } }),
-    );
+    const out = resolveRecordCards(fileOf({ stats_and_boosters: { 最大総合値: "107", ...statLabels } }), [
+      resolverCard({ stats: fullStats }),
+      resolverCard({ worldCardId: "2", stats: { ...fullStats, speed: 1 } }),
+    ]);
     expect(recordOf(out)).toMatchObject({ resolved_by: "stats", resolved_card_ids: ["1"] });
     const idx = buildSourceRatingsIndex(out);
     expect(matchCard(idx, card({ worldCardId: "1", ovrMax: 102 }))[0].kind).toBe("stats");
     expect(matchCard(idx, card({ worldCardId: "2", ovrMax: 107 }))[0].kind).toBe("nameOnly");
   });
   it("能力値が 1 つでも欠けた記録は能力値で特定しない", () => {
-    const out = resolveRecordCards(fileOf({ stats_and_boosters: { オフェンスセンス: "50" } }), [resolverCard({})], statsById({ "1": fullStats }));
+    const out = resolveRecordCards(fileOf({ stats_and_boosters: { オフェンスセンス: "50" } }), [resolverCard({ stats: fullStats })]);
     expect(recordOf(out).resolved_by).toBeNull();
   });
   it("同じ能力値のカードが複数なら候補を全部残し、確定にしない（candidate）", () => {
-    const out = resolveRecordCards(
-      fileOf({ stats_and_boosters: statLabels }),
-      [resolverCard({}), resolverCard({ worldCardId: "2" })],
-      statsById({ "1": fullStats, "2": fullStats }),
-    );
+    const out = resolveRecordCards(fileOf({ stats_and_boosters: statLabels }), [resolverCard({ stats: fullStats }), resolverCard({ worldCardId: "2", stats: fullStats })]);
     expect(recordOf(out).resolved_card_ids).toEqual(["1", "2"]);
     expect(matchCard(buildSourceRatingsIndex(out), card({ worldCardId: "2" }))[0].kind).toBe("candidate");
   });
   it("種別・Lv 上限・初期総合値が同じカードが 1 枚なら typeLevelOvr（ポジションでは絞らない）", () => {
-    const out = resolveRecordCards(
-      fileOf({ position: "DMF", rating_or_tier: "7位 / 総合値: 86", stats_and_boosters: { カード種別: "エピック", Lv上限: "32" } }),
-      [resolverCard({}), resolverCard({ worldCardId: "2", maximumLevel: 35 }), resolverCard({ worldCardId: "3", cardType: "SHOWTIME" })],
-      statsById({}),
-    );
+    const out = resolveRecordCards(fileOf({ position: "DMF", rating_or_tier: "7位 / 総合値: 86", stats_and_boosters: { カード種別: "エピック", Lv上限: "32" } }), [
+      resolverCard({}),
+      resolverCard({ worldCardId: "2", maximumLevel: 35 }),
+      resolverCard({ worldCardId: "3", cardType: "SHOWTIME" }),
+    ]);
     expect(recordOf(out)).toMatchObject({ resolved_by: "typeLevelOvr", resolved_card_ids: ["1"] });
   });
   it("種別を決められない表記・総合値の違うカードでは特定しない", () => {
-    const potw = resolveRecordCards(fileOf({ rating_or_tier: "総合値: 86", stats_and_boosters: { カード種別: "POTW 24 Aug '23" } }), [resolverCard({})], statsById({}));
+    const potw = resolveRecordCards(fileOf({ rating_or_tier: "総合値: 86", stats_and_boosters: { カード種別: "POTW 24 Aug '23" } }), [resolverCard({})]);
     expect(recordOf(potw).resolved_by).toBeNull();
-    const other = resolveRecordCards(fileOf({ rating_or_tier: "総合値: 90", stats_and_boosters: { カード種別: "エピック" } }), [resolverCard({})], statsById({}));
+    const other = resolveRecordCards(fileOf({ rating_or_tier: "総合値: 90", stats_and_boosters: { カード種別: "エピック" } }), [resolverCard({})]);
     expect(recordOf(other).resolved_by).toBeNull();
   });
+  it("Lv 上限が分からない候補（暫定のカード）は、同じかもしれないとして残す", () => {
+    const out = resolveRecordCards(fileOf({ rating_or_tier: "総合値: 86", stats_and_boosters: { カード種別: "エピック", Lv上限: "32" } }), [resolverCard({}), resolverCard({ worldCardId: "2", maximumLevel: null })]);
+    expect(recordOf(out).resolved_card_ids).toEqual(["1", "2"]);
+  });
+  it("カードデータに無いカード番号の記録も候補に入れ、新しいカードと取り違えて確定にしない", () => {
+    const out = resolveRecordCards(
+      fileOf(
+        { source: "B", rating_or_tier: "総合値: 86", stats_and_boosters: { カード種別: "エピック", Lv上限: "32" } },
+        { source: "B", card_id: "52904601956478", rating_or_tier: "総合値: 86", stats_and_boosters: { カード種別: "エピック", Lv上限: "32" } },
+      ),
+      [resolverCard({})],
+    );
+    expect(recordOf(out).resolved_card_ids).toEqual(["1", "52904601956478"]);
+  });
+  it("カードデータに無いカードでも、他のソースの記録と 26 能力値が同じなら特定する", () => {
+    const out = resolveRecordCards(fileOf({ stats_and_boosters: statLabels }, { source: "C", card_id: "52904601956478", stats_and_boosters: statLabels }), [resolverCard({})]);
+    expect(recordOf(out)).toMatchObject({ resolved_by: "stats", resolved_card_ids: ["52904601956478"] });
+  });
+  it("候補が複数でも、他のソースが特定したカードが 1 枚なら crossSource。同じソースの記録では絞らない", () => {
+    const row = { source: "B", rating_or_tier: "総合値: 86", stats_and_boosters: { カード種別: "エピック" } };
+    const cards = [resolverCard({ stats: fullStats }), resolverCard({ worldCardId: "2" })];
+    const out = resolveRecordCards(fileOf(row, { source: "A", stats_and_boosters: statLabels }), cards);
+    expect(recordOf(out)).toMatchObject({ resolved_by: "crossSource", resolved_card_ids: ["1"] });
+    expect(matchCard(buildSourceRatingsIndex(out), card({ worldCardId: "1", ovrMax: 102 })).map((m) => m.kind)).toContain("crossSource");
+    const same = resolveRecordCards(fileOf(row, { source: "B", stats_and_boosters: statLabels }), cards);
+    expect(recordOf(same).resolved_card_ids).toEqual(["1", "2"]);
+  });
   it("カード番号を持つ記録・同名のカードが無い記録はそのまま", () => {
-    const withId = resolveRecordCards(fileOf({ card_id: "52904601956478", stats_and_boosters: statLabels }), [resolverCard({})], statsById({ "1": fullStats }));
+    const withId = resolveRecordCards(fileOf({ card_id: "52904601956478", stats_and_boosters: statLabels }), [resolverCard({ stats: fullStats })]);
     expect(recordOf(withId).resolved_by).toBeNull();
-    const noName = resolveRecordCards(fileOf({ player_name: "存在しない選手", stats_and_boosters: statLabels }), [resolverCard({})], statsById({ "1": fullStats }));
+    const noName = resolveRecordCards(fileOf({ player_name: "存在しない選手", stats_and_boosters: statLabels }), [resolverCard({ stats: fullStats })]);
     expect(recordOf(noName).resolved_by).toBeNull();
   });
   it("突き合わせの結果は「その他」の項目に出さない", () => {
-    const out = resolveRecordCards(fileOf({ stats_and_boosters: statLabels }), [resolverCard({})], statsById({ "1": fullStats }));
+    const out = resolveRecordCards(fileOf({ stats_and_boosters: statLabels }), [resolverCard({ stats: fullStats })]);
     expect(unknownRecordEntries(recordOf(out))).toEqual([]);
   });
 });
