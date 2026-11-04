@@ -509,6 +509,8 @@ const part: PartialDictionary = {
     maxLevelLabel: "최대 레벨",
     addedLabel: "TeamAIXI에 추가",
     preferredFootLabel: "주발",
+    footLeft: "왼발",
+    footRight: "오른발",
     heightWeightTemplate: "키 / 몸무게",
     teamLabel: "팀",
   },

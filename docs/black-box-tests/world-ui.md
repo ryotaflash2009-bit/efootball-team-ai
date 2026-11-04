@@ -1,50 +1,50 @@
 # World データ UI 接続 ブラックボックステスト結果
 
-実行日時: 2026-11-01T13:02:53.413Z
+実行日時: 2026-11-03T19:31:49.607Z
 対象: http://localhost:3000（localhost のみ）  外部アクセス: 0 回
 
 | 結果 | 項目 | 詳細 |
 |---|---|---|
 | PASS | 一覧API: HTTP 200 | HTTP 200 |
-| PASS | 一覧API: 総件数がおよそ 13,009 | totalCount=13517 |
+| PASS | 一覧API: 総件数がおよそ 13,009 | totalCount=13009 |
 | PASS | 一覧API: 1ページ 24 件前後 | players=24 |
-| PASS | 一覧API: totalPages 計算 | totalPages=564 |
+| PASS | 一覧API: totalPages 計算 | totalPages=543 |
 | PASS | 一覧API: source=eFootball World | eFootball World |
 | PASS | 一覧API: 要素は必須フィールドを持つ |  |
 | PASS | 一覧API: 26能力値やスキルを含めない（軽量） |  |
 | PASS | 一覧API: 内部情報/パス/SQLを含まない |  |
 | PASS | ページ2へ移動できる | page=2 |
-| PASS | 最終ページを表示できる | page=564/564 |
-| PASS | 範囲外ページはクラッシュせず最終ページへ丸める | page=564 |
+| PASS | 最終ページを表示できる | page=543/543 |
+| PASS | 範囲外ページはクラッシュせず最終ページへ丸める | page=543 |
 | PASS | 不正な page/pageSize でも 200（既定へ丸め） | page=1 size=24 |
 | PASS | pageSize 上限 100 に丸める | pageSize=100 |
-| PASS | 日本語名検索 | total=48 |
-| PASS | 英語名検索（部分一致） | total=48 |
-| PASS | 英語検索は大文字小文字を無視 | 48 vs 48 |
+| PASS | 日本語名検索 | total=44 |
+| PASS | 英語名検索（部分一致） | total=44 |
+| PASS | 英語検索は大文字小文字を無視 | 44 vs 44 |
 | PASS | World ID 検索で 1 件 | total=1 |
 | PASS | 存在しない検索は 0 件（200） | total=0 |
-| PASS | 空検索は全件 | total=13517 |
+| PASS | 空検索は全件 | total=13009 |
 | PASS | 記号入力でクラッシュしない | HTTP 200 |
 | PASS | 非常に長い入力を制限（クラッシュしない） | HTTP 200 |
-| PASS | SQLインジェクション風入力でテーブルが無事 | HTTP 400 after=13517 |
-| PASS | フィルター: GK | total=998 |
-| PASS | フィルター: CB | total=2003 |
-| PASS | フィルター: CMF | total=1505 |
-| PASS | フィルター: AMF | total=1339 |
-| PASS | フィルター: CF | total=2259 |
-| PASS | フィルター: カードタイプ EPIC | total=904 |
-| PASS | フィルター: 攻撃プレースタイル | total=1145 |
-| PASS | フィルター: 複数条件の組み合わせ | total=217 |
+| PASS | SQLインジェクション風入力でテーブルが無事 | HTTP 200 after=13009 |
+| PASS | フィルター: GK | total=962 |
+| PASS | フィルター: CB | total=1919 |
+| PASS | フィルター: CMF | total=1456 |
+| PASS | フィルター: AMF | total=1281 |
+| PASS | フィルター: CF | total=2175 |
+| PASS | フィルター: カードタイプ EPIC | total=867 |
+| PASS | フィルター: 攻撃プレースタイル | total=1105 |
+| PASS | フィルター: 複数条件の組み合わせ | total=208 |
 | PASS | フィルター: facets に国籍の一覧（Japan・Côte d'Ivoire を含む） | n=123 |
-| PASS | フィルター: 国籍 Côte d'Ivoire（アクセント・アポストロフィ）で絞り込める | total=95 |
-| PASS | フィルター: 国籍とポジションの組み合わせ | total=123 |
-| PASS | フィルター: 不正な国籍は無視して全件（クラッシュしない） | total=13517 |
+| PASS | フィルター: 国籍 Côte d'Ivoire（アクセント・アポストロフィ）で絞り込める | total=88 |
+| PASS | フィルター: 国籍とポジションの組み合わせ | total=118 |
+| PASS | フィルター: 不正な国籍は無視して全件（クラッシュしない） | total=13009 |
 | PASS | フィルター: facets にリーグの一覧（J1 を含む） | n=33 j1=2026/27 MEIJI YASUDA J1 LEAGUE |
-| PASS | フィルター: リーグ（数字・スラッシュ）と国籍の組み合わせで絞り込める | total=890 |
-| PASS | フィルター: facets にチームの一覧（FC Barcelona を含む） | n=421 |
+| PASS | フィルター: リーグ（数字・スラッシュ）と国籍の組み合わせで絞り込める | total=850 |
+| PASS | フィルター: facets にチームの一覧（FC Barcelona を含む） | n=410 |
 | PASS | フィルター: チーム（ウムラウト）で絞り込める | total=299 |
 | PASS | 画面: 国籍の選択肢と選択中の値（Japan）を描画 | HTTP 200 |
-| PASS | フィルター解除で全件へ戻る | total=13517 |
+| PASS | フィルター解除で全件へ戻る | total=13009 |
 | PASS | 並べ替え: 最大OVR降順 |  |
 | PASS | 並べ替え: 最大OVR昇順 |  |
 | PASS | 並べ替え: 基礎OVR降順 |  |
@@ -75,7 +75,7 @@
 | PASS | 画面: 未取得項目を 0/空で偽装しない（Tier: 追加調査中） |  |
 | PASS | 画面: 詳細に 26 能力値の内容が描画される（有効IDのみ） |  |
 | PASS | 画面: 詳細の国籍・リーグ・チームが選手一覧の絞り込みへのリンク | nationality,league,team,playingStyle,playingStyleDef |
-| PASS | 画面: 国籍のリンク先は絞り込まれた一覧（全件より少ない） | total=617 |
+| PASS | 画面: 国籍のリンク先は絞り込まれた一覧（全件より少ない） | total=591 |
 | PASS | 画面: 不正 World ID の詳細はクラッシュせず not-found（詳細本文を描画しない） | HTTP 200 |
 | PASS | 画面: 存在しない World ID の詳細はクラッシュせず not-found | HTTP 200 |
 | PASS | 画像: eFHUB リンクなし World カードでも画像が表示される | Lionel Messi 200 241KB cache=HIT |
@@ -91,8 +91,7 @@
 | PASS | 画像: 一覧カードレイアウトが崩れない（aspect-[3/4] 枠 + OVR/名前を保持） |  |
 | PASS | 回帰: ホーム 200 | HTTP 200 |
 | PASS | 回帰: ホームにサイドメニュー |  |
-| PASS | 回帰: 旧サンプル詳細（ローカルサンプルあり）: 旧APIと同じ選手を表示 #1 | HTTP 200 |
-| PASS | 回帰: 旧サンプル詳細（ローカルサンプルあり）: 旧APIと同じ選手を表示 #2 | HTTP 200 |
+| PASS | 回帰: 旧サンプル詳細（サンプルなし）: 共通のnot-found画面・選手情報/内部情報なし | HTTP 200 |
 | PASS | 回帰: 旧 /api/players（サンプル）維持 | HTTP 200 |
 | PASS | 回帰: 画像プロキシの不正IDは 400 | HTTP 400 |
 | PASS | 回帰: eFHUB 画像プロキシ（efimg 経路）が応答 | HTTP 200 |

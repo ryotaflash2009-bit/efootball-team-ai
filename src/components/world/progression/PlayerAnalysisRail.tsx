@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/Badge";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
 import { formatNumber } from "@/lib/i18n/format";
+import { usePreferredFootText } from "@/components/world/use-preferred-foot";
 import type { Dictionary } from "@/lib/i18n/dictionaries/ja";
 
 type PTKey = keyof Dictionary["progressionTab"];
@@ -249,6 +250,7 @@ function TraitsPanel({ a }: { a: PlayerAnalysis["traits"] }) {
   const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
   const traitLabel = (tr: PlayerAnalysis["traits"]["fields"][number]) =>
     TRAIT_LABEL_KEY[tr.key] ? tp(TRAIT_LABEL_KEY[tr.key]) : tr.label;
+  const footText = usePreferredFootText();
   const facts = a.fields.filter((tr) => !TRAIT_INTERNAL.has(tr.key));
   const internal = a.fields.filter((tr) => TRAIT_INTERNAL.has(tr.key));
   return (
@@ -258,7 +260,7 @@ function TraitsPanel({ a }: { a: PlayerAnalysis["traits"] }) {
           <div key={tr.key} className="flex items-baseline justify-between gap-2 text-xs">
             <dt className="text-text-dim">{traitLabel(tr)}</dt>
             <dd className={tr.confirmation === "missing" ? "text-text-muted" : "font-medium tabular-nums"}>
-              {tr.confirmation === "missing" ? tp("anNotRecorded") : tr.value}
+              {tr.confirmation === "missing" ? tp("anNotRecorded") : tr.key === "preferredFoot" && typeof tr.value === "string" ? footText(tr.value) : tr.value}
             </dd>
           </div>
         ))}

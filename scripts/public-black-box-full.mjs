@@ -653,7 +653,23 @@ async function main() {
         return { ok: true, detail: `${n} results` };
       });
     }
-    await step(vp, "header search", "submit with Enter", async () => {
+    // 460px 未満では、ヘッダーの検索欄の代わりに虫眼鏡のボタンで選手一覧へ移る（2026-11-04）。
+    if (vp.width < 460) {
+      await step(vp, "header search", "search button opens /players", async () => {
+        await nav("/");
+        if (await selectVisible("header input[type='search']")) throw new Error("cramped header input still visible");
+        await click("header [data-testid='header-search-link']", "header search link");
+        await waitFor(async () => (await locationPath()) === "/players", 10000, "/players");
+        // 画面内の移動のあと、一覧の検索欄が描かれるまで待つ（本番は表示に少し時間がかかる）
+        await settle();
+        await waitFor(async () => await selectVisible("main input[aria-label='選手を検索']"), 10000, "players search input");
+        await typeInto("main input[aria-label='選手を検索']", "Messi");
+        await waitFor(async () => new URL(await ev("location.href")).searchParams.get("q") === "Messi", 8000, "q in URL");
+        await settle();
+        const n = (await run(worldCardIds)).length;
+        return { ok: n > 0, detail: `${n} results` };
+      });
+    } else await step(vp, "header search", "submit with Enter", async () => {
       await nav("/");
       await typeInto("header input[type='search']", "Messi");
       await client.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, text: "\r" });
@@ -817,6 +833,9 @@ async function main() {
       }
       await nav(`/squads/compare?a=${ids[0]}&b=${ids[1]}`);
       await waitFor(async () => (await run(pageText)).includes("共通カード"), 10000, "comparison (ja)");
+      // 結果は別チャンク（SquadCompareResult・2026-11-04）。タブの切り替えが効くことも確かめる。
+      await ev(`[...document.querySelectorAll("button[aria-pressed]")].find((b) => b.textContent.trim() === "警告").click()`);
+      await waitFor(async () => await ev(`[...document.querySelectorAll("button[aria-pressed]")].find((b) => b.textContent.trim() === "警告")?.getAttribute("aria-pressed") === "true"`), 5000, "warnings tab");
       await ev(`localStorage.setItem("efootball-team-ai:locale:v1", "en")`);
       await ev("location.reload()");
       await sleep(300);

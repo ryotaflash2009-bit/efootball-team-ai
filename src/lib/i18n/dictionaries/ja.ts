@@ -2790,6 +2790,8 @@ export interface Dictionary {
     maxLevelLabel: string;
     addedLabel: string;
     preferredFootLabel: string;
+    footLeft: string;
+    footRight: string;
     heightWeightTemplate: string;
     teamLabel: string;
   };

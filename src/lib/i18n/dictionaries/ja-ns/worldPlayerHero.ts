@@ -14,6 +14,8 @@ const worldPlayerHero: Dictionary["worldPlayerHero"] = {
   maxLevelLabel: "最大レベル",
   addedLabel: "TeamAIXI に追加",
   preferredFootLabel: "利き足",
+  footLeft: "左足",
+  footRight: "右足",
   heightWeightTemplate: "身長 / 体重",
   teamLabel: "チーム",
   };
