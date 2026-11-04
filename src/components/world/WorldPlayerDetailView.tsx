@@ -133,7 +133,7 @@ export function WorldPlayerDetailView({
       <SectionHeader title={tp("statsHeading")} as="h2" hint={tp("statsHint")} />
       <PlayerTitles stats={player.stats} registeredPosition={player.registeredPosition ?? null} />
       <WorldStatGrid stats={player.stats} />
-      <WorldBasePercentilePanel stats={player.stats} registeredPosition={player.registeredPosition ?? null} />
+      <WorldBasePercentilePanel stats={player.stats} registeredPosition={player.registeredPosition ?? null} placement="stats" />
     </Surface>
   );
 

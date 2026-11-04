@@ -281,7 +281,7 @@ export function ProgressionPanel({
             <details className="rounded-md border border-border bg-surface-2/20" data-testid="progression-base-percentile">
               <summary className="cursor-pointer px-3 py-2 text-sm font-semibold">{t("basePercentile", "heading")}</summary>
               <div className="border-t border-border px-3 pb-3">
-                <WorldBasePercentilePanel stats={worldStats} registeredPosition={registeredPosition} />
+                <WorldBasePercentilePanel stats={worldStats} registeredPosition={registeredPosition} placement="progression" />
               </div>
             </details>
           ) : null}

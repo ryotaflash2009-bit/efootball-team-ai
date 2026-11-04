@@ -1,7 +1,7 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/basePercentile";
-import { useId, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { WorldStatValue, WorldStatGroup } from "@/lib/world/types";
 import { abilityName } from "@/lib/progression/ability-editor-labels";
 import { useLocale, useT } from "@/lib/i18n/LocaleContext";
@@ -37,13 +37,13 @@ const GROUP_ORDER: WorldStatGroup[] = ["offense", "defense", "physical", "gk"];
  * F-071: 選手詳細の「能力値」タブ。育成前の基礎能力値が、現在の World カードの分布のどこにあるか（範囲は1つずつ）。
  * 成果物が applied-state と一致しないときは、照合できない旨だけを表示する（推測の値を出さない）。
  */
-export function WorldBasePercentilePanel({ stats, registeredPosition }: { stats: WorldStatValue[]; registeredPosition: string | null }) {
+export function WorldBasePercentilePanel({ stats, registeredPosition, placement }: { stats: WorldStatValue[]; registeredPosition: string | null; placement: "stats" | "progression" }) {
   const t = useT();
   const { locale, displayLocale } = useLocale();
   const bp = (k: BpKey) => t("basePercentile", k);
   const data = useWorldBasePercentiles();
-  // 同じページに 2 回出る（概要と育成のタブ）ため、見出しの id は描画ごとに一意にする（2026-10-31）
-  const headingId = `base-percentile-heading-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
+  // 同じページに 2 回出る（能力値と育成のタブ）ため、見出しの id は置き場所で分ける。useId は育成タブでサーバーとブラウザーの値が食い違う（2026-11-04）
+  const headingId = `base-percentile-heading-${placement}`;
   const [choice, setChoice] = useState<PercentileScopeChoice>("all");
 
   const scopeKey = scopeKeyFor(choice, registeredPosition);
