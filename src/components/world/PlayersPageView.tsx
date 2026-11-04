@@ -5,6 +5,7 @@ import { ProvisionalCardsLink } from "@/components/world/ProvisionalCardsLink";
 import "@/lib/i18n/dictionaries/ja-ns/playersPage";
 import "@/lib/i18n/dictionaries/ja-ns/searchInput";
 import { Suspense } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import type { WorldFacets, WorldListResult, WorldSourceMeta } from "@/lib/world/types";
 import { WorldPlayerCard, type WorldPlayerCardData } from "@/components/world/WorldPlayerCard";
@@ -18,6 +19,12 @@ import { useT, useLocale } from "@/lib/i18n/LocaleContext";
 import { formatDate, formatDateTime, formatNumber } from "@/lib/i18n/format";
 
 type SP = Record<string, string | string[] | undefined>;
+
+// 開発用の外部ソースのバッジ（このPCのクローラーのデータ・2026-11-04）。`next dev` のときだけ。本番のビルドでは import ごと取り除かれる。
+const SourceRatingsBadges =
+  process.env.NODE_ENV === "development"
+    ? dynamic(() => import("@/components/world/source-ratings/SourceRatingsBadges").then((m) => m.SourceRatingsBadges), { ssr: false })
+    : null;
 
 export function PlayersPageUnavailable() {
   const t = useT();
@@ -173,6 +180,11 @@ export function PlayersPageView({
               <li key={p.worldCardId}>
                 {/* 最初の画面の数枚だけすぐに読み込む（残りは画面の近くに来てから。WorldCardImage） */}
                 <WorldPlayerCard player={p} imagePriority={i < 4} />
+                {SourceRatingsBadges ? (
+                  <div className="mt-1">
+                    <SourceRatingsBadges card={p} compact />
+                  </div>
+                ) : null}
               </li>
             ))}
           </ul>

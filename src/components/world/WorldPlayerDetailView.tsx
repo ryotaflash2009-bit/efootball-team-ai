@@ -37,6 +37,21 @@ const NOT_YET_FIXED_KEYS = ["Weak Foot Usage", "Weak Foot Accuracy", "Form", "In
 const RealFormPanel = dynamic(() => import("@/components/world/RealFormPanel").then((m) => m.RealFormPanel), { ssr: false });
 const SHOW_REAL_FORM = areInternalPagesVisible();
 
+// 開発用の外部ソース（このPCのクローラーのデータ・2026-11-04）。`next dev` のときだけ（isSourceRatingsEnabled と同じ条件）。
+// 条件を `process.env.NODE_ENV` の直接の比較にして、本番のビルドでは import ごと取り除かれるようにする（内部ページの上書きでも有効にしない）。
+const SourceRatingsBadges =
+  process.env.NODE_ENV === "development"
+    ? dynamic(() => import("@/components/world/source-ratings/SourceRatingsBadges").then((m) => m.SourceRatingsBadges), { ssr: false })
+    : null;
+const SourceRatingsTab =
+  process.env.NODE_ENV === "development"
+    ? dynamic(() => import("@/components/world/source-ratings/SourceRatingsTab").then((m) => m.SourceRatingsTab), { ssr: false })
+    : null;
+const SourceRatingsTabLabel =
+  process.env.NODE_ENV === "development"
+    ? dynamic(() => import("@/components/world/source-ratings/SourceRatingsTab").then((m) => m.SourceRatingsTabLabel), { ssr: false, loading: () => <>…</> })
+    : null;
+
 const SquadUsagePanel = dynamic(() => import("@/components/world/SquadUsagePanel").then((m) => m.SquadUsagePanel), { ssr: false });
 const SquadFitPanel = dynamic(() => import("@/components/world/SquadFitPanel").then((m) => m.SquadFitPanel), { ssr: false });
 
@@ -244,6 +259,7 @@ export function WorldPlayerDetailView({
     <PageContainer width="full">
       <div className="flex flex-col gap-4">
         <WorldPlayerHero player={player} imageSources={heroImageSources} />
+        {SourceRatingsBadges ? <SourceRatingsBadges card={fitCard} /> : null}
         {player.provisional ? <ProvisionalCardNotice info={player.provisional} /> : null}
         <MyTeamFitPanel card={fitCard} />
         <SquadUsagePanel worldCardId={player.worldCardId} />
@@ -259,6 +275,9 @@ export function WorldPlayerDetailView({
             { id: "skills", label: tp("tabSkills"), content: skillsTab },
             { id: "progression", label: tp("tabProgression"), content: progressionTab },
             { id: "data", label: tp("tabData"), content: dataTab },
+            ...(SourceRatingsTab && SourceRatingsTabLabel
+              ? [{ id: "sources", label: <SourceRatingsTabLabel />, content: <SourceRatingsTab card={fitCard} cardStats={player.stats} cardSkills={player.playerSkills} /> }]
+              : []),
           ]}
         />
       </div>
