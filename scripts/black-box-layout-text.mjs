@@ -9,6 +9,7 @@
  *   - 利き足が日本語の画面でも「Left foot」のままだった（#438・これは new-cards で確認）。
  *   ここでは同じ種類の切れ・混入を、主なページ × 日本語/英語 × 狭い画面でまとめて確かめる。
  *
+ * - 埋め込み忘れの {name}・undefined・NaN・null・[object Object] が画面に出ていないことも確かめる。
  * - 隔離したヘッドレス Chrome（scripts/lib/headless-chrome.mjs）で実際に画面を確認する。
  * - 保存データは作らない（表示言語の既存のキーだけを、この隔離した browser の中で切り替える）。
  * - 結果は docs/black-box-tests/layout-text.md へ。
@@ -81,6 +82,9 @@ function audit(checkJapanese) {
       out.push(`clipped <${el.tagName.toLowerCase()}> "${el.textContent.trim().slice(0, 40)}"`);
     }
   }
+  // 埋め込み忘れの {name}・undefined・NaN・null・[object Object] を画面に出さない
+  const leftovers = (document.body.innerText.match(/\{[a-zA-Z]+\}|\bundefined\b|\bNaN\b|\[object Object\]|\bnull\b/g) || []);
+  for (const token of new Set(leftovers)) out.push(`leftover "${token}" in the page text`);
   if (document.documentElement.scrollWidth > innerWidth + 1) out.push(`page wider than viewport (${document.documentElement.scrollWidth} > ${innerWidth})`);
   if (checkJapanese) {
     const text = document.querySelector("main")?.innerText ?? "";
@@ -127,7 +131,7 @@ async function main() {
         const problems = await evalJson(client, `(${audit.toString()})(${locale === "en"})`);
         const langOk = locale === "en" ? /^en/.test(lang ?? "") : true;
         record(
-          `${locale} ${width}px ${p}: 文字の切れ・はみ出し${locale === "en" ? "・日本語の混入" : ""}がない`,
+          `${locale} ${width}px ${p}: 文字の切れ・はみ出し・埋め込み忘れ${locale === "en" ? "・日本語の混入" : ""}がない`,
           langOk && Array.isArray(problems) && problems.length === 0,
           langOk ? (problems ?? ["evaluation failed"]).join(" / ") : `html lang=${lang}（英語に切り替わっていない）`,
         );
