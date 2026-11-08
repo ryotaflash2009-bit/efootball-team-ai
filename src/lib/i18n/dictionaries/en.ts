@@ -54,7 +54,7 @@ const en: Dictionary = {
     heroTitleSuffix: ".",
     heroDescriptionTemplate:
       "All {count} eFootball World cards. 26 abilities, skills, progression calculations, manager boosters, and Link-Up Play conditions — all in one screen. Items whose calculation rules aren't confirmed are clearly marked \"under verification.\"",
-    searchPlaceholder: "Player name or World ID…",
+    searchPlaceholder: "Name or World ID…",
     searchAriaLabel: "Search players",
     searchButton: "Search",
     compareButton: "Compare Players",
