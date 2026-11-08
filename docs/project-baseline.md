@@ -11,7 +11,7 @@
 | 項目 | 値 |
 |---|---|
 | `npm run test`（CI の Unit tests・run 40687483574） | 391 テストファイル合格（2 skip・計 393）・5351 テスト合格（37 skip・計 5388） |
-| ローカルの black-box（`node scripts/black-box-all.mjs`・#375 のコード） | 46/46（通常のビルドで 41・社内向けページを有効にしたビルドで 5） |
+| ローカルの black-box（`node scripts/black-box-all.mjs`・#443 のコード） | 47/47（通常のビルドで 42・社内向けページを有効にしたビルドで 5） |
 | 公開 black-box（総合・8 viewport・本番・#375 の反映の後） | 608/608・性能 14/14・security 20/20・メモリ OK |
 | 公開 hydration-seeded（本番・保存データあり） | 107/107 |
 
