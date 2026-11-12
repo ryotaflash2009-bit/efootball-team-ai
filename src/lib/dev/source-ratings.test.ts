@@ -218,8 +218,8 @@ describe("matchCard", () => {
   });
   it("参考の種類（総合値が食い違うカード番号・同じ選手の別カード・名前だけ）は、このカードのものとして結び付けない", () => {
     expect(
-      ["cardId", "stats", "typeLevelOvr", "crossSource", "nameOvr", "candidate", "cardIdConflict", "samePerson", "nameOnly"].filter((k) => isCardLevelMatch(k as never)),
-    ).toEqual(["cardId", "stats", "typeLevelOvr", "crossSource", "nameOvr", "candidate"]);
+      ["cardId", "stats", "typeLevelOvr", "statsNear", "crossSource", "nameOvr", "candidate", "cardIdConflict", "samePerson", "nameOnly"].filter((k) => isCardLevelMatch(k as never)),
+    ).toEqual(["cardId", "stats", "typeLevelOvr", "statsNear", "crossSource", "nameOvr", "candidate"]);
   });
   it("最大総合値が不明なカード（暫定）は、総合値の違いを食い違いにしない", () => {
     const m = matchCard(index, card({ worldCardId: "52904601956478", ovrBase: 96, ovrMax: null }));
@@ -322,6 +322,17 @@ describe("resolveRecordCards", () => {
     expect(matchCard(buildSourceRatingsIndex(out), card({ worldCardId: "1", ovrMax: 102 })).map((m) => m.kind)).toContain("crossSource");
     const same = resolveRecordCards(fileOf(row, { source: "B", stats_and_boosters: statLabels }), cards);
     expect(recordOf(same).resolved_card_ids).toEqual(["1", "2"]);
+  });
+  it("能力値が数項目だけずれる記録は、種別・Lv 上限が同じカードの中でほぼ一致が 1 枚だけなら statsNear", () => {
+    const off = { ...statLabels, [STAT_LABEL_JA.speed]: "1", [STAT_LABEL_JA.finishing]: "1" };
+    const row = { stats_and_boosters: { ...off, 選手タイプ: "エピック", "最大Lv/ポイント": "Lv.32 / 62" } };
+    const near = resolveRecordCards(fileOf(row), [resolverCard({ stats: fullStats }), resolverCard({ worldCardId: "2", stats: {} })]);
+    expect(recordOf(near)).toMatchObject({ resolved_by: "statsNear", resolved_card_ids: ["1"] });
+    expect(matchCard(buildSourceRatingsIndex(near), card({ worldCardId: "1", ovrMax: 102 }))[0].kind).toBe("statsNear");
+    // Lv 上限が違う・2 番目も近いときは絞らない
+    expect(recordOf(resolveRecordCards(fileOf(row), [resolverCard({ maximumLevel: 35, stats: fullStats })])).resolved_by).toBeNull();
+    const twin = resolveRecordCards(fileOf(row), [resolverCard({ stats: fullStats }), resolverCard({ worldCardId: "2", stats: { ...fullStats, curl: 0 } })]);
+    expect(recordOf(twin).resolved_by).toBeNull();
   });
   it("カード番号を持つ記録・同名のカードが無い記録はそのまま", () => {
     const withId = resolveRecordCards(fileOf({ card_id: "52904601956478", stats_and_boosters: statLabels }), [resolverCard({ stats: fullStats })]);

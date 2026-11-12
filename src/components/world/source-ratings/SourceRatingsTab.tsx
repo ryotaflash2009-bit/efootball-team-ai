@@ -104,6 +104,8 @@ function matchNote(m: SourceMatch, sameNameOvr: number | null | "loading", tp: T
       return { text: tp("matchStats"), tone: "ok" };
     case "typeLevelOvr":
       return { text: tp("matchTypeLevelOvr"), tone: "ok" };
+    case "statsNear":
+      return { text: tp("matchStatsNear"), tone: "ok" };
     case "crossSource":
       return { text: tp("matchCrossSource"), tone: "ok" };
     case "candidate":

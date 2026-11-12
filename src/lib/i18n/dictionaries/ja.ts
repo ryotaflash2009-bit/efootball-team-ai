@@ -5528,6 +5528,7 @@ export interface Dictionary {
     matchCardId: string;
     matchStats: string;
     matchTypeLevelOvr: string;
+    matchStatsNear: string;
     matchCrossSource: string;
     matchCandidateTemplate: string;
     matchCardIdConflict: string;

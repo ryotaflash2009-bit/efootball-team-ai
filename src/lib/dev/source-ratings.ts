@@ -52,7 +52,7 @@ const sourceRecordSchema = z.looseObject({
   source_table_type: z.string().default(""),
   fetched_at: z.string().default(""),
   /** API がローカルの World データと突き合わせた結果（ファイルには無い）。{@link resolveRecordCards} */
-  resolved_by: z.enum(["stats", "typeLevelOvr", "crossSource"]).nullable().default(null),
+  resolved_by: z.enum(["stats", "statsNear", "typeLevelOvr", "crossSource"]).nullable().default(null),
   resolved_card_ids: z.array(z.string()).default([]),
 });
 
@@ -171,11 +171,17 @@ export interface ResolverCard {
   stats: Readonly<Record<string, number>>;
 }
 
-/** 個別ページの Lv 上限（「育成不可」などは null）。 */
+/** 個別ページの Lv 上限（「Lv上限: 35」または「最大Lv/ポイント: Lv.33 / 64」。「育成不可」などは null）。 */
 function recordMaxLevel(record: SourceRecord): number | null {
-  const level = Number.parseInt(record.stats_and_boosters["Lv上限"] ?? "", 10);
+  const sb = record.stats_and_boosters;
+  const raw = sb["Lv上限"] ?? /^Lv\.?\s*(\d+)/.exec(sb["最大Lv/ポイント"] ?? "")?.[1] ?? "";
+  const level = Number.parseInt(raw, 10);
   return Number.isFinite(level) ? level : null;
 }
+
+/** ほぼ一致とみなす能力値の数（26 項目中）と、2 番目に近いカードとの差の最小値。 */
+const NEAR_STATS_MIN_EQUAL = 22;
+const NEAR_STATS_MIN_GAP = 4;
 
 /** カードデータに無いカード番号の記録を、照合の候補として扱う形にする。 */
 function recordAsCard(record: SourceRecord, id: string): ResolverCard {
@@ -231,9 +237,20 @@ export function resolveRecordCards(file: SourceRatingsFile, cards: readonly Reso
       if (same.length > 0) return { ...record, resolved_by: "stats", resolved_card_ids: same.map((c) => c.worldCardId) };
     }
     const type = recordCardType(record);
+    const level = recordMaxLevel(record);
+    if (stats && type && level != null) {
+      // 抽出の誤りで数項目だけずれることがある。種別・Lv 上限が同じカードの中で、ほぼ一致が 1 枚だけなら有力とする
+      const scored = candidates
+        .filter((c) => c.cardType === type && c.maximumLevel === level)
+        .map((c) => ({ c, equal: Object.entries(stats).filter(([key, value]) => c.stats[key] === value).length }))
+        .sort((a, b) => b.equal - a.equal);
+      const [best, second] = scored;
+      if (best && best.equal >= NEAR_STATS_MIN_EQUAL && best.equal - (second?.equal ?? 0) >= NEAR_STATS_MIN_GAP) {
+        return { ...record, resolved_by: "statsNear", resolved_card_ids: [best.c.worldCardId] };
+      }
+    }
     const overalls = recordOveralls(record);
     if (!type || overalls.length === 0) return record;
-    const level = recordMaxLevel(record);
     const same = candidates.filter(
       (c) =>
         (c.cardType == null || c.cardType === type) &&
@@ -308,6 +325,7 @@ export function buildSourceRatingsIndex(file: SourceRatingsFile): SourceRatingsI
  * - cardId: 記録のカード番号がこのカードと同じ（確定）
  * - stats: カード番号の無い記録で、26 能力値が同じカードがこの 1 枚だけ（確定）
  * - typeLevelOvr: カード番号の無い記録で、種別・Lv 上限・総合値が同じカードがこの 1 枚だけ（手元のカードデータの中で確定）
+ * - statsNear: 種別・Lv 上限が同じカードの中で、26 能力値のほとんどが一致するカードがこの 1 枚だけ（有力）
  * - crossSource: 同じ条件のカードが複数ある中で、他のソースが特定したカードがこの 1 枚だけ（有力）
  * - nameOvr: 上の 2 つで特定できない記録で、名前・総合値（とポジション）が同じ。同名・同総合値の別カードがあり得るので、画面で確定できたときだけ結び付ける
  * - candidate: 能力値または種別などが同じカードが複数あり、このカードはその 1 枚（未確定）
@@ -317,14 +335,14 @@ export function buildSourceRatingsIndex(file: SourceRatingsFile): SourceRatingsI
  *
  * カード番号を持つ記録は名前では結び付けない（同名の別人を混ぜない）。
  */
-export type SourceMatchKind = "cardId" | "stats" | "typeLevelOvr" | "crossSource" | "nameOvr" | "candidate" | "cardIdConflict" | "samePerson" | "nameOnly";
+export type SourceMatchKind = "cardId" | "stats" | "typeLevelOvr" | "statsNear" | "crossSource" | "nameOvr" | "candidate" | "cardIdConflict" | "samePerson" | "nameOnly";
 
 export interface SourceMatch {
   kind: SourceMatchKind;
   record: SourceRecord;
 }
 
-const MATCH_ORDER: Record<SourceMatchKind, number> = { cardId: 0, stats: 1, typeLevelOvr: 2, crossSource: 3, nameOvr: 4, candidate: 5, cardIdConflict: 6, samePerson: 7, nameOnly: 8 };
+const MATCH_ORDER: Record<SourceMatchKind, number> = { cardId: 0, stats: 1, typeLevelOvr: 2, statsNear: 3, crossSource: 4, nameOvr: 5, candidate: 6, cardIdConflict: 7, samePerson: 8, nameOnly: 9 };
 
 /** このカードのものとして結び付けてよい（バッジ・タブの本体に出す）種類。 */
 export function isCardLevelMatch(kind: SourceMatchKind): boolean {
