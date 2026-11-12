@@ -54,6 +54,8 @@ const sourceRecordSchema = z.looseObject({
   /** API がローカルの World データと突き合わせた結果（ファイルには無い）。{@link resolveRecordCards} */
   resolved_by: z.enum(["stats", "statsNear", "typeLevelOvr", "crossSource", "skills"]).nullable().default(null),
   resolved_card_ids: z.array(z.string()).default([]),
+  /** 同名のカードのどれも記録のスキルをすべては持たない（アプリのデータにまだ無い新しいカードの可能性）。{@link resolveRecordCards} */
+  card_not_in_data: z.boolean().default(false),
 });
 
 export const sourceRatingsFileSchema = z.object({
@@ -208,7 +210,7 @@ const SKILL_MAP_MIN_SUPPORT = 2;
 const SKILL_NARROW_MIN_KNOWN = 5;
 
 /**
- * カード番号で確定した記録（ソースのスキル名）とそのカード（World のスキル名）を突き合わせ、
+ * カード番号（または 26 能力値の完全一致）で確定した記録（ソースのスキル名）とそのカード（World のスキル名）を突き合わせ、
  * ソースのスキル名 → カードのスキル名 の対応を作る。
  * 1 つのスキル名について、それを持つ記録のカードの 9 割以上に共通する名前を候補にし、
  * 候補が 1 つに決まったものから順に、他のスキル名の候補から取り除いていく。2 件以上の記録で裏付けられたものだけを使う。
@@ -217,13 +219,17 @@ export function buildSkillNameMap(file: SourceRatingsFile, cards: readonly Resol
   const skillsById = new Map(cards.filter((c) => c.skills?.length).map((c) => [c.worldCardId, c.skills!]));
   const support = new Map<string, number>();
   const together = new Map<string, Map<string, number>>();
+  const pairs: { keys: string[]; cardSkills: readonly string[]; sameName: Set<string>; complete: boolean }[] = [];
   for (const record of file.players.flatMap((p) => p.records)) {
-    const id = recordCardId(record);
+    // カード番号か、26 能力値がすべて同じで 1 枚に決まった記録だけを使う
+    const id = recordCardId(record) ?? (record.resolved_by === "stats" && record.resolved_card_ids.length === 1 ? record.resolved_card_ids[0] : null);
     const cardSkills = id ? skillsById.get(id) : undefined;
     if (!cardSkills || record.skills.length === 0) continue;
     // カードと同じ名前（英語のソース）は対応を作るまでもない。混ぜると、同じ英語名の取り合いで別の名前に押し出される
     const sameName = new Set(cardSkills.map(nameKey));
-    for (const key of new Set(record.skills.map(nameKey).filter((k) => !sameName.has(k)))) {
+    const keys = [...new Set(record.skills.map(nameKey).filter((k) => !sameName.has(k)))];
+    pairs.push({ keys, cardSkills, sameName: new Set(record.skills.map(nameKey).filter((k) => sameName.has(k))), complete: record.skills.length === cardSkills.length });
+    for (const key of keys) {
       support.set(key, (support.get(key) ?? 0) + 1);
       const counts = together.get(key) ?? new Map<string, number>();
       for (const name of new Set(cardSkills)) counts.set(name, (counts.get(name) ?? 0) + 1);
@@ -246,6 +252,22 @@ export function buildSkillNameMap(file: SourceRatingsFile, cards: readonly Resol
       for (const name of taken) names.delete(name);
       if (names.size === 1) {
         map.set(key, [...names][0]);
+        changed = true;
+      }
+    }
+  }
+  // 記録とカードのスキルの数が同じ組で、対応の分からない名前が 1 つだけ残れば、残ったカードのスキルがそれ（新しいスキルは裏付けが 1 件しかないため）
+  for (let changed = true; changed; ) {
+    changed = false;
+    const taken = new Set(map.values());
+    for (const { keys, cardSkills, sameName, complete } of pairs) {
+      const open = keys.filter((k) => !map.has(k));
+      if (!complete || open.length !== 1) continue;
+      const used = new Set(keys.map((k) => map.get(k)).filter((n): n is string => !!n));
+      const rest = cardSkills.filter((n) => !used.has(n) && !sameName.has(nameKey(n)));
+      if (rest.length === 1 && !taken.has(rest[0])) {
+        map.set(open[0], rest[0]);
+        taken.add(rest[0]);
         changed = true;
       }
     }
@@ -334,9 +356,20 @@ export function resolveRecordCards(file: SourceRatingsFile, cards: readonly Reso
     const id = recordCardId(record) ?? (record.resolved_card_ids.length === 1 ? record.resolved_card_ids[0] : null);
     if (id) addSource(id, record.source);
   }
-  const skillNameMap = Object.fromEntries(buildSkillNameMap(file, cards));
+  const skillNameMap = Object.fromEntries(buildSkillNameMap({ ...file, players: resolved }, cards));
   const cardById = new Map(allCards.map((c) => [c.worldCardId, c]));
+  // カードデータに無いカード（他の記録のカード番号だけで分かるもの）には、スキルをすべてカードの言語に直せた記録のスキルを持たせる
+  const vocabulary = [...new Set(cards.flatMap((c) => c.skills ?? []))];
+  for (const record of file.players.flatMap((p) => p.records)) {
+    const id = recordCardId(record);
+    const ghost = id && !cards.some((c) => c.worldCardId === id) ? cardById.get(id) : undefined;
+    if (!ghost || ghost.skills?.length || record.skills.length === 0) continue;
+    // 英語のソースのスキルは、まだどのカードにも無い新しいスキルでもそのまま使う
+    const skills = record.skills.map((s) => translatedSkills({ ...record, skills: [s] }, skillNameMap, vocabulary)[0] ?? (/^[ -~]+$/.test(s) ? s : null));
+    if (skills.every((s) => s != null)) ghost.skills = skills as string[];
+  }
   const narrow = (record: SourceRecord): SourceRecord => {
+    if (record.resolved_card_ids.length === 0 && !recordCardId(record)) return bySkillsAlone(record);
     if (record.resolved_card_ids.length < 2) return record;
     const others = record.resolved_card_ids.filter((id) => [...(sourcesByCard.get(id) ?? [])].some((s) => s !== record.source));
     if (others.length === 1) return { ...record, resolved_by: "crossSource", resolved_card_ids: others };
@@ -347,6 +380,19 @@ export function resolveRecordCards(file: SourceRatingsFile, cards: readonly Reso
     const fit = cardsWithSkills.filter((c) => known.every((s) => c!.skills!.includes(s)));
     return fit.length === 1 ? { ...record, resolved_by: "skills", resolved_card_ids: [fit[0]!.worldCardId] } : record;
   };
+
+  // 特定できなかった記録を、同名のカードのスキルと比べる。
+  // スキルをすべてカードの言語に直せて、それをすべて持つカードが 1 枚だけなら有力。どのカードも持たないなら、まだデータに無いカードとみる
+  function bySkillsAlone(record: SourceRecord): SourceRecord {
+    const named = byName.get(nameKey(record.player_name)) ?? [];
+    if (named.length === 0 || named.some((c) => !c.skills?.length)) return record;
+    const known = translatedSkills(record, skillNameMap, named.flatMap((c) => c.skills!));
+    if (known.length < SKILL_NARROW_MIN_KNOWN) return record;
+    const holders = named.filter((c) => known.every((s) => c.skills!.includes(s)));
+    if (holders.length === 0) return { ...record, card_not_in_data: true };
+    if (holders.length === 1 && known.length === record.skills.length) return { ...record, resolved_by: "skills", resolved_card_ids: [holders[0].worldCardId] };
+    return record;
+  }
 
   return { ...file, skill_name_map: skillNameMap, players: resolved.map((p) => ({ ...p, records: p.records.map(narrow) })) };
 }
@@ -434,6 +480,7 @@ function recordConflicts(record: SourceRecord, card: SourceCardRef): boolean {
 
 /** カード番号の無い記録の、このカードに対する種類。 */
 function nameRecordKind(record: SourceRecord, card: SourceCardRef): SourceMatchKind {
+  if (record.card_not_in_data) return "nameOnly";
   if (record.resolved_by) {
     if (!record.resolved_card_ids.includes(card.worldCardId)) return "nameOnly";
     return record.resolved_card_ids.length > 1 ? "candidate" : record.resolved_by;

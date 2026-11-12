@@ -367,6 +367,35 @@ describe("resolveRecordCards", () => {
     const both = resolveRecordCards(fileOf(row, ...skillTraining), [...skillCards, resolverCard({ skills: all }), resolverCard({ worldCardId: "2", skills: all })]);
     expect(recordOf(both).resolved_card_ids).toEqual(["1", "2"]);
   });
+  it("同名のカードのどれも記録のスキルをすべては持たないなら、まだデータに無いカードとして名前だけの一致にする", () => {
+    const row = { rating_or_tier: "総合値: 102", skills: ["ア", "イ", "ウ", "エ", "オ"] };
+    const cards = [...skillCards, resolverCard({ skills: ["Alpha", "Beta", "Gamma", "Delta", "Zeta"] })];
+    const out = resolveRecordCards(fileOf(row, ...skillTraining), cards);
+    expect(recordOf(out)).toMatchObject({ resolved_by: null, card_not_in_data: true });
+    expect(matchCard(buildSourceRatingsIndex(out), card({ worldCardId: "1", ovrMax: 102 }))[0].kind).toBe("nameOnly");
+    // スキルの合うカードがある・スキルの分からないカードがあるときは印を付けない
+    const fits = resolveRecordCards(fileOf(row, ...skillTraining), [...skillCards, resolverCard({ skills: ["Alpha", "Beta", "Gamma", "Delta", "Epsilon"] })]);
+    expect(recordOf(fits).card_not_in_data).toBe(false);
+    const unknown = resolveRecordCards(fileOf(row, ...skillTraining), [...skillCards, resolverCard({})]);
+    expect(recordOf(unknown).card_not_in_data).toBe(false);
+  });
+  it("スキルの数が同じ組で対応の分からない名前が 1 つだけ残れば、残ったカードのスキルに対応させる", () => {
+    const fresh = { source: "B", card_id: "15", player_name: "別人", skills: ["ア", "イ", "キ"], rating_or_tier: "", stats_and_boosters: {} };
+    const map = buildSkillNameMap(fileOf({}, ...skillTraining, fresh), [...skillCards, resolverCard({ worldCardId: "15", nameJa: "別人", skills: ["Alpha", "Beta", "Eta"] })]);
+    expect(map.get("キ")).toBe("Eta");
+    // 数が違う組では決めない
+    const uneven = buildSkillNameMap(fileOf({}, ...skillTraining, fresh), [...skillCards, resolverCard({ worldCardId: "15", nameJa: "別人", skills: ["Alpha", "Beta", "Eta", "Theta"] })]);
+    expect(uneven.has("キ")).toBe(false);
+  });
+  it("特定できなかった記録も、スキルをすべて直せてそれを持つ同名のカードが 1 枚なら skills（カードデータに無いカードは他の記録のスキルを使う）", () => {
+    const row = { rating_or_tier: "総合値: 108", skills: ["ア", "イ", "ウ", "エ", "オ"] };
+    const other = { source: "C", card_id: "52904601956478", rating_or_tier: "総合値: 88", skills: ["Alpha", "Beta", "Gamma", "Delta", "Epsilon"] };
+    const out = resolveRecordCards(fileOf(row, other, ...skillTraining), [...skillCards, resolverCard({ skills: ["Alpha", "Beta", "Gamma", "Delta", "Zeta"] })]);
+    expect(recordOf(out)).toMatchObject({ resolved_by: "skills", resolved_card_ids: ["52904601956478"], card_not_in_data: false });
+    // 直せないスキルがあれば、合うカードが 1 枚でも確定にしない
+    const partial = resolveRecordCards(fileOf({ ...row, skills: [...row.skills, "未知"] }, other, ...skillTraining), [...skillCards, resolverCard({ skills: ["Alpha", "Beta", "Gamma", "Delta", "Zeta"] })]);
+    expect(recordOf(partial).resolved_by).toBeNull();
+  });
   it("カード番号を持つ記録・同名のカードが無い記録はそのまま", () => {
     const withId = resolveRecordCards(fileOf({ card_id: "52904601956478", stats_and_boosters: statLabels }), [resolverCard({ stats: fullStats })]);
     expect(recordOf(withId).resolved_by).toBeNull();

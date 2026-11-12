@@ -5531,6 +5531,7 @@ export interface Dictionary {
     matchStatsNear: string;
     matchCrossSource: string;
     matchSkills: string;
+    matchNotInData: string;
     matchCandidateTemplate: string;
     matchCardIdConflict: string;
     matchNameOvrConfirmed: string;

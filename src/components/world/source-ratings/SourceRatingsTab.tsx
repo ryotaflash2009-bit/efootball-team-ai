@@ -123,7 +123,7 @@ function matchNote(m: SourceMatch, sameNameOvr: number | null | "loading", tp: T
     case "samePerson":
       return { text: tp("matchSamePerson"), tone: "dim" };
     case "nameOnly":
-      return { text: tp("matchNameOnly"), tone: "dim" };
+      return { text: tp(m.record.card_not_in_data ? "matchNotInData" : "matchNameOnly"), tone: "dim" };
   }
 }
 
