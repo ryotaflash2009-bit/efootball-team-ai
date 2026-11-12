@@ -102,6 +102,8 @@ describe("F-084 投稿の保存（ローカル/モック）", () => {
     }
     const log = await s.auditLog();
     expect(log.map((e) => e.action)).toEqual(["draft_saved", "draft_saved", "draft_saved"]);
-    expect(JSON.stringify(log)).not.toMatch(/スカッド|webp|blob/);
+    // 投稿 ID は英小文字と数字のランダムな 26 文字で、まれに "blob" などを含むため、ID を除いて確かめる
+    expect(log.every((e) => Object.keys(e).sort().join() === "action,at,postId")).toBe(true);
+    expect(JSON.stringify(log.map(({ postId: _postId, ...rest }) => rest))).not.toMatch(/スカッド|webp|blob/);
   });
 });
