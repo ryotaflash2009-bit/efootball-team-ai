@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 /** このPCのクローラーが書き出す受け渡しファイル（/data は Git の対象外 → 本番には存在しない）。 */
 const SOURCE_RATINGS_FILE = path.join(process.cwd(), "data", "external", "crawler", "latest_ratings.json");
 const NO_STORE = { "Cache-Control": "no-store" };
-const CARD_COLUMNS = "world_card_id,name_ja,name_en,card_type,maximum_level,ovr_base,ovr_max,stats,skills";
+const CARD_COLUMNS = "world_card_id,name_ja,name_en,card_type,maximum_level,ovr_base,ovr_max,stats,skills,playing_style";
 const CARD_PAGE_SIZE = 1000;
 const CARD_CACHE_MS = 30 * 60 * 1000;
 
@@ -29,6 +29,7 @@ function rowToCard(row: CardRow): ResolverCard {
     ovrBase: (row.ovr_base as number | null) ?? null,
     ovrMax: (row.ovr_max as number | null) ?? null,
     stats: (row.stats as Record<string, number> | null) ?? {},
+    playStyle: (row.playing_style as string | null) ?? null,
     skills: Array.isArray(row.skills) ? (row.skills as unknown[]).filter((s): s is string => typeof s === "string" && s !== "-") : undefined,
   };
 }

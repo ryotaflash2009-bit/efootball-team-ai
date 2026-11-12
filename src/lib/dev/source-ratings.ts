@@ -52,7 +52,7 @@ const sourceRecordSchema = z.looseObject({
   source_table_type: z.string().default(""),
   fetched_at: z.string().default(""),
   /** API がローカルの World データと突き合わせた結果（ファイルには無い）。{@link resolveRecordCards} */
-  resolved_by: z.enum(["stats", "statsNear", "typeLevelOvr", "crossSource", "skills"]).nullable().default(null),
+  resolved_by: z.enum(["stats", "statsNear", "typeLevelOvr", "crossSource", "skills", "styleSkills"]).nullable().default(null),
   resolved_card_ids: z.array(z.string()).default([]),
   /** 同名のカードのどれも記録のスキルをすべては持たない（アプリのデータにまだ無い新しいカードの可能性）。{@link resolveRecordCards} */
   card_not_in_data: z.boolean().default(false),
@@ -175,6 +175,8 @@ export interface ResolverCard {
   stats: Readonly<Record<string, number>>;
   /** カードのスキル（World は英語名）。無ければスキルでは絞らない。 */
   skills?: readonly string[];
+  /** 攻撃のプレースタイル（World は英語名）。 */
+  playStyle?: string | null;
 }
 
 /** 個別ページの Lv 上限（「Lv上限: 35」または「最大Lv/ポイント: Lv.33 / 64」。「育成不可」などは null）。 */
@@ -221,8 +223,7 @@ export function buildSkillNameMap(file: SourceRatingsFile, cards: readonly Resol
   const together = new Map<string, Map<string, number>>();
   const pairs: { keys: string[]; cardSkills: readonly string[]; sameName: Set<string>; complete: boolean }[] = [];
   for (const record of file.players.flatMap((p) => p.records)) {
-    // カード番号か、26 能力値がすべて同じで 1 枚に決まった記録だけを使う
-    const id = recordCardId(record) ?? (record.resolved_by === "stats" && record.resolved_card_ids.length === 1 ? record.resolved_card_ids[0] : null);
+    const id = confirmedCardId(record);
     const cardSkills = id ? skillsById.get(id) : undefined;
     if (!cardSkills || record.skills.length === 0) continue;
     // カードと同じ名前（英語のソース）は対応を作るまでもない。混ぜると、同じ英語名の取り合いで別の名前に押し出される
@@ -244,12 +245,14 @@ export function buildSkillNameMap(file: SourceRatingsFile, cards: readonly Resol
     candidates.set(key, new Set([...counts].filter(([, count]) => count >= n * SKILL_MAP_MIN_SHARE).map(([name]) => name)));
   }
   const map = new Map<string, string>();
+  // 取り合いは同じ文字の種類の名前どうしだけ（英語の別名 "Heading Skill" と日本語の「ヘッダー」は両方 Heading になれる）
+  const ascii = (key: string) => /^[ -~]+$/.test(key);
+  const takenBy = (key: string) => new Set([...map].filter(([k]) => ascii(k) === ascii(key)).map(([, name]) => name));
   for (let changed = true; changed; ) {
     changed = false;
-    const taken = new Set(map.values());
     for (const [key, names] of candidates) {
       if (map.has(key)) continue;
-      for (const name of taken) names.delete(name);
+      for (const name of takenBy(key)) names.delete(name);
       if (names.size === 1) {
         map.set(key, [...names][0]);
         changed = true;
@@ -259,18 +262,52 @@ export function buildSkillNameMap(file: SourceRatingsFile, cards: readonly Resol
   // 記録とカードのスキルの数が同じ組で、対応の分からない名前が 1 つだけ残れば、残ったカードのスキルがそれ（新しいスキルは裏付けが 1 件しかないため）
   for (let changed = true; changed; ) {
     changed = false;
-    const taken = new Set(map.values());
     for (const { keys, cardSkills, sameName, complete } of pairs) {
       const open = keys.filter((k) => !map.has(k));
       if (!complete || open.length !== 1) continue;
       const used = new Set(keys.map((k) => map.get(k)).filter((n): n is string => !!n));
       const rest = cardSkills.filter((n) => !used.has(n) && !sameName.has(nameKey(n)));
-      if (rest.length === 1 && !taken.has(rest[0])) {
+      if (rest.length === 1 && !takenBy(open[0]).has(rest[0])) {
         map.set(open[0], rest[0]);
-        taken.add(rest[0]);
         changed = true;
       }
     }
+  }
+  return map;
+}
+
+/** 確定した記録のカード（カード番号か、26 能力値がすべて同じで 1 枚に決まったもの）。対応表を作るのに使う。 */
+function confirmedCardId(record: SourceRecord): string | null {
+  return recordCardId(record) ?? (record.resolved_by === "stats" && record.resolved_card_ids.length === 1 ? record.resolved_card_ids[0] : null);
+}
+
+/** 記録の攻撃のプレースタイル（「攻撃: X / 守備: Y」の X。そうでなければ表記そのもの）。 */
+export function recordAttackStyle(record: SourceRecord): string | null {
+  const text = record.play_style.trim();
+  const style = (/攻撃\s*[:：]\s*([^/]+)/.exec(text)?.[1] ?? text.split("/")[0]).trim();
+  return style || null;
+}
+
+const STYLE_MAP_MIN_SUPPORT = 2;
+
+/** 確定した記録の攻撃のプレースタイルと、そのカードのプレースタイルの対応（9 割以上が同じで、2 件以上で裏付けられたもの）。 */
+export function buildStyleNameMap(file: SourceRatingsFile, cards: readonly ResolverCard[]): Map<string, string> {
+  const styleById = new Map(cards.filter((c) => c.playStyle).map((c) => [c.worldCardId, c.playStyle!]));
+  const counts = new Map<string, Map<string, number>>();
+  for (const record of file.players.flatMap((p) => p.records)) {
+    const id = confirmedCardId(record);
+    const cardStyle = id ? styleById.get(id) : undefined;
+    const style = recordAttackStyle(record);
+    if (!cardStyle || !style || nameKey(style) === nameKey(cardStyle)) continue;
+    const own = counts.get(nameKey(style)) ?? new Map<string, number>();
+    own.set(cardStyle, (own.get(cardStyle) ?? 0) + 1);
+    counts.set(nameKey(style), own);
+  }
+  const map = new Map<string, string>();
+  for (const [key, own] of counts) {
+    const total = [...own.values()].reduce((a, b) => a + b, 0);
+    const [best, n] = [...own].sort((a, b) => b[1] - a[1])[0];
+    if (total >= STYLE_MAP_MIN_SUPPORT && n >= total * SKILL_MAP_MIN_SHARE) map.set(key, best);
   }
   return map;
 }
@@ -368,6 +405,17 @@ export function resolveRecordCards(file: SourceRatingsFile, cards: readonly Reso
     const skills = record.skills.map((s) => translatedSkills({ ...record, skills: [s] }, skillNameMap, vocabulary)[0] ?? (/^[ -~]+$/.test(s) ? s : null));
     if (skills.every((s) => s != null)) ghost.skills = skills as string[];
   }
+  const styleNameMap = buildStyleNameMap({ ...file, players: resolved }, cards);
+  const styleByKey = new Map(cards.filter((c) => c.playStyle).map((c) => [nameKey(c.playStyle!), c.playStyle!]));
+  const cardStyleOf = (record: SourceRecord): string | null => {
+    const style = recordAttackStyle(record);
+    return style ? (styleNameMap.get(nameKey(style)) ?? styleByKey.get(nameKey(style)) ?? null) : null;
+  };
+  for (const record of file.players.flatMap((p) => p.records)) {
+    const id = recordCardId(record);
+    const ghost = id && !cards.some((c) => c.worldCardId === id) ? cardById.get(id) : undefined;
+    if (ghost && !ghost.playStyle) ghost.playStyle = cardStyleOf(record);
+  }
   const narrow = (record: SourceRecord): SourceRecord => {
     if (record.resolved_card_ids.length === 0 && !recordCardId(record)) return bySkillsAlone(record);
     if (record.resolved_card_ids.length < 2) return record;
@@ -387,11 +435,28 @@ export function resolveRecordCards(file: SourceRatingsFile, cards: readonly Reso
     const named = byName.get(nameKey(record.player_name)) ?? [];
     if (named.length === 0 || named.some((c) => !c.skills?.length)) return record;
     const known = translatedSkills(record, skillNameMap, named.flatMap((c) => c.skills!));
-    if (known.length < SKILL_NARROW_MIN_KNOWN) return record;
-    const holders = named.filter((c) => known.every((s) => c.skills!.includes(s)));
-    if (holders.length === 0) return { ...record, card_not_in_data: true };
-    if (holders.length === 1 && known.length === record.skills.length) return { ...record, resolved_by: "skills", resolved_card_ids: [holders[0].worldCardId] };
-    return record;
+    const style = cardStyleOf(record);
+    const sameStyle = (c: ResolverCard) => !!style && !!c.playStyle && nameKey(c.playStyle) === nameKey(style);
+    const holds = (c: ResolverCard) => known.every((s) => c.skills!.includes(s));
+    if (known.length >= SKILL_NARROW_MIN_KNOWN) {
+      const holders = named.filter(holds);
+      if (holders.length === 0) return { ...record, card_not_in_data: true };
+      // プレースタイルが分かっていて違うカードは除く
+      const fit = holders.filter((c) => !style || !c.playStyle || sameStyle(c));
+      return known.length === record.skills.length ? withCandidates(record, "skills", fit) : record;
+    }
+    // スキルが少ない記録（順位表だけの記録）は、攻撃のプレースタイルが同じで、スキルもすべて持つカードが 1 枚だけなら有力
+    if (!style || known.length === 0 || known.length !== record.skills.length || named.some((c) => !c.playStyle)) return record;
+    return withCandidates(record, "styleSkills", named.filter((c) => sameStyle(c) && holds(c)));
+  }
+
+  // 合うカードが 1 枚ならそれ。複数なら、他のソースが特定したカードが 1 枚だけのときはそれ、そうでなければ候補として全部残す（確定にしない）
+  function withCandidates(record: SourceRecord, by: "skills" | "styleSkills", fit: readonly ResolverCard[]): SourceRecord {
+    if (fit.length === 0) return record;
+    const ids = fit.map((c) => c.worldCardId);
+    if (ids.length === 1) return { ...record, resolved_by: by, resolved_card_ids: ids };
+    const others = ids.filter((id) => [...(sourcesByCard.get(id) ?? [])].some((s) => s !== record.source));
+    return others.length === 1 ? { ...record, resolved_by: "crossSource", resolved_card_ids: others } : { ...record, resolved_by: by, resolved_card_ids: ids };
   }
 
   return { ...file, skill_name_map: skillNameMap, players: resolved.map((p) => ({ ...p, records: p.records.map(narrow) })) };
@@ -446,6 +511,7 @@ export function buildSourceRatingsIndex(file: SourceRatingsFile): SourceRatingsI
  * - statsNear: 種別・Lv 上限が同じカードの中で、26 能力値のほとんどが一致するカードがこの 1 枚だけ（有力）
  * - crossSource: 同じ条件のカードが複数ある中で、他のソースが特定したカードがこの 1 枚だけ（有力）
  * - skills: 同じ条件のカードが複数ある中で、記録のスキルをすべて持つカードがこの 1 枚だけ（有力）
+ * - styleSkills: 攻撃のプレースタイルが同じで、記録の（少ない）スキルをすべて持つカードがこの 1 枚だけ（有力）
  * - nameOvr: 上の 2 つで特定できない記録で、名前・総合値（とポジション）が同じ。同名・同総合値の別カードがあり得るので、画面で確定できたときだけ結び付ける
  * - candidate: 能力値または種別などが同じカードが複数あり、このカードはその 1 枚（未確定）
  * - cardIdConflict: カード番号は同じだが、総合値か Lv 上限がこのカードと食い違う（誤った番号の可能性。確定として出さない）
@@ -454,14 +520,14 @@ export function buildSourceRatingsIndex(file: SourceRatingsFile): SourceRatingsI
  *
  * カード番号を持つ記録は名前では結び付けない（同名の別人を混ぜない）。
  */
-export type SourceMatchKind = "cardId" | "stats" | "typeLevelOvr" | "statsNear" | "crossSource" | "skills" | "nameOvr" | "candidate" | "cardIdConflict" | "samePerson" | "nameOnly";
+export type SourceMatchKind = "cardId" | "stats" | "typeLevelOvr" | "statsNear" | "crossSource" | "skills" | "styleSkills" | "nameOvr" | "candidate" | "cardIdConflict" | "samePerson" | "nameOnly";
 
 export interface SourceMatch {
   kind: SourceMatchKind;
   record: SourceRecord;
 }
 
-const MATCH_ORDER: Record<SourceMatchKind, number> = { cardId: 0, stats: 1, typeLevelOvr: 2, statsNear: 3, crossSource: 4, skills: 5, nameOvr: 6, candidate: 7, cardIdConflict: 8, samePerson: 9, nameOnly: 10 };
+const MATCH_ORDER: Record<SourceMatchKind, number> = { cardId: 0, stats: 1, typeLevelOvr: 2, statsNear: 3, crossSource: 4, skills: 5, styleSkills: 6, nameOvr: 7, candidate: 8, cardIdConflict: 9, samePerson: 10, nameOnly: 11 };
 
 /** このカードのものとして結び付けてよい（バッジ・タブの本体に出す）種類。 */
 export function isCardLevelMatch(kind: SourceMatchKind): boolean {

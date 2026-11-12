@@ -219,8 +219,8 @@ describe("matchCard", () => {
   });
   it("参考の種類（総合値が食い違うカード番号・同じ選手の別カード・名前だけ）は、このカードのものとして結び付けない", () => {
     expect(
-      ["cardId", "stats", "typeLevelOvr", "statsNear", "crossSource", "skills", "nameOvr", "candidate", "cardIdConflict", "samePerson", "nameOnly"].filter((k) => isCardLevelMatch(k as never)),
-    ).toEqual(["cardId", "stats", "typeLevelOvr", "statsNear", "crossSource", "skills", "nameOvr", "candidate"]);
+      ["cardId", "stats", "typeLevelOvr", "statsNear", "crossSource", "skills", "styleSkills", "nameOvr", "candidate", "cardIdConflict", "samePerson", "nameOnly"].filter((k) => isCardLevelMatch(k as never)),
+    ).toEqual(["cardId", "stats", "typeLevelOvr", "statsNear", "crossSource", "skills", "styleSkills", "nameOvr", "candidate"]);
   });
   it("最大総合値が不明なカード（暫定）は、総合値の違いを食い違いにしない", () => {
     const m = matchCard(index, card({ worldCardId: "52904601956478", ovrBase: 96, ovrMax: null }));
@@ -351,6 +351,10 @@ describe("resolveRecordCards", () => {
     // 英語のソース（カードと同じ名前）は対応に入れず、日本語の対応を押し出さない
     const english = SKILL_PAIRS.map(([id, , en]) => ({ source: "C", card_id: id, player_name: "別人", skills: en, rating_or_tier: "", stats_and_boosters: {} }));
     expect(Object.fromEntries(buildSkillNameMap(fileOf({}, ...skillTraining, ...english), skillCards))).toEqual(Object.fromEntries(map));
+    // 英語の別名（"Alpha Skill"）と日本語の名前は、同じカードのスキルに対応できる
+    const alias = SKILL_PAIRS.slice(0, 2).map(([id, , en]) => ({ source: "B", card_id: id, player_name: "別人", skills: en.map((n) => (n === "Alpha" ? "Alpha Skill" : n)), rating_or_tier: "", stats_and_boosters: {} }));
+    const both = buildSkillNameMap(fileOf({}, ...skillTraining, ...alias), skillCards);
+    expect([both.get("ア"), both.get("alphaskill")]).toEqual(["Alpha", "Alpha"]);
     // 1 件だけの裏付けでは対応にしない
     expect(buildSkillNameMap(fileOf({}, skillTraining[0]), skillCards).size).toBe(0);
   });
@@ -392,9 +396,26 @@ describe("resolveRecordCards", () => {
     const other = { source: "C", card_id: "52904601956478", rating_or_tier: "総合値: 88", skills: ["Alpha", "Beta", "Gamma", "Delta", "Epsilon"] };
     const out = resolveRecordCards(fileOf(row, other, ...skillTraining), [...skillCards, resolverCard({ skills: ["Alpha", "Beta", "Gamma", "Delta", "Zeta"] })]);
     expect(recordOf(out)).toMatchObject({ resolved_by: "skills", resolved_card_ids: ["52904601956478"], card_not_in_data: false });
+    // 合うカードが 2 枚なら候補として残し、他のソースが特定した 1 枚があればそれにする
+    const twins = [...skillCards, resolverCard({ skills: ["Alpha", "Beta", "Gamma", "Delta", "Epsilon"] }), resolverCard({ worldCardId: "2", skills: ["Alpha", "Beta", "Gamma", "Delta", "Epsilon"] })];
+    expect(recordOf(resolveRecordCards(fileOf(row, ...skillTraining), twins))).toMatchObject({ resolved_by: "skills", resolved_card_ids: ["1", "2"] });
+    const named = { source: "C", card_id: "2", rating_or_tier: "総合値: 88", skills: [] };
+    expect(recordOf(resolveRecordCards(fileOf(row, named, ...skillTraining), twins))).toMatchObject({ resolved_by: "crossSource", resolved_card_ids: ["2"] });
     // 直せないスキルがあれば、合うカードが 1 枚でも確定にしない
     const partial = resolveRecordCards(fileOf({ ...row, skills: [...row.skills, "未知"] }, other, ...skillTraining), [...skillCards, resolverCard({ skills: ["Alpha", "Beta", "Gamma", "Delta", "Zeta"] })]);
     expect(recordOf(partial).resolved_by).toBeNull();
+  });
+  it("スキルが少ない記録は、攻撃のプレースタイルが同じでスキルもすべて持つカードが 1 枚なら styleSkills", () => {
+    // 「ウイング」→ Prolific Winger の対応は、カード番号で確定した記録 2 件から作る
+    const styleTraining = ["20", "21"].map((id) => ({ source: "B", card_id: id, player_name: "別人", play_style: "ウイング", skills: [], rating_or_tier: "", stats_and_boosters: {} }));
+    const styleCards = ["20", "21"].map((id) => resolverCard({ worldCardId: id, nameJa: "別人", nameEn: null, playStyle: "Prolific Winger", skills: ["Alpha"] }));
+    const row = { rating_or_tier: "1位 / 総合値: 109", play_style: "攻撃: ウイング / 守備: ベーシック", skills: ["ア", "イ"] };
+    const cards = [...skillCards, ...styleCards, resolverCard({ playStyle: "Prolific Winger", skills: ["Alpha", "Beta", "Gamma"] }), resolverCard({ worldCardId: "2", playStyle: "Hole Player", skills: ["Alpha", "Beta"] })];
+    const out = resolveRecordCards(fileOf(row, ...skillTraining, ...styleTraining), cards);
+    expect(recordOf(out)).toMatchObject({ resolved_by: "styleSkills", resolved_card_ids: ["1"] });
+    // プレースタイルの分からないカードがあれば絞らない
+    const unknown = resolveRecordCards(fileOf(row, ...skillTraining, ...styleTraining), [...cards.slice(0, -1), resolverCard({ worldCardId: "2", skills: ["Alpha", "Beta"] })]);
+    expect(recordOf(unknown).resolved_by).toBeNull();
   });
   it("カード番号を持つ記録・同名のカードが無い記録はそのまま", () => {
     const withId = resolveRecordCards(fileOf({ card_id: "52904601956478", stats_and_boosters: statLabels }), [resolverCard({ stats: fullStats })]);

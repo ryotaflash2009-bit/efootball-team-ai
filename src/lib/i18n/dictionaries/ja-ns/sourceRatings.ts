@@ -20,6 +20,7 @@ const sourceRatings: Dictionary["sourceRatings"] = {
   matchStatsNear: "カード種別・Lv 上限が同じカードの中で、26 能力値のほとんどが一致するのはこの 1 枚だけ（有力）",
   matchCrossSource: "同じ条件のカードが複数ある中で、他のソースが特定したカードと一致（有力）",
   matchSkills: "同じ条件のカードが複数ある中で、ソースのスキルをすべて持つのはこの 1 枚だけ（有力）",
+  matchStyleSkills: "攻撃のプレースタイルが同じで、ソースのスキルをすべて持つのはこの 1 枚だけ（有力）",
   matchNotInData: "名前だけが一致。ソースのスキルをすべて持つカードがアプリのデータに無く、まだ入っていない新しいカードの可能性があります",
   matchCandidateTemplate: "同じ条件のカードが {count} 枚あり、どのカードのデータかは確定できません。",
   matchCardIdConflict: "カード番号は同じですが、総合値か Lv 上限がこのカードと違います（番号の誤りや、データの時期の違いの可能性があります）",

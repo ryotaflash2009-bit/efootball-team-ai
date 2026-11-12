@@ -110,6 +110,8 @@ function matchNote(m: SourceMatch, sameNameOvr: number | null | "loading", tp: T
       return { text: tp("matchCrossSource"), tone: "ok" };
     case "skills":
       return { text: tp("matchSkills"), tone: "ok" };
+    case "styleSkills":
+      return { text: tp("matchStyleSkills"), tone: "ok" };
     case "candidate":
       return { text: fillMessage(tp("matchCandidateTemplate"), { count: String(m.record.resolved_card_ids.length) }), tone: "warn" };
     case "cardIdConflict":

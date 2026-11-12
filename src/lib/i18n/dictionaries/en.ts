@@ -5592,6 +5592,7 @@ const en: Dictionary = {
     matchStatsNear: "Among cards with the same type and level cap, this is the only one where nearly all 26 stats match (likely)",
     matchCrossSource: "Several cards meet the same conditions; this is the one another source identified (likely)",
     matchSkills: "Several cards meet the same conditions; this is the only one that has every skill the source lists (likely)",
+    matchStyleSkills: "The attacking play style matches and this is the only card with every skill the source lists (likely)",
     matchNotInData: "Only the name matches. No card in the app has every skill the source lists, so this is probably a newer card the app does not have yet",
     matchCandidateTemplate: "{count} cards meet the same conditions, so which card this data belongs to is not confirmed.",
     matchCardIdConflict: "The card number matches, but the overall rating or level cap differs from this card (the number may be wrong or the data may be from a different time)",
