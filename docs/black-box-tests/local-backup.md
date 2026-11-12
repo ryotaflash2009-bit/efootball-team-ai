@@ -1,6 +1,6 @@
 # F-023b 現在の領域のデータ（書き出し・読み込み・削除） ブラックボックス
 
-実行日時: 2026-11-03T19:15:20.728Z
+実行日時: 2026-11-08T16:21:48.068Z
 対象: localhost（Production Build）・隔離ブラウザーの localStorage の合成データだけ。サーバー・DB・Production へは書き込まない。
 
 | 結果 | viewport | locale | 確認 | 詳細 |
