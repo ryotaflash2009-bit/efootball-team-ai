@@ -5530,6 +5530,7 @@ export interface Dictionary {
     matchTypeLevelOvr: string;
     matchStatsNear: string;
     matchCrossSource: string;
+    matchSkills: string;
     matchCandidateTemplate: string;
     matchCardIdConflict: string;
     matchNameOvrConfirmed: string;

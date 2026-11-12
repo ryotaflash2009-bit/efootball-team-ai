@@ -76,7 +76,7 @@ export function SourceRatingsTab({
         <div className="flex flex-col gap-4">
           {own.length === 0 ? <p className="text-sm text-text-dim">{tp("noMatch")}</p> : null}
           {own.map((m, i) => (
-            <RecordPanel key={i} match={m} matchNote={matchNote(m, sameNameOvr, tp)} cardStats={cardStats} cardSkills={cardSkills} fmtTime={fmtTime} tp={tp} />
+            <RecordPanel key={i} match={m} matchNote={matchNote(m, sameNameOvr, tp)} cardStats={cardStats} cardSkills={cardSkills} skillNameMap={state.index.skillNameMap} fmtTime={fmtTime} tp={tp} />
           ))}
           {others.length > 0 ? (
             <details className="rounded-card border border-dashed border-border p-3" data-testid="source-ratings-other-cards">
@@ -85,7 +85,7 @@ export function SourceRatingsTab({
               </summary>
               <div className="mt-3 flex flex-col gap-4">
                 {others.map((m, i) => (
-                  <RecordPanel key={i} match={m} matchNote={matchNote(m, sameNameOvr, tp)} cardStats={cardStats} cardSkills={cardSkills} fmtTime={fmtTime} tp={tp} />
+                  <RecordPanel key={i} match={m} matchNote={matchNote(m, sameNameOvr, tp)} cardStats={cardStats} cardSkills={cardSkills} skillNameMap={state.index.skillNameMap} fmtTime={fmtTime} tp={tp} />
                 ))}
               </div>
             </details>
@@ -108,6 +108,8 @@ function matchNote(m: SourceMatch, sameNameOvr: number | null | "loading", tp: T
       return { text: tp("matchStatsNear"), tone: "ok" };
     case "crossSource":
       return { text: tp("matchCrossSource"), tone: "ok" };
+    case "skills":
+      return { text: tp("matchSkills"), tone: "ok" };
     case "candidate":
       return { text: fillMessage(tp("matchCandidateTemplate"), { count: String(m.record.resolved_card_ids.length) }), tone: "warn" };
     case "cardIdConflict":
@@ -132,6 +134,7 @@ function RecordPanel({
   matchNote: note,
   cardStats,
   cardSkills,
+  skillNameMap,
   fmtTime,
   tp,
 }: {
@@ -139,6 +142,7 @@ function RecordPanel({
   matchNote: { text: string; tone: "ok" | "warn" | "dim" };
   cardStats: readonly { key: string; value: number | null }[];
   cardSkills: readonly string[];
+  skillNameMap: Readonly<Record<string, string>>;
   fmtTime: (iso: string) => string;
   tp: Tp;
 }) {
@@ -169,17 +173,19 @@ function RecordPanel({
           </div>
         ))}
       </dl>
-      <SkillList record={r} cardSkills={cardSkills} tp={tp} />
+      <SkillList record={r} cardSkills={cardSkills} skillNameMap={skillNameMap} tp={tp} />
       <StatTable record={r} cardStats={cardStats} tp={tp} />
       <ExtraFields record={r} tp={tp} />
     </section>
   );
 }
 
-function SkillList({ record, cardSkills, tp }: { record: SourceRecord; cardSkills: readonly string[]; tp: Tp }) {
+function SkillList({ record, cardSkills, skillNameMap, tp }: { record: SourceRecord; cardSkills: readonly string[]; skillNameMap: Readonly<Record<string, string>>; tp: Tp }) {
   const cardKeys = new Set(cardSkills.map(nameKey));
-  // ソースとカードでスキル名の言語が違う（日本語 / 英語）と全部「無い」になるため、1 つでも共通するときだけ印を付ける
-  const comparable = record.skills.some((s) => cardKeys.has(nameKey(s)));
+  // ソースの日本語名は、カード番号で確定した記録から作った対応で英語名に直して比べる
+  const cardName = (s: string) => skillNameMap[nameKey(s)] ?? s;
+  // 名前の対応が取れないと全部「無い」になるため、1 つでも共通するときだけ印を付ける
+  const comparable = record.skills.some((s) => cardKeys.has(nameKey(cardName(s))));
   return (
     <div>
       <h3 className="text-xs font-semibold text-text-dim">{fillMessage(tp("skillsHeadingTemplate"), { count: String(record.skills.length) })}</h3>
@@ -188,7 +194,7 @@ function SkillList({ record, cardSkills, tp }: { record: SourceRecord; cardSkill
       ) : (
         <ul className="mt-1 flex flex-wrap gap-1">
           {record.skills.map((s) => {
-            const missing = comparable && !cardKeys.has(nameKey(s));
+            const missing = comparable && !cardKeys.has(nameKey(cardName(s)));
             return (
               <li key={s}>
                 <Badge tone={missing ? "warning" : "neutral"}>

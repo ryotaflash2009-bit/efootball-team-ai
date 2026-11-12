@@ -5591,6 +5591,7 @@ const en: Dictionary = {
     matchTypeLevelOvr: "Card type, level cap and overall rating match (the only such card in the local data)",
     matchStatsNear: "Among cards with the same type and level cap, this is the only one where nearly all 26 stats match (likely)",
     matchCrossSource: "Several cards meet the same conditions; this is the one another source identified (likely)",
+    matchSkills: "Several cards meet the same conditions; this is the only one that has every skill the source lists (likely)",
     matchCandidateTemplate: "{count} cards meet the same conditions, so which card this data belongs to is not confirmed.",
     matchCardIdConflict: "The card number matches, but the overall rating or level cap differs from this card (the number may be wrong or the data may be from a different time)",
     matchNameOvrConfirmed: "Matched by name and overall rating (this is the only card with that name and rating)",

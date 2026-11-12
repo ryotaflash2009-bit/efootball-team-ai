@@ -19,6 +19,7 @@ const sourceRatings: Dictionary["sourceRatings"] = {
   matchTypeLevelOvr: "カード種別・Lv 上限・総合値が一致（手元のカードデータの中でこの 1 枚だけ）",
   matchStatsNear: "カード種別・Lv 上限が同じカードの中で、26 能力値のほとんどが一致するのはこの 1 枚だけ（有力）",
   matchCrossSource: "同じ条件のカードが複数ある中で、他のソースが特定したカードと一致（有力）",
+  matchSkills: "同じ条件のカードが複数ある中で、ソースのスキルをすべて持つのはこの 1 枚だけ（有力）",
   matchCandidateTemplate: "同じ条件のカードが {count} 枚あり、どのカードのデータかは確定できません。",
   matchCardIdConflict: "カード番号は同じですが、総合値か Lv 上限がこのカードと違います（番号の誤りや、データの時期の違いの可能性があります）",
   matchNameOvrConfirmed: "名前・総合値で一致（同名・同総合値のカードはこの 1 枚だけ）",

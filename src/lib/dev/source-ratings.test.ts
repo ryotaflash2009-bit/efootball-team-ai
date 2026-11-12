@@ -15,6 +15,7 @@ import {
   recordBadgeRating,
   recordOveralls,
   resolveRecordCards,
+  buildSkillNameMap,
   sourceRatingsFileSchema,
   unknownRecordEntries,
   type ResolverCard,
@@ -218,8 +219,8 @@ describe("matchCard", () => {
   });
   it("参考の種類（総合値が食い違うカード番号・同じ選手の別カード・名前だけ）は、このカードのものとして結び付けない", () => {
     expect(
-      ["cardId", "stats", "typeLevelOvr", "statsNear", "crossSource", "nameOvr", "candidate", "cardIdConflict", "samePerson", "nameOnly"].filter((k) => isCardLevelMatch(k as never)),
-    ).toEqual(["cardId", "stats", "typeLevelOvr", "statsNear", "crossSource", "nameOvr", "candidate"]);
+      ["cardId", "stats", "typeLevelOvr", "statsNear", "crossSource", "skills", "nameOvr", "candidate", "cardIdConflict", "samePerson", "nameOnly"].filter((k) => isCardLevelMatch(k as never)),
+    ).toEqual(["cardId", "stats", "typeLevelOvr", "statsNear", "crossSource", "skills", "nameOvr", "candidate"]);
   });
   it("最大総合値が不明なカード（暫定）は、総合値の違いを食い違いにしない", () => {
     const m = matchCard(index, card({ worldCardId: "52904601956478", ovrBase: 96, ovrMax: null }));
@@ -333,6 +334,38 @@ describe("resolveRecordCards", () => {
     expect(recordOf(resolveRecordCards(fileOf(row), [resolverCard({ maximumLevel: 35, stats: fullStats })])).resolved_by).toBeNull();
     const twin = resolveRecordCards(fileOf(row), [resolverCard({ stats: fullStats }), resolverCard({ worldCardId: "2", stats: { ...fullStats, curl: 0 } })]);
     expect(recordOf(twin).resolved_by).toBeNull();
+  });
+  // カード番号で確定した記録（日本語のスキル名）とカード（英語のスキル名）の組。どのスキルも 2 件以上で裏付けられる
+  const SKILL_PAIRS: [string, string[], string[]][] = [
+    ["10", ["ア", "イ", "エ"], ["Alpha", "Beta", "Delta"]],
+    ["11", ["ア", "ウ", "エ"], ["Alpha", "Gamma", "Delta"]],
+    ["12", ["イ", "ウ", "オ"], ["Beta", "Gamma", "Epsilon"]],
+    ["13", ["ア", "オ", "カ"], ["Alpha", "Epsilon", "Zeta"]],
+    ["14", ["イ", "カ", "エ"], ["Beta", "Zeta", "Delta"]],
+  ];
+  const skillTraining = SKILL_PAIRS.map(([id, ja]) => ({ source: "B", card_id: id, player_name: "別人", skills: ja, rating_or_tier: "", stats_and_boosters: {} }));
+  const skillCards = SKILL_PAIRS.map(([id, , en]) => resolverCard({ worldCardId: id, nameJa: "別人", nameEn: null, skills: en }));
+  it("カード番号で確定した記録から、ソースのスキル名 → カードのスキル名の対応を作る", () => {
+    const map = buildSkillNameMap(fileOf({}, ...skillTraining), skillCards);
+    expect(Object.fromEntries(map)).toEqual({ ア: "Alpha", イ: "Beta", ウ: "Gamma", エ: "Delta", オ: "Epsilon", カ: "Zeta" });
+    // 英語のソース（カードと同じ名前）は対応に入れず、日本語の対応を押し出さない
+    const english = SKILL_PAIRS.map(([id, , en]) => ({ source: "C", card_id: id, player_name: "別人", skills: en, rating_or_tier: "", stats_and_boosters: {} }));
+    expect(Object.fromEntries(buildSkillNameMap(fileOf({}, ...skillTraining, ...english), skillCards))).toEqual(Object.fromEntries(map));
+    // 1 件だけの裏付けでは対応にしない
+    expect(buildSkillNameMap(fileOf({}, skillTraining[0]), skillCards).size).toBe(0);
+  });
+  it("候補が複数でも、記録のスキルをすべて持つカードが 1 枚だけなら skills", () => {
+    const row = { rating_or_tier: "総合値: 86", stats_and_boosters: { カード種別: "エピック", Lv上限: "32" }, skills: ["ア", "イ", "ウ", "エ", "オ"] };
+    const all = ["Alpha", "Beta", "Gamma", "Delta", "Epsilon"];
+    const out = resolveRecordCards(fileOf(row, ...skillTraining), [...skillCards, resolverCard({ skills: [...all, "Zeta"] }), resolverCard({ worldCardId: "2", skills: ["Alpha", "Beta", "Gamma", "Delta", "Zeta"] })]);
+    expect(recordOf(out)).toMatchObject({ resolved_by: "skills", resolved_card_ids: ["1"] });
+    expect(out.skill_name_map).toMatchObject({ ア: "Alpha" });
+    expect(matchCard(buildSourceRatingsIndex(out), card({ worldCardId: "1", ovrMax: 102 }))[0].kind).toBe("skills");
+    // スキルの分からない候補がある・どちらも持つときは絞らない
+    const unknown = resolveRecordCards(fileOf(row, ...skillTraining), [...skillCards, resolverCard({ skills: all }), resolverCard({ worldCardId: "2" })]);
+    expect(recordOf(unknown).resolved_card_ids).toEqual(["1", "2"]);
+    const both = resolveRecordCards(fileOf(row, ...skillTraining), [...skillCards, resolverCard({ skills: all }), resolverCard({ worldCardId: "2", skills: all })]);
+    expect(recordOf(both).resolved_card_ids).toEqual(["1", "2"]);
   });
   it("カード番号を持つ記録・同名のカードが無い記録はそのまま", () => {
     const withId = resolveRecordCards(fileOf({ card_id: "52904601956478", stats_and_boosters: statLabels }), [resolverCard({ stats: fullStats })]);
