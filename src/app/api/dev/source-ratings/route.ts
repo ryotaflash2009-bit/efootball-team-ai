@@ -51,7 +51,7 @@ async function loadSupabaseRows(): Promise<CardRow[]> {
 function loadSqliteRows(): CardRow[] {
   const db = getDb();
   const rows = db
-    .prepare("SELECT world_card_id, name_ja, name_en, card_type, maximum_level, ovr_base, ovr_max FROM world_player_cards")
+    .prepare("SELECT world_card_id, name_ja, name_en, card_type, maximum_level, ovr_base, ovr_max, playing_style FROM world_player_cards")
     .all() as unknown as CardRow[];
   const stats = new Map<string, Record<string, number>>();
   for (const s of db.prepare("SELECT world_card_id AS id, stat_key AS k, value AS v FROM world_player_stats WHERE stat_kind = 'base'").all() as unknown as { id: string; k: string; v: number }[]) {
@@ -59,7 +59,14 @@ function loadSqliteRows(): CardRow[] {
     if (own) own[s.k] = s.v;
     else stats.set(s.id, { [s.k]: s.v });
   }
-  return rows.map((r) => ({ ...r, stats: stats.get(String(r.world_card_id)) ?? {} }));
+  // スキルも読む（無いとスキル・プレースタイルでの絞り込みが SQLite のときだけ効かない）
+  const skills = new Map<string, string[]>();
+  for (const s of db.prepare("SELECT world_card_id AS id, skill_name AS name FROM world_player_skills ORDER BY world_card_id, display_order").all() as unknown as { id: string; name: string }[]) {
+    const own = skills.get(String(s.id));
+    if (own) own.push(s.name);
+    else skills.set(String(s.id), [s.name]);
+  }
+  return rows.map((r) => ({ ...r, stats: stats.get(String(r.world_card_id)) ?? {}, skills: skills.get(String(r.world_card_id)) ?? [] }));
 }
 
 let cardCache: { at: number; cards: ResolverCard[] } | null = null;
