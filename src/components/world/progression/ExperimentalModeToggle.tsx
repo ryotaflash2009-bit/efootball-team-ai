@@ -1,7 +1,7 @@
 "use client";
 
 import "@/lib/i18n/dictionaries/ja-ns/progressionTab";
-import { useId, useState } from "react";
+import { useState } from "react";
 import { Modal } from "@/components/ui/Overlay";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
@@ -24,7 +24,6 @@ export function ExperimentalModeToggle({
   const tp = (k: Parameters<typeof t<"progressionTab">>[1]) => t("progressionTab", k);
   const WARNING = tp("ruExWarning");
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const warnId = useId();
 
   if (enabled) {
     return (
@@ -51,13 +50,13 @@ export function ExperimentalModeToggle({
       <button
         type="button"
         onClick={() => setConfirmOpen(true)}
-        aria-describedby={warnId}
+        aria-describedby="experimental-mode-warning"
         className="inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-xs text-text-dim hover:border-yellow-400/50 hover:text-yellow-200"
       >
         <Icon name="sparkles" size={13} />
         {tp("ruExOpen")}
       </button>
-      <span id={warnId} className="sr-only">
+      <span id="experimental-mode-warning" className="sr-only">
         {WARNING}
       </span>
 

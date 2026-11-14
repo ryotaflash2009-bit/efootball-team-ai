@@ -101,6 +101,7 @@ import packCheck from "./packCheck";
 import glossary from "./glossary";
 import managerCompare from "./managerCompare";
 import gamePlan from "./gamePlan";
+import sourceRatings from "./sourceRatings";
 
 export const JA_SPLIT_NAMESPACES = {
   notFoundPage,
@@ -205,4 +206,5 @@ export const JA_SPLIT_NAMESPACES = {
   glossary,
   managerCompare,
   gamePlan,
+  sourceRatings,
 };

@@ -190,12 +190,14 @@ async function main() {
   let newCards = 0;
   let maxSeen = prevMaxUpdated;
   let stopEarly = false;
+  let incomplete = (p1.totalPages || 27) > MAX_PAGES;
 
   for (let page = 1; page <= (p1.totalPages || 27) && page <= MAX_PAGES && !stopEarly; page++) {
     const r = page === 1 ? p1 : await fetchPage("UPDATED_AT", page);
     if (r.fatal) {
       console.log(`[world-inc] page ${page} 停止: ${r.fatal}`);
       recErr(page, r.fatal);
+      incomplete = true;
       break;
     }
     let pageAllOld = true;
@@ -221,6 +223,7 @@ async function main() {
     } catch (e) {
       db.exec("ROLLBACK");
       recErr(page, `write: ${e.message}`);
+      incomplete = true;
       break;
     }
     console.log(`[world-inc] page ${page}: 変更 ${changed} / 新規 ${newCards}`);
@@ -228,6 +231,14 @@ async function main() {
       stopEarly = true;
       console.log("[world-inc] このページは全件が前回同期以前 → 早期停止。");
     }
+  }
+
+  // 途中で止まったときは進捗を進めない（進めると、取り込めなかったカードを次回の差分で取りこぼす）
+  if (incomplete && !stopEarly) {
+    db.prepare("UPDATE world_sync_runs SET status='stopped', finished_at=?, ok_count=? WHERE id=?").run(nowIso(), changed + newCards, runId);
+    console.log(`\n[world-inc] 途中で停止: 変更 ${changed} / 新規 ${newCards} / リクエスト ${reqCount}。--max-pages を増やすか、制限が解けてから再実行してください。`);
+    db.close();
+    process.exit(2);
   }
 
   setState("world_last_updated_at_seen", maxSeen);

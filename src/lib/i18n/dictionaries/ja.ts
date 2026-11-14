@@ -5512,6 +5512,52 @@ export interface Dictionary {
     backToList: string;
     managerColumn: string;
   };
+  /** 開発用: 外部ソース（このPCのクローラーのデータ・next dev だけ・2026-11-04）。 */
+  sourceRatings: {
+    tab: string;
+    heading: string;
+    noteTemplate: string;
+    loading: string;
+    off: string;
+    missing: string;
+    invalid: string;
+    noMatch: string;
+    badgeTemplate: string;
+    badgeUncertainTitle: string;
+    sourceLabelTemplate: string;
+    matchCardId: string;
+    matchStats: string;
+    matchTypeLevelOvr: string;
+    matchStatsNear: string;
+    matchCrossSource: string;
+    matchSkills: string;
+    matchNotInData: string;
+    matchStyleSkills: string;
+    matchCandidateTemplate: string;
+    matchCardIdConflict: string;
+    matchNameOvrConfirmed: string;
+    matchNameOvrAmbiguousTemplate: string;
+    matchNameOvrUnknown: string;
+    matchSamePerson: string;
+    matchNameOnly: string;
+    otherCardsHeadingTemplate: string;
+    tierLabel: string;
+    tableLabel: string;
+    positionLabel: string;
+    subPositionsLabel: string;
+    teamLabel: string;
+    playStyleLabel: string;
+    cardIdLabel: string;
+    fetchedLabel: string;
+    skillsHeadingTemplate: string;
+    skillNotOnCard: string;
+    statsHeading: string;
+    statMatchTemplate: string;
+    statDiffNote: string;
+    statSourceColumn: string;
+    statCardColumn: string;
+    extraHeading: string;
+  };
 }
 
 

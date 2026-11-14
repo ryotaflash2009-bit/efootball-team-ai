@@ -25,6 +25,9 @@
 # local SQLite DB, dev-session logs, server PID (regenerated / not redistributable — see below)
 # includes: efootball.db (read-only reference data), all *.log, server.pid
 /data
+# dev-only hand-off from the local crawler (third-party rankings; never commit or deploy).
+# Already covered by /data above; listed explicitly so it stays excluded if /data is ever narrowed.
+/data/external/
 
 # third-party sample data (fetched from eFHUB; redistribution rights not confirmed — see
 # docs/data-verification.md / docs/production-readiness/architecture-audit.md). Keep the
